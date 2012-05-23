@@ -40,14 +40,18 @@ Textarea.draw=function(){
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
 
-
-	if (this.oldContent!=this.getContentAsString()) {   //content has changed
-		var text = this.getContentAsString();
-		text = text.replace(/[\r\n]+/g, "<br />");
-		$(rep).find("body>div>div").html(text);
-	}
+	var that=this;
 	
-	this.oldContent=this.getContentAsString();
+	this.fetchContentString(function(text){
+		
+		if(text!=that.oldContent){
+			text = text.replace(/[\r\n]+/g, "<br />");
+			$(rep).find("body>div>div").html(text);
+		}
+		
+		that.oldContent=text;
+		
+	});
 
 }
 

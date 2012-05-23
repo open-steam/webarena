@@ -117,7 +117,8 @@ theObject.copyContentFromFile=function(filename,callback) {
 *	get the object's content
 */
 theObject.getContent=function(){
-	return Modules.Connector.getContent(this.inRoom, this.id);
+	var content=Modules.Connector.getContent(this.inRoom, this.id);
+	return content;
 }
 
 
