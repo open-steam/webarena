@@ -293,7 +293,7 @@ GUI.initInspectorAttributeUpdate = function() {
 	
 		if (GUI.currentInspectorObject.data.id == object.data.id) {
 	
-			GUI.inspectorElementsSetter[key](value);
+			if (GUI.inspectorElementsSetter[key]) GUI.inspectorElementsSetter[key](value);
 		
 		}
 		
