@@ -1,0 +1,5 @@
+
+Highlighter.setTranslations('de',{
+
+}
+);

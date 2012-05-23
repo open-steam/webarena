@@ -1,0 +1,234 @@
+
+.jDesktopInspector_pageHead {
+	margin-top: 5px;
+	border: 1px solid #aaaaaa;
+	border-bottom: 0px;
+	border-top-right-radius: 3px;
+	-moz-border-radius-topright: 3px;
+	border-top-left-radius: 3px;
+	-moz-border-radius-topleft: 3px;
+	background-color: #FFFFFF;
+	font-size: 13px;
+	color: #8a8a8a;
+	padding: 5px;
+	font-weight: bold;
+}
+
+.jDesktopInspector_pageHead_closed {
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	border-bottom: 1px solid #aaaaaa;
+}
+
+.jDesktopInspector_page {
+	border-bottom-right-radius: 3px;
+	-moz-border-radius-bottomright: 3px;
+	border-bottom-left-radius: 3px;
+	-moz-border-radius-bottomleft: 3px;
+	border: 1px solid #aaaaaa;
+	border-top: 0px;
+	background-color: #FFFFFF;
+	font-size: 13px;
+	color: #000000;
+	padding: 5px;
+	overflow: hidden;
+}
+
+
+
+.jDesktopInspector div.jDesktopInspector_section {
+
+}
+
+.jDesktopInspector div.jDesktopInspector_section div.jDesktopInspector_element {
+	margin-bottom: 6px;
+	min-height: 18px;
+	padding-top: 3px;
+}
+
+.jDesktopInspector div.jDesktopInspector_section div.jDesktopInspector_button_right {
+	float: right;
+	text-align: right;
+	font-weight: normal;
+	color: #1D42A0;
+	position: relative;
+}
+
+.jDesktopInspector div.jDesktopInspector_section div.jDesktopInspector_button_inactive {
+	color: #A7A7A7 !important;
+}
+
+
+.jDesktopInspector div.jDesktopInspector_section div.jDesktopInspector_button_right input[type=text], .jDesktopInspector div.jDesktopInspector_section div.jDesktopInspector_button_right input[type=number] {
+	font-family: Helvetica;
+	border: 1px solid #aaaaaa;
+	box-shadow: none;
+	-webkit-box-shadow: 0px;
+	-webkit-appearance: none;
+	color: #1D42A0;
+	font-weight: normal;
+	padding: 1px;
+	margin: 0px;
+	text-align: right;
+	width: 90px;
+	font-size: 13px;
+	border-radius: 3px;
+	position: relative;
+	top: -2px;
+}
+
+.jDesktopInspector div.jDesktopInspector_section table {
+	position: relative;
+	top: 5px;
+	margin-bottom: 10px;
+}
+
+
+
+
+/* WIDGETS */
+
+
+.jDesktopInspectorWidget_selector td {
+	cursor: pointer;
+}
+
+
+.jDesktopInspectorWidget_color_preview {
+	width: 20px;
+	height: 20px;
+	border-radius: 5px;
+	border: 1px solid #abaeb3;
+}
+
+.jDesktopInspectorWidget_color_colors {
+	padding-top: 5px;
+}
+
+
+
+
+.jDesktopInspectorWidget_fontsize_preview {
+	position: absolute;
+	color: #424242;
+	font-size: 33px;
+	z-index: 100002;
+	left: 15px;
+	top: 17px;
+}
+
+.jDesktopInspectorWidget_fontsize_down {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #FFFFFF),
+		color-stop(0.05, #eaeaea),
+		color-stop(1, #fafafa)
+	);
+	border-bottom-left-radius: 5px;
+	-moz-border-radius-bottomleft: 5px;
+	border-bottom-right-radius: 5px;
+	-moz-border-radius-bottomright: 5px;
+}
+
+.jDesktopInspectorWidget_fontsize_up {
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #eaeaea),
+		color-stop(0.05, #d7d7d7),
+		color-stop(1, #e8e8e8)
+	);
+	border-bottom: 0px !important;
+	border-top-right-radius: 5px;
+	-moz-border-radius-topright: 5px;
+	border-top-left-radius: 5px;
+	-moz-border-radius-topleft: 5px;
+}
+
+.jDesktopInspectorWidget_fontsize_button {
+	border: 1px solid #bbbbbb;
+	width: 110px;
+	height: 35px;
+	position: relative;
+	z-index: 100001;
+}
+
+.jDesktopInspectorWidget_fontsize_button>div {
+	width: 0;
+	height: 0;
+	content: '';
+	position: absolute;
+	right: 10px;
+	border-style: solid;
+	border-width: 7px;
+}
+
+.jDesktopInspectorWidget_fontsize_up>div {
+	top: 7px;
+	border-color: transparent transparent #696d72 transparent;
+}
+
+.jDesktopInspectorWidget_fontsize_down>div {
+	top: 14px;
+	border-color: #696d72 transparent transparent transparent;
+}
+
+
+.jDesktopInspectorWidget_font_selectbox {
+	font-size: 15px;
+	margin-bottom: 10px;
+	margin-left: 15px;
+}
+
+.jDesktopInspectorWidget_font_selectbox>div {
+	margin-top: 5px;
+	margin-bottom: 5px;
+	cursor: pointer;
+}
+
+.jDesktopInspectorWidget_font_selectbox>div:hover {
+	color: #1D42A0;
+}
+
+
+.jDesktopInspectorWidget_objectid_table {
+	border: 1px solid #CCCCCC;
+	border-bottom: 0px;
+	border-spacing: 0px;
+	border-collapse: collapse;
+	empty-cells: show;
+	text-align: left;
+	margin-bottom: 10px;
+}
+
+.jDesktopInspectorWidget_objectid_table td, .jDesktopInspectorWidget_objectid_table th {
+	border-bottom: 1px solid #CCCCCC;
+	padding: 4px;
+	cursor: pointer;
+}
+
+.jDesktopInspectorWidget_objectid_table tr:hover {
+	background-color: #F0F0F0;
+}
+
+.jDesktopInspectorWidget_objectid_table tr.selected {
+	background-color: #F0F0F0;
+}
+
+.jDesktopInspectorWidget_objectid_table tr:first-child:hover {
+	background: none;
+}
+
+
+
+.jDesktopInspectorWidget_point_input {
+	width: 30px !important;
+}
+
+
+

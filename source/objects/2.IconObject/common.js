@@ -1,0 +1,42 @@
+/**
+*    Webarena - A web application for responsive graphical knowledge work
+*
+*    @author Felix Winkelnkemper, University of Paderborn, 2012
+*
+*/
+
+var Modules=require('../../server.js');
+
+var IconObject=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
+
+IconObject.isCreatable=false;
+
+IconObject.category='Objects';
+
+IconObject.register=function(type){
+	
+	// Registering the object
+	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
+	GeneralObject.register.call(this,type); //super call
+	
+	this.attributeManager.registerAttribute('layer',{readonly:true, hidden: true});
+	this.registerAttribute('width',{hidden:true});
+	this.registerAttribute('height',{hidden:true});
+	this.registerAttribute('fillcolor',{hidden:true});
+	this.registerAttribute('linecolor',{hidden:true});
+	this.registerAttribute('linesize',{hidden:true});
+	this.unregisterAction('to back');
+	this.unregisterAction('to front');
+	
+}
+
+
+IconObject.isResizable=function(){
+	return false;
+}
+
+
+
+IconObject.register('IconObject');
+
+module.exports=IconObject;

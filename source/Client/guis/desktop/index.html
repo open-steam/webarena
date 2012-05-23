@@ -1,0 +1,478 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+	<title>Webarena 1.0</title>
+
+	<script src="/socket.io/socket.io.js"></script>
+
+	<script src="../../config.js"></script>
+	<script src="../../Helper.js"></script>
+	<script src="../../Dispatcher.js"></script>
+	<script src="../../ObjectManager.js"></script>
+	<script src="../../SocketClient.js"></script>
+
+	<script src="/Common/DataSet.js"></script>
+	<script src="/Common/ActionManager.js"></script>
+	<script src="/Common/AttributeManager.js"></script>
+	<script src="/Common/TranslationManager.js"></script>
+
+	<script>
+	var  Modules={
+		'config':Config,
+		'Config':Config,
+		'SocketClient':SocketClient,
+		'Dispatcher':Dispatcher,
+		'ObjectManager':ObjectManager,
+		'Helper':Helper,
+
+		//Object specific
+
+		'DataSet':DataSet,
+		'AttributeManager':AttributeManager,
+		'TranslationManager':TranslationManager,
+		'ActionManager':ActionManager,
+	};
+
+	for (var name in Modules){
+		var module=Modules[name];
+		if (module.init) {
+			console.log('Initializing '+name);
+			module.init(Modules);
+			module.Modules=Modules;
+		}
+	}
+
+	</script>
+
+	<script src="/objects"></script>
+	
+	
+	
+	
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.animate-enhanced.min.js"></script>
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/jquery-ui.js"></script>
+	<link type="text/css" href="../../guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.color.js"></script>
+
+	<link type="text/css" href="style.css" rel="Stylesheet" />
+
+
+	<script type="text/javascript" src="../../guis.common/javascript/0.GUI.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/0.cookies.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.progressBarManager.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.login.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.load.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.actionsheet.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.hiddenObjects.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.inspector.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.links.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.paint.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.rubberband.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.svg.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.text.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.toolbar.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.dragDropUpload.js"></script>
+	
+	<link type="text/css" href="../../guis.common/css/actionsheet.css" rel="Stylesheet" />
+	<link type="text/css" href="../../guis.common/css/progressBar.css" rel="Stylesheet" />
+	<link type="text/css" href="../../guis.common/css/login.css" rel="Stylesheet" />
+	
+	
+
+
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.jDesktopInspector.js"></script>
+	<link type="text/css" href="../../guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" />
+	<link type="text/css" href="../../guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
+	
+	<script>
+	
+		GUI.uploadFile=function(object,message){
+		
+			var uploadDialog = document.createElement("div");
+			$(uploadDialog).attr("title", GUI.translate("upload file"));
+			$(uploadDialog).html('<p>'+message+'</p>');
+			
+			var form = document.createElement("input");
+			$(form).attr("type", "file");
+			
+			$(form).bind("change", function() {
+			
+				var progress = document.createElement("div");
+				$(progress).css("margin-top", "10px");
+				$(progress).progressbar({
+					value: 0
+				});
+
+				$(uploadDialog).append(progress);
+
+				var fd = new FormData();
+				fd.append("file", form.files[0]);
+
+				var xhr = new XMLHttpRequest();
+				xhr.upload.addEventListener("progress", function(evt) {
+					
+					if (evt.lengthComputable) {
+						var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+						$(progress).progressbar("value", percentComplete);
+					} else {
+						$(progress).progressbar("destroy");
+						$(progress).html("unable to compute progress");
+					}
+					
+				}, false);
+				
+				xhr.addEventListener("load", function() {
+					//upload complete
+					$(uploadDialog).dialog("close");
+				}, false);
+				xhr.addEventListener("error", function() {
+					//failed
+					alert("failed");
+				}, false);
+				xhr.addEventListener("abort", function() {
+					//canceled
+					alert("cancel");
+				}, false);
+				xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id'));
+				xhr.send(fd);
+				
+				var dialogButtons = {};
+				dialogButtons[GUI.translate("cancel")] = function() {
+					xhr.abort();
+					$(this).dialog("close");
+				}
+				
+				$(uploadDialog).dialog("option", "buttons", dialogButtons);
+				
+			});
+			
+			$(uploadDialog).append(form);
+			
+			var dialogButtons = {};
+			dialogButtons[GUI.translate("cancel")] = function() {
+				$(this).dialog("close");
+			}
+			
+			$(uploadDialog).dialog({
+				modal: true,
+				resizable: false,
+				buttons: dialogButtons
+			});
+			
+		}
+
+		
+		
+		
+		/* inspector */
+		
+		GUI.updateInspector = function() {
+			
+			$("#inspector").data("jDesktopInspector").update();
+			
+		}
+		
+		
+		GUI.saveInspectorStateAndHide = function() {
+			
+			GUI.inspectorState = ($("#inspector").css("opacity") > 0);
+			GUI.hideInspector();
+			
+		}
+		
+		
+		GUI.restoreInspectorFromSavedState = function() {
+			
+			if (GUI.inspectorState) {
+				GUI.showInspector();
+			}
+			
+		}
+		
+		
+		GUI.hideInspector = function() {
+			
+			$("#inspector_button").html(GUI.translate("Show inspector"));
+			
+			$("#inspector").animate({
+				opacity: 0
+			}, 200, function() {
+				$("#inspector").hide();
+			});
+			
+		}
+		
+		
+		GUI.showInspector = function() {
+			
+			$("#inspector_button").html(GUI.translate("Hide inspector"));
+			
+			$("#inspector").show();
+			$("#inspector").animate({
+				opacity: 1
+			}, 200);
+			
+		}
+	
+		
+		GUI.toggleInspector = function() {
+			
+			if ($("#inspector").css("opacity") > 0) {
+				/* close */
+				
+				GUI.hideInspector();
+				
+			} else {
+				/* open */
+				
+				GUI.showInspector();
+				
+			}
+			
+		}
+		
+		
+		GUI.setupInspector = function() {
+			
+			$("#inspector").css("opacity", 0);
+			$("#inspector").hide();
+			
+			
+			/* add hidden-mode toggle button */
+			
+			var hiddenButton = document.createElement("span");
+			$(hiddenButton).addClass("header_button");
+			$(hiddenButton).attr("id", "hidden_button");
+			$(hiddenButton).html(GUI.translate("Show hidden objects"));
+			
+			GUI.onToggleHidden = function(hiddenMode) {
+				
+				if (hiddenMode) {
+					//hidden mode is active (hidden objects are visible)
+					$("#hidden_button").html(GUI.translate("Hide hidden objects"));
+					$("#hidden_button").addClass("button_active");
+				} else {
+					//hidden mode is inactive (no hidden objects are visible)
+					$("#hidden_button").html(GUI.translate("Show hidden objects"));
+					$("#hidden_button").removeClass("button_active");	
+				}
+				
+			}
+			
+			$(hiddenButton).bind("click", function() {
+				
+				GUI.toggleHidden();
+				
+			});
+			
+			$("#header > .header_right").append(hiddenButton);
+			
+			
+			
+			/* add inspector toggle button */
+		
+			var inspectorButton = document.createElement("span");
+			$(inspectorButton).addClass("header_button");
+			$(inspectorButton).attr("id", "inspector_button");
+			$(inspectorButton).html(GUI.translate("Show inspector"));
+			
+			$(inspectorButton).bind("click", GUI.toggleInspector);
+			
+			$("#header > .header_right").append(inspectorButton);
+			
+			
+			
+			/* add user info */
+			
+			var userinfo = document.createElement("span");
+			$(userinfo).addClass("header_info");
+			$(userinfo).css("font-size", "11px");
+			$(userinfo).html(GUI.translate("Logged in user")+": "+GUI.username);
+
+			$("#header > .header_right").prepend(userinfo);
+			
+			
+			
+			/* add inspector */
+
+			$("#inspector").jDesktopInspector({
+				onUpdate : function(domEl, inspector) {
+
+					GUI.setupInspectorContent(inspector);
+
+				}
+			});
+			
+			
+			GUI.showInspector();
+
+		}
+		
+		
+		GUI.error = function(heading, message, webarenaObject, fatal) {
+
+			var translate = function(text) {
+				if (!webarenaObject) {
+					return GUI.translate(text);
+				} else {
+					return webarenaObject.translate(GUI.currentLanguage, text);
+				}
+			}		
+
+			var errorButtons = {};
+			
+			if (fatal) {
+				errorButtons[GUI.translate("Reload")] = function() {
+					window.location.reload();
+				}
+			} else {
+				errorButtons[GUI.translate("Close Dialog")] = function() {
+					$(this).dialog("close");
+				}
+			}
+			
+			var heading = translate(heading);
+			var message = '<p>'+translate(message)+'</p>';
+			
+			GUI.dialog(heading, message, errorButtons);
+
+		}
+		
+		
+		/*
+		 * heading: string
+		 * content: html content of dialog
+		 * buttons: object of buttons e.g.:
+		 * 			{
+		 * 				"title of this button" : function() {
+		 * 					//button callback
+		 * 				}
+		 * 			}
+		 */
+		GUI.dialog = function(heading, content, buttons, dialogWidth) {
+			
+			GUI.blockKeyEvents = true;
+			
+			if (buttons == undefined) {
+				
+				var buttons = {};
+				
+				buttons[GUI.translate("close")] = function() {
+					//nothing
+				}
+				
+			}
+			
+			var dialogContent = document.createElement("div");
+			$(dialogContent).attr("title", heading);
+			$(dialogContent).html(content);
+
+			var buttons2 = {};
+			
+			$.each(buttons, function(title, callback) {
+				
+				buttons2[title] = function() {
+					callback(dialogContent);
+					$(this).dialog("close");
+				}
+				
+			});
+			
+			if (dialogWidth == undefined) {
+				dialogWidth = "auto";
+			}
+			
+			$(dialogContent).dialog({
+				modal: true,
+				resizable: false,
+				buttons: buttons2,
+				zIndex: 100000,
+				width : dialogWidth,
+				close: function() {
+					$(this).remove();
+					GUI.blockKeyEvents = false;
+				}
+			});
+			
+			
+		};
+	
+
+
+		
+
+	
+	</script>
+</head>
+<body>
+	
+	<div id="header">
+		
+		<div class="header_right">
+			
+		</div>
+		
+		<div class="header_left">
+		
+		</div>
+		
+	</div>
+
+
+	<div id="content"></div>
+	
+	
+	<div id="inspector">
+		
+	</div>
+	
+	<div id="actionsheet"></div>
+	
+	<div id="error_bg"></div>
+	<div id="error_box">
+		
+		<div id="error_box_heading"></div>
+		<div id="error_box_message"></div>
+		<div id="error_box_button"></div>
+		
+	</div>
+
+
+	<div id="login_background" style="display: none">&nbsp;</div>
+	<div id="login" style="display: none;">
+		
+		<div class="login_title">Webarena 1.0</div>
+		
+		<div class="login_error"></div>
+		
+		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="Mustermann" id="login_username" class="login_input" />
+		
+		<br />
+		
+		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="My_Password" id="login_password" class="login_input" />
+		
+		<br />
+		
+		<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
+		
+	</div>
+	
+	
+	<div id="progressBar"><div class="progressBar_container"></div></div>
+
+</body>
+</html>
