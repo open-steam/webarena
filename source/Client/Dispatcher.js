@@ -38,8 +38,10 @@ Dispatcher.response=function(message){
 
 var responseCleanupTimeout=false;
 Dispatcher.query=function(name,arguments,responseFunction){
+	
 	var random=new Date().getTime()-1296055327011;
 	var responseID=name+random;
+
 	responseFunctions[responseID]=responseFunction;
 	if (responseCleanupTimeout){
 		window.clearTimeout(responseCleanupTimeout);

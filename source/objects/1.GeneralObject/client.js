@@ -43,7 +43,7 @@ GeneralObject.setContent=function(content){
 	
 }
 
-GeneralObject.withContent=function(worker){
+GeneralObject.fetchContent=function(worker){
 	
 	if (!worker) worker=function(data){
 		console.log(data);
@@ -70,47 +70,52 @@ GeneralObject.withContent=function(worker){
 	});
 }
 
-GeneralObject.getContent=function(){
-	return this.content;
+GeneralObject.utf8={};
+
+GeneralObject.utf8.toByteArray = function(str) {
+    var byteArray = [];
+    for (var i = 0; i < str.length; i++)
+        if (str.charCodeAt(i) <= 0x7F)
+            byteArray.push(str.charCodeAt(i));
+        else {
+            var h = encodeURIComponent(str.charAt(i)).substr(1).split('%');
+            for (var j = 0; j < h.length; j++)
+                byteArray.push(parseInt(h[j], 16));
+        }
+    return byteArray;
 };
 
-GeneralObject.getContentAsString=function(){
-	
-	var utf8 = {}
+GeneralObject.utf8.parse = function(byteArray) {
+    var str = '';
+    for (var i = 0; i < byteArray.length; i++)
+        str +=  byteArray[i] <= 0x7F?
+                byteArray[i] === 0x25 ? "%25" : // %
+                String.fromCharCode(byteArray[i]) :
+                "%" + byteArray[i].toString(16).toUpperCase();
+    try {
+    	return decodeURIComponent(str);
+    } catch (e) {
+    }
+    return '';
+};
 
-	utf8.toByteArray = function(str) {
-	    var byteArray = [];
-	    for (var i = 0; i < str.length; i++)
-	        if (str.charCodeAt(i) <= 0x7F)
-	            byteArray.push(str.charCodeAt(i));
-	        else {
-	            var h = encodeURIComponent(str.charAt(i)).substr(1).split('%');
-	            for (var j = 0; j < h.length; j++)
-	                byteArray.push(parseInt(h[j], 16));
-	        }
-	    return byteArray;
-	};
+GeneralObject.fetchContentString=function(worker){
 	
-	utf8.parse = function(byteArray) {
-	    var str = '';
-	    for (var i = 0; i < byteArray.length; i++)
-	        str +=  byteArray[i] <= 0x7F?
-	                byteArray[i] === 0x25 ? "%25" : // %
-	                String.fromCharCode(byteArray[i]) :
-	                "%" + byteArray[i].toString(16).toUpperCase();
-	    try {
-	    	return decodeURIComponent(str);
-	    } catch (e) {
-	    }
-	    return '';
-	};
+	this.fetchContent(function(data){
+		
+		data=GeneralObject.utf8.parse(data);
+		
+		worker(data);
+		return;
 	
-	
-	var result='';
-	
-	result=utf8.parse(this.content);
-	
-	return result;
+	});
+
+}
+
+//ATTENTION. Do not use this, when you cannot be sure, the content has already been loaded (e.g. do not use it in draw)
+GeneralObject.getContentAsString=function(){
+	if (!this.contentFetched) alert('Timing error on getContentAsString. Call developer!');
+	return GeneralObject.utf8.parse(this.content);
 }
 
 GeneralObject.hasContent=function(){
@@ -125,17 +130,10 @@ GeneralObject.contentUpdated=function(){
 	
 	requestData.roomID=this.getRoomID();
     requestData.objectID=this.id;
-	
-	var that=this;
-	
+
 	this.contentFetched=false;
 	
-	var that=this;
-	
-	this.withContent(function(newContent){
-		that.content=newContent;
-		that.draw();
-	});
+	this.draw();
 }
 
 

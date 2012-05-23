@@ -26,12 +26,18 @@ SimpleText.draw=function(){
 	$(rep).attr("layer", this.getAttribute('layer'));
 
 
-	if (this.oldContent!=this.getContentAsString()) {   //content has changed
-		rep.textContent = this.getContentAsString();
-		if (!rep.textContent) rep.textContent='No text yet!';
-	}
+	var that=this;
 	
-	this.oldContent=this.getContentAsString();
+	this.fetchContentString(function(data){
+		
+		if(data!=that.oldContent){
+			rep.textContent=data;
+			if (!data) rep.textContent='No text yet!';
+		}
+		
+		that.oldContent=data;
+		
+	});
 
 }
 
