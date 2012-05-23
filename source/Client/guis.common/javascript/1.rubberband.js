@@ -10,19 +10,20 @@ GUI.initRubberband = function() {
 
 GUI.rubberbandStart = function(event) {
 
+	var webarenaObject = false;
+
 	if (event.target.id) {
 		var webarenaObject = ObjectManager.getObject(event.target.id);
-		if (webarenaObject) {
-			return;
-		}
-	} else if ($(event.target).parent()) {
-		if ($(event.target).parent().attr("id")) {
-			var webarenaObject = ObjectManager.getObject($(event.target).parent().attr("id"));
-			if (webarenaObject && webarenaObject.selected) {
-				return;
-			}
-		}
+	} else if ($(event.target).parents("svg>*") && $(event.target).parents("svg>*").attr("id")) {
+		var webarenaObject = ObjectManager.getObject($(event.target).parents("svg>*").attr("id"));
 	}
+	
+	if (webarenaObject) {
+		webarenaObject.select();
+		webarenaObject.moveStart(event);
+		return;
+	}
+	
 
 	if (GUI.shiftKeyDown) return;
 	
