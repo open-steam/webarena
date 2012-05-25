@@ -5,6 +5,7 @@
 *
 */
 
+"use strict";
 
     var Helper=new function(){
     	

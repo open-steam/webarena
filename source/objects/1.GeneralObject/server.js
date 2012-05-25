@@ -7,6 +7,8 @@
 *
 */
 
+"use strict";
+
 // The server side defintion of the object extends the common parts
 
 var theObject=Object.create(require('./common.js'));

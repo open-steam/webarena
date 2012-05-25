@@ -8,7 +8,7 @@
 
 Exit.createRepresentation = function() {
 	
-	rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(this.getAttribute('id'));
 	
 	GUI.svg.image(rep, 0, 0, 32, 32, this.getIconPath());
 	

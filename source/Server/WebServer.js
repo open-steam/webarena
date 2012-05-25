@@ -5,6 +5,8 @@
 *
 */
 
+"use strict";
+
 var Modules=false;
 
 var WebServer={};

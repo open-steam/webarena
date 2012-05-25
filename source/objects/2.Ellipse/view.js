@@ -7,7 +7,7 @@
 
 Ellipse.createRepresentation = function() {
 	
-	rep = GUI.svg.ellipse(
+	var rep = GUI.svg.ellipse(
 		10, //cx
 		10, //cy
 		10, //rx

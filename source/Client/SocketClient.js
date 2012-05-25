@@ -1,3 +1,4 @@
+"use strict";
 var SocketClient={};
 
 SocketClient.init=function(){

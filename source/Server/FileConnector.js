@@ -16,6 +16,8 @@
 *
 */
 
+"use strict";
+
 var fs = require('fs');
 
 var Modules=false;

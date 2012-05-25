@@ -67,7 +67,7 @@ Polygon.createRepresentation = function() {
 	
 	this.points = [];
 
-	rep = GUI.svg.polyline(this.points);
+	var rep = GUI.svg.polyline(this.points);
 
 	rep.dataObject=this;
 
