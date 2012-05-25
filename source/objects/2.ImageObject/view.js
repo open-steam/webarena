@@ -8,7 +8,7 @@
 
 ImageObject.createRepresentation = function() {
 
-	rep = GUI.svg.image(10, 10, 10, 10, this.getPreviewContentURL());
+	var rep = GUI.svg.image(10, 10, 10, 10, this.getPreviewContentURL());
 	
 	rep.dataObject=this;
 

@@ -8,7 +8,7 @@
 
 File.createRepresentation = function() {
 
-	rep = GUI.svg.image(10, 10, 10, 10, this.getFileIcon());
+	var rep = GUI.svg.image(10, 10, 10, 10, this.getFileIcon());
 	
 	rep.dataObject=this;
 

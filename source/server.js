@@ -11,6 +11,8 @@ console.log('#                                     #');
 console.log('#    (c) 2012, Felix Winkelnkemper    #');
 console.log('#######################################');
 
+"use strict";
+
 //General error handling
 
 /*

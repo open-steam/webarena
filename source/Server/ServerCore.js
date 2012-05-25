@@ -7,6 +7,8 @@
 
 // no users, no rights, no server communication
 
+"use strict";
+
 var fs=require('fs');
 
 var Modules=false;
@@ -19,11 +21,13 @@ ServerCore.init=function(theModules){
 	
 	Modules=theModules;
 	
-	files=fs.readdirSync('objects');
-	objectTypes={};
+	var files=fs.readdirSync('objects');
+	var objectTypes={};
+	
+	ServerCore.clientCode='//Object Code for WebArena Client '+enter;
 	
 	files.forEach(function(filename){
-		fileinfo=filename.split('.');
+		var fileinfo=filename.split('.');
 		var index=fileinfo[0];
 		var objName=fileinfo[1];
 		if (!index) return;
@@ -32,8 +36,6 @@ ServerCore.init=function(theModules){
 		var filebase=__dirname+'/../objects/'+filename;
 
 		var obj=require(filebase+'/server.js');
-		
-		this.clientCode='//Object Code for WebArena Client '+enter;
 		
 		addToClientCode(filebase+'/common.js');
 		addToClientCode(filebase+'/client.js');
@@ -142,7 +144,7 @@ ServerCore.getRoom=function(roomID){
 
 ServerCore.getClientCode=function(){
 	
-	var code='';
+	var code='"use strict";';
 	
 	var lines=this.clientCode.split(enter);
 	
@@ -171,8 +173,6 @@ ServerCore.remove=function(obj){
 	//Inform clients about remove.
 	
 	obj.updateClients('objectDelete');
-	
-	delete(obj);
 	
 }
 

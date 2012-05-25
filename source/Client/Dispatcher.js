@@ -5,6 +5,8 @@
 *
 */
 
+"use strict";
+
 var Dispatcher={};
 
 var calls={};
@@ -37,10 +39,10 @@ Dispatcher.response=function(message){
 }
 
 var responseCleanupTimeout=false;
-Dispatcher.query=function(name,arguments,responseFunction){
+Dispatcher.query=function(queryName,queryArguments,responseFunction){
 	
 	var random=new Date().getTime()-1296055327011;
-	var responseID=name+random;
+	var responseID=queryName+random;
 
 	responseFunctions[responseID]=responseFunction;
 	if (responseCleanupTimeout){
@@ -50,7 +52,7 @@ Dispatcher.query=function(name,arguments,responseFunction){
 	responseCleanupTimeout=window.setTimeout(function(){
 		responseFunction={}; // get rid of all remaining response functions
 	},5000);
-	Modules.SocketClient.sendCall(name, arguments, responseID);
+	Modules.SocketClient.sendCall(queryName, queryArguments, responseID);
 }
 
 

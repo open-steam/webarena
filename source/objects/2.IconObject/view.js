@@ -1,6 +1,6 @@
 IconObject.createRepresentation = function() {
 	
-	rep = GUI.svg.image(10, 10, 16, 16, this.getIconPath());
+	var rep = GUI.svg.image(10, 10, 16, 16, this.getIconPath());
 
 	rep.dataObject=this;
 

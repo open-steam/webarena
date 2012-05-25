@@ -45,7 +45,7 @@ SimpleText.draw=function(){
 
 SimpleText.createRepresentation = function() {
 	
-	rep = GUI.svg.text(10, 10, "Text");
+	var rep = GUI.svg.text(10, 10, "Text");
 
 	rep.dataObject=this;
 

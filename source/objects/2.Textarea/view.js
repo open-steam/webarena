@@ -68,7 +68,7 @@ Textarea.updateInnerHeight = function() {
 
 Textarea.createRepresentation = function() {
 	
-	rep = GUI.svg.other("foreignObject");
+	var rep = GUI.svg.other("foreignObject");
 
 	rep.dataObject=this;
 	

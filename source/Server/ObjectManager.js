@@ -8,6 +8,8 @@
 
 // rights, functions relative to users or sockets
 
+"use strict";
+
 var Modules=false;
 
 var ObjectManager={};
