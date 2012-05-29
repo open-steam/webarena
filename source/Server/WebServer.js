@@ -67,7 +67,7 @@ WebServer.init=function(theModules){
 	  	var roomID=ids[0];
 	  	var objectID=ids[1];
 	
-		var object=Modules.ServerCore.getObject(roomID,objectID);
+		var object=Modules.ObjectManager.getObject(roomID,objectID);
 	  	
 	  	//TODO rights check (Idea: provide connection id)
 	  	
@@ -141,7 +141,7 @@ WebServer.init=function(theModules){
 	  	var ids=url.substr(12).split('/');
 	  	var roomID=ids[0];
 	  	var objectID=ids[1];
-	  	var object=Modules.ServerCore.getObject(roomID,objectID);
+	  	var object=Modules.ObjectManager.getObject(roomID,objectID);
 
 	  	//TODO rights check (Idea: provide connection id)
 
@@ -167,7 +167,7 @@ WebServer.init=function(theModules){
 	  	var ids=url.substr(19).split('/');
 	  	var roomID=ids[0];
 	  	var objectID=ids[1];
-	  	var object=Modules.ServerCore.getObject(roomID,objectID);
+	  	var object=Modules.ObjectManager.getObject(roomID,objectID);
 
 	  	//TODO rights check (Idea: provide connection id)
 
