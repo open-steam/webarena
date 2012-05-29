@@ -103,6 +103,17 @@ var getObjectDataByFile=function(filebase,roomID,objectID){
 }
 
 /**
+*	getObjectData
+*
+*	returns the attribute set of an object
+*
+*/
+fileConnector.getObjectData=function(roomID,objectID){
+	var obj=getObjectDataByFile(Modules.Config.filebase,roomID,objectID);
+	return obj;
+}
+
+/**
 *	getInventory
 *
 *	returns a list of all objects in a room (no actual objcts, just their attributeset)

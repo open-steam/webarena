@@ -35,7 +35,7 @@ UserManager.login=function(socketOrUser,data){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	
-	if (connector.login(data.username,data.password)){  //TODO rights check
+	if (connector.login(data.username,data.password)){
 		var userObject=require('./User.js');
 		connection.user=new userObject(this);
 		connection.user.username=data.username;
@@ -115,7 +115,6 @@ UserManager.init=function(theModules){
 	Dispatcher.registerCall('login',UserManager.login);
     Dispatcher.registerCall('subscribe',UserManager.subscribe);
     Dispatcher.registerCall('unsubscribe',UserManager.unsubscribe);
-    Dispatcher.registerCall('say',UserManager.say);
 }
 
 UserManager.getConnectionsForRoom=function(roomID){
