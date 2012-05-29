@@ -255,10 +255,10 @@ WebServer.init=function(theModules){
 		    		var src=data;
 		    		src=src.substr(position1);
 		    		
-		    		position2=src.search('"')+1;
+		    		var position2=src.search('"')+1;
 		    		src=src.substr(position2);
 		    		
-		    		position3=src.search('"');
+		    		var position3=src.search('"');
 		    		src=src.substr(0,position3);
 		    		
 		    		var pre=data.substr(0,position1);
