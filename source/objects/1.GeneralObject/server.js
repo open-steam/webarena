@@ -14,7 +14,7 @@
 var theObject=Object.create(require('./common.js'));
 
 // The Modules variable provides access to server modules such as
-// Module.ObjectManager or Module.ServerCore
+// Module.ObjectManager
 
 var Modules=require('../../server.js');
 
