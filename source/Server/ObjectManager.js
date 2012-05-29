@@ -6,8 +6,6 @@
 */
 
 
-// rights, functions relative to users or sockets
-
 "use strict";
 
 var fs=require('fs');
@@ -19,38 +17,23 @@ var ObjectManager={};
 ObjectManager.isServer=true;
 
 var enter=String.fromCharCode(10);
-ObjectManager.clientCode='';
 
 
-function addToClientCode(filename){
-	var file=false;
-	try {
-		file=fs.readFileSync(filename, 'UTF8');
-		ObjectManager.clientCode+=enter+enter+'//'+filename+enter+enter+file;
-	} catch (e) {
-		ObjectManager.clientCode+=enter+enter+'//'+filename+enter+enter+'//'+e;
-	}
-}
-
-ObjectManager.toString=function(){
-	return 'ObjectManager (server)';
-}
+ObjectManager.toString=function(){return 'ObjectManager (server)';}
 
 var prototypes={};
-var objectCache={};
 
 ObjectManager.registerType=function(type,constr){
 	prototypes[type]=constr;
 }
 
-ObjectManager.getInventory=function(roomID){
-	//TODO rights check
-	return this.getInventory(roomID);
-}
 
 ObjectManager.sendRoom=function(socket,roomID){
-	var room=this.getRoom(roomID);
-	room.updateClient(socket);
+	
+	//var context=Modules.UserManager.getConnectionBySocket(socket);
+	
+	var room=this.getRoom(roomID);	//the room object
+	room.updateClient(socket);				//and send it to the client
 	
 	var objects=this.getInventory(roomID);
 	for (var i in objects){
@@ -60,13 +43,9 @@ ObjectManager.sendRoom=function(socket,roomID){
 	} 
 }
 
-//This function has the potential for later object caching
-ObjectManager.add=function(obj){
-}
-
 ObjectManager.remove=function(obj){
-
-	//TODO if there is a cache, remove from cache.
+	
+	//if (!context) throw new Error('Missing context in ObjectManager.remove');
 	
 	//Send remove to connector
 	
@@ -78,10 +57,6 @@ ObjectManager.remove=function(obj){
 	
 }
 
-ObjectManager.getTypes=function(){
-
-};
-
 ObjectManager.getPrototype=function(objType){
 	if (prototypes[objType]) return prototypes[objType];
 	if (prototypes['GeneralObject']) return prototypes['GeneralObject'];
@@ -91,10 +66,6 @@ ObjectManager.getPrototype=function(objType){
 ObjectManager.getPrototypeFor=ObjectManager.getPrototype;
 
 ObjectManager.buildObjectFromObjectData=function(objectData,roomID,type){
-	
-	//get from cache if possible
-	
-	if (objectCache[roomID+'#'+objectData.id]) return objectCache[roomID+'#'+objectData.id];
 	
 	//get the object's prototype
 	
@@ -116,17 +87,15 @@ ObjectManager.buildObjectFromObjectData=function(objectData,roomID,type){
 	obj.inRoom=roomID;
 	obj.data.type=type;
 	
-	objectCache[roomID+'#'+objectData.id]=obj;
-	
 	return obj;
 }
 
 ObjectManager.getObject=function(roomID,objectID){
 	
-	//TODO optimize this!
+	var objectData=Modules.Connector.getObjectData(roomID,objectID);
+	var object=this.buildObjectFromObjectData(objectData,roomID);
+	return object;
 	
-    this.getInventory(roomID); // updating the object cache
-	return objectCache[roomID+'#'+objectID];
 }
 
 ObjectManager.getObjects=function(roomID){
@@ -153,8 +122,8 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 
 	if (type=='Dummy') return;
 
-	//TODO check for rights
-	
+	//TODO send error to client if there is a rights issue here
+		
 	var proto=this.getPrototypeFor(type);
 
 	Modules.Connector.createObject(roomID,type,proto.standardData,function(id){
@@ -174,6 +143,19 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 		
 	});
 	
+}
+
+ObjectManager.clientCode='';
+
+
+function addToClientCode(filename){
+	var file=false;
+	try {
+		file=fs.readFileSync(filename, 'UTF8');
+		ObjectManager.clientCode+=enter+enter+'//'+filename+enter+enter+file;
+	} catch (e) {
+		ObjectManager.clientCode+=enter+enter+'//'+filename+enter+enter+'//'+e;
+	}
 }
 
 ObjectManager.init=function(theModules){
