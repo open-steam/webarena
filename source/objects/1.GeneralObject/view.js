@@ -99,6 +99,7 @@ GeneralObject.initGUI = function(rep) {
 	
 	var self = this;
 	
+	/*
 	var clickHandler = function(event) {
 
 		event.preventDefault();
@@ -114,6 +115,7 @@ GeneralObject.initGUI = function(rep) {
 	} else {
 		$(rep).click(clickHandler);
 	}
+	*/
 	
 	if (this.getAttribute("shadow")) {
 		$(rep).attr("filter", "url(#svg-drop-shadow)");
@@ -410,6 +412,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 	var start = function(event) {
 		
 		event.preventDefault();
+		event.stopPropagation();
 		
 		GUI.updateLayers();
 		
@@ -511,8 +514,16 @@ GeneralObject.saveMoveStartPosition = function() {
 
 
 GeneralObject.moveStart = function(event) {
-
+	
 	var self = ObjectManager.getObject(this.id);
+	
+	
+	var contentPosition = $("#content").offset();
+	
+	if (!self.hasPixelAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top)) {
+		return;
+	}
+
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -581,9 +592,10 @@ GeneralObject.moveStart = function(event) {
 		GUI.showLinks(self);
 		
 		if (!self.moved) {
-			self.click(event);
+			if (!self.selectionClickActive) self.click();
 		}
 		
+		self.selectionClickActive = false;
 		
 		if (GUI.isTouchDevice) {
 			/* touch */
@@ -778,6 +790,7 @@ GeneralObject.setViewHeight = function(value) {
 }
 
 
+GeneralObject.clickTimeout = false;
 
 /* our own click handler (because we have to differ single click and double click) */
 GeneralObject.click = function(event) {
@@ -787,6 +800,10 @@ GeneralObject.click = function(event) {
 	if (GUI.isTouchDevice) {
 		self.clickHandler(event);
 		return true;
+	}
+	
+	if (event == undefined) {
+		self.clickTimeout = false;
 	}
 
 	if (self.clickTimeout) {
@@ -809,7 +826,7 @@ GeneralObject.click = function(event) {
 
 			self.clickTimeout = false;
 
-		}, 300);
+		}, 600);
 		
 		self.clickHandler(event);
 	
@@ -833,7 +850,9 @@ GeneralObject.clickHandler = function(event) {
 	if (this.selected) {
 		this.selectedClickHandler(event);
 	} else {
+		this.selectionClickActive = true; //this is used to prevent a second click-call by mouseup of move when selecting an object (otherwise this would result in an doubleclick)
 		this.select();
+		this.moveStart(event);
 	}
 }
 

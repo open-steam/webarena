@@ -19,3 +19,28 @@ Paint.draw=function(){
 	}
 	
 }
+
+Paint.createRepresentation = function() {
+
+	ImageObject.createRepresentation.call(this);
+
+	this.createCanvas();
+	this.updateCanvas(this.getPreviewContentURL());
+	
+}
+
+Paint.updateImage=function(){
+
+	ImageObject.updateImage.call(this);
+
+	if (this.hasContent() == false) {
+		
+		this.updateCanvas("../../guis.common/images/imageNotFound.png");
+		
+	} else {
+		
+		this.updateCanvas(this.getPreviewContentURL());
+	
+	}
+
+}

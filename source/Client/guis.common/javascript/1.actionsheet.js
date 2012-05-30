@@ -1,3 +1,5 @@
+"use strict";
+
 /* actionsheet */
 
 GUI.hideActionsheet = function() {

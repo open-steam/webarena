@@ -1,3 +1,5 @@
+"use strict";
+
 /* hidden objects */
 
 GUI.hiddenObjectsVisible = false;

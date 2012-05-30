@@ -154,7 +154,11 @@ WebServer.init=function(theModules){
 
 	  	var mimeType=object.getAttribute('mimeType') || 'text/plain';
 
+<<<<<<< HEAD
 	  	data=object.getContent(true);
+=======
+	  	var data=object.getContent();
+>>>>>>> 114f68dc0851b89165dc76074ce1b83e290532ff
 	  	res.writeHead(200, {'Content-Type': mimeType,'Content-Disposition': 'inline'});
 		res.end(data);
 	  	return;

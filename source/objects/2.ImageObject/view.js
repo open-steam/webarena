@@ -6,7 +6,7 @@
 */
 
 
-ImageObject.createRepresentation = function() {
+ImageObject.createRepresentation=function() {
 
 	var rep = GUI.svg.image(10, 10, 10, 10, this.getPreviewContentURL());
 	
@@ -43,3 +43,5 @@ ImageObject.updateImage=function(){
 	}
 
 }
+
+

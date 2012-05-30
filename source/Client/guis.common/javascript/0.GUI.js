@@ -1,3 +1,5 @@
+"use strict";
+
 var GUI={};
 
 GUI.currentLanguage='de';
@@ -255,22 +257,22 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 /* mouse handler */
 GUI.initMouseHandler = function() {
-	return; //TODO: build this
+
 	var mousedown = function(event) {
-		
+
 		event.preventDefault();
+		event.stopPropagation();
 		
 		var contentPosition = $("#content").offset();
 		
-		var clickedObject = GUI.getObjectAt(event.pageX, event.pageY-contentPosition.top);
-		
+		/* find objects at this position */
+		var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
+
 		if (clickedObject) {
-
-			clickedObject.select();
-
+			clickedObject.click(event);
 		} else {
 			/* clicked on background */
-			GUI.rubberbandStart(event)
+			GUI.rubberbandStart(event);
 		}
 		
 	}
@@ -281,12 +283,18 @@ GUI.initMouseHandler = function() {
 }
 
 
-/* get the topmost object at point x,y */
+/* get the topmost object at point x,y which is visible */
 GUI.getObjectAt = function(x,y) {
 	
 	var clickedObject = false;
 	
 	$.each(ObjectManager.getObjectsByLayer(), function(key, object) {
+
+		var rep = object.getRepresentation();
+
+		if (GUI.hiddenObjectsVisible && !object.getAttribute("hidden")) return;
+		if (!GUI.hiddenObjectsVisible && object.getAttribute("hidden")) return;
+		if (!object.getAttribute("visible") && !$(rep).hasClass("webarena_ghost")) return;
 
 		if (object.hasPixelAt(x,y)) {
 			clickedObject = object;
@@ -333,5 +341,9 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
 
 
 
-
+GUI.disconnected = function() {
+	
+	GUI.error("connection lost", "Lost connection to server", false, true);
+		
+}
 

@@ -1,3 +1,5 @@
+"use strict";
+
 /* Links */
 
 GUI.currentLinkObject = undefined;

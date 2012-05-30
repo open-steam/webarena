@@ -1,3 +1,5 @@
+"use strict";
+
 GUI.loaded = false;
 GUI.isLoggedIn = false;
 
@@ -59,9 +61,6 @@ GUI.loadGUI = function(step) {
 		GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
 		GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
 		GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown	
-
-		/* rubberband */
-		GUI.initRubberband(); //init rubberband //needs: ObjectManager.getObjects on usage
 
 		/* window resizing */
 		GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
