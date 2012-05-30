@@ -67,7 +67,7 @@ WebServer.init=function(theModules){
 	  	var roomID=ids[0];
 	  	var objectID=ids[1];
 	
-		var object=Modules.ObjectManager.getObject(roomID,objectID);
+		var object=Modules.ObjectManager.getObject(roomID,objectID,true); //TODO use actual credentials
 	  	
 	  	//TODO rights check (Idea: provide connection id)
 	  	
@@ -113,7 +113,7 @@ WebServer.init=function(theModules){
 							res.writeHead(200);
 							res.end();
 							
-						}, files.file.type);
+						}, files.file.type,true);
 						
 					} else {
 						object.data.inline = false;
@@ -141,7 +141,7 @@ WebServer.init=function(theModules){
 	  	var ids=url.substr(12).split('/');
 	  	var roomID=ids[0];
 	  	var objectID=ids[1];
-	  	var object=Modules.ObjectManager.getObject(roomID,objectID);
+	  	var object=Modules.ObjectManager.getObject(roomID,objectID,true); //TODO use actual credentials
 
 	  	//TODO rights check (Idea: provide connection id)
 
@@ -154,7 +154,7 @@ WebServer.init=function(theModules){
 
 	  	var mimeType=object.getAttribute('mimeType') || 'text/plain';
 
-	  	data=object.getContent();
+	  	data=object.getContent(true);
 	  	res.writeHead(200, {'Content-Type': mimeType,'Content-Disposition': 'inline'});
 		res.end(data);
 	  	return;
@@ -167,7 +167,7 @@ WebServer.init=function(theModules){
 	  	var ids=url.substr(19).split('/');
 	  	var roomID=ids[0];
 	  	var objectID=ids[1];
-	  	var object=Modules.ObjectManager.getObject(roomID,objectID);
+	  	var object=Modules.ObjectManager.getObject(roomID,objectID,true); //TODO use actual credentials
 
 	  	//TODO rights check (Idea: provide connection id)
 
@@ -185,10 +185,10 @@ WebServer.init=function(theModules){
 				return res.end('Object not found');
 			}
 			
-		  	res.writeHead(200, {'Content-Type': object.getInlinePreviewMimeType(),'Content-Disposition': 'inline'});
+		  	res.writeHead(200, {'Content-Type': object.getInlinePreviewMimeType(true),'Content-Disposition': 'inline'});
 			res.end(data);
 				
-		},mimeType);
+		},mimeType,true);
 
 	  	return;
 	  }
