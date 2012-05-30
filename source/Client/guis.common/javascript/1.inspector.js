@@ -1,3 +1,5 @@
+"use strict";
+
 /* inspector */
 
 /* the following three functions are overwritten by desktop GUI */
@@ -293,7 +295,7 @@ GUI.initInspectorAttributeUpdate = function() {
 	
 		if (GUI.currentInspectorObject.data.id == object.data.id) {
 	
-			GUI.inspectorElementsSetter[key](value);
+			if (GUI.inspectorElementsSetter[key]) GUI.inspectorElementsSetter[key](value);
 		
 		}
 		

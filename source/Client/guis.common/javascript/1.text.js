@@ -1,3 +1,5 @@
+"use strict";
+
 GUI.editText = function(webarenaObject, multiLine, width, height) {
 	
 	var style = 'font-family: '+webarenaObject.getAttribute("font-family")+'; ';
