@@ -1,3 +1,5 @@
+"use strict";
+
 GUI.showLogin = function(err) {
 	
 	GUI.loginProcessActive = false;

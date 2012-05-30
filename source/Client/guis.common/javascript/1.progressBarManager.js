@@ -1,3 +1,5 @@
+"use strict";
+
 GUI.progressBarManager = {};
 
 GUI.progressBarManager.currentId = 0;

@@ -113,7 +113,7 @@ GeneralObject.register=function(type){
 		
 		var objects = ObjectManager.getObjects();
 		
-		for (index in objects) {
+		for (var index in objects) {
 			var object = objects[index];
 
 			if (!object.hasLinkedObjects() && object.getAttribute("visible") != true) {

@@ -10,6 +10,9 @@ SocketClient.init=function(){
 		if (data.type=='call') Modules.Dispatcher.call(data);
 		if (data.type=='response') Modules.Dispatcher.response(data);
 	});
+	socket.on('disconnect', function() {
+		GUI.disconnected();
+	});
 }
 
 SocketClient.sendCall=function(type, data, responseID){

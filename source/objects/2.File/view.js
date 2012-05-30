@@ -80,3 +80,22 @@ File.updateThumbnail=function(){
 	}
 
 }
+
+
+/* get the width of the objects bounding box */
+File.getViewBoundingBoxWidth = function() {
+	if (this.hasContent() == false || this.getAttribute("preview") == false) {
+		return 64;
+	} else {
+		return GeneralObject.getViewBoundingBoxWidth.call(this);
+	}
+}
+
+/* get the height of the objects bounding box */
+File.getViewBoundingBoxHeight = function() {
+	if (this.hasContent() == false || this.getAttribute("preview") == false) {
+		return 64;
+	} else {
+		return GeneralObject.getViewBoundingBoxHeight.call(this);
+	}
+}

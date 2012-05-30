@@ -1,3 +1,5 @@
+"use strict";
+
 GUI.initToolbar = function() {
 
 	/* insert icons for creating new objects: */

@@ -1,33 +1,10 @@
+"use strict";
+
 /* rubberband */
-
-GUI.initRubberband = function() {
-
-	if (GUI.isTouchDevice) return;
-
-	$("#content>svg").bind("mousedown", GUI.rubberbandStart);
-	
-}
 
 GUI.rubberbandStart = function(event) {
 
-	var webarenaObject = false;
-
-	if (event.target.id) {
-		var webarenaObject = ObjectManager.getObject(event.target.id);
-	} else if ($(event.target).parents("svg>*") && $(event.target).parents("svg>*").attr("id")) {
-		var webarenaObject = ObjectManager.getObject($(event.target).parents("svg>*").attr("id"));
-	}
-	
-	if (webarenaObject) {
-		webarenaObject.select();
-		webarenaObject.moveStart(event);
-		return;
-	}
-	
-
 	if (GUI.shiftKeyDown) return;
-	
-	if ($(event.target).hasClass("webarenaControl")) return;
 	
 	$("#content").find(".webarenaRubberband").remove();
 	
@@ -87,12 +64,14 @@ GUI.rubberbandStart = function(event) {
 	}
 	
 	var end = function(event) {
-	
+
+		if (GUI.rubberbandWidth < 4) GUI.rubberbandWidth = 4;
+		if (GUI.rubberbandHeight < 4) GUI.rubberbandHeight = 4;
 	
 		$.each(ObjectManager.getObjects(), function(index, object) {
 		
 			if (!object.getAttribute("visible")) return;
-		
+
 			if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
 				if (object.isGraphical) {
 					object.select(true);
