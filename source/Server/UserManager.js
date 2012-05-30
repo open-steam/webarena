@@ -5,7 +5,7 @@
 *
 */
 
-// no users, no rights, no server communication
+"use strict";
 
 var Modules=false;
 
@@ -23,7 +23,7 @@ UserManager.socketDisconnect=function(socket){
 
 
 UserManager.login=function(socketOrUser,data){
-	if(typeof socketOrUser.id=='string') userID=socketOrUser.id; else userID=socketOrUser; 
+	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser; 
 	
 	var connection=UserManager.connections[userID];
 	if (!connection) {
@@ -49,7 +49,7 @@ UserManager.login=function(socketOrUser,data){
 }
 
 UserManager.subscribe=function(socketOrUser,room){
-	if(typeof socketOrUser.id=='string') userID=socketOrUser.id; else userID=socketOrUser;
+	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
 	
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;
@@ -83,7 +83,7 @@ UserManager.subscribe=function(socketOrUser,room){
 }
 
 UserManager.unsubscribe=function(socketOrUser,room){
-	if(typeof socketOrUser.id=='string') userID=socketOrUser.id; else userID=socketOrUser;	
+	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;	
 	
 	var connection=UserManager.connections[userID];
 	if (!connection) {

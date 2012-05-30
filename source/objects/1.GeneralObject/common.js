@@ -20,7 +20,6 @@ GeneralObject.translationManager=false;
 GeneralObject.actionManager=false;
 GeneralObject.isCreatable=false;
 GeneralObject.isGraphical=true;
-GeneralObject.name='Graphical Object';
 GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;

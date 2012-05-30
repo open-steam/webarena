@@ -11,6 +11,8 @@ console.log('#                                     #');
 console.log('#    (c) 2012, Felix Winkelnkemper    #');
 console.log('#######################################');
 
+"use strict";
+
 //General error handling
 
 /*
@@ -44,7 +46,6 @@ var  Modules={
 	Dispatcher:require('./Server/Dispatcher.js'),
 	WebServer:require('./Server/Webserver.js'),
 	SocketServer:require('./Server/SocketServer.js'),
-	ServerCore:require('./Server/ServerCore.js'),
 	UserManager:require('./Server/UserManager.js'),
 	Helper:require('./Server/Helper.js'),
 	

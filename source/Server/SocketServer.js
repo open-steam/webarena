@@ -5,6 +5,8 @@
 *
 */
 
+"use strict";
+
 var SocketServer={};
 var Modules=false;
 
