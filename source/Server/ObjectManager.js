@@ -30,12 +30,12 @@ ObjectManager.registerType=function(type,constr){
 
 ObjectManager.sendRoom=function(socket,roomID){
 	
-	//var context=Modules.UserManager.getConnectionBySocket(socket);
+	var context=Modules.UserManager.getConnectionBySocket(socket);
 	
-	var room=this.getRoom(roomID);	//the room object
+	var room=this.getRoom(roomID,context);	//the room object
 	room.updateClient(socket);				//and send it to the client
 	
-	var objects=this.getInventory(roomID);
+	var objects=this.getInventory(roomID,context);
 	for (var i in objects){
 		var object=objects[i];
 		object.updateClient(socket);
@@ -45,7 +45,7 @@ ObjectManager.sendRoom=function(socket,roomID){
 
 ObjectManager.remove=function(obj){
 	
-	//if (!context) throw new Error('Missing context in ObjectManager.remove');
+	if (!context) throw new Error('Missing context in ObjectManager.remove');
 	
 	//Send remove to connector
 	
@@ -65,13 +65,13 @@ ObjectManager.getPrototype=function(objType){
 
 ObjectManager.getPrototypeFor=ObjectManager.getPrototype;
 
-ObjectManager.buildObjectFromObjectData=function(objectData,roomID,type){
+function buildObjectFromObjectData(objectData,roomID,type){
 	
 	//get the object's prototype
 	
 	var type=type||objectData.type;
 	
-	var proto=this.getPrototypeFor(type);
+	var proto=ObjectManager.getPrototypeFor(type);
 	
 	//build a new object
 	
@@ -90,27 +90,31 @@ ObjectManager.buildObjectFromObjectData=function(objectData,roomID,type){
 	return obj;
 }
 
-ObjectManager.getObject=function(roomID,objectID){
+ObjectManager.getObject=function(roomID,objectID,context){
 	
-	var objectData=Modules.Connector.getObjectData(roomID,objectID);
-	var object=this.buildObjectFromObjectData(objectData,roomID);
+	if (!context) throw new Error('Missing context in ObjectManager.getObject');
+	
+	var objectData=Modules.Connector.getObjectData(roomID,objectID,context);
+	var object=buildObjectFromObjectData(objectData,roomID);
 	return object;
 	
 }
 
-ObjectManager.getObjects=function(roomID){
+ObjectManager.getObjects=function(roomID,context){
+	
+	if (!context) throw new Error('Missing context in ObjectManager.getObjects');
 	
 	var inventory=[];
 	
 	//get the object creation information by the connector
 	// {id;type;rights;attributes}
 	
-	var objectsData=Modules.Connector.getInventory(roomID);
+	var objectsData=Modules.Connector.getInventory(roomID,context);
 	
 	for (var i in objectsData){
 		var objectData=objectsData[i];
 		
-		var object=this.buildObjectFromObjectData(objectData,roomID);
+		var object=buildObjectFromObjectData(objectData,roomID);
 		inventory.push(object);
 	}
 	return inventory;
@@ -119,6 +123,8 @@ ObjectManager.getObjects=function(roomID){
 ObjectManager.getInventory=ObjectManager.getObjects;
 
 ObjectManager.createObject=function(roomID,type, attributes, content,socket,responseID){
+	
+	var context=Modules.UserManager.getConnectionBySocket(socket);
 
 	if (type=='Dummy') return;
 
@@ -127,12 +133,12 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 	var proto=this.getPrototypeFor(type);
 
 	Modules.Connector.createObject(roomID,type,proto.standardData,function(id){
-		var object=ObjectManager.getObject(roomID,id);
+		var object=ObjectManager.getObject(roomID,id,context);
 	
-		object.setAttribute('name',type);
+		object.setAttribute('name',type,false,context);
 		for (var key in attributes){
 			var value=attributes[key];
-			object.setAttribute(key,value);
+			object.setAttribute(key,value,false,context);
 		}
 		
 		if (content) {
@@ -141,7 +147,7 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 		
 		if (socket && responseID) Modules.Dispatcher.respond(socket,responseID,object.id);
 		
-	});
+	},context);
 	
 }
 
@@ -191,44 +197,53 @@ ObjectManager.init=function(theModules){
 	});
 	
 	Modules.Dispatcher.registerCall('setAttribute',function(socket,data){
+		
+		var context=Modules.UserManager.getConnectionBySocket(socket);
+		
 		var roomID=data.roomID
 		var objectID=data.objectID;
 		var key=data.key;
 		var value=data.value;
 		
-		var object=ObjectManager.getObject(roomID,objectID);
+		var object=ObjectManager.getObject(roomID,objectID,context);
 		if (!object){
 			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
 		}
 		
 		//TODO check write right
 		
-		object.setAttribute(key,value);
+		object.setAttribute(key,value,false,context);
 		
 	});
 	
 	Modules.Dispatcher.registerCall('setContent',function(socket,data){
+		
+		var context=Modules.UserManager.getConnectionBySocket(socket);
+		
 		var roomID=data.roomID
 		var objectID=data.objectID;
 		var content=data.content;
 		
-		var object=ObjectManager.getObject(roomID,objectID);
+		var object=ObjectManager.getObject(roomID,objectID,context);
 		if (!object){
 			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
 		}
 		
 		//TODO check write right
 		
-		object.setContent(content);
+		object.setContent(content,false,context);
 		
 	});
 	
 	Modules.Dispatcher.registerCall('getAttribute',function(socket,data){
+		
+		var context=Modules.UserManager.getConnectionBySocket(socket);
+		
 		var roomID=data.roomID
 		var objectID=data.objectID;
 		var key=data.key;
 		
-		var object=ObjectManager.getObject(roomID,objectID);
+		var object=ObjectManager.getObject(roomID,objectID,context);
 		if (!object){
 			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
 		}
@@ -238,25 +253,31 @@ ObjectManager.init=function(theModules){
 	});
 
 	Modules.Dispatcher.registerCall('getContent',function(socket,data){
+		
+		var context=Modules.UserManager.getConnectionBySocket(socket);
+		
 		var roomID=data.roomID
 		var objectID=data.objectID;
 			
-		var object=ObjectManager.getObject(roomID,objectID);
+		var object=ObjectManager.getObject(roomID,objectID,context);
 		if (!object){
 			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
 		}
 		
-		return object.getContent();
+		return object.getContent(context);
 		
 	});
 	
 	Modules.Dispatcher.registerCall('deleteObject',function(socket,data){
+		
+		var context=Modules.UserManager.getConnectionBySocket(socket);
+		
 		//TODO check delete right
 		var roomID=data.roomID
 		var objectID=data.objectID;
 		
-		var object=ObjectManager.getObject(roomID,objectID);
-				if (!object){
+		var object=ObjectManager.getObject(roomID,objectID,context);
+		if (!object){
 			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
 		}
 		
@@ -280,10 +301,13 @@ ObjectManager.init=function(theModules){
 	});
 	
 	Modules.Dispatcher.registerCall('duplicate',function(socket,data,responseID){
+		
+		var context=Modules.UserManager.getConnectionBySocket(socket);
+		
 		var roomID=data.roomID
 		var objectID=data.objectID;
 		
-		var object=ObjectManager.getObject(roomID,objectID);
+		var object=ObjectManager.getObject(roomID,objectID,context);
 		if (!object){
 			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
 		}
@@ -301,11 +325,13 @@ ObjectManager.init=function(theModules){
 		
 }
 
-ObjectManager.getRoom=function(roomID){
+ObjectManager.getRoom=function(roomID,context){
 	
-	var objectData=Modules.Connector.getRoomData(roomID);
+	if (!context) throw new Error('Missing context in ObjectManager.remove');
 	
-	var object=this.buildObjectFromObjectData(objectData,roomID,'Room');
+	var objectData=Modules.Connector.getRoomData(roomID,context);
+	
+	var object=buildObjectFromObjectData(objectData,roomID,'Room');
 	
 	return object;
 	

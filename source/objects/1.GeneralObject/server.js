@@ -43,8 +43,9 @@ theObject.updateClient=function(socket,mode){
 *	and a message is sent to the clients
 *
 */
-theObject.persist=function(){
-	Modules.Connector.saveObjectData(this.inRoom, this.id, this.data);
+theObject.persist=function(context){
+	
+	Modules.Connector.saveObjectData(this.inRoom, this.id, this.data, false, context);
 	if (this.evaluate) this.evaluate();
 	this.updateClients();
 }
@@ -82,7 +83,9 @@ theObject.hasContent=function(){
 *	set a new content. If the content is base64 encoded png data,
 *	it is decoded first.
 */
-theObject.setContent=function(content,callback){
+theObject.setContent=function(content,callback,context){
+	
+	if (!context) throw new Error('Missing context in GeneralObject.setContent');
 	
 	if (content.substr(0,22)=='data:image/png;base64,'){
 		
@@ -90,25 +93,27 @@ theObject.setContent=function(content,callback){
 		content = new Buffer(base64Data, 'base64');
 	}
 
-	Modules.Connector.saveContent(this.inRoom, this.id, content, callback);
+	Modules.Connector.saveContent(this.inRoom, this.id, content, callback, context);
 	
 	this.data.hasContent=!!content;
 	this.data.contentAge=new Date().getTime();
 
 	//send object update to all listeners
-	this.persist();
+	this.persist(context);
 	this.updateClients('contentUpdate');
 }
 
-theObject.copyContentFromFile=function(filename,callback) {
+theObject.copyContentFromFile=function(filename,callback,context) {
+	
+	if (!context) throw new Error('Missing context in GeneralObject.copyContentFromFile');
 
-	Modules.Connector.copyContentFromFile(this.inRoom, this.id, filename, callback);
+	Modules.Connector.copyContentFromFile(this.inRoom, this.id, filename, callback, context);
 	
 	this.data.hasContent=true;
 	this.data.contentAge=new Date().getTime();
 
 	//send object update to all listeners
-	this.persist();
+	this.persist(context);
 	this.updateClients('contentUpdate');
 	
 }
@@ -118,8 +123,11 @@ theObject.copyContentFromFile=function(filename,callback) {
 *
 *	get the object's content
 */
-theObject.getContent=function(){
-	var content=Modules.Connector.getContent(this.inRoom, this.id);
+theObject.getContent=function(context){
+	
+	if (!context) throw new Error('Missing context in GeneralObject.getContent');
+	
+	var content=Modules.Connector.getContent(this.inRoom, this.id, context);
 	return content;
 }
 
@@ -129,12 +137,12 @@ theObject.getContent=function(){
 *
 *	get the object's inline preview
 */
-theObject.getInlinePreview=function(callback,mimeType){
-	return Modules.Connector.getInlinePreview(this.inRoom, this.id, callback, mimeType);
+theObject.getInlinePreview=function(callback,mimeType,context){
+	return Modules.Connector.getInlinePreview(this.inRoom, this.id, callback, mimeType,context);
 }
 
-theObject.getInlinePreviewMimeType=function() {
-	return Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id);
+theObject.getInlinePreviewMimeType=function(context) {
+	return Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id,context);
 }
 
 

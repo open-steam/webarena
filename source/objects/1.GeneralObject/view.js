@@ -77,7 +77,7 @@ GeneralObject.createRepresentation = function() {
 
 	if (!this.isGraphical) return;
 
-	rep = GUI.svg.rect(
+	var rep = GUI.svg.rect(
 		10, //x
 		10, //y
 		10, //width

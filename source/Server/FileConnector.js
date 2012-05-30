@@ -14,15 +14,21 @@
 *	The fileconnector is the most simple connector strucure, which just persists
 *	object data in plain textfiles.
 *
+*	Most public functions are provided with a context attribute. This context is
+*	either a connection or 'true'. In case of a connection, user credentials are found
+*	in context.user.username and context.user.password. If context is just set to 'true'
+*	access to all objects should be granted (e.g. by using a root connection).
+*
 */
 
 "use strict";
+
+//TODO make this asynchronous
 
 var fs = require('fs');
 
 var Modules=false;
 var fileConnector={};
-var username='nobody';
 
 fileConnector.init=function(theModules){
 	Modules=theModules;
@@ -31,12 +37,22 @@ fileConnector.init=function(theModules){
 /**
 *	 RIGHTS
 */
-fileConnector.login=function(username,password){
-	this.username=username;
+fileConnector.login=function(username,password,processFunction){
+
+
+	var success=(username == 'Mustermann' && password == 'My_Password');
 	
-	if (username == 'Mustermann' && password == 'My_Password') return true;
+	if (!success) return false;
 	
-	return false;
+	var data={};
+	
+	data.username=username;
+	data.password=password;
+	data.home='public';
+	
+	processFunction(data);
+	
+	return true;
 }
 
 //TODO mayRead
@@ -45,16 +61,11 @@ fileConnector.login=function(username,password){
 //TODO mayDelete
 //TODO mayCreate
 
-fileConnector.maySubscribe=function(room){
+fileConnector.maySubscribe=function(room,context){
+	if (!context) throw new Error('Missing context in fileConnector.maySubscribe');
 	return true;
 }
 
-/**
-*	USER MANAGEMENT
-*/
-fileConnector.getHome=function(){
-	return 'public';
-}
 
 /**
 *	internal
@@ -108,8 +119,12 @@ var getObjectDataByFile=function(filebase,roomID,objectID){
 *	returns the attribute set of an object
 *
 */
-fileConnector.getObjectData=function(roomID,objectID){
+fileConnector.getObjectData=function(roomID,objectID,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.getObjectData');
+	
 	var obj=getObjectDataByFile(Modules.Config.filebase,roomID,objectID);
+	
 	return obj;
 }
 
@@ -119,7 +134,9 @@ fileConnector.getObjectData=function(roomID,objectID){
 *	returns a list of all objects in a room (no actual objcts, just their attributeset)
 *
 */
-fileConnector.getInventory=function(roomID){
+fileConnector.getInventory=function(roomID,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.getInventory');
 	
 	//load the rooms contents. Do not care about rights.
 	
@@ -162,7 +179,9 @@ fileConnector.getInventory=function(roomID){
 *	returns the attribute set of the current room
 *
 */
-fileConnector.getRoomData=function(roomID){
+fileConnector.getRoomData=function(roomID,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.getRoomData');
 	
 	var filebase=Modules.Config.filebase;
 	var obj=getObjectDataByFile(filebase,roomID,roomID);
@@ -176,7 +195,9 @@ fileConnector.getRoomData=function(roomID){
 *	if an "after" function is specified, it is called after saving
 *
 */
-fileConnector.saveObjectData=function(roomID,objectID,data,after){
+fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.saveObjectData');
 
 	var filebase=Modules.Config.filebase;
 	
@@ -187,12 +208,10 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after){
 	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
 	data=JSON.stringify(data);
 	
-	fs.writeFile(filename, data,'utf-8', function (err) {
-		  if (err) {
-		  	console.log('Could not write: ',err);
-		  }
-		  if (after) after(objectID);
-	});
+	//TODO Change to asynchronous access
+	
+	fs.writeFileSync(filename, data,'utf-8');
+	if (after) after(objectID);
 	
 }
 
@@ -202,7 +221,9 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after){
 *	if an "after" function is specified, it is called after saving
 *
 */
-fileConnector.saveContent=function(roomID,objectID,content,after){
+fileConnector.saveContent=function(roomID,objectID,content,after,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.saveContent');
 	
 	var filebase=Modules.Config.filebase;
 	
@@ -229,7 +250,9 @@ fileConnector.saveContent=function(roomID,objectID,content,after){
 *	if an "after" function is specified, it is called after saving
 *
 */
-fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, after) {
+fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, after,context) {
+	
+	if (!context) throw new Error('Missing context in fileConnector.copyContentFromFile');
 	
 	var filebase=Modules.Config.filebase;
 	
@@ -256,7 +279,9 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, aft
 *	get an object's content as a binary buffer (array of bytes);
 *	
 */
-fileConnector.getContent=function(roomID,objectID,encoding){
+fileConnector.getContent=function(roomID,objectID,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.getContent');
 	
 	var filebase=Modules.Config.filebase;
 	
@@ -277,7 +302,9 @@ fileConnector.getContent=function(roomID,objectID,encoding){
 *
 *	remove an object from the persistence
 */
-fileConnector.remove=function(roomID,objectID){
+fileConnector.remove=function(roomID,objectID,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.remove');
 	
 	var filebase=Modules.Config.filebase;
 	
@@ -305,12 +332,15 @@ fileConnector.remove=function(roomID,objectID){
 *	after(objectID)
 *
 */
-fileConnector.createObject=function(roomID,type,data,after){
+fileConnector.createObject=function(roomID,type,data,after,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.createObject');
+	
 	var objectID=new Date().getTime()-1296055327011;
 	
 	data.type=type;
 	
-	this.saveObjectData(roomID,objectID,data,after);
+	this.saveObjectData(roomID,objectID,data,after,context);
 }
 
 
@@ -325,7 +355,9 @@ fileConnector.createObject=function(roomID,type,data,after){
 *	after(objectID)
 *
 */
-fileConnector.duplicateObject=function(roomID,objectID,after){
+fileConnector.duplicateObject=function(roomID,objectID,after,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.context');
 
 	var self = this;
 
@@ -408,7 +440,9 @@ fileConnector.duplicateObject=function(roomID,objectID,after){
 }
 
 
-fileConnector.trimImage=function(roomID, objectID, callback) {
+fileConnector.trimImage=function(roomID, objectID, callback,context) {
+	
+	if (!context) throw new Error('Missing context in fileConnector.trimImage');
 
 	var im = require('imagemagick');
 	
@@ -434,7 +468,7 @@ fileConnector.trimImage=function(roomID, objectID, callback) {
 			
 			var dX = dA[1];
 			var dY = dA[2];
-console.log("1", newWidth, newHeight, dX, dY);
+
 			im.convert([filename, '-trim', filename], function(err,out,err2) {
 
 				if (!err) {
@@ -468,7 +502,9 @@ fileConnector.isInlineDisplayable=function(mimeType) {
 	
 }
 
-fileConnector.getMimeType=function(roomID,objectID) {
+fileConnector.getMimeType=function(roomID,objectID,context) {
+	
+	if (!context) throw new Error('Missing context in fileConnector.getMimeType');
 	
 	var filebase=Modules.Config.filebase;
 	
@@ -532,7 +568,9 @@ fileConnector.getInlinePreviewProviders=function() {
 	}
 }
 
-fileConnector.getInlinePreviewDimensions=function(roomID, objectID, callback, mimeType) {
+fileConnector.getInlinePreviewDimensions=function(roomID, objectID, callback, mimeType,context) {
+	
+	if (!context) throw new Error('Missing context in fileConnector.getInlinePreviewDimensions');
 	
 	if (!mimeType) {
 		var mimeType = fileConnector.getMimeType(roomID,objectID);
@@ -545,15 +583,17 @@ fileConnector.getInlinePreviewDimensions=function(roomID, objectID, callback, mi
 		console.log("getInlinePreviewDimensions: no generator name for mime type '"+mimeType+"' found!");
 		callback(false, false); //do not set width and height (just send update to clients)
 	} else {
-		this.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, callback);
+		this.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, callback, context);
 	}
 	
 }
 
-fileConnector.getInlinePreview=function(roomID, objectID, callback, mimeType) {
+fileConnector.getInlinePreview=function(roomID, objectID, callback, mimeType,context) {
+	
+	if (!context) throw new Error('Missing context in fileConnector.getInlinePreview');
 	
 	if (!mimeType) {
-		var mimeType = fileConnector.getMimeType(roomID,objectID);
+		var mimeType = fileConnector.getMimeType(roomID,objectID,context);
 	}
 	
 	if (!mimeType) {
@@ -568,14 +608,16 @@ fileConnector.getInlinePreview=function(roomID, objectID, callback, mimeType) {
 		console.log("getInlinePreview: no generator name for mime type '"+mimeType+"' found!");
 		callback(false); //do not set width and height (just send update to clients)
 	} else {
-		this.inlinePreviewProviders[generatorName].preview(roomID, objectID, callback);
+		this.inlinePreviewProviders[generatorName].preview(roomID, objectID, callback, context);
 	}
 	
 }
 
-fileConnector.getInlinePreviewMimeType=function(roomID, objectID) {
+fileConnector.getInlinePreviewMimeType=function(roomID, objectID,context) {
 	
-	var mimeType = fileConnector.getMimeType(roomID,objectID);
+	if (!context) throw new Error('Missing context in fileConnector.getInlinePreviewMimeType');
+	
+	var mimeType = fileConnector.getMimeType(roomID,objectID,context);
 	
 	if (!mimeType) {
 		return false;
@@ -588,7 +630,7 @@ fileConnector.getInlinePreviewMimeType=function(roomID, objectID) {
 		console.log("getInlinePreviewMimeType: no generator name for mime type '"+mimeType+"' found!");
 		return false;
 	} else {
-		return this.inlinePreviewProviders[generatorName].mimeType(roomID, objectID, mimeType);
+		return this.inlinePreviewProviders[generatorName].mimeType(roomID, objectID, mimeType, context);
 	}
 	
 }
@@ -596,10 +638,15 @@ fileConnector.getInlinePreviewMimeType=function(roomID, objectID) {
 fileConnector.inlinePreviewProviders = {
 	
 	'image': {
-		'mimeType' : function(roomID, objectID, mimeType) {
+		'mimeType' : function(roomID, objectID, mimeType, context) {
+			
+			if (!context) throw new Error('Missing context in mimeType for image');
+			
 			return mimeType;
 		},
-		'dimensions' : function(roomID, objectID, callback) {
+		'dimensions' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in dimensions for image');
 
 			var filebase=Modules.Config.filebase;
 
@@ -630,7 +677,9 @@ fileConnector.inlinePreviewProviders = {
 			});
 
 		},
-		'preview' : function(roomID, objectID, callback) {
+		'preview' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in preview for image');
 
 			var filebase=Modules.Config.filebase;
 
@@ -648,10 +697,15 @@ fileConnector.inlinePreviewProviders = {
 	
 	
 	'pdf': {
-		'mimeType' : function(roomID, objectID, mimeType) {
+		'mimeType' : function(roomID, objectID, mimeType, context) {
+			
+			if (!context) throw new Error('Missing context in mimeType for pdf');
+			
 			return 'image/jpeg';
 		},
-		'generatePreviewFile' : function(roomID, objectID, callback) {
+		'generatePreviewFile' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in generatePreviewFile for pdf');
 
 			var filebase=Modules.Config.filebase;
 
@@ -679,7 +733,9 @@ fileConnector.inlinePreviewProviders = {
 			});
 	
 		},
-		'dimensions' : function(roomID, objectID, callback) {
+		'dimensions' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in dimensions for pdf');
 
 			var filebase=Modules.Config.filebase;
 
@@ -710,7 +766,9 @@ fileConnector.inlinePreviewProviders = {
 			});
 
 		},
-		'preview' : function(roomID, objectID, callback) {
+		'preview' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in preview for pdf');
 
 			var filebase=Modules.Config.filebase;
 

@@ -35,16 +35,16 @@ UserManager.login=function(socketOrUser,data){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	
-	if (connector.login(data.username,data.password)){
+	var success=connector.login(data.username,data.password,function(data){
 		var userObject=require('./User.js');
 		connection.user=new userObject(this);
 		connection.user.username=data.username;
-		connection.user.home=connector.getHome();
-		
-		socketServer.sendToSocket(socket,'loggedIn',connection.user);
-	} else {
-		socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
-	}
+		connection.user.password=data.password;
+		connection.user.home=data.home;
+	});
+	
+	if (success) socketServer.sendToSocket(socket,'loggedIn',connection.user);
+	else socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
 	
 }
 
@@ -64,7 +64,7 @@ UserManager.subscribe=function(socketOrUser,room){
 	var user=connection.user;
 	var rooms=connection.rooms;
 	
-	if (connector.maySubscribe(room)){
+	if (connector.maySubscribe(room,connection)){
 		
 		if (!isInArray(rooms,room)){
 			rooms.push(room);
@@ -128,6 +128,22 @@ UserManager.getConnectionsForRoom=function(roomID){
 		}
 	}
 	return result;
+}
+
+UserManager.getConnectionBySocket=function(socket){
+	for (var i in this.connections){
+		var connection=this.connections[i];
+		if (connection.socket==socket) return connection;
+	}
+	return false;
+}
+
+UserManager.getConnectionBySocketID=function(socketID){
+	for (var i in this.connections){
+		var connection=this.connections[i];
+		if (connection.socket.id==socketID) return connection;
+	}
+	return false;
 }
 
 module.exports=UserManager;
