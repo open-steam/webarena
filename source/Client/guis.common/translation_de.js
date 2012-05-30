@@ -1,3 +1,5 @@
+"use strict";
+
 GUI.setTranslations('de',{
 	'ping':'pong',
 	'Basic':'Basis',

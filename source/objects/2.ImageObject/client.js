@@ -7,3 +7,4 @@ ImageObject.contentUpdated=function(){
 ImageObject.justCreated=function(){
 	this.execute();
 }
+

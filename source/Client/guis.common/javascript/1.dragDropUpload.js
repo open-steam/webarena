@@ -1,3 +1,5 @@
+"use strict";
+
 /* upload files via drag and drop (HTML5) */
 
 $(function() {

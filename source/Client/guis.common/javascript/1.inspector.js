@@ -1,3 +1,5 @@
+"use strict";
+
 /* inspector */
 
 /* the following three functions are overwritten by desktop GUI */

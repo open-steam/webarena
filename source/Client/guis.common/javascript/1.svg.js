@@ -1,7 +1,10 @@
+"use strict";
+
 /* SVG */
 
 GUI.refreshSVG = function() {
 	$("#content").hide().show();
+	GUI.updateLayers();
 }
 
 /* setup SVG */
