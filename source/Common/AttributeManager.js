@@ -1,3 +1,5 @@
+"use strict";
+
 /**
 *    Webarena - A webclient for responsive graphical knowledge work
 *

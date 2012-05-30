@@ -1,3 +1,5 @@
+"use strict";
+
 var TranslationManager=Object.create(Object);
 
 TranslationManager.proto=false;

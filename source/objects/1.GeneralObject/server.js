@@ -7,12 +7,14 @@
 *
 */
 
+"use strict";
+
 // The server side defintion of the object extends the common parts
 
 var theObject=Object.create(require('./common.js'));
 
 // The Modules variable provides access to server modules such as
-// Module.ObjectManager or Module.ServerCore
+// Module.ObjectManager
 
 var Modules=require('../../server.js');
 
@@ -117,7 +119,8 @@ theObject.copyContentFromFile=function(filename,callback) {
 *	get the object's content
 */
 theObject.getContent=function(){
-	return Modules.Connector.getContent(this.inRoom, this.id);
+	var content=Modules.Connector.getContent(this.inRoom, this.id);
+	return content;
 }
 
 

@@ -5,6 +5,8 @@
 *
 */
 
+"use strict";
+
 var Modules=false; //set in init
 var Dispatcher={};
 var calls={};

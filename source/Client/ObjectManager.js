@@ -1,5 +1,7 @@
 // This is the client side ObjectManager
 
+"use strict";
+
 var Modules=false;
 
 var ObjectManager={};
@@ -164,9 +166,6 @@ ObjectManager.removeLocally=function(data){
 	
     //remove from local structure
     delete(ObjectManager.objects[data.id]);
-	
-    //delete the object
-    delete(object);
 }
 
 ObjectManager.login=function(username, password){
