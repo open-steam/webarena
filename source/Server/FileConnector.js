@@ -23,8 +23,6 @@
 
 "use strict";
 
-//TODO make this asynchronous
-
 var fs = require('fs');
 
 var Modules=false;
@@ -35,14 +33,20 @@ fileConnector.init=function(theModules){
 }
 
 /**
-*	 RIGHTS
+*	login
+*
+*	logs the user in on the backend. The main purpose of this function is not
+*	necessary a persistent connections but verifying the user's credentials
+*	and in case of a success, return a user object with username, password and
+*	home room for later usage.
+*
+*	If the login was successful, the newly created user object is sent to a
+*	response function.
+*
 */
-fileConnector.login=function(username,password,processFunction){
+fileConnector.login=function(username,password,rp){
 
-
-	var success=(username == 'Mustermann' && password == 'My_Password');
-	
-	if (!success) return false;
+	// In this simple fileConnector we accept every password.
 	
 	var data={};
 	
@@ -50,16 +54,39 @@ fileConnector.login=function(username,password,processFunction){
 	data.password=password;
 	data.home='public';
 	
-	processFunction(data);
+	rp(data);
 	
 	return true;
 }
 
-//TODO mayRead
-//TODO mayWrite
-//TODO mayEvaluate
-//TODO mayDelete
-//TODO mayCreate
+/**
+*	 RIGHTS
+*/
+
+fileConnector.mayRead=function(roomID,objectID,context){
+	if (!context) throw new Error('Missing context in fileConnector.mayRead');
+	return true;	
+}
+
+fileConnector.mayWrite=function(roomID,objectID,context){
+	if (!context) throw new Error('Missing context in fileConnector.mayWrite');
+	return true;	
+}
+
+fileConnector.mayEvaluate=function(roomID,objectID,context){
+	if (!context) throw new Error('Missing context in fileConnector.mayEvaluate');
+	return true;
+}
+
+fileConnector.mayDelete=function(roomID,objectID,context){
+	if (!context) throw new Error('Missing context in fileConnector.mayDelete');
+	return true;	
+}
+
+fileConnector.mayCreate=function(roomID,type,context){
+	if (!context) throw new Error('Missing context in fileConnector.mayCreate');
+	return true;
+}
 
 fileConnector.maySubscribe=function(room,context){
 	if (!context) throw new Error('Missing context in fileConnector.maySubscribe');
@@ -67,71 +94,12 @@ fileConnector.maySubscribe=function(room,context){
 }
 
 
-/**
-*	internal
-*
-*	read an object file and return the attribute set
-*/
-var getObjectDataByFile=function(filebase,roomID,objectID){
-	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
-	
-	try {
-		var attributes = fs.readFileSync(filename, 'utf8');
-		attributes=JSON.parse(attributes);
-	} catch (e) {								//if the attribute file does not exist, create an empty one
-		var attributes={};
-		attributes.name=objectID;
-	}
-	
-	var data={};
-	
-	//	automatically repair some values which could be wrong due
-	//  to manual file copying.
-	
-	data.attributes=attributes;
-	data.type=data.attributes.type;
-	data.id=objectID;
-	data.attributes.id=data.id;
-	data.inRoom=roomID;
-	data.attributes.inRoom=roomID;
-	data.rights={};
-	data.attributes.hasContent=false;
-	
-	var path = require('path');
-	
-	filename=filebase+'/'+roomID+'/'+objectID+'.content';
-	
-	if (path.existsSync(filename)) {
-		
-		data.attributes.hasContent=true;
-		data.attributes.contentAge=new Date().getTime();
-	}
-	
-	//TODO check for content => hasConent
 
-	return data;
-}
-
-/**
-*	getObjectData
-*
-*	returns the attribute set of an object
-*
-*/
-fileConnector.getObjectData=function(roomID,objectID,context){
-	
-	if (!context) throw new Error('Missing context in fileConnector.getObjectData');
-	
-	var obj=getObjectDataByFile(Modules.Config.filebase,roomID,objectID);
-	
-	return obj;
-}
 
 /**
 *	getInventory
 *
-*	returns a list of all objects in a room (no actual objcts, just their attributeset)
+*	returns all objects in a room (no actual objcts, just their attributeset)
 *
 */
 fileConnector.getInventory=function(roomID,context){
@@ -156,14 +124,12 @@ fileConnector.getInventory=function(roomID,context){
 		var filename=value;
 		var objectID=filename.substr(0,position);
 		
-		if (roomID==objectID) return; //this is the room itself
+		if (roomID==objectID) return; //leave out the room
 		
-		try {
-			
+		try {		
 			var obj=getObjectDataByFile(filebase,roomID,objectID);
-			
 			inventory.push(obj);
-		} catch (e){
+		} catch (e) {
 			console.log('ERROR: Cannot load '+objectID+' in '+roomID);
 			console.log(e);
 		}
@@ -198,6 +164,7 @@ fileConnector.getRoomData=function(roomID,context){
 fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
 	
 	if (!context) throw new Error('Missing context in fileConnector.saveObjectData');
+	if (!data) throw new Error('Missing data in fileConnector.saveObjectData');
 
 	var filebase=Modules.Config.filebase;
 	
@@ -247,10 +214,10 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context){
 /**
 *	get the the object's content from a file and save it
 *
-*	if an "after" function is specified, it is called after saving
+*	if a callback function is specified, it is called after saving
 *
 */
-fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, after,context) {
+fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, callback,context) {
 	
 	if (!context) throw new Error('Missing context in fileConnector.copyContentFromFile');
 	
@@ -266,7 +233,7 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, aft
 		  if (err) {
 		  	console.log('Could not write: ',err);
 		  }
-		  if (after) after(objectID);
+		  if (callback) callback(objectID);
 	});
 	
 	
@@ -276,7 +243,7 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, aft
 /**
 *	getContent
 *
-*	get an object's content as a binary buffer (array of bytes);
+*	get an object's content as a an array of bytes;
 *	
 */
 fileConnector.getContent=function(roomID,objectID,context){
@@ -300,7 +267,7 @@ fileConnector.getContent=function(roomID,objectID,context){
 /**
 *	remove
 *
-*	remove an object from the persistence
+*	remove an object from the persistence layer
 */
 fileConnector.remove=function(roomID,objectID,context){
 	
@@ -327,12 +294,12 @@ fileConnector.remove=function(roomID,objectID,context){
 *
 *	create a new object on the persistence layer
 *
-*	to direcly work on the new object, specify an after function
+*	to direcly work on the new object, specify a callback function
 *
 *	after(objectID)
 *
 */
-fileConnector.createObject=function(roomID,type,data,after,context){
+fileConnector.createObject=function(roomID,type,data,callback,context){
 	
 	if (!context) throw new Error('Missing context in fileConnector.createObject');
 	
@@ -340,7 +307,7 @@ fileConnector.createObject=function(roomID,type,data,after,context){
 	
 	data.type=type;
 	
-	this.saveObjectData(roomID,objectID,data,after,context);
+	this.saveObjectData(roomID,objectID,data,callback,context);
 }
 
 
@@ -355,7 +322,7 @@ fileConnector.createObject=function(roomID,type,data,after,context){
 *	after(objectID)
 *
 */
-fileConnector.duplicateObject=function(roomID,objectID,after,context){
+fileConnector.duplicateObject=function(roomID,objectID,callback,context){
 	
 	if (!context) throw new Error('Missing context in fileConnector.context');
 
@@ -392,7 +359,7 @@ fileConnector.duplicateObject=function(roomID,objectID,after,context){
 	/* callback function after duplicating files */
 	var cb = function() {
 
-		if (after) after(newObjectID, objectID);
+		if (callback) callback(newObjectID, objectID);
 		
 	}
 	
@@ -440,7 +407,7 @@ fileConnector.duplicateObject=function(roomID,objectID,after,context){
 }
 
 
-fileConnector.trimImage=function(roomID, objectID, callback,context) {
+fileConnector.trimImage=function(roomID, objectID, callback, context) {
 	
 	if (!context) throw new Error('Missing context in fileConnector.trimImage');
 
@@ -796,6 +763,65 @@ fileConnector.inlinePreviewProviders = {
 	
 }
 
+/**
+*	internal
+*
+*	read an object file and return the attribute set
+*/
+var getObjectDataByFile=function(filebase,roomID,objectID){
+	
+	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
+	
+	try {
+		var attributes = fs.readFileSync(filename, 'utf8');
+		attributes=JSON.parse(attributes);
+	} catch (e) {								//if the attribute file does not exist, create an empty one
+		var attributes={};
+		attributes.name=objectID;
+	}
+	
+	var data={};
+	
+	//	automatically repair some values which could be wrong due
+	//  to manual file copying.
+	
+	data.attributes=attributes;
+	data.type=data.attributes.type;
+	data.id=objectID;
+	data.attributes.id=data.id;
+	data.inRoom=roomID;
+	data.attributes.inRoom=roomID;
+	data.rights={};
+	data.attributes.hasContent=false;
+	
+	var path = require('path');
+	
+	filename=filebase+'/'+roomID+'/'+objectID+'.content';
+	
+	if (path.existsSync(filename)) {
+		
+		data.attributes.hasContent=true;
+		data.attributes.contentAge=new Date().getTime();
+	}
+	
+	//TODO check for content => hasConent
 
+	return data;
+}
+
+/**
+*	getObjectData
+*
+*	returns the attribute set of an object
+*
+*/
+fileConnector.getObjectData=function(roomID,objectID,context){
+	
+	if (!context) throw new Error('Missing context in fileConnector.getObjectData');
+	
+	var obj=getObjectDataByFile(Modules.Config.filebase,roomID,objectID);
+	
+	return obj;
+}
 
 module.exports=fileConnector;
