@@ -12,6 +12,7 @@ ObjectManager.currentRoomID='public';
 ObjectManager.currentRoom=false;
 ObjectManager.clientID = new Date().getTime()-1296055327011;
 ObjectManager.prototypes={};
+ObjectManager.user={};
 
 ObjectManager.registerType=function(type,constr){
     this.prototypes[type]=constr;
@@ -243,6 +244,7 @@ ObjectManager.init=function(){
 	
     Modules.Dispatcher.registerCall('loggedIn',function(data){
         GUI.loggedIn();
+        ObjectManager.user=data;
         ObjectManager.loadRoom(data.home);
     });
 	
@@ -373,6 +375,9 @@ ObjectManager.renumberLayers = function() {
 	
 }
 
+ObjectManager.getUser=function(){
+	return this.user;
+}
 
 
 

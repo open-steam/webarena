@@ -45,11 +45,9 @@ ObjectManager.sendRoom=function(socket,roomID){
 
 ObjectManager.remove=function(obj){
 	
-	if (!context) throw new Error('Missing context in ObjectManager.remove');
-	
 	//Send remove to connector
 	
-	Modules.Connector.remove(obj.inRoom,obj.id);
+	Modules.Connector.remove(obj.inRoom,obj.id,obj.context);
 	
 	//Inform clients about remove.
 	
@@ -96,6 +94,9 @@ ObjectManager.getObject=function(roomID,objectID,context){
 	
 	var objectData=Modules.Connector.getObjectData(roomID,objectID,context);
 	var object=buildObjectFromObjectData(objectData,roomID);
+	
+	object.context=context;
+	
 	return object;
 	
 }
@@ -115,6 +116,9 @@ ObjectManager.getObjects=function(roomID,context){
 		var objectData=objectsData[i];
 		
 		var object=buildObjectFromObjectData(objectData,roomID);
+		
+		object.context=context;
+		
 		inventory.push(object);
 	}
 	return inventory;
@@ -135,10 +139,10 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 	Modules.Connector.createObject(roomID,type,proto.standardData,function(id){
 		var object=ObjectManager.getObject(roomID,id,context);
 	
-		object.setAttribute('name',type,false,context);
+		object.setAttribute('name',type);
 		for (var key in attributes){
 			var value=attributes[key];
-			object.setAttribute(key,value,false,context);
+			object.setAttribute(key,value);
 		}
 		
 		if (content) {

@@ -18,9 +18,7 @@ module.exports=theObject;
 *	set a new content. If the content is base64 encoded png data,
 *	it is decoded first.
 */
-theObject.setContent=function(content,callback,context){
-	
-	if (!context) throw new Error('No context in Paint.setContent');
+theObject.setContent=function(content,callback){
 	
 	var self = this;
 	
@@ -38,10 +36,10 @@ theObject.setContent=function(content,callback,context){
 			if (dX) {
 				/* set new dimensions */
 
-				self.setAttribute("x", parseInt(self.data.x)+parseInt(dX),false,context);
-				self.setAttribute("y", parseInt(self.data.y)+parseInt(dY),false,context);
-				self.setAttribute("width", parseInt(newWidth),false,context);
-				self.setAttribute("height", parseInt(newHeight),false,context);
+				self.setAttribute("x", parseInt(self.data.x)+parseInt(dX));
+				self.setAttribute("y", parseInt(self.data.y)+parseInt(dY));
+				self.setAttribute("width", parseInt(newWidth));
+				self.setAttribute("height", parseInt(newHeight));
 				
 			}
 
@@ -51,11 +49,11 @@ theObject.setContent=function(content,callback,context){
 			self.data.contentAge=new Date().getTime();
 
 			//send object update to all listeners
-			self.persist(context);
+			self.persist();
 			self.updateClients('contentUpdate');
 		
-		},context);
+		},self.context);
 		
-	},context);
+	},self.context);
 	
 }

@@ -138,7 +138,7 @@ var saveDelays={};
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced,context){
+AttributeManager.setAttribute=function(object,attribute,value,forced){
 	
 	var time=new Date().getTime()-1328721558003;;
 	
@@ -169,8 +169,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,context){
 	// persist the results
 	
 	if (object.ObjectManager.isServer){
-		if (!context) throw new Error('Missing context in setAttribute in AttributeManager');
-		object.persist(context);
+		object.persist();
 	} else {
 
 		var identifier=object.id+'#'+attribute;
