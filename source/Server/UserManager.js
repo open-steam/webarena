@@ -41,6 +41,7 @@ UserManager.login=function(socketOrUser,data){
 		connection.user.username=data.username;
 		connection.user.password=data.password;
 		connection.user.home=data.home;
+		connection.user.hash='###'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
 	});
 	
 	if (success) socketServer.sendToSocket(socket,'loggedIn',connection.user);

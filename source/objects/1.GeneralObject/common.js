@@ -313,14 +313,14 @@ GeneralObject.registerAttribute=function(attribute,setter,type,min,max){
 	return this.attributeManager.registerAttribute(attribute, setter,type, min, max);
 }
 
-GeneralObject.setAttribute=function(attribute,value,forced,context){
+GeneralObject.setAttribute=function(attribute,value,forced){
 	
 	if (this.mayChangeAttributes()){
 		
 		//rights could also be checked in the attribute manager but HAVE to
 		//be checked on the server side.
 		
-		var ret = this.attributeManager.setAttribute(this,attribute,value,forced,context);
+		var ret = this.attributeManager.setAttribute(this,attribute,value,forced);
 		
 		if (this.afterSetAttribute) this.afterSetAttribute();
 		
