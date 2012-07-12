@@ -37,6 +37,8 @@ try {
 //Load server modules
 var  Modules={
 	
+	Log:require('./Server/Log.js'),
+	
 	// These modules are accessible everywhere by accessing the global variable Modules
 	// They shall exist only once for the whole server
 	
@@ -48,6 +50,7 @@ var  Modules={
 	SocketServer:require('./Server/SocketServer.js'),
 	UserManager:require('./Server/UserManager.js'),
 	Helper:require('./Server/Helper.js'),
+	CacheManager:require('./Server/CacheManager.js'),
 	
 	// These object exist for every object type or every single object. They shall not be
 	// modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
@@ -56,10 +59,10 @@ var  Modules={
 	AttributeManager:require('./Common/AttributeManager.js'),
 	TranslationManager:require('./Common/TranslationManager.js'),
 	ActionManager:require('./Common/ActionManager.js'),
-
+	
 };
 
-Modules.Connector=Modules.config.connector; //shortcut
+Modules.Connector=Modules.CacheManager; //shortcut
 
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports=Modules;
@@ -71,3 +74,4 @@ for (var name in Modules){
 		module.init(Modules);
 	}
 }
+

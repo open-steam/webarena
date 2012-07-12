@@ -13,6 +13,8 @@ var UserManager={};
 
 UserManager.connections={};
 
+
+
 UserManager.socketConnect=function(socket){
 	this.connections[socket.id]=({'socket':socket,'user':false,'rooms':[]});
 }
@@ -27,7 +29,7 @@ UserManager.login=function(socketOrUser,data){
 	
 	var connection=UserManager.connections[userID];
 	if (!connection) {
-		console.log('ERROR: There is no connection for '+userID);
+		Modules.Log.error("UserManager", "+login", "There is no connection for this user (user: '"+userID+"')");
 		return;
 	}
 	
@@ -35,28 +37,40 @@ UserManager.login=function(socketOrUser,data){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	
-	var success=connector.login(data.username,data.password,function(data){
-		var userObject=require('./User.js');
-		connection.user=new userObject(this);
-		connection.user.username=data.username;
-		connection.user.password=data.password;
-		connection.user.home=data.home;
-		connection.user.hash='###'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
-	});
 	
-	if (success) socketServer.sendToSocket(socket,'loggedIn',connection.user);
-	else socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
+	var userObject=require('./User.js');
+	connection.user=new userObject(this);
+	connection.user.username=data.username;
+	connection.user.password=data.password;
+	
+	connector.login(data.username,data.password,function(data){
+		
+		if (data) {
+		
+			connection.user.home=data.home;
+			connection.user.hash='###'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
+		
+			socketServer.sendToSocket(socket,'loggedIn',connection.user);
+			
+		} else {
+			socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
+		}
+		
+	}, connection);
 	
 }
 
 UserManager.subscribe=function(socketOrUser,room){
+	
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
+	
+	Modules.Log.debug("UserManager", "+subscribe", "Subscribe (roomID: '"+room+"', user: '"+userID+"')");
 	
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;
 	
 	if (!connection) {
-		console.log('ERROR: There is no connection for '+userID);
+		Modules.Log.error("UserManager", "+subscribe", "There is no connection for this user (user: '"+userID+"')");
 		return;
 	}
 	var socket=connection.socket;
@@ -64,22 +78,29 @@ UserManager.subscribe=function(socketOrUser,room){
 	var socketServer=Modules.SocketServer;
 	var user=connection.user;
 	var rooms=connection.rooms;
+	var roomID = room;
 	
-	if (connector.maySubscribe(room,connection)){
-		
-		if (!isInArray(rooms,room)){
-			rooms.push(room);
+	connector.maySubscribe(room,connection, function(maySub) {
+
+		if (maySub) {
+			
+			if (!isInArray(rooms,roomID)){
+				rooms.push(roomID);
+			}
+			connection.rooms=rooms;
+			socketServer.sendToSocket(socket,'subscribed',rooms);
+			for (var i in rooms){
+				var room=rooms[i];
+				ObjectManager.sendRoom(socket,room);
+			}
+
+		} else {
+			socketServer.sendToSocket(socket,'error', 'User '+userID+' may not subscribe to '+roomID);
 		}
-		connection.rooms=rooms;
-		socketServer.sendToSocket(socket,'subscribed',rooms);
-		for (var i in rooms){
-			var room=rooms[i];
-			ObjectManager.sendRoom(socket,room);
-		}
 		
-	} else {
-		socketServer.sendToSocket(socket,'error', 'User '+userID+' may not subscribe to '+room);
-	}
+	});
+		
+		
 
 }
 
@@ -88,7 +109,7 @@ UserManager.unsubscribe=function(socketOrUser,room){
 	
 	var connection=UserManager.connections[userID];
 	if (!connection) {
-		console.log('ERROR: There is no connection for '+userID);
+		Modules.Log.error("UserManager", "+login", "There is no connection for this user (user: '"+userID+"')");
 		return;
 	}
 	var socket=connection.socket;
