@@ -121,7 +121,7 @@ theObject.copyContentFromFile=function(filename,callback) {
 */
 theObject.getContent=function(){
 	
-	if (!context) throw new Error('Missing context in GeneralObject.getContent');
+	if (!this.context) throw new Error('Missing context in GeneralObject.getContent');
 	
 	var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
 	return content;
@@ -144,10 +144,14 @@ theObject.getInlinePreviewMimeType=function() {
 
 theObject.duplicate=function(socket,responseID) {
 
+	var self = this;
+
 	var roomId = this.inRoom;
 	
 	
 	var list = this.getObjectsToDuplicate();
+	
+	console.log("LIST", list);
 
 	var counter = 0;
 	var idTranslationList = {}; //list of object ids and their duplicated new ids
@@ -156,11 +160,13 @@ theObject.duplicate=function(socket,responseID) {
 	/* this function will be called by the last duplicate-callback */
 	var updateObjects = function() {
 		counter++;
-
+		
 		if (counter == list.length) {
 			/* all objects are duplicated */
 
 			var idList = [];
+			
+			console.log("new objects:", newObjects);
 
 			for (var i in newObjects) {
 				var object = newObjects[i];
@@ -169,6 +175,11 @@ theObject.duplicate=function(socket,responseID) {
 
 				object.setAttribute("x", object.getAttribute("x")+30);
 				object.setAttribute("y", object.getAttribute("y")+30);
+
+				/* add group id if source object was grouped */
+				if (object.getAttribute("group") && object.getAttribute("group") > 0) {
+					object.setAttribute("group", object.getAttribute("group")+1);
+				}
 
 				object.updateClients();
 				
@@ -187,14 +198,16 @@ theObject.duplicate=function(socket,responseID) {
 		var objectId = list[i];
 		
 		Modules.Connector.duplicateObject(roomId,objectId,function(newId,oldId) {
-			var obj = Modules.ObjectManager.getObject(roomId, newId);
-			
+			var obj = Modules.ObjectManager.getObject(roomId, newId, self.context);
+
+			console.log("add to new list:", obj.data.id, "-", newId, oldId, obj);
+
 			newObjects.push(obj);
 			idTranslationList[oldId] = newId;
 
 			updateObjects(); //try to update objects
 
-		});
+		},self.context);
 		
 	}
 	

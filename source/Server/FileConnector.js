@@ -28,6 +28,10 @@ var fs = require('fs');
 var Modules=false;
 var fileConnector={};
 
+fileConnector.info=function(){
+	return "FileConnector 1.0";
+}
+
 fileConnector.init=function(theModules){
 	Modules=theModules;
 }
@@ -93,7 +97,37 @@ fileConnector.maySubscribe=function(room,context){
 	return true;
 }
 
+fileConnector.getUserRightsForObjects=function(roomID, ids, context, callback) {
+	
+	var rights = {};
+	
+	for (var i in ids) {
+		rights[ids[i]] = {
+			"read" : true,
+			"write" : true,
+			"evaluate" : true,
+			"delete" : true
+		}
+	}
+	
+	callback(rights);
+	
+}
 
+fileConnector.getUserRightsForRoom=function(roomID, context, callback) {
+	callback({
+		"read" : true,
+		"write" : true,
+		"evaluate" : true,
+		"delete" : true,
+		"create" : {
+			"drawing" : true,
+			"ellipse" : false,
+			"unknown" : true
+		},
+		"subscribe" : true
+	});
+}
 
 
 /**
@@ -102,7 +136,7 @@ fileConnector.maySubscribe=function(room,context){
 *	returns all objects in a room (no actual objcts, just their attributeset)
 *
 */
-fileConnector.getInventory=function(roomID,context){
+fileConnector.withInventory=function(roomID,context,callback){
 	
 	if (!context) throw new Error('Missing context in fileConnector.getInventory');
 	
@@ -136,7 +170,8 @@ fileConnector.getInventory=function(roomID,context){
 		
 	});
 	
-	return inventory;
+	callback(inventory);
+	
 }
 
 /**
@@ -145,13 +180,14 @@ fileConnector.getInventory=function(roomID,context){
 *	returns the attribute set of the current room
 *
 */
-fileConnector.getRoomData=function(roomID,context){
+fileConnector.withRoomData=function(roomID,context,callback){
 	
 	if (!context) throw new Error('Missing context in fileConnector.getRoomData');
-	
+
 	var filebase=Modules.Config.filebase;
 	var obj=getObjectDataByFile(filebase,roomID,roomID);
-	return obj;
+	
+	callback(obj);
 	
 }
 
@@ -791,7 +827,6 @@ var getObjectDataByFile=function(filebase,roomID,objectID){
 	data.attributes.id=data.id;
 	data.inRoom=roomID;
 	data.attributes.inRoom=roomID;
-	data.rights={};
 	data.attributes.hasContent=false;
 	
 	var path = require('path');

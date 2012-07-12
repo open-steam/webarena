@@ -32,15 +32,22 @@ ObjectManager.sendRoom=function(socket,roomID){
 	
 	var context=Modules.UserManager.getConnectionBySocket(socket);
 	
-	var room=this.getRoom(roomID,context);	//the room object
-	room.updateClient(socket);				//and send it to the client
-	
-	var objects=this.getInventory(roomID,context);
-	for (var i in objects){
-		var object=objects[i];
-		object.updateClient(socket);
-		if (object.hasContent()) {object.updateClient(socket,'contentUpdate');}
-	} 
+	Modules.ObjectManager.getRoom(roomID,context,function(room) { //the room object
+
+		room.updateClient(socket);				//and send it to the client
+		
+		Modules.ObjectManager.getInventory(roomID,context,function(objects) {
+
+			for (var i in objects){
+				var object=objects[i];
+				object.updateClient(socket);
+				if (object.hasContent()) {object.updateClient(socket,'contentUpdate');}
+			}
+
+		});
+		
+	});	
+ 
 }
 
 ObjectManager.remove=function(obj){
@@ -89,7 +96,7 @@ function buildObjectFromObjectData(objectData,roomID,type){
 }
 
 ObjectManager.getObject=function(roomID,objectID,context){
-	
+
 	if (!context) throw new Error('Missing context in ObjectManager.getObject');
 	
 	var objectData=Modules.Connector.getObjectData(roomID,objectID,context);
@@ -101,8 +108,8 @@ ObjectManager.getObject=function(roomID,objectID,context){
 	
 }
 
-ObjectManager.getObjects=function(roomID,context){
-	
+ObjectManager.getObjects=function(roomID,context,callback){
+
 	if (!context) throw new Error('Missing context in ObjectManager.getObjects');
 	
 	var inventory=[];
@@ -110,18 +117,49 @@ ObjectManager.getObjects=function(roomID,context){
 	//get the object creation information by the connector
 	// {id;type;rights;attributes}
 	
-	var objectsData=Modules.Connector.getInventory(roomID,context);
-	
-	for (var i in objectsData){
-		var objectData=objectsData[i];
+	if (callback == undefined) {
+		/* sync. */
 		
-		var object=buildObjectFromObjectData(objectData,roomID);
+		/* check if inventory is cached */
+		if (Modules.Connector.inventoryIsCached(roomID,context)) {
 		
-		object.context=context;
+			var objectsData = Modules.Connector.getCachedInventory(roomID, context);
+			
+			for (var i in objectsData){
+				var objectData=objectsData[i];
+
+				var object=buildObjectFromObjectData(objectData,roomID);
+
+				object.context=context;
+
+				inventory.push(object);
+			}
+			
+			return inventory;
 		
-		inventory.push(object);
+		} else throw Error("inventory is not cached for room "+roomID);
+		
+	} else {
+		//async.
+
+		Modules.Connector.getInventory(roomID,context,function(objectsData) {
+
+			for (var i in objectsData){
+				var objectData=objectsData[i];
+
+				var object=buildObjectFromObjectData(objectData,roomID);
+
+				object.context=context;
+
+				inventory.push(object);
+			}
+
+			callback(inventory);
+
+		});
+		
 	}
-	return inventory;
+
 }
 
 ObjectManager.getInventory=ObjectManager.getObjects;
@@ -329,15 +367,13 @@ ObjectManager.init=function(theModules){
 		
 }
 
-ObjectManager.getRoom=function(roomID,context){
+ObjectManager.getRoom=function(roomID,context,callback){
 	
 	if (!context) throw new Error('Missing context in ObjectManager.remove');
 	
-	var objectData=Modules.Connector.getRoomData(roomID,context);
-	
-	var object=buildObjectFromObjectData(objectData,roomID,'Room');
-	
-	return object;
+	Modules.Connector.getRoomData(roomID,context, function(data) {
+		callback(buildObjectFromObjectData(data,roomID,'Room'));
+	});
 	
 }
 

@@ -102,9 +102,9 @@ GeneralObject.utf8.parse = function(byteArray) {
 GeneralObject.fetchContentString=function(worker){
 	
 	this.fetchContent(function(data){
-		
+
 		data=GeneralObject.utf8.parse(data);
-		
+
 		worker(data);
 		return;
 	
@@ -185,7 +185,7 @@ GeneralObject.duplicate=function() {
     requestData.objectID=this.id;
 
 	Modules.Dispatcher.query('duplicate',requestData,function(){
-
+		
 	});
 	
 	GUI.deselectAllObjects();

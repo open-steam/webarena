@@ -145,10 +145,13 @@ GeneralObject.register=function(type){
 		
 		var selected = ObjectManager.getSelected();
 		
+		var date = new Date();
+		var groupID = date.getTime();
+		
 		for (var i in selected) {
 			var obj = selected[i];
 			
-			obj.duplicate();
+			obj.duplicate(groupID);
 			
 		}
 		
@@ -655,10 +658,10 @@ GeneralObject.getLinkedObjects=function() {
 	if (self.ObjectManager.isServer) {
 		/* server */
 		var getObject = function(id) {
-			return Modules.ObjectManager.getObject(self.data.inRoom, id);
+			return Modules.ObjectManager.getObject(self.data.inRoom, id, self.context);
 		}
 		var getObjects = function() {
-			return Modules.ObjectManager.getObjects(self.data.inRoom);
+			return Modules.ObjectManager.getObjects(self.data.inRoom, self.context);
 		}
 	} else {
 		/* client */
