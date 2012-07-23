@@ -10,6 +10,12 @@ GeneralObject.setTranslations('de',{
 	'Delete':'Löschen',
 	'Duplicate':'Duplizieren',
 	'to front':'nach vorne',
-	'to back':'nach hinten'
+	'to back':'nach hinten',
+	'locked':'angeheftet',
+	'visible':'sichtbar',
+	'group':'Gruppe',
+	'shadow':'Schatten',
+	'link':'Verknüpfung',
+	'no object slected':'Kein Objekt ausgewählt'
 }
 );
