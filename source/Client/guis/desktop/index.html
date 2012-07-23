@@ -86,6 +86,8 @@
 	<script type="text/javascript" src="../../guis.common/javascript/1.toolbar.js"></script>
 	<script type="text/javascript" src="../../guis.common/javascript/1.dragDropUpload.js"></script>
 	
+	<script type="text/javascript" src="../../guis.common/translation_de.js"></script>
+	
 	<link type="text/css" href="../../guis.common/css/actionsheet.css" rel="Stylesheet" />
 	<link type="text/css" href="../../guis.common/css/progressBar.css" rel="Stylesheet" />
 	<link type="text/css" href="../../guis.common/css/login.css" rel="Stylesheet" />
@@ -301,7 +303,7 @@
 			var userinfo = document.createElement("span");
 			$(userinfo).addClass("header_info");
 			$(userinfo).css("font-size", "11px");
-			$(userinfo).html(GUI.translate("Logged in user")+": "+GUI.username);
+			$(userinfo).html(GUI.translate("Current user")+": "+GUI.username);
 
 			$("#header > .header_right").prepend(userinfo);
 			

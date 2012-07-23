@@ -27,6 +27,8 @@ TranslationManager.addTranslations=function(language, translations){
 
 TranslationManager.get=function(language,text){
 	
+	console.log('getting translation for '+text+' on '+this);
+	
 	if (this.data[language] && this.data[language][text]) {
 		return this.data[language][text];
 	} else {
