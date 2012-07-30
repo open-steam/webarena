@@ -139,8 +139,12 @@ var saveDelays={};
 *	set an attribute to a value on a specified object
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced){
+		
+	//if local is set true, there will be no persistance. This shall be the case
+	//if the attribute name begins with local_ or if evaluation processes were involved.
+	var local=false;
 	
-	var time=new Date().getTime()-1328721558003;
+	if (attribute.substr(0,6)=='local_') local=true;
 	
 	// do nothing, if value has not changed
 	if (object.data[attribute]===value) return false;
@@ -160,30 +164,35 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	
 	setter(object,value);
 	
-	// persist the results
+	if (!local){
 	
-	if (object.ObjectManager.isServer){
-		object.persist();
-	} else {
-
-		var identifier=object.id+'#'+attribute;
+		// persist the results
 		
-		if (saveDelays[identifier]){
-			window.clearTimeout(saveDelays[identifier]);
-			delete(saveDelays[identifier]);
-		}
-		
-		
-		var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
-		
-		if (forced) {
-			Modules.SocketClient.serverCall('setAttribute',data);
+		if (object.ObjectManager.isServer){
+			object.persist();
 		} else {
-			saveDelays[identifier]=window.setTimeout(function(){
+	
+			var identifier=object.id+'#'+attribute;
+			
+			if (saveDelays[identifier]){
+				window.clearTimeout(saveDelays[identifier]);
+				delete(saveDelays[identifier]);
+			}
+			
+			
+			var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
+			
+			if (forced) {
 				Modules.SocketClient.serverCall('setAttribute',data);
-			},1000);
+			} else {
+				saveDelays[identifier]=window.setTimeout(function(){
+					Modules.SocketClient.serverCall('setAttribute',data);
+				},1000);
+			}
+			
 		}
-		
+	} else {
+		if (Modules) Modules.Log.info('AttributeManager','setAttribute','Attribute '+attribute+' is local.');
 	}
 	
 	if (object.ObjectManager.attributeChanged) object.ObjectManager.attributeChanged(object,attribute,this.getAttribute(object, attribute),true);
