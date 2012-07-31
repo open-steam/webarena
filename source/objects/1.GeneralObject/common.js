@@ -28,6 +28,8 @@ GeneralObject.moveByTransform = false;			//TODO cient only??
 GeneralObject.duplicateWithLinkedObjects = false; //duplicate this object if a linked object gets duplicated
 GeneralObject.duplicateLinkedObjects = false; //duplicate linked objects if this object gets duplicated
 
+GeneralObject.contentURLOnly = true; //content is only accessible via URL
+
 
 GeneralObject.register=function(type){
 	

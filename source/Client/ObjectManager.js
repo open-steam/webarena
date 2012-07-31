@@ -8,7 +8,7 @@ var ObjectManager={};
 
 ObjectManager.isServer=false;
 ObjectManager.objects={};
-ObjectManager.currentRoomID='public';
+ObjectManager.currentRoomID=undefined;
 ObjectManager.currentRoom=false;
 ObjectManager.clientID = new Date().getTime()-1296055327011;
 ObjectManager.prototypes={};
@@ -50,7 +50,7 @@ ObjectManager.buildObject=function(type, attributes){
         this.currentRoom.isGraphical=false; // the current room is cannot be positioned
 		
     }
-	
+
     return object;
 
 }
@@ -179,7 +179,7 @@ ObjectManager.login=function(username, password){
 }
 
 ObjectManager.loadRoom=function(roomid){
-	
+	console.log("LOAD ROOM", roomid);
     var currentRoom = ObjectManager.getRoomID();
     if (currentRoom) {
         Modules.SocketClient.serverCall('unsubscribe', currentRoom);

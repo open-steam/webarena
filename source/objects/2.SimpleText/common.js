@@ -45,6 +45,8 @@ SimpleText.isResizable=function(){
 SimpleText.register('SimpleText');
 SimpleText.isCreatable=true;
 
+SimpleText.contentURLOnly = false; //content is only accessible via URL
+
 SimpleText.content='Neuer Text';
 
 SimpleText.category='Texts';
