@@ -131,6 +131,9 @@ CacheManager.login=function(username,password,rp,context){
 
 
 CacheManager.mayRead=function(roomID,objectID,context){
+	
+	if (roomID=='undefined') trace();
+	
 	Modules.Log.debug("CacheManager", "+mayRead", "Check right 'read' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (context === true) return true; //root

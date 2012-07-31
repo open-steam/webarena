@@ -240,8 +240,6 @@ ObjectManager.init=function(theModules){
 	
 	Modules.Dispatcher.registerCall('setAttribute',function(socket,data){
 		
-		console.log('setAttribute',data);
-		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 		
 		var roomID=data.roomID
@@ -371,7 +369,7 @@ ObjectManager.init=function(theModules){
 
 ObjectManager.getRoom=function(roomID,context,callback){
 	
-	if (!context) throw new Error('Missing context in ObjectManager.remove');
+	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
 	
 	Modules.Connector.getRoomData(roomID,context, function(data) {
 		callback(buildObjectFromObjectData(data,roomID,'Room'));

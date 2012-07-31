@@ -19,4 +19,15 @@ Room.isCreatable=false;
 
 Room.category = 'Rooms';
 
+//returns the Evaluated position of an object. returns false if an object cannot be positioned
+Room.getEvaluatedPositionFor=function(obj){
+	return false;
+}
+
+//evaluates the position for an object. If there was no evaluation, false is returned.
+//if there was one, it returns an array of attributes which shall be set
+Room.evaluatePositionFor=function(obj,x,y){
+	return false;
+}
+
 module.exports=Room;
