@@ -170,7 +170,10 @@ fileConnector.withInventory=function(roomID,context,callback){
 		
 	});
 	
-	callback(inventory);
+	callback({
+		"attributes" : inventory,
+		"content" : false
+	});
 	
 }
 

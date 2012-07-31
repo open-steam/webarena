@@ -71,7 +71,7 @@ ObjectManager.getPrototype=function(objType){
 ObjectManager.getPrototypeFor=ObjectManager.getPrototype;
 
 function buildObjectFromObjectData(objectData,roomID,type){
-	
+
 	//get the object's prototype
 	
 	var type=type||objectData.type;
@@ -100,6 +100,7 @@ ObjectManager.getObject=function(roomID,objectID,context){
 	if (!context) throw new Error('Missing context in ObjectManager.getObject');
 	
 	var objectData=Modules.Connector.getObjectData(roomID,objectID,context);
+
 	var object=buildObjectFromObjectData(objectData,roomID);
 	
 	object.context=context;
@@ -246,7 +247,7 @@ ObjectManager.init=function(theModules){
 		var objectID=data.objectID;
 		var key=data.key;
 		var value=data.value;
-		
+
 		var object=ObjectManager.getObject(roomID,objectID,context);
 		if (!object){
 			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
