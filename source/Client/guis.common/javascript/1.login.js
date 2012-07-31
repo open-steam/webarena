@@ -66,7 +66,7 @@ GUI.login = function() {
 //            'Set-Cookie': 'userid='+GUI.userid
 //        });
 	
-	GUI.progressBarManager.addProgress("Anmeldeinformationen überprüfen", "login");
+	GUI.progressBarManager.addProgress(GUI.translate('checking login information'), "login");
 	
 	GUI.loadGUI(); //reload GUI
 	

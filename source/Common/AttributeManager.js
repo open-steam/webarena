@@ -3,7 +3,7 @@
 /**
 *    Webarena - A webclient for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2010
+*    @author Felix Winkelnkemper, University of Paderborn, 2012
 *
 */
 
@@ -139,25 +139,23 @@ var saveDelays={};
 *	set an attribute to a value on a specified object
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced){
+		
+	//if local is set true, there will be no persistance. This shall be the case
+	//if the attribute name begins with local_ or if evaluation processes were involved.
+	var local=false;
 	
-	var time=new Date().getTime()-1328721558003;;
-	
-	// Check, if the attribute is registred
-	
-	if (this.attributes[attribute]==undefined){
-		console.log('Attribute '+attribute+' is not registred for '+this.proto);
-		return undefined;
-	}
+	if (attribute.substr(0,6)=='local_') local=true;
 	
 	// do nothing, if value has not changed
-	
 	if (object.data[attribute]===value) return false;
 	
-	var setter=this.attributes[attribute].setter;
+	// get the object's setter function. If the attribute is not registred,
+	// create a setter function which directly sets the attribute to the
+	// specified value
+	var setter=(this.attributes[attribute])?this.attributes[attribute].setter:function(object,value){object.data[attribute]=value;};
 	
 	// check if the attribute is read only
-	
-	if (this.attributes[attribute].readonly) {
+	if (this.attributes[attribute] && this.attributes[attribute].readonly) {
 		console.log('Attribute '+attribute+' is read only for '+this.proto);
 		return undefined;
 	}
@@ -166,30 +164,35 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	
 	setter(object,value);
 	
-	// persist the results
+	if (!local){
 	
-	if (object.ObjectManager.isServer){
-		object.persist();
-	} else {
-
-		var identifier=object.id+'#'+attribute;
+		// persist the results
 		
-		if (saveDelays[identifier]){
-			window.clearTimeout(saveDelays[identifier]);
-			delete(saveDelays[identifier]);
-		}
-		
-		
-		var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
-		
-		if (forced) {
-			Modules.SocketClient.serverCall('setAttribute',data);
+		if (object.ObjectManager.isServer){
+			object.persist();
 		} else {
-			saveDelays[identifier]=window.setTimeout(function(){
+	
+			var identifier=object.id+'#'+attribute;
+			
+			if (saveDelays[identifier]){
+				window.clearTimeout(saveDelays[identifier]);
+				delete(saveDelays[identifier]);
+			}
+			
+			
+			var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
+			
+			if (forced) {
 				Modules.SocketClient.serverCall('setAttribute',data);
-			},1000);
+			} else {
+				saveDelays[identifier]=window.setTimeout(function(){
+					Modules.SocketClient.serverCall('setAttribute',data);
+				},1000);
+			}
+			
 		}
-		
+	} else {
+		if (Modules) Modules.Log.info('AttributeManager','setAttribute','Attribute '+attribute+' is local.');
 	}
 	
 	if (object.ObjectManager.attributeChanged) object.ObjectManager.attributeChanged(object,attribute,this.getAttribute(object, attribute),true);
@@ -202,8 +205,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 */
 AttributeManager.getAttribute=function(object,attribute){
 	
-	// Check, if the attribute is registred
-	
+	//on unregistred attributes directly return their value
 	if (this.attributes[attribute]==undefined){
 		return object.data[attribute];
 	}
@@ -222,6 +224,8 @@ AttributeManager.hasAttribute=function(object,attribute) {
 
 /**
 *	get the attributes (e.g. for GUI)
+*
+*	returns only registred attribute data, not their contents or unregistred attributes
 */
 AttributeManager.getAttributes=function(){
 	return this.attributes;
