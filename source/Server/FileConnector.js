@@ -162,7 +162,10 @@ fileConnector.withInventory=function(roomID,context,callback){
 		
 		try {		
 			var obj=getObjectDataByFile(filebase,roomID,objectID);
-			inventory.push(obj);
+			inventory.push({
+				"attributes" : obj,
+				"content" : false
+			});
 		} catch (e) {
 			console.log('ERROR: Cannot load '+objectID+' in '+roomID);
 			console.log(e);
@@ -170,10 +173,7 @@ fileConnector.withInventory=function(roomID,context,callback){
 		
 	});
 	
-	callback({
-		"attributes" : inventory,
-		"content" : false
-	});
+	callback(inventory);
 	
 }
 
