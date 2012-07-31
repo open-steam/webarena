@@ -38,6 +38,8 @@ Textarea.execute=function(){
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
 
+Textarea.contentURLOnly = false; //content is only accessible via URL
+
 Textarea.content='Neuer Text';
 
 Textarea.category='Texts';
