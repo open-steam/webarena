@@ -400,18 +400,23 @@ CacheManager.loadRoomObjects = function(roomID,callback) {
 			};
 
 			data.forEach(function(objData){
-				
-				//TODO: read real content
-				var str = "FELIX";
-				var bytes = [];
 
-				for (var i = 0; i < str.length; ++i)
-				{
-				    bytes.push(str.charCodeAt(i));
+				if (Modules.ObjectManager.getPrototypeFor(objData.attributes.type).contentURLOnly === false) {
+
+					var str = objData.content;
+					var bytes = [];
+
+					for (var i = 0; i < str.length; ++i)
+					{
+					    bytes.push(str.charCodeAt(i));
+					}
+					
+				} else {
+					var bytes = [];
 				}
 				
-				CacheManager.cache["rooms"][roomID]["objects"][objData.id] = {
-					"objectData" : objData,
+				CacheManager.cache["rooms"][roomID]["objects"][objData.attributes.id] = {
+					"objectData" : objData.attributes,
 					"content" : bytes
 				};
 
@@ -543,8 +548,12 @@ CacheManager.saveObjectData=function(roomID,objectID,data,after,context){
 	Modules.Log.debug("CacheManager", "+saveObjectData", "Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (!CacheManager.mayWrite(roomID, objectID, context)) Modules.Log.debug("CacheManager", "+saveObjectData", "Missing rights to write (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
-	
-	CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"]["attributes"] = data; //update object cache
+
+	if (roomID == objectID) {
+		CacheManager.cache["rooms"][roomID]["roomData"]["attributes"] = data; //update object cache
+	} else {
+		CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"]["attributes"] = data; //update object cache
+	}
 	
 	Modules.config.connector.saveObjectData(roomID,objectID,data,after,context);
 	
@@ -596,7 +605,7 @@ CacheManager.getContent=function(roomID,objectID,context){
 	Modules.Log.debug("CacheManager", "+getContent", "Get content as String (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (!CacheManager.mayRead(roomID, objectID, context)) Modules.Log.error("CacheManager", "+getContent", "Missing rights to read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
-	
+
 	return CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"];
 	
 }
@@ -743,8 +752,13 @@ CacheManager.getObjectData=function(roomID,objectID,context){
 	Modules.Log.debug("CacheManager", "+getObjectData", "Get object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (!CacheManager.mayRead(roomID, objectID, context)) Modules.Log.error("CacheManager", "+getObjectData", "Missing rights to read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
-	
-	return CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"];
+
+	if (roomID == objectID) {
+		/* room */
+		return CacheManager.cache["rooms"][roomID]["roomData"];
+	} else {
+		return CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"];
+	}
 	
 }
 
