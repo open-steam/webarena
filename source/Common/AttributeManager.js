@@ -147,8 +147,9 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		if (!object.ObjectManager.isServer && !noevaluation){
 		
 			//client side evaluations
-		
+
 			var evaluationResults=object.evaluatePosition(value.x,value.y);
+			
 			if (evaluationResults){
 				for (var key in evaluationResults){
 					AttributeManager.setAttribute(object,key,value,forced,noevaluation,local);

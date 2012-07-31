@@ -25,7 +25,7 @@ Set.getForbiddenPositionsFor=function(obj){
 }
 
 Set.evaluatePosition=function(obj,x,y){
-	return true;
+	return false;
 }
 
 Set.isActive=function(){

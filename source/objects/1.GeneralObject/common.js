@@ -448,6 +448,7 @@ GeneralObject.move=function(dx,dy){
 *	put the top left edge of the bounding box to x,y
 */
 GeneralObject.setPosition=function(x,y){
+	
 	/*
 	this.setAttribute('x',x);
 	this.setAttribute('y',y);
@@ -816,13 +817,14 @@ GeneralObject.deleteIt=GeneralObject.remove;
 
 //returns the Evaluated position of an object. returns false if an object cannot be positioned
 GeneralObject.getEvaluatedPosition=function(){
-	this.getRoom().getEvaluatedPositionFor(this);
+	return this.getRoom().getEvaluatedPositionFor(this);
 }
 
 //evaluates the position for an object. If there was no evaluation, false is returned.
 //if there was one, it returns an array of attributes which shall be set
 GeneralObject.evaluatePosition=function(x,y){
-	this.getRoom().evaluatPositionFor(this,x,y);
+	return false;
+	//return this.getRoom().evaluatePositionFor(this,x,y);
 }
 
 module.exports=GeneralObject;
