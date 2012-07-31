@@ -138,16 +138,55 @@ var saveDelays={};
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced){
-		
-	//if local is set true, there will be no persistance. This shall be the case
-	//if the attribute name begins with local_ or if evaluation processes were involved.
-	var local=false;
+AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation,local){
 	
-	if (attribute.substr(0,6)=='local_') local=true;
+	//the position attribute is saved as 2 seperate attributes. The x value will not be evaluated seperately
+	
+	if (attribute=='position'){
+		
+		if (!object.ObjectManager.isServer && !noevaluation){
+		
+			//client side evaluations
+		
+			var evaluationResults=object.evaluatePosition(value.x,value.y);
+			if (evaluationResults){
+				for (var key in evaluationResults){
+					AttributeManager.setAttribute(object,key,value,forced,noevaluation,local);
+				}
+				return true;
+			}
+		
+		}
+		
+		AttributeManager.setAttribute(object,'x',value.x,forced,true,local);
+		AttributeManager.setAttribute(object,'y',value.y,forced,noevaluation,local);
+		return true;
+	} else {
+		
+		if (!object.ObjectManager.isServer && !noevaluation){
+		
+			//client side evaluations
+		
+			var position=object.getEvaluatedPosition();
+			if (position){
+				AttributeManager.setAttribute(object,'x',position.x,forced,true,true);
+				AttributeManager.setAttribute(object,'y',position.y,forced,true,true);
+				return true;
+			}
+		
+		}
+		
+	}
+	
+	
 	
 	// do nothing, if value has not changed
 	if (object.data[attribute]===value) return false;
+		
+	//if local is set true, there will be no persistance. This shall be the case
+	//if the attribute name begins with local_ or if evaluation processes were involved.
+	
+	if (attribute.substr(0,6)=='local_') local=true;
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the

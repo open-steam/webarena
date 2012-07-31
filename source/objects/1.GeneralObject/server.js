@@ -46,7 +46,6 @@ theObject.updateClient=function(socket,mode){
 theObject.persist=function(){
 	
 	Modules.Connector.saveObjectData(this.inRoom, this.id, this.data, false, this.context);
-	if (this.evaluate) this.evaluate();
 	this.updateClients();
 }
 
