@@ -49,7 +49,7 @@ GUI.loadGUI = function(step) {
 		}, 200);
 		
 	} else if (step == 3) {
-		GUI.progressBarManager.updateProgress("login", 60, "Benutzeroberfläche laden");
+		GUI.progressBarManager.updateProgress("login", 60, GUI.translate('loading GUI'));
 		
 		/* toolbar */
 		GUI.initToolbar(); //needs: ObjectManager
@@ -75,7 +75,7 @@ GUI.loadGUI = function(step) {
 		}, 200);
 		
 	} else if (step == 4) {
-		GUI.progressBarManager.updateProgress("login", 80, "Objekte darstellen");
+		GUI.progressBarManager.updateProgress("login", 80, GUI.translate('rendering objects'));
 		
 		/* load objects */
 		GUI.hideHiddenObjects(); //hide hidden objects / initially create representations when calling getRepresentation() //needs: ObjectManager.getObjects, SVG
@@ -87,7 +87,7 @@ GUI.loadGUI = function(step) {
 		}, 200);
 		
 	} else if (step == 5) {
-		GUI.progressBarManager.updateProgress("login", 90, "Objekte anordnen");
+		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
 		
 		GUI.updateLayers(); //update z-order by layer-attribute
 		
