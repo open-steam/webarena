@@ -241,8 +241,6 @@ ObjectManager.init=function(theModules){
 	
 	Modules.Dispatcher.registerCall('setAttribute',function(socket,data){
 		
-		console.log('setAttribute',data);
-		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 		
 		var roomID=data.roomID

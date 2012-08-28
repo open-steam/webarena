@@ -47,7 +47,7 @@ ObjectManager.buildObject=function(type, attributes){
     } else {
 
         this.currentRoom=object;
-        this.currentRoom.isGraphical=false; // the current room is cannot be positioned
+        this.currentRoom.isGraphical=false; // the current room cannot be positioned
 		
     }
 
@@ -126,7 +126,6 @@ ObjectManager.objectUpdate=function(data){
 }
 
 ObjectManager.attributeChanged=function(object,key,newValue,local){
-    //TODO this has to be called in local setAttribute as well
 	
     if (!object.attributeManager.getAttributes()[key]) return;
 	

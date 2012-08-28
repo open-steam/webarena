@@ -448,8 +448,12 @@ GeneralObject.move=function(dx,dy){
 *	put the top left edge of the bounding box to x,y
 */
 GeneralObject.setPosition=function(x,y){
+	
+	/*
 	this.setAttribute('x',x);
 	this.setAttribute('y',y);
+	*/
+	this.setAttribute('position',{'x':x,'y':y});
 }
 		
 /**
@@ -509,12 +513,6 @@ GeneralObject.hasPixelAt=function(x,y){
 }
 
 
-
-GeneralObject.evaluate=function(){
-	//Should be overwritten for client and server and not called
-	//directly
-}
-
 GeneralObject.toFront=function(){
 	ObjectManager.performAction("toFront");
 }
@@ -571,37 +569,6 @@ GeneralObject.isSelected = function() {
 	return this.selected;
 }
 
-GeneralObject.evaluateDelayed=function(){
-	// Prevent a loop of evaluations. When an evaluation is taking place,
-	// further operations on the same object are not evaluated any morge
-	if (this.evaluating) return;
-	if (this.evaluateTimeout) {
-		window.clearTimeout(this.evaluateTimeout);
-		this.evaluateTimeout=false;
-	}
-	var that=this;
-	this.evaluateTimeout=window.setTimeout(function() {
-		this.evaluateInt.call(that);
-	},100,this);
-}
-
-GeneralObject.evaluateNow=function(){
-	// Prevent a loop of evaluations. When an evaluation is taking place,
-	// further operations on the same object are not evaluated any morge
-	if (this.evaluating) return;
-	if (this.evaluateTimeout) {
-		window.clearTimeout(this.evaluateTimeout);
-		this.evaluateTimeout=false;
-		this.evaluateInt(this);
-	}
-}
-
-GeneralObject.evaluateInt=function(that){
-		that.evaluating=true;
-		that.evaluate();
-		that.evaluating=false;
-}
-
 GeneralObject.refresh=function(){
 	//This should be overwritten for GUI updates and object repainting
 }
@@ -621,6 +588,8 @@ GeneralObject.refreshDelayed=function(){
 GeneralObject.getRoomID=function(){
 	return this.data.inRoom;
 }
+
+
 
 GeneralObject.getID=function(){
 	return this.id;
@@ -845,6 +814,18 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 }
 
 GeneralObject.deleteIt=GeneralObject.remove;
+
+//returns the Evaluated position of an object. returns false if an object cannot be positioned
+GeneralObject.getEvaluatedPosition=function(){
+	return this.getRoom().getEvaluatedPositionFor(this);
+}
+
+//evaluates the position for an object. If there was no evaluation, false is returned.
+//if there was one, it returns an array of attributes which shall be set
+GeneralObject.evaluatePosition=function(x,y){
+	return false;
+	//return this.getRoom().evaluatePositionFor(this,x,y);
+}
 
 module.exports=GeneralObject;
 
