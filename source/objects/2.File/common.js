@@ -44,10 +44,10 @@ File.execute=function(){
 	
 	var that=this;
 	
-	if (this.hasContent() == false) {
-		GUI.uploadFile(this,this.translate(GUI.currentLanguage, "please select a file"));
-	} else {
+	if (this.hasContent() == true) {
 		this.openFile();
+	} else {
+		GUI.uploadFile(this,this.translate(GUI.currentLanguage, "please select a file"));
 	}
 
 }

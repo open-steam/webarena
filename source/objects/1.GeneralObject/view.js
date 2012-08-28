@@ -200,7 +200,8 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	this.draw();
 	
-	GUI.refreshSVG();
+	//TODO: is this really needed?
+	//GUI.refreshSVG();
 
 }
 
@@ -414,7 +415,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		event.preventDefault();
 		event.stopPropagation();
 		
-		GUI.updateLayers();
+		//TODO: is this really needed?
+		//GUI.updateLayers();
 		
 		GUI.hideActionsheet();
 		GUI.hideLinks(self);
@@ -734,12 +736,12 @@ GeneralObject.getViewBoundingBoxY = function() {
 
 /* get the width of the objects bounding box */
 GeneralObject.getViewBoundingBoxWidth = function() {
-		return parseInt(this.getRepresentation().getBBox().width);
+	return parseInt(this.getRepresentation().getBBox().width);
 }
 
 /* get the height of the objects bounding box */
 GeneralObject.getViewBoundingBoxHeight = function() {
-		return parseInt(this.getRepresentation().getBBox().height);	
+	return parseInt(this.getRepresentation().getBBox().height);
 }
 
 
@@ -803,7 +805,7 @@ GeneralObject.click = function(event) {
 	}
 	
 	if (event == undefined) {
-		self.clickTimeout = false;
+		//self.clickTimeout = false; //TODO: needed?
 	}
 
 	if (self.clickTimeout) {
@@ -827,6 +829,8 @@ GeneralObject.click = function(event) {
 			self.clickTimeout = false;
 
 		}, 600);
+		
+		self.clickTimeout = true;
 		
 		self.clickHandler(event);
 	

@@ -683,7 +683,7 @@ fileConnector.inlinePreviewProviders = {
 			});
 
 		},
-		'preview' : function(roomID, objectID, callback, context) {
+		'preview' : function(roomID, objectID, webserverResponse, context) {
 			
 			if (!context) throw new Error('Missing context in preview for image');
 
@@ -693,9 +693,10 @@ fileConnector.inlinePreviewProviders = {
 
 			try {
 				var content = fs.readFileSync(filename);
-				callback(content);
+				webserverResponse.write(content);
+				webserverResponse.end();
 			} catch (e) {
-				callback(false);
+				webserverResponse.end("error!");
 			}
 
 		}

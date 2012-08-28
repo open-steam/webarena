@@ -49,7 +49,7 @@ GeneralObject.register=function(type){
 	this.registerAttribute('type',{type:'text',readonly:true});
 	this.registerAttribute('name',{type:'text'});
     
-	this.registerAttribute('hasContent',{type:'boolean',hidden:true});
+	this.registerAttribute('hasContent',{type:'boolean',hidden:true,standard:false});
   
 	this.attributeManager.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {
 		GUI.updateLayers();

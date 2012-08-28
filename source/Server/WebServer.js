@@ -138,6 +138,9 @@ WebServer.init=function(theModules){
 	  // getContent
 
 	  else if (url.substr(0,11)=='/getContent'){
+		
+		//TODO: this will not work with koalaConnector!
+		
 	  	var ids=url.substr(12).split('/');
 	  	var roomID=ids[0];
 	  	var objectID=ids[1];
@@ -152,7 +155,7 @@ WebServer.init=function(theModules){
 
 	  	//TODO mime type
 
-	  	var mimeType=object.getAttribute('mimeType') || 'text/plain';
+	  	var mimeType = object.getAttribute('mimeType') || 'text/plain';
 
 	  	var data=object.getContent(true);
 	  	res.writeHead(200, {'Content-Type': mimeType,'Content-Disposition': 'inline'});
@@ -177,18 +180,14 @@ WebServer.init=function(theModules){
 	  	}
 
 	  	var mimeType=object.getAttribute('mimeType') || 'text/plain';
+	
+		object.getInlinePreviewMimeType(function(mimeType) {
+	
+			res.writeHead(200, {'Content-Type': mimeType, 'Content-Disposition': 'inline'});
 
-		object.getInlinePreview(function(data) {
-			
-			if (!data) {
-				res.writeHead(404);
-				return res.end('Object not found');
-			}
-			
-		  	res.writeHead(200, {'Content-Type': object.getInlinePreviewMimeType(true),'Content-Disposition': 'inline'});
-			res.end(data);
-				
-		},mimeType,true);
+		});
+
+		object.getInlinePreview(res,mimeType,true);
 
 	  	return;
 	  }
