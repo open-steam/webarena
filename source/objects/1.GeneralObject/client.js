@@ -191,3 +191,7 @@ GeneralObject.duplicate=function() {
 	GUI.deselectAllObjects();
 	
 }
+
+GeneralObject.getRoom=function(){
+	return Modules.ObjectManager.getCurrentRoom();
+}
