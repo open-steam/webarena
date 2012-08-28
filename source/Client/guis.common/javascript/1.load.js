@@ -8,9 +8,13 @@ GUI.loggedIn = function() {
 	
 	GUI.isLoggedIn = true;
 	
-	window.setTimeout(function() {
-		GUI.loadGUI(2);
-	}, 200);
+	GUI.progressBarManager.updateProgress("login", 30, GUI.translate('loading room'));
+	
+}
+
+GUI.subscribed = function() {
+	
+	GUI.loadGUI(2);
 	
 }
 

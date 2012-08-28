@@ -132,21 +132,21 @@ Discussion.setViewHeight = function(value) {
 
 
 /* get the x position of the objects bounding box (this is the left position of the object) */
-GeneralObject.getViewBoundingBoxX = function() {
+Discussion.getViewBoundingBoxX = function() {
     return parseInt(this.getAttribute("x"));
 }
 
 /* get the y position of the objects bounding box (this is the top position of the object) */
-GeneralObject.getViewBoundingBoxY = function() {
+Discussion.getViewBoundingBoxY = function() {
     return parseInt(this.getAttribute("y"));
 }
 
 /* get the width of the objects bounding box */
-GeneralObject.getViewBoundingBoxWidth = function() {
+Discussion.getViewBoundingBoxWidth = function() {
     return parseInt(this.getAttribute("width"));
 }
 
 /* get the height of the objects bounding box */
-GeneralObject.getViewBoundingBoxHeight = function() {
+Discussion.getViewBoundingBoxHeight = function() {
     return parseInt(this.getAttribute("height"));	
 }

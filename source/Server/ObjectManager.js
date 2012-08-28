@@ -372,7 +372,7 @@ ObjectManager.init=function(theModules){
 
 ObjectManager.getRoom=function(roomID,context,callback){
 	
-	if (!context) throw new Error('Missing context in ObjectManager.remove');
+	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
 	
 	Modules.Connector.getRoomData(roomID,context, function(data) {
 		callback(buildObjectFromObjectData(data,roomID,'Room'));

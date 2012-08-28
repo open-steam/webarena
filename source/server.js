@@ -37,7 +37,7 @@ try {
 //Load server modules
 var  Modules={
 	
-	Log:require('./Server/Log.js'),
+	Log:require('./Common/Log.js'),
 	
 	// These modules are accessible everywhere by accessing the global variable Modules
 	// They shall exist only once for the whole server

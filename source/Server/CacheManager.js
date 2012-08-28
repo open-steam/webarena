@@ -725,14 +725,14 @@ CacheManager.getInlinePreviewDimensions=function(roomID, objectID, callback, mim
 }
 
 CacheManager.getInlinePreview=function(roomID, objectID, callback, mimeType,context) {
-	
+
 	Modules.config.connector.getInlinePreview(roomID, objectID, callback, mimeType,context);
 	
 }
 
-CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context) {
+CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context,callback) {
 	
-	return Modules.config.connector.getInlinePreviewMimeType(roomID, objectID,context);
+	return Modules.config.connector.getInlinePreviewMimeType(roomID, objectID,context,callback);
 	
 }
 

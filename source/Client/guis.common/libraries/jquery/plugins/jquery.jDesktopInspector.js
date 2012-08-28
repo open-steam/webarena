@@ -39,6 +39,11 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			self.callChange();
 		});
 		
+		widget.valueBox.children("input").bind("blur", function() {
+			if ($(this).val() == "") return;
+			self.callChange();
+		});
+		
 	}
 	
 	
@@ -65,6 +70,11 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.html('<input type="text" />');
 		
 		widget.valueBox.children("input").bind("change", function() {
+			if ($(this).val() == "") return;
+			self.callChange();
+		});
+		
+		widget.valueBox.children("input").bind("keyup", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
 		});
