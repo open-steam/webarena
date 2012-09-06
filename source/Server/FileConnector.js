@@ -162,9 +162,10 @@ fileConnector.withInventory=function(roomID,context,callback){
 		
 		try {		
 			var obj=getObjectDataByFile(filebase,roomID,objectID);
+			var content=fileConnector.getContent(roomID,objectID,context);
 			inventory.push({
 				"attributes" : obj,
-				"content" : false
+				"content" : content
 			});
 		} catch (e) {
 			console.log('ERROR: Cannot load '+objectID+' in '+roomID);
@@ -228,7 +229,7 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
 *
 */
 fileConnector.saveContent=function(roomID,objectID,content,after,context){
-	
+
 	if (!context) throw new Error('Missing context in fileConnector.saveContent');
 	
 	var filebase=Modules.Config.filebase;
@@ -294,7 +295,7 @@ fileConnector.getContent=function(roomID,objectID,context){
 	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
 	
 	try {
-		var content = fs.readFileSync(filename);
+		var content = fs.readFileSync(filename, 'utf8');
 		return content;
 	} catch (e) {
 		return false;
