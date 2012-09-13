@@ -7,11 +7,11 @@
 */
 
 Discussion.draw=function(){
-
+    console.log("DRAW");
 
     // representation
     var rep=this.getRepresentation();
-
+    rep.dataObject=this;
 
 
     // set properties
@@ -42,8 +42,11 @@ Discussion.draw=function(){
     $(rep).find("body").css("font-family", this.getAttribute('font-family'));
     $(rep).find("body").css("color", this.getAttribute('font-color'));	
     $(rep).attr("layer", this.getAttribute('layer'));
-	
+
+    console.log('new');
 	console.log(this.getAttribute('discussionText'));
+    console.log('old');
+    console.log(this.oldContent);
 
     // update content
     if (this.oldContent !== this.getAttribute('discussionText')) {   //content has changed
@@ -77,11 +80,10 @@ Discussion.updateInnerHeight = function() {
 
 
 Discussion.createRepresentation = function() {
+    console.log("CREATE");
 
     // wrapper
     var rep = GUI.svg.other("foreignObject");
-
-	
     rep.dataObject=this;
     
     // content
@@ -94,6 +96,8 @@ Discussion.createRepresentation = function() {
 
 
     var that = this;
+    that.content = this.getAttribute("discussionText") || new Array();
+    console.log(that.content);
     //$(body).find(".discussion").html(this.getAttribute("discussionText"));
 
     // events
@@ -108,12 +112,13 @@ Discussion.createRepresentation = function() {
             message.text = value;
 
             that.content.push(message);
-            console.log(message);
+            console.log(that.content);
 
             //$(this).parent().find('.discussion').append(that.renderMessage(message));
             $(this).val('');
 
             that.setAttribute("discussionText", that.content);
+
             //rep.dataObject.setContent($(this).parent().find('.discussion').html());
 
         }

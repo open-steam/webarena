@@ -35,7 +35,6 @@ Discussion.execute=function(){
 Discussion.register('Discussion');
 Discussion.isCreatable=true;
 
-Discussion.content= new Array();
 Discussion.contentURLOnly = false;
 
 Discussion.category='Texts';
