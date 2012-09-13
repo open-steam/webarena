@@ -2,14 +2,18 @@
 *    Webarena - A webclient for responsive graphical knowledge work
 *
 *    @author Felix Winkelnkemper, University of Paderborn, 2011
+*    @author Viktor Koop
 *
 */
 
 Discussion.draw=function(){
 
+
     // representation
     var rep=this.getRepresentation();
-    
+
+
+
     // set properties
     this.setViewX(this.getAttribute('x'));
     this.setViewY(this.getAttribute('y'));
@@ -29,23 +33,35 @@ Discussion.draw=function(){
         $(rep).find("body>div").css("padding", "0px");
 		
     }
-	
+
+
+
     // apply properties
     $(rep).find("body>div").css("background-color", this.getAttribute('fillcolor'));
     $(rep).find("body").css("font-size", this.getAttribute('font-size'));
     $(rep).find("body").css("font-family", this.getAttribute('font-family'));
     $(rep).find("body").css("color", this.getAttribute('font-color'));	
     $(rep).attr("layer", this.getAttribute('layer'));
+	
+	console.log(this.getAttribute('discussionText'));
 
     // update content
-    if (this.oldContent!=this.getContentAsString()) {   //content has changed
-        var text = this.getContentAsString();
+    if (this.oldContent !== this.getAttribute('discussionText')) {   //content has changed
+        console.log('test');
+        var text = '';
+        var messageArray = this.getAttribute('discussionText');
+        for (var i = 0; i < messageArray.length; ++i){
+            text += this.renderMessage(messageArray[i]);
+        }
         text = text.replace(/[\r\n]+/g, "<br />");
-        // TODO Mike check path
-        $(rep).find("body>div>div").html(text);
+
+        $(rep).find(".discussion").html(text);
+        this.oldContent=messageArray;
     }
 	
-    this.oldContent=this.getContentAsString();
+
+
+	
 }
 
 
@@ -53,14 +69,19 @@ Discussion.updateInnerHeight = function() {
     var rep=this.getRepresentation();
 	
     $(rep).find("body").css("height", this.getAttribute('height')+"px");
-    $(rep).find("body>div").css("height", this.getAttribute('height')+"px");
+    
+	//TODO : calculate size with input instead of fixed 75px
+	$(rep).find("body>div").css("height", (this.getAttribute('height')-75)+"px");
+
 }
 
 
 Discussion.createRepresentation = function() {
-    
+
     // wrapper
-    rep = GUI.svg.other("foreignObject");
+    var rep = GUI.svg.other("foreignObject");
+
+	
     rep.dataObject=this;
     
     // content
@@ -70,24 +91,61 @@ Discussion.createRepresentation = function() {
         , $('<div>').attr('class', 'scrollWrapper discussion')
         , $('<input>')
     );
-   
+
+
+    var that = this;
+    //$(body).find(".discussion").html(this.getAttribute("discussionText"));
+
     // events
     $(body).find("input").keyup(function (event) {
         if (event.keyCode == 13) { // enter
             var value = $(this).val();
-            $(this).parent().find('.discussion').append('<p>' + value + '</p>');
+
+
+            var message = {};
+            message.author = GUI.username;
+            message.timestamp = new Date();
+            message.text = value;
+
+            that.content.push(message);
+            console.log(message);
+
+            //$(this).parent().find('.discussion').append(that.renderMessage(message));
             $(this).val('');
+
+            that.setAttribute("discussionText", that.content);
+            //rep.dataObject.setContent($(this).parent().find('.discussion').html());
+
         }
     });
+
+
     
     // add content to wrapper
     $(rep).append(body);
+
+    /*var that=this;
+    this.fetchContentString(function(text){
+
+        if(text!=that.oldContent){
+            text = text.replace(/[\r\n]+/g, "<br />");
+            $(rep).find(".discussion").html(text);
+        }
+
+        that.oldContent=text;
+        console.log('test123');
+
+    });*/
 
     // push to gui
     $(rep).attr("id", this.getAttribute('id'));
     this.initGUI(rep);
 	
     return rep;
+}
+
+Discussion.renderMessage = function(message){
+    return "<p>" + message.author +" (" + message.timestamp +"): " + message.text +"</p>";
 }
 
 
@@ -118,7 +176,7 @@ Discussion.editText = function() {
 // override clickHandler for input field
 Discussion.selectedClickHandler = function (event) {
     //GeneralObject.selectedClickHandler.call(this);
-    //$(this.getRepresentation()).find("input").focus();
+    $(this.getRepresentation()).find("input").focus();
     return true;
 };
 
