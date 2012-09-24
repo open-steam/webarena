@@ -46,7 +46,6 @@ function KoalaConnection(host, port, username, password) {
 			/* encode content (base64) */
 			post_data[contentName] = post_data[contentName].toString('base64');
 			
-			
 			post_data = querystring.stringify(post_data);
 			
 			options.headers = {  
@@ -226,7 +225,7 @@ function KoalaConnection(host, port, username, password) {
 	}
 
 	this.Document.setContent = function(id, content, callback) {
-		self.request("Document", "setContent", [id], callback, false, "content", content);
+		self.request("Document", "setContent", [id], callback, true, "content", content);
 	}
 	
 	this.Document.create = function(name, destId, callback) {

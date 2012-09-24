@@ -76,9 +76,7 @@ WebServer.init=function(theModules){
 		      return res.end('Object not found');
 	  	}
 	
-		var fileName = Modules.config.filebase+'/'+roomID+'/'+objectID+'.content';
-	
-	
+
 	
 		var formidable = require('formidable');
 		var util = require('util');
