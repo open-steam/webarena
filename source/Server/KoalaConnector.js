@@ -90,8 +90,8 @@ koalaConnector.convertAttributeList = {
 	"DOC_MIME_TYPE" : "mimeType",
 	"GRAPHIC_LINESIZE" : "linesize",
 	"GRAPHIC_LINECOLOR" : "linecolor",
-	"GRAPHIC_FILLCOLOR" : "fillcolor"
-	
+	"GRAPHIC_FILLCOLOR" : "fillcolor",
+	"PAINT_TYPE" : "paintType"
 };
 
 koalaConnector.getAttributeNameForWebarena = function(name) {
@@ -125,9 +125,11 @@ koalaConnector.getWebarenaType = function(type, koalaObject) {
 	
 	if (type == "DOCUMENT" && koalaObject.attributes.DOC_MIME_TYPE == "text/plain") {
 		return "Textarea";
-	} else if (type == "DOCUMENT" && koalaObject.attributes.DOC_MIME_TYPE == "image/jpeg") {
-		return "File";
-	} else if (type == "DOCUMENT" && (koalaObject.attributes.DOC_MIME_TYPE == "application/octet-stream" || koalaObject.attributes.DOC_MIME_TYPE == "application/x-unknown-content-type")) {
+	} else if (type == "DOCUMENT" && koalaObject.attributes.PAINT_TYPE == "Paint") {
+		return "Paint";
+	} else if (type == "DOCUMENT" && koalaObject.attributes.PAINT_TYPE == "Highlighter") {
+		return "Highlighter";
+	} else if (type == "DOCUMENT") {
 		return "File";
 	} else if (type == "DRAWING") {
 	
@@ -466,7 +468,7 @@ koalaConnector.saveObjectData=function(roomID,objectID,data,after,context){
 	/* data FORMAT:
 		
 		{ 
-			name: 'Ellipse',
+			name: 'Dolle Ellipse',
 	  		...
 		}
 	
@@ -511,8 +513,9 @@ koalaConnector.saveContent=function(roomID,objectID,content,after,context){
 	if (!context) throw new Error('Missing context in koalaConnector.saveContent');
 	
 	var connection = koalaConnector.getConnection(context);
-	
-	connection.Document.setContent(objectID, content, function() {
+
+	connection.Document.setContent(objectID, content, function(resp) {
+		console.log("RESP", resp);
 		if (after) after(objectID);
 	});
 	
@@ -616,11 +619,31 @@ koalaConnector.createObject=function(roomID,type,data,callback,context){
 		return;
 	}
 	
-	if (type == "Rectangle" || type == "Ellipse" || type == "Polygon" || type == "Paint" || type == "Highlighter") {
+	if (type == "Rectangle" || type == "Ellipse" || type == "Polygon") {
 		
 		connection.Drawing.create("NEW", roomID, type, function(newKoalaObject) {
 			
 			//data.mimeType = 'application/octet-stream';
+			
+			setData(newKoalaObject, data);
+			
+		});
+		
+		return;
+	}
+	
+	if (type == "Paint" || type == "Highlighter") {
+		
+		connection.Document.create("NEW", roomID, function(newKoalaObject) {
+
+			if (type == "Paint") {
+				data.paintType = 'Paint';
+			} else {
+				data.paintType = 'Highlighter';
+			}
+
+			data.mimeType = 'image/png';
+			data.hasContent = false;
 			
 			setData(newKoalaObject, data);
 			
@@ -666,53 +689,60 @@ koalaConnector.trimImage=function(roomID, objectID, callback, context) {
 	
 	if (!context) throw new Error('Missing context in koalaConnector.trimImage');
 
-	throw new Error("TODO: not implemented");
+	/* download file */
+	var connection = koalaConnector.getConnection(context);
 
-	var im = require('imagemagick');
+	var filename = __dirname+"/tmp/trim_"+roomID+"_"+objectID;
+
+	var writeStream = fs.createWriteStream(filename);
 	
-	var filebase=Modules.Config.filebase;
+	connection.Document.streamContent(objectID, writeStream);
 	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
-	
-	//output: test.png PNG 192x154 812x481+226+131 8-bit DirectClass 0.010u 0:00.000
-	im.convert([filename, '-trim', 'info:-'], function(err,out,err2) {
+	writeStream.on('end', function() {
 		
-		if (!err) {
+		var im = require('imagemagick');
 
-			var results = out.split(" ");
+		//output: test.png PNG 192x154 812x481+226+131 8-bit DirectClass 0.010u 0:00.000
+		im.convert([filename, '-trim', 'info:-'], function(err,out,err2) {
 
-			var dimensions = results[2];
-			var dimensionsA = dimensions.split("x");
-			
-			var newWidth = dimensionsA[0];
-			var newHeight = dimensionsA[1];
-			
-			var d = results[3];
-			var dA = d.split("+");
-			
-			var dX = dA[1];
-			var dY = dA[2];
+			if (!err) {
 
-			im.convert([filename, '-trim', filename], function(err,out,err2) {
+				var results = out.split(" ");
 
-				if (!err) {
+				var dimensions = results[2];
+				var dimensionsA = dimensions.split("x");
 
-					callback(dX, dY, newWidth, newHeight);
+				var newWidth = dimensionsA[0];
+				var newHeight = dimensionsA[1];
 
-				} else {
-					console.log("trimImage: error while trimming "+roomID+"/"+objectID);
-					callback(false);
-				}
+				var d = results[3];
+				var dA = d.split("+");
 
-			});
-			
-		} else {
-			console.log("trimImage: error getting trim information of "+roomID+"/"+objectID);
-			callback(false);
-		}
-	
+				var dX = dA[1];
+				var dY = dA[2];
+
+				im.convert([filename, '-trim', filename], function(err,out,err2) {
+
+					if (!err) {
+
+						callback(dX, dY, newWidth, newHeight);
+
+					} else {
+						console.log("trimImage: error while trimming "+roomID+"/"+objectID);
+						callback(false);
+					}
+
+				});
+
+			} else {
+				console.log("trimImage: error getting trim information of "+roomID+"/"+objectID);
+				callback(false);
+			}
+
+		});
+		
 	});
-	
+
 };
 
 
