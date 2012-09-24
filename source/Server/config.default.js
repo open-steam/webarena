@@ -12,5 +12,7 @@ module.exports={
 	port: 8080,     // HTTP Port for server
 	imageUpload: {
 		maxDimensions: 400
-	}
+	},
+	koalaServer: 'www.bid-owl.de.localhost',
+	koalaPort: 80
 };
