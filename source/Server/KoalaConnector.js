@@ -45,8 +45,8 @@ koalaConnector.initConnection = function(username, password, callback) {
 	if (koalaConnector.connections[username] == undefined) {
 		
 		var koalaConnection = require('./KoalaAPI.js').KoalaConnection;
-		
-		var connection = new koalaConnection("www.bid-owl.de.localhost", 80, username, password);
+
+		var connection = new koalaConnection(global.config.koalaServer, global.config.koalaPort, username, password);
 	
 		connection.checkLogin(function(loggedIn) {
 		
