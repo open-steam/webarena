@@ -565,14 +565,23 @@ CacheManager.saveObjectData=function(roomID,objectID,data,after,context){
 *	if an "after" function is specified, it is called after saving
 *
 */
-CacheManager.saveContent=function(roomID,objectID,content,after,context,cacheContent){
+CacheManager.saveContent=function(roomID,objectID,content,after,context){
 	Modules.Log.debug("CacheManager", "+saveContent", "Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (!CacheManager.mayWrite(roomID, objectID, context)) Modules.Log.debug("CacheManager", "+saveContent", "Missing rights to write (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
-	
-	if (cacheContent === true) {
+
+	if (Modules.ObjectManager.getPrototypeFor(CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"]["attributes"].type).contentURLOnly === false) {
 		/* cache content */
-		CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"] = content;
+		
+		var bytes = [];
+
+		for (var i = 0; i < content.length; ++i)
+		{
+		    bytes.push(content.charCodeAt(i));
+		}
+
+		CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"] = bytes;
+		
 	}
 	
 	Modules.config.connector.saveContent(roomID,objectID,content,after,context);
@@ -605,9 +614,9 @@ CacheManager.getContent=function(roomID,objectID,context){
 	Modules.Log.debug("CacheManager", "+getContent", "Get content as String (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (!CacheManager.mayRead(roomID, objectID, context)) Modules.Log.error("CacheManager", "+getContent", "Missing rights to read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
-
-	return CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"];
 	
+	return CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"];
+
 }
 
 
@@ -728,14 +737,14 @@ CacheManager.getInlinePreviewDimensions=function(roomID, objectID, callback, mim
 }
 
 CacheManager.getInlinePreview=function(roomID, objectID, callback, mimeType,context) {
-	
+
 	Modules.config.connector.getInlinePreview(roomID, objectID, callback, mimeType,context);
 	
 }
 
-CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context) {
+CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context,callback) {
 	
-	return Modules.config.connector.getInlinePreviewMimeType(roomID, objectID,context);
+	return Modules.config.connector.getInlinePreviewMimeType(roomID, objectID,context,callback);
 	
 }
 

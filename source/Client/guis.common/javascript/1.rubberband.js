@@ -34,6 +34,9 @@ GUI.rubberbandStart = function(event) {
 	$(GUI.rubberband).attr("style", "stroke-dasharray: 9, 5; stroke-width: 1");
 	$(GUI.rubberband).attr("class", "webarenaRubberband");
 	
+	GUI.rubberbandX = GUI.rubberbandStartX;
+	GUI.rubberbandY = GUI.rubberbandStartY;
+	
 	var move = function(event) {
 		
 		event.preventDefault();
