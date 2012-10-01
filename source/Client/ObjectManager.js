@@ -239,7 +239,7 @@ ObjectManager.init=function(){
 	
     Modules.Dispatcher.registerCall('welcome',function(data){
 
-        });
+    });
 	
     Modules.Dispatcher.registerCall('loggedIn',function(data){
         GUI.loggedIn();
@@ -262,6 +262,10 @@ ObjectManager.init=function(){
 	
     Modules.Dispatcher.registerCall('contentUpdate',function(data){
         ObjectManager.contentUpdate(data);
+    });
+
+	Modules.Dispatcher.registerCall('subscribed',function(data){
+		GUI.subscribed();
     });
 	
     Modules.Dispatcher.registerCall('error',function(data){

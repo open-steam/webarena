@@ -108,22 +108,22 @@ Textarea.setViewHeight = function(value) {
 
 
 /* get the x position of the objects bounding box (this is the left position of the object) */
-GeneralObject.getViewBoundingBoxX = function() {
+Textarea.getViewBoundingBoxX = function() {
 return parseInt(this.getAttribute("x"));
 }
 
 /* get the y position of the objects bounding box (this is the top position of the object) */
-GeneralObject.getViewBoundingBoxY = function() {
+Textarea.getViewBoundingBoxY = function() {
 	return parseInt(this.getAttribute("y"));
 }
 
 /* get the width of the objects bounding box */
-GeneralObject.getViewBoundingBoxWidth = function() {
+Textarea.getViewBoundingBoxWidth = function() {
 		return parseInt(this.getAttribute("width"));
 }
 
 /* get the height of the objects bounding box */
-GeneralObject.getViewBoundingBoxHeight = function() {
+Textarea.getViewBoundingBoxHeight = function() {
 		return parseInt(this.getAttribute("height"));	
 }
 
