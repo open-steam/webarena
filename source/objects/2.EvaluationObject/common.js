@@ -14,24 +14,4 @@ EvaluationObject.category = 'Evaluations';
 EvaluationObject.isCreatable=false;
 EvaluationObject.isEvaluationObject=true;
 
-EvaluationObject.getPossiblePositionsFor=function(obj){
-	
-	return [];
-	
-}
-
-EvaluationObject.getForbiddenPositionsFor=function(obj){
-	
-	return [];
-	
-}
-
-EvaluationObject.evaluatePosition=function(obj,x,y){
-	return false;
-}
-
-EvaluationObject.isActive=function(){
-	return true;
-}
-
 module.exports=EvaluationObject;
