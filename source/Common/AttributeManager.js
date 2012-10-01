@@ -140,6 +140,8 @@ var saveDelays={};
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation,local){
 	
+	if (object.isEvaluationObject) noevaluation=true; // evaluation objects themselves are not evaluated
+	
 	//the position attribute is saved as 2 seperate attributes. The x value will not be evaluated seperately
 	
 	if (attribute=='position'){
@@ -148,10 +150,12 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		
 			//client side evaluations
 
-			var evaluationResults=object.evaluatePosition(value.x,value.y);
+			var evaluationResults=object.getRoom().evaluatePositionFor(object,value.x,value.y);
 			
 			if (evaluationResults){
 				for (var key in evaluationResults){
+					var value=evaluationResults[key];
+					console.log('settingAttribute',key,value);
 					AttributeManager.setAttribute(object,key,value,forced,noevaluation,local);
 				}
 				return true;
@@ -168,7 +172,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		
 			//client side evaluations
 		
-			var position=object.getEvaluatedPosition();
+			var position=object.getRoom().getEvaluatedPositionFor(object);
 			if (position){
 				AttributeManager.setAttribute(object,'x',position.x,forced,true,true);
 				AttributeManager.setAttribute(object,'y',position.y,forced,true,true);
@@ -244,6 +248,21 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 *	get an attribute of a specified object
 */
 AttributeManager.getAttribute=function(object,attribute){
+	
+	
+	if (!object.ObjectManager.isServer && (attribute=='x' || attribute=='y')){
+	
+		//client side evaluations
+	
+		var position=object.getRoom().getEvaluatedPositionFor(object);
+		
+		if (position){
+			if (attribute=='x') return position.x;
+			return position.y;
+		}
+		
+	
+	}
 	
 	//on unregistred attributes directly return their value
 	if (this.attributes[attribute]==undefined){

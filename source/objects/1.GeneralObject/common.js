@@ -474,7 +474,7 @@ GeneralObject.boxContainsPoint=function(px,py){
 }
 
 /**
-*	determine if the current object intersects with the square x1,y1,x2,y2
+*	determine if the current object intersects with the square x,y,width,height
 */
 GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 	
@@ -492,9 +492,17 @@ GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 	
 }
 
+/**
+*	determine if the current object intersects with oanother object
+*/
 GeneralObject.intersectsWith=function(other){
-	return false;
-	//TODO
+	var otherx=other.getViewBoundingBoxX();
+	var othery=other.getViewBoundingBoxY();
+	var otherw=other.getViewBoundingBoxWidth();
+	var otherh=other.getViewBoundingBoxHeight();
+	
+	return this.boxIntersectsWith(otherx,othery,otherw,otherh);
+	
 }
 
 GeneralObject.contains=function(other){
