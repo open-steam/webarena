@@ -209,6 +209,7 @@ function addToClientCode(filename){
 
 ObjectManager.init=function(theModules){
 	Modules=theModules;
+
 	
 	var files=fs.readdirSync('objects');
 	var objectTypes={};
@@ -365,7 +366,27 @@ ObjectManager.init=function(theModules){
 		Modules.Dispatcher.respond(socket,responseID,Modules.Connector.getInlinePreviewMimeTypes());
 		
 	});
-		
+
+    Modules.Dispatcher.registerCall('search',function(socket,data,responseID){
+        var context=Modules.UserManager.getConnectionBySocket(socket);
+        var roomID=data.roomID
+        var objectID=data.objectID;
+
+        var searchString = data.searchString;
+        var offset = data.offset || 0;
+        //TODO: default limit in config
+        var limit = data.limit || 10;
+
+        var object=ObjectManager.getObject(roomID,objectID,context);
+        if (!object){
+            return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+        }
+
+        object.search(searchString, offset, limit, function(res){
+            console.log('Send search results to client.');
+            Modules.Dispatcher.respond(socket,responseID,res);
+        });
+    });
 }
 
 ObjectManager.getRoom=function(roomID,context,callback){

@@ -24,20 +24,20 @@ Discussion.draw=function(){
     var linesize = this.getAttribute('linesize')+0;
 	
     if (linesize > 0) {  // draw line
-        $(rep).find("body>div").css("border-color", this.getAttribute('linecolor'));
-        $(rep).find("body>div").css("border-width", this.getAttribute('linesize'));
-        $(rep).find("body>div").css("padding", "5px");
+        $(rep).find(".discussion-text").css("border-color", this.getAttribute('linecolor'));
+        $(rep).find(".discussion-text").css("border-width", this.getAttribute('linesize'));
+        $(rep).find(".discussion-text").css("padding", "5px");
     } else {  // no line
-        $(rep).find("body>div").css("border-color", "none");
-        $(rep).find("body>div").css("border-width", "0px");
-        $(rep).find("body>div").css("padding", "0px");
+        $(rep).find(".discussion-text").css("border-color", "none");
+        $(rep).find(".discussion-text").css("border-width", "0px");
+        $(rep).find(".discussion-text").css("padding", "0px");
 		
     }
 
 
 
     // apply properties
-    $(rep).find("body>div").css("background-color", this.getAttribute('fillcolor'));
+    $(rep).find(".discussion-text").css("background-color", this.getAttribute('fillcolor'));
     $(rep).find("body").css("font-size", this.getAttribute('font-size'));
     $(rep).find("body").css("font-family", this.getAttribute('font-family'));
     $(rep).find("body").css("color", this.getAttribute('font-color'));	
@@ -47,6 +47,10 @@ Discussion.draw=function(){
 	console.log(this.getAttribute('discussionText'));
     console.log('old');
     console.log(this.oldContent);
+
+    var title = this.getAttribute('discussionTitle') || "TITLE";
+    $(rep).find(".discussion-heading").html(title);
+
 
     // update content
     if (this.oldContent !== this.getAttribute('discussionText')) {   //content has changed
@@ -58,7 +62,7 @@ Discussion.draw=function(){
         }
         text = text.replace(/[\r\n]+/g, "<br />");
 
-        $(rep).find(".discussion").html(text);
+        $(rep).find(".discussion-text").html(text);
         this.oldContent=messageArray;
     }
 	
@@ -74,7 +78,7 @@ Discussion.updateInnerHeight = function() {
     $(rep).find("body").css("height", this.getAttribute('height')+"px");
     
 	//TODO : calculate size with input instead of fixed 75px
-	$(rep).find("body>div").css("height", (this.getAttribute('height')-75)+"px");
+	$(rep).find(".discussion-text").css("height", (this.getAttribute('height')-150)+"px");
 
 }
 
@@ -89,15 +93,14 @@ Discussion.createRepresentation = function() {
     // content
     var body = document.createElement("body");
     $(body).append(
-        $('<h1>')
-        , $('<div>').attr('class', 'scrollWrapper discussion')
-        , $('<input>')
+        $('<div class="discussion"><h1 class="discussion-heading"></h1><div class="discussion-text"></div><input class="discussion-input"></div>')
     );
 
 
     var that = this;
     that.content = this.getAttribute("discussionText") || new Array();
-    console.log(that.content);
+    that.title = this.getAttribute("discussionTitle") || "TITLE";
+
     //$(body).find(".discussion").html(this.getAttribute("discussionText"));
 
     // events
@@ -150,7 +153,12 @@ Discussion.createRepresentation = function() {
 }
 
 Discussion.renderMessage = function(message){
-    return "<p>" + message.author +" (" + message.timestamp +"): " + message.text +"</p>";
+    return "<div class='discussion-statement'><div class='discussion-statement-heading'><span class='message-author'>" + message.author +"</span><span class='message-timestamp'>(" + this.formatTimestamp(message.timestamp) +")</span></div> <p class='discussion-statement-text'> " + message.text +"</p></div>";
+}
+
+Discussion.formatTimestamp = function(time){
+
+    return $.datepicker.formatDate('dd.mm.y', new Date(time));
 }
 
 
@@ -166,11 +174,13 @@ Discussion.editText = function() {
         
     // values
 //    content.find('input').value($(rep).attr('title'));
+    var that = this;
     
     // dispatch
     GUI.dialog('Edit Title', content, {
         "OK": function () {
-            Discussion.title = $(content).find("input").val();
+            var title = $(content).find("input").val();
+            that.setAttribute("discussionTitle", title);
         },
         "Cancel": function () {
             return false;
