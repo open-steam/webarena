@@ -12,5 +12,11 @@ module.exports={
 	port: 8080,     // HTTP Port for server
 	imageUpload: {
 		maxDimensions: 400
-	}
+	},
+    easydb: {
+        apiUrl : "easydb.uni-paderborn.de",
+        apiPath: "/easy/fs.php?",
+        username: "",
+        password: ""
+    }
 };
