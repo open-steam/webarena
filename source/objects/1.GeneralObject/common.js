@@ -337,8 +337,8 @@ GeneralObject.setAttribute=function(attribute,value,forced){
 	}
 }
 
-GeneralObject.getAttribute=function(attribute){
-	return this.attributeManager.getAttribute(this,attribute);
+GeneralObject.getAttribute=function(attribute,noevaluation){
+	return this.attributeManager.getAttribute(this,attribute,noevaluation);
 }
 
 

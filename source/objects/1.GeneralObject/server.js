@@ -22,6 +22,17 @@ var Modules=require('../../server.js');
 module.exports=theObject;
 
 /**
+*	getAttributeSet
+*
+*	all of the objects Attributes as key,value pairs.
+*	This may be different from actual object.data
+*	as evaluations may be involved
+*/
+theObject.getAttributeSet=function(){
+	return Modules.AttributeManager.getAttributeSet(this);
+}
+
+/**
 *	updateClient
 *
 *	send a message to a client (identified by its socket)
@@ -31,7 +42,7 @@ theObject.updateClient=function(socket,mode){
 	var object=this;
 	process.nextTick(function(){
 		var SocketServer=Modules.SocketServer;
-		SocketServer.sendToSocket(socket,mode, object.data);
+		SocketServer.sendToSocket(socket,mode, object.getAttributeSet());
 	});
 }
 
@@ -211,4 +222,58 @@ theObject.duplicate=function(socket,responseID) {
 	}
 	
 	
+}
+
+theObject.evaluatePosition=function(key,value){
+	console.log('incoming',key,value);
+
+	if (this.runtimeData.evaluatePositionData===undefined) {
+		this.runtimeData.evaluatePositionData={};
+	}
+	
+	if (this.runtimeData.evaluatePositionData.delay) {
+		clearTimeout(this.runtimeData.evaluatePositionData.delay);
+		this.runtimeData.evaluatePositionData.delay=false;
+	}
+	
+	this.runtimeData.evaluatePositionData[key]=value;
+	
+	var posData=this.runtimeData.evaluatePositionData;
+	var self=this;
+	
+	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
+		
+		var data={};
+		data.x=posData.x;
+		data.y=posData.y;
+		data.width=posData.width;
+		data.height=posData.height;
+		
+		self.evaluatePositionInt(data);
+		self.runtimeData.evaluatePositionData={};
+	},300);
+	
+}
+
+theObject.evaluatePositionInt=function(data){
+	//console.log('evaluating',data);
+	
+	//check room for EvaluationObjects
+	//evaluate positions against them
+	
+	//if this is an evaluationobject
+	//recalculate positions of nonevaluation objects
+}
+
+theObject.getPosition=function(){
+	
+	//check room for EvaluationObjects
+	//check poisitions according to them
+	
+	var data={};
+	data.x=this.getAttribute('x',true);
+	data.y=this.getAttribute('y',true);
+	data.width=this.getAttribute('width',true);
+	data.height==this.getAttribute('height',true);
+	return data;
 }
