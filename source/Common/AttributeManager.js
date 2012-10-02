@@ -138,13 +138,20 @@ var saveDelays={};
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced){
+AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
 	
 	if (attribute=='position'){
 		AttributeManager.setAttribute(object,'x',value.x,forced);
 		AttributeManager.setAttribute(object,'y',value.y,forced);
 		return true;
 	} 	
+	
+	if (object.ObjectManager.isServer && !noevaluation){	
+		
+		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+			object.evaluatePosition(attribute,value);
+		}
+	}	
 	
 	// do nothing, if value has not changed
 	if (object.data[attribute]===value) return false;
@@ -198,7 +205,20 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 /**
 *	get an attribute of a specified object
 */
-AttributeManager.getAttribute=function(object,attribute){
+AttributeManager.getAttribute=function(object,attribute,noevaluation){
+	
+	if (object.ObjectManager.isServer && !noevaluation){	
+		
+		//if Attribute is of x,y,w,h call object.getPosition
+		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+			
+			var positionData=object.getPosition();
+			
+			return positionData[attribute];
+			
+		}
+		
+	}
 	
 	//on unregistred attributes directly return their value
 	if (this.attributes[attribute]==undefined){
@@ -210,6 +230,21 @@ AttributeManager.getAttribute=function(object,attribute){
 	// call the getter function
 	
 	return getter(object);
+}
+
+/**
+*	get a full attribute set of an object
+*	with getter functions and evaluations
+*/
+AttributeManager.getAttributeSet=function(object){
+	
+	var result={};
+	
+	for (var key in object.data){
+		result[key]=AttributeManager.getAttribute(object,key);
+	}
+	
+	return result;
 }
 
 

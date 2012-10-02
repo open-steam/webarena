@@ -70,6 +70,8 @@ ObjectManager.getPrototype=function(objType){
 
 ObjectManager.getPrototypeFor=ObjectManager.getPrototype;
 
+var runtimeData={};   //TODO describe
+
 function buildObjectFromObjectData(objectData,roomID,type){
 
 	//get the object's prototype
@@ -91,6 +93,10 @@ function buildObjectFromObjectData(objectData,roomID,type){
 	obj.data.id=objectData.id;
 	obj.inRoom=roomID;
 	obj.data.type=type;
+	
+	if (!runtimeData[obj.id])runtimeData[obj.id]={}; //create runtime data for this object if there is none
+	
+	obj.runtimeData=runtimeData[obj.id];
 	
 	return obj;
 }
