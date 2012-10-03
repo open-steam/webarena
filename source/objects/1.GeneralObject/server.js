@@ -225,7 +225,6 @@ theObject.duplicate=function(socket,responseID) {
 }
 
 theObject.evaluatePosition=function(key,value){
-	console.log('incoming',key,value);
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};
