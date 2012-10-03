@@ -269,10 +269,21 @@ theObject.getPosition=function(){
 	//check room for EvaluationObjects
 	//check poisitions according to them
 	
-	var data={};
-	data.x=this.getAttribute('x',true);
-	data.y=this.getAttribute('y',true);
-	data.width=this.getAttribute('width',true);
-	data.height==this.getAttribute('height',true);
-	return data;
+	var room=this.getRoom();
+	
+	if (room){
+		return this.getRoom().getEvaluatedPositionFor(this);
+	} else {
+		var data={};
+		data.x=this.getAttribute('x',true);
+		data.y=this.getAttribute('y',true);
+		data.width=this.getAttribute('width',true);
+		data.height=this.getAttribute('height',true);
+		return data;
+	}
+}
+
+theObject.getRoom=function(callback){
+	if (!this.context) return;
+	return this.context.rooms[this.inRoom]; //the room has been set into context on subscrube (in UserManager)
 }

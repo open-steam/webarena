@@ -193,5 +193,5 @@ GeneralObject.duplicate=function() {
 }
 
 GeneralObject.getRoom=function(){
-	return Modules.ObjectManager.getCurrentRoom();
+	return Modules.ObjectManager.getCurrentRoom(); //TODO this only works for single rooms
 }
