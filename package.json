@@ -1,0 +1,10 @@
+{
+    "name": "webarena",
+    "version": "1.0.0",
+    "dependencies": {
+        "socket.io": "*",
+        "formidable": "*",
+        "imagemagick": "*",
+        "underscore": "*"
+    }
+}
