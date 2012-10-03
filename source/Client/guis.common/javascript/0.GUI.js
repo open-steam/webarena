@@ -86,8 +86,8 @@ GUI.adjustContent = function(webarenaObject) {
 
 		var currentRoom = ObjectManager.getCurrentRoom();
 		
-		var maxX = webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth();
-		var maxY = webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight();
+		var maxX = Math.round(webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth());
+		var maxY = Math.round(webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight());
 		
 		if (maxX > currentRoom.getAttribute("width")) {
 			currentRoom.setAttribute("width", maxX);
