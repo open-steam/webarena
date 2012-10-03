@@ -44,6 +44,7 @@ EasyDBImage.execute=function(){
             });
 
             Modules.Dispatcher.query('search', data ,function(searchResults){
+                that.searchTerm = searchTerm;
                 that.renderResultPage(searchResults, ".ui-dialog-content");
             });
         },

@@ -82,13 +82,13 @@ EasyDBImage.renderPagination = function(data){
 }
 
 EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
-    console.log(number);
+
     //TODO: searchTerm
     var that=this;
     var data = {
         roomID : that.getRoomID(),
         objectID: that.getID(),
-        searchString: "hund",
+        searchString: that.searchTerm,
         offset: offset,
         limit: limit
     }
@@ -119,37 +119,23 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
 EasyDBImage.createRepresentation=function() {
 
     var rep = GUI.svg.image(10, 10, 10, 10, this.getAttribute('remote_url'));
-
     rep.dataObject=this;
-
     $(rep).attr("id", this.getAttribute('id'));
-
     this.initGUI(rep);
 
     return rep;
 
 }
 
-
-EasyDBImage.updateImage=function(){
-
+EasyDBImage.draw = function(){
     var rep=this.getRepresentation();
 
-    if (this.hasContent() == false) {
-
-        GeneralObject.draw.call(this);
-
-        $(rep).attr("href", "../../guis.common/images/imageNotFound.png");
-
-        this.setViewWidth(128);
-        this.setViewHeight(101);
-
-    } else {
-
-        GeneralObject.draw.call(this);
-
+    if($(rep).attr("href")!== this.getAttribute('remote_url')){
         $(rep).attr("href", this.getAttribute('remote_url'));
-
     }
-
+    GeneralObject.draw.call(this);
 }
+
+
+
+

@@ -70,17 +70,21 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
             }
         });
 
+
         //filter information
         _.each(mappedIdObject, function(value, key){
-            filtered.push({
-                titel : value.titel,
-                url : value['bild.image']['remote_uri'] || '',
-                kommentar : value['kommentar'],
-                kuenstler : value['kuenstler_id.name'],
-                easydbId : value['id'],
-                originalUrl : value['bild.image']['download_url'],
-                cnt : value['cnt']
-            });
+            try{
+                filtered.push({
+                    titel : value.titel,
+                    url : value['bild.image']['remote_uri'] || '',
+                    kommentar : value['kommentar'],
+                    kuenstler : value['kuenstler_id.name'],
+                    easydbId : value['id'],
+                    originalUrl : value['bild.image']['download_url'],
+                    cnt : value['cnt']
+                });
+            } catch(e){}
+
         });
 
 
@@ -156,7 +160,7 @@ EasyDbAPI.search = function(searchArgs, callback){
             "(" +
                 "SELECT COUNT(*) as cnt FROM Bilder WHERE  "+"titel LIKE '%" + searchTerm + "%' "+
                 "OR kommentar LIKE '%"+searchTerm  +"%'" +
-            ") as cnta"
+            ") as cnta " +
         "WHERE  "+
             "titel LIKE '%" + searchTerm + "%' "+
             "OR kommentar LIKE '%"+searchTerm  +"%'"; // OR PERSON.KUENSTLER_ID LIKE '%" + searchTerm +"%'";
