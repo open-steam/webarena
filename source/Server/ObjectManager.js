@@ -11,10 +11,10 @@
 var fs=require('fs');
 
 var Modules=false;
-
 var ObjectManager={};
-
+var runtimeData={};
 ObjectManager.isServer=true;
+
 
 var enter=String.fromCharCode(10);
 
@@ -23,11 +23,21 @@ ObjectManager.toString=function(){return 'ObjectManager (server)';}
 
 var prototypes={};
 
+/**
+*	registerType
+*
+*	registers an object type, so objects can be created by this objectManager
+*/
 ObjectManager.registerType=function(type,constr){
 	prototypes[type]=constr;
 }
 
-
+/**
+*	sendRoom
+*
+*	sends a rooms content to a client (given by its socket)
+*
+*/
 ObjectManager.sendRoom=function(socket,roomID){
 	
 	var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -40,8 +50,10 @@ ObjectManager.sendRoom=function(socket,roomID){
 
 			for (var i in objects){
 				var object=objects[i];
-				object.updateClient(socket);
-				if (object.hasContent()) {object.updateClient(socket,'contentUpdate');}
+				object.updateClient(socket);	//the object data
+				if (object.hasContent()) {		//and its content if there is some
+					object.updateClient(socket,'contentUpdate');
+				}
 			}
 
 		});
@@ -50,6 +62,11 @@ ObjectManager.sendRoom=function(socket,roomID){
  
 }
 
+/**
+*	remove
+*
+*	deletes an object and informs clients about the deletion
+*/
 ObjectManager.remove=function(obj){
 	
 	//Send remove to connector
@@ -62,6 +79,11 @@ ObjectManager.remove=function(obj){
 	
 }
 
+/**
+*	getPrototype / getPrototypeFor
+*
+*	gets the prototype (the class) of an object.
+*/
 ObjectManager.getPrototype=function(objType){
 	if (prototypes[objType]) return prototypes[objType];
 	if (prototypes['GeneralObject']) return prototypes['GeneralObject'];
@@ -70,13 +92,24 @@ ObjectManager.getPrototype=function(objType){
 
 ObjectManager.getPrototypeFor=ObjectManager.getPrototype;
 
-var runtimeData={};   //TODO describe
 
+/**
+*	buildObjectFromObjectData
+*
+*	creates an object from given objectData. This objectData are the
+*	attributes saved on the persistance layer.
+*
+*	Attention. This is called on EVERY call of getObject so object you
+*	get by getObject is a different one on every call. The consequence
+*	of this is, that you cannot add properties to the object! If you
+*	want to save runtime data, use the runtimeData property.
+*	
+*/
 function buildObjectFromObjectData(objectData,roomID,type){
-
-	//get the object's prototype
 	
 	var type=type||objectData.type;
+	
+	//get the object's prototype
 	
 	var proto=ObjectManager.getPrototypeFor(type);
 	
@@ -101,6 +134,15 @@ function buildObjectFromObjectData(objectData,roomID,type){
 	return obj;
 }
 
+/**
+*	getObject
+*
+*	gets an Object by a given id and its context (context is user credentials)
+*
+*	Attention. EVERY call of getObject returns a different object on every call. 
+*   The consequence of this is, that you cannot add properties to the object! 
+*   If you want to save runtime data, use the runtimeData property.
+*/
 ObjectManager.getObject=function(roomID,objectID,context){
 
 	if (!context) throw new Error('Missing context in ObjectManager.getObject');
@@ -115,6 +157,16 @@ ObjectManager.getObject=function(roomID,objectID,context){
 	
 }
 
+/**
+*	getObjects / getInventory
+*
+*	gets an inventory of all objects in a room by roomID and context. Context
+*	is user credentials.
+*
+*	This function can either be called synchronous or asyncronous. Please not
+*	that syncronous usage only works when objects have yet been cached!
+*
+*/
 ObjectManager.getObjects=function(roomID,context,callback){
 
 	if (!context) throw new Error('Missing context in ObjectManager.getObjects');
@@ -161,7 +213,7 @@ ObjectManager.getObjects=function(roomID,context,callback){
 				inventory.push(object);
 			}
 
-			callback(inventory);
+			callback(inventory); 
 
 		});
 		
@@ -171,6 +223,12 @@ ObjectManager.getObjects=function(roomID,context,callback){
 
 ObjectManager.getInventory=ObjectManager.getObjects;
 
+/**
+*	createObject
+*
+*	creates a new object
+*
+**/
 ObjectManager.createObject=function(roomID,type, attributes, content,socket,responseID){
 	
 	var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -200,9 +258,10 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 	
 }
 
+/**
+*	addToClientCode (internal)
+**/
 ObjectManager.clientCode='';
-
-
 function addToClientCode(filename){
 	var file=false;
 	try {
@@ -213,8 +272,16 @@ function addToClientCode(filename){
 	}
 }
 
+/**
+*	init
+*
+*	initializes the ObjectManager
+**/
 ObjectManager.init=function(theModules){
 	Modules=theModules;
+	
+	//go through all objects, build its client code (the code for the client side)
+	//register the object types.
 	
 	var files=fs.readdirSync('objects');
 	var objectTypes={};
@@ -245,6 +312,11 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
+	//This is the interface for clients. Registering functions for attribute access and
+	//other object updates
+	
+	
+	//setAttribute
 	Modules.Dispatcher.registerCall('setAttribute',function(socket,data){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -265,6 +337,7 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
+	//setContent
 	Modules.Dispatcher.registerCall('setContent',function(socket,data){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -284,6 +357,7 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
+	//getAttribute
 	Modules.Dispatcher.registerCall('getAttribute',function(socket,data){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -301,6 +375,7 @@ ObjectManager.init=function(theModules){
 		
 	});
 
+	//getContent
 	Modules.Dispatcher.registerCall('getContent',function(socket,data){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -317,6 +392,7 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
+	//deleteObject
 	Modules.Dispatcher.registerCall('deleteObject',function(socket,data){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -334,6 +410,7 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
+	//createObject
 	Modules.Dispatcher.registerCall('createObject',function(socket,data,responseID){
 		
 		//TODO check create right
@@ -349,6 +426,7 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
+	//duplicate
 	Modules.Dispatcher.registerCall('duplicate',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -374,6 +452,11 @@ ObjectManager.init=function(theModules){
 		
 }
 
+/**
+*	getRoom
+*
+*	returns the a room object for a given roomID
+**/
 ObjectManager.getRoom=function(roomID,context,callback){
 	
 	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
@@ -384,12 +467,19 @@ ObjectManager.getRoom=function(roomID,context,callback){
 	
 }
 
+/**
+*	getClientCode
+*
+*	get the combined client side sourcecode for objects.
+**/
 ObjectManager.getClientCode=function(){
 	
+	//turn on strict mode for client side scripting
 	var code='"use strict";';
 	
 	var lines=this.clientCode.split(enter);
 	
+	//fill in line numbers for debugging
 	for (var i=0;i<lines.length;i++){
 		var line=lines[i];
 		code+=line+' //'+(i+1)+enter;
