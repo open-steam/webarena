@@ -823,17 +823,5 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 
 GeneralObject.deleteIt=GeneralObject.remove;
 
-//returns the Evaluated position of an object. returns false if an object cannot be positioned
-GeneralObject.getEvaluatedPosition=function(){
-	return this.getRoom().getEvaluatedPositionFor(this);
-}
-
-//evaluates the position for an object. If there was no evaluation, false is returned.
-//if there was one, it returns an array of attributes which shall be set
-GeneralObject.evaluatePosition=function(x,y){
-	return false;
-	//return this.getRoom().evaluatePositionFor(this,x,y);
-}
-
 module.exports=GeneralObject;
 
