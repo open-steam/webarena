@@ -47,9 +47,12 @@ UserManager.login=function(socketOrUser,data){
 		if (data) {
 		
 			connection.user.home=data.home;
-			connection.user.hash='###'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
+			connection.user.hash='___'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
 		
-			socketServer.sendToSocket(socket,'loggedIn',connection.user);
+			socketServer.sendToSocket(socket,'loggedIn',{
+				username: connection.user,
+				userhash: connection.user.hash
+			});
 			
 		} else {
 			socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
@@ -169,6 +172,14 @@ UserManager.getConnectionBySocketID=function(socketID){
 	for (var i in this.connections){
 		var connection=this.connections[i];
 		if (connection.socket.id==socketID) return connection;
+	}
+	return false;
+}
+
+UserManager.getConnectionByUserHash=function(userHash){
+	for (var i in this.connections){
+		var connection=this.connections[i];
+		if (connection.user.hash==userHash) return connection;
 	}
 	return false;
 }

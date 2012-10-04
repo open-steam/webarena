@@ -161,8 +161,6 @@ theObject.duplicate=function(socket,responseID) {
 	
 	var list = this.getObjectsToDuplicate();
 	
-	console.log("LIST", list);
-
 	var counter = 0;
 	var idTranslationList = {}; //list of object ids and their duplicated new ids
 	var newObjects = []; //list of new (duplicated) objects
@@ -176,8 +174,6 @@ theObject.duplicate=function(socket,responseID) {
 
 			var idList = [];
 			
-			console.log("new objects:", newObjects);
-
 			for (var i in newObjects) {
 				var object = newObjects[i];
 
@@ -209,8 +205,6 @@ theObject.duplicate=function(socket,responseID) {
 		
 		Modules.Connector.duplicateObject(roomId,objectId,function(newId,oldId) {
 			var obj = Modules.ObjectManager.getObject(roomId, newId, self.context);
-
-			console.log("add to new list:", obj.data.id, "-", newId, oldId, obj);
 
 			newObjects.push(obj);
 			idTranslationList[oldId] = newId;

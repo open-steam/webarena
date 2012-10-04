@@ -243,7 +243,8 @@ ObjectManager.init=function(){
 	
     Modules.Dispatcher.registerCall('loggedIn',function(data){
         GUI.loggedIn();
-        ObjectManager.user=data;
+        ObjectManager.user = data.username;
+		ObjectManager.userHash = data.userhash;
         ObjectManager.loadRoom(GUI.startRoom);
     });
 	

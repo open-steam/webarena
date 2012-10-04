@@ -151,7 +151,7 @@
 					//canceled
 					alert("cancel");
 				}, false);
-				xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id'));
+				xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
 				xhr.send(fd);
 				
 				var dialogButtons = {};

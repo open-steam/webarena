@@ -47,7 +47,7 @@ Log.info=function(message) {
 }
 
 Log.error=function(message) {
-	
+
 	if (message.stack === undefined) {
 		//Log.error was directly called --> create real error (to get stack)
 		throw new Error(message);
@@ -55,12 +55,12 @@ Log.error=function(message) {
 
 	var msg = message.stack;
 	
-	var lines = msg.match(/^.*((\r\n|\n|\r)|$)/gm);
-	lines.splice(1,1);
-	msg = lines.join("");
+	//var lines = msg.match(/^.*((\r\n|\n|\r)|$)/gm);
+	//lines.splice(1,1);
+	//msg = lines.join("");
 
 	console.error(Log.getLogString(msg,Log.colors.error));
-	
+
 }
 
 Log.warn=function(message) {
