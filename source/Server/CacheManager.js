@@ -100,13 +100,13 @@ CacheManager.getCacheUser=function(context) {
 
 CacheManager.login=function(username,password,rp,context){
 	
-	Modules.Log.debug("CacheManager", "+login", "Login request for user '"+username+"'");
+	Modules.Log.debug("Login request for user '"+username+"'");
 	
 	Modules.config.connector.login(username,password,function(data) {
 		
 		if (data) {
 			/* login successfull */
-			Modules.Log.debug("CacheManager", "+login", "Login successfull for user '"+username+"'");
+			Modules.Log.debug("Login successfull for user '"+username+"'");
 			
 			/* create cache structure for user */
 			CacheManager.cache["users"][username] = {
@@ -117,7 +117,7 @@ CacheManager.login=function(username,password,rp,context){
 				"context" : context
 			};
 			
-		} else Modules.Log.debug("CacheManager", "+login", "Login failed for user '"+username+"'");
+		} else Modules.Log.debug("Login failed for user '"+username+"'");
 		
 		rp(data);
 		
@@ -134,7 +134,7 @@ CacheManager.mayRead=function(roomID,objectID,context){
 	
 	if (roomID=='undefined') trace();
 	
-	Modules.Log.debug("CacheManager", "+mayRead", "Check right 'read' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Check right 'read' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (context === true) return true; //root
 	if (roomID==objectID) {
@@ -147,7 +147,7 @@ CacheManager.mayRead=function(roomID,objectID,context){
 }
 
 CacheManager.mayWrite=function(roomID,objectID,context){
-	Modules.Log.debug("CacheManager", "+mayWrite", "Check right 'write' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Check right 'write' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (context === true) return true; //root
 	if (roomID==objectID) {
@@ -160,7 +160,7 @@ CacheManager.mayWrite=function(roomID,objectID,context){
 }
 
 CacheManager.mayEvaluate=function(roomID,objectID,context){
-	Modules.Log.debug("CacheManager", "+mayEvaluate", "Check right 'evaluate' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Check right 'evaluate' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (context === true) return true; //root
 	if (roomID==objectID) {
@@ -173,7 +173,7 @@ CacheManager.mayEvaluate=function(roomID,objectID,context){
 }
 
 CacheManager.mayDelete=function(roomID,objectID,context){
-	Modules.Log.debug("CacheManager", "+mayDelete", "Check right 'delete' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Check right 'delete' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (context === true) return true; //root
 	if (roomID==objectID) {
@@ -187,7 +187,7 @@ CacheManager.mayDelete=function(roomID,objectID,context){
 
 
 CacheManager.mayCreate=function(roomID,type,context){
-	Modules.Log.debug("CacheManager", "+mayCreate", "Check right 'create' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Check right 'create' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (context === true) return true; //root
 	if (CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["create"][type] == undefined) {
@@ -206,7 +206,7 @@ CacheManager.mayCreate=function(roomID,type,context){
 }
 
 CacheManager.maySubscribe=function(roomID,context,callback){
-	Modules.Log.debug("CacheManager", "+maySubscribe", "Check right 'subscribe' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Check right 'subscribe' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (callback == undefined) {
 		/* sync. */
@@ -214,7 +214,7 @@ CacheManager.maySubscribe=function(roomID,context,callback){
 		if (context === true) return true; //root
 		if (CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID] && CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["subscribe"]) {
 			return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["subscribe"];
-		} else Modules.Log.error("CacheManager", "+maySubscribe", "Rights not cached for room (sync. access not possible) (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+		} else Modules.Log.error("Rights not cached for room (sync. access not possible) (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 		
 	} else {
 		/* async. */
@@ -242,20 +242,20 @@ CacheManager.maySubscribe=function(roomID,context,callback){
 *
 */
 CacheManager.getInventory=function(roomID,context,callback){
-	Modules.Log.debug("CacheManager", "+getInventory", "Request inventory (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
-	if (roomID === undefined) Modules.Log.error("CacheManager", "+getInventory", "Missing roomID (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (roomID === undefined) Modules.Log.error("Missing roomID (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
-	if (CacheManager.cache["users"][CacheManager.getCacheUser(context)] == undefined) Modules.Log.error("CacheManager", "+getInventory", "User is not logged in (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (CacheManager.cache["users"][CacheManager.getCacheUser(context)] == undefined) Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
 	//this function is called when objects are loaded
 	function objectsLoaded(roomID,context,callback) {
 
-		Modules.Log.debug("CacheManager", "+getInventory", "Inventory objects are loaded (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+		Modules.Log.debug("Inventory objects are loaded (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
 		//this function is called when rights are loaded
 		function rightsLoaded(roomID,context,callback) {
-			Modules.Log.debug("CacheManager", "+getInventory", "User rights are loaded (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+			Modules.Log.debug("User rights are loaded (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 			
 			var inventory = [];
 
@@ -266,17 +266,17 @@ CacheManager.getInventory=function(roomID,context,callback){
 			CacheManager.maySubscribe(roomID, context, function(maySub) {
 				if (maySub) {
 					callback(inventory);
-				} else Modules.Log.error("CacheManager", "+getInventory", "Missing rights to subscribe (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+				} else Modules.Log.error("Missing rights to subscribe (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 			});
 			
 		}
 		
 		if (CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID] != undefined) {
 			//user rights cached
-			Modules.Log.debug("CacheManager", "+getInventory", "User rights are cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+			Modules.Log.debug("User rights are cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 			rightsLoaded(roomID,context,callback);
 		} else {
-			Modules.Log.debug("CacheManager", "+getInventory", "User rights are not cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+			Modules.Log.debug("User rights are not cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 			//user rights not cached --> load user rights
 			CacheManager.loadUserRights(roomID, context, function() {
 				rightsLoaded(roomID,context,callback);
@@ -289,13 +289,13 @@ CacheManager.getInventory=function(roomID,context,callback){
 	if (CacheManager.cache["rooms"][roomID] != undefined && CacheManager.cache["rooms"][roomID]["objects"] != undefined) {
 		/* room with objects found in cache */
 		
-		Modules.Log.debug("CacheManager", "+getInventory", "Inventory is cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+		Modules.Log.debug("Inventory is cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 		
 		objectsLoaded(roomID,context,callback);
 		
 	} else {
 		/* room not cached --> load room */
-		Modules.Log.debug("CacheManager", "+getInventory", "Inventory is not cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+		Modules.Log.debug("Inventory is not cached (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 		
 		CacheManager.loadRoom(roomID, function() {
 			objectsLoaded(roomID,context,callback);
@@ -312,7 +312,7 @@ CacheManager.inventoryIsCached=function(roomID,context) {
 
 //sync
 CacheManager.getCachedInventory = function(roomID, context) {
-	Modules.Log.debug("CacheManager", "+getCachedInventory", "Load cached inventory (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Load cached inventory (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
 	var inventory = [];
 
@@ -320,7 +320,7 @@ CacheManager.getCachedInventory = function(roomID, context) {
 		inventory.push(CacheManager.cache["rooms"][roomID]["objects"][i]["objectData"]);
 	}
 
-	if (!CacheManager.maySubscribe(roomID, context)) Modules.Log.debug("CacheManager", "+getCachedInventory", "Missing rights to subscribe (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.maySubscribe(roomID, context)) Modules.Log.debug("Missing rights to subscribe (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	return inventory;
 	
@@ -329,7 +329,7 @@ CacheManager.getCachedInventory = function(roomID, context) {
 
 //internal
 CacheManager.loadUserRights = function(roomID,context,callback) {
-	Modules.Log.debug("CacheManager", "-loadUserRights", "Load user rights (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Load user rights (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	var ids = [];
 	
@@ -368,14 +368,14 @@ CacheManager.loadUserRights = function(roomID,context,callback) {
 CacheManager.loadRoom = function(roomID,loadRoomCallback) {
 
 	//load room data
-	Modules.Log.debug("CacheManager", "-loadRoom", "Load Room (roomID: '"+roomID+"')");
+	Modules.Log.debug("Load Room (roomID: '"+roomID+"')");
 	
 	CacheManager.cache["rooms"][roomID] = {
 		"roomData" : {}
 	};
 	
 	Modules.config.connector.withRoomData(roomID,true,function(roomData) {
-		Modules.Log.debug("CacheManager", "-loadRoom", "Room data loaded (roomID: '"+roomID+"')");
+		Modules.Log.debug("Room data loaded (roomID: '"+roomID+"')");
 		
 		CacheManager.cache["rooms"][roomID]["roomData"] = roomData;
 	
@@ -387,12 +387,12 @@ CacheManager.loadRoom = function(roomID,loadRoomCallback) {
 
 //internal
 CacheManager.loadRoomObjects = function(roomID,callback) {
-	Modules.Log.debug("CacheManager", "-loadRoomObjects", "Load room objects (roomID: '"+roomID+"')");
+	Modules.Log.debug("Load room objects (roomID: '"+roomID+"')");
 
 		//load room objects
 		
 		Modules.config.connector.withInventory(roomID,true,function(data) {
-			Modules.Log.debug("CacheManager", "-loadRoomObjects", "Got objects from connector (roomID: '"+roomID+"')");
+			Modules.Log.debug("Got objects from connector (roomID: '"+roomID+"')");
 			
 			/* create cache structure for room objects */
 			CacheManager.cache["rooms"][roomID]["objects"] = {
@@ -400,24 +400,28 @@ CacheManager.loadRoomObjects = function(roomID,callback) {
 			};
 
 			data.forEach(function(objData){
-
-				if (Modules.ObjectManager.getPrototypeFor(objData.attributes.type).contentURLOnly === false) {
-
-					var str = objData.content;
-					var bytes = [];
-
-					for (var i = 0; i < str.length; ++i)
-					{
-					    bytes.push(str.charCodeAt(i));
+				
+				var content = objData.content;
+				
+				if (({}).toString.call(objData.content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
+					/* create byte array */
+					
+					var byteArray = [];
+					var contentBuffer = new Buffer(content);
+					
+					for (var j = 0; j < contentBuffer.length; j++) {
+						
+						byteArray.push(contentBuffer.readUInt8(j));
+						
 					}
 					
-				} else {
-					var bytes = [];
+					content = byteArray;
+					
 				}
 				
 				CacheManager.cache["rooms"][roomID]["objects"][objData.attributes.id] = {
 					"objectData" : objData.attributes,
-					"content" : bytes
+					"content" : content
 				};
 
 			});
@@ -432,14 +436,14 @@ CacheManager.loadRoomObjects = function(roomID,callback) {
 
 //internal
 CacheManager.updateUserRights = function(roomID,callback) {
-	Modules.Log.debug("CacheManager", "-updateUserRights", "Update cached rights for all users (roomID: '"+roomID+"')");
+	Modules.Log.debug("Update cached rights for all users (roomID: '"+roomID+"')");
 	
 	function updateDone() {
 
 		numberOfUpdatesDone++;
 		
 		if (numberOfUpdatesDone == numberOfUpdates) {
-			Modules.Log.debug("CacheManager", "-updateUserRights", "All users updated (roomID: '"+roomID+"')");
+			Modules.Log.debug("All users updated (roomID: '"+roomID+"')");
 			callback();
 		}
 		
@@ -456,7 +460,7 @@ CacheManager.updateUserRights = function(roomID,callback) {
 		if (user.rights[roomID] != undefined) {
 			//update rights for user
 			
-			Modules.Log.debug("CacheManager", "-loadUserRights", "Updating cached user rights for user '"+user.userData.username+"' (roomID: '"+roomID+"')");
+			Modules.Log.debug("Updating cached user rights for user '"+user.userData.username+"' (roomID: '"+roomID+"')");
 			
 			CacheManager.loadUserRights(roomID,user.context,function() {
 				updateDone();
@@ -470,7 +474,7 @@ CacheManager.updateUserRights = function(roomID,callback) {
 
 //internal
 CacheManager.reloadRoomCache=function(roomID,callback) {
-	Modules.Log.debug("CacheManager", "-reloadRoomCache", "Reload cached rooms (roomID: '"+roomID+"')");
+	Modules.Log.debug("Reload cached rooms (roomID: '"+roomID+"')");
 	
 	/* reload all objects in room with id roomID (including the new object) */
 	CacheManager.loadRoomObjects(roomID,function() {
@@ -498,14 +502,14 @@ CacheManager.reloadRoomCache=function(roomID,callback) {
 *
 */
 CacheManager.getRoomData=function(roomID,context,callback){
-	Modules.Log.debug("CacheManager", "+getRoomData", "Get data for room (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Get data for room (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	if (!context) Modules.Log.error("CacheManager", "+getRoomData", "Missing context");
+	if (!context) Modules.Log.error("Missing context");
 	
 	function roomLoaded(roomID,context,callback) {
 
 		function rightsLoaded(roomID,context,callback) {
-			if (!CacheManager.mayRead(roomID, roomID, context)) Modules.Log.error("CacheManager", "+getRoomData", "Missing rights to read (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+			if (!CacheManager.mayRead(roomID, roomID, context)) Modules.Log.error("Missing rights to read (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 			callback(CacheManager.cache["rooms"][roomID]["roomData"]);
 		}
 		
@@ -545,9 +549,9 @@ CacheManager.getRoomData=function(roomID,context,callback){
 *
 */
 CacheManager.saveObjectData=function(roomID,objectID,data,after,context){
-	Modules.Log.debug("CacheManager", "+saveObjectData", "Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	if (!CacheManager.mayWrite(roomID, objectID, context)) Modules.Log.debug("CacheManager", "+saveObjectData", "Missing rights to write (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.mayWrite(roomID, objectID, context)) Modules.Log.debug("Missing rights to write (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
 	if (roomID == objectID) {
 		CacheManager.cache["rooms"][roomID]["roomData"]["attributes"] = data; //update object cache
@@ -566,23 +570,27 @@ CacheManager.saveObjectData=function(roomID,objectID,data,after,context){
 *
 */
 CacheManager.saveContent=function(roomID,objectID,content,after,context){
-	Modules.Log.debug("CacheManager", "+saveContent", "Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	if (!CacheManager.mayWrite(roomID, objectID, context)) Modules.Log.debug("CacheManager", "+saveContent", "Missing rights to write (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.mayWrite(roomID, objectID, context)) Modules.Log.debug("Missing rights to write (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
-	if (Modules.ObjectManager.getPrototypeFor(CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"]["attributes"].type).contentURLOnly === false) {
-		/* cache content */
+	if (({}).toString.call(content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
+		/* create byte array */
 		
-		var bytes = [];
-
-		for (var i = 0; i < content.length; ++i)
-		{
-		    bytes.push(content.charCodeAt(i));
+		var byteArray = [];
+		var contentBuffer = new Buffer(content);
+		
+		for (var j = 0; j < contentBuffer.length; j++) {
+			
+			byteArray.push(contentBuffer.readUInt8(j));
+			
 		}
-
-		CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"] = bytes;
+		
+		content = byteArray;
 		
 	}
+
+	CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"] = content;
 	
 	Modules.config.connector.saveContent(roomID,objectID,content,after,context);
 	
@@ -597,10 +605,25 @@ CacheManager.saveContent=function(roomID,objectID,content,after,context){
 */
 CacheManager.copyContentFromFile=function(roomID, objectID, sourceFilename, callback,context) {
 	
-	Modules.Log.debug("CacheManager", "+copyContentFromFile", "Copy content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"', source: '"+sourceFilename+"')");
+	Modules.Log.debug("Copy content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"', source: '"+sourceFilename+"')");
 	
-	Modules.config.connector.copyContentFromFile(roomID, objectID, sourceFilename, callback,context);
+	if (!context) throw new Error('Missing context in CacheManager.copyContentFromFile');
 	
+	var fs = require('fs');
+	
+	var content = fs.readFileSync(sourceFilename);
+	
+	var byteArray = [];
+	var contentBuffer = new Buffer(content);
+	
+	for (var j = 0; j < contentBuffer.length; j++) {
+		
+		byteArray.push(contentBuffer.readUInt8(j));
+		
+	}
+
+	CacheManager.saveContent(roomID,objectID,byteArray,callback,context);
+
 }
 
 /**
@@ -609,13 +632,51 @@ CacheManager.copyContentFromFile=function(roomID, objectID, sourceFilename, call
 *	get an object's content as an array of bytes
 *	
 */
-CacheManager.getContent=function(roomID,objectID,context){
+CacheManager.getContent=function(roomID,objectID,context,callback){
 	
-	Modules.Log.debug("CacheManager", "+getContent", "Get content as String (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Get content as String (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	if (!CacheManager.mayRead(roomID, objectID, context)) Modules.Log.error("CacheManager", "+getContent", "Missing rights to read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.mayRead(roomID, objectID, context)) Modules.Log.error("Missing rights to read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	return CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"];
+	if (callback == undefined) {
+		//sync
+
+		return CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"];
+		
+	} else {
+		//async
+
+		if (CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"]) {
+
+			callback(CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"]);
+		} else {
+
+			Modules.config.connector.getContent(roomID,objectID,context, function(content) {
+
+
+				if (({}).toString.call(objData.content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
+					/* create byte array */
+					
+					var byteArray = [];
+					var contentBuffer = new Buffer(content);
+					
+					for (var j = 0; j < contentBuffer.length; j++) {
+						
+						byteArray.push(contentBuffer.readUInt8(j));
+						
+					}
+					
+					content = byteArray;
+					
+				}
+				
+				CacheManager.cache["rooms"][roomID]["objects"][objectID]["content"] = content;
+				callback(content);
+			});
+			
+		}
+		
+	}
 
 }
 
@@ -628,9 +689,9 @@ CacheManager.getContent=function(roomID,objectID,context){
 */
 CacheManager.remove=function(roomID,objectID,context){
 	
-	Modules.Log.debug("CacheManager", "+remove", "Remove object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Remove object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	if (!CacheManager.mayDelete(roomID, objectID, context)) Modules.Log.error("CacheManager", "+remove", "Missing rights to delete (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.mayDelete(roomID, objectID, context)) Modules.Log.error("Missing rights to delete (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	delete CacheManager.cache["rooms"][roomID]["objects"][objectID]; //remove from cache
 	
@@ -650,13 +711,13 @@ CacheManager.remove=function(roomID,objectID,context){
 */
 CacheManager.createObject=function(roomID,type,data,callback,context){
 
-	Modules.Log.debug("CacheManager", "+createObject", "Create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	if (!CacheManager.mayCreate(roomID, type, context)) Modules.Log.error("CacheManager", "+createObject", "Missing rights to create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.mayCreate(roomID, type, context)) Modules.Log.error("Missing rights to create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	Modules.config.connector.createObject(roomID,type,data,function(newObjectId) {
 		
-		Modules.Log.debug("CacheManager", "+createObject", "Object created (roomID: '"+roomID+"', objectID: '"+newObjectId+"', user: '"+CacheManager.getCacheUser(context)+"')");
+		Modules.Log.debug("Object created (roomID: '"+roomID+"', objectID: '"+newObjectId+"', user: '"+CacheManager.getCacheUser(context)+"')");
 		
 		CacheManager.reloadRoomCache(roomID, function() {
 			callback(newObjectId);
@@ -681,10 +742,10 @@ CacheManager.createObject=function(roomID,type,data,callback,context){
 */
 CacheManager.duplicateObject=function(roomID,objectID,callback,context){
 	
-	Modules.Log.debug("CacheManager", "+duplicateObject", "Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	Modules.config.connector.duplicateObject(roomID,objectID,function(newObjectId, oldObjectId) {
-		Modules.Log.debug("CacheManager", "+duplicateObject", "Object duplicated (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+		Modules.Log.debug("Object duplicated (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 		
 		CacheManager.reloadRoomCache(roomID, function() {
 			callback(newObjectId, oldObjectId);
@@ -695,58 +756,8 @@ CacheManager.duplicateObject=function(roomID,objectID,callback,context){
 }
 
 
-CacheManager.trimImage=function(roomID, objectID, callback, context) {
-	
-	Modules.config.connector.trimImage(roomID, objectID, callback, context);
-	
-};
 
 
-CacheManager.isInlineDisplayable=function(mimeType) {
-	
-	return Modules.config.connector.isInlineDisplayable(mimeType);
-	
-}
-
-CacheManager.getMimeType=function(roomID,objectID,context) {
-	
-	//TODO: this must be asynchronous!
-	
-}
-
-CacheManager.getInlinePreviewProviderName=function(mimeType) {
-
-	return Modules.config.connector.getInlinePreviewProviderName(mimeType);
-	
-}
-
-CacheManager.getInlinePreviewMimeTypes=function() {
-	
-	return Modules.config.connector.getInlinePreviewMimeTypes();
-	
-}
-
-CacheManager.getInlinePreviewProviders=function() {
-	return Modules.config.connector.getInlinePreviewProviders();
-}
-
-CacheManager.getInlinePreviewDimensions=function(roomID, objectID, callback, mimeType,context) {
-	
-	Modules.config.connector.getInlinePreviewDimensions(roomID, objectID, callback, mimeType,context);
-	
-}
-
-CacheManager.getInlinePreview=function(roomID, objectID, callback, mimeType,context) {
-
-	Modules.config.connector.getInlinePreview(roomID, objectID, callback, mimeType,context);
-	
-}
-
-CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context,callback) {
-	
-	return Modules.config.connector.getInlinePreviewMimeType(roomID, objectID,context,callback);
-	
-}
 
 
 
@@ -758,18 +769,454 @@ CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context,callback
 */
 CacheManager.getObjectData=function(roomID,objectID,context){
 	
-	Modules.Log.debug("CacheManager", "+getObjectData", "Get object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	Modules.Log.debug("Get object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
-	if (!CacheManager.mayRead(roomID, objectID, context)) Modules.Log.error("CacheManager", "+getObjectData", "Missing rights to read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.mayRead(roomID, objectID, context)) Modules.Log.error("Missing rights to read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 
 	if (roomID == objectID) {
 		/* room */
-		return CacheManager.cache["rooms"][roomID]["roomData"];
+		try {
+			var val = CacheManager.cache["rooms"][roomID]["roomData"];
+		} catch(err) {
+			var val = false;
+		}
 	} else {
-		return CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"];
+		try {
+			var val = CacheManager.cache["rooms"][roomID]["objects"][objectID]["objectData"];
+		} catch(err) {
+			var val = false;
+		}
+	}
+	
+	return val;
+	
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CacheManager.trimImage=function(roomID, objectID, callback, context) {
+	
+	if (!context) throw new Error('Missing context in CacheManager.trimImage');
+
+	/* save content to temp. file */
+
+	var filename = __dirname+"/tmp/trim_"+roomID+"_"+objectID;
+
+	CacheManager.getContent(roomID,objectID,context,function(content) {
+		
+		var fs = require('fs');
+
+		fs.writeFile(filename, content, function (err) {
+		 	if (err) throw err;
+			/* temp. file saved */
+
+			var im = require('imagemagick');
+
+			//output: test.png PNG 192x154 812x481+226+131 8-bit DirectClass 0.010u 0:00.000
+			im.convert([filename, '-trim', 'info:-'], function(err,out,err2) {
+
+				if (!err) {
+
+					var results = out.split(" ");
+
+					var dimensions = results[2];
+					var dimensionsA = dimensions.split("x");
+
+					var newWidth = dimensionsA[0];
+					var newHeight = dimensionsA[1];
+
+					var d = results[3];
+					var dA = d.split("+");
+
+					var dX = dA[1];
+					var dY = dA[2];
+
+					im.convert([filename, '-trim', filename], function(err,out,err2) {
+
+						if (!err) {
+
+							//save new content:
+							CacheManager.copyContentFromFile(roomID, objectID, filename, function() {
+							
+								//TODO: delete temp. file
+							
+								callback(dX, dY, newWidth, newHeight);
+								
+							},context);
+							
+						} else {
+							//TODO: delete temp. file
+							console.log("trimImage: error while trimming "+roomID+"/"+objectID);
+							callback(false);
+						}
+
+					});
+
+				} else {
+					console.log("trimImage: error getting trim information of "+roomID+"/"+objectID);
+					callback(false);
+				}
+
+			});
+
+
+
+		});
+		
+	});
+	
+	
+	
+};
+
+
+CacheManager.isInlineDisplayable=function(mimeType) {
+	
+	if (this.getInlinePreviewProviderName(mimeType) == false) {
+		return false;
+	} else {
+		return true;
 	}
 	
 }
+
+CacheManager.getMimeType=function(roomID,objectID,context,callback) {
+	
+	if (!context) throw new Error('Missing context in CacheManager.getMimeType');
+
+	var objectData = CacheManager.getObjectData(roomID,objectID,context);
+	var mimeType = objectData.attributes.mimeType;
+	
+	callback(mimeType);
+	
+}
+
+//SYNC
+CacheManager.getInlinePreviewProviderName=function(mimeType) {
+
+	if (!mimeType) return false;
+
+	if (this.getInlinePreviewProviders()[mimeType] != undefined) {
+		return this.getInlinePreviewProviders()[mimeType];
+	} else {
+		return false;
+	}
+	
+}
+
+//SYNC
+CacheManager.getInlinePreviewMimeTypes=function() {
+	
+	var mimeTypes = this.getInlinePreviewProviders();
+	var list = {};
+	
+	for (var mimeType in mimeTypes){
+		list[mimeType] = true;
+	}
+	
+	return list;
+	
+}
+
+//SYNC
+CacheManager.getInlinePreviewProviders=function() {
+	return {
+		//"application/pdf" : "pdf",
+		"image/jpeg" : "image",
+		"image/jpg" : "image",
+		"image/png" : "image",
+		"image/gif" : "image"
+	}
+}
+
+CacheManager.getInlinePreviewDimensions=function(roomID, objectID, callback, mimeType,context) {
+	
+	if (!context) throw new Error('Missing context in CacheManager.getInlinePreviewDimensions');
+	
+	function mimeTypeDetected(mimeType) {
+		
+		/* find provider for inline content: */
+		var generatorName = CacheManager.getInlinePreviewProviderName(mimeType);
+
+		if (generatorName == false) {
+			console.log("getInlinePreviewDimensions: no generator name for mime type '"+mimeType+"' found!");
+			callback(false, false); //do not set width and height (just send update to clients)
+		} else {
+			CacheManager.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, callback, context);
+		}
+		
+	}
+	
+	if (!mimeType) {
+		
+		CacheManager.getMimeType(roomID,objectID,context,function(mimeType) {
+			mimeTypeDetected(mimeType);
+		});
+		
+	} else {
+		mimeTypeDetected(mimeType);
+	}
+	
+}
+
+CacheManager.getInlinePreview=function(roomID, objectID, callback, mimeType,context) {
+
+	if (!context) throw new Error('Missing context in CacheManager.getInlinePreview');
+	
+	function mimeTypeDetected(mimeType) {
+		
+		if (!mimeType) {
+			callback(false);
+		} else {
+
+			/* find provider for inline content: */
+			var generatorName = CacheManager.getInlinePreviewProviderName(mimeType);
+
+			if (generatorName == false) {
+				console.trace();
+				console.log("getInlinePreview: no generator name for mime type '"+mimeType+"' found!");
+				callback(false); //do not set width and height (just send update to clients)
+			} else {
+				CacheManager.inlinePreviewProviders[generatorName].preview(roomID, objectID, callback, context);
+			}
+		
+		}
+		
+	}
+	
+	if (!mimeType) {
+		
+		CacheManager.getMimeType(roomID,objectID,context,function(mimeType) {
+			mimeTypeDetected(mimeType);
+		});
+		
+	} else {
+		mimeTypeDetected(mimeType);
+	}
+	
+}
+
+CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context,callback) {
+	
+	if (!context) throw new Error('Missing context in CacheManager.getInlinePreviewMimeType');
+	
+	CacheManager.getMimeType(roomID,objectID,context,function(mimeType) {
+		
+		if (!mimeType) {
+			callback(false);
+		}
+
+		/* find provider for inline content: */
+		var generatorName = CacheManager.getInlinePreviewProviderName(mimeType);
+
+		if (generatorName == false) {
+			console.log("getInlinePreviewMimeType: no generator name for mime type '"+mimeType+"' found!");
+			callback(false);
+		} else {
+			callback(CacheManager.inlinePreviewProviders[generatorName].mimeType(roomID, objectID, mimeType, context));
+		}
+		
+	});
+	
+}
+
+
+
+CacheManager.inlinePreviewProviders = {
+	
+	'image': {
+		'mimeType' : function(roomID, objectID, mimeType, context) {
+			
+			if (!context) throw new Error('Missing context in mimeType for image');
+			
+			return mimeType;
+		},
+		'dimensions' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in dimensions for image');
+
+			
+			var filename = __dirname+"/tmp/image_preview_dimensions_"+roomID+"_"+objectID;
+
+			CacheManager.getContent(roomID,objectID,context,function(content) {
+				
+				var fs = require('fs');
+
+				fs.writeFile(filename, Buffer(content), function (err) {
+				 	if (err) throw err;
+					/* temp. file saved */
+
+					var im = require('imagemagick');
+
+					im.identify(filename, function(err, features) {
+
+						if (err) throw err;
+
+						var width = features.width;
+						var height = features.height;
+
+						if (width > Modules.config.imageUpload.maxDimensions) {
+							height = height*(Modules.config.imageUpload.maxDimensions/width);
+							width = Modules.config.imageUpload.maxDimensions;
+						}
+
+						if (height > Modules.config.imageUpload.maxDimensions) {
+							width = width*(Modules.config.imageUpload.maxDimensions/height);
+							height = Modules.config.imageUpload.maxDimensions;
+						}
+
+						//TODO: delete temp. file
+						callback(width, height);
+
+					});
+
+				});
+				
+			});
+			
+
+		},
+		'preview' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in preview for image');
+
+			CacheManager.getContent(roomID,objectID,context,function(content) {
+				
+				callback(content);
+				
+			});
+
+		}
+	},
+	
+	
+	'pdf_TODO': {
+		'mimeType' : function(roomID, objectID, mimeType, context) {
+			
+			if (!context) throw new Error('Missing context in mimeType for pdf');
+			
+			return 'image/jpeg';
+		},
+		'generatePreviewFile' : function(roomID, objectID, callback, context) {
+			
+			throw new Error("TODO!");
+			
+			if (!context) throw new Error('Missing context in generatePreviewFile for pdf');
+
+			var filebase=Modules.Config.filebase;
+
+			var filename = filebase+'/'+roomID+'/'+objectID+'.content';
+			var filenamePreview = filebase+'/'+roomID+'/'+objectID+'.preview';
+			
+
+			var im = require('imagemagick');
+			
+			im.convert(['-density', '200x200', 'pdf:'+filename+'[0]', '-quality', '100', 'jpg:'+filenamePreview], 
+			function(err, metadata){
+			  	if (err) {
+					console.log("error creating preview for pdf");
+					callback(false);
+				} else {
+
+					try {
+						var content = fs.readFileSync(filenamePreview);
+						callback(content);
+					} catch (e) {
+						callback(false);
+					}
+					
+				}
+			});
+	
+		},
+		'dimensions' : function(roomID, objectID, callback, context) {
+			
+			throw new Error("TODO!");
+			
+			if (!context) throw new Error('Missing context in dimensions for pdf');
+
+			var filebase=Modules.Config.filebase;
+
+			var filename=filebase+'/'+roomID+'/'+objectID+'.content';
+			
+
+			var im = require('imagemagick');
+
+			im.identify(filename, function(err, features) {
+
+				if (err) throw err;
+				
+				var width = features.width;
+				var height = features.height;
+
+				if (width > Modules.config.imageUpload.maxDimensions) {
+					height = height*(Modules.config.imageUpload.maxDimensions/width);
+					width = Modules.config.imageUpload.maxDimensions;
+				}
+
+				if (height > Modules.config.imageUpload.maxDimensions) {
+					width = width*(Modules.config.imageUpload.maxDimensions/height);
+					height = Modules.config.imageUpload.maxDimensions;
+				}
+
+				callback(width, height);
+			
+			});
+
+		},
+		'preview' : function(roomID, objectID, webserverResponse, context) {
+			
+			throw new Error("TODO!");
+			
+			if (!context) throw new Error('Missing context in preview for pdf');
+
+			var filebase=Modules.Config.filebase;
+
+			var filename=filebase+'/'+roomID+'/'+objectID+'.preview';
+
+			var path = require('path');
+
+			if (!path.existsSync(filename)) {
+				this.generatePreviewFile(roomID, objectID, function(data) {
+					/* preview file is generated */
+					callback(data);
+				});
+			} else {
+				/* preview file exists */
+				try {
+					var content = fs.readFileSync(filename);
+					callback(content);
+				} catch (e) {
+					callback(false);
+				}
+			}
+
+		}
+	}
+	
+}
+
+
+
+
 
 
 module.exports=CacheManager;
