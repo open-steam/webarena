@@ -286,6 +286,8 @@ ObjectManager.init=function(theModules){
 	var files=fs.readdirSync('objects');
 	var objectTypes={};
 	
+	files.sort();
+	
 	ObjectManager.clientCode='//Object Code for WebArena Client '+enter;
 	
 	files.forEach(function(filename){
