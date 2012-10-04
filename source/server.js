@@ -76,4 +76,8 @@ for (var name in Modules){
 	}
 }
 
-
+//create temp. directory
+var fs = require('fs');
+if (!fs.existsSync("./Server/tmp")) {
+	fs.mkdirSync("./Server/tmp", 0777);
+}
