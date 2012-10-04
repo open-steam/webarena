@@ -11,27 +11,7 @@ var EvaluationObject=Object.create(Modules.ObjectManager.getPrototype('GeneralOb
 
 EvaluationObject.register('EvaluationObject');
 EvaluationObject.category = 'Evaluations';
-EvaluationObject.isCreatable=true;  //TODO should be false
-EvaluationObject.isEvaluatable=true;
-
-EvaluationObject.getPossiblePositionsFor=function(obj){
-	
-	return [];
-	
-}
-
-EvaluationObject.getForbiddenPositionsFor=function(obj){
-	
-	return [];
-	
-}
-
-EvaluationObject.evaluatePosition=function(obj,x,y){
-	return false;
-}
-
-EvaluationObject.isActive=function(){
-	return true;
-}
+EvaluationObject.isCreatable=false;
+EvaluationObject.isEvaluationObject=true;
 
 module.exports=EvaluationObject;
