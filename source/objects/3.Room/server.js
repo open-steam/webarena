@@ -20,7 +20,10 @@ theObject.getEvaluatedPositionFor=function(object){
 	for (var i in inventory){
 		var evaluationObject=inventory[i];
 		if (!evaluationObject.isEvaluationObject) continue;
-		console.log(evaluationObject.toString(),'is an evaluationObject');
+		//console.log(evaluationObject.toString(),'is an evaluationObject');
+		
+		//TODO calculate positions
+		
 	}
 	
 	var data={};
@@ -29,6 +32,19 @@ theObject.getEvaluatedPositionFor=function(object){
 	data.width=object.getAttribute('width',true);
 	data.height=object.getAttribute('height',true);
 	return data;
+}
+
+theObject.evaluatePositionFor=function(object,data){
+	console.log('room','evaluatePositionFor',object.toString(),data);
+	
+	var inventory=this.getInventory();
+	
+	for (var i in inventory){
+		var evaluationObject=inventory[i];
+		if (!evaluationObject.isEvaluationObject) continue;
+		evaluationObject.evaluate(object,data);
+	}
+	
 }
 
 theObject.getInventory=function(){
