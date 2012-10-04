@@ -28,7 +28,23 @@ WebServer.init=function(theModules){
 	app.listen(global.config.port);  // start server (port set in config)
 
 	function handler (req, res) {
-	  var url=req.url.replace('%20',' ');	
+	  var url=req.url.replace('%20',' ');
+	
+		/* get userHash */
+		var userHashIndex = url.indexOf("/___");
+		if (userHashIndex > -1) {
+			/* userHash found */
+			
+			var userHash = url.slice(userHashIndex+1);
+			url = url.slice(0, userHashIndex);
+			
+			var context = Modules.UserManager.getConnectionByUserHash(userHash);
+			
+		} else {
+			var userHash = false;
+			var context = false;
+		}
+			
 	  
 	  if (url=='/') url='/index.html';
 	  
@@ -113,7 +129,7 @@ WebServer.init=function(theModules){
 			  	var roomID=ids[0];
 			  	var objectID=ids[1];
 
-				var object=Modules.ObjectManager.getObject(roomID,objectID,true); //TODO use actual credentials
+				var object=Modules.ObjectManager.getObject(roomID,objectID,context); //TODO use actual credentials
 
 			  	//TODO rights check (Idea: provide connection id)
 
@@ -195,7 +211,7 @@ WebServer.init=function(theModules){
 			var ids=url.substr(12).split('/');
 		  	var roomID=ids[0];
 		  	var objectID=ids[1];
-		  	var object=Modules.ObjectManager.getObject(roomID,objectID,true); //TODO use actual credentials
+		  	var object=Modules.ObjectManager.getObject(roomID,objectID,context);
 
 		  	//TODO rights check (Idea: provide connection id)
 
@@ -232,7 +248,7 @@ WebServer.init=function(theModules){
 	  			var ids=url.substr(19).split('/');
 			  	var roomID=ids[0];
 			  	var objectID=ids[1];
-			  	var object=Modules.ObjectManager.getObject(roomID,objectID,true); //TODO use actual credentials
+			  	var object=Modules.ObjectManager.getObject(roomID,objectID,context);
 
 			  	//TODO rights check (Idea: provide connection id)
 

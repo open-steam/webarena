@@ -856,7 +856,9 @@ CacheManager.trimImage=function(roomID, objectID, callback, context) {
 							//save new content:
 							CacheManager.copyContentFromFile(roomID, objectID, filename, function() {
 							
-								//TODO: delete temp. file
+								//delete temp. file
+								var fs = require('fs');
+								fs.unlink(filename);
 							
 								callback(dX, dY, newWidth, newHeight);
 								
@@ -864,15 +866,13 @@ CacheManager.trimImage=function(roomID, objectID, callback, context) {
 							
 						} else {
 							//TODO: delete temp. file
-							console.log("trimImage: error while trimming "+roomID+"/"+objectID);
-							callback(false);
+							Modules.Log.error("error while trimming "+roomID+"/"+objectID);
 						}
 
 					});
 
 				} else {
-					console.log("trimImage: error getting trim information of "+roomID+"/"+objectID);
-					callback(false);
+					Modules.Log.error("error getting trim information of "+roomID+"/"+objectID);
 				}
 
 			});
@@ -957,7 +957,7 @@ CacheManager.getInlinePreviewDimensions=function(roomID, objectID, callback, mim
 		var generatorName = CacheManager.getInlinePreviewProviderName(mimeType);
 
 		if (generatorName == false) {
-			console.log("getInlinePreviewDimensions: no generator name for mime type '"+mimeType+"' found!");
+			Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
 			callback(false, false); //do not set width and height (just send update to clients)
 		} else {
 			CacheManager.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, callback, context);
@@ -991,8 +991,7 @@ CacheManager.getInlinePreview=function(roomID, objectID, callback, mimeType,cont
 			var generatorName = CacheManager.getInlinePreviewProviderName(mimeType);
 
 			if (generatorName == false) {
-				console.trace();
-				console.log("getInlinePreview: no generator name for mime type '"+mimeType+"' found!");
+				Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
 				callback(false); //do not set width and height (just send update to clients)
 			} else {
 				CacheManager.inlinePreviewProviders[generatorName].preview(roomID, objectID, callback, context);
@@ -1028,7 +1027,7 @@ CacheManager.getInlinePreviewMimeType=function(roomID, objectID,context,callback
 		var generatorName = CacheManager.getInlinePreviewProviderName(mimeType);
 
 		if (generatorName == false) {
-			console.log("getInlinePreviewMimeType: no generator name for mime type '"+mimeType+"' found!");
+			Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
 			callback(false);
 		} else {
 			callback(CacheManager.inlinePreviewProviders[generatorName].mimeType(roomID, objectID, mimeType, context));
@@ -1083,7 +1082,10 @@ CacheManager.inlinePreviewProviders = {
 							height = Modules.config.imageUpload.maxDimensions;
 						}
 
-						//TODO: delete temp. file
+						//delete temp. file
+						var fs = require('fs');
+						fs.unlink(filename);
+						
 						callback(width, height);
 
 					});
@@ -1132,15 +1134,14 @@ CacheManager.inlinePreviewProviders = {
 			im.convert(['-density', '200x200', 'pdf:'+filename+'[0]', '-quality', '100', 'jpg:'+filenamePreview], 
 			function(err, metadata){
 			  	if (err) {
-					console.log("error creating preview for pdf");
-					callback(false);
+					Modules.Log.error("unable to create preview for pdf");
 				} else {
 
 					try {
 						var content = fs.readFileSync(filenamePreview);
 						callback(content);
 					} catch (e) {
-						callback(false);
+						Modules.Log.error("not able to read preview file");
 					}
 					
 				}
