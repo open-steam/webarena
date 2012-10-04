@@ -132,8 +132,8 @@ theObject.getContent=function(){
 *
 *	get the object's inline preview
 */
-theObject.getInlinePreview=function(webserverResponse,mimeType){
-	return Modules.Connector.getInlinePreview(this.inRoom, this.id, webserverResponse, mimeType,this.context);
+theObject.getInlinePreview=function(callback,mimeType){
+	return Modules.Connector.getInlinePreview(this.inRoom, this.id, callback, mimeType, this.context);
 }
 
 theObject.getInlinePreviewMimeType=function(callback) {

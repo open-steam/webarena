@@ -244,7 +244,7 @@ ObjectManager.init=function(){
     Modules.Dispatcher.registerCall('loggedIn',function(data){
         GUI.loggedIn();
         ObjectManager.user=data;
-        ObjectManager.loadRoom(data.home);
+        ObjectManager.loadRoom(GUI.startRoom);
     });
 	
     Modules.Dispatcher.registerCall('loginFailed',function(data){

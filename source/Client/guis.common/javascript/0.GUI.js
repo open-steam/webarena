@@ -343,7 +343,13 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
 
 GUI.disconnected = function() {
 	
-	GUI.error("connection lost", "Lost connection to server", false, true);
-		
+	GUI.showDisconnected();
+	
 }
 
+
+GUI.showDisconnected = function() {
+	
+	$("body").append('<div id="disconnected_message"><div>Die Verbindung wurde getrennt.<br /><br /><span onclick="window.location.reload()">Neu laden</span></div></div>');
+	
+}

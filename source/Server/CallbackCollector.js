@@ -20,6 +20,8 @@ var CallbackCollector = function(total, callback){
 		}
 	}
 	
+	if (total == 0) callback();
+	
 }	
 
 module.exports=CallbackCollector;

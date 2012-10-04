@@ -15,11 +15,12 @@ console.log('#######################################');
 
 //General error handling
 
-/*
+
 process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
+  //console.log('Caught exception: ' + err);
+	Modules.Log.error(err);
 });
-*/
+
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
 
 var config=require('./Server/config.default.js');
