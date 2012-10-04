@@ -14,9 +14,8 @@ var UserManager={};
 UserManager.connections={};
 
 
-
 UserManager.socketConnect=function(socket){
-	this.connections[socket.id]=({'socket':socket,'user':false,'rooms':[]});
+	this.connections[socket.id]=({'socket':socket,'user':false,'roomIDs':[],'rooms':{}});
 }
 
 UserManager.socketDisconnect=function(socket){
@@ -77,22 +76,26 @@ UserManager.subscribe=function(socketOrUser,room){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	var user=connection.user;
-	var rooms=connection.rooms;
+	var roomIDs=connection.roomIDs;
 	var roomID = room;
 	
 	connector.maySubscribe(room,connection, function(maySub) {
 
 		if (maySub) {
 			
-			if (!isInArray(rooms,roomID)){
-				rooms.push(roomID);
+			if (!isInArray(roomIDs,roomID)){
+				roomIDs.push(roomID);
 			}
-			connection.rooms=rooms;
-			socketServer.sendToSocket(socket,'subscribed',rooms);
-			for (var i in rooms){
-				var room=rooms[i];
-				ObjectManager.sendRoom(socket,room);
-			}
+			connection.roomIDs=roomIDs;
+			
+			ObjectManager.getRoom(roomID,connection,function(room){
+				socketServer.sendToSocket(socket,'subscribed',roomIDs);
+				connection.rooms[roomID]=room;
+				for (var i in roomIDs){
+					var room=roomIDs[i];
+					ObjectManager.sendRoom(socket,room);
+				}
+			})
 
 		} else {
 			socketServer.sendToSocket(socket,'error', 'User '+userID+' may not subscribe to '+roomID);
@@ -116,16 +119,18 @@ UserManager.unsubscribe=function(socketOrUser,room){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	var user=connection.user;
-	var rooms=connection.rooms;
+	var roomIDs=connection.roomIDs;
 	
 	var temp=[];
-	for (var i=0;i<rooms.length;i++){
-		if (rooms[i]!==room) {
-			temp.push(rooms[i]);
+	for (var i=0;i<roomIDs.length;i++){
+		if (roomIDs[i]!==room) {
+			temp.push(roomIDs[i]);
+		} else {
+			delete(connection.rooms[roomID]);
 		}
 	}
 
-	connection.rooms=temp;
+	connection.roomIDs=temp;
 	socketServer.sendToSocket(socket,'subscribed',temp);
 		
 	
@@ -143,9 +148,9 @@ UserManager.getConnectionsForRoom=function(roomID){
 	var result={};
 	for (var connectionID in this.connections){
 		var connection=this.connections[connectionID];
-		var rooms=connection.rooms;
-		for (var i in rooms){
-			var compare=rooms[i];
+		var roomIDs=connection.roomIDs;
+		for (var i in roomIDs){
+			var compare=roomIDs[i];
 			if (roomID===compare) result[connectionID]=connection;
 		}
 	}

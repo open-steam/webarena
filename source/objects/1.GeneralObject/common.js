@@ -337,8 +337,8 @@ GeneralObject.setAttribute=function(attribute,value,forced){
 	}
 }
 
-GeneralObject.getAttribute=function(attribute){
-	return this.attributeManager.getAttribute(this,attribute);
+GeneralObject.getAttribute=function(attribute,noevaluation){
+	return this.attributeManager.getAttribute(this,attribute,noevaluation);
 }
 
 
@@ -474,7 +474,7 @@ GeneralObject.boxContainsPoint=function(px,py){
 }
 
 /**
-*	determine if the current object intersects with the square x1,y1,x2,y2
+*	determine if the current object intersects with the square x,y,width,height
 */
 GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 	
@@ -492,9 +492,17 @@ GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 	
 }
 
+/**
+*	determine if the current object intersects with oanother object
+*/
 GeneralObject.intersectsWith=function(other){
-	return false;
-	//TODO
+	var otherx=other.getViewBoundingBoxX();
+	var othery=other.getViewBoundingBoxY();
+	var otherw=other.getViewBoundingBoxWidth();
+	var otherh=other.getViewBoundingBoxHeight();
+	
+	return this.boxIntersectsWith(otherx,othery,otherw,otherh);
+	
 }
 
 GeneralObject.contains=function(other){
@@ -814,18 +822,6 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 }
 
 GeneralObject.deleteIt=GeneralObject.remove;
-
-//returns the Evaluated position of an object. returns false if an object cannot be positioned
-GeneralObject.getEvaluatedPosition=function(){
-	return this.getRoom().getEvaluatedPositionFor(this);
-}
-
-//evaluates the position for an object. If there was no evaluation, false is returned.
-//if there was one, it returns an array of attributes which shall be set
-GeneralObject.evaluatePosition=function(x,y){
-	return false;
-	//return this.getRoom().evaluatePositionFor(this,x,y);
-}
 
 module.exports=GeneralObject;
 

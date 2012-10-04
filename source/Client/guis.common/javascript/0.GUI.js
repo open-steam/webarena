@@ -86,18 +86,18 @@ GUI.adjustContent = function(webarenaObject) {
 
 		var currentRoom = ObjectManager.getCurrentRoom();
 		
-		var maxX = webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth();
-		var maxY = webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight();
+		var maxX = Math.round(webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth());
+		var maxY = Math.round(webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight());
 		
 		if (maxX > currentRoom.getAttribute("width")) {
 			currentRoom.setAttribute("width", maxX);
-			$("#content").css("width", maxX);
+			$("#content").css("width", maxX);			//TODO do not do this, if browser viewport is bigger
 			$("#content > svg").css("width", maxX);
 		}
 		
 		if (maxY > currentRoom.getAttribute("height")) {
 			currentRoom.setAttribute("height", maxY);
-			$("#content").css("height", maxY);
+			$("#content").css("height", maxY);			//TODO do not do this, if browser viewport is bigger
 			$("#content > svg").css("height", maxY);
 		}
 		

@@ -138,56 +138,23 @@ var saveDelays={};
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation,local){
-	
-	//the position attribute is saved as 2 seperate attributes. The x value will not be evaluated seperately
+AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
 	
 	if (attribute=='position'){
-		
-		if (!object.ObjectManager.isServer && !noevaluation){
-		
-			//client side evaluations
-
-			var evaluationResults=object.evaluatePosition(value.x,value.y);
-			
-			if (evaluationResults){
-				for (var key in evaluationResults){
-					AttributeManager.setAttribute(object,key,value,forced,noevaluation,local);
-				}
-				return true;
-			}
-		
-		}
-		
-		AttributeManager.setAttribute(object,'x',value.x,forced,true,local);
-		AttributeManager.setAttribute(object,'y',value.y,forced,noevaluation,local);
+		AttributeManager.setAttribute(object,'x',value.x,forced);
+		AttributeManager.setAttribute(object,'y',value.y,forced);
 		return true;
-	} else {
+	} 	
+	
+	if (object.ObjectManager.isServer && !noevaluation){	
 		
-		if (!object.ObjectManager.isServer && !noevaluation){
-		
-			//client side evaluations
-		
-			var position=object.getEvaluatedPosition();
-			if (position){
-				AttributeManager.setAttribute(object,'x',position.x,forced,true,true);
-				AttributeManager.setAttribute(object,'y',position.y,forced,true,true);
-				return true;
-			}
-		
+		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+			object.evaluatePosition(attribute,value);
 		}
-		
-	}
-	
-	
+	}	
 	
 	// do nothing, if value has not changed
 	if (object.data[attribute]===value) return false;
-		
-	//if local is set true, there will be no persistance. This shall be the case
-	//if the attribute name begins with local_ or if evaluation processes were involved.
-	
-	if (attribute.substr(0,6)=='local_') local=true;
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
@@ -204,35 +171,30 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	
 	setter(object,value);
 	
-	if (!local){
+	// persist the results
 	
-		// persist the results
-		
-		if (object.ObjectManager.isServer){
-			object.persist();
-		} else {
-	
-			var identifier=object.id+'#'+attribute;
-			
-			if (saveDelays[identifier]){
-				window.clearTimeout(saveDelays[identifier]);
-				delete(saveDelays[identifier]);
-			}
-			
-			
-			var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
-			
-			if (forced) {
-				Modules.SocketClient.serverCall('setAttribute',data);
-			} else {
-				saveDelays[identifier]=window.setTimeout(function(){
-					Modules.SocketClient.serverCall('setAttribute',data);
-				},1000);
-			}
-			
-		}
+	if (object.ObjectManager.isServer){
+		object.persist();
 	} else {
-		if (Modules) Modules.Log.info('AttributeManager','setAttribute','Attribute '+attribute+' is local.');
+
+		var identifier=object.id+'#'+attribute;
+		
+		if (saveDelays[identifier]){
+			window.clearTimeout(saveDelays[identifier]);
+			delete(saveDelays[identifier]);
+		}
+		
+		
+		var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
+		
+		if (forced) {
+			Modules.SocketClient.serverCall('setAttribute',data);
+		} else {
+			saveDelays[identifier]=window.setTimeout(function(){
+				Modules.SocketClient.serverCall('setAttribute',data);
+			},1000);
+		}
+		
 	}
 	
 	if (object.ObjectManager.attributeChanged) object.ObjectManager.attributeChanged(object,attribute,this.getAttribute(object, attribute),true);
@@ -243,7 +205,20 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 /**
 *	get an attribute of a specified object
 */
-AttributeManager.getAttribute=function(object,attribute){
+AttributeManager.getAttribute=function(object,attribute,noevaluation){
+	
+	if (object.ObjectManager.isServer && !noevaluation){	
+		
+		//if Attribute is of x,y,w,h call object.getPosition
+		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+			
+			var positionData=object.getPosition();
+			
+			return positionData[attribute];
+			
+		}
+		
+	}
 	
 	//on unregistred attributes directly return their value
 	if (this.attributes[attribute]==undefined){
@@ -255,6 +230,21 @@ AttributeManager.getAttribute=function(object,attribute){
 	// call the getter function
 	
 	return getter(object);
+}
+
+/**
+*	get a full attribute set of an object
+*	with getter functions and evaluations
+*/
+AttributeManager.getAttributeSet=function(object){
+	
+	var result={};
+	
+	for (var key in object.data){
+		result[key]=AttributeManager.getAttribute(object,key);
+	}
+	
+	return result;
 }
 
 
