@@ -224,10 +224,12 @@ theObject.duplicate=function(socket,responseID) {
 	
 }
 
-theObject.evaluatePosition=function(key,value){
+theObject.evaluatePosition=function(key,value,oldvalue){
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};
+		this.runtimeData.evaluatePositionData.old={};
+		this.runtimeData.evaluatePositionData.new={};
 	}
 	
 	if (this.runtimeData.evaluatePositionData.delay) {
@@ -235,7 +237,8 @@ theObject.evaluatePosition=function(key,value){
 		this.runtimeData.evaluatePositionData.delay=false;
 	}
 	
-	this.runtimeData.evaluatePositionData[key]=value;
+	this.runtimeData.evaluatePositionData['new'][key]=value;
+	this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
 	
 	var posData=this.runtimeData.evaluatePositionData;
 	var self=this;
@@ -243,31 +246,28 @@ theObject.evaluatePosition=function(key,value){
 	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
 		
 		var data={};
-		data.x=posData.x;
-		data.y=posData.y;
-		data.width=posData.width;
-		data.height=posData.height;
+		data.old=posData.old;
+		data.new=posData.new;
 		
 		self.evaluatePositionInt(data);
-		self.runtimeData.evaluatePositionData={};
+		self.runtimeData.evaluatePositionData=undefined;
 	},300);
 	
 }
 
 theObject.evaluatePositionInt=function(data){
-	//console.log('evaluating',data);
 	
-	//check room for EvaluationObjects
-	//evaluate positions against them
+	var room=this.getRoom();
+	
+	if (!room) return;
+	
+	room.evaluatePositionFor(this,data);
 	
 	//if this is an evaluationobject
 	//recalculate positions of nonevaluation objects
 }
 
 theObject.getPosition=function(){
-	
-	//check room for EvaluationObjects
-	//check poisitions according to them
 	
 	var room=this.getRoom();
 	

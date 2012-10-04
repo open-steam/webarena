@@ -149,7 +149,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	if (object.ObjectManager.isServer && !noevaluation){	
 		
 		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-			object.evaluatePosition(attribute,value);
+			object.evaluatePosition(attribute,value,object.data[attribute]);
 		}
 	}	
 	
