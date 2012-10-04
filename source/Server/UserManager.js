@@ -5,6 +5,12 @@
 *
 */
 
+/**
+*	the UserManager holds connection information. For every connection, it saves
+*	information about who is logged in, which rooms he is subscribed to
+*	and the socket. Actual socket connections are handled by SocketServer
+**/
+
 "use strict";
 
 var Modules=false;
@@ -13,16 +19,31 @@ var UserManager={};
 
 UserManager.connections={};
 
-
+/**
+*	socketConnect
+*
+*	in case of a new connection, a new entry is created.
+**/
 UserManager.socketConnect=function(socket){
 	this.connections[socket.id]=({'socket':socket,'user':false,'roomIDs':[],'rooms':{}});
 }
 
+/**
+*	socketDisconnect
+*
+*	delete all connection data, when a socket disconnects.
+*
+**/
 UserManager.socketDisconnect=function(socket){
 	delete(this.connections[socket.id]);
 }
 
 
+/**
+*	login
+*
+*	when a user tries to log in, his credentials are tested and added to the connection
+**/
 UserManager.login=function(socketOrUser,data){
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser; 
 	
