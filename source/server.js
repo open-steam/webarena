@@ -47,7 +47,7 @@ var  Modules={
 	'Config':config,
 	ObjectManager:require('./Server/ObjectManager.js'),
 	Dispatcher:require('./Server/Dispatcher.js'),
-	WebServer:require('./Server/Webserver.js'),
+	WebServer:require('./Server/WebServer.js'),
 	SocketServer:require('./Server/SocketServer.js'),
 	UserManager:require('./Server/UserManager.js'),
 	Helper:require('./Server/Helper.js'),
