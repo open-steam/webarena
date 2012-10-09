@@ -43,11 +43,6 @@ Discussion.draw=function(){
     $(rep).find("body").css("color", this.getAttribute('font-color'));	
     $(rep).attr("layer", this.getAttribute('layer'));
 
-    console.log('new');
-	console.log(this.getAttribute('discussionText'));
-    console.log('old');
-    console.log(this.oldContent);
-
     var title = this.getAttribute('discussionTitle') || "TITLE";
     $(rep).find(".discussion-heading").html(title);
 
@@ -93,7 +88,7 @@ Discussion.createRepresentation = function() {
     // content
     var body = document.createElement("body");
     $(body).append(
-        $('<div class="discussion"><h1 class="discussion-heading"></h1><div class="discussion-text"></div><input class="discussion-input"></div>')
+        $('<div class="discussion"><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
     );
 
 
@@ -115,9 +110,7 @@ Discussion.createRepresentation = function() {
             message.text = value;
 
             that.content.push(message);
-            console.log(that.content);
 
-            //$(this).parent().find('.discussion').append(that.renderMessage(message));
             $(this).val('');
 
             that.setAttribute("discussionText", that.content);
@@ -131,19 +124,6 @@ Discussion.createRepresentation = function() {
     
     // add content to wrapper
     $(rep).append(body);
-
-    /*var that=this;
-    this.fetchContentString(function(text){
-
-        if(text!=that.oldContent){
-            text = text.replace(/[\r\n]+/g, "<br />");
-            $(rep).find(".discussion").html(text);
-        }
-
-        that.oldContent=text;
-        console.log('test123');
-
-    });*/
 
     // push to gui
     $(rep).attr("id", this.getAttribute('id'));
