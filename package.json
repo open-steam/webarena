@@ -5,6 +5,7 @@
         "socket.io": "*",
         "formidable": "*",
         "imagemagick": "*",
-        "underscore": "*"
+        "underscore": "*",
+        "sharepoint" : "*"
     }
 }
