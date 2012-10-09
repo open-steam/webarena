@@ -5,61 +5,26 @@
 *
 */
 
-EasyDBImage.renderResultPage = function(data, target){
-    var renderedResults = this.renderResultTable(data);
 
-    if($('.paginator').length !== 0){
-        $(target + " .easydb-result-wrapper").replaceWith(renderedResults );
 
-    } else {
-        var renderedPaginator = this.renderPagination(data);
-        $(target).html(renderedPaginator);
-        $(target).append(renderedResults );
-        $('.paginator-button').first().addClass('current');
+EasyDBImage.createRepresentation=function() {
+
+    var rep = GUI.svg.image(10, 10, 10, 10, this.getAttribute('remote_url'));
+    rep.dataObject=this;
+    $(rep).attr("id", this.getAttribute('id'));
+    this.initGUI(rep);
+
+    return rep;
+
+}
+
+EasyDBImage.draw = function(){
+    var rep=this.getRepresentation();
+
+    if($(rep).attr("href")!== this.getAttribute('remote_url')){
+        $(rep).attr("href", this.getAttribute('remote_url'));
     }
-}
-
-EasyDBImage.renderResultTable = function(data){
-    var dialogPage2 = '';
-    dialogPage2 += ""+
-        "<div class='easydb-result-wrapper'>"+
-            "<table>";
-            $.each(data, function(index, imageInformation){
-            dialogPage2 += ""+
-            "<tr class='result-row' onclick='EasyDBImage.selectRow(event)' easydbdownloadurl='" + imageInformation.originalUrl +"'>" +
-                "<td>" +
-                    "<img class='result-row-image' src='" + imageInformation.url + "'>" +
-                "</td>" +
-                "<td>" +
-                    "<table>" +
-                    "<tr>" +
-                        "<th>Titel" +
-                        "</th>" +
-                        "<td>" + imageInformation.titel +
-                        "</td>" +
-                    "</tr>" +
-                    "<tr>" +
-                        "<th>Künstler" +
-                        "</th>" +
-                        "<td>" + imageInformation.kuenstler +
-                        "</td>" +
-                    "</tr>" +
-                    "</table>" +
-                "</td>" +
-            "</tr>" ;
-    });
-    dialogPage2 += "</table></div>";
-
-
-
-    return (dialogPage2);
-}
-
-EasyDBImage.selectRow = function(event){
-    $('.selected-row').removeClass('selected-row');
-
-    var selRow = $(event.target).closest('.result-row');
-    $(selRow).addClass('selected-row');
+    GeneralObject.draw.call(this);
 }
 
 EasyDBImage.renderPagination = function(data){
@@ -100,7 +65,7 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
 
 
     $(button).on('click', function(){
-        console.log('click2');
+        that.renderLoadScreen(".ui-dialog-content");
         Modules.Dispatcher.query('search', data ,function(searchResults){
             that.renderResultPage(searchResults, ".ui-dialog-content");
         });
@@ -116,24 +81,79 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
 
 }
 
-EasyDBImage.createRepresentation=function() {
+EasyDBImage.renderLoadScreen  = function(target){
+    var dialogPage2 = $('' +
+        '<div>' +
+        '<h2> Suchergebnisse werden geladen. </h2>' +
+        '<img src="objects/EasyDBImage/progress.gif">' +
+        '</div>'
+    );
+    if($('.paginator').length !== 0){
+        $(".easydb-result-wrapper").html(dialogPage2 );
 
-    var rep = GUI.svg.image(10, 10, 10, 10, this.getAttribute('remote_url'));
-    rep.dataObject=this;
-    $(rep).attr("id", this.getAttribute('id'));
-    this.initGUI(rep);
+    } else {
+        return dialogPage2;
 
-    return rep;
+    }
 
 }
 
-EasyDBImage.draw = function(){
-    var rep=this.getRepresentation();
 
-    if($(rep).attr("href")!== this.getAttribute('remote_url')){
-        $(rep).attr("href", this.getAttribute('remote_url'));
+EasyDBImage.renderResultPage = function(data, target){
+    var renderedResults = this.renderResultTable(data);
+
+    if($('.paginator').length !== 0){
+        $(target + " .easydb-result-wrapper").replaceWith(renderedResults );
+
+    } else {
+        var renderedPaginator = this.renderPagination(data);
+        $(target).html(renderedPaginator);
+        $(target).append(renderedResults );
+        $('.paginator-button').first().addClass('current');
     }
-    GeneralObject.draw.call(this);
+}
+
+EasyDBImage.renderResultTable = function(data){
+    var dialogPage2 = '';
+    dialogPage2 += ""+
+        "<div class='easydb-result-wrapper'>"+
+        "<table>";
+    $.each(data, function(index, imageInformation){
+        dialogPage2 += ""+
+            "<tr class='result-row' onclick='EasyDBImage.selectRow(event)' easydbdownloadurl='" + imageInformation.originalUrl +"'>" +
+            "<td>" +
+            "<img class='result-row-image' src='" + imageInformation.url + "'>" +
+            "</td>" +
+            "<td>" +
+            "<table>" +
+            "<tr>" +
+            "<th>Titel" +
+            "</th>" +
+            "<td>" + imageInformation.titel +
+            "</td>" +
+            "</tr>" +
+            "<tr>" +
+            "<th>Künstler" +
+            "</th>" +
+            "<td>" + imageInformation.kuenstler +
+            "</td>" +
+            "</tr>" +
+            "</table>" +
+            "</td>" +
+            "</tr>" ;
+    });
+    dialogPage2 += "</table></div>";
+
+
+
+    return (dialogPage2);
+}
+
+EasyDBImage.selectRow = function(event){
+    $('.selected-row').removeClass('selected-row');
+
+    var selRow = $(event.target).closest('.result-row');
+    $(selRow).addClass('selected-row');
 }
 
 

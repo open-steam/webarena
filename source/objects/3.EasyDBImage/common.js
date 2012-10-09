@@ -27,26 +27,32 @@ EasyDBImage.execute=function(){
                 searchString: searchTerm
             }
 
-            var dialogPage2 = $('<div>' +
-                '<h2> Suchergebnisse werden geladen. </h2>' +
-                '<img src="objects/EasyDBImage/progress.gif">' +
-            '</div>');
+            var dialogPage2 = $('' +
+                '<div>' +
+                    '<h2> Suchergebnisse werden geladen. </h2>' +
+                    '<img src="objects/EasyDBImage/progress.gif">' +
+                '</div>'
+            );
 
-            GUI.dialog('Select Image', $(dialogPage2), {
+            GUI.dialog('Select Image', that.renderLoadScreen('.ui-dialog-content'), {
                 "OK" : function(){
                     //TODO: check if image selected
                     var pictureUrl = $('.selected-row').attr('easydbdownloadurl');
-
                     that.setAttribute('remote_url', pictureUrl);
 
                 },
                 "Cancel": function(){return false;}
+
+            }, undefined, {
+                create : function(){
+                    Modules.Dispatcher.query('search', data ,function(searchResults){
+                        that.searchTerm = searchTerm;
+                        that.renderResultPage(searchResults, ".ui-dialog-content");
+                    });
+                }
             });
 
-            Modules.Dispatcher.query('search', data ,function(searchResults){
-                that.searchTerm = searchTerm;
-                that.renderResultPage(searchResults, ".ui-dialog-content");
-            });
+
         },
 
         "Cancel": function () {

@@ -57,6 +57,7 @@
 
 	<script type="text/javascript" src="../../guis.common/libraries/jquery/jquery.js"></script>
 	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+    <script type="text/javascript" src="../../guis.common/libraries/jsTree/jquery.jstree.js"></script>
 
 	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.animate-enhanced.min.js"></script>
 
@@ -369,7 +370,7 @@
 		 * 				}
 		 * 			}
 		 */
-		GUI.dialog = function(heading, content, buttons, dialogWidth) {
+		GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
 			
 			GUI.blockKeyEvents = true;
 			
@@ -401,18 +402,25 @@
 			if (dialogWidth == undefined) {
 				dialogWidth = "auto";
 			}
+
+            var dialogOptions = {
+                modal: true,
+                resizable: false,
+                buttons: buttons2,
+                zIndex: 100000,
+                width : dialogWidth,
+                close: function() {
+                    $(this).remove();
+                    GUI.blockKeyEvents = false;
+                }
+            }
+
+            if(typeof passThrough === "object"){
+                $.extend(dialogOptions, passThrough)
+            }
+
 			
-			$(dialogContent).dialog({
-				modal: true,
-				resizable: false,
-				buttons: buttons2,
-				zIndex: 100000,
-				width : dialogWidth,
-				close: function() {
-					$(this).remove();
-					GUI.blockKeyEvents = false;
-				}
-			});
+			$(dialogContent).dialog(dialogOptions);
 			
 			
 		};

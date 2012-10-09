@@ -18,17 +18,18 @@ Discussion.register=function(type){
 	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
 	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,unit:'px',category:'Appearance'});
 	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance'});
-	
+
+    /*
 	this.registerAction('Edit',function(){
 		$.each(ObjectManager.getSelected(), function(key, object) {
 			object.execute();
 		});
-	}, true);
+	}, true);*/
 }
 
 Discussion.execute=function(){
 	
-	this.editText();
+	//this.editText();
 	
 }
 

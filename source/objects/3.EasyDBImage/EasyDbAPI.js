@@ -7,6 +7,9 @@ var EasyDbAPI = {};
 
 EasyDbAPI.apiUrl = Modules.config.easydb.apiUrl; //"easydb.uni-paderborn.de";
 EasyDbAPI.apiPath = Modules.config.easydb.apiPath; //"/easy/fs.php?";
+
+//Not used yet
+//TODO: should be used to check if apicall method exists/**/
 EasyDbAPI.methods = {
     object_search : ['table_name',
         'search',
