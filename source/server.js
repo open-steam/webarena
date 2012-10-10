@@ -15,11 +15,12 @@ console.log('#######################################');
 
 //General error handling
 
-/*
+
 process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
+  //console.log('Caught exception: ' + err);
+	Modules.Log.error(err);
 });
-*/
+
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
 
 var config=require('./Server/config.default.js');
@@ -46,7 +47,7 @@ var  Modules={
 	'Config':config,
 	ObjectManager:require('./Server/ObjectManager.js'),
 	Dispatcher:require('./Server/Dispatcher.js'),
-	WebServer:require('./Server/Webserver.js'),
+	WebServer:require('./Server/WebServer.js'),
 	SocketServer:require('./Server/SocketServer.js'),
 	UserManager:require('./Server/UserManager.js'),
 	Helper:require('./Server/Helper.js'),
@@ -75,3 +76,8 @@ for (var name in Modules){
 	}
 }
 
+//create temp. directory
+var fs = require('fs');
+if (!fs.existsSync("./Server/tmp")) {
+	fs.mkdirSync("./Server/tmp", 0777);
+}

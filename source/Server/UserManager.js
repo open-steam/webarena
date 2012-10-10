@@ -5,6 +5,12 @@
 *
 */
 
+/**
+*	the UserManager holds connection information. For every connection, it saves
+*	information about who is logged in, which rooms he is subscribed to
+*	and the socket. Actual socket connections are handled by SocketServer
+**/
+
 "use strict";
 
 var Modules=false;
@@ -13,17 +19,31 @@ var UserManager={};
 
 UserManager.connections={};
 
-
-
+/**
+*	socketConnect
+*
+*	in case of a new connection, a new entry is created.
+**/
 UserManager.socketConnect=function(socket){
-	this.connections[socket.id]=({'socket':socket,'user':false,'rooms':[]});
+	this.connections[socket.id]=({'socket':socket,'user':false,'roomIDs':[],'rooms':{}});
 }
 
+/**
+*	socketDisconnect
+*
+*	delete all connection data, when a socket disconnects.
+*
+**/
 UserManager.socketDisconnect=function(socket){
 	delete(this.connections[socket.id]);
 }
 
 
+/**
+*	login
+*
+*	when a user tries to log in, his credentials are tested and added to the connection
+**/
 UserManager.login=function(socketOrUser,data){
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser; 
 	
@@ -48,9 +68,12 @@ UserManager.login=function(socketOrUser,data){
 		if (data) {
 		
 			connection.user.home=data.home;
-			connection.user.hash='###'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
+			connection.user.hash='___'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
 		
-			socketServer.sendToSocket(socket,'loggedIn',connection.user);
+			socketServer.sendToSocket(socket,'loggedIn',{
+				username: connection.user,
+				userhash: connection.user.hash
+			});
 			
 		} else {
 			socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
@@ -77,22 +100,26 @@ UserManager.subscribe=function(socketOrUser,room){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	var user=connection.user;
-	var rooms=connection.rooms;
+	var roomIDs=connection.roomIDs;
 	var roomID = room;
 	
 	connector.maySubscribe(room,connection, function(maySub) {
 
 		if (maySub) {
 			
-			if (!isInArray(rooms,roomID)){
-				rooms.push(roomID);
+			if (!isInArray(roomIDs,roomID)){
+				roomIDs.push(roomID);
 			}
-			connection.rooms=rooms;
-			socketServer.sendToSocket(socket,'subscribed',rooms);
-			for (var i in rooms){
-				var room=rooms[i];
-				ObjectManager.sendRoom(socket,room);
-			}
+			connection.roomIDs=roomIDs;
+			
+			ObjectManager.getRoom(roomID,connection,function(room){
+				socketServer.sendToSocket(socket,'subscribed',roomIDs);
+				connection.rooms[roomID]=room;
+				for (var i in roomIDs){
+					var room=roomIDs[i];
+					ObjectManager.sendRoom(socket,room);
+				}
+			})
 
 		} else {
 			socketServer.sendToSocket(socket,'error', 'User '+userID+' may not subscribe to '+roomID);
@@ -116,16 +143,18 @@ UserManager.unsubscribe=function(socketOrUser,room){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	var user=connection.user;
-	var rooms=connection.rooms;
+	var roomIDs=connection.roomIDs;
 	
 	var temp=[];
-	for (var i=0;i<rooms.length;i++){
-		if (rooms[i]!==room) {
-			temp.push(rooms[i]);
+	for (var i=0;i<roomIDs.length;i++){
+		if (roomIDs[i]!==room) {
+			temp.push(roomIDs[i]);
+		} else {
+			delete(connection.rooms[roomID]);
 		}
 	}
 
-	connection.rooms=temp;
+	connection.roomIDs=temp;
 	socketServer.sendToSocket(socket,'subscribed',temp);
 		
 	
@@ -143,9 +172,9 @@ UserManager.getConnectionsForRoom=function(roomID){
 	var result={};
 	for (var connectionID in this.connections){
 		var connection=this.connections[connectionID];
-		var rooms=connection.rooms;
-		for (var i in rooms){
-			var compare=rooms[i];
+		var roomIDs=connection.roomIDs;
+		for (var i in roomIDs){
+			var compare=roomIDs[i];
 			if (roomID===compare) result[connectionID]=connection;
 		}
 	}
@@ -164,6 +193,14 @@ UserManager.getConnectionBySocketID=function(socketID){
 	for (var i in this.connections){
 		var connection=this.connections[i];
 		if (connection.socket.id==socketID) return connection;
+	}
+	return false;
+}
+
+UserManager.getConnectionByUserHash=function(userHash){
+	for (var i in this.connections){
+		var connection=this.connections[i];
+		if (connection.user.hash==userHash) return connection;
 	}
 	return false;
 }

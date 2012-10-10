@@ -143,11 +143,11 @@ GeneralObject.refresh = function() {
 
 
 GeneralObject.getPreviewContentURL = function() {
-	return "/getPreviewContent/"+this.getRoomID()+"/"+this.data.id+"/"+Math.round(new Date().getTime() / 1000);
+	return "/getPreviewContent/"+this.getRoomID()+"/"+this.data.id+"/"+Math.round(new Date().getTime() / 1000)+"/"+ObjectManager.userHash;
 }
 
 GeneralObject.getContentURL = function() {
-	return "/getContent/"+this.getRoomID()+"/"+this.data.id+"/"+Math.round(new Date().getTime() / 1000);
+	return "/getContent/"+this.getRoomID()+"/"+this.data.id+"/"+Math.round(new Date().getTime() / 1000)+"/"+ObjectManager.userHash;
 }
 
 GeneralObject.create = function() {
@@ -193,5 +193,5 @@ GeneralObject.duplicate=function() {
 }
 
 GeneralObject.getRoom=function(){
-	return Modules.ObjectManager.getCurrentRoom();
+	return Modules.ObjectManager.getCurrentRoom(); //TODO this only works for single rooms
 }

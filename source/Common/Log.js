@@ -17,11 +17,11 @@ Log.colors = {
 	"error" : '\u001b[31m',
 	"warn" 	: '\u001b[33m',
 	"debug" : '\u001b[34m',
-	"reset" : '\u001b[0m'
+	"reset" : '\u001b[0m',
 }
 
-Log.classNameLength = 16;
-Log.functionNameLength = 20;
+Log.linebreak = '\n'; //TODO
+
 
 Log.init=function(theModules){
 	Modules=theModules;
@@ -32,42 +32,55 @@ Log.getTime=function() {
 	return date.toLocaleString();
 }
 
-Log.formatString=function(str,len) {
-	if (str.length >= len) return str.slice(0,len);
-	for (var i = str.length; i < len; i++) {
-		str = str+" ";
+Log.getLogString=function(message,color) {
+	return color+""+Log.getTime()+"   "+message+""+Log.colors.reset+"\n";
+}
+
+Log.info=function(message) {
+	
+	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
+	
+	var on = "\n"+lines[2].replace(/\n/g, '');
+	
+	console.log(Log.getLogString(message+on,Log.colors.info));
+	
+}
+
+Log.error=function(message) {
+
+	if (message.stack === undefined) {
+		//Log.error was directly called --> create real error (to get stack)
+		throw new Error(message);
 	}
-	return str;
+
+	var msg = message.stack;
+	
+	//var lines = msg.match(/^.*((\r\n|\n|\r)|$)/gm);
+	//lines.splice(1,1);
+	//msg = lines.join("");
+
+	console.error(Log.getLogString(msg,Log.colors.error));
+
 }
 
-Log.formatClassName=function(str) {
-	return Log.formatString(str, Log.classNameLength);
+Log.warn=function(message) {
+	
+	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
+	
+	var on = "\n"+lines[2].replace(/\n/g, '');
+	
+	console.log(Log.getLogString(message+on,Log.colors.warn));
+	
 }
 
-Log.formatFunctionName=function(str) {
-	return Log.formatString(str, Log.functionNameLength);
-}
-
-
-Log.getLogString=function(className,functionName,message,color) {
-	return color+""+Log.getTime()+"   "+Log.formatClassName(className)+"   "+Log.formatFunctionName(functionName)+"   "+message+""+Log.colors.reset;
-}
-
-Log.info=function(className, functionName, message) {
-	console.log(Log.getLogString(className,functionName,message,Log.colors.info));
-}
-
-Log.error=function(className, functionName, message) {
-	console.error(Log.getLogString(className,functionName,message,Log.colors.error));
-	throw new Error();
-}
-
-Log.warn=function(className, functionName, message) {
-	console.log(Log.getLogString(className,functionName,message,Log.colors.warn));
-}
-
-Log.debug=function(className, functionName, message) {
-	console.log(Log.getLogString(className,functionName,message,Log.colors.debug));
+Log.debug=function(message) {
+	
+	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
+	
+	var on = "\n"+lines[2].replace(/\n/g, '');
+	
+	console.log(Log.getLogString(message+on,Log.colors.debug));
+	
 }
 
 Log.getUserFromContext=function(context) {

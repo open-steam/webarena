@@ -5,7 +5,7 @@
 *
 */
 	
-Set.draw=function(){
+MereologyElement.draw=function(){
 
 	var rep=this.getRepresentation();
 	
@@ -20,7 +20,7 @@ Set.draw=function(){
 
 }
 
-Set.getRepresentation=function(){
+MereologyElement.getRepresentation=function(){
 
 	var rep=document.getElementById(this.getAttribute('id'));
 
@@ -32,7 +32,7 @@ Set.getRepresentation=function(){
 	return rep;
 }
 
-Set.createRepresentation = function() {
+MereologyElement.createRepresentation = function() {
 
 	var rep = GUI.svg.rect(
 		10, //x

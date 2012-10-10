@@ -15,12 +15,18 @@ function KoalaConnection(host, port, username, password) {
 	this.username = username;
 	this.password = password;
 	
+	this.requestCounter = 0;
+	
 	var self = this;
 	
 	
 	this.request = function(command, functionName, parameters, callback, returnRaw, contentName, content) {
 
-		require('../Common/Log.js').info("KoalaAPI", "-request", '/Rest/'+command+'/'+functionName+'/'+parameters.join('/'));
+		self.requestCounter = self.requestCounter+1;
+
+		var reqC = parseInt(self.requestCounter);
+
+		require('../Common/Log.js').debug('request ('+reqC+'): /Rest/'+command+'/'+functionName+'/'+parameters.join('/'));
 
 		var options = {
 		  host: self.host,
@@ -46,7 +52,6 @@ function KoalaConnection(host, port, username, password) {
 			/* encode content (base64) */
 			post_data[contentName] = post_data[contentName].toString('base64');
 			
-			
 			post_data = querystring.stringify(post_data);
 			
 			options.headers = {  
@@ -63,7 +68,11 @@ function KoalaConnection(host, port, username, password) {
 		
 		var req = http.request(options, function(res) {
 
-			res.setEncoding('utf8');				
+			if (returnRaw == undefined || returnRaw == false) {
+				res.setEncoding('utf8');
+			} else {
+				//res.setEncoding('binary');
+			}
 			
 			res.on('data', function (chunk) {
 				response.push(chunk);
@@ -73,7 +82,21 @@ function KoalaConnection(host, port, username, password) {
 				if (returnRaw == undefined || returnRaw == false) {
 					callback(JSON.parse(response.join('')));
 				} else {
-					callback(response.join(''));
+					
+					var byteArray = [];
+					
+					for (var i = 0; i < response.length; i++) {
+						
+						for (var j = 0; j < response[i].length; j++) {
+							
+							byteArray.push(response[i].readUInt8(j));
+							
+						}
+						
+					}
+
+					callback(byteArray);
+					
 				}
 			});
 			
@@ -81,44 +104,9 @@ function KoalaConnection(host, port, username, password) {
 		
 
 		if (contentName && content) {
-			console.log("POST: ", contentName);
-			console.log("CON: ", content);
 			req.write(post_data);
 		}
 
-		req.end();
-		
-	}
-	
-	
-	this.stream = function(command, functionName, parameters, webserverResponse) {
-		
-		require('../Common/Log.js').info("KoalaAPI", "-stream", '/Rest/'+command+'/'+functionName+'/'+parameters.join('/'));
-
-		var options = {
-		  host: self.host,
-		  port: self.port,
-		  auth: self.username+":"+self.password,
-		  path: '/Rest/'+command+'/'+functionName+'/'+parameters.join('/'),
-		  method: 'POST'
-		};
-		
-		var http = require('http');
-		
-		var req = http.request(options, function(res) {
-
-			//res.setEncoding('utf8');				
-			
-			res.on('data', function (chunk) {
-				webserverResponse.write(chunk);
-			});
-			
-			res.on('end', function() {
-				webserverResponse.end();
-			});
-			
-		});
-		
 		req.end();
 		
 	}
@@ -220,13 +208,9 @@ function KoalaConnection(host, port, username, password) {
 	this.Document.getContent = function(id, callback) {
 		self.request("Document", "getContent", [id], callback, true);
 	}
-	
-	this.Document.streamContent = function(id, webserverResponse) {
-		self.stream("Document", "getContent", [id], webserverResponse);
-	}
 
 	this.Document.setContent = function(id, content, callback) {
-		self.request("Document", "setContent", [id], callback, false, "content", content);
+		self.request("Document", "setContent", [id], callback, true, "content", content);
 	}
 	
 	this.Document.create = function(name, destId, callback) {

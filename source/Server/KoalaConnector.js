@@ -42,11 +42,11 @@ koalaConnector.connections = {};
 
 koalaConnector.initConnection = function(username, password, callback) {
 	
-	if (koalaConnector.connections[username] == undefined) {
+	//if (koalaConnector.connections[username] == undefined) {
 		
 		var koalaConnection = require('./KoalaAPI.js').KoalaConnection;
-		
-		var connection = new koalaConnection("www.bid-owl.de.localhost", 80, username, password);
+
+		var connection = new koalaConnection(global.config.koalaServer, global.config.koalaPort, username, password);
 	
 		connection.checkLogin(function(loggedIn) {
 		
@@ -59,9 +59,9 @@ koalaConnector.initConnection = function(username, password, callback) {
 			
 		});
 	
-	} else {
-		callback(true);
-	}
+	//} else {
+	//	callback(true);
+	//}
 	
 }
 
@@ -90,8 +90,8 @@ koalaConnector.convertAttributeList = {
 	"DOC_MIME_TYPE" : "mimeType",
 	"GRAPHIC_LINESIZE" : "linesize",
 	"GRAPHIC_LINECOLOR" : "linecolor",
-	"GRAPHIC_FILLCOLOR" : "fillcolor"
-	
+	"GRAPHIC_FILLCOLOR" : "fillcolor",
+	"PAINT_TYPE" : "paintType"
 };
 
 koalaConnector.getAttributeNameForWebarena = function(name) {
@@ -122,12 +122,14 @@ koalaConnector.getAttributeNameForKoala = function(name) {
 
 
 koalaConnector.getWebarenaType = function(type, koalaObject) {
-	
+
 	if (type == "DOCUMENT" && koalaObject.attributes.DOC_MIME_TYPE == "text/plain") {
 		return "Textarea";
-	} else if (type == "DOCUMENT" && koalaObject.attributes.DOC_MIME_TYPE == "image/jpeg") {
-		return "File";
-	} else if (type == "DOCUMENT" && (koalaObject.attributes.DOC_MIME_TYPE == "application/octet-stream" || koalaObject.attributes.DOC_MIME_TYPE == "application/x-unknown-content-type")) {
+	} else if (type == "DOCUMENT" && koalaObject.attributes.PAINT_TYPE == "Paint") {
+		return "Paint";
+	} else if (type == "DOCUMENT" && koalaObject.attributes.PAINT_TYPE == "Highlighter") {
+		return "Highlighter";
+	} else if (type == "DOCUMENT") {
 		return "File";
 	} else if (type == "DRAWING") {
 	
@@ -286,7 +288,7 @@ koalaConnector.login=function(username,password,rp){
 
 			data.username=username;
 			data.password=password;
-			data.home='1645'; //TODO: replace with non static value
+			data.home='7655'; //TODO: replace with non static value
 
 			rp(data);
 			
@@ -382,7 +384,6 @@ koalaConnector.withInventory=function(roomID,context,callback){
 		var CallbackCollector = require("./CallbackCollector.js");
 		var collector = new CallbackCollector(inv.length, function() {
 			/* getObjectById for all objects in inventory finished */
-			//console.log("DONE!", inventoryObjects);
 			callback(inventoryObjects);
 		});
 
@@ -392,15 +393,19 @@ koalaConnector.withInventory=function(roomID,context,callback){
 			connection.Object.getObjectById(objectId, function(koalaObj) {
 			
 				var id = koalaObj.id;
-			
-				koalaConnector.buildWebareaObject(id, roomID, koalaObj.object.objects[id].attributes, koalaObj.type, koalaObj.object.objects[id], context, function(obj) {
-			
-					inventoryObjects.push({
-						"attributes" : obj,
-						"content" : koalaObj.object.objects[id].content
-					});
+				
+				connection.Document.getContent(id, function(content) {
+					
+					koalaConnector.buildWebareaObject(id, roomID, koalaObj.object.objects[id].attributes, koalaObj.type, koalaObj.object.objects[id], context, function(obj) {
 
-					collector.call();
+						inventoryObjects.push({
+							"attributes" : obj,
+							"content" : content
+						});
+
+						collector.call();
+
+					});
 					
 				});
 			
@@ -459,14 +464,14 @@ koalaConnector.withRoomData=function(roomID,context,callback){
 *
 */
 koalaConnector.saveObjectData=function(roomID,objectID,data,after,context){
-	
+
 	if (!context) throw new Error('Missing context in koalaConnector.saveObjectData');
 	if (!data) throw new Error('Missing data in koalaConnector.saveObjectData');
 	
 	/* data FORMAT:
 		
 		{ 
-			name: 'Ellipse',
+			name: 'Dolle Ellipse',
 	  		...
 		}
 	
@@ -511,9 +516,31 @@ koalaConnector.saveContent=function(roomID,objectID,content,after,context){
 	if (!context) throw new Error('Missing context in koalaConnector.saveContent');
 	
 	var connection = koalaConnector.getConnection(context);
-	
-	connection.Document.setContent(objectID, content, function() {
+
+	content = new Buffer(content);
+
+	connection.Document.setContent(objectID, content, function(resp) {
 		if (after) after(objectID);
+	});
+	
+}
+
+
+
+/**
+*	getContent
+*
+*	get an object's content as a an array of bytes;
+*	
+*/
+koalaConnector.getContent=function(roomID,objectID,context,callback){
+
+	if (!context) throw new Error('Missing context in koalaConnector.getContent');
+	
+	var connection = koalaConnector.getConnection(context);
+
+	connection.Document.getContent(objectID, function(resp) {
+		callback(resp);
 	});
 	
 }
@@ -616,11 +643,31 @@ koalaConnector.createObject=function(roomID,type,data,callback,context){
 		return;
 	}
 	
-	if (type == "Rectangle" || type == "Ellipse" || type == "Polygon" || type == "Paint" || type == "Highlighter") {
+	if (type == "Rectangle" || type == "Ellipse" || type == "Polygon") {
 		
 		connection.Drawing.create("NEW", roomID, type, function(newKoalaObject) {
 			
 			//data.mimeType = 'application/octet-stream';
+			
+			setData(newKoalaObject, data);
+			
+		});
+		
+		return;
+	}
+	
+	if (type == "Paint" || type == "Highlighter") {
+		
+		connection.Document.create("NEW", roomID, function(newKoalaObject) {
+
+			if (type == "Paint") {
+				data.paintType = 'Paint';
+			} else {
+				data.paintType = 'Highlighter';
+			}
+
+			data.mimeType = 'image/png';
+			data.hasContent = false;
 			
 			setData(newKoalaObject, data);
 			
@@ -662,373 +709,17 @@ koalaConnector.duplicateObject=function(roomID,objectID,callback,context){
 }
 
 
-koalaConnector.trimImage=function(roomID, objectID, callback, context) {
-	
-	if (!context) throw new Error('Missing context in koalaConnector.trimImage');
-
-	throw new Error("TODO: not implemented");
-
-	var im = require('imagemagick');
-	
-	var filebase=Modules.Config.filebase;
-	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
-	
-	//output: test.png PNG 192x154 812x481+226+131 8-bit DirectClass 0.010u 0:00.000
-	im.convert([filename, '-trim', 'info:-'], function(err,out,err2) {
-		
-		if (!err) {
-
-			var results = out.split(" ");
-
-			var dimensions = results[2];
-			var dimensionsA = dimensions.split("x");
-			
-			var newWidth = dimensionsA[0];
-			var newHeight = dimensionsA[1];
-			
-			var d = results[3];
-			var dA = d.split("+");
-			
-			var dX = dA[1];
-			var dY = dA[2];
-
-			im.convert([filename, '-trim', filename], function(err,out,err2) {
-
-				if (!err) {
-
-					callback(dX, dY, newWidth, newHeight);
-
-				} else {
-					console.log("trimImage: error while trimming "+roomID+"/"+objectID);
-					callback(false);
-				}
-
-			});
-			
-		} else {
-			console.log("trimImage: error getting trim information of "+roomID+"/"+objectID);
-			callback(false);
-		}
-	
-	});
-	
-};
 
 
-koalaConnector.isInlineDisplayable=function(mimeType) {
-	
-	if (this.getInlinePreviewProviderName(mimeType) == false) {
-		return false;
-	} else {
-		return true;
-	}
-	
-}
-
-koalaConnector.getMimeType=function(roomID,objectID,context,callback) {
-	
-	if (!context) throw new Error('Missing context in koalaConnector.getMimeType');
-
-	var connection = koalaConnector.getConnection(context);
-	
-	connection.Object.getObjectById(objectID, function(koalaObj) {
-	
-		console.log("DETECTED MIME: ", koalaObj.object.objects[objectID].attributes.DOC_MIME_TYPE);
-	
-		callback(koalaObj.object.objects[objectID].attributes.DOC_MIME_TYPE);
-		
-	});
-	
-}
-
-//SYNC
-koalaConnector.getInlinePreviewProviderName=function(mimeType) {
-
-	if (!mimeType) return false;
-
-	if (this.getInlinePreviewProviders()[mimeType] != undefined) {
-		return this.getInlinePreviewProviders()[mimeType];
-	} else {
-		return false;
-	}
-	
-}
-
-//SYNC
-koalaConnector.getInlinePreviewMimeTypes=function() {
-	
-	var mimeTypes = this.getInlinePreviewProviders();
-	var list = {};
-	
-	for (var mimeType in mimeTypes){
-		list[mimeType] = true;
-	}
-	
-	return list;
-	
-}
-
-//SYNC
-koalaConnector.getInlinePreviewProviders=function() {
-	return {
-		//"application/pdf" : "pdf",
-		"image/jpeg" : "image",
-		"image/jpg" : "image",
-		"image/png" : "image",
-		"image/gif" : "image"
-	}
-}
-
-koalaConnector.getInlinePreviewDimensions=function(roomID, objectID, callback, mimeType, context) {
-	
-	if (!context) throw new Error('Missing context in koalaConnector.getInlinePreviewDimensions');
-	
-	function mimeTypeDetected(mimeType) {
-		
-		/* find provider for inline content: */
-		var generatorName = koalaConnector.getInlinePreviewProviderName(mimeType);
-
-		if (generatorName == false) {
-			console.log("getInlinePreviewDimensions: no generator name for mime type '"+mimeType+"' found!");
-			callback(false, false); //do not set width and height (just send update to clients)
-		} else {
-			koalaConnector.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, callback, context);
-		}
-		
-	}
-	
-	if (!mimeType) {
-		
-		koalaConnector.getMimeType(roomID,objectID,context,function(mimeType) {
-			mimeTypeDetected(mimeType);
-		});
-		
-	} else {
-		mimeTypeDetected(mimeType);
-	}
-	
-}
-
-koalaConnector.getInlinePreview=function(roomID, objectID, callback, mimeType, context) {
-	
-	if (!context) throw new Error('Missing context in koalaConnector.getInlinePreview');
-	
-	function mimeTypeDetected(mimeType) {
-		
-		if (!mimeType) {
-			callback(false);
-		} else {
-
-			/* find provider for inline content: */
-			var generatorName = koalaConnector.getInlinePreviewProviderName(mimeType);
-
-			if (generatorName == false) {
-				console.log("getInlinePreview: no generator name for mime type '"+mimeType+"' found!");
-				callback(false); //do not set width and height (just send update to clients)
-			} else {
-				koalaConnector.inlinePreviewProviders[generatorName].preview(roomID, objectID, callback, context);
-			}
-		
-		}
-		
-	}
-	
-	if (!mimeType) {
-		
-		koalaConnector.getMimeType(roomID,objectID,context,function(mimeType) {
-			mimeTypeDetected(mimeType);
-		});
-		
-	} else {
-		mimeTypeDetected(mimeType);
-	}
-	
-}
-
-koalaConnector.getInlinePreviewMimeType=function(roomID, objectID, context, callback) {
-	
-	if (!context) throw new Error('Missing context in koalaConnector.getInlinePreviewMimeType');
-	
-	koalaConnector.getMimeType(roomID,objectID,context,function(mimeType) {
-		
-		if (!mimeType) {
-			callback(false);
-		}
-
-		/* find provider for inline content: */
-		var generatorName = koalaConnector.getInlinePreviewProviderName(mimeType);
-
-		if (generatorName == false) {
-			console.log("getInlinePreviewMimeType: no generator name for mime type '"+mimeType+"' found!");
-			callback(false);
-		} else {
-			callback(koalaConnector.inlinePreviewProviders[generatorName].mimeType(roomID, objectID, mimeType, context));
-		}
-		
-	});
-	
-}
-
-koalaConnector.inlinePreviewProviders = {
-	
-	'image': {
-		'mimeType' : function(roomID, objectID, mimeType, context) {
-			
-			if (!context) throw new Error('Missing context in mimeType for image');
-			
-			return mimeType;
-		},
-		'dimensions' : function(roomID, objectID, callback, context) {
-			
-			if (!context) throw new Error('Missing context in dimensions for image');
 
 
-			var connection = koalaConnector.getConnection(context);
 
-			connection.Document.getDimensions(objectID, function(dimObj) {
 
-				if (!dimObj) {
-					callback(false, false);
-				} else {
 
-					var width = dimObj.width;
-					var height = dimObj.height;
 
-					if (width > Modules.config.imageUpload.maxDimensions) {
-						height = height*(Modules.config.imageUpload.maxDimensions/width);
-						width = Modules.config.imageUpload.maxDimensions;
-					}
 
-					if (height > Modules.config.imageUpload.maxDimensions) {
-						width = width*(Modules.config.imageUpload.maxDimensions/height);
-						height = Modules.config.imageUpload.maxDimensions;
-					}
 
-					callback(width, height);
 
-				}
-
-			});
-
-		},
-		'preview' : function(roomID, objectID, webserverResponse, context) {
-			
-			if (!context) throw new Error('Missing context in preview for image');
-			
-			var connection = koalaConnector.getConnection(context);
-
-			connection.Document.streamContent(objectID, webserverResponse);
-
-		}
-	},
-	
-	
-	'pdf_TODO': {
-		'mimeType' : function(roomID, objectID, mimeType, context) {
-			
-			if (!context) throw new Error('Missing context in mimeType for pdf');
-			
-			return 'image/jpeg';
-		},
-		'generatePreviewFile' : function(roomID, objectID, callback, context) {
-			
-			throw new Error("TODO!");
-			
-			if (!context) throw new Error('Missing context in generatePreviewFile for pdf');
-
-			var filebase=Modules.Config.filebase;
-
-			var filename = filebase+'/'+roomID+'/'+objectID+'.content';
-			var filenamePreview = filebase+'/'+roomID+'/'+objectID+'.preview';
-			
-
-			var im = require('imagemagick');
-			
-			im.convert(['-density', '200x200', 'pdf:'+filename+'[0]', '-quality', '100', 'jpg:'+filenamePreview], 
-			function(err, metadata){
-			  	if (err) {
-					console.log("error creating preview for pdf");
-					callback(false);
-				} else {
-
-					try {
-						var content = fs.readFileSync(filenamePreview);
-						callback(content);
-					} catch (e) {
-						callback(false);
-					}
-					
-				}
-			});
-	
-		},
-		'dimensions' : function(roomID, objectID, callback, context) {
-			
-			throw new Error("TODO!");
-			
-			if (!context) throw new Error('Missing context in dimensions for pdf');
-
-			var filebase=Modules.Config.filebase;
-
-			var filename=filebase+'/'+roomID+'/'+objectID+'.content';
-			
-
-			var im = require('imagemagick');
-
-			im.identify(filename, function(err, features) {
-
-				if (err) throw err;
-				
-				var width = features.width;
-				var height = features.height;
-
-				if (width > Modules.config.imageUpload.maxDimensions) {
-					height = height*(Modules.config.imageUpload.maxDimensions/width);
-					width = Modules.config.imageUpload.maxDimensions;
-				}
-
-				if (height > Modules.config.imageUpload.maxDimensions) {
-					width = width*(Modules.config.imageUpload.maxDimensions/height);
-					height = Modules.config.imageUpload.maxDimensions;
-				}
-
-				callback(width, height);
-			
-			});
-
-		},
-		'preview' : function(roomID, objectID, webserverResponse, context) {
-			
-			throw new Error("TODO!");
-			
-			if (!context) throw new Error('Missing context in preview for pdf');
-
-			var filebase=Modules.Config.filebase;
-
-			var filename=filebase+'/'+roomID+'/'+objectID+'.preview';
-
-			var path = require('path');
-
-			if (!path.existsSync(filename)) {
-				this.generatePreviewFile(roomID, objectID, function(data) {
-					/* preview file is generated */
-					callback(data);
-				});
-			} else {
-				/* preview file exists */
-				try {
-					var content = fs.readFileSync(filename);
-					callback(content);
-				} catch (e) {
-					callback(false);
-				}
-			}
-
-		}
-	}
-	
-}
 
 
 module.exports=koalaConnector;

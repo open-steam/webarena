@@ -22,6 +22,17 @@ var Modules=require('../../server.js');
 module.exports=theObject;
 
 /**
+*	getAttributeSet
+*
+*	all of the objects Attributes as key,value pairs.
+*	This may be different from actual object.data
+*	as evaluations may be involved
+*/
+theObject.getAttributeSet=function(){
+	return Modules.AttributeManager.getAttributeSet(this);
+}
+
+/**
 *	updateClient
 *
 *	send a message to a client (identified by its socket)
@@ -31,7 +42,7 @@ theObject.updateClient=function(socket,mode){
 	var object=this;
 	process.nextTick(function(){
 		var SocketServer=Modules.SocketServer;
-		SocketServer.sendToSocket(socket,mode, object.data);
+		SocketServer.sendToSocket(socket,mode, object.getAttributeSet());
 	});
 }
 
@@ -132,8 +143,8 @@ theObject.getContent=function(){
 *
 *	get the object's inline preview
 */
-theObject.getInlinePreview=function(webserverResponse,mimeType){
-	return Modules.Connector.getInlinePreview(this.inRoom, this.id, webserverResponse, mimeType,this.context);
+theObject.getInlinePreview=function(callback,mimeType){
+	return Modules.Connector.getInlinePreview(this.inRoom, this.id, callback, mimeType, this.context);
 }
 
 theObject.getInlinePreviewMimeType=function(callback) {
@@ -150,8 +161,6 @@ theObject.duplicate=function(socket,responseID) {
 	
 	var list = this.getObjectsToDuplicate();
 	
-	console.log("LIST", list);
-
 	var counter = 0;
 	var idTranslationList = {}; //list of object ids and their duplicated new ids
 	var newObjects = []; //list of new (duplicated) objects
@@ -165,8 +174,6 @@ theObject.duplicate=function(socket,responseID) {
 
 			var idList = [];
 			
-			console.log("new objects:", newObjects);
-
 			for (var i in newObjects) {
 				var object = newObjects[i];
 
@@ -199,8 +206,6 @@ theObject.duplicate=function(socket,responseID) {
 		Modules.Connector.duplicateObject(roomId,objectId,function(newId,oldId) {
 			var obj = Modules.ObjectManager.getObject(roomId, newId, self.context);
 
-			console.log("add to new list:", obj.data.id, "-", newId, oldId, obj);
-
 			newObjects.push(obj);
 			idTranslationList[oldId] = newId;
 
@@ -211,4 +216,68 @@ theObject.duplicate=function(socket,responseID) {
 	}
 	
 	
+}
+
+theObject.evaluatePosition=function(key,value,oldvalue){
+
+	if (this.runtimeData.evaluatePositionData===undefined) {
+		this.runtimeData.evaluatePositionData={};
+		this.runtimeData.evaluatePositionData.old={};
+		this.runtimeData.evaluatePositionData.new={};
+	}
+	
+	if (this.runtimeData.evaluatePositionData.delay) {
+		clearTimeout(this.runtimeData.evaluatePositionData.delay);
+		this.runtimeData.evaluatePositionData.delay=false;
+	}
+	
+	this.runtimeData.evaluatePositionData['new'][key]=value;
+	this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
+	
+	var posData=this.runtimeData.evaluatePositionData;
+	var self=this;
+	
+	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
+		
+		var data={};
+		data.old=posData.old;
+		data.new=posData.new;
+		
+		self.evaluatePositionInt(data);
+		self.runtimeData.evaluatePositionData=undefined;
+	},300);
+	
+}
+
+theObject.evaluatePositionInt=function(data){
+	
+	var room=this.getRoom();
+	
+	if (!room) return;
+	
+	room.evaluatePositionFor(this,data);
+	
+	//if this is an evaluationobject
+	//recalculate positions of nonevaluation objects
+}
+
+theObject.getPosition=function(){
+	
+	var room=this.getRoom();
+	
+	if (room){
+		return this.getRoom().getEvaluatedPositionFor(this);
+	} else {
+		var data={};
+		data.x=this.getAttribute('x',true);
+		data.y=this.getAttribute('y',true);
+		data.width=this.getAttribute('width',true);
+		data.height=this.getAttribute('height',true);
+		return data;
+	}
+}
+
+theObject.getRoom=function(callback){
+	if (!this.context) return;
+	return this.context.rooms[this.inRoom]; //the room has been set into context on subscrube (in UserManager)
 }

@@ -18,5 +18,7 @@ module.exports={
         apiPath: "/easy/fs.php?",
         username: "",
         password: ""
-    }
+	},
+	koalaServer: 'www.bid-owl.de.localhost',
+	koalaPort: 80
 };
