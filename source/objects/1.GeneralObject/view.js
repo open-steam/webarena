@@ -594,7 +594,7 @@ GeneralObject.moveStart = function(event) {
 		GUI.showLinks(self);
 		
 		if (!self.moved) {
-			if (!self.selectionClickActive) self.click();
+			if (!self.selectionClickActive) self.click(event);
 		}
 		
 		self.selectionClickActive = false;
@@ -882,8 +882,9 @@ GeneralObject.deselectHandler = function() {
 	GUI.hideLinks(this);
 }
 
-GeneralObject.dblclickHandler = function() {
-	this.execute();
+GeneralObject.dblclickHandler = function(event) {
+
+	this.execute(event);
 }
 
 GeneralObject.selectedClickHandler = function(event) {
