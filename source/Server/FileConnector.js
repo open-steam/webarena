@@ -133,12 +133,13 @@ fileConnector.withInventory=function(roomID,context,callback){
 		
 		try {		
 			var obj=getObjectDataByFile(filebase,roomID,objectID);
-			var content=fileConnector.getContent(roomID,objectID,context);
-			inventory.push({
-				"attributes" : obj,
-				"content" : content
-			});
-		} catch (e) {
+            fileConnector.getContent(roomID,objectID,context, function(content){
+                inventory.push({
+                    "attributes" : obj,
+                    "content" : content
+                });
+            });
+        } catch (e) {
 			console.log('ERROR: Cannot load '+objectID+' in '+roomID);
 			console.log(e);
 		}
