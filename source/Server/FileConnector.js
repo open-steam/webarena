@@ -212,7 +212,7 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context){
 	
 	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
 	
-	fs.writeFile(filename, content, function (err) {
+	fs.writeFile(filename, new Buffer(content), function (err) {
 		  if (err) {
 		  	console.log('Could not write: ',err);
 		  }
@@ -240,7 +240,17 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 	
 	try {
 		var content = fs.readFileSync(filename, 'utf8');
-		callback(content);
+		
+		var byteArray = [];
+		var contentBuffer = new Buffer(content);
+		
+		for (var j = 0; j < contentBuffer.length; j++) {
+			
+			byteArray.push(contentBuffer.readUInt8(j));
+			
+		}
+		
+		callback(byteArray);
 	} catch (e) {
 		callback(false);
 	}
