@@ -16,12 +16,20 @@ module.exports=theObject;
 
 theObject.search = function(searchTerm, offset, limit, callback){
     //var easy = new EasyDbAPI();
+    var that = this;
     var searchArgs = {
         limit : limit,
         offset: offset,
         searchTerm: searchTerm
     }
-    EasyDbAPI.search(searchArgs, function(res){
+
+
+    var api = Object.create( EasyDbAPI);
+    api.getAuth = function(){
+        return {username : that.context.user.username, password : that.context.user.password}
+    }
+
+    api.search(searchArgs, function(res){
         callback(res);
     });
 }

@@ -23,11 +23,12 @@ SP.RestService.prototype.request = function(options, next) {
             (id ? '(' + id + ')' : '') +
             (query ? '?' + qs.stringify(query) : '');
 
+    console.log("auth: " + this.username + " " + this.password2);
     var req_options = {
         method: options.method,
         host: this.host,
         path: path,
-        auth: Modules.config.sharepoint.username +":" + Modules.config.sharepoint.password,
+        auth: this.username +":" + this.password2,
         headers: {
             'Accept': options.accept || 'application/json',
             'Content-type': 'application/json',
@@ -145,13 +146,17 @@ theObject.buildTreeObject = function(data){
 
 
 theObject.search=function(content, a, b, callback){
+    console.log(this.context);
     console.log('search');
     var that = this;
 
-    var url = 'https://vkoop:!mO8dke7@projects.uni-paderborn.de/websites/studiolo/';
+    var url = 'https://projects.uni-paderborn.de/websites/studiolo/';
 
     var client = new SP.RestService(url),
         documents = client.list('FreigegebeneDokumente');
+
+    client.username =  that.context.user.username;
+    client.password2 = that.context.user.password;
 
 
     var showResponse = function(err, data){
