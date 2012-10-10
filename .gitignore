@@ -3,3 +3,4 @@ config.local.js
 source/Server/tmp/*
 data/
 node_modules/
+.svn/
