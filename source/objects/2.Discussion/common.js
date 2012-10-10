@@ -27,10 +27,10 @@ Discussion.register=function(type){
 	}, true);*/
 }
 
-Discussion.execute=function(){
-	
-	//this.editText();
-	
+Discussion.execute=function(event){
+	if($(event.target).hasClass("discussion-heading")){
+        this.editText();
+    }
 }
 
 Discussion.register('Discussion');

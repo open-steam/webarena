@@ -45,21 +45,27 @@ Discussion.draw=function(){
 
     var title = this.getAttribute('discussionTitle') || "TITLE";
     $(rep).find(".discussion-heading").html(title);
+    var that = this;
 
+    this.fetchContentString(function(remoteContent){
+        console.log(remoteContent);
+        remoteContent = JSON.parse(remoteContent);
+        // update content
+        if (that.oldContent !== remoteContent) {   //content has changed
+            console.log('test');
+            var text = '';
+            var messageArray = remoteContent;
+            for (var i = 0; i < messageArray.length; ++i){
+                text += that.renderMessage(messageArray[i]);
+            }
+            text = text.replace(/[\r\n]+/g, "<br />");
 
-    // update content
-    if (this.oldContent !== this.getAttribute('discussionText')) {   //content has changed
-        console.log('test');
-        var text = '';
-        var messageArray = this.getAttribute('discussionText');
-        for (var i = 0; i < messageArray.length; ++i){
-            text += this.renderMessage(messageArray[i]);
+            $(rep).find(".discussion-text").html(text);
+            that.oldContent=messageArray;
         }
-        text = text.replace(/[\r\n]+/g, "<br />");
+    });
 
-        $(rep).find(".discussion-text").html(text);
-        this.oldContent=messageArray;
-    }
+
 	
 
 
@@ -93,12 +99,23 @@ Discussion.createRepresentation = function() {
 
 
     var that = this;
-    that.content = this.getAttribute("discussionText") || new Array();
+    that.oldContent = new Array();
+
+
+    this.fetchContentString(function(remoteContent){
+        //console.log(remoteContent);
+        console.log(remoteContent);
+        remoteContent = JSON.parse(remoteContent)
+        if(remoteContent){
+            console.log("testwtst");
+            that.oldContent = remoteContent;
+        }
+
+        //console.log(that.content);
+    });
+
     that.title = this.getAttribute("discussionTitle") || "TITLE";
 
-    //$(body).find(".discussion").html(this.getAttribute("discussionText"));
-
-    // events
     $(body).find("input").keyup(function (event) {
         if (event.keyCode == 13) { // enter
             var value = $(this).val();
@@ -109,26 +126,32 @@ Discussion.createRepresentation = function() {
             message.timestamp = new Date();
             message.text = value;
 
-            that.content.push(message);
+            if(!that.oldContent){
+                that.oldContent = new Array();
+            }
+            that.oldContent.push(message);
 
             $(this).val('');
+            console.log(JSON.stringify(that.oldContent));
 
-            that.setAttribute("discussionText", that.content);
+            that.setContent(JSON.stringify(that.oldContent));
+            $(body).find(".discussion-text").animate(
+                { scrollTop : $(body).find(".discussion-text").prop("scrollHeight")}, 3000
+            );
 
             //rep.dataObject.setContent($(this).parent().find('.discussion').html());
 
         }
     });
 
-
-    
     // add content to wrapper
     $(rep).append(body);
 
     // push to gui
     $(rep).attr("id", this.getAttribute('id'));
     this.initGUI(rep);
-	
+    this.draw();
+
     return rep;
 }
 
@@ -145,11 +168,15 @@ Discussion.formatTimestamp = function(time){
 Discussion.editText = function() {
     // representation
     var rep = this.getRepresentation();
-    
+    var that = this;
+
+    //$(rep).find(".discussion-heading").html("<textarea rows='20' cols='20'> Test</textarea>");
+
+
     // dialog content
     var content = $('<div>').append(
         $('<span>').html('You can change the title below:')
-        , $('<input>').attr('class', 'maxWidth')
+        , $('<textarea>').attr('class', 'maxWidth').val(that.getAttribute("discussionTitle"))
     );
         
     // values
@@ -159,7 +186,7 @@ Discussion.editText = function() {
     // dispatch
     GUI.dialog('Edit Title', content, {
         "OK": function () {
-            var title = $(content).find("input").val();
+            var title = $(content).find("textarea").val();
             that.setAttribute("discussionTitle", title);
         },
         "Cancel": function () {
