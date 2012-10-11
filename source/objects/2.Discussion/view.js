@@ -49,7 +49,10 @@ Discussion.draw=function(){
 
     this.fetchContentString(function(remoteContent){
         console.log(remoteContent);
-        remoteContent = JSON.parse(remoteContent);
+        if(remoteContent !== ""){
+            remoteContent = JSON.parse(remoteContent);
+        }
+
         // update content
         if (that.oldContent !== remoteContent) {   //content has changed
             console.log('test');
