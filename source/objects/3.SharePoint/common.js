@@ -56,5 +56,6 @@ SharePoint.execute=function(){
 SharePoint.register('SharePoint');
 SharePoint.category='Files';
 SharePoint.isCreatable=true;
+SharePoint.moveByTransform = true;
 
 module.exports=SharePoint;
