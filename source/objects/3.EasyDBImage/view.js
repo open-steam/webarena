@@ -8,8 +8,8 @@
 
 
 EasyDBImage.createRepresentation=function() {
-
-    var rep = GUI.svg.image(10, 10, 10, 10, this.getAttribute('remote_url'));
+    var imgUrl = this.getAttribute('remote_url') || "../../guis.common/images/imageNotFound.png";
+    var rep = GUI.svg.image(10, 10, 10, 10, imgUrl);
     rep.dataObject=this;
     $(rep).attr("id", this.getAttribute('id'));
     this.initGUI(rep);
