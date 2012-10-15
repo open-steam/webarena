@@ -2,7 +2,7 @@
 
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
-var XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
+
 var SP = require('sharepoint');
 var https = require('https');
 var _ = require('underscore');
