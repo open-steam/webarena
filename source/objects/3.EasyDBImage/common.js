@@ -73,4 +73,9 @@ EasyDBImage.isCreatable=true;
 
 EasyDBImage.category='Images';
 
+EasyDBImage.isProportional=function(){
+    return false;
+}
+
 module.exports=EasyDBImage;
+

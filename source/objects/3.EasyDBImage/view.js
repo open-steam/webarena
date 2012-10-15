@@ -38,8 +38,6 @@ EasyDBImage.renderPagination = function(data){
 
 
     for(var i = 0 ; i< pageCount; i++){
-        //$(dialogPage2).append(this.renderPaginatorButton(i));
-        //result += (this.renderPaginatorButton(i));
         $(result).append(this.renderPaginatorButton(i, rowsPerPage * i, rowsPerPage, false));
     }
 
