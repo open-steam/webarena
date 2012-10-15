@@ -7,8 +7,6 @@
 */
 
 Discussion.draw=function(){
-    console.log("DRAW");
-
     // representation
     var rep=this.getRepresentation();
     rep.dataObject=this;
@@ -48,14 +46,14 @@ Discussion.draw=function(){
     var that = this;
 
     this.fetchContentString(function(remoteContent){
-        console.log(remoteContent);
+
         if(remoteContent !== ""){
             remoteContent = JSON.parse(remoteContent);
         }
 
         // update content
         if (that.oldContent !== remoteContent) {   //content has changed
-            console.log('test');
+
             var text = '';
             var messageArray = remoteContent;
             for (var i = 0; i < messageArray.length; ++i){
@@ -82,13 +80,15 @@ Discussion.updateInnerHeight = function() {
     $(rep).find("body").css("height", this.getAttribute('height')+"px");
     
 	//TODO : calculate size with input instead of fixed 75px
-	$(rep).find(".discussion-text").css("height", (this.getAttribute('height')-150)+"px");
+    var hh = $(rep).find(".discussion-heading").height();
+    var ih = $(rep).find(".discussion-input").height();
+
+	$(rep).find(".discussion-text").css("height", (this.getAttribute('height')- hh - ih - 55)+"px");
 
 }
 
 
 Discussion.createRepresentation = function() {
-    console.log("CREATE");
 
     // wrapper
     var rep = GUI.svg.other("foreignObject");
@@ -106,15 +106,10 @@ Discussion.createRepresentation = function() {
 
 
     this.fetchContentString(function(remoteContent){
-        //console.log(remoteContent);
-        console.log(remoteContent);
         remoteContent = JSON.parse(remoteContent)
         if(remoteContent){
-            console.log("testwtst");
             that.oldContent = remoteContent;
         }
-
-        //console.log(that.content);
     });
 
     that.title = this.getAttribute("discussionTitle") || "TITLE";
@@ -135,7 +130,6 @@ Discussion.createRepresentation = function() {
             that.oldContent.push(message);
 
             $(this).val('');
-            console.log(JSON.stringify(that.oldContent));
 
             that.setContent(JSON.stringify(that.oldContent));
             $(body).find(".discussion-text").animate(
@@ -163,8 +157,8 @@ Discussion.renderMessage = function(message){
 }
 
 Discussion.formatTimestamp = function(time){
-
-    return $.datepicker.formatDate('dd.mm.y', new Date(time));
+    return moment(time).format('DD.MM.YYYY HH:mm');
+    return  //$.datepicker.formatDate('dd.mm.y', new Date(time));
 }
 
 
