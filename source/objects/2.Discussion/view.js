@@ -149,6 +149,12 @@ Discussion.createRepresentation = function() {
     this.initGUI(rep);
     this.draw();
 
+    setTimeout(function(){
+        $(body).find(".discussion-text").animate(
+            { scrollTop : $(body).find(".discussion-text").prop("scrollHeight")}, 0
+        );
+    }, 1000);
+
     return rep;
 }
 
