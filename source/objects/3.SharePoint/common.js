@@ -25,7 +25,7 @@ SharePoint.execute=function(){
             searchString: "Hund"
         }
 
-        GUI.dialog('Select File', $("<div class='js-tree'></div>"), {
+        GUI.dialog(that.translate(GUI.currentLanguage, "FILE_SELECTION"), $("<div class='js-tree'></div>"), {
             "OK" : function(){
                 var selectedUrl = $('.js-tree').jstree('get_selected').data('media_src');
                 var selectedFilename = $('.js-tree').jstree('get_selected').data('filename');

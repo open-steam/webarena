@@ -80,9 +80,10 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
 }
 
 EasyDBImage.renderLoadScreen  = function(target){
+    var that = this;
     var dialogPage2 = $('' +
         '<div>' +
-        '<h2> Suchergebnisse werden geladen. </h2>' +
+        '<h2> ' +that.translate(GUI.currentLanguage, "WAIT_DIALOG") +'  </h2>' +
         '<img src="objects/EasyDBImage/progress.gif">' +
         '</div>'
     );

@@ -18,7 +18,7 @@ EasyDBImage.execute=function(){
     );
 
 
-    GUI.dialog('Edit Title', dialogPage1, {
+    GUI.dialog(that.translate(GUI.currentLanguage, "EASYDB_SEARCH_HEADER"), dialogPage1, {
         "OK": function () {
             var searchTerm =  $(dialogPage1).find("input").val();
             var data = {
@@ -29,12 +29,12 @@ EasyDBImage.execute=function(){
 
             var dialogPage2 = $('' +
                 '<div>' +
-                    '<h2> Suchergebnisse werden geladen. </h2>' +
+                    '<h2>' + that.translate(GUI.currentLanguage, "DISCUSSION_TOPIC") + '</h2>' +
                     '<img src="objects/EasyDBImage/progress.gif">' +
                 '</div>'
             );
 
-            GUI.dialog('Select Image', that.renderLoadScreen('.ui-dialog-content'), {
+            GUI.dialog(that.translate(GUI.currentLanguage, "EASYDB_IMAGE_SELECTION"), that.renderLoadScreen('.ui-dialog-content'), {
                 "OK" : function(){
                     //TODO: check if image selected
                     var pictureUrl = $('.selected-row').attr('easydbdownloadurl');

@@ -41,7 +41,7 @@ Discussion.draw=function(){
     $(rep).find("body").css("color", this.getAttribute('font-color'));	
     $(rep).attr("layer", this.getAttribute('layer'));
 
-    var title = this.getAttribute('discussionTitle') || "TITLE";
+    var title = this.getAttribute('discussionTitle') || "Bitte hier klicken, um das Thema zu ändern.";
     $(rep).find(".discussion-heading").html(title);
     var that = this;
 
@@ -178,7 +178,7 @@ Discussion.editText = function() {
 
     // dialog content
     var content = $('<div>').append(
-        $('<span>').html('You can change the title below:')
+        $('<span>').html(that.translate(GUI.currentLanguage, "DISCUSSION_HEADER"))
         , $('<textarea>').attr('class', 'maxWidth').val(that.getAttribute("discussionTitle"))
     );
         
@@ -187,7 +187,7 @@ Discussion.editText = function() {
     var that = this;
     
     // dispatch
-    GUI.dialog('Edit Title', content, {
+    GUI.dialog(that.translate(GUI.currentLanguage, "DISCUSSION_TOPIC"), content, {
         "OK": function () {
             var title = $(content).find("textarea").val();
             that.setAttribute("discussionTitle", title);
