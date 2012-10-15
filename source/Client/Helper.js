@@ -16,8 +16,7 @@ function require(input){
 	}
 }
 
-if (true) {							//TODO this overrides how object derivation works. Maybe find a function
-									//that does not override the native one.
+if (true) {	
 	Object.create = function (o) {
 		function F() {}
 		F.prototype = o;

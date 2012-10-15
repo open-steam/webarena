@@ -20,7 +20,7 @@ Log.colors = {
 	"reset" : '\u001b[0m',
 }
 
-Log.linebreak = '\n'; //TODO
+Log.linebreak = '\n';
 
 
 Log.init=function(theModules){

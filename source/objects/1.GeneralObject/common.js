@@ -465,13 +465,6 @@ GeneralObject.setDimensions=function(width,height){
 	this.setAttribute('height',height);
 }
 
-	
-/**
-*	determine if a given point is within the current object
-*/
-GeneralObject.boxContainsPoint=function(px,py){
-	return this.boxIntersectsWith(px,py,0,0);
-}
 
 /**
 *	determine if the current object intersects with the square x,y,width,height
@@ -505,11 +498,6 @@ GeneralObject.intersectsWith=function(other){
 	
 }
 
-GeneralObject.contains=function(other){
-	return false;
-	//TODO
-}
-
 GeneralObject.hasPixelAt=function(x,y){
 	
 	//assume, that the GeneralObject is full of pixels.
@@ -517,8 +505,9 @@ GeneralObject.hasPixelAt=function(x,y){
 	//object is nontransparent
 	
 	return this.boxIntersectsWith(x,y,0,0);
-	//TODO: duplicate of GeneralObject.boxContainsPoint !?
 }
+
+GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
 
 
 GeneralObject.toFront=function(){
