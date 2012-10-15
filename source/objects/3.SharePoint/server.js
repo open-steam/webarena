@@ -23,7 +23,6 @@ SP.RestService.prototype.request = function(options, next) {
             (id ? '(' + id + ')' : '') +
             (query ? '?' + qs.stringify(query) : '');
 
-    console.log("auth: " + this.username + " " + this.password2);
     var req_options = {
         method: options.method,
         host: this.host,
@@ -146,8 +145,7 @@ theObject.buildTreeObject = function(data){
 
 
 theObject.search=function(content, a, b, callback){
-    console.log(this.context);
-    console.log('search');
+
     var that = this;
 
     var url = 'https://projects.uni-paderborn.de/websites/studiolo/';

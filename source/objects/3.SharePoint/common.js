@@ -35,14 +35,14 @@ SharePoint.execute=function(){
             "Cancel": function(){return false;}
         }, 500, {create : function(){
             Modules.Dispatcher.query('search', data ,function(tree){
-                console.log(tree);
+
                 $(".js-tree").jstree({
                     json_data  : {
                         data  : tree
                     },
                     "plugins" : [ "themes", "json_data", "ui" ]
                 }).bind("select_node.jstree", function (event, data) {
-                        console.log(data.rslt.obj.data("media_src"));
+                        //console.log(data.rslt.obj.data("media_src"));
                 });
 
 
