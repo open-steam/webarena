@@ -145,7 +145,7 @@ CacheManager.mayRead=function(roomID,objectID,context){
 		
 		if (!CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]) {
 			console.error('Object not found in CacheManager.mayRead');
-			//TODO There seeems to be a timing problem here
+			//TODO There seeems to be a timing problem here or object not in cache at all?
 			return true;
 		}
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]["read"];
@@ -161,6 +161,13 @@ CacheManager.mayWrite=function(roomID,objectID,context){
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["write"];
 	} else {
 		//object
+		
+		if (!CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]) {
+			console.error('Object not found in CacheManager.mayRead');
+			//TODO There seeems to be a timing problem here or object not in cache at all?
+			return true;
+		}		
+		
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]["write"];
 	}
 }
@@ -174,6 +181,13 @@ CacheManager.mayEvaluate=function(roomID,objectID,context){
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["evaluate"];
 	} else {
 		//object
+		
+		if (!CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]) {
+			console.error('Object not found in CacheManager.mayRead');
+			//TODO There seeems to be a timing problem here or object not in cache at all?
+			return true;
+		}
+		
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]["evaluate"];
 	}
 }
@@ -187,6 +201,13 @@ CacheManager.mayDelete=function(roomID,objectID,context){
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["delete"];
 	} else {
 		//object
+		
+		if (!CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]) {
+			console.error('Object not found in CacheManager.mayRead');
+			//TODO There seeems to be a timing problem here or object not in cache at all?
+			return true;
+		}		
+		
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]["delete"];
 	}
 }
