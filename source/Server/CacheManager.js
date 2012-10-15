@@ -142,6 +142,12 @@ CacheManager.mayRead=function(roomID,objectID,context){
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["read"];
 	} else {
 		//object
+		
+		if (!CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]) {
+			console.error('Object not found in CacheManager.mayRead');
+			//TODO There seeems to be a timing problem here
+			return true;
+		}
 		return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["objects"][objectID]["read"];
 	}
 }
