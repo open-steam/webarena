@@ -2,7 +2,7 @@ SharePoint.createRepresentation = function(){
 
     var rep = GUI.svg.group(this.getAttribute('id'));
 
-    GUI.svg.image(rep, 0, 0, 32, 32, this.getFileIcon());
+    GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
 
     var textVal;
     if(this.getAttribute("sharepoint_src")){
@@ -10,7 +10,7 @@ SharePoint.createRepresentation = function(){
     } else {
         textVal = "";
     }
-    var text = GUI.svg.text(rep, 0, 44, textVal);
+    var text = GUI.svg.text(rep, 0, 75, textVal);
     $(text).attr("font-size", 12);
     $(rep).attr("id", this.getAttribute('id'));
 
@@ -27,6 +27,9 @@ SharePoint.draw = function(){
 
     this.setViewX(this.getAttribute('x'));
     this.setViewY(this.getAttribute('y'));
+
+    this.setViewWidth(64);
+    this.setViewHeight(64);
 
 
     if(this.getAttribute("sharepoint_src")){
@@ -67,4 +70,13 @@ SharePoint.getFileIcon = function(){
 
 
     return "../../guis.common/images/fileicons/"+typeIcon+".png";
+}
+
+SharePoint.getViewBoundingBoxWidth = function() {
+    return 64;
+}
+
+/* get the height of the objects bounding box */
+SharePoint.getViewBoundingBoxHeight = function() {
+    return 64;
 }
