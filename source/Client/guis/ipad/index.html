@@ -185,7 +185,7 @@
 		 * 				}
 		 * 			}
 		 */
-		GUI.dialog = function(heading, content, buttons, dialogWidth) {
+		GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
 			
 			alert("TODO: GUI.dialog");
 			return false;
@@ -220,20 +220,24 @@
 			if (dialogWidth == undefined) {
 				dialogWidth = "auto";
 			}
+
+            var dialogOptions = {
+                modal: true,
+                resizable: false,
+                buttons: buttons2,
+                zIndex: 100000,
+                width : dialogWidth,
+                close: function() {
+                    $(this).remove();
+                    GUI.blockKeyEvents = false;
+                }
+            }
+
+            if(typeof passThrough === "object"){
+                $.extend(dialogOptions, passThrough)
+            }
 			
-			$(dialogContent).dialog({
-				modal: true,
-				resizable: false,
-				buttons: buttons2,
-				zIndex: 100000,
-				width : dialogWidth,
-				close: function() {
-					$(this).remove();
-					GUI.blockKeyEvents = false;
-				}
-			});
-			
-			
+			return $(dialogContent).dialog(dialogOptions);
 		};
 	
 
