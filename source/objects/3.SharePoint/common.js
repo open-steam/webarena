@@ -48,7 +48,9 @@ SharePoint.execute=function(){
 
             });
 
-        }})
+        }}).on("dblclick", '.jstree-leaf', function(){
+                $(':button:contains("OK")').click();
+            })
     }
 
 }
