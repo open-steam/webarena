@@ -25,7 +25,7 @@ SharePoint.execute=function(){
             searchString: "Hund"
         }
 
-        GUI.dialog(that.translate(GUI.currentLanguage, "FILE_SELECTION"), $("<div class='js-tree'></div>"), {
+        GUI.dialog(that.translate(GUI.currentLanguage, "FILE_SELECTION"), that.renderLoadScreen(".ui-dialog-content"), {
             "OK" : function(){
                 var selectedUrl = $('.js-tree').jstree('get_selected').data('media_src');
                 var selectedFilename = $('.js-tree').jstree('get_selected').data('filename');
@@ -36,7 +36,7 @@ SharePoint.execute=function(){
         }, 500, {create : function(){
             Modules.Dispatcher.query('search', data ,function(tree){
 
-                $(".js-tree").jstree({
+                var renderedTree = $("<div class='js-tree'></div>").jstree({
                     json_data  : {
                         data  : tree
                     },
@@ -45,7 +45,7 @@ SharePoint.execute=function(){
                         //console.log(data.rslt.obj.data("media_src"));
                 });
 
-
+                $('.ui-dialog-content').html(renderedTree);
             });
 
         }}).on("dblclick", '.jstree-leaf', function(){
