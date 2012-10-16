@@ -466,50 +466,6 @@ GeneralObject.setDimensions=function(width,height){
 }
 
 
-/**
-*	determine if the current object intersects with the square x,y,width,height
-*/
-GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
-	
-	var thisx = this.getViewBoundingBoxX();
-	var thisy = this.getViewBoundingBoxY();
-	var thisw = this.getViewBoundingBoxWidth();
-	var thish = this.getViewBoundingBoxHeight();
-	
-	if (otherx+otherwidth<thisx) return false;
-	if (otherx>thisx+thisw) return false;
-	if (othery+otherheight<thisy) return false;
-	if (othery>thisy+thish) return false;
-	
-	return true;
-	
-}
-
-/**
-*	determine if the current object intersects with oanother object
-*/
-GeneralObject.intersectsWith=function(other){
-	var otherx=other.getViewBoundingBoxX();
-	var othery=other.getViewBoundingBoxY();
-	var otherw=other.getViewBoundingBoxWidth();
-	var otherh=other.getViewBoundingBoxHeight();
-	
-	return this.boxIntersectsWith(otherx,othery,otherw,otherh);
-	
-}
-
-GeneralObject.hasPixelAt=function(x,y){
-	
-	//assume, that the GeneralObject is full of pixels.
-	//override this if you can determine better, where there
-	//object is nontransparent
-	
-	return this.boxIntersectsWith(x,y,0,0);
-}
-
-GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
-
-
 GeneralObject.toFront=function(){
 	ObjectManager.performAction("toFront");
 }
