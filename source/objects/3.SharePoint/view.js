@@ -1,16 +1,27 @@
 SharePoint.createRepresentation = function(){
 
     var rep = GUI.svg.group(this.getAttribute('id'));
+    var textVal, splitTextVal, text, cTexts;
 
     GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
 
-    var textVal;
+
     if(this.getAttribute("sharepoint_src")){
         textVal = this.getAttribute("name");
+
+        splitTextVal = splitSubstr(textVal, 14);
     } else {
-        textVal = "";
+        splitTextVal = new Array();
     }
-    var text = GUI.svg.text(rep, 0, 75, textVal);
+
+    cTexts = GUI.svg.createText();
+
+    for(var i = 0, len = splitTextVal.length; i< len ; i++){
+        cTexts.span(splitTextVal[i], {'y' : 78 + i * 14, 'x': 0});
+    }
+    text = GUI.svg.text(rep, 0, 75, cTexts);
+
+
     $(text).attr("font-size", 12);
     $(rep).attr("id", this.getAttribute('id'));
 
@@ -33,7 +44,7 @@ SharePoint.draw = function(){
 
 
     if(this.getAttribute("sharepoint_src")){
-        $(rep).find("text").get(0).textContent = this.getAttribute('name');
+        //$(rep).find("text").get(0).textContent = splitSubstr(this.getAttribute('name'), 12).join("\n");
     }
 
 
