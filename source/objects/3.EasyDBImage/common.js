@@ -43,22 +43,23 @@ EasyDBImage.execute=function(){
                 },
                 "Cancel": function(){return false;}
 
-            }, undefined, {
+            }, 500, {
                 create : function(){
                     Modules.Dispatcher.query('search', data ,function(searchResults){
                         that.searchTerm = searchTerm;
                         that.renderResultPage(searchResults, ".ui-dialog-content");
                     });
-                }
-            });
-
-
+                },
+                height: 600
+            }).on("dblclick", ".result-row", function(){
+                    $(':button:contains("OK")').click();
+                });
         },
 
         "Cancel": function () {
             return false;
         }
-    }, 300);
+    }, 500, {height : 600});
 }
 
 EasyDBImage.isResizable=function(){
