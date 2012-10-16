@@ -281,3 +281,13 @@ theObject.getRoom=function(callback){
 	if (!this.context) return;
 	return this.context.rooms[this.inRoom]; //the room has been set into context on subscrube (in UserManager)
 }
+
+theObject.getBoundingBox=function(){
+	
+	var x=this.getAttribute('x');
+	var y=this.getAttribute('y');
+	var width=this.getAttribute('width');
+	var height=this.getAttribute('height');
+	return {'x':x,'y':y,'width':width,'height':height};
+	
+}
