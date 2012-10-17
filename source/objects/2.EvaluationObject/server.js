@@ -11,11 +11,15 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 module.exports=theObject;
 
+/**
+*	encloses
+*
+*	determines, if this evaluation object fully encloses another object.
+*	In this simple implementation, this is done by bounding box comparison.
+**/
 theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
 	
 	var bbox=this.getBoundingBox();
-	
-	console.log(bbox,otherX,otherY,otherWidth,otherHeight);
 	
 	if (otherX<bbox.x) return false;
 	if (otherY<bbox.y) return false;
@@ -47,9 +51,6 @@ theObject.evaluate=function(object,changeData){
 		newData[field]=changeData['new'][field] || object.getAttribute(field);
 	}
 	
-	console.log(oldData);
-	console.log(newData);
-	
 	//determine intersections
 	
 	var oldIntersects=this.encloses(oldData.x,oldData.y,oldData.width,oldData.height);
@@ -64,17 +65,17 @@ theObject.evaluate=function(object,changeData){
 }
 
 theObject.onMoveWithin=function(object,oldData,newData){
-	console.log(object+' moved within '+this);
+	
 };
 
 theObject.onMoveOutside=function(object,oldData,newData){
-	console.log(object+' moved outside of '+this);
+	
 };
 
 theObject.onLeave=function(object,oldData,newData){
-	console.log(object+' left '+this);
+	
 };
 
 theObject.onEnter=function(object,oldData,newData){
-	console.log(object+' entered '+this);
+	
 };
