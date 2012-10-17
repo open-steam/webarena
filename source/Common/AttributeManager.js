@@ -192,7 +192,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		} else {
 			saveDelays[identifier]=window.setTimeout(function(){
 				Modules.SocketClient.serverCall('setAttribute',data);
-			},1000);
+			},100);
 		}
 		
 	}

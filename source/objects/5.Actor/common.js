@@ -10,6 +10,7 @@ var Actor=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
 Actor.register('Actor');
 Actor.isCreatable=false;
+Actor.isActor=true;
 
 Actor.category='Evaluations';
 
