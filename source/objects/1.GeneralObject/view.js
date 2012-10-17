@@ -118,7 +118,7 @@ GeneralObject.initGUI = function(rep) {
 	*/
 	
 	if (this.getAttribute("shadow")) {
-		$(rep).attr("filter", "url(#svg-drop-shadow)");
+		//$(rep).attr("filter", "url(#svg-drop-shadow)");
 	}
 	
 }
@@ -128,7 +128,7 @@ GeneralObject.addSelectedIndicator = function() {
 
 	var rep = this.getRepresentation();
 
-	$(rep).attr("filter", "url(#svg-selected)");
+	//$(rep).attr("filter", "url(#svg-selected)");
 	
 	this.oldAttrStroke = $(rep).attr("stroke");
 	this.oldAttrStrokeWidth = $(rep).attr("stroke-width");
@@ -145,9 +145,9 @@ GeneralObject.removeSelectedIndicator = function() {
 	var rep = this.getRepresentation();
 
 	if (this.getAttribute("shadow")) {
-		$(rep).attr("filter", "url(#svg-drop-shadow)");
+		//$(rep).attr("filter", "url(#svg-drop-shadow)");
 	} else {
-		$(rep).attr("filter", "");
+		//$(rep).attr("filter", "");
 	}
 
 	$(rep).attr("stroke", this.oldAttrStroke);
@@ -397,8 +397,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		{
 			fill: "#008DDF",
 			stroke: "#FFFFFF",
-			strokeWidth: border,
-			filter: "url(#svg-drop-shadow)"
+			strokeWidth: border
+			//filter: "url(#svg-drop-shadow)"
 		}
 	);
 	
