@@ -436,6 +436,8 @@ GeneralObject.unHide=function(){
 	this.setAttribute('hidden',false);
 }
 
+GeneralObject.unhide=GeneralObject.unHide;
+
 /**
 *	move the object by dx,dy pixels
 */
