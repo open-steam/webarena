@@ -8,28 +8,30 @@ SharePoint.createRepresentation = function(){
 
     if(this.getAttribute("sharepoint_src")){
         textVal = this.getAttribute("name");
+        this.renderFilename(rep, textVal);
 
-        splitTextVal = splitSubstr(textVal, 14);
+
     } else {
-        splitTextVal = new Array();
+
     }
 
-    cTexts = GUI.svg.createText();
-
-    for(var i = 0, len = splitTextVal.length; i< len ; i++){
-        cTexts.span(splitTextVal[i], {'y' : 78 + i * 14, 'x': 0});
-    }
-    text = GUI.svg.text(rep, 0, 75, cTexts);
-
-
-    $(text).attr("font-size", 12);
     $(rep).attr("id", this.getAttribute('id'));
 
     rep.dataObject=this;
     this.initGUI(rep);
 
     return rep;
+}
 
+SharePoint.renderFilename = function (rep, filename){
+    var splitTextVal = splitSubstr(filename, 14);
+    var cTexts = GUI.svg.createText();
+
+    for(var i = 0, len = splitTextVal.length; i< len ; i++){
+        cTexts.span(splitTextVal[i], {'y' : 78 + i * 14, 'x': 0});
+    }
+    var text = GUI.svg.text(rep, 0, 75, cTexts);
+    $(text).attr("font-size", 12);
 }
 
 SharePoint.draw = function(){
@@ -48,6 +50,11 @@ SharePoint.draw = function(){
     }
 
 
+}
+
+SharePoint.updateIcon = function(){
+    var rep = this.getRepresentation();
+    $(rep).find('image').attr('href', this.getFileIcon());
 }
 
 SharePoint.getFileIcon = function(){

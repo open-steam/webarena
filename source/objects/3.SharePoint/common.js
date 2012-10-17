@@ -13,6 +13,7 @@ SharePoint.register=function(type){
 
 SharePoint.execute=function(){
     var that=this;
+    var rep=this.getRepresentation();
 
     if(this.getAttribute("sharepoint_src")){
         window.open(this.getAttribute("sharepoint_src"), '_blank');
@@ -30,7 +31,10 @@ SharePoint.execute=function(){
                 var selectedUrl = $('.js-tree').jstree('get_selected').data('media_src');
                 var selectedFilename = $('.js-tree').jstree('get_selected').data('filename');
                 that.setAttribute("sharepoint_src", selectedUrl);
-                that.setAttribute("name", selectedFilename)
+                that.setAttribute("name", selectedFilename);
+
+                that.renderFilename(rep, selectedFilename );
+                that.updateIcon();
             },
             "Cancel": function(){return false;}
         }, 500, {create : function(){
