@@ -245,7 +245,7 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 		
 		self.evaluatePositionInt(data);
 		self.runtimeData.evaluatePositionData=undefined;
-	},300);
+	},100);
 	
 }
 
