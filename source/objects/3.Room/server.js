@@ -35,7 +35,7 @@ theObject.getEvaluatedPositionFor=function(object){
 }
 
 theObject.evaluatePositionFor=function(object,data){
-	console.log('room','evaluatePositionFor',object.toString(),data);
+	//console.log('room','evaluatePositionFor',object.toString(),data);
 	
 	var inventory=this.getInventory();
 	
