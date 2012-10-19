@@ -1,0 +1,335 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+
+	<title>Webarena 1.0</title>
+	
+	<meta content="minimum-scale=1.0, initial-scale=1.0, width=device-width, maximum-scale=1, user-scalable=yes" name="viewport" />
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<link rel="apple-touch-icon" sizes="72x72" href="icon.png" />
+
+	<script src="http://jsconsole.com/remote.js?63A8D31B-B408-47EC-9CA8-699619B5BA73"></script>
+
+	<script src="/socket.io/socket.io.js"></script>
+
+	<script src="../../config.js"></script>
+	<script src="../../Helper.js"></script>
+	<script src="../../Dispatcher.js"></script>
+	<script src="../../ObjectManager.js"></script>
+	<script src="../../SocketClient.js"></script>
+
+	<script src="/Common/DataSet.js"></script>
+	<script src="/Common/ActionManager.js"></script>
+	<script src="/Common/AttributeManager.js"></script>
+	<script src="/Common/TranslationManager.js"></script>
+
+	<script>
+	var  Modules={
+		'config':Config,
+		'Config':Config,
+		'SocketClient':SocketClient,
+		'Dispatcher':Dispatcher,
+		'ObjectManager':ObjectManager,
+		'Helper':Helper,
+
+		//Object specific
+
+		'DataSet':DataSet,
+		'AttributeManager':AttributeManager,
+		'TranslationManager':TranslationManager,
+		'ActionManager':ActionManager,
+	};
+
+	for (var name in Modules){
+		var module=Modules[name];
+		if (module.init) {
+			console.log('Initializing '+name);
+			module.init(Modules);
+			module.Modules=Modules;
+		}
+	}
+
+	</script>
+
+	<script src="/objects"></script>
+	
+	
+	
+	
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/jquery.js"></script>
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.animate-enhanced.min.js"></script>
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/jquery-ui.js"></script>
+	<link type="text/css" href="../../guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
+
+	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.color.js"></script>
+
+	<link type="text/css" href="style.css" rel="Stylesheet" />
+
+	<script type="text/javascript" src="../../guis.common/javascript/0.GUI.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/0.cookies.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.progressBarManager.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.login.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.load.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.actionsheet.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.hiddenObjects.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.inspector.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.links.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.paint.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.rubberband.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.svg.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.text.js"></script>
+	<script type="text/javascript" src="../../guis.common/javascript/1.toolbar.js"></script>
+
+	<link type="text/css" href="../../guis.common/css/actionsheet.css" rel="Stylesheet" />
+	<link type="text/css" href="../../guis.common/css/progressBar.css" rel="Stylesheet" />
+	<link type="text/css" href="../../guis.common/css/login.css" rel="Stylesheet" />
+
+	<link type="text/css" href="../../guis.common/libraries/jquery/plugins/css/jquery.jPopover.ipad.css" rel="Stylesheet" />
+	
+	<script>
+	
+		GUI.isTouchDevice = true;
+		
+		
+		
+		
+	
+		GUI.uploadFile=function(object,message,command){
+			
+			alert(this.translate('No Upload on iOS'));
+			
+		}
+
+		
+		
+		
+		/* inspector */
+
+		GUI.setupInspector = function() {
+			
+			$("#inspector").jPopover({
+				onOpen : function(domEl, inspector) {
+					
+					GUI.setupInspectorContent(inspector);
+					 					
+				},
+				onClose : function(domEl, popover) {
+					
+				}
+			});
+
+		}
+		
+		
+		GUI.error = function(heading, message, webarenaObject, fatal) {
+
+			var translate = function(text) {
+				if (!webarenaObject) {
+					return GUI.translate(text);
+				} else {
+					return webarenaObject.translate(GUI.currentLanguage, text);
+				}
+			}		
+
+			$("#error_box").show();
+			$("#error_bg").show();
+
+			$("#error_box_heading").html(translate(heading));
+			$("#error_box_message").html(translate(message));
+
+			if (fatal) {
+				$("#error_box_button").html(GUI.translate("Reload"));
+			} else {
+				$("#error_box_button").html(GUI.translate("Close Dialog"));
+			}
+
+			$("#error_box_button").bind("click", function(event) {
+
+				if (fatal) {
+					window.location.reload();
+				} else {
+					$("#error_box").hide();
+					$("#error_bg").hide();
+				}
+
+			});
+
+			$("#error_box").css("top", $(window).height()/2);
+			$("#error_box").css("margin-top", (-1)*($("#error_box").outerHeight()/2));
+
+		}
+		
+		
+		/*
+		 * heading: string
+		 * content: html content of dialog
+		 * buttons: object of buttons e.g.:
+		 * 			{
+		 * 				"title of this button" : function() {
+		 * 					//button callback
+		 * 				}
+		 * 			}
+		 */
+		GUI.dialog = function(heading, content, buttons, dialogWidth) {
+			
+			alert("TODO: GUI.dialog");
+			return false;
+			
+			GUI.blockKeyEvents = true;
+			
+			if (buttons == undefined) {
+				
+				var buttons = {};
+				
+				buttons[GUI.translate("close")] = function() {
+					//nothing
+				}
+				
+			}
+			
+			var dialogContent = document.createElement("div");
+			$(dialogContent).attr("title", heading);
+			$(dialogContent).html(content);
+
+			var buttons2 = {};
+			
+			$.each(buttons, function(title, callback) {
+				
+				buttons2[title] = function() {
+					callback(dialogContent);
+					$(this).dialog("close");
+				}
+				
+			});
+			
+			if (dialogWidth == undefined) {
+				dialogWidth = "auto";
+			}
+			
+			$(dialogContent).dialog({
+				modal: true,
+				resizable: false,
+				buttons: buttons2,
+				zIndex: 100000,
+				width : dialogWidth,
+				close: function() {
+					$(this).remove();
+					GUI.blockKeyEvents = false;
+				}
+			});
+			
+			
+		};
+	
+
+
+		$(function() {
+			window.setTimeout(function() {
+
+				var huu = new Audio("");
+				$("body").append(huu);
+				
+				huu.src = "huu.m4a";
+				
+				GUI.onToggleHidden = function(hiddenMode) {
+					
+					if (hiddenMode) {
+						//hidden mode is active (hidden objects are visible)
+						$("#hiddenToggle").attr("src", "hidden_active.png");
+						huu.src = "huu.m4a";
+						huu.play();
+					} else {
+						//hidden mode is inactive (no hidden objects are visible)
+						$("#hiddenToggle").attr("src", "hidden.png");	
+					}
+					
+				}
+				
+				
+				$("#hiddenToggle").get(0).addEventListener("touchstart", function() {
+					GUI.toggleHidden();
+				}, false);
+				
+				
+				//TODO: remove in production env:
+				$("#reload").bind("click", function() {
+					location.reload();
+				});
+				
+			}, 100);
+		});
+
+	
+	</script>
+</head>
+<body>
+	
+	<div id="header">
+		
+		<div class="header_right">
+			
+			<img src="reload.png" alt="" id="reload" height="24" width="24" />
+			
+			<img src="hidden.png" alt="" id="hiddenToggle" height="24" width="24" />
+			
+			<img src="info.png" alt="" id="inspector" height="24" width="24" />
+			
+		</div>
+		
+		<div class="header_left">
+		
+		</div>
+		
+	</div>
+
+
+
+	<div id="content"></div>
+	
+
+	
+	<div id="actionsheet"></div>
+	
+	<div id="error_bg"></div>
+	<div id="error_box">
+		
+		<div id="error_box_heading"></div>
+		<div id="error_box_message"></div>
+		<div id="error_box_button"></div>
+		
+	</div>
+	
+
+
+	<div id="login_background" style="display: none">&nbsp;</div>
+	<div id="login" style="display: none;">
+		
+		<div class="login_title">Webarena 1.0</div>
+		
+		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="Mustermann" id="login_username" class="login_input" />
+		
+		<br />
+		
+		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="My_Password" id="login_password" class="login_input" />
+		
+		<br />
+		
+		<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
+		
+	</div>
+
+
+	<div id="progressBar"><div class="progressBar_container"></div></div>
+	
+</body>
+</html>
