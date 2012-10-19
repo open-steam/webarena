@@ -591,7 +591,7 @@ GUI.closePaintMode = function() {
 			GUI.currentPaintObject.deleteIt();
 		}
 	
-	} else { //TODO: will this be called at any time!?
+	} else { 
 		/* create new object */
 
 		if (pixelFound) {

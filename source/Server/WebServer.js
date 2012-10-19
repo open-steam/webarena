@@ -46,7 +46,7 @@ WebServer.init=function(theModules){
 		}
 			
 	  
-	  if (url=='/') url='/index.html';
+	  if (url=='/') url=Modules.config.homepage;
 	  
 	  if (url.substr(0,6)=='/room/') {
 		/* open room */
