@@ -239,7 +239,7 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
 	
 	try {
-		var content = fs.readFileSync(filename, 'utf8');
+		var content = fs.readFileSync(filename);
 		
 		var byteArray = [];
 		var contentBuffer = new Buffer(content);
@@ -331,6 +331,13 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 	var objectID=new Date().getTime()-1296055327011;
 	
 	data.type=type;
+	
+	if (type == "Paint" || type == "Highlighter") {
+		
+		data.mimeType = 'image/png';
+		data.hasContent = false;
+		
+	}
 	
 	this.saveObjectData(roomID,objectID,data,callback,context);
 }
