@@ -64,13 +64,19 @@ GeneralObject.getRepresentation=function(){
 	var rep=document.getElementById(this.getAttribute('id'));
 
 	if (!rep){
-		
-		return this.createRepresentation();
+
+		var rep = this.createRepresentation();
+		this.representationCreated();
+		return rep;
 		
 	}
 	return rep;
 }
 
+
+GeneralObject.representationCreated = function() {
+	this.bindMoveArea();
+}
 
 
 GeneralObject.createRepresentation = function() {
@@ -132,6 +138,9 @@ GeneralObject.addSelectedIndicator = function() {
 	
 	this.oldAttrStroke = $(rep).attr("stroke");
 	this.oldAttrStrokeWidth = $(rep).attr("stroke-width");
+	
+	if (this.oldAttrStroke == undefined) this.oldAttrStroke = "";
+	if (this.oldAttrStrokeWidth == undefined) this.oldAttrStrokeWidth = 0;
 	
 	$(rep).attr("stroke", '#1F7BFE');
 	$(rep).attr("stroke-width", "2");
@@ -516,9 +525,14 @@ GeneralObject.saveMoveStartPosition = function() {
 
 
 GeneralObject.moveStart = function(event) {
+
+	if (!this.id || this.id == "") {
+		var self = ObjectManager.getObject($(this).parent().attr("id"));
+	} else {
+		var self = ObjectManager.getObject(this.id);
+	}
 	
-	var self = ObjectManager.getObject(this.id);
-	
+	if (!self.selected) self.select();
 	
 	var contentPosition = $("#content").offset();
 	
@@ -582,7 +596,7 @@ GeneralObject.moveStart = function(event) {
 	};
 	
 	var end = function(event) {
-		
+	
 		event.preventDefault();
 		event.stopPropagation();
 		
@@ -626,21 +640,40 @@ GeneralObject.moveStart = function(event) {
 }
 
 GeneralObject.makeMovable = function() {
-	
+
 	var self = this;
 	
 	var rep = this.getRepresentation();
 
-	if (GUI.isTouchDevice) {
-		/* touch */
+	if (!this.restrictedMovingArea) {
 
-		rep.ontouchstart = self.moveStart;
-	} else {
-		/* mouse */
-
-		$(rep).bind("mousedown", self.moveStart);
+		if (GUI.isTouchDevice) {
+			/* touch */
+			rep.ontouchstart = self.moveStart;
+		} else {
+			/* mouse */
+			$(rep).bind("mousedown", self.moveStart);
+		}
+	
 	}
 	
+}
+
+
+GeneralObject.bindMoveArea = function() {
+
+	if (!this.restrictedMovingArea) return;
+
+	//find move area
+	var rep = $(this.getRepresentation()).find(".moveArea").get(0);
+
+	if (GUI.isTouchDevice) {
+		/* touch */
+		rep.ontouchstart = this.moveStart;
+	} else {
+		/* mouse */
+		$(rep).bind("mousedown", this.moveStart);
+	}
 	
 }
 

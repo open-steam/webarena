@@ -44,7 +44,7 @@ ImageObject.isResizable=function(){
 }
 
 ImageObject.register('ImageObject');
-ImageObject.isCreatable=true;
+ImageObject.isCreatable=false;
 
 ImageObject.category='Images';
 
