@@ -50,17 +50,24 @@ fileConnector.init=function(theModules){
 */
 fileConnector.login=function(username,password,rp){
 
-	// In this simple fileConnector we accept every password.
-	
 	var data={};
 	
 	data.username=username;
 	data.password=password;
 	data.home='public';
 	
-	rp(data);
+	if (Modules.Config.fileConnectorUsers) {
+		
+		if (Modules.Config.fileConnectorUsers[data.username] == data.password) {
+			rp(data);
+		} else {
+			rp(false);
+		}
+		
+	} else {
+		rp(data);
+	}
 	
-	return true;
 }
 
 /**
