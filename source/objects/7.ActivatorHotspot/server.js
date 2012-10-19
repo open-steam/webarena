@@ -13,10 +13,8 @@ module.exports=theObject;
 
 theObject.onLeave=function(object,oldData,newData){
 	if (!object.isActor) {
-		console.log(object+' is not an actor!');
 		return;
 	}
-	console.log(object+' left '+this,oldData,newData);
 	var objects=(this.getLinkedObjects());
 	for (var i in objects){
 		var obj=objects[i].object;
@@ -26,10 +24,8 @@ theObject.onLeave=function(object,oldData,newData){
 
 theObject.onEnter=function(object,oldData,newData){
 	if (!object.isActor) {
-		console.log(object+' is not an actor!');
 		return;
 	}
-	console.log(object+' entered '+this,oldData,newData);
 	var objects=(this.getLinkedObjects());
 	for (var i in objects){
 		var obj=objects[i].object;
@@ -38,11 +34,9 @@ theObject.onEnter=function(object,oldData,newData){
 };
 
 theObject.onMoveWithin=function(object,oldData,newData){
-	console.log(object+' moved within '+this,oldData,newData);
 	
 };
 
 theObject.onMoveOutside=function(object,oldData,newData){
-	console.log(object+' moved outside '+this,oldData,newData);
 	
 };

@@ -6,9 +6,9 @@
 */
 
 var Modules=require('../../server.js')
-var Hotspot=Object.create(Modules.ObjectManager.getPrototype('EvaluationObject'));
+var ActivatorHotspot=Object.create(Modules.ObjectManager.getPrototype('EvaluationObject'));
 
-Hotspot.register=function(type){
+ActivatorHotspot.register=function(type){
 	
 	// Registering the object
 	EvaluationObject=Modules.ObjectManager.getPrototype('EvaluationObject');
@@ -20,7 +20,7 @@ Hotspot.register=function(type){
 
 }
 
-Hotspot.register('Hotspot');
-Hotspot.isCreatable=true; 
+ActivatorHotspot.register('ActivatorHotspot');
+ActivatorHotspot.isCreatable=true; 
 
-module.exports=Hotspot;
+module.exports=ActivatorHotspot;
