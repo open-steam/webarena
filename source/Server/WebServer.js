@@ -55,9 +55,14 @@ WebServer.init=function(theModules){
 		
 				var roomId = url.substr(6);
 
-				//TODO: detect device (desktop, ipad, ...)
+				//detect device
+				if (/iPad/.test(req.headers['user-agent'])) {
+					var indexFilename = '/../Client/guis/ipad/index.html';
+				} else {
+					var indexFilename = '/../Client/guis/desktop/index.html';
+				}
 
-				fs.readFile(__dirname + '/../Client/guis/desktop/index.html', 'utf8', function (err, data) {
+				fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
 
 				    	if (err) {
 				      		res.writeHead(404);

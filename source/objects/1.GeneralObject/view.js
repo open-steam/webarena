@@ -128,7 +128,7 @@ GeneralObject.addSelectedIndicator = function() {
 
 	var rep = this.getRepresentation();
 
-	$(rep).attr("filter", "url(#svg-selected)");
+	//$(rep).attr("filter", "url(#svg-selected)");
 	
 	this.oldAttrStroke = $(rep).attr("stroke");
 	this.oldAttrStrokeWidth = $(rep).attr("stroke-width");
@@ -145,9 +145,9 @@ GeneralObject.removeSelectedIndicator = function() {
 	var rep = this.getRepresentation();
 
 	if (this.getAttribute("shadow")) {
-		$(rep).attr("filter", "url(#svg-drop-shadow)");
+	//	$(rep).attr("filter", "url(#svg-drop-shadow)");
 	} else {
-		$(rep).attr("filter", "");
+	//	$(rep).attr("filter", "");
 	}
 
 	$(rep).attr("stroke", this.oldAttrStroke);
@@ -398,7 +398,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			fill: "#008DDF",
 			stroke: "#FFFFFF",
 			strokeWidth: border,
-			filter: "url(#svg-drop-shadow)"
+			//filter: "url(#svg-drop-shadow)"
 		}
 	);
 	
@@ -594,7 +594,7 @@ GeneralObject.moveStart = function(event) {
 		GUI.showLinks(self);
 		
 		if (!self.moved) {
-			if (!self.selectionClickActive) self.click();
+			if (!self.selectionClickActive) self.click(event);
 		}
 		
 		self.selectionClickActive = false;
@@ -630,12 +630,14 @@ GeneralObject.makeMovable = function() {
 	var self = this;
 	
 	var rep = this.getRepresentation();
-	
+
 	if (GUI.isTouchDevice) {
 		/* touch */
+
 		rep.ontouchstart = self.moveStart;
 	} else {
 		/* mouse */
+
 		$(rep).bind("mousedown", self.moveStart);
 	}
 	
@@ -843,7 +845,7 @@ GeneralObject.click = function(event) {
 /* handler functions */
 
 GeneralObject.clickHandler = function(event) {
-	
+
 	if (GUI.isTouchDevice && event.touches.length > 1) {
 		this.select(true); //multi select
 		event.stopPropagation();

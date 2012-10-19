@@ -8,18 +8,17 @@
 	
 	<meta content="minimum-scale=1.0, initial-scale=1.0, width=device-width, maximum-scale=1, user-scalable=yes" name="viewport" />
 	<meta content="yes" name="apple-mobile-web-app-capable" />
-	<link rel="apple-touch-icon" sizes="72x72" href="icon.png" />
-
-	<script src="http://jsconsole.com/remote.js?63A8D31B-B408-47EC-9CA8-699619B5BA73"></script>
+	<link rel="apple-touch-icon" sizes="72x72" href="/guis/ipad/icon.png" />
 
 	<script src="/socket.io/socket.io.js"></script>
 
-	<script src="../../config.js"></script>
-	<script src="../../Helper.js"></script>
-	<script src="../../Dispatcher.js"></script>
-	<script src="../../ObjectManager.js"></script>
-	<script src="../../SocketClient.js"></script>
+	<script src="/config.js"></script>
+	<script src="/Helper.js"></script>
+	<script src="/Dispatcher.js"></script>
+	<script src="/ObjectManager.js"></script>
+	<script src="/SocketClient.js"></script>
 
+	<script src="/Common/Log.js"></script>
 	<script src="/Common/DataSet.js"></script>
 	<script src="/Common/ActionManager.js"></script>
 	<script src="/Common/AttributeManager.js"></script>
@@ -59,42 +58,46 @@
 	
 	
 
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/jquery.js"></script>
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
 
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.animate-enhanced.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.animate-enhanced.min.js"></script>
 
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
 
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/jquery-ui.js"></script>
-	<link type="text/css" href="../../guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
+	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
+	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
 
-	<script type="text/javascript" src="../../guis.common/libraries/jquery/plugins/jquery.color.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
 
-	<link type="text/css" href="style.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis/ipad/style.css" rel="Stylesheet" />
 
-	<script type="text/javascript" src="../../guis.common/javascript/0.GUI.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/0.cookies.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.progressBarManager.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.login.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.load.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.actionsheet.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.hiddenObjects.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.inspector.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.links.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.paint.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.rubberband.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.svg.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.text.js"></script>
-	<script type="text/javascript" src="../../guis.common/javascript/1.toolbar.js"></script>
 
-	<link type="text/css" href="../../guis.common/css/actionsheet.css" rel="Stylesheet" />
-	<link type="text/css" href="../../guis.common/css/progressBar.css" rel="Stylesheet" />
-	<link type="text/css" href="../../guis.common/css/login.css" rel="Stylesheet" />
+	<script type="text/javascript" src="/guis.common/javascript/0.GUI.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/0.cookies.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.progressBarManager.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.login.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.load.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.actionsheet.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.hiddenObjects.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.inspector.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.links.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.paint.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.rubberband.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.svg.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.text.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.toolbar.js"></script>
 
-	<link type="text/css" href="../../guis.common/libraries/jquery/plugins/css/jquery.jPopover.ipad.css" rel="Stylesheet" />
+
+	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
+
+	<link type="text/css" href="/guis.common/css/actionsheet.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis.common/css/progressBar.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
+
+	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.ipad.css" rel="Stylesheet" />
 	
 	<script>
 	
@@ -104,11 +107,81 @@
 		
 		
 	
-		GUI.uploadFile=function(object,message,command){
+		GUI.uploadFile=function(object,message){
+		
+			var uploadDialog = document.createElement("div");
+			$(uploadDialog).attr("title", GUI.translate("upload file"));
+			$(uploadDialog).html('<p>'+message+'</p>');
 			
-			alert(this.translate('No Upload on iOS'));
+			var form = document.createElement("input");
+			$(form).attr("type", "file");
+			
+			$(form).bind("change", function() {
+			
+				var progress = document.createElement("div");
+				$(progress).css("margin-top", "10px");
+				$(progress).progressbar({
+					value: 0
+				});
+
+				$(uploadDialog).append(progress);
+
+				var fd = new FormData();
+				fd.append("file", form.files[0]);
+
+				var xhr = new XMLHttpRequest();
+				xhr.upload.addEventListener("progress", function(evt) {
+					
+					if (evt.lengthComputable) {
+						var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+						$(progress).progressbar("value", percentComplete);
+					} else {
+						$(progress).progressbar("destroy");
+						$(progress).html("unable to compute progress");
+					}
+					
+				}, false);
+				
+				xhr.addEventListener("load", function() {
+					//upload complete
+					$(uploadDialog).dialog("close");
+				}, false);
+				xhr.addEventListener("error", function() {
+					//failed
+					alert("failed");
+				}, false);
+				xhr.addEventListener("abort", function() {
+					//canceled
+					alert("cancel");
+				}, false);
+				xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
+				xhr.send(fd);
+				
+				var dialogButtons = {};
+				dialogButtons[GUI.translate("cancel")] = function() {
+					xhr.abort();
+					$(this).dialog("close");
+				}
+				
+				$(uploadDialog).dialog("option", "buttons", dialogButtons);
+				
+			});
+			
+			$(uploadDialog).append(form);
+			
+			var dialogButtons = {};
+			dialogButtons[GUI.translate("cancel")] = function() {
+				$(this).dialog("close");
+			}
+			
+			$(uploadDialog).dialog({
+				modal: true,
+				resizable: false,
+				buttons: dialogButtons
+			});
 			
 		}
+		
 
 		
 		
@@ -239,18 +312,18 @@
 				var huu = new Audio("");
 				$("body").append(huu);
 				
-				huu.src = "huu.m4a";
+				huu.src = "/guis/ipad/huu.m4a";
 				
 				GUI.onToggleHidden = function(hiddenMode) {
 					
 					if (hiddenMode) {
 						//hidden mode is active (hidden objects are visible)
-						$("#hiddenToggle").attr("src", "hidden_active.png");
-						huu.src = "huu.m4a";
+						$("#hiddenToggle").attr("src", "/guis/ipad/hidden_active.png");
+						huu.src = "/guis/ipad/huu.m4a";
 						huu.play();
 					} else {
 						//hidden mode is inactive (no hidden objects are visible)
-						$("#hiddenToggle").attr("src", "hidden.png");	
+						$("#hiddenToggle").attr("src", "/guis/ipad/hidden.png");	
 					}
 					
 				}
@@ -268,6 +341,9 @@
 				
 			}, 100);
 		});
+		
+		
+		GUI.startRoom = '##START_ROOM##';
 
 	
 	</script>
@@ -278,11 +354,11 @@
 		
 		<div class="header_right">
 			
-			<img src="reload.png" alt="" id="reload" height="24" width="24" />
+			<img src="/guis/ipad/reload.png" alt="" id="reload" height="24" width="24" />
 			
-			<img src="hidden.png" alt="" id="hiddenToggle" height="24" width="24" />
+			<img src="/guis/ipad/hidden.png" alt="" id="hiddenToggle" height="24" width="24" />
 			
-			<img src="info.png" alt="" id="inspector" height="24" width="24" />
+			<img src="/guis/ipad/info.png" alt="" id="inspector" height="24" width="24" />
 			
 		</div>
 		
@@ -316,11 +392,13 @@
 		
 		<div class="login_title">Webarena 1.0</div>
 		
-		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="Mustermann" id="login_username" class="login_input" />
+		<div class="login_error"></div>
+		
+		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="root" id="login_username" class="login_input" />
 		
 		<br />
 		
-		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="My_Password" id="login_password" class="login_input" />
+		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="bid!steam2011" id="login_password" class="login_input" />
 		
 		<br />
 		

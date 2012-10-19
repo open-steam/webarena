@@ -38,6 +38,19 @@ File.register=function(type){
 		
 	}});
 	
+	this.registerAction('Datei hochladen',function(){
+		
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var obj = selected[i];
+			
+			obj.execute();
+			
+		}
+		
+	},true);
+	
 }
 
 File.execute=function(){
