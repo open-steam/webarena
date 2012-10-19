@@ -89,6 +89,10 @@ GUI.adjustContent = function(webarenaObject) {
 		var maxX = Math.round(webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth());
 		var maxY = Math.round(webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight());
 		
+		//TODO BAUSTELLE Die Fenstergroesse und die Scrollposition muessen beruecksichtigt werden!!!!
+		
+		maxX=5000;maxY=5000;
+		
 		if (maxX > currentRoom.getAttribute("width")) {
 			currentRoom.setAttribute("width", maxX);
 			$("#content").css("width", maxX);			//TODO do not do this, if browser viewport is bigger
