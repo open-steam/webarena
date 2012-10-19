@@ -13,7 +13,7 @@ Paint.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 	if (!GeneralObject.boxIntersectsWith.call(this, otherx, othery, otherwidth, otherheight)) {
 		return false;
 	}
-	
+	return true; //TODO: fix this...
 	var thisx = this.getViewBoundingBoxX();
 	var thisy = this.getViewBoundingBoxY();
 	var thisw = this.getViewBoundingBoxWidth();
