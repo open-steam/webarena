@@ -272,6 +272,7 @@ GUI.initMouseHandler = function() {
 			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
 
 			if (clickedObject) {
+				if (clickedObject.restrictedMovingArea) return false;
 				event.preventDefault();
 				event.stopPropagation();
 				clickedObject.click(event);
@@ -294,6 +295,10 @@ GUI.initMouseHandler = function() {
 			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
 
 			if (clickedObject) {
+				if (clickedObject.restrictedMovingArea) {
+					return false;
+				}
+				
 				clickedObject.click(event);
 			} else {
 				/* clicked on background */
