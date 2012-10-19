@@ -20,6 +20,8 @@ File.register=function(type){
 	
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
 
+	this.registerAttribute('fillcolor',{hidden: true});
+
 	this.registerAttribute('preview',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
 		if (local) {
 			object.updateThumbnail();
@@ -81,6 +83,8 @@ File.isResizable=function(){
 
 File.register('File');
 File.isCreatable=true;
+
+File.moveByTransform = true;
 
 File.category='Files';
 

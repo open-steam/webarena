@@ -46,6 +46,8 @@ ImageObject.isResizable=function(){
 ImageObject.register('ImageObject');
 ImageObject.isCreatable=false;
 
+ImageObject.moveByTransform = true;
+
 ImageObject.category='Images';
 
 module.exports=ImageObject;
