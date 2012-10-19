@@ -262,27 +262,54 @@ GUI.initObjectDeletionByKeyboard = function() {
 /* mouse handler */
 GUI.initMouseHandler = function() {
 
-	var mousedown = function(event) {
-
-		event.preventDefault();
-		event.stopPropagation();
+	if (GUI.isTouchDevice) {
 		
-		var contentPosition = $("#content").offset();
-		
-		/* find objects at this position */
-		var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
+		var touchHandler = function(event) {
+			
+			var contentPosition = $("#content").offset();
 
-		if (clickedObject) {
-			clickedObject.click(event);
-		} else {
-			/* clicked on background */
-			GUI.rubberbandStart(event);
+			/* find objects at this position */
+			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
+
+			if (clickedObject) {
+				if (clickedObject.restrictedMovingArea) return false;
+				event.preventDefault();
+				event.stopPropagation();
+				clickedObject.click(event);
+			}
+			
 		}
 		
+		$("#content>svg").get(0).addEventListener("touchstart", touchHandler, false);
+		
+	} else {
+		
+		var mousedown = function(event) {
+
+			event.preventDefault();
+			event.stopPropagation();
+
+			var contentPosition = $("#content").offset();
+
+			/* find objects at this position */
+			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
+
+			if (clickedObject) {
+				if (clickedObject.restrictedMovingArea) {
+					return false;
+				}
+				
+				clickedObject.click(event);
+			} else {
+				/* clicked on background */
+				GUI.rubberbandStart(event);
+			}
+
+		}
+		
+		$("#content>svg").bind("mousedown", mousedown);
+		
 	}
-	
-	$("#content>svg").bind("mousedown", mousedown);
-	
 	
 }
 

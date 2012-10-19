@@ -1,51 +1,41 @@
-/**************************************/
-/*           EasyDB                   */
-/**************************************/
-
-.easydb-result-wrapper table{
-
+/* line 3, ../sass/easydb.scss */
+.easydb-result-wrapper table > th {
+  font-weight: bold;
+  vertical-align: top;
+  width: 20%;
 }
 
-.easydb-result-wrapper table tr{
-
+/* line 9, ../sass/easydb.scss */
+.easydb-result-wrapper table tr:hover {
+  background-color: #eeeeee;
 }
 
-.easydb-result-wrapper table > th{
-    font-weight: bold;
-    vertical-align: top;
-    width: 20%;
+/* line 13, ../sass/easydb.scss */
+.selected-row {
+  background-color: #dddddd;
 }
 
-.easydb-result-wrapper table tr:hover{
-    background-color: #eeeeee;
+/* line 17, ../sass/easydb.scss */
+.easydb-result-wrapper table tr:hover .selected-row {
+  background-color: #CCCCCC;
 }
 
-.selected-row{
-    background-color: #dddddd;
+/* line 21, ../sass/easydb.scss */
+.paginator-button {
+  float: left;
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #000000;
+  background-color: #eeeeee;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -ms-border-radius: 5px;
+  -o-border-radius: 5px;
+  border-radius: 5px;
+  font-weight: bold;
 }
 
-.easydb-result-wrapper table tr:hover .selected-row{
-    background-color: #CCCCCC;
+/* line 33, ../sass/easydb.scss */
+.paginator-button.current {
+  background-color: #cccccc;
 }
-
-.paginator-button{
-    float: left;
-    padding: 5px;
-    margin-right: 5px;
-    border: 1px solid #000000;
-    background-color: #eeeeee;
-    border-radius: 5px;
-    font-weight: bold;
-}
-
-.paginator-button.current{
-
-    background-color: #cccccc;
-
-}
-
-
-
-
-
-

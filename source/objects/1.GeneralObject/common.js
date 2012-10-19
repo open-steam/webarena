@@ -25,6 +25,8 @@ GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
 GeneralObject.moveByTransform = false;			//TODO cient only??
 
+GeneralObject.restrictedMovingArea = false;
+
 GeneralObject.duplicateWithLinkedObjects = false; //duplicate this object if a linked object gets duplicated
 GeneralObject.duplicateLinkedObjects = false; //duplicate linked objects if this object gets duplicated
 
