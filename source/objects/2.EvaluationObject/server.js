@@ -19,15 +19,56 @@ module.exports=theObject;
 **/
 theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
 	
+	if (typeof otherX == 'object'){
+		var other=otherX.getBoundingBox();
+		otherX=other.x;
+		otherY=other.y;
+		otherWidth=other.width;
+		otherHeight=other.height;
+	}
+	
 	var bbox=this.getBoundingBox();
 	
-	if (otherX<bbox.x) return false;
-	if (otherY<bbox.y) return false;
-	if ((otherX+otherWidth)>(bbox.x+bbox.width)) return false;
-	if ((otherY+otherHeight)>(bbox.y+bbox.height)) return false;
+	if (otherX<bbox.x) {
+		//console.log('too far left');
+		return false;
+	}
+	if (otherY<bbox.y) {
+		//console.log('too far up');
+		return false;
+	}
+	if ((otherX+otherWidth)>(bbox.x+bbox.width)) {
+		//console.log('too far right');
+		return false;
+	}
+	if ((otherY+otherHeight)>(bbox.y+bbox.height)) {
+		//console.log('too far bottom');
+		return false;
+	}
 	
 	return true;
 	
+}
+
+/**
+*	getOverlappingObjcts
+*
+*	get an array of all overlapping objects
+**/
+theObject.getOverlappingObjects=function(){
+	var result=[];
+	
+	var inventory=this.getRoom().getInventory();
+	
+	for (var i in inventory){
+		 var test=inventory[i];
+		 if (test.id==this.id) continue;
+		 if (this.encloses(test)){
+		 	result.push(test);
+		 }
+	}
+	
+	return result;
 }
 
 /**
@@ -39,6 +80,7 @@ theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
 *	changeData old and new values of positioning (e.g. changeData.old.x) 
 **/
 theObject.evaluate=function(object,changeData){
+	
 	//complete data
 	
 	var oldData={};
