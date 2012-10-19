@@ -37,6 +37,7 @@ Log.getLogString=function(message,color) {
 }
 
 Log.info=function(message) {
+	if (!Modules.Config.logLevels.info) return;
 	
 	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
 	
@@ -64,6 +65,7 @@ Log.error=function(message) {
 }
 
 Log.warn=function(message) {
+	if (!Modules.Config.logLevels.warn) return;
 	
 	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
 	
@@ -74,6 +76,7 @@ Log.warn=function(message) {
 }
 
 Log.debug=function(message) {
+	if (!Modules.Config.logLevels.debug) return;
 	
 	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
 	
