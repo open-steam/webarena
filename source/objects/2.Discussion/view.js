@@ -83,7 +83,7 @@ Discussion.updateInnerHeight = function() {
     var hh = $(rep).find(".discussion-heading").height();
     var ih = $(rep).find(".discussion-input").height();
 
-	$(rep).find(".discussion-text").css("height", (this.getAttribute('height')- hh - ih - 55)+"px");
+	$(rep).find(".discussion-text").css("height", (this.getAttribute('height')- hh - ih - 90)+"px");
 
 }
 
@@ -93,11 +93,13 @@ Discussion.createRepresentation = function() {
     // wrapper
     var rep = GUI.svg.other("foreignObject");
     rep.dataObject=this;
-    
+
+
+
     // content
     var body = document.createElement("body");
     $(body).append(
-        $('<div class="discussion"><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
+        $('<div class="discussion"><span class="moveArea">MOVE</span></span><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
     );
 
 
@@ -232,4 +234,24 @@ Discussion.getViewBoundingBoxWidth = function() {
 /* get the height of the objects bounding box */
 Discussion.getViewBoundingBoxHeight = function() {
     return parseInt(this.getAttribute("height"));	
+}
+
+Discussion.representationCreated = function() {
+    GeneralObject.representationCreated.call(this);
+    var that = this;
+
+    var rep = this.getRepresentation();
+    $(rep).find('.discussion-heading').editable(function(value, settings) {
+        that.setAttribute("discussionTitle", value);
+
+        return(value);
+    }, {
+        type      : "autogrow",
+        submit    : 'Speichern',
+        autogrow : {
+            lineHeight : 16,
+            maxHeight  : 512
+        }
+    });
+
 }

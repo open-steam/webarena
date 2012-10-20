@@ -39,6 +39,8 @@ Discussion.execute=function(event){
 Discussion.register('Discussion');
 Discussion.isCreatable=true;
 
+Discussion.restrictedMovingArea = true;
+
 Discussion.contentURLOnly = false;
 
 Discussion.category='Texts';

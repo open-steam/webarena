@@ -1,0 +1,67 @@
+@import "compass/css3";
+
+/**************************************/
+/*           Discussion               */
+/**************************************/
+
+.discussion {
+  border: 2px solid #cccccc ;
+
+  @include border-top-radius(5px);
+
+  padding-bottom: 5px;
+  background-color: #FFFFFF;
+}
+
+.discussion-text{
+  overflow-y: scroll;
+
+  border-bottom:  2px solid #cccccc ;
+  border-top:  2px solid #cccccc ;
+}
+
+.discussion-heading{
+  margin-bottom: 5px;
+  margin-top: 0px;
+
+  padding: 5px;
+  font-size: 16px;
+
+}
+
+.discussion-statement{
+  background-color: white;
+}
+
+.discussion-statement-heading{
+  border-top: 2px solid #CCCCCC;
+  padding: 5px;
+
+  font-size: 16px;
+  color: #04138A;
+}
+
+.discussion-statement-heading{
+  .message-timestamp{
+    float: right;
+    font-size: 12px;
+  }
+
+  .message-author{
+    font-size: 12px;
+  }
+}
+
+
+.discussion-statement-text{
+  padding: 5px;
+  font-size: 14px;
+  margin: 0px;
+}
+
+.discussion-input{
+  @include box-sizing(border-box);
+
+  padding: 10px;
+  width: 100%;
+}

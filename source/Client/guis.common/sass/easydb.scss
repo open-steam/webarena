@@ -1,0 +1,43 @@
+@import "compass/css3";
+
+.easydb-result-wrapper table > th{
+  font-weight: bold;
+  vertical-align: top;
+  width: 20%;
+}
+
+.easydb-result-wrapper table tr:hover{
+  background-color: #eeeeee;
+}
+
+.selected-row{
+  background-color: #dddddd;
+}
+
+.easydb-result-wrapper table tr:hover .selected-row{
+  background-color: #CCCCCC;
+}
+
+.paginator-button{
+  float: left;
+  padding: 5px;
+  margin-right: 5px;
+  border: 1px solid #000000;
+  background-color: #eeeeee;
+
+  @include border-radius(5px);
+
+  font-weight: bold;
+}
+
+.paginator-button.current{
+
+  background-color: #cccccc;
+
+}
+
+
+
+
+
+

@@ -527,7 +527,7 @@ GeneralObject.saveMoveStartPosition = function() {
 GeneralObject.moveStart = function(event) {
 
 	if (!this.id || this.id == "") {
-		var self = ObjectManager.getObject($(this).parent().attr("id"));
+		var self = ObjectManager.getObject($(this).closest("svg>*").attr("id"));
 	} else {
 		var self = ObjectManager.getObject(this.id);
 	}
