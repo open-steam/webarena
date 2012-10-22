@@ -117,9 +117,8 @@ Discussion.createRepresentation = function() {
     that.title = this.getAttribute("discussionTitle") || "TITLE";
 
     $(body).find("input").keyup(function (event) {
-        if (event.keyCode == 13) { // enter
+        if (event.keyCode == 13 && $(this).val()!= "") { // enter
             var value = $(this).val();
-
 
             var message = {};
             message.author = GUI.username;
@@ -137,9 +136,6 @@ Discussion.createRepresentation = function() {
             $(body).find(".discussion-text").animate(
                 { scrollTop : $(body).find(".discussion-text").prop("scrollHeight")}, 3000
             );
-
-            //rep.dataObject.setContent($(this).parent().find('.discussion').html());
-
         }
     });
 
