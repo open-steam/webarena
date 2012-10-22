@@ -1,0 +1,6 @@
+/* line 1, ../sass/sharepoint.scss */
+.js-tree {
+  height: 100%;
+  overflow: auto;
+  padding-right: -1em;
+}

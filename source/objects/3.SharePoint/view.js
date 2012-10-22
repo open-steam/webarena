@@ -102,9 +102,9 @@ SharePoint.getViewBoundingBoxHeight = function() {
 SharePoint.renderLoadScreen  = function(target){
     var that = this;
     var dialogPage2 = $('' +
-        '<div>' +
+        '<div class="easy-load-wrapper">' +
         '<h2> ' +that.translate(GUI.currentLanguage, "WAIT_DIALOG") +'  </h2>' +
-        '<img src="objects/EasyDBImage/progress.gif">' +
+        '<img src="/guis.common/images/progress.gif">' +
         '</div>'
     );
     return dialogPage2;

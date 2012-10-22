@@ -8,10 +8,18 @@
 
 
 EasyDBImage.createRepresentation=function() {
+    var rep = GUI.svg.group(this.getAttribute('id'));
+
+    var rect = GUI.svg.rect(rep, 0,0,10,10);
+    $(rect).attr("fill", "transparent");
+    $(rect).addClass("borderRect");
+
+
+
     var imgUrl = this.getAttribute('remote_url') || "../../guis.common/images/imageNotFound.png";
-    var rep = GUI.svg.image(10, 10, 10, 10, imgUrl);
+    GUI.svg.image(rep, 0, 0, 100, 100, imgUrl);
+
     rep.dataObject=this;
-    $(rep).attr("id", this.getAttribute('id'));
     this.initGUI(rep);
 
     return rep;
@@ -20,11 +28,27 @@ EasyDBImage.createRepresentation=function() {
 
 EasyDBImage.draw = function(){
     var rep=this.getRepresentation();
+    var that = this;
+    var remoteUrl = this.getAttribute('remote_url')
 
-    if($(rep).attr("href")!== this.getAttribute('remote_url')){
-        $(rep).attr("href", this.getAttribute('remote_url'));
+    if(remoteUrl && $(rep).find('image').attr("href")!== remoteUrl){
+        $(rep).find('image').attr("href", remoteUrl);
+
+        var newImg = new Image();
+        newImg.src = remoteUrl;
+        $(newImg).one("load", function(){
+            var newheight = newImg.height;
+            var newwidth = newImg.width;
+
+            that.setAttribute("width", newwidth);
+            that.setAttribute("height", newheight);
+
+            GeneralObject.draw.call(this);
+        });
+    } else {
+        GeneralObject.draw.call(this);
     }
-    GeneralObject.draw.call(this);
+
 }
 
 EasyDBImage.renderPagination = function(data){
@@ -36,15 +60,23 @@ EasyDBImage.renderPagination = function(data){
     var rowsPerPage = 10;
     var pageCount = Math.ceil(absRowCount / rowsPerPage);
 
-
+    var extraClass;
     for(var i = 0 ; i< pageCount; i++){
-        $(result).append(this.renderPaginatorButton(i, rowsPerPage * i, rowsPerPage, false));
+
+        if(i == 0){
+            extraClass = "first";
+        } else if(i == pageCount -1){
+            extraClass = "last"
+        } else{
+            extraClass ="";
+        }
+        $(result).append(this.renderPaginatorButton(i, rowsPerPage * i, rowsPerPage, false, extraClass));
     }
 
     return result;
 }
 
-EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
+EasyDBImage.renderPaginatorButton = function(number, offset, limit, current, extraClass){
 
     //TODO: searchTerm
     var that=this;
@@ -59,6 +91,7 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
     //var button = "<div class='paginator-button'>" + number + "</div>";
     var button = document.createElement("div");
     $(button).addClass('paginator-button');
+    if(extraClass) {$(button).addClass(extraClass);}
     $(button).html( number );
 
 
@@ -82,9 +115,9 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current){
 EasyDBImage.renderLoadScreen  = function(target){
     var that = this;
     var dialogPage2 = $('' +
-        '<div>' +
+        '<div class="easy-load-wrapper">' +
         '<h2> ' +that.translate(GUI.currentLanguage, "WAIT_DIALOG") +'  </h2>' +
-        '<img src="objects/EasyDBImage/progress.gif">' +
+        '<img src="/guis.common/images/progress.gif">' +
         '</div>'
     );
     if($('.paginator').length !== 0){
@@ -154,6 +187,7 @@ EasyDBImage.selectRow = function(event){
     var selRow = $(event.target).closest('.result-row');
     $(selRow).addClass('selected-row');
 }
+
 
 
 

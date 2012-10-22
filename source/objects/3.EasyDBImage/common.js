@@ -12,9 +12,10 @@ EasyDBImage.execute=function(){
 	
 	var that=this;
 
-    var dialogPage1 = $('<div>').append(
-        $('<span>').html('Suchbegriff eingeben:')
-        , $('<input>').attr('class', 'maxWidth')
+    var dialogPage1 = $('' +
+        '<div id="easydb-dialog">' +
+            '<input class="maxWidth" placeholder="Suchbegriff hier eingeben">',
+        '</div>'
     );
 
 
@@ -27,19 +28,11 @@ EasyDBImage.execute=function(){
                 searchString: searchTerm
             }
 
-            var dialogPage2 = $('' +
-                '<div>' +
-                    '<h2>' + that.translate(GUI.currentLanguage, "DISCUSSION_TOPIC") + '</h2>' +
-                    '<img src="objects/EasyDBImage/progress.gif">' +
-                '</div>'
-            );
-
             GUI.dialog(that.translate(GUI.currentLanguage, "EASYDB_IMAGE_SELECTION"), that.renderLoadScreen('.ui-dialog-content'), {
                 "OK" : function(){
                     //TODO: check if image selected
                     var pictureUrl = $('.selected-row').attr('easydbdownloadurl');
                     that.setAttribute('remote_url', pictureUrl);
-
                 },
                 "Cancel": function(){return false;}
 
@@ -59,12 +52,12 @@ EasyDBImage.execute=function(){
         "Cancel": function () {
             return false;
         }
-    }, 500, {height : 600});
+    }, 500, {height : 200});
 }
 
 EasyDBImage.isResizable=function(){
-    if (this.getAttribute('remote_url') == false) return false;
-    return GeneralObject.isResizable.call(this);
+    //if (this.getAttribute('remote_url') == false) return false;
+    return true;
 }
 
 //TODO: changeimage action

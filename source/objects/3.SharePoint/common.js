@@ -52,7 +52,7 @@ SharePoint.execute=function(){
                 $('.ui-dialog-content').html(renderedTree);
             });
 
-        }}).on("dblclick", '.jstree-leaf', function(){
+        }, height: 600}  ).on("dblclick", '.jstree-leaf', function(){
                 $(':button:contains("OK")').click();
             })
     }
