@@ -292,26 +292,34 @@ ObjectManager.init=function(theModules){
 	ObjectManager.clientCode='//Object Code for WebArena Client '+enter;
 	
 	files.forEach(function(filename){
-		var fileinfo=filename.split('.');
-		var index=fileinfo[0];
-		var objName=fileinfo[1];
-		if (!index) return;
-		if (!objName) return;
 		
-		var filebase=__dirname+'/../objects/'+filename;
-
-		var obj=require(filebase+'/server.js');
+		try {
 		
-		addToClientCode(filebase+'/common.js');
-		addToClientCode(filebase+'/client.js');
-		addToClientCode(filebase+'/view.js');
-		ObjectManager.clientCode+=enter+objName+'.register("'+objName+'");'+enter+enter;
-		addToClientCode(filebase+'/languages.js');
-		
-		obj.ObjectManager=Modules.ObjectManager;
-		obj.register(objName);
-		
-		obj.localIconPath=filebase+'/icon.png';
+			var fileinfo=filename.split('.');
+			var index=fileinfo[0];
+			var objName=fileinfo[1];
+			if (!index) return;
+			if (!objName) return;
+			
+			var filebase=__dirname+'/../objects/'+filename;
+	
+			var obj=require(filebase+'/server.js');
+			
+			addToClientCode(filebase+'/common.js');
+			addToClientCode(filebase+'/client.js');
+			addToClientCode(filebase+'/view.js');
+			ObjectManager.clientCode+=enter+objName+'.register("'+objName+'");'+enter+enter;
+			addToClientCode(filebase+'/languages.js');
+			
+			obj.ObjectManager=Modules.ObjectManager;
+			obj.register(objName);
+			
+			obj.localIconPath=filebase+'/icon.png';
+			
+		} catch (e) {
+			Modules.Log.warn('Could not register '+objName);
+			Modules.Log.warn(e);
+		}
 		
 	});
 	

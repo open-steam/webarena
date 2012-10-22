@@ -9,3 +9,5 @@ node_modules/
 .svn/
 
 .config.rb.swp
+source/err.log
+source/out.log

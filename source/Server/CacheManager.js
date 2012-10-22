@@ -681,7 +681,7 @@ CacheManager.getContent=function(roomID,objectID,context,callback){
 			Modules.config.connector.getContent(roomID,objectID,context, function(content) {
 
 
-				if (({}).toString.call(objData.content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
+				if (({}).toString.call(content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
 					/* create byte array */
 					
 					var byteArray = [];

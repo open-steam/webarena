@@ -197,11 +197,6 @@ ObjectManager.loadRoom=function(roomid){
 }
 
 ObjectManager.createObject=function(type,attributes,content,callback) {
-    
-    // check if type exists (not)
-    if (typeof(type) != "function" && typeof(type.prototype) != "object") {
-        // TODO type does not exists
-    }
 	
     var data={
         'roomID':this.currentRoomID,

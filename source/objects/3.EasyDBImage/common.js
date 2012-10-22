@@ -72,11 +72,11 @@ EasyDBImage.isResizable=function(){
 EasyDBImage.register('EasyDBImage');
 EasyDBImage.isCreatable=true;
 
+EasyDBImage.restrictedMovingArea = false;
+
 EasyDBImage.category='Images';
 
-EasyDBImage.isProportional=function(){
-    return false;
-}
+
 
 module.exports=EasyDBImage;
 

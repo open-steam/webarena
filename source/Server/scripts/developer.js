@@ -72,6 +72,7 @@ function traverse(folder){
 		files.forEach(function(filename){
 			
 			if (filename.search('svn')!=-1) return;
+			if (filename.search('libraries')!=-1) return;
 			
 			filename=folder+filename;
 			
@@ -112,6 +113,7 @@ function traverseLog(folder){
 		files.forEach(function(filename){
 			
 			if (filename.search('svn')!=-1) return;
+			if (filename.search('libraries')!=-1) return;
 			
 			filename=folder+filename;
 			

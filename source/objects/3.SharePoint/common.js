@@ -64,4 +64,6 @@ SharePoint.category='Files';
 SharePoint.isCreatable=true;
 SharePoint.moveByTransform = true;
 
+SharePoint.restrictedMovingArea = false;
+
 module.exports=SharePoint;

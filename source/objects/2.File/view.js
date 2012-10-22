@@ -8,12 +8,16 @@
 
 File.createRepresentation = function() {
 
-	var rep = GUI.svg.image(10, 10, 10, 10, this.getFileIcon());
+	var rep = GUI.svg.group(this.getAttribute('id'));
+
+	var rect = GUI.svg.rect(rep, 0,0,10,10);
+	$(rect).attr("fill", "transparent");
+	$(rect).addClass("borderRect");
+
+	GUI.svg.image(rep, 0, 0, 10, 10, this.getFileIcon());
 	
 	rep.dataObject=this;
-
-	$(rep).attr("id", this.getAttribute('id'));
-
+	
 	this.initGUI(rep);
 	
 	this.updateThumbnail();
@@ -31,6 +35,13 @@ File.draw = function() {
 		this.setViewWidth(64);
 		this.setViewHeight(64);
 		
+	}
+	
+	var rep = this.getRepresentation();
+	
+	if (!$(rep).hasClass("selected")) {
+		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
+		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
 	}
 	
 }
@@ -61,25 +72,46 @@ File.updateThumbnail=function(){
 		
 		GeneralObject.draw.call(this);
 		
-		$(rep).attr("href", "../../guis.common/images/fileicons/upload.png");
+		$(rep).find("image").attr("href", "../../guis.common/images/fileicons/upload.png");
 		
 	} else if (this.getAttribute("preview") == false) {	
 		/* show object type icon */
 		
 		GeneralObject.draw.call(this);
 		
-		$(rep).attr("href", this.getFileIcon());
+		$(rep).find("image").attr("href", this.getFileIcon());
 	
 	} else {
 		/* show thumbnail */
 		
 		GeneralObject.draw.call(this);
 	
-		$(rep).attr("href", this.getPreviewContentURL());
+		$(rep).find("image").attr("href", this.getPreviewContentURL());
 	
 	}
 
 }
+
+
+
+File.setViewWidth = function(value) {
+	
+	$(this.getRepresentation()).find("image").attr("width", parseInt(value));
+	$(this.getRepresentation()).find("rect").attr("width", parseInt(value));
+
+	GeneralObject.setViewWidth.call(this, value);
+	
+}
+
+File.setViewHeight = function(value) {
+
+	$(this.getRepresentation()).find("image").attr("height", parseInt(value));
+	$(this.getRepresentation()).find("rect").attr("height", parseInt(value));
+	GeneralObject.setViewHeight.call(this, value);
+
+}
+
+
 
 
 /* get the width of the objects bounding box */

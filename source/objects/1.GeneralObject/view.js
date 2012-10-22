@@ -134,16 +134,21 @@ GeneralObject.addSelectedIndicator = function() {
 
 	var rep = this.getRepresentation();
 
-	//$(rep).attr("filter", "url(#svg-selected)");
+	var borderRep = rep;
 	
-	this.oldAttrStroke = $(rep).attr("stroke");
-	this.oldAttrStrokeWidth = $(rep).attr("stroke-width");
+	if ($(rep).find(".borderRect").length > 0) {
+		/* border rect exists */
+		borderRep = $(rep).find(".borderRect").get(0);
+	}
+	console.log("BR", borderRep);
+	this.oldAttrStroke = $(borderRep).attr("stroke");
+	this.oldAttrStrokeWidth = $(borderRep).attr("stroke-width");
 	
 	if (this.oldAttrStroke == undefined) this.oldAttrStroke = "";
 	if (this.oldAttrStrokeWidth == undefined) this.oldAttrStrokeWidth = 0;
 	
-	$(rep).attr("stroke", '#1F7BFE');
-	$(rep).attr("stroke-width", "2");
+	$(borderRep).attr("stroke", '#1F7BFE');
+	$(borderRep).attr("stroke-width", "2");
 
 	$(rep).addClass("selected");
 	
@@ -152,15 +157,17 @@ GeneralObject.addSelectedIndicator = function() {
 GeneralObject.removeSelectedIndicator = function() {
 
 	var rep = this.getRepresentation();
-
-	if (this.getAttribute("shadow")) {
-		//$(rep).attr("filter", "url(#svg-drop-shadow)");
-	} else {
-		//$(rep).attr("filter", "");
+	
+	var borderRep = rep;
+	
+	if ($(rep).find(".borderRect").length > 0) {
+		/* border rect exists */
+		borderRep = $(rep).find(".borderRect").get(0);
 	}
-
-	$(rep).attr("stroke", this.oldAttrStroke);
-	$(rep).attr("stroke-width", this.oldAttrStrokeWidth);
+	
+	
+	$(borderRep).attr("stroke", this.oldAttrStroke);
+	$(borderRep).attr("stroke-width", this.oldAttrStrokeWidth);
 	
 	$(rep).removeClass("selected");
 	
@@ -273,10 +280,10 @@ GeneralObject.addControls = function() {
 	this.addControl("x", function(dx, dy, startWidth, startHeight, rep) {
 		
 		if (self.resizeProportional()) {
-			
+
 			var width = startWidth+dx;
 			var height = startHeight*(width/startWidth);
-			
+
 			if (width >= 10) {
 				self.setViewWidth(width);
 			}
@@ -406,7 +413,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		{
 			fill: "#008DDF",
 			stroke: "#FFFFFF",
-			strokeWidth: border
+			strokeWidth: border,
 			//filter: "url(#svg-drop-shadow)"
 		}
 	);
@@ -434,7 +441,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		control.startMouseY = event.pageY;
 		control.objectStartWidth = self.getViewWidth();
 		control.objectStartHeight = self.getViewHeight();
-		
+
 		control.moving = true;
 		
 		var move = function(event) {
@@ -878,7 +885,7 @@ GeneralObject.click = function(event) {
 /* handler functions */
 
 GeneralObject.clickHandler = function(event) {
-	
+
 	if (GUI.isTouchDevice && event.touches.length > 1) {
 		this.select(true); //multi select
 		event.stopPropagation();
