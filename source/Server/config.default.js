@@ -15,5 +15,10 @@ module.exports={
 		maxDimensions: 400
 	},
 	koalaServer: 'www.bid-owl.de.localhost',
-	koalaPort: 80
+	koalaPort: 80,
+	logLevels : {
+		"warn" : true,
+		"debug" : false,
+		"info" : false
+	}
 };

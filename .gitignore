@@ -2,3 +2,5 @@
 config.local.js
 source/Server/tmp/*
 node_modules
+source/err.log
+source/out.log
