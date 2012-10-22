@@ -5,3 +5,5 @@
 *
 */
 	
+TesterImage.createRepresentation=ImageObject.createRepresentation;
+TesterImage.updateImage=ImageObject.updateImage;

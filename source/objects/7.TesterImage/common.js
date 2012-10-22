@@ -17,8 +17,17 @@ TesterImage.register=function(type){
 
 	this.registerAttribute('key',{type:'text',standard:'',category:'Keyword'});
 	this.registerAttribute('value',{type:'text',standard:'',category:'Keyword'});
+	
+	this.registerAttribute('mimeType',{type:'text',standard:'image/png'});
+	
+	this.registerAttribute('shadow',{type:'boolean',standard:false,category:'Appearance'});
 
 }
+
+TesterImage.execute=ImageObject.execute
+TesterImage.isProportional=ImageObject.isProportional
+TesterImage.resizeProportional=ImageObject.resizeProportional
+TesterImage.isResizable=ImageObject.isResizable
 
 TesterImage.register('TesterImage');
 TesterImage.isCreatable=true; 
