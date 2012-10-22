@@ -1,32 +1,7 @@
 SharePoint.createRepresentation = function(){
 
-    var rep;
-    if(this.getAttribute("show_iframe")){
-        rep = this.createRepresentationIFrame();
-    } else {
-        rep = this.createRepresentationIcon();
-    }
-
-    $(rep).attr("id", this.getAttribute('id'));
-    this.initGUI(rep);
-
-    return rep;
-}
-
-SharePoint.createRepresentationIFrame = function(){
-
-    var rep = GUI.svg.other("foreignObject");
-    var body = document.createElement("body");
-    $(body).append("<iframe src='" + this.getAttribute("sharepoint_src") + "' width='500px' height='500px'></iframe> ");
-
-    $(rep).append(body);
-
-    return rep;
-}
-
-SharePoint.createRepresentationIcon = function(){
     var rep = GUI.svg.group(this.getAttribute('id'));
-    var textVal;
+    var textVal, splitTextVal, text, cTexts;
 
     GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
 
@@ -34,7 +9,16 @@ SharePoint.createRepresentationIcon = function(){
     if(this.getAttribute("sharepoint_src")){
         textVal = this.getAttribute("name");
         this.renderFilename(rep, textVal);
+
+
+    } else {
+
     }
+
+    $(rep).attr("id", this.getAttribute('id'));
+
+    rep.dataObject=this;
+    this.initGUI(rep);
 
     return rep;
 }
@@ -52,24 +36,6 @@ SharePoint.renderFilename = function (rep, filename){
 
 SharePoint.draw = function(){
 
-    if(this.getAttribute("show_iframe")){
-        console.log("draw");
-        this.drawIFrame();
-    } else {
-        this.drawIcon();
-    }
-}
-
-SharePoint.drawIFrame = function(){
-    var rep=this.getRepresentation();
-
-    this.setViewX(this.getAttribute('x'));
-    this.setViewY(this.getAttribute('y'));
-    this.setViewWidth(this.getAttribute('width'));
-    this.setViewHeight(this.getAttribute('height'));
-}
-
-SharePoint.drawIcon = function(){
     var rep=this.getRepresentation();
 
     this.setViewX(this.getAttribute('x'));
@@ -80,8 +46,10 @@ SharePoint.drawIcon = function(){
 
 
     if(this.getAttribute("sharepoint_src")){
-        $(rep).find("text").get(0).textContent = splitSubstr(this.getAttribute('name'), 12).join("\n");
+        //$(rep).find("text").get(0).textContent = splitSubstr(this.getAttribute('name'), 12).join("\n");
     }
+
+
 }
 
 SharePoint.updateIcon = function(){
@@ -123,38 +91,13 @@ SharePoint.getFileIcon = function(){
 }
 
 SharePoint.getViewBoundingBoxWidth = function() {
-    if(this.getAttribute("show_iframe")){
-        return this.getViewBoundingBoxWidthIFrame();
-    } else {
-        return this.getViewBoundingBoxWidthIcon();
-    }
+    return 64;
 }
 
 /* get the height of the objects bounding box */
 SharePoint.getViewBoundingBoxHeight = function() {
-    if(this.getAttribute("show_iframe")){
-        return this.getViewBoundingBoxHeightIFrame()
-    } else {
-        return this.getViewBoundingBoxHeightIcon()
-    }
-}
-
-SharePoint.getViewBoundingBoxWidthIcon = function() {
     return 64;
 }
-
-SharePoint.getViewBoundingBoxWidthIFrame = function() {
-    return parseInt(this.getAttribute("width"));
-}
-
-SharePoint.getViewBoundingBoxHeightIcon = function() {
-    return 64;
-}
-
-SharePoint.getViewBoundingBoxHeightIFrame = function() {
-    return parseInt(this.getAttribute("height"));
-}
-
 
 SharePoint.renderLoadScreen  = function(target){
     var that = this;

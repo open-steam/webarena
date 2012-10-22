@@ -16,10 +16,8 @@ SharePoint.execute=function(){
     var rep=this.getRepresentation();
 
     if(this.getAttribute("sharepoint_src")){
-        //window.open(this.getAttribute("sharepoint_src"), '_blank');
-        //window.focus();
-
-        this.setAttribute("show_iframe", true);
+        window.open(this.getAttribute("sharepoint_src"), '_blank');
+        window.focus();
 
     }  else {
         var data = {
