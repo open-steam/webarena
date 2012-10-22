@@ -166,45 +166,7 @@ Discussion.formatTimestamp = function(time){
 }
 
 
-Discussion.editText = function() {
-    // representation
-    var rep = this.getRepresentation();
-    var that = this;
-
-    //$(rep).find(".discussion-heading").html("<textarea rows='20' cols='20'> Test</textarea>");
-
-
-    // dialog content
-    var content = $('<div>').append(
-        $('<span>').html(that.translate(GUI.currentLanguage, "DISCUSSION_HEADER"))
-        , $('<textarea>').attr('class', 'maxWidth').val(that.getAttribute("discussionTitle"))
-    );
-        
-    // values
-//    content.find('input').value($(rep).attr('title'));
-    var that = this;
-    
-    // dispatch
-    GUI.dialog(that.translate(GUI.currentLanguage, "DISCUSSION_TOPIC"), content, {
-        "OK": function () {
-            var title = $(content).find("textarea").val();
-            that.setAttribute("discussionTitle", title);
-        },
-        "Cancel": function () {
-            return false;
-        }
-    }, 300);
-}
-
-// override clickHandler for input field
-Discussion.selectedClickHandler = function (event) {
-    //GeneralObject.selectedClickHandler.call(this);
-    $(this.getRepresentation()).find("input").focus();
-    return true;
-};
-
 /* view setter */
-
 Discussion.setViewHeight = function(value) {
     $(this.getRepresentation()).attr("height", parseInt(value));
     GUI.adjustContent(this);
