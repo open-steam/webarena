@@ -7,9 +7,15 @@
 *
 */
 
-GeneralObject.draw=function(){
+GeneralObject.draw=function(external){
 	
 	if (!this.isGraphical) return;
+	
+	if (external === true) {
+		var animated = true;
+	} else {
+		var animated = false;
+	}
 	
 	var rep=this.getRepresentation();
 
@@ -686,6 +692,8 @@ GeneralObject.bindMoveArea = function() {
 
 
 GeneralObject.moveRelative = function(dx, dy) {
+
+	if (this.getAttribute("locked")) return;
 
 	this.setViewX(this.moveObjectStartX+dx);
 	this.setViewY(this.moveObjectStartY+dy);
