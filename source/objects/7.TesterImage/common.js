@@ -24,12 +24,15 @@ TesterImage.register=function(type){
 
 }
 
-TesterImage.execute=ImageObject.execute
-TesterImage.isProportional=ImageObject.isProportional
-TesterImage.resizeProportional=ImageObject.resizeProportional
-TesterImage.isResizable=ImageObject.isResizable
+if (!File) var File=Modules.ObjectManager.getPrototype('File');
+
+TesterImage.execute=File.execute;
+TesterImage.isProportional=File.isProportional;
+TesterImage.resizeProportional=File.resizeProportional;
+TesterImage.isResizable=File.isResizable;
 
 TesterImage.register('TesterImage');
 TesterImage.isCreatable=true; 
+TesterImage.moveByTransform = true;
 
 module.exports=TesterImage;

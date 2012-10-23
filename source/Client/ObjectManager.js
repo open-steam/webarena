@@ -61,6 +61,7 @@ ObjectManager.buildObject=function(type, attributes){
 ObjectManager.getObjects=function(){
     return this.objects;
 }
+ObjectManager.getInventory=ObjectManager.getObjects;
 
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (highest layer first)
