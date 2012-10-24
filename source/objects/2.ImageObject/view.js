@@ -47,7 +47,7 @@ ImageObject.updateImage=function(){
 		
 		this.draw();
 		
-		$(rep).attr("href", "../../guis.common/images/imageNotFound.png");
+		$(rep).find("image").attr("href", "../../guis.common/images/imageNotFound.png");
 		
 		this.setViewWidth(128);
 		this.setViewHeight(101);
@@ -56,7 +56,7 @@ ImageObject.updateImage=function(){
 		
 		this.draw();
 	
-		$(rep).attr("href", this.getPreviewContentURL());
+		$(rep).find("image").attr("href", this.getPreviewContentURL());
 	
 	}
 

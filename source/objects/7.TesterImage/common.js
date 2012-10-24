@@ -12,7 +12,7 @@ TesterImage.register=function(type){
 	
 	// Registering the object
 	EvaluationObject=Modules.ObjectManager.getPrototype('EvaluationObject');
-	EvaluationObject.register.call(this,type);
+	File.register.call(this,type);
 	
 
 	this.registerAttribute('key',{type:'text',standard:'',category:'Keyword'});
@@ -26,7 +26,7 @@ TesterImage.register=function(type){
 
 if (!File) var File=Modules.ObjectManager.getPrototype('File');
 
-TesterImage.execute=File.execute;
+TesterImage.execute=function() {};
 TesterImage.isProportional=File.isProportional;
 TesterImage.resizeProportional=File.resizeProportional;
 TesterImage.isResizable=File.isResizable;
