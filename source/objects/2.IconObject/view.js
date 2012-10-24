@@ -19,12 +19,11 @@ IconObject.createRepresentation = function() {
 }
 
 
-IconObject.draw=function(){
+IconObject.draw=function(external){
 	
 	var rep=this.getRepresentation();
 
-	this.setViewX(this.getAttribute('x'));
-	this.setViewY(this.getAttribute('y'));
+	this.drawDimensions(external);
 	
 	this.setViewWidth(36);
 	this.setViewHeight(36);

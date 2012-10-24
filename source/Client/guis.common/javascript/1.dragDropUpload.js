@@ -37,7 +37,7 @@ $(function() {
 					
 					
 					
-					fd=new FormData();
+					var fd=new FormData();
 					fd.append("file", file); // Append the file
 					
 					var xhr = new XMLHttpRequest();
@@ -64,7 +64,7 @@ $(function() {
 						GUI.progressBarManager.error(progressBarId, "Upload aborted");
 					},false);
 					
-					xhr.open("POST", "/setContent/"+newObject.getCurrentRoom()+"/"+newObject.getAttribute('id'));
+					xhr.open("POST", "/setContent/"+newObject.getCurrentRoom()+"/"+newObject.getAttribute('id')+"/"+ObjectManager.userHash);
 					xhr.send(fd);
 				
 				

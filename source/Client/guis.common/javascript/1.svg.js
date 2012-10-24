@@ -70,25 +70,8 @@ GUI.initSVG = function() {
 
 GUI.updateLayers = function() {
 	
-	/* get all objects and order by layer */
-	var objects = ObjectManager.getObjects();
-	
-	var objectsArray = [];
-	
-	for (var i in objects){
-		var obj = objects[i];
-		objectsArray.push(obj);
-	}
-
-	objectsArray.sort(function(a,b) {
-		
-		if (a.getAttribute("layer") > b.getAttribute("layer")) {
-			return -1;
-		} else {
-			return 1;
-		}
-		
-	});
+	var objectsArray = ObjectManager.getObjectsByLayer(); //get all objects ordered by layer
+	objectsArray.reverse();
 	
 	for (var i in objectsArray){
 		var obj = objectsArray[i];

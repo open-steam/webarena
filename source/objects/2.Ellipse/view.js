@@ -25,11 +25,11 @@ Ellipse.createRepresentation = function() {
 }
 
 
-Ellipse.draw=function(){
+Ellipse.draw=function(external){
 	
 	var rep=this.getRepresentation();
 	
-	GeneralObject.draw.call(this);
+	GeneralObject.draw.call(this,external);
 
 	$(rep).attr("fill", this.getAttribute('fillcolor'));
 	
@@ -106,4 +106,16 @@ Ellipse.setViewWidth = function(value) {
 Ellipse.setViewHeight = function(value) {
 	$(this.getRepresentation()).attr("ry", parseInt(value));
 	GUI.adjustContent(this);
+}
+
+Ellipse.setViewXYAnimated = function(x,y) {
+
+	var self = this;
+	
+	var rep = this.getRepresentation();
+	
+	$(rep).animate({svgCx: x, svgCy: y}, 1000);
+	
+	GUI.adjustContent(this);
+	
 }

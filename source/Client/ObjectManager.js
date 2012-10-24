@@ -79,6 +79,14 @@ ObjectManager.getObjectsByLayer=function() {
 
     objectsArray.sort(function(a,b) {
 		
+		if (a.alwaysOnTop === true) {
+			return 1;
+		}
+		
+		if (b.alwaysOnTop === true) {
+			return -1;
+		}
+		
         if (a.getAttribute("layer") > b.getAttribute("layer")) {
             return 1;
         } else {

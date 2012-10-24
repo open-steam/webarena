@@ -1126,7 +1126,7 @@ CacheManager.inlinePreviewProviders = {
 		'preview' : function(roomID, objectID, callback, context) {
 			
 			if (!context) throw new Error('Missing context in preview for image');
-
+//TODO: change image orientation
 			CacheManager.getContent(roomID,objectID,context,function(content) {
 				
 				callback(content);

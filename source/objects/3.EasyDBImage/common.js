@@ -20,7 +20,7 @@ EasyDBImage.execute=function(){
 }
 
 EasyDBImage.register('EasyDBImage');
-EasyDBImage.isCreatable=true;
+EasyDBImage.isCreatable=false;
 
 EasyDBImage.category='Images';
 
