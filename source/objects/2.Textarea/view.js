@@ -5,12 +5,12 @@
 *
 */
 
-Textarea.draw=function(){
+Textarea.draw=function(external){
 	
 	var rep=this.getRepresentation();
 	
-	this.setViewX(this.getAttribute('x'));
-	this.setViewY(this.getAttribute('y'));
+	this.drawDimensions(external);
+	
 	this.setViewWidth(this.getAttribute('width'));
 	this.setViewHeight(this.getAttribute('height'));
 

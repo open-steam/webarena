@@ -6,11 +6,11 @@
 */
 
 
-Highlighter.draw=function(){
+Highlighter.draw=function(external){
 
 	var rep=this.getRepresentation();
 
-	Paint.draw.call(this);
+	Paint.draw.call(this, external);
 
 	$(rep).css("opacity", Highlighter.normalOpacity);
 	$(rep).attr("normalOpacity", Highlighter.normalOpacity);

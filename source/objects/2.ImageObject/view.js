@@ -25,9 +25,9 @@ ImageObject.createRepresentation=function() {
 }
 
 
-ImageObject.draw = function() {
+ImageObject.draw = function(external) {
 	
-	GeneralObject.draw.call(this);
+	GeneralObject.draw.call(this,external);
 	
 	var rep = this.getRepresentation();
 	

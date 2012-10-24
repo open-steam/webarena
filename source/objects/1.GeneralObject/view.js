@@ -11,18 +11,13 @@ GeneralObject.draw=function(external){
 	
 	if (!this.isGraphical) return;
 	
-	if (external === true) {
-		var animated = true;
-	} else {
-		var animated = false;
-	}
 	
 	var rep=this.getRepresentation();
 
 	this.setViewWidth(this.getAttribute('width'));
 	this.setViewHeight(this.getAttribute('height'));
-	this.setViewX(this.getAttribute('x'));
-	this.setViewY(this.getAttribute('y'));
+	
+	this.drawDimensions(external);
 			
 	$(rep).attr("layer", this.getAttribute('layer'));
 	
@@ -36,6 +31,25 @@ GeneralObject.draw=function(external){
 	
 	this.adjustControls();
 	
+}
+
+
+GeneralObject.drawDimensions = function(external) {
+
+	if (external === true && !this.selected && this.noAnimation == undefined && GUI.noAnimation == undefined) {
+		//animated
+		this.setViewXYAnimated(this.getAttribute('x'), this.getAttribute('y'));
+	} else {
+		this.setViewX(this.getAttribute('x'));
+		this.setViewY(this.getAttribute('y'));
+	}
+	
+}
+
+GeneralObject.startNoAnimationTimer = function() {
+	this.noAnimation = window.setTimeout(function() {
+		this.noAnimation = undefined;
+	}, 1000);
 }
 
 
@@ -239,6 +253,8 @@ GeneralObject.deselect = function() {
 	this.removeSelectedIndicator();
 	
 	this.deselectHandler();
+	
+	this.startNoAnimationTimer();
 	
 	this.draw();
 	
@@ -830,6 +846,28 @@ GeneralObject.setViewY = function(value) {
 	GUI.adjustContent(this);
 
 }
+
+
+GeneralObject.setViewXYAnimated = function(x,y) {
+
+	var self = this;
+	
+	var rep = this.getRepresentation();
+	
+	if (this.moveByTransform) {
+		$(rep).animate({svgTransform: "translate("+x+","+y+")"}, 1000);
+		$(rep).attr("x", x);
+		$(rep).attr("y", y);
+	} else {
+		$(rep).animate({svgX: x, svgY: y}, 1000);
+	}
+	
+	GUI.adjustContent(this);
+	
+}
+
+
+
 
 GeneralObject.setViewWidth = function(value) {
 	$(this.getRepresentation()).attr("width", value);

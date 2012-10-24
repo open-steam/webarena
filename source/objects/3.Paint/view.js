@@ -6,11 +6,11 @@
 */
 
 
-Paint.draw=function(){
+Paint.draw=function(external){
 
 	var rep=this.getRepresentation();
 
-	ImageObject.draw.call(this);
+	ImageObject.draw.call(this,external);
 
 	if (!this.hasContent()) {
 		$(rep).css("visibility", "hidden");

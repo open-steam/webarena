@@ -137,8 +137,10 @@ GeneralObject.contentUpdated=function(){
 }
 
 
+//triggered by non local change of values
 GeneralObject.refresh = function() {
-	this.draw();
+	if (this.moving) return;
+	this.draw(true);
 }
 
 

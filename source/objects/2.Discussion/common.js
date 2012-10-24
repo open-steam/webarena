@@ -33,7 +33,7 @@ Discussion.execute=function(){
 }
 
 Discussion.register('Discussion');
-Discussion.isCreatable=true;
+Discussion.isCreatable=false;
 
 Discussion.content='Neuer Text';
 
