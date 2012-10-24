@@ -12,6 +12,7 @@ var Modules=require('../../server.js');
 module.exports=theObject;
 
 theObject.onLeave=function(object,oldData,newData){
+	return;
 	if (!object.isActor) {
 		return;
 	}
