@@ -47,8 +47,9 @@ GeneralObject.drawDimensions = function(external) {
 }
 
 GeneralObject.startNoAnimationTimer = function() {
+	var self = this;
 	this.noAnimation = window.setTimeout(function() {
-		this.noAnimation = undefined;
+		self.noAnimation = undefined;
 	}, 1000);
 }
 
