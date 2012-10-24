@@ -99,6 +99,44 @@ ObjectManager.getObjectsByLayer=function() {
 	
 }
 
+
+/**
+ * getObjectsByLayer - get an array of all objects ordered by layer (lowest layer first)
+ */
+ObjectManager.getObjectsByLayerInverted=function() {
+	
+    var objects = this.getObjects();
+	
+    var objectsArray = [];
+	
+    for (var i in objects){
+        var obj = objects[i];
+        objectsArray.push(obj);
+    }
+
+    objectsArray.sort(function(a,b) {
+		
+		if (a.alwaysOnTop === true) {
+			return -1;
+		}
+		
+		if (b.alwaysOnTop === true) {
+			return 1;
+		}
+		
+        if (a.getAttribute("layer") > b.getAttribute("layer")) {
+            return -1;
+        } else {
+            return 1;
+        }
+		
+    });
+	
+    return objectsArray;
+	
+}
+
+
 /**
 *	hasObject - determine, if an object is within the current inventory
 */
