@@ -55,7 +55,11 @@ GUI.initToolbar = function() {
 
 							var proto = ObjectManager.getPrototype(object.type);
 							
-							proto.create();
+							if (!Modules.Config.presentationMode) {
+								proto.create();
+							} else {
+								alert(GUI.translate("You cannot create objects in presentation mode"));	
+							}
 							
 							popover.hide();
 							
@@ -80,7 +84,11 @@ GUI.initToolbar = function() {
 
 				var proto = ObjectManager.getPrototype(object[0].type);
 				
-				proto.create();
+				if (!Modules.Config.presentationMode) {
+								proto.create();
+							} else {
+								alert(GUI.translate("You cannot create objects in presentation mode"));	
+							}
 				
 				jPopoverManager.hideAll();
 				

@@ -284,7 +284,7 @@
 				
 			});
 			
-			$("#header > .header_right").append(hiddenButton);
+			if (!Modules.Config.presentationMode) $("#header > .header_right").append(hiddenButton);
 			
 			
 			
@@ -297,7 +297,7 @@
 			
 			$(inspectorButton).bind("click", GUI.toggleInspector);
 			
-			$("#header > .header_right").append(inspectorButton);
+			if (!Modules.Config.presentationMode) $("#header > .header_right").append(inspectorButton);
 			
 			
 			
@@ -323,7 +323,7 @@
 			});
 			
 			
-			GUI.showInspector();
+			if (!Modules.Config.presentationMode) GUI.showInspector();
 
 		}
 		
