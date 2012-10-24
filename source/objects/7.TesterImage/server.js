@@ -34,6 +34,7 @@ theObject.checkOverlapping=function(){
 	
 	var hasWrong=false;
 	var hasRight=false;
+	var rights=0;
 	
 	var objects=this.getOverlappingObjects();
 	for (var i in objects){
@@ -42,6 +43,7 @@ theObject.checkOverlapping=function(){
 		
 		if (this.getAttribute('value')==object.getAttribute('value')) {
 			hasRight=true;
+			rights++;
 		} else {
 			hasWrong=true;
 		}
@@ -53,4 +55,5 @@ theObject.checkOverlapping=function(){
 	if (hasRight && hasWrong) {var color='orange';}
 	
 	this.setAttribute('linecolor',color);
+	this.setAttribute('linesize',(rights*3)+3);
 }
