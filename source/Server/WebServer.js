@@ -127,14 +127,14 @@ WebServer.init=function(theModules){
 	  // setContent
 	  
 	  else if (url.substr(0,11)=='/setContent' && req.method.toLowerCase() == 'post'){
-	  	
+
 			try {
 	
 				var ids=url.substr(12).split('/');
 			  	var roomID=ids[0];
 			  	var objectID=ids[1];
 
-				var object=Modules.ObjectManager.getObject(roomID,objectID,context); //TODO use actual credentials
+				var object=Modules.ObjectManager.getObject(roomID,objectID,context);
 
 			  	//TODO rights check (Idea: provide connection id)
 
