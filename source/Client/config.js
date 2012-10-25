@@ -9,5 +9,5 @@
 
 var Config={
 	language:'de',
-	presentationMode:true
+	presentationMode:false
 };

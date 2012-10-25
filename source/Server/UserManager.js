@@ -7,7 +7,7 @@
 
 /**
 *	the UserManager holds connection information. For every connection, it saves
-*	information about who is logged in, which rooms he is subscribed to
+*	information about who is logged in, which room he is subscribed to
 *	and the socket. Actual socket connections are handled by SocketServer
 **/
 
@@ -25,7 +25,7 @@ UserManager.connections={};
 *	in case of a new connection, a new entry is created.
 **/
 UserManager.socketConnect=function(socket){
-	this.connections[socket.id]=({'socket':socket,'user':false,'roomIDs':[],'rooms':{}});
+	this.connections[socket.id]=({'socket':socket,'user':false,'room':false});
 }
 
 /**
@@ -83,11 +83,11 @@ UserManager.login=function(socketOrUser,data){
 	
 }
 
-UserManager.subscribe=function(socketOrUser,room){
+UserManager.subscribe=function(socketOrUser,roomID){
 	
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
 	
-	Modules.Log.debug("UserManager", "+subscribe", "Subscribe (roomID: '"+room+"', user: '"+userID+"')");
+	Modules.Log.debug("UserManager", "+subscribe", "Subscribe (roomID: '"+roomID+"', user: '"+userID+"')");
 	
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;
@@ -100,25 +100,17 @@ UserManager.subscribe=function(socketOrUser,room){
 	var connector=Modules.Connector;
 	var socketServer=Modules.SocketServer;
 	var user=connection.user;
-	var roomIDs=connection.roomIDs;
-	var roomID = room;
 	
-	connector.maySubscribe(room,connection, function(maySub) {
+	connector.maySubscribe(roomID,connection, function(maySub) {
 
 		if (maySub) {
 			
-			if (!isInArray(roomIDs,roomID)){
-				roomIDs.push(roomID);
-			}
-			connection.roomIDs=roomIDs;
-			
 			ObjectManager.getRoom(roomID,connection,function(room){
-				socketServer.sendToSocket(socket,'subscribed',roomIDs);
-				connection.rooms[roomID]=room;
-				for (var i in roomIDs){
-					var room=roomIDs[i];
-					ObjectManager.sendRoom(socket,room);
-				}
+				console.log('roomID:'+roomID);
+				console.log('room.id'+room.id);				
+				socketServer.sendToSocket(socket,'subscribed',room.id);
+				connection.room=room;
+				ObjectManager.sendRoom(socket,room.id);
 			})
 
 		} else {
@@ -129,35 +121,6 @@ UserManager.subscribe=function(socketOrUser,room){
 		
 		
 
-}
-
-UserManager.unsubscribe=function(socketOrUser,room){
-	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;	
-	
-	var connection=UserManager.connections[userID];
-	if (!connection) {
-		Modules.Log.error("UserManager", "+login", "There is no connection for this user (user: '"+userID+"')");
-		return;
-	}
-	var socket=connection.socket;
-	var connector=Modules.Connector;
-	var socketServer=Modules.SocketServer;
-	var user=connection.user;
-	var roomIDs=connection.roomIDs;
-	
-	var temp=[];
-	for (var i=0;i<roomIDs.length;i++){
-		if (roomIDs[i]!==room) {
-			temp.push(roomIDs[i]);
-		} else {
-			delete(connection.rooms[roomID]);
-		}
-	}
-
-	connection.roomIDs=temp;
-	socketServer.sendToSocket(socket,'subscribed',temp);
-		
-	
 }
 
 UserManager.init=function(theModules){
@@ -172,11 +135,7 @@ UserManager.getConnectionsForRoom=function(roomID){
 	var result={};
 	for (var connectionID in this.connections){
 		var connection=this.connections[connectionID];
-		var roomIDs=connection.roomIDs;
-		for (var i in roomIDs){
-			var compare=roomIDs[i];
-			if (roomID===compare) result[connectionID]=connection;
-		}
+		if (roomID===connection.room.id) result[connectionID]=connection;
 	}
 	return result;
 }
