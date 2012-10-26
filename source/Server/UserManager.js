@@ -7,7 +7,7 @@
 
 /**
 *	the UserManager holds connection information. For every connection, it saves
-*	information about who is logged in, which room he is subscribed to
+*	information about who is logged in, which room he is in
 *	and the socket. Actual socket connections are handled by SocketServer
 **/
 
@@ -83,17 +83,17 @@ UserManager.login=function(socketOrUser,data){
 	
 }
 
-UserManager.subscribe=function(socketOrUser,roomID){
+UserManager.enterRoom=function(socketOrUser,roomID){
 	
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
 	
-	Modules.Log.debug("UserManager", "+subscribe", "Subscribe (roomID: '"+roomID+"', user: '"+userID+"')");
+	Modules.Log.debug("UserManager", "+enter", "EnterRoom (roomID: '"+roomID+"', user: '"+userID+"')");
 	
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;
 	
 	if (!connection) {
-		Modules.Log.error("UserManager", "+subscribe", "There is no connection for this user (user: '"+userID+"')");
+		Modules.Log.error("UserManager", "+enter", "There is no connection for this user (user: '"+userID+"')");
 		return;
 	}
 	var socket=connection.socket;
@@ -101,20 +101,18 @@ UserManager.subscribe=function(socketOrUser,roomID){
 	var socketServer=Modules.SocketServer;
 	var user=connection.user;
 	
-	connector.maySubscribe(roomID,connection, function(maySub) {
+	connector.mayEnter(roomID,connection, function(maySub) {
 
 		if (maySub) {
 			
-			ObjectManager.getRoom(roomID,connection,function(room){
-				console.log('roomID:'+roomID);
-				console.log('room.id'+room.id);				
-				socketServer.sendToSocket(socket,'subscribed',room.id);
+			ObjectManager.getRoom(roomID,connection,function(room){			
+				socketServer.sendToSocket(socket,'entered',room.id);
 				connection.room=room;
 				ObjectManager.sendRoom(socket,room.id);
 			})
 
 		} else {
-			socketServer.sendToSocket(socket,'error', 'User '+userID+' may not subscribe to '+roomID);
+			socketServer.sendToSocket(socket,'error', 'User '+userID+' may not enter '+roomID);
 		}
 		
 	});
@@ -127,8 +125,7 @@ UserManager.init=function(theModules){
  	Modules=theModules;
 	var Dispatcher=Modules.Dispatcher;
 	Dispatcher.registerCall('login',UserManager.login);
-    Dispatcher.registerCall('subscribe',UserManager.subscribe);
-    Dispatcher.registerCall('unsubscribe',UserManager.unsubscribe);
+    Dispatcher.registerCall('enter',UserManager.enterRoom);
 }
 
 UserManager.getConnectionsForRoom=function(roomID){

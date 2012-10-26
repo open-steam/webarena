@@ -66,7 +66,7 @@ CacheManager.cache_test = {
 							"drawing" : false,
 							"ellipse" : true
 						},
-						"subscribe" : true
+						"enter" : true
 					}
 				},
 				//...
@@ -232,26 +232,26 @@ CacheManager.mayCreate=function(roomID,type,context){
 	}
 }
 
-CacheManager.maySubscribe=function(roomID,context,callback){
-	Modules.Log.debug("Check right 'subscribe' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+CacheManager.mayEnter=function(roomID,context,callback){
+	Modules.Log.debug("Check right 'enter' (roomID: '"+roomID+"', objectID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	if (callback == undefined) {
 		/* sync. */
 		
 		if (context === true) return true; //root
-		if (CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID] && CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["subscribe"]) {
-			return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["subscribe"];
+		if (CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID] && CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["enter"]) {
+			return CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["enter"];
 		} else Modules.Log.error("Rights not cached for room (sync. access not possible) (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 		
 	} else {
 		/* async. */
 		
 		if (context === true) callback(true); //root
-		if (CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID] && CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["subscribe"]) {
-			callback(CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["subscribe"]);
+		if (CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID] && CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["enter"]) {
+			callback(CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["enter"]);
 		} else {
 			CacheManager.getInventory(roomID,context,function() {
-				callback(CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["subscribe"]);
+				callback(CacheManager.cache["users"][CacheManager.getCacheUser(context)]["rights"][roomID]["room"]["enter"]);
 			});
 		}
 		
@@ -290,10 +290,10 @@ CacheManager.getInventory=function(roomID,context,callback){
 				inventory.push(CacheManager.cache["rooms"][roomID]["objects"][i]["objectData"]);
 			}
 
-			CacheManager.maySubscribe(roomID, context, function(maySub) {
+			CacheManager.mayEnter(roomID, context, function(maySub) {
 				if (maySub) {
 					callback(inventory);
-				} else Modules.Log.error("Missing rights to subscribe (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+				} else Modules.Log.error("Missing rights to enter (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 			});
 			
 		}
@@ -347,7 +347,7 @@ CacheManager.getCachedInventory = function(roomID, context) {
 		inventory.push(CacheManager.cache["rooms"][roomID]["objects"][i]["objectData"]);
 	}
 
-	if (!CacheManager.maySubscribe(roomID, context)) Modules.Log.debug("Missing rights to subscribe (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
+	if (!CacheManager.mayEnter(roomID, context)) Modules.Log.debug("Missing rights to enter (roomID: '"+roomID+"', user: '"+CacheManager.getCacheUser(context)+"')");
 	
 	return inventory;
 	

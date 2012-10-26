@@ -225,11 +225,6 @@ ObjectManager.login=function(username, password){
 }
 
 ObjectManager.loadRoom=function(roomid){
-	console.log("LOAD ROOM", roomid);
-    var currentRoom = ObjectManager.getRoomID();
-    if (currentRoom) {
-        Modules.SocketClient.serverCall('unsubscribe', currentRoom);
-    }
 	
     var objects = this.getObjects();
 	
@@ -240,7 +235,7 @@ ObjectManager.loadRoom=function(roomid){
 	
     if(!roomid) roomid='public';
     this.currentRoomID=roomid;
-    Modules.SocketClient.serverCall('subscribe',roomid);
+    Modules.SocketClient.serverCall('enter',roomid);
 }
 
 ObjectManager.createObject=function(type,attributes,content,callback) {
@@ -307,8 +302,8 @@ ObjectManager.init=function(){
         ObjectManager.contentUpdate(data);
     });
 
-	Modules.Dispatcher.registerCall('subscribed',function(data){
-		GUI.subscribed();
+	Modules.Dispatcher.registerCall('entered',function(data){
+		GUI.entered();
     });
 	
     Modules.Dispatcher.registerCall('error',function(data){

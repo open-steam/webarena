@@ -336,7 +336,7 @@ koalaConnector.getUserRightsForRoom=function(roomID, context, callback) {
 			"ellipse" : false,
 			"unknown" : true
 		},
-		"subscribe" : true
+		"enter" : true
 	});
 }
 
