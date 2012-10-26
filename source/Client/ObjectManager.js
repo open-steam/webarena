@@ -25,6 +25,7 @@ ObjectManager.getTypes=function(){
 ObjectManager.getPrototype=function(objType){
     var prototypes=this.prototypes;
     if (prototypes[objType]) return prototypes[objType];
+    if (prototypes['UnknownObject']) return prototypes['UnknownObject'];
     if (prototypes['GeneralObject']) return prototypes['GeneralObject'];
     return;
 }
@@ -41,6 +42,8 @@ ObjectManager.buildObject=function(type, attributes){
     object.init(attributes.id);
 
     object.data=attributes;
+    object.type=proto.type;
+    object.data.type=proto.type;
 
     if (object.data.id != this.currentRoomID) {
         this.objects[object.id]=object;
@@ -225,11 +228,6 @@ ObjectManager.login=function(username, password){
 }
 
 ObjectManager.loadRoom=function(roomid){
-	console.log("LOAD ROOM", roomid);
-    var currentRoom = ObjectManager.getRoomID();
-    if (currentRoom) {
-        Modules.SocketClient.serverCall('unsubscribe', currentRoom);
-    }
 	
     var objects = this.getObjects();
 	
@@ -240,7 +238,7 @@ ObjectManager.loadRoom=function(roomid){
 	
     if(!roomid) roomid='public';
     this.currentRoomID=roomid;
-    Modules.SocketClient.serverCall('subscribe',roomid);
+    Modules.SocketClient.serverCall('enter',roomid);
 }
 
 ObjectManager.createObject=function(type,attributes,content,callback) {
@@ -307,8 +305,8 @@ ObjectManager.init=function(){
         ObjectManager.contentUpdate(data);
     });
 
-	Modules.Dispatcher.registerCall('subscribed',function(data){
-		GUI.subscribed();
+	Modules.Dispatcher.registerCall('entered',function(data){
+		GUI.entered();
     });
 	
     Modules.Dispatcher.registerCall('error',function(data){

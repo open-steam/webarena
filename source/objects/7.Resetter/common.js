@@ -31,6 +31,21 @@ Resetter.execute=function(){
 			object.setAttribute('x',x);
 			object.setAttribute('y',y);
 		}
+		if (object.type=='ActivatorHotspot'){
+			var linkeds=object.getLinkedObjects();
+			for (var i in linkeds){
+				var linked=linkeds[i].object;
+				linked.hide();
+			}
+		}
+		if (object.type=='BlueActor'){
+			object.setAttribute('x',10);
+			object.setAttribute('y',100);
+		}
+		if (object.type=='OrangeActor'){
+			object.setAttribute('x',60);
+			object.setAttribute('y',100);
+		}
 	}
 }
 

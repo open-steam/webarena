@@ -12,7 +12,7 @@ GUI.loggedIn = function() {
 	
 }
 
-GUI.subscribed = function() {
+GUI.entered = function() {
 	
 	GUI.loadGUI(2);
 	

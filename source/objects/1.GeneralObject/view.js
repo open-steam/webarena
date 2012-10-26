@@ -236,10 +236,6 @@ GeneralObject.select = function(multiple, groupSelect) {
 	this.selectHandler();
 	
 	this.draw();
-	
-	//TODO: is this really needed?
-	//GUI.refreshSVG();
-
 }
 
 GeneralObject.deselect = function() {
@@ -453,9 +449,6 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		
 		event.preventDefault();
 		event.stopPropagation();
-		
-		//TODO: is this really needed?
-		//GUI.updateLayers();
 		
 		GUI.hideActionsheet();
 		GUI.hideLinks(self);
@@ -891,10 +884,6 @@ GeneralObject.click = function(event) {
 	if (GUI.isTouchDevice) {
 		self.clickHandler(event);
 		return true;
-	}
-	
-	if (event == undefined) {
-		//self.clickTimeout = false; //TODO: needed?
 	}
 
 	if (self.clickTimeout) {

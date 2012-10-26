@@ -8,5 +8,6 @@
 "use strict";
 
 var Config={
-	language:'de'
+	language:'de',
+	presentationMode:false
 };
