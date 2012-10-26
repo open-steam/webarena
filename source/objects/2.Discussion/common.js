@@ -33,7 +33,7 @@ Discussion.register=function(type){
 
 
 Discussion.register('Discussion');
-Discussion.isCreatable=true;
+Discussion.isCreatable=false;
 
 Discussion.restrictedMovingArea = true;
 

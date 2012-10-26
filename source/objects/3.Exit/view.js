@@ -24,12 +24,11 @@ Exit.createRepresentation = function() {
 }
 
 
-Exit.draw=function(){
+Exit.draw=function(external){
 	
 	var rep=this.getRepresentation();
 
-	this.setViewX(this.getAttribute('x'));
-	this.setViewY(this.getAttribute('y'));
+	this.drawDimensions(external);
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
 	

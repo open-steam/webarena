@@ -65,11 +65,10 @@
 
 
 
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.animate-enhanced.min.js"></script>
-
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
@@ -293,7 +292,7 @@
 				
 			});
 			
-			$("#header > .header_right").append(hiddenButton);
+			if (!Modules.Config.presentationMode) $("#header > .header_right").append(hiddenButton);
 			
 			
 			
@@ -306,7 +305,7 @@
 			
 			$(inspectorButton).bind("click", GUI.toggleInspector);
 			
-			$("#header > .header_right").append(inspectorButton);
+			if (!Modules.Config.presentationMode) $("#header > .header_right").append(inspectorButton);
 			
 			
 			
@@ -332,7 +331,7 @@
 			});
 			
 			
-			GUI.showInspector();
+			if (!Modules.Config.presentationMode) GUI.showInspector();
 
 		}
 		

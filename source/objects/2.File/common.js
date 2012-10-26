@@ -47,11 +47,36 @@ File.register=function(type){
 		for (var i in selected) {
 			var obj = selected[i];
 			
-			obj.execute();
+			GUI.uploadFile(obj,obj.translate(GUI.currentLanguage, "please select a file"));
 			
 		}
 		
 	},true);
+	
+	
+	this.registerAction('Datei öffnen',function(){
+		
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var obj = selected[i];
+			
+			obj.openFile();
+			
+		}
+		
+	},true, function() {
+		
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var obj = selected[i];
+			
+			return (obj.hasContent() == true);
+			
+		}
+		
+	});
 	
 }
 

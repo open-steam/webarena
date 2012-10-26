@@ -63,7 +63,7 @@ EasyDBImage.isResizable=function(){
 //TODO: changeimage action
 
 EasyDBImage.register('EasyDBImage');
-EasyDBImage.isCreatable=true;
+EasyDBImage.isCreatable=false;
 
 EasyDBImage.restrictedMovingArea = false;
 

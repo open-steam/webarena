@@ -12,7 +12,7 @@ GUI.loggedIn = function() {
 	
 }
 
-GUI.subscribed = function() {
+GUI.entered = function() {
 	
 	GUI.loadGUI(2);
 	
@@ -54,6 +54,8 @@ GUI.loadGUI = function(step) {
 		
 	} else if (step == 3) {
 		GUI.progressBarManager.updateProgress("login", 60, GUI.translate('loading GUI'));
+		
+		GUI.startNoAnimationTimer();
 		
 		/* toolbar */
 		GUI.initToolbar(); //needs: ObjectManager

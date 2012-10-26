@@ -137,8 +137,10 @@ GeneralObject.contentUpdated=function(){
 }
 
 
+//triggered by non local change of values
 GeneralObject.refresh = function() {
-	this.draw();
+	if (this.moving) return;
+	this.draw(true);
 }
 
 
@@ -193,7 +195,7 @@ GeneralObject.duplicate=function() {
 }
 
 GeneralObject.getRoom=function(){
-	return Modules.ObjectManager.getCurrentRoom(); //TODO this only works for single rooms
+	return Modules.ObjectManager.getCurrentRoom();
 }
 
 /**

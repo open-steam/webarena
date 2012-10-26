@@ -7,16 +7,17 @@
 *
 */
 
-GeneralObject.draw=function(){
+GeneralObject.draw=function(external){
 	
 	if (!this.isGraphical) return;
+	
 	
 	var rep=this.getRepresentation();
 
 	this.setViewWidth(this.getAttribute('width'));
 	this.setViewHeight(this.getAttribute('height'));
-	this.setViewX(this.getAttribute('x'));
-	this.setViewY(this.getAttribute('y'));
+	
+	this.drawDimensions(external);
 			
 	$(rep).attr("layer", this.getAttribute('layer'));
 	
@@ -30,6 +31,26 @@ GeneralObject.draw=function(){
 	
 	this.adjustControls();
 	
+}
+
+
+GeneralObject.drawDimensions = function(external) {
+
+	if (external === true && !this.selected && this.noAnimation == undefined && GUI.noAnimation == undefined) {
+		//animated
+		this.setViewXYAnimated(this.getAttribute('x'), this.getAttribute('y'));
+	} else {
+		this.setViewX(this.getAttribute('x'));
+		this.setViewY(this.getAttribute('y'));
+	}
+	
+}
+
+GeneralObject.startNoAnimationTimer = function() {
+	var self = this;
+	this.noAnimation = window.setTimeout(function() {
+		self.noAnimation = undefined;
+	}, 1000);
 }
 
 
@@ -140,7 +161,7 @@ GeneralObject.addSelectedIndicator = function() {
 		/* border rect exists */
 		borderRep = $(rep).find(".borderRect").get(0);
 	}
-	console.log("BR", borderRep);
+
 	this.oldAttrStroke = $(borderRep).attr("stroke");
 	this.oldAttrStrokeWidth = $(borderRep).attr("stroke-width");
 	
@@ -215,10 +236,6 @@ GeneralObject.select = function(multiple, groupSelect) {
 	this.selectHandler();
 	
 	this.draw();
-	
-	//TODO: is this really needed?
-	//GUI.refreshSVG();
-
 }
 
 GeneralObject.deselect = function() {
@@ -233,6 +250,8 @@ GeneralObject.deselect = function() {
 	this.removeSelectedIndicator();
 	
 	this.deselectHandler();
+	
+	this.startNoAnimationTimer();
 	
 	this.draw();
 	
@@ -430,9 +449,6 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		
 		event.preventDefault();
 		event.stopPropagation();
-		
-		//TODO: is this really needed?
-		//GUI.updateLayers();
 		
 		GUI.hideActionsheet();
 		GUI.hideLinks(self);
@@ -687,6 +703,8 @@ GeneralObject.bindMoveArea = function() {
 
 GeneralObject.moveRelative = function(dx, dy) {
 
+	if (this.getAttribute("locked")) return;
+
 	this.setViewX(this.moveObjectStartX+dx);
 	this.setViewY(this.moveObjectStartY+dy);
 	
@@ -823,6 +841,28 @@ GeneralObject.setViewY = function(value) {
 
 }
 
+
+GeneralObject.setViewXYAnimated = function(x,y) {
+
+	var self = this;
+	
+	var rep = this.getRepresentation();
+	
+	if (this.moveByTransform) {
+		$(rep).animate({svgTransform: "translate("+x+","+y+")"}, 1000);
+		$(rep).attr("x", x);
+		$(rep).attr("y", y);
+	} else {
+		$(rep).animate({svgX: x, svgY: y}, 1000);
+	}
+	
+	GUI.adjustContent(this);
+	
+}
+
+
+
+
 GeneralObject.setViewWidth = function(value) {
 	$(this.getRepresentation()).attr("width", value);
 	GUI.adjustContent(this);
@@ -844,10 +884,6 @@ GeneralObject.click = function(event) {
 	if (GUI.isTouchDevice) {
 		self.clickHandler(event);
 		return true;
-	}
-	
-	if (event == undefined) {
-		//self.clickTimeout = false; //TODO: needed?
 	}
 
 	if (self.clickTimeout) {

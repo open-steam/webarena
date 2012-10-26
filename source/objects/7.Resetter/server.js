@@ -7,7 +7,8 @@
 
 "use strict";
 
-var Config={
-	language:'de',
-	presentationMode:false
-};
+var theObject=Object.create(require('./common.js'));
+var Modules=require('../../server.js');
+var exec = require('child_process').exec;
+
+module.exports=theObject;

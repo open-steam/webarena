@@ -5,11 +5,11 @@
 *
 */
 
-Polygon.draw=function(){
+Polygon.draw=function(external){
 	
 	var rep=this.getRepresentation();
 	
-	GeneralObject.draw.call(this);
+	GeneralObject.draw.call(this, external);
 
 	$(rep).attr("fill", this.getAttribute('fillcolor'));
 	

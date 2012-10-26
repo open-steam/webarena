@@ -26,9 +26,9 @@ File.createRepresentation = function() {
 	
 }
 
-File.draw = function() {
+File.draw = function(external) {
 	
-	GeneralObject.draw.call(this);
+	GeneralObject.draw.call(this,external);
 	
 	if (this.hasContent() == false || this.getAttribute("preview") == false) {
 		

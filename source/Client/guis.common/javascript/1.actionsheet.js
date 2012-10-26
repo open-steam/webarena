@@ -11,6 +11,8 @@ GUI.hideActionsheet = function() {
 
 GUI.showActionsheet = function(x, y, webarenaObject) {
 
+	if (Modules.Config.presentationMode) return;
+
 	$(document).unbind("click.actionsheetHide");
 
 	var offsetTop = 22;

@@ -266,6 +266,8 @@ GUI.initMouseHandler = function() {
 		
 		var touchHandler = function(event) {
 			
+			jPopoverManager.hideAll();
+			
 			var contentPosition = $("#content").offset();
 
 			/* find objects at this position */
@@ -285,6 +287,8 @@ GUI.initMouseHandler = function() {
 	} else {
 		
 		var mousedown = function(event) {
+
+			jPopoverManager.hideAll();
 
 			event.preventDefault();
 			event.stopPropagation();
@@ -383,4 +387,13 @@ GUI.showDisconnected = function() {
 	
 	$("body").append('<div id="disconnected_message"><div>Die Verbindung wurde getrennt.<br /><br /><span onclick="window.location.reload()">Neu laden</span></div></div>');
 	
+}
+
+
+
+
+GUI.startNoAnimationTimer = function() {
+	GUI.noAnimation = window.setTimeout(function() {
+		GUI.noAnimation = undefined;
+	}, 2000);
 }

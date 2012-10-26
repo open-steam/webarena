@@ -127,16 +127,14 @@ WebServer.init=function(theModules){
 	  // setContent
 	  
 	  else if (url.substr(0,11)=='/setContent' && req.method.toLowerCase() == 'post'){
-	  	
+
 			try {
 	
 				var ids=url.substr(12).split('/');
 			  	var roomID=ids[0];
 			  	var objectID=ids[1];
 
-				var object=Modules.ObjectManager.getObject(roomID,objectID,context); //TODO use actual credentials
-
-			  	//TODO rights check (Idea: provide connection id)
+				var object=Modules.ObjectManager.getObject(roomID,objectID,context);
 
 			  	if (!object){
 			  		  res.writeHead(404);
@@ -218,8 +216,6 @@ WebServer.init=function(theModules){
 		  	var objectID=ids[1];
 		  	var object=Modules.ObjectManager.getObject(roomID,objectID,context);
 
-		  	//TODO rights check (Idea: provide connection id)
-
 		  	if (!object){
 		  		  res.writeHead(404);
 				  Modules.Log.warn('Object not found (roomID: '+roomID+' objectID: '+objectID+')');
@@ -254,8 +250,6 @@ WebServer.init=function(theModules){
 			  	var roomID=ids[0];
 			  	var objectID=ids[1];
 			  	var object=Modules.ObjectManager.getObject(roomID,objectID,context);
-
-			  	//TODO rights check (Idea: provide connection id)
 
 			  	if (!object){
 			  		  res.writeHead(404);
@@ -355,9 +349,6 @@ WebServer.init=function(theModules){
 					}
 
 					res.writeHead(200, {'Content-Type': contentType, 'Content-Disposition': 'inline'});
-
-
-				    //TODO try-catch for scripts
 
 				    if (url.search(".html") != -1){
 				    	data=data.toString('utf8');
