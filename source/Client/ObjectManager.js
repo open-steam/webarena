@@ -25,6 +25,7 @@ ObjectManager.getTypes=function(){
 ObjectManager.getPrototype=function(objType){
     var prototypes=this.prototypes;
     if (prototypes[objType]) return prototypes[objType];
+    if (prototypes['UnknownObject']) return prototypes['UnknownObject'];
     if (prototypes['GeneralObject']) return prototypes['GeneralObject'];
     return;
 }
@@ -41,6 +42,8 @@ ObjectManager.buildObject=function(type, attributes){
     object.init(attributes.id);
 
     object.data=attributes;
+    object.type=proto.type;
+    object.data.type=proto.type;
 
     if (object.data.id != this.currentRoomID) {
         this.objects[object.id]=object;
