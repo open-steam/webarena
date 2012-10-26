@@ -93,6 +93,18 @@ GUI.initToolbar = function() {
 			}
 			
 		}
+		
+		var effect = function() {
+			$(this).animate({ opacity: 1 }, 500, function() {
+				$(this).animate({ opacity: 0.6 }, 500);
+			});
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(newCategoryIcon).bind("touchstart", effect);
+		} else {
+			$(newCategoryIcon).bind("mousedown", effect);
+		}
 	
 	});
 	

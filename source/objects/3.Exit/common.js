@@ -30,7 +30,9 @@ Exit.execute=function(){
 	
 	if (!destination) return;
 	
-	ObjectManager.loadRoom(destination);
+//	ObjectManager.loadRoom(destination);
+	
+	window.location.href = "/room/"+destination;
 	
 }
 

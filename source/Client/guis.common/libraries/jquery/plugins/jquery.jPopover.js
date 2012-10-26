@@ -776,6 +776,8 @@ $(function() {
 
 			if (!this.visible) return;
 			
+			$(self.target).removeClass("active");
+			
 			self.callEvent("onClose");
 
 			if (noAnimation == undefined) {
@@ -800,6 +802,8 @@ $(function() {
 		this.show = function() {
 
 			if (this.visible) return;
+			
+			$(self.target).addClass("active");
 			
 			self.callEvent("onOpen");
 			

@@ -266,6 +266,8 @@ GUI.initMouseHandler = function() {
 		
 		var touchHandler = function(event) {
 			
+			jPopoverManager.hideAll();
+			
 			var contentPosition = $("#content").offset();
 
 			/* find objects at this position */
@@ -285,6 +287,8 @@ GUI.initMouseHandler = function() {
 	} else {
 		
 		var mousedown = function(event) {
+
+			jPopoverManager.hideAll();
 
 			event.preventDefault();
 			event.stopPropagation();

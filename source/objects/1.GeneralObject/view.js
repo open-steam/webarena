@@ -161,7 +161,7 @@ GeneralObject.addSelectedIndicator = function() {
 		/* border rect exists */
 		borderRep = $(rep).find(".borderRect").get(0);
 	}
-	console.log("BR", borderRep);
+
 	this.oldAttrStroke = $(borderRep).attr("stroke");
 	this.oldAttrStrokeWidth = $(borderRep).attr("stroke-width");
 	
