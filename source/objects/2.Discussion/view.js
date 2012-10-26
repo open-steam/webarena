@@ -90,11 +90,11 @@ Discussion.updateInnerHeight = function() {
 
 Discussion.createRepresentation = function() {
 
+    var that = this;
+
     // wrapper
     var rep = GUI.svg.other("foreignObject");
     rep.dataObject=this;
-
-
 
     // content
     var body = document.createElement("body");
@@ -103,15 +103,18 @@ Discussion.createRepresentation = function() {
     );
 
 
-    var that = this;
+
     that.oldContent = new Array();
 
 
     this.fetchContentString(function(remoteContent){
-        remoteContent = JSON.parse(remoteContent)
         if(remoteContent){
-            that.oldContent = remoteContent;
+            remoteContent = JSON.parse(remoteContent)
+            if(remoteContent){
+                that.oldContent = remoteContent;
+            }
         }
+
     });
 
     that.title = this.getAttribute("discussionTitle") || "TITLE";
@@ -139,6 +142,12 @@ Discussion.createRepresentation = function() {
         }
     });
 
+    $(body).on("click", ".discussion-text, .moveArea, .discussion-input", function(){
+        if(!that.selected){
+            that.select();
+        }
+    });
+
     // add content to wrapper
     $(rep).append(body);
 
@@ -162,7 +171,6 @@ Discussion.renderMessage = function(message){
 
 Discussion.formatTimestamp = function(time){
     return moment(time).format('DD.MM.YYYY HH:mm');
-    return  //$.datepicker.formatDate('dd.mm.y', new Date(time));
 }
 
 
@@ -201,6 +209,7 @@ Discussion.representationCreated = function() {
     var rep = this.getRepresentation();
     $(rep).find('.discussion-heading').editable(function(value, settings) {
         that.setAttribute("discussionTitle", value);
+
 
         return(value);
     }, {

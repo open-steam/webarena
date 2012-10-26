@@ -22,12 +22,7 @@ Discussion.register=function(type){
     this.standardData.fillcolor='rgb('+240+','+240+','+240+')';
     this.standardData.width=400;
     this.standardData.height=400;
-    /*
-	this.registerAction('Edit',function(){
-		$.each(ObjectManager.getSelected(), function(key, object) {
-			object.execute();
-		});
-	}, true);*/
+
 }
 
 
