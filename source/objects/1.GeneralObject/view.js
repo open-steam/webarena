@@ -773,7 +773,7 @@ GeneralObject.getViewBoundingBoxX = function() {
 
 	var rep = this.getRepresentation();
 	
-	if (this.moveByTransform) {
+	if (this.moveByTransform()) {
 		return this.getViewX();
 	} else {
 			return this.getRepresentation().getBBox().x;
@@ -786,7 +786,7 @@ GeneralObject.getViewBoundingBoxY = function() {
 	
 	var rep = this.getRepresentation();
 	
-	if (this.moveByTransform) {
+	if (this.moveByTransform()) {
 		return this.getViewY();
 	} else {
 			return this.getRepresentation().getBBox().y;
@@ -815,7 +815,7 @@ GeneralObject.setViewX = function(value) {
 	
 	var rep = this.getRepresentation();
 	
-	if (this.moveByTransform) {
+	if (this.moveByTransform()) {
 		$(rep).attr("transform", "translate("+value+","+self.getViewY()+")");	
 	}
 	
@@ -831,7 +831,7 @@ GeneralObject.setViewY = function(value) {
 
 	var rep = this.getRepresentation();
 	
-	if (this.moveByTransform) {
+	if (this.moveByTransform()) {
 		$(rep).attr("transform", "translate("+self.getViewX()+","+value+")");
 	}
 	
@@ -848,7 +848,7 @@ GeneralObject.setViewXYAnimated = function(x,y) {
 	
 	var rep = this.getRepresentation();
 	
-	if (this.moveByTransform) {
+	if (this.moveByTransform()) {
 		$(rep).animate({svgTransform: "translate("+x+","+y+")"}, 1000);
 		$(rep).attr("x", x);
 		$(rep).attr("y", y);

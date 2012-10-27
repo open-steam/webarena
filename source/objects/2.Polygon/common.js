@@ -27,6 +27,6 @@ Polygon.register=function(type){
 
 Polygon.register('Polygon');
 Polygon.isCreatable=true;
-Polygon.moveByTransform = true;
+Polygon.moveByTransform = function(){return true;};
 
 module.exports=Polygon;

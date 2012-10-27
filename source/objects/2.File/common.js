@@ -109,7 +109,7 @@ File.isResizable=function(){
 File.register('File');
 File.isCreatable=true;
 
-File.moveByTransform = true;
+File.moveByTransform = function(){return true;};
 
 File.category='Files';
 

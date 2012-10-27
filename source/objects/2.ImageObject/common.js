@@ -46,7 +46,7 @@ ImageObject.isResizable=function(){
 ImageObject.register('ImageObject');
 ImageObject.isCreatable=false;
 
-ImageObject.moveByTransform = true;
+ImageObject.moveByTransform = function(){return true;};
 
 ImageObject.category='Images';
 

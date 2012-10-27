@@ -11,6 +11,6 @@ var Ellipse=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 Ellipse.register('Ellipse');
 Ellipse.isCreatable=true;
-Ellipse.moveByTransform = true;
+Ellipse.moveByTransform = function(){return true;}
 
 module.exports=Ellipse;
