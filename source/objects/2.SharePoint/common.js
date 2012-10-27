@@ -1,13 +1,13 @@
 var Modules=require('../../server.js');
-var SharePoint=Object.create(Modules.ObjectManager.getPrototype('File'));
+var SharePoint=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 
 SharePoint.register=function(type){
 
     // Registering the object
 
-    File=Modules.ObjectManager.getPrototype('File');
-    File.register.call(this,type);
+    GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
+    GeneralObject.register.call(this,type);
 
 }
 
@@ -16,8 +16,8 @@ SharePoint.execute=function(){
     var rep=this.getRepresentation();
 
     if(this.getAttribute("sharepoint_src")){
-        window.open(this.getAttribute("sharepoint_src"), '_blank');
-        window.focus();
+        this.switchState();
+
 
     }  else {
         var data = {
@@ -59,11 +59,29 @@ SharePoint.execute=function(){
 
 }
 
+
+SharePoint.isResizable=function(){
+   return false;
+}
+
+SharePoint.init=function(id){
+    var r = GeneralObject.init.call(this, id);
+
+    console.log(this.getAttribute('sharepoint_src'));
+    return r;
+}
+
 SharePoint.register('SharePoint');
 SharePoint.category='Files';
 SharePoint.isCreatable=true;
-SharePoint.moveByTransform = true;
+SharePoint.moveByTransform = function(){
+    if(this.getAttribute("show_iframe")){
+        return false;
+    } else {
+        return true;
+    }
+}
 
-SharePoint.restrictedMovingArea = false;
+SharePoint.restrictedMovingArea = true;
 
 module.exports=SharePoint;
