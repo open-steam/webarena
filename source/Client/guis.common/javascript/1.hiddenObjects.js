@@ -55,7 +55,7 @@ GUI.showHiddenObjects = function() {
 GUI.hideHiddenObjects = function() {
 
 	$.each(ObjectManager.getObjects(), function(index, object) {
-			
+
 		if (object.getAttribute("hidden")) {
 			GUI.hideObject(object);
 		} else {

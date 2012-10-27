@@ -20,18 +20,6 @@ EvaluationObject.draw=function(external){
 
 }
 
-EvaluationObject.getRepresentation=function(){
-
-	var rep=document.getElementById(this.getAttribute('id'));
-
-	if (!rep){
-		
-		return this.createRepresentation();
-		
-	}
-	return rep;
-}
-
 EvaluationObject.createRepresentation = function() {
 
 	var rep = GUI.svg.rect(

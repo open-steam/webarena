@@ -83,9 +83,6 @@ GUI.loadGUI = function(step) {
 	} else if (step == 4) {
 		GUI.progressBarManager.updateProgress("login", 80, GUI.translate('rendering objects'));
 		
-		/* load objects */
-		GUI.hideHiddenObjects(); //hide hidden objects / initially create representations when calling getRepresentation() //needs: ObjectManager.getObjects, SVG
-		
 		GUI.initMouseHandler();
 		
 		window.setTimeout(function() {

@@ -96,7 +96,15 @@ GeneralObject.getRepresentation=function(){
 
 
 GeneralObject.representationCreated = function() {
+	
 	this.bindMoveArea();
+	
+	if (this.getAttribute("hidden")) {
+		GUI.hideObject(this);
+	} else {
+		GUI.showObject(this);
+	}
+	
 }
 
 

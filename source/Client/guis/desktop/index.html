@@ -212,6 +212,7 @@
 		GUI.hideInspector = function() {
 			
 			$("#inspector_button").html(GUI.translate("Show inspector"));
+			$("#inspector_button").removeClass("button_active");
 			
 			$("#inspector").animate({
 				opacity: 0
@@ -225,6 +226,7 @@
 		GUI.showInspector = function() {
 			
 			$("#inspector_button").html(GUI.translate("Hide inspector"));
+			$("#inspector_button").addClass("button_active");
 			
 			$("#inspector").show();
 			$("#inspector").animate({
@@ -238,7 +240,7 @@
 			
 			if ($("#inspector").css("opacity") > 0) {
 				/* close */
-				
+
 				GUI.hideInspector();
 				
 			} else {
