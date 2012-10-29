@@ -537,9 +537,12 @@ GeneralObject.refreshDelayed=function(){
 	
 	var that=this;
 	
+	//this timer is the time in which changes on the same object are discarded
+	var theTimer=400;
+	
 	this.refreshDelay=setTimeout(function(){
 		that.refresh();
-	},200);
+	},theTimer);
 }
 
 GeneralObject.getRoomID=function(){

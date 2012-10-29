@@ -91,7 +91,7 @@ GUI.adjustContent = function(webarenaObject) {
 		
 		//TODO BAUSTELLE Die Fenstergroesse und die Scrollposition muessen beruecksichtigt werden!!!!
 		
-		maxX=5000;maxY=5000;
+		maxX=500;maxY=500;
 		
 		if (maxX > currentRoom.getAttribute("width")) {
 			currentRoom.setAttribute("width", maxX);
