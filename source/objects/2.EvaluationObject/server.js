@@ -29,19 +29,19 @@ theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
 	
 	var bbox=this.getBoundingBox();
 	
-	if (otherX<bbox.x) {
+	if (otherX<bbox.x-20) {
 		//console.log('too far left');
 		return false;
 	}
-	if (otherY<bbox.y) {
+	if (otherY<bbox.y-20) {
 		//console.log('too far up');
 		return false;
 	}
-	if ((otherX+otherWidth)>(bbox.x+bbox.width)) {
+	if ((otherX+otherWidth)>(bbox.x+bbox.width+20)) {
 		//console.log('too far right');
 		return false;
 	}
-	if ((otherY+otherHeight)>(bbox.y+bbox.height)) {
+	if ((otherY+otherHeight)>(bbox.y+bbox.height+20)) {
 		//console.log('too far bottom');
 		return false;
 	}
