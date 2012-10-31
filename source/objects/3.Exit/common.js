@@ -21,6 +21,14 @@ Exit.register=function(type){
 	//this.registerAttribute('rotation',{type:'number',standard:0,min:0,category:'Appearance'});
 	
 	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality'});
+	
+	var self=this;
+	
+	this.registerAction('Follow',function(){
+		
+		self.execute();
+		
+	},true);
 
 }
 
