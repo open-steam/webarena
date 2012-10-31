@@ -20,8 +20,6 @@ TesterImage.register=function(type){
 	
 	this.registerAttribute('mimeType',{type:'text',standard:'image/png'});
 	
-	this.registerAttribute('shadow',{type:'boolean',standard:false,category:'Appearance'});
-
 }
 
 if (!File) var File=Modules.ObjectManager.getPrototype('File');

@@ -105,6 +105,8 @@ GeneralObject.representationCreated = function() {
 		GUI.showObject(this);
 	}
 	
+	GUI.updateLayersDelayed();
+	
 }
 
 
@@ -133,28 +135,6 @@ GeneralObject.createRepresentation = function() {
 GeneralObject.initGUI = function(rep) {
 	
 	var self = this;
-	
-	/*
-	var clickHandler = function(event) {
-
-		event.preventDefault();
-
-		if (!self.selected) {
-			self.click(event);
-		}
-		
-	}
-
-	if (GUI.isTouchDevice) {
-		rep.addEventListener("touchstart", clickHandler, false);
-	} else {
-		$(rep).click(clickHandler);
-	}
-	*/
-	
-	if (this.getAttribute("shadow")) {
-		$(rep).attr("filter", "url(#svg-drop-shadow)");
-	}
 	
 }
 
@@ -279,15 +259,40 @@ GeneralObject.adjustControls = function() {
 			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth();
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
 		}
+		
+		if (control.type == "x2") {
+			var x = self.getViewBoundingBoxX();
+			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
+		}
 
 		if (control.type == "y") {
 			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight();
 		}
 		
-		if (control.type == "xy") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth();
-			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight();
+		if (control.type == "y2") {
+			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
+			var y = self.getViewBoundingBoxY();
+		}
+		
+		if (control.type == "xy1") {
+			var x = self.getViewX();
+			var y = self.getViewY();
+		}
+		
+		if (control.type == "xy2") {
+			var x = self.getViewX()+self.getViewWidth();
+			var y = self.getViewY();
+		}
+		
+		if (control.type == "xy3") {
+			var x = self.getViewX()+self.getViewWidth();
+			var y = self.getViewY()+self.getViewHeight();
+		}
+		
+		if (control.type == "xy4") {
+			var x = self.getViewX();
+			var y = self.getViewY()+self.getViewHeight();
 		}
 
 		$(control).attr("cx", x);
@@ -304,6 +309,7 @@ GeneralObject.addControls = function() {
 	
 	this.controls = {};
 
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("x") === true)
 	this.addControl("x", function(dx, dy, startWidth, startHeight, rep) {
 		
 		if (self.resizeProportional()) {
@@ -329,7 +335,40 @@ GeneralObject.addControls = function() {
 		}
 		
 	});
+	
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("x2") === true)
+	this.addControl("x2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
 
+		if (self.resizeProportional()) {
+
+			var width = startWidth-dx;
+			var height = startHeight*(width/startWidth);
+
+			var x =  startX+dx;
+
+			if (width >= 10) {
+				self.setViewWidth(width);
+				self.setViewX(x);
+			}
+
+			if (height >= 10) {
+				self.setViewHeight(height);
+			}
+			
+		} else {
+			
+			var width = startWidth-dx;
+			var x =  startX+dx;
+			
+			if (width < 10) return;
+			self.setViewWidth(width);
+			self.setViewX(x);
+			
+		}
+		
+	});
+
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("y") === true)
 	this.addControl("y", function(dx, dy, startWidth, startHeight, rep) {
 		
 		if (self.resizeProportional()) {
@@ -355,8 +394,92 @@ GeneralObject.addControls = function() {
 		}
 		
 	});
+	
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("y2") === true)
+	this.addControl("y2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+		
+		if (self.resizeProportional()) {
+			
+			var height = startHeight-dy;
+			var width = startWidth*(height/startHeight);
+			
+			var y =  startY+dy;
+			
+			if (width >= 10) {
+				self.setViewWidth(width);
+			}
 
-	this.addControl("xy", function(dx, dy, startWidth, startHeight, rep) {
+			if (height >= 10) {
+				self.setViewHeight(height);
+				self.setViewY(y);
+			}
+			
+		} else {
+			
+			var height = startHeight-dy;
+			var y =  startY+dy;
+			
+			if (height < 10) return;
+			self.setViewHeight(height);
+			self.setViewY(y);
+			
+		}
+		
+	});
+	
+	
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy1") === true)
+	if (!self.resizeProportional())
+	this.addControl("xy1", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+
+		if (!self.resizeProportional()) {
+			
+			var width = startWidth-dx;
+			var height = startHeight-dy;
+			
+			var x =  startX+dx;
+			var y =  startY+dy;
+			
+			if (width >= 10 || self.ignoreMinDimensions === true) {
+				self.setViewWidth(width);
+				self.setViewX(x);
+			}
+
+			if (height >= 10 || self.ignoreMinDimensions === true) {
+				self.setViewHeight(height);
+				self.setViewY(y);
+			}
+			
+		}
+	
+	});
+	
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy2") === true)
+	if (!self.resizeProportional())
+	this.addControl("xy2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+
+		if (!self.resizeProportional()) {
+			
+			var width = startWidth+dx;
+			var height = startHeight-dy;
+
+			var y =  startY+dy;
+			
+			if (width >= 10 || self.ignoreMinDimensions === true) {
+				self.setViewWidth(width);
+			}
+
+			if (height >= 10 || self.ignoreMinDimensions === true) {
+				self.setViewHeight(height);
+				self.setViewY(y);
+			}
+			
+		}
+	
+	});
+	
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy3") === true)
+	this.addControl("xy3", function(dx, dy, startWidth, startHeight, rep) {
 		
 		if (self.resizeProportional()) {
 			/* resize proportional */
@@ -383,17 +506,39 @@ GeneralObject.addControls = function() {
 			var width = startWidth+dx;
 			var height = startHeight+dy;
 			
-			if (width >= 10) {
+			if (width >= 10 | self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10) {
+			if (height >= 10 | self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 			}
 			
 		}
 		
-		
+	});
+	
+	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy4") === true)
+	if (!self.resizeProportional())
+	this.addControl("xy4", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+
+		if (!self.resizeProportional()) {
+			
+			var width = startWidth-dx;
+			var height = startHeight+dy;
+			
+			var x =  startX+dx;
+			
+			if (width >= 10 || self.ignoreMinDimensions === true) {
+				self.setViewWidth(width);
+				self.setViewX(x);
+			}
+
+			if (height >= 10 || self.ignoreMinDimensions === true) {
+				self.setViewHeight(height);
+			}
+			
+		}
 	
 	});
 	
@@ -441,7 +586,6 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			fill: "#008DDF",
 			stroke: "#FFFFFF",
 			strokeWidth: border,
-			//filter: "url(#svg-drop-shadow)"
 		}
 	);
 	
@@ -465,6 +609,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		control.startMouseY = event.pageY;
 		control.objectStartWidth = self.getViewWidth();
 		control.objectStartHeight = self.getViewHeight();
+		control.objectStartX = self.getViewX();
+		control.objectStartY = self.getViewY();
 
 		control.moving = true;
 		
@@ -485,11 +631,11 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			}
 
 			/* resize object */
-			resizeFunction(dx, dy, control.objectStartWidth, control.objectStartHeight, rep);
+			resizeFunction(dx, dy, control.objectStartWidth, control.objectStartHeight, rep, control.objectStartX, control.objectStartY);
 			
 			self.adjustControls();
 			
-			self.resizeHandler();
+			
 					
 		};
 		
@@ -500,6 +646,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			control.moving = false;
 			
 			self.adjustControls();
+			
+			self.resizeHandler();
 			
 			GUI.showLinks(self);
 			
@@ -957,6 +1105,7 @@ GeneralObject.moveHandler = function() {
 
 GeneralObject.resizeHandler = function() {
 	this.setDimensions(this.getViewWidth(), this.getViewHeight());
+	this.setPosition(this.getViewX(), this.getViewY());
 }
 
 GeneralObject.selectHandler = function() {

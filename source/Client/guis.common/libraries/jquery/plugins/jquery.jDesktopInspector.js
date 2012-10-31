@@ -638,7 +638,110 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 	}
 	
 	
+	
+	/* list widget */
+	this.list = function() {
+		var self = this;
+		self.value = [];
+		
+		this.setMultipleValues = function(multipleValues) {
+			if (multipleValues) widget.valueBox.html(GUI.translate("multiple values"));
+		}
+		
+		this.getValue = function() {
+			
+			var newValue = [];
+			
+			widget.el.find("table").find("input").each(function(index,el) {
 
+				if ($(el).val() != undefined && $(el).val() != "") {
+					newValue.push($(el).val());
+				}
+				
+			});
+			
+			return newValue;
+			
+		}
+
+		this.setValue = function(value) {
+
+			self.value = value;
+			
+		}
+		
+		widget.valueBox.html('<div style="cursor: pointer">...</div>');
+		widget.valueBox.children("div").bind("click", function() {
+			self.showSelectPage();
+		});
+		
+		
+		this.page_open = false;
+		
+		
+		this.hidePage = function() {
+			
+			this.page_open = false;
+			
+			widget.el.find("table").hide();
+			widget.el.find("table").remove();
+			
+			widget.el.find("input.inspector_addValueButton").hide();
+			widget.el.find("input.inspector_addValueButton").remove();
+			
+		}
+		
+		
+		this.showSelectPage = function() {
+			
+			if (this.page_open) {
+				this.hidePage();
+				return;
+			} else {
+				this.page_open = true;
+			}
+			
+			var selector='<table style="margin:auto; width: 100%;">';
+			
+			for (var i=0; i<self.value.length;i++) {
+				
+				var value = self.value[i];
+				
+				selector+='<tr><td><input type="text" value="'+value+'" style="width: 95%" /></td></tr>';
+				
+			}
+
+			selector+='</table><input type="submit" value="'+GUI.translate('Add value')+'" class="inspector_addValueButton" style="margin-top: 10px; margin-left: 5px;" />';
+
+			$(widget.el).find(".jDesktopInspectorWidget_selector").remove();
+			$(widget.el).find("input.inspector_addValueButton").remove();
+
+			widget.el.append(selector);
+
+			widget.el.find("table").hide();
+			
+			widget.el.find("table").show();
+			inspector.openPage(page.page, page.head);
+			
+
+			widget.el.find("table").find("input").bind("keyup", function(event) {
+
+				self.callChange();
+				
+			});
+			
+			widget.el.find("input.inspector_addValueButton").click(function() {
+				widget.el.find("table").append('<tr><td><input type="text" value="" style="width: 95%" /></td></tr>');
+				widget.el.find("table").find("input").last().bind("keyup", function(event) {
+					self.callChange();
+				}).focus();
+			});
+	
+		}
+		
+		
+	}
+	
 	
 	
 	

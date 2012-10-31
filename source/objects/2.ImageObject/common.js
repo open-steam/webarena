@@ -18,8 +18,6 @@ ImageObject.register=function(type){
 	
 	this.registerAttribute('mimeType',{type:'text',standard:'image/png'});
 	
-	this.registerAttribute('shadow',{type:'boolean',standard:false,category:'Appearance'});
-	
 }
 
 ImageObject.execute=function(){

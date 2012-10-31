@@ -38,10 +38,12 @@ GUI.hideLogin = function() {
 	$("#login_background").hide();
 	$("#login_background").css("opacity", 1);
 	
-	GUI.progressBarManager.updateProgress("login", 100);
-	
-	GUI.loginProcessActive = false;
-	
+	window.setTimeout(function() {
+		GUI.progressBarManager.updateProgress("login", 100);
+
+		GUI.loginProcessActive = false;
+	}, 1000);
+
 }
 
 GUI.username = undefined;
@@ -57,14 +59,16 @@ GUI.login = function() {
 
 	GUI.loginProcessActive = true;
 	
-	GUI.username = $("#login_username").val();
-	GUI.password = $("#login_password").val();
+	if (GUI.username === undefined)	GUI.username = $("#login_username").val();
+	if (GUI.password === undefined) GUI.password = $("#login_password").val();
 	GUI.userid = GUI.username;
         
         // add cookie with user id
 //        Webserver.response.writeHead(200, {
 //            'Set-Cookie': 'userid='+GUI.userid
 //        });
+	
+	$("#disconnected_message").remove();
 	
 	GUI.progressBarManager.addProgress(GUI.translate('checking login information'), "login");
 	
