@@ -139,7 +139,6 @@ var saveDelays={};
 *	set an attribute to a value on a specified object
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
-	
 	if (attribute=='position'){
 		AttributeManager.setAttribute(object,'x',value.x,forced);
 		AttributeManager.setAttribute(object,'y',value.y,forced);
@@ -187,12 +186,15 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		
 		var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
 		
+		//this timer is the delay in which changes on the same object are discarded
+		var theTimer=200;
+		
 		if (forced) {
 			Modules.SocketClient.serverCall('setAttribute',data);
 		} else {
 			saveDelays[identifier]=window.setTimeout(function(){
 				Modules.SocketClient.serverCall('setAttribute',data);
-			},200);
+			},theTimer);
 		}
 		
 	}

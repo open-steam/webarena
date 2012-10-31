@@ -458,6 +458,20 @@ ObjectManager.init=function(theModules){
 		Modules.Dispatcher.respond(socket,responseID,Modules.Connector.getInlinePreviewMimeTypes());
 		
 	});
+	
+	Modules.Dispatcher.registerCall('memoryUsage',function(socket,data,responseID){
+		
+		var util=require('util');
+		
+		var result={};
+		
+		result.memory=util.inspect(process.memoryUsage());
+		
+		console.log(result);
+		
+		Modules.Dispatcher.respond(socket,responseID,result);
+		
+	});
 		
 }
 

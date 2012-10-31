@@ -423,6 +423,7 @@ ObjectManager.getUser=function(){
 	return this.user;
 }
 
-
-
+ObjectManager.serverMemoryInfo=function(){
+	ObjectManager.Modules.Dispatcher.query('memoryUsage','',console.log);
+}
 

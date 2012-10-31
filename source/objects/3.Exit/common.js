@@ -21,6 +21,21 @@ Exit.register=function(type){
 	//this.registerAttribute('rotation',{type:'number',standard:0,min:0,category:'Appearance'});
 	
 	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality'});
+	
+	var self=this;
+	
+	this.registerAction('Follow',function(){
+		
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var object = selected[i];
+			
+			object.execute();
+			
+		}
+		
+	},true);
 
 }
 
@@ -30,9 +45,9 @@ Exit.execute=function(){
 	
 	if (!destination) return;
 	
-//	ObjectManager.loadRoom(destination);
+	ObjectManager.loadRoom(destination);
 	
-	window.location.href = "/room/"+destination;
+	//window.location.href = "/room/"+destination;
 	
 }
 

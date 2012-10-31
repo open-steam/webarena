@@ -232,10 +232,18 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 	}
 	
 	this.runtimeData.evaluatePositionData['new'][key]=value;
-	this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
+	if (!this.runtimeData.evaluatePositionData['old'][key]) {
+		this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
+		//if there yet is a value here, we have concurrent modifications
+	}
 	
 	var posData=this.runtimeData.evaluatePositionData;
 	var self=this;
+	
+	//Within this time, we collect data for evaluation. This is important
+	//as often data that logically belongs together is sent seperately
+	
+	var timerLength=200;
 	
 	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
 		
@@ -245,7 +253,7 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 		
 		self.evaluatePositionInt(data);
 		self.runtimeData.evaluatePositionData=undefined;
-	},100);
+	},timerLength);
 	
 }
 
