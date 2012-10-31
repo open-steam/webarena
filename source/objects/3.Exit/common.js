@@ -26,7 +26,14 @@ Exit.register=function(type){
 	
 	this.registerAction('Follow',function(){
 		
-		self.execute();
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var object = selected[i];
+			
+			object.execute();
+			
+		}
 		
 	},true);
 
