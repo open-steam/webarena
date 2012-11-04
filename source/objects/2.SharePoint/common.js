@@ -15,11 +15,11 @@ SharePoint.execute=function(){
     var that=this;
     var rep=this.getRepresentation();
 
-    if(this.getAttribute("sharepoint_src")){
+    if(this.getAttribute("sharepoint_src") && !this.getAttribute("show_iframe")){
         this.switchState();
 
 
-    }  else {
+    }  else if(!this.getAttribute("sharepoint_src")) {
         var data = {
             roomID : that.getRoomID(),
             objectID: that.getID(),
