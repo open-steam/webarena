@@ -99,7 +99,7 @@ Discussion.createRepresentation = function() {
     // content
     var body = document.createElement("body");
     $(body).append(
-        $('<div class="discussion"><span class="moveArea">MOVE</span></span><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
+        $('<div class="discussion"><div class="embedded-toolbar moveArea"></div></span><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
     );
 
 

@@ -1,6 +1,29 @@
-/* line 1, ../sass/sharepoint.scss */
+/* line 3, ../sass/sharepoint.scss */
 .js-tree {
   height: 100%;
   overflow: auto;
   padding-right: -1em;
+}
+
+/* line 9, ../sass/sharepoint.scss */
+.sharepoint-toolbar, .embedded-toolbar {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5a6775), color-stop(100%, #3d454f));
+  background: -webkit-linear-gradient(#5a6775, #3d454f);
+  background: -moz-linear-gradient(#5a6775, #3d454f);
+  background: -o-linear-gradient(#5a6775, #3d454f);
+  background: linear-gradient(#5a6775, #3d454f);
+  height: 20px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+/* line 18, ../sass/sharepoint.scss */
+.minimize-button {
+  width: 16px;
+  height: 16px;
+  background-image: url("../images/close.png");
+  background-repeat: no-repeat;
+  display: block;
+  cursor: pointer;
 }

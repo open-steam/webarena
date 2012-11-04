@@ -38,7 +38,7 @@ SharePoint.createRepresentationIFrame = function(){
     var rep = GUI.svg.other(rep, "foreignObject");
     var body = document.createElement("body");
 
-    $(body).append("<div class='sharepoint-toolbar moveArea' style='height: 20px; background-color: red;'><span class='minimize-button'>minimize</span></div>")
+    $(body).append("<div class='sharepoint-toolbar moveArea' ><span class='minimize-button'></span></div>")
     $(body).append("<div class='iframe-container'><iframe src='" + this.getAttribute("sharepoint_src") + "' width='" + this.getAttribute('width') + "px' height='" +  this.getAttribute('height')  +"px'></iframe> </div>");
 
 

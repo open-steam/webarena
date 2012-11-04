@@ -28,7 +28,7 @@ Discussion.register=function(type){
 
 
 Discussion.register('Discussion');
-Discussion.isCreatable=false;
+Discussion.isCreatable=true;
 
 Discussion.restrictedMovingArea = true;
 

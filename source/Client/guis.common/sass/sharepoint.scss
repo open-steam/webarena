@@ -1,5 +1,25 @@
+@import "compass/css3";
+
 .js-tree{
   height: 100%;
   overflow: auto;
   padding-right: -1em;
+}
+
+.sharepoint-toolbar, .embedded-toolbar{
+  @include background(
+    linear-gradient(#5A6775, #3D454F));
+  height: 20px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+.minimize-button{
+  width: 16px;
+  height: 16px;
+  background-image: url('../images/close.png');
+  background-repeat: no-repeat;
+  display: block;
+  cursor: pointer;
 }
