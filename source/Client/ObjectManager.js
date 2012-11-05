@@ -312,6 +312,10 @@ ObjectManager.init=function(){
     Modules.Dispatcher.registerCall('error',function(data){
         GUI.error("server error", data);
     });
+    
+    Modules.Dispatcher.registerCall('tell',function(data){
+    	alert(data.user+':'+data.text);//TODO client side chat
+    });
 	
 }
 
@@ -425,5 +429,13 @@ ObjectManager.getUser=function(){
 
 ObjectManager.serverMemoryInfo=function(){
 	ObjectManager.Modules.Dispatcher.query('memoryUsage','',console.log);
+}
+
+ObjectManager.tell=function(text){
+	var data={};
+	data.text=text;
+	data.room=this.getRoomID();
+	data.user=this.getUser().username;
+	ObjectManager.Modules.Dispatcher.query('tell',data);
 }
 
