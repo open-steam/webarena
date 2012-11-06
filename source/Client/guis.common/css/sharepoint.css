@@ -27,3 +27,9 @@
   display: block;
   cursor: pointer;
 }
+
+/* line 27, ../sass/sharepoint.scss */
+.iframe-container {
+  background-color: white;
+  border: 2px solid #3D454F;
+}

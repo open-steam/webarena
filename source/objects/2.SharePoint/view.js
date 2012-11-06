@@ -39,7 +39,7 @@ SharePoint.createRepresentationIFrame = function(){
     var body = document.createElement("body");
 
     $(body).append("<div class='sharepoint-toolbar moveArea' ><span class='minimize-button'></span></div>")
-    $(body).append("<div class='iframe-container'><iframe src='" + this.getAttribute("sharepoint_src") + "' width='" + this.getAttribute('width') + "px' height='" +  this.getAttribute('height')  +"px'></iframe> </div>");
+    $(body).append("<div class='iframe-container'><iframe src='" + this.getAttribute("sharepoint_src") + "' width='" + (this.getAttribute('width')-8) + "px' height='" +  (this.getAttribute('height')-38)  +"px'></iframe> </div>");
 
 
     $(body).on("click", ".minimize-button", function(){
