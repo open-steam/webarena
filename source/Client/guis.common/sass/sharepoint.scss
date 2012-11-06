@@ -15,13 +15,25 @@
   padding-bottom: 2px;
 }
 
-.minimize-button{
+.embedded-toolbar-button{
   width: 16px;
   height: 16px;
-  background-image: url('../images/close.png');
   background-repeat: no-repeat;
   display: block;
   cursor: pointer;
+  padding-right: 5px;
+}
+
+.minimize-button{
+  @extend .embedded-toolbar-button;
+  background-image: url('../images/close.png');
+  float: left;
+}
+
+.open-extern-button{
+  @extend .embedded-toolbar-button;
+  background-image: url('../images/export.png');
+  float: right;
 }
 
 .iframe-container{

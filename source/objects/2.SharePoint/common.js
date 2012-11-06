@@ -9,6 +9,17 @@ SharePoint.register=function(type){
     GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
     GeneralObject.register.call(this,type);
 
+    this.registerAction('Open extern',function(){
+        var selected = ObjectManager.getSelected();
+        for (var i in selected) {
+            var obj = selected[i];
+
+            obj.openWindow();
+
+        }
+
+    },false);
+
 }
 
 SharePoint.execute=function(){

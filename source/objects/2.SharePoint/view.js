@@ -32,18 +32,26 @@ SharePoint.switchState = function(){
     this.getRepresentation();
 }
 
+SharePoint.openWindow = function(){
+    window.open(this.getAttribute("sharepoint_src"));
+}
+
 SharePoint.createRepresentationIFrame = function(){
 
     var that = this;
     var rep = GUI.svg.other(rep, "foreignObject");
     var body = document.createElement("body");
 
-    $(body).append("<div class='sharepoint-toolbar moveArea' ><span class='minimize-button'></span></div>")
+    $(body).append("<div class='sharepoint-toolbar moveArea' ><span class='minimize-button'></span><span class='open-extern-button'</div>")
     $(body).append("<div class='iframe-container'><iframe src='" + this.getAttribute("sharepoint_src") + "' width='" + (this.getAttribute('width')-8) + "px' height='" +  (this.getAttribute('height')-38)  +"px'></iframe> </div>");
 
 
     $(body).on("click", ".minimize-button", function(){
         that.switchState();
+    });
+
+    $(body).on("click", ".open-extern-button", function(){
+        that.openWindow();
     });
 
     $(rep).append(body);
