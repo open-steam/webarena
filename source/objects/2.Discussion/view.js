@@ -6,8 +6,23 @@
 *
 */
 
-Discussion.draw=function(){
-    // representation
+Discussion.switchState = function(){
+    var embedded = this.getAttribute("show_embedded");
+
+    this.setAttribute("show_embedded", !embedded);
+    if(!embedded){
+        this.setAttribute("width", 700);
+        this.setAttribute("height", 800);
+    } else {
+        this.setAttribute("width", 64*2.5);
+        this.setAttribute("height", 64*1.5)
+    }
+
+    $('#' + this.getAttribute('id')).remove();
+    this.getRepresentation();
+}
+
+Discussion.drawEmbedded = function(){
     var rep=this.getRepresentation();
     rep.dataObject=this;
 
@@ -20,7 +35,7 @@ Discussion.draw=function(){
 
     // draw outer line
     var linesize = this.getAttribute('linesize')+0;
-	
+
     if (linesize > 0) {  // draw line
         $(rep).find(".discussion-text").css("border-color", this.getAttribute('linecolor'));
         $(rep).find(".discussion-text").css("border-width", this.getAttribute('linesize'));
@@ -29,7 +44,7 @@ Discussion.draw=function(){
         $(rep).find(".discussion-text").css("border-color", "none");
         $(rep).find(".discussion-text").css("border-width", "0px");
         $(rep).find(".discussion-text").css("padding", "0px");
-		
+
     }
 
 
@@ -38,7 +53,7 @@ Discussion.draw=function(){
     $(rep).find(".discussion-text").css("background-color", this.getAttribute('fillcolor'));
     $(rep).find("body").css("font-size", this.getAttribute('font-size'));
     $(rep).find("body").css("font-family", this.getAttribute('font-family'));
-    $(rep).find("body").css("color", this.getAttribute('font-color'));	
+    $(rep).find("body").css("color", this.getAttribute('font-color'));
     $(rep).attr("layer", this.getAttribute('layer'));
 
     var title = this.getAttribute('discussionTitle') || "Bitte hier klicken, um das Thema zu ändern.";
@@ -65,12 +80,25 @@ Discussion.draw=function(){
             that.oldContent=messageArray;
         }
     });
+}
 
+Discussion.drawIcon = function(){
+    var rep=this.getRepresentation();
 
-	
+    this.setViewX(this.getAttribute('x'));
+    this.setViewY(this.getAttribute('y'));
 
+    this.setViewWidth(this.getAttribute('width'));
+    this.setViewHeight(this.getAttribute('height'));
+}
 
-	
+Discussion.draw=function(){
+    var embedded = this.getAttribute("show_embedded");
+    if(embedded){
+        this.drawEmbedded();
+    } else {
+        this.drawIcon();
+    }
 }
 
 
@@ -85,11 +113,11 @@ Discussion.updateInnerHeight = function() {
 
 	$(rep).find(".discussion-text").css("height", (this.getAttribute('height')- hh - ih - 90)+"px");
 
+    $(rep).find(".wrapped-text").css("height", (this.getAttribute('height') - 50) + "px");
+    $(rep).find(".wrapped-text").dotdotdot();
 }
 
-
-Discussion.createRepresentation = function() {
-
+Discussion.createRepresentationEmbedded = function(){
     var that = this;
 
     // wrapper
@@ -99,7 +127,7 @@ Discussion.createRepresentation = function() {
     // content
     var body = document.createElement("body");
     $(body).append(
-        $('<div class="discussion"><div class="embedded-toolbar moveArea"></div></span><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
+        $('<div class="discussion"><div class="embedded-toolbar moveArea"><span class="minimize-button"></span></div><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
     );
 
 
@@ -148,6 +176,10 @@ Discussion.createRepresentation = function() {
         }
     });
 
+    $(body).on("click", ".minimize-button", function(){
+        that.switchState();
+    });
+
     // add content to wrapper
     $(rep).append(body);
 
@@ -163,6 +195,43 @@ Discussion.createRepresentation = function() {
     }, 1000);
 
     return rep;
+}
+
+Discussion.createRepresentationIcon = function(){
+
+    //var rep = GUI.svg.group(this.getAttribute('id'));
+    var rep = GUI.svg.other("foreignObject");
+
+    var body = document.createElement("body");
+    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text'>" + this.getAttribute('discussionTitle') + "</div></div>");
+
+    $(rep).append(body);
+    $(rep).attr("id", this.getAttribute('id'));
+    $(rep).find('.wrapped-text').dotdotdot();
+
+    //GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
+    //$(rep).find('image').addClass('moveArea');
+
+    return rep;
+
+}
+
+Discussion.getFileIcon = function(){
+    return "../../guis.common/images/discussion.png";
+}
+
+
+Discussion.createRepresentation = function() {
+    var embedded = this.getAttribute("show_embedded");
+    var rep;
+    if(embedded){
+        rep = this.createRepresentationEmbedded();
+    } else {
+        rep = this.createRepresentationIcon();
+    }
+
+    return rep;
+
 }
 
 Discussion.renderMessage = function(message){

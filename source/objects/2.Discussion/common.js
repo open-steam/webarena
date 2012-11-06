@@ -25,9 +25,24 @@ Discussion.register=function(type){
 
 }
 
+Discussion.execute=function(){
+    if(!this.getAttribute("show_embedded")){
+        this.switchState();
+    }
+}
+
 
 
 Discussion.register('Discussion');
+
+Discussion.moveByTransform = function(){
+    if(this.getAttribute("show_embedded")){
+        return false;
+    } else {
+        return false;
+    }
+}
+
 Discussion.isCreatable=true;
 
 Discussion.restrictedMovingArea = true;
