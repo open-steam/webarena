@@ -313,8 +313,8 @@ ObjectManager.init=function(){
         GUI.error("server error", data);
     });
     
-    Modules.Dispatcher.registerCall('tell',function(data){
-    	alert(data.user+':'+data.text);//TODO client side chat
+    Modules.Dispatcher.registerCall('inform',function(data){
+    	console.log(data.user+':',data.message);//TODO client side chat
     });
 	
 }
@@ -431,11 +431,28 @@ ObjectManager.serverMemoryInfo=function(){
 	ObjectManager.Modules.Dispatcher.query('memoryUsage','',console.log);
 }
 
-ObjectManager.tell=function(text){
+ObjectManager.inform=function(type,content){
 	var data={};
-	data.text=text;
+	data.message={};
+	data.message[type]=content;
 	data.room=this.getRoomID();
 	data.user=this.getUser().username;
-	ObjectManager.Modules.Dispatcher.query('tell',data);
+	ObjectManager.Modules.Dispatcher.query('inform',data);
+}
+
+ObjectManager.tell=function(text){
+	ObjectManager.inform('text',text);
+}
+
+ObjectManager.informAboutSelection=function(id){
+	ObjectManager.inform('selection',id);
+}
+
+ObjectManager.informAboutDeselection=function(id){
+	ObjectManager.inform('deselection',id);
+}
+
+ObjectManager.requestAttentionToObject=function(id){
+	ObjectManager.inform('requestAttention',id);
 }
 

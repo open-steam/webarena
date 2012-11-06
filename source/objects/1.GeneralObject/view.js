@@ -224,6 +224,8 @@ GeneralObject.select = function(multiple, groupSelect) {
 	this.selectHandler();
 	
 	this.draw();
+	
+	ObjectManager.informAboutSelection(this.id);
 }
 
 GeneralObject.deselect = function() {
@@ -242,6 +244,8 @@ GeneralObject.deselect = function() {
 	this.startNoAnimationTimer();
 	
 	this.draw();
+	
+	ObjectManager.informAboutDeselection(this.id);
 	
 }
 

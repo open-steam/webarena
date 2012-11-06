@@ -473,16 +473,17 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
-	Modules.Dispatcher.registerCall('tell',function(socket,data,responseID){
+	//Information are sent to all clients in the same room
+	Modules.Dispatcher.registerCall('inform',function(socket,data,responseID){
 		
 		var connections=Modules.UserManager.getConnectionsForRoom(data.room);
 		
 		for (var i in connections){
 			var socket=connections[i].socket;
-			Modules.SocketServer.sendToSocket(socket,'tell',data);
+			Modules.SocketServer.sendToSocket(socket,'inform',data);
 		}
 		
-		console.log(data.user+'@'+data.room+':'+data.text);
+		console.log(data.user+'@'+data.room+':',data.message);
 		
 	});
 		

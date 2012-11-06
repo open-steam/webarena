@@ -21,23 +21,6 @@ GUI.translate=function(text){
 
 
 
-
-/* ---> needed!? <--- */
-GUI.objectSaved=function(object){
-}
-
-GUI.objectRemoved=function(object){
-}
-
-GUI.objectSelected=function(object){
-}
-
-GUI.objectUnselected=function(object){
-}
-
-
-
-
 GUI.isTouchDevice = false;
 
 
