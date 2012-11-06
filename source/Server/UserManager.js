@@ -108,7 +108,8 @@ UserManager.enterRoom=function(socketOrUser,roomID){
 			ObjectManager.getRoom(roomID,connection,function(room){			
 				socketServer.sendToSocket(socket,'entered',room.id);
 				connection.room=room;
-				ObjectManager.sendRoom(socket,room.id);
+				ObjectManager.sendRoom(socket,room.id);				
+				UserManager.sendAwarenessData(room.id);
 			})
 
 		} else {
@@ -119,6 +120,40 @@ UserManager.enterRoom=function(socketOrUser,roomID){
 		
 		
 
+}
+
+UserManager.getAwarenessData=function(roomID,connections){
+	var awarenessData={};
+	awarenessData.room=roomID;
+	awarenessData.present=[];
+	for (var i in connections){
+		var con=connections[i];
+		
+		var presData={};
+		presData.username=con.user.username;
+		presData.id=i;
+		awarenessData.present.push(presData);
+	}
+	return awarenessData;
+}
+
+UserManager.sendAwarenessData=function(roomID){
+	var connections=UserManager.getConnectionsForRoom(roomID);
+						
+	var awarenessData=UserManager.getAwarenessData(roomID,connections);
+	
+	for (var i in connections){
+		var con=connections[i];
+		var sock=con.socket;
+		
+		var data={};
+		data.message={};
+		data.message['awareness']=awarenessData;
+		data.room=roomID;
+		data.user='Server';
+		
+		Modules.SocketServer.sendToSocket(sock,'inform',data);
+	}
 }
 
 UserManager.init=function(theModules){
