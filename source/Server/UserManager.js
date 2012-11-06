@@ -35,7 +35,14 @@ UserManager.socketConnect=function(socket){
 *
 **/
 UserManager.socketDisconnect=function(socket){
+	
+	var roomID=this.getConnectionBySocket(socket).room.id;
+	
 	delete(this.connections[socket.id]);
+	
+	UserManager.sendAwarenessData(roomID);
+	
+	
 }
 
 
