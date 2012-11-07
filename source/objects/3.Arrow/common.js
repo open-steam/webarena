@@ -21,6 +21,7 @@ Arrow.register=function(type){
 	this.attributeManager.registerAttribute('markerEnd',{type:'boolean',standard:true,category:'Appearance'});
 
 	this.attributeManager.registerAttribute('linesize',{type:'number',min:4,standard:4,category:'Appearance'});
+	this.attributeManager.registerAttribute('linecolor',{standard:'black'});
 	
 }
 
