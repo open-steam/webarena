@@ -2,19 +2,9 @@
 
 /* inspector */
 
-/* the following three functions are overwritten by desktop GUI */
-GUI.saveInspectorStateAndHide = function() {
-	//overwritten
-}
-
 GUI.updateInspector = function() {
 	//overwritten	
 }
-
-GUI.restoreInspectorFromSavedState = function() {
-	//overwritten	
-}
-
 
 
 GUI.setupInspectorContent = function(inspector) {

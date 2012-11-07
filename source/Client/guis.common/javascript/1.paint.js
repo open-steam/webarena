@@ -54,7 +54,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 
 	GUI.paintModeActive = true;
 
-	GUI.saveInspectorStateAndHide();
+	GUI.sidebar.saveStateAndHide();
 
 	
 	$("#header > div.header_left").children().hide();
@@ -472,7 +472,7 @@ GUI.cancelPaintMode = function() {
 	
 	$("#content").unbind("mousedown.paint");
 	
-	GUI.restoreInspectorFromSavedState();
+	GUI.sidebar.restoreFromSavedState();
 	
 	$("#header").find(".jPaint_navi").remove();
 	

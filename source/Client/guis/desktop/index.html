@@ -179,155 +179,7 @@
 			});
 			
 		}
-
 		
-		
-		
-		/* inspector */
-		
-		GUI.updateInspector = function() {
-			
-			$("#inspector").data("jDesktopInspector").update();
-			
-		}
-		
-		
-		GUI.saveInspectorStateAndHide = function() {
-			
-			GUI.inspectorState = ($("#inspector").css("opacity") > 0);
-			GUI.hideInspector();
-			
-		}
-		
-		
-		GUI.restoreInspectorFromSavedState = function() {
-			
-			if (GUI.inspectorState) {
-				GUI.showInspector();
-			}
-			
-		}
-		
-		
-		GUI.hideInspector = function() {
-			
-			$("#inspector_button").html(GUI.translate("Show inspector"));
-			$("#inspector_button").removeClass("button_active");
-			
-			$("#inspector").animate({
-				opacity: 0
-			}, 200, function() {
-				$("#inspector").hide();
-			});
-			
-		}
-		
-		
-		GUI.showInspector = function() {
-			
-			$("#inspector_button").html(GUI.translate("Hide inspector"));
-			$("#inspector_button").addClass("button_active");
-			
-			$("#inspector").show();
-			$("#inspector").animate({
-				opacity: 1
-			}, 200);
-			
-		}
-	
-		
-		GUI.toggleInspector = function() {
-			
-			if ($("#inspector").css("opacity") > 0) {
-				/* close */
-
-				GUI.hideInspector();
-				
-			} else {
-				/* open */
-				
-				GUI.showInspector();
-				
-			}
-			
-		}
-		
-		
-		GUI.setupInspector = function() {
-			
-			$("#inspector").css("opacity", 0);
-			$("#inspector").hide();
-			
-			
-			/* add hidden-mode toggle button */
-			
-			var hiddenButton = document.createElement("span");
-			$(hiddenButton).addClass("header_button");
-			$(hiddenButton).attr("id", "hidden_button");
-			$(hiddenButton).html(GUI.translate("Show hidden objects"));
-			
-			GUI.onToggleHidden = function(hiddenMode) {
-				
-				if (hiddenMode) {
-					//hidden mode is active (hidden objects are visible)
-					$("#hidden_button").html(GUI.translate("Hide hidden objects"));
-					$("#hidden_button").addClass("button_active");
-				} else {
-					//hidden mode is inactive (no hidden objects are visible)
-					$("#hidden_button").html(GUI.translate("Show hidden objects"));
-					$("#hidden_button").removeClass("button_active");	
-				}
-				
-			}
-			
-			$(hiddenButton).bind("click", function() {
-				
-				GUI.toggleHidden();
-				
-			});
-			
-			if (!Modules.Config.presentationMode) $("#header > .header_right").append(hiddenButton);
-			
-			
-			
-			/* add inspector toggle button */
-		
-			var inspectorButton = document.createElement("span");
-			$(inspectorButton).addClass("header_button");
-			$(inspectorButton).attr("id", "inspector_button");
-			$(inspectorButton).html(GUI.translate("Show inspector"));
-			
-			$(inspectorButton).bind("click", GUI.toggleInspector);
-			
-			if (!Modules.Config.presentationMode) $("#header > .header_right").append(inspectorButton);
-			
-			
-			
-			/* add user info */
-			
-			var userinfo = document.createElement("span");
-			$(userinfo).addClass("header_info");
-			$(userinfo).css("font-size", "11px");
-			$(userinfo).html(GUI.translate("Current user")+": "+GUI.username);
-
-			$("#header > .header_right").prepend(userinfo);
-			
-			
-			
-			/* add inspector */
-
-			$("#inspector").jDesktopInspector({
-				onUpdate : function(domEl, inspector) {
-
-					GUI.setupInspectorContent(inspector);
-
-				}
-			});
-			
-			
-			if (!Modules.Config.presentationMode) GUI.showInspector();
-
-		}
 		
 		
 		GUI.error = function(heading, message, webarenaObject, fatal) {
@@ -417,6 +269,158 @@
 			
 			
 		};
+		
+		
+		
+		
+		/* sidebar */
+		
+		GUI.sidebar = {};
+		
+		GUI.sidebar.open = false;
+		GUI.sidebar.currentElement = undefined;
+		
+		GUI.sidebar.elementConfig = {
+			"inspector" : {
+				order : 0,
+				title : GUI.translate("Object inspector"),
+			},
+			"chat" : {
+				order : 1,
+				title : GUI.translate("Chat"),
+			},
+		};
+		
+		GUI.sidebar.back = function() {
+			//TODO
+		}
+		
+		GUI.sidebar.openPage = function(element, button) {
+			
+			if (GUI.sidebar.elementConfig[element] == undefined) {
+				console.error("Open Sidebar: Unknown element ID");
+				return;
+			}
+			
+			if (GUI.sidebar.currentElement == element && GUI.sidebar.open) {
+				GUI.sidebar.closeSidebar();
+				return;
+			}
+			
+			GUI.sidebar.currentElement = element;
+
+			var left = GUI.sidebar.elementConfig[element]['order']*$("#sidebar").width()*(-1);
+
+			
+			if (!GUI.sidebar.open) {
+				
+				$("#sidebar_content").children("div").css("margin-left", left);
+				
+				GUI.sidebar.openSidebar();
+				
+			} else {
+				
+				$("#sidebar_content").children("div").animate({
+					"margin-left" : left
+				}, 500);
+				
+			}
+			
+			$("#sidebar_title").children("span").html(GUI.sidebar.elementConfig[element]['title']);
+			
+			$(".sidebar_button").removeClass("active");
+			
+			
+			if (button !== undefined) {
+				
+				$(button).addClass("active");
+				
+			}
+
+			
+		}
+		
+		GUI.sidebar.openSidebar = function() {
+			
+			$("#sidebar, #sidebar_title").animate({
+				right: 0
+			}, 500);
+			
+			$("#header").animate({
+				right: 230
+			}, 500);
+			
+			GUI.sidebar.open = true;
+			
+		}
+		
+		
+		GUI.sidebar.closeSidebar = function() {
+			
+			$("#sidebar, #sidebar_title").animate({
+				right: -230
+			}, 500);
+			
+			$("#header").animate({
+				right: 0
+			}, 500);
+			
+			GUI.sidebar.open = false;
+			GUI.sidebar.currentElement = undefined;
+			
+			$(".sidebar_button").removeClass("active");
+			
+		}
+		
+		
+		GUI.sidebar.saveStateAndHide = function() {
+			
+			GUI.inspectorState = ($("#inspector").css("opacity") > 0);
+			GUI.hideInspector();
+			
+		}
+		
+		
+		GUI.sidebar.restoreFromSavedState = function() {
+			
+			if (GUI.inspectorState) {
+				GUI.showInspector();
+			}
+			
+		}
+		
+		
+		GUI.sidebar.init = function() {
+			
+		}
+
+		
+		
+		
+		/* inspector */
+		
+		GUI.updateInspector = function() {
+			
+			$("#inspector").data("jDesktopInspector").update();
+			
+		}
+			
+		GUI.setupInspector = function() {
+			
+			/* add inspector */
+
+			$("#inspector").jDesktopInspector({
+				onUpdate : function(domEl, inspector) {
+
+					GUI.setupInspectorContent(inspector);
+
+				}
+			});
+			
+		}
+		
+		
+		
 	
 
 
@@ -442,9 +446,14 @@
 
 	<div id="content"></div>
 	
-	
-	<div id="inspector">
-		
+	<div id="sidebar">
+		<div id="sidebar_title"><span></span></div>
+		<div id="sidebar_content">
+			<div>
+				<div id="inspector"></div>
+				<div id="chat">CHAT</div>
+			</div>
+		</div>
 	</div>
 	
 	<div id="actionsheet"></div>

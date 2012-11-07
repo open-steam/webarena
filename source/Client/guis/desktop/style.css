@@ -8,35 +8,37 @@ body {
 
 
 #header {
-	z-index: 11000;
+	z-index: 11001;
 	height: 33px;
-	width: 100%;
 	position: fixed;
 	top: 0px;
 	left: 0px;
-	right: 0px;
+	right: 230px;
 	background: -moz-linear-gradient(
 		center top ,
-		#5a6775 0%,
-		#3d454f 100%) repeat scroll 0 0 transparent;	
+		#3E3E3E 0%,
+		#1E1E1E 100%) repeat scroll 0 0 transparent;	
 	background: -webkit-gradient(
 		linear,
 		left top,
 		left bottom,
-		color-stop(0, #5a6775),
-		color-stop(1, #3d454f)
+		color-stop(0, #3E3E3E),
+		color-stop(1, #1E1E1E)
 		);
-
 	color: #eaecf0;
-	border-bottom: 1px solid #303840;
 	box-shadow: 0px 1px 3px rgba(0,0,0,0.3);
 	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
 	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+	border-right: 1px solid #000000;
 }
 
 #header img {
 	opacity: 0.6;
 	cursor: pointer;
+}
+
+#header img.active, #header img:hover {
+	opacity: 0.9;
 }
 
 
@@ -49,9 +51,8 @@ body {
 
 #header>div.header_right {
 	float: right;
-	padding-right: 6px;
 	position: relative;
-	top: 10px;
+	top: -4px;
 }
 
 
@@ -66,103 +67,25 @@ body {
 #header>div.header_right>img {
 	display: block;
 	margin-top: 8px;
-	margin-left: 20px;
+	margin-right: 20px;
 	float: left;
 }
 
 
-#header>div.header_right img {
-	margin-left: 20px;
-}
-
-#header>div.header_right span {
-	margin-left: 10px;
-}
 
 
-#header>div>span a {
-	color: #eaecf0;
-}
 
-#header>div>span.header_button {
-	padding: 4px;
-	text-decoration: none;
-	background: -moz-linear-gradient(
-		center top ,
-		#e5ecf1 0%,
-		#d5dce0 1%,
-		#b7bcc0 100%) repeat scroll 0 0 transparent;	
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, #e5ecf1),
-		color-stop(0.1, #d5dce0),
-		color-stop(1, #b7bcc0)
-		);
-	color: #555;
+#chat_notifier {
+	background-color: #D60000;
+	padding: 1px;
+	border-radius: 2px;
+	padding-left: 3px;
+	padding-right: 3px;
+	position: absolute;
+	margin-top: 6px;
+	margin-left: -2px;
 	cursor: pointer;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
-	border-radius: 3px;
-	font-size: 11px;
 }
-
-#header>div>span.header_button:hover {
-	text-decoration: none;
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, #FFFFFF),
-		color-stop(0.3, #eceded),
-		color-stop(1, #dbdbd9)
-	);
-	background: -moz-linear-gradient(
-		center top ,
-		#FFFFFF 0%,
-		#eceded 3%,
-		#dbdbd9 100%) repeat scroll 0 0 transparent;
-}
-
-#header>div>span.header_button:active {
-	background: #dbdbd9;
-}
-
-#header>div>span.button_active {
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, #adbbcc),
-		color-stop(0.1, #8c9eb3),
-		color-stop(1, #5e6f83)
-	);
-	background: -moz-linear-gradient(
-		center top ,
-		#adbbcc 0%,
-		#8c9eb3 10%,
-		#5e6f83 100%) repeat scroll 0 0 transparent;
-	color: #e7e7e7;
-}
-
-#header>div>span.button_active:hover {
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, #c3d3e5),
-		color-stop(0.1, #9fb4cc),
-		color-stop(1, #70849c)
-	);
-	background: -moz-linear-gradient(
-		center top ,
-		#c3d3e5 0%,
-		#9fb4cc 10%,
-		#70849c 100%) repeat scroll 0 0 transparent;
-	color: #FFFFFF;
-}
-
 
 
 
@@ -296,24 +219,65 @@ body {
 
 
 
-/* desktop inspector */
+/* sidebar */
 
-#inspector {
+#sidebar {
 	position: fixed;
-	width: 200px;
+	width: 230px;
 	right: 0px;
-	top: 34px;
+	top: 10px;
 	bottom: 0px;
-	background-color: #c5cbcf;
-	border-left: 1px solid #acacac;
+	-webkit-box-shadow: inset 2px 0px 10px rgba(0,0,0,0.3);
+	background-image: url(/guis.common/images/sidebar_bg.png);
 	z-index: 999;
-	box-shadow: -1px 0px 3px rgba(0,0,0,0.3);
-	-webkit-box-shadow: -1px 0px 3px rgba(0,0,0,0.3);
-	-moz-box-shadow: rgba(0,0,0,0.3) -1px 0px 3px;
-	padding: 5px;
 	padding-top: 0px;
 }
 
+#sidebar_title {
+	z-index: 11000;
+	height: 24px;
+	position: fixed;
+	top: 0px;
+	width: 220px;
+	right: 0px;
+	background: -moz-linear-gradient(
+		center top ,
+		#3E3E3E 0%,
+		#1E1E1E 100%) repeat scroll 0 0 transparent;	
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #3E3E3E),
+		color-stop(1, #1E1E1E)
+		);
+	color: #ADADAD;
+	box-shadow: 0px 1px 3px rgba(0,0,0,0.3);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+	border-left: 1px solid #636363;
+	font-size: 12px;
+	padding-top: 9px;
+	padding-left: 9px;
+}
+
+#sidebar_content {
+	overflow: scroll;
+	width: 2000px;
+	position: absolute;
+	top: 23px;
+	bottom: 0px;
+	left: 0px;
+}
+
+#sidebar_content>div {
+	width: 2000px;
+}
+
+#sidebar_content>div>div {
+	float: left;
+	width: 230px;
+}
 
 
 

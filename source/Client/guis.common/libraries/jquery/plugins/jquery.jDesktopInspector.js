@@ -840,36 +840,12 @@ $(function() { });
 
 			var newHead = document.createElement("div");
 			$(newHead).addClass("jDesktopInspector_pageHead");
-			$(newHead).addClass("jDesktopInspector_pageHead_closed");
 			$(newHead).html(title);
-			$(newHead).css("cursor", "pointer");
 
 			var newPage = document.createElement("div");
 			$(newPage).hide();
 			$(newPage).addClass("jDesktopInspector_page");
 			$(newPage).addClass("jDesktopInspector_page_"+pageId);
-
-			$(newHead).bind("click", function(event) {
-			
-				if (!$(newPage).is(":visible")) {
-					/* open */
-					
-					$(self.mainEl).find(".jDesktopInspectorWidget_selector").remove();
-					
-					self.openPage(newPage, newHead);
-					
-				} else {
-					/* close */
-					
-					$(newPage).hide("blind", function() {
-						$(newHead).addClass("jDesktopInspector_pageHead_closed");
-					});
-					
-					$(newPage).find(".jDesktopInspectorWidget_selector").remove();
-					
-				}
-				
-			});
 
 			$(this.el).children("div").append(newHead);
 			$(this.el).children("div").append(newPage);
