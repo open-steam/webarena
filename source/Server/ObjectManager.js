@@ -472,6 +472,20 @@ ObjectManager.init=function(theModules){
 		Modules.Dispatcher.respond(socket,responseID,result);
 		
 	});
+	
+	//Information are sent to all clients in the same room
+	Modules.Dispatcher.registerCall('inform',function(socket,data,responseID){
+		
+		var connections=Modules.UserManager.getConnectionsForRoom(data.room);
+		
+		for (var i in connections){
+			var socket=connections[i].socket;
+			Modules.SocketServer.sendToSocket(socket,'inform',data);
+		}
+		
+		console.log(data.user+'@'+data.room+':',data.message);
+		
+	});
 		
 }
 

@@ -106,6 +106,7 @@ theObject.evaluate=function(object,changeData){
 	if (!oldIntersects && newIntersects) return this.onEnter(object,oldData,newData);
 }
 
+
 theObject.onMoveWithin=function(object,oldData,newData){
 	
 };

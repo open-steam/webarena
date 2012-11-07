@@ -5,16 +5,22 @@
 *
 */
 
-console.log('#######################################');
-console.log('#    W E B A R E N A   S E R V E R    #');
-console.log('#                                     #');
-console.log('#    (c) 2012, Felix Winkelnkemper    #');
-console.log('#######################################');
+console.log('##########################################');
+console.log('#    W E B A R E N A   S E R V E R       #');
+console.log('#                                        #');
+console.log('#    (c) 2012, Contextual Informatics,   #');
+console.log('#              Universität Paderborn     #');
+console.log('#                                        #');
+console.log('#    Main contributors:                  #');
+console.log('#                                        #');
+console.log('#        Felix Winkelnkemper             #');
+console.log('#        Tobias Kempkensteffen           #');
+console.log('#                                        #');
+console.log('##########################################');
 
 "use strict";
 
 //General error handling
-
 
 process.on('uncaughtException', function (err) {
   //console.log('Caught exception: ' + err);
