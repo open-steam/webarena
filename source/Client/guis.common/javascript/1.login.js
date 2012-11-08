@@ -46,6 +46,29 @@ GUI.hideLogin = function() {
 
 }
 
+
+GUI.isLoggedIn = false;
+
+GUI.loggedIn = function() {
+	if (GUI.isLoggedIn) return;
+	
+	GUI.isLoggedIn = true;
+
+	GUI.progressBarManager.updateProgress("login", 30, GUI.translate('loading room'));
+	
+}
+
+
+GUI.loginFailed = function(err) {
+	GUI.progressBarManager.removeProgress("login");
+	GUI.showLogin(err);
+	GUI.loginProcessActive = false;
+	GUI.username = undefined;
+	GUI.password = undefined;
+}
+
+
+
 GUI.username = undefined;
 GUI.password = undefined;
 GUI.userid = undefined;

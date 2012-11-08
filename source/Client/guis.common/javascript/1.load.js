@@ -1,16 +1,6 @@
 "use strict";
 
 GUI.loaded = false;
-GUI.isLoggedIn = false;
-
-GUI.loggedIn = function() {
-	if (GUI.isLoggedIn) return;
-	
-	GUI.isLoggedIn = true;
-
-	GUI.progressBarManager.updateProgress("login", 30, GUI.translate('loading room'));
-	
-}
 
 GUI.entered = function() {
 	
@@ -18,10 +8,6 @@ GUI.entered = function() {
 	
 }
 
-GUI.loginFailed = function(err) {
-	GUI.progressBarManager.removeProgress("login");
-	GUI.showLogin(err);
-}
 
 GUI.loadGUI = function(step) {
 

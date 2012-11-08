@@ -160,10 +160,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		GUI.closePaintMode();
 	});
 
-	$("#header > div.header_right").append(closeButton);
-	
-	$("#header img").css("opacity", 1);
-	
+	$("#header > div.header_right").append(closeButton);	
 	
 	/* create html canvas */
 	GUI.paintCanvas = document.createElement("canvas");
@@ -219,7 +216,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		var img = new Image();
 		
 		$(img).bind("load", function() {
-			
+
 			var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 			
 			var x = webarenaObject.getAttribute("x");
@@ -236,7 +233,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		
 		var rep = webarenaObject.getRepresentation();
 		
-		$(img).attr("src", $(rep).attr("href"));
+		$(img).attr("src", webarenaObject.getPreviewContentURL());
 		
 	}
 	
@@ -479,8 +476,6 @@ GUI.cancelPaintMode = function() {
 	$("#header > div.header_left").children().show();
 	$("#header > div.header_right").children().show();
 	
-	$("#header img").css("opacity", 0.6);
-	
 	$("#webarena_paintCanvas").remove();
 	
 	/* set normal opacity to all objects */
@@ -492,56 +487,6 @@ GUI.closePaintMode = function() {
 	
 	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 	
-//<---
-
-	/* calculate new min/max values */
-
-/*
-	GUI.paintMaxX = GUI.paintMaxX+5;
-	GUI.paintMaxY = GUI.paintMaxY+5;
-	GUI.paintMinX = GUI.paintMinX-5;
-	GUI.paintMinY = GUI.paintMinY-5;
-
-	var minX = undefined;
-	var minY = undefined;
-	var maxX = undefined;
-	var maxY = undefined;
-
-	var pixelFound = false;
-
-	for (var x = GUI.paintMinX; x < GUI.paintMaxX; x++) {
-		for (var y = GUI.paintMinY; y < GUI.paintMaxY; y++) {
-
-			var pixelData = canvasContext.getImageData(x, y, 1, 1).data;
-
-			if (pixelData[3] > 0) {
-				// pixel found at x,y
-				pixelFound = true;
-
-				if (x < minX || minX == undefined) { minX = x }
-				if (y < minY || minY == undefined) { minY = y }
-				if (x > maxX || maxX == undefined) { maxX = x }
-				if (y > maxY || maxY == undefined) { maxY = y }
-
-			}
-
-		}
-	}
-
-	if (minX == undefined) { minX = 0 }
-	if (minY == undefined) { minY = 0 }
-	if (maxX == undefined) { maxX = 0 }
-	if (maxY == undefined) { maxY = 0 }
-
-	maxX = maxX+5;
-	maxY = maxY+5;
-	minX = minX-5;
-	minY = minY-5;
-
-	if (minX < 0) { minX = 0 }
-	if (minY < 0) { minY = 0 }
-
-*/
 	
 	var pixelFound = true;
 	

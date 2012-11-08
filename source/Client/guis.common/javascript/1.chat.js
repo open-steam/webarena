@@ -32,7 +32,6 @@ GUI.chat.setUsers = function(users) {
 		var user = users[i];
 		$("#chat_users").append('<div><span style="background-color: '+user.color+'"></span>'+user.username+'</div>');
 	}
-	//$("#chat_messages").height($("#chat").height()-$("#chat_users").height()-$("#chat_message").height()); //adjust messages box
 }
 
 
@@ -73,6 +72,7 @@ GUI.chat.addMessage = function(username, text, userColor) {
 GUI.chat.opened = function() {
 	GUI.chat.newMessages = 0;
 	GUI.chat.hideNotifier();
+	//$("#chat_message_input").focus(); //TODO: chrome bug
 }
 
 

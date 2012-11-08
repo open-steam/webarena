@@ -281,6 +281,8 @@
 		GUI.sidebar.open = false;
 		GUI.sidebar.currentElement = undefined;
 		
+		GUI.sidebar.savedState = undefined;
+		
 		GUI.sidebar.elementConfig = {
 			"inspector" : {
 				order : 0,
@@ -335,9 +337,11 @@
 			
 			
 			if (button !== undefined) {
-				
-				$(button).addClass("active");
-				
+				GUI.sidebar.elementConfig[element]['button'] = button;
+			}
+
+			if (GUI.sidebar.elementConfig[element]['button'] !== undefined) {
+				$(GUI.sidebar.elementConfig[element]['button']).addClass("active");
 			}
 
 			
@@ -358,7 +362,7 @@
 		}
 		
 		
-		GUI.sidebar.closeSidebar = function() {
+		GUI.sidebar.closeSidebar = function(noReset) {
 			
 			$("#sidebar, #sidebar_title").animate({
 				right: -230
@@ -369,7 +373,10 @@
 			}, 500);
 			
 			GUI.sidebar.open = false;
-			GUI.sidebar.currentElement = undefined;
+			
+			if (noReset !== true) {
+				GUI.sidebar.currentElement = undefined;
+			}
 			
 			$(".sidebar_button").removeClass("active");
 			
@@ -378,16 +385,26 @@
 		
 		GUI.sidebar.saveStateAndHide = function() {
 			
-			GUI.inspectorState = ($("#inspector").css("opacity") > 0);
-			GUI.hideInspector();
+			GUI.sidebar.savedState = {
+				"open" : GUI.sidebar.open,
+				"currentElement" : GUI.sidebar.currentElement
+			};
+			
+			GUI.sidebar.closeSidebar(true);
 			
 		}
 		
 		
 		GUI.sidebar.restoreFromSavedState = function() {
-			
-			if (GUI.inspectorState) {
-				GUI.showInspector();
+
+			if (GUI.sidebar.savedState.open) {
+				
+				GUI.sidebar.openSidebar();
+				
+				if (GUI.sidebar.elementConfig[GUI.sidebar.savedState.currentElement]['button'] !== undefined) {
+					$(GUI.sidebar.elementConfig[GUI.sidebar.savedState.currentElement]['button']).addClass("active");
+				}
+				
 			}
 			
 		}

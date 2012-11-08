@@ -73,6 +73,23 @@ body {
 
 
 
+#header>div.header_right>span.header_button {
+	display: block;
+	margin-right: 20px;
+	float: left;
+	background-color: #565656;
+	padding: 6px;
+	border-radius: 2px;
+	position: relative;
+	font-size: 10px;
+	top: 8px;
+	cursor: pointer;
+	-webkit-box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.2);
+	box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 1px inset;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 
 
 #chat_notifier {
