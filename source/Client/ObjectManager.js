@@ -314,9 +314,19 @@ ObjectManager.init=function(){
     });
     
     Modules.Dispatcher.registerCall('inform',function(data){
+
+		if (data.message.awareness !== undefined && data.message.awareness.present !== undefined) {
+			//list of users
+			var users = [];
+			for (var i = 0; i < data.message.awareness.present.length; i++) {
+				var d = data.message.awareness.present[i];
+				users.push(d);
+			}
+			GUI.chat.setUsers(users);
+		}
 		
 		if (data.message.text !== undefined) {
-			GUI.chat.addMessage(data.user, data.message.text);
+			GUI.chat.addMessage(data.user, data.message.text, data.color);
 		}
 
     });

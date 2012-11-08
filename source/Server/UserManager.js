@@ -81,11 +81,22 @@ UserManager.login=function(socketOrUser,data){
 		
 		if (data) {
 		
-			var r=Modules.Helper.getRandom(0,200);
-			var g=Modules.Helper.getRandom(0,200);
-			var b=Modules.Helper.getRandom(0,200);		
-		
-			var userColor='rgb('+r+','+g+','+b+')';
+			var colors = [
+				"#398da8",
+				"#39a842",
+				"#a84d39",
+				"#a8398e",
+				"#a2a839",
+				"#39a899",
+				"#74a839",
+				"#a87639",
+				"#1d68c4",
+				"#c41d73",
+				"#1dc46e",
+				"#c46b1d",
+			];
+			
+			var userColor = colors[Math.floor(Math.random() * colors.length+1)];
 		
 			var userObject=require('./User.js');
 			connection.user=new userObject(this);

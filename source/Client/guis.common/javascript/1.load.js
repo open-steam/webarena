@@ -38,6 +38,9 @@ GUI.loadGUI = function(step) {
 	if (step == undefined || step == 1) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
+		if (!GUI.loaded) GUI.chat.init();
+		GUI.chat.clear();
+
 		/* login to server */
 		ObjectManager.login(GUI.username, GUI.password);
 		
@@ -73,9 +76,6 @@ GUI.loadGUI = function(step) {
 		/* inspector */
 		if (!GUI.loaded) GUI.setupInspector(); //add inspector buttons, ...
 		if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
-
-		if (!GUI.loaded) GUI.chat.init();
-		GUI.chat.clear();
 
 		window.setTimeout(function() {
 			GUI.loadGUI(4);

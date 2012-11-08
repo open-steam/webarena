@@ -6,7 +6,7 @@ GUI.chat.newMessages = 0;
 
 GUI.chat.init = function() {
 
-	$("#chat").append('<div id="chat_messages"></div><div id="chat_message"><textarea id="chat_message_input"></textarea></div>');
+	$("#chat").append('<div id="chat_messages"></div><div id="chat_message"><textarea id="chat_message_input"></textarea></div><div id="chat_users"></div>');
 	
 	$("#chat_message_input").attr("placeholder", GUI.translate("Message"));
 	
@@ -26,15 +26,24 @@ GUI.chat.init = function() {
 	
 }
 
+GUI.chat.setUsers = function(users) {
+	$("#chat_users").html("");
+	for (var i = 0; i < users.length; i++) {
+		var user = users[i];
+		$("#chat_users").append('<div><span style="background-color: '+user.color+'"></span>'+user.username+'</div>');
+	}
+	//$("#chat_messages").height($("#chat").height()-$("#chat_users").height()-$("#chat_message").height()); //adjust messages box
+}
+
 
 GUI.chat.clear = function() {
 	
-	$("#chat_messages").html("");
+	$("#chat_messages").html('<span id="chat_messages_spacer"></span>');
 	
 }
 
 
-GUI.chat.addMessage = function(username, text) {
+GUI.chat.addMessage = function(username, text, userColor) {
 	
 	if (username == GUI.username) {
 		var type = "mine";
@@ -49,7 +58,11 @@ GUI.chat.addMessage = function(username, text) {
 		
 	}
 	
-	$("#chat_messages").append('<div class="chat_message_'+type+'"><span>'+username+'</span>'+text+'</div>');
+	if (userColor == undefined) {
+		var userColor = "#000000";
+	}
+	
+	$("#chat_messages").append('<div class="chat_message_'+type+'"><span style="color: '+userColor+'">'+username+'</span>'+text+'</div>');
 	
 
 	$("#chat_messages").scrollTop(200000);

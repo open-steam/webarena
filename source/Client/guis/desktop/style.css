@@ -332,6 +332,43 @@ body {
 	position: relative;
 }
 
+#chat_users {
+	background-color: #333335;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	opacity: 0.9;
+}
+
+#chat_users>div {
+	padding: 4px;
+	font-size: 11px;
+	color: #FFFFFF;
+	border-bottom: 1px solid #4A4A4D;
+}
+
+#chat_users>div:last-child {
+	border-bottom: none;
+}
+
+#chat_users>div>span {
+	border-radius: 10px;
+	display: block;
+	float: left;
+	width: 10px;
+	height: 10px;
+	margin-right: 4px;
+	position: relative;
+	top: 1px;
+}
+
+#chat_messages_spacer {
+	width: 20px;
+	height: 10000px;
+	display: block;
+}
+
 #chat_message {
 	height: 44px;
 	position: absolute;
@@ -350,13 +387,13 @@ body {
 }
 
 #chat_messages {
-	overflow-y: auto;
+	overflow-y: hidden;
 	overflow-x: hidden;
 	position: absolute;
-	top: 0px;
 	left: 0px;
 	right: 0px;
 	bottom: 44px;
+	height: 100%;
 }
 
 #chat_messages>div {
@@ -376,6 +413,7 @@ body {
 	font-size: 11px;
 	margin-bottom: 2px;
 	color: #5F5F5F;
+	font-weight: bold;
 }
 
 #chat_messages>div:before {
@@ -421,7 +459,8 @@ body {
 
 
 #chat_messages>div.chat_message_mine:before {
-	border-color: transparent #D4E6FE transparent transparent;
+	border-color: transparent transparent transparent #D4E6FE;
+	left: 207px;
 }
 
 #chat_messages>div.chat_message_other:before {
