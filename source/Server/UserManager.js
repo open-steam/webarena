@@ -81,10 +81,17 @@ UserManager.login=function(socketOrUser,data){
 		
 		if (data) {
 		
+			var r=Modules.Helper.getRandom(0,200);
+			var g=Modules.Helper.getRandom(0,200);
+			var b=Modules.Helper.getRandom(0,200);		
+		
+			var userColor='rgb('+r+','+g+','+b+')';
+		
 			var userObject=require('./User.js');
 			connection.user=new userObject(this);
 			connection.user.username=data.username;
 			connection.user.password=data.password;
+			connection.user.color=userColor;
 		
 			connection.user.home=data.home;
 			connection.user.hash='___'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
@@ -164,6 +171,7 @@ UserManager.getAwarenessData=function(roomID,connections){
 		var presData={};
 		presData.username=con.user.username;
 		presData.id=i;
+		presData.color=con.user.color;
 		awarenessData.present.push(presData);
 	}
 	return awarenessData;

@@ -81,7 +81,7 @@ GeneralObject.register=function(type){
 	}});
 	
 	this.attributeManager.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
-	this.attributeManager.registerAttribute('linecolor',{type:'color',standard:'black',category:'Appearance'});
+	this.attributeManager.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
 	this.attributeManager.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
 
 	this.attributeManager.registerAttribute('hidden',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {

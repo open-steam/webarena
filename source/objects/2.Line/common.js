@@ -16,12 +16,12 @@ Line.register=function(type){
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type);
 
-	this.attributeManager.registerAttribute('width',{type:'number',min:0,standard:100,unit:'px',category:'Dimensions'});
-	this.attributeManager.registerAttribute('height',{type:'number',min:0,standard:100,unit:'px',category:'Dimensions'});
+	this.registerAttribute('width',{type:'number',min:0,standard:100,unit:'px',category:'Dimensions'});
+	this.registerAttribute('height',{type:'number',min:0,standard:100,unit:'px',category:'Dimensions'});
 	
 	this.registerAttribute('direction',{type:'number',standard:1,readonly:false,hidden:true});
 
-	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
+	this.registerAttribute('fillcolor',{hidden:true});
 
 }
 
