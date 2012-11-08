@@ -20,5 +20,7 @@ GUI.setTranslations('de',{
 	'checking login information':'Anmeldedaten überprüfen',
 	'Add value' : 'Wert hinzufügen',
 	'multiple values' : 'Verschiedene Werte',
+	'Username' : 'Benutzername',
+	'Message' : 'Nachricht',
 }
 );

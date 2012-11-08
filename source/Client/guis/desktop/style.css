@@ -228,6 +228,7 @@ body {
 	top: 10px;
 	bottom: 0px;
 	-webkit-box-shadow: inset 2px 0px 10px rgba(0,0,0,0.3);
+	box-shadow: rgba(0,0,0,0.3) 2px 0px 10px inset;
 	background-image: url(/guis.common/images/sidebar_bg.png);
 	z-index: 999;
 	padding-top: 0px;
@@ -262,7 +263,8 @@ body {
 }
 
 #sidebar_content {
-	overflow: scroll;
+	overflow-y: auto;
+	overflow-x: hidden;
 	width: 2000px;
 	position: absolute;
 	top: 23px;
@@ -272,11 +274,13 @@ body {
 
 #sidebar_content>div {
 	width: 2000px;
+	height: 100%;
 }
 
 #sidebar_content>div>div {
 	float: left;
 	width: 230px;
+	position: relative;
 }
 
 
@@ -312,4 +316,114 @@ body {
 #disconnected_message>div>span {
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+
+
+
+
+
+
+
+/* CHAT */
+
+#chat {
+	height: 100%;
+	position: relative;
+}
+
+#chat_message {
+	height: 44px;
+	position: absolute;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+}
+
+#chat_message>textarea {
+	width: 220px;
+	height: 35px;
+	margin: 2px;
+	padding: 2px;
+	font-size: 12px;
+	font-family: sans-serif;
+}
+
+#chat_messages {
+	overflow-y: auto;
+	overflow-x: hidden;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 44px;
+}
+
+#chat_messages>div {
+	border-radius: 3px;
+	border: 1px solid #A3A3A3;	
+	padding: 5px;
+	margin: 10px;
+	font-size: 12px;
+	box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+	-webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+	-moz-box-shadow: rgba(0,0,0,0.1) 0px 1px 1px;
+	position: relative;
+}
+
+#chat_messages>div>span {
+	display: block;
+	font-size: 11px;
+	margin-bottom: 2px;
+	color: #5F5F5F;
+}
+
+#chat_messages>div:before {
+	position: absolute;
+	top: 7px;
+	left: -13px;
+	width: 0px;
+	height: 0px;
+	content: '';
+	border-style: solid;
+	border-width: 7px;
+}
+
+
+
+#chat_messages>div.chat_message_mine {
+	background: -moz-linear-gradient(
+		center top ,
+		#E7F1FF 0%,
+		#B5D4FD 100%) repeat scroll 0 0 transparent;	
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #E7F1FF),
+		color-stop(1, #B5D4FD)
+		);
+}
+
+#chat_messages>div.chat_message_other {
+	background: -moz-linear-gradient(
+		center top ,
+		#FEFEFE 0%,
+		#E9E9E9 100%) repeat scroll 0 0 transparent;	
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #FEFEFE),
+		color-stop(1, #E9E9E9)
+		);
+}
+
+
+#chat_messages>div.chat_message_mine:before {
+	border-color: transparent #D4E6FE transparent transparent;
+}
+
+#chat_messages>div.chat_message_other:before {
+	border-color: transparent #F8F8F8 transparent transparent;
 }

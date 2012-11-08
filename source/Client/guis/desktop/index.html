@@ -88,6 +88,7 @@
 	<script type="text/javascript" src="/guis.common/javascript/1.text.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.toolbar.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.dragDropUpload.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.chat.js"></script>
 	
 	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 	
@@ -288,13 +289,11 @@
 			"chat" : {
 				order : 1,
 				title : GUI.translate("Chat"),
+				onOpen : GUI.chat.opened
 			},
 		};
 		
-		GUI.sidebar.back = function() {
-			//TODO
-		}
-		
+
 		GUI.sidebar.openPage = function(element, button) {
 			
 			if (GUI.sidebar.elementConfig[element] == undefined) {
@@ -329,6 +328,10 @@
 			$("#sidebar_title").children("span").html(GUI.sidebar.elementConfig[element]['title']);
 			
 			$(".sidebar_button").removeClass("active");
+			
+			if (GUI.sidebar.elementConfig[element]['onOpen'] !== undefined) {
+				GUI.sidebar.elementConfig[element]['onOpen']();
+			}
 			
 			
 			if (button !== undefined) {
@@ -420,9 +423,9 @@
 		}
 		
 		
-		
-	
-
+		$(function() {
+			$("#login_username").attr("placeholder", GUI.translate("Username"));
+		});
 
 		GUI.startRoom = '##START_ROOM##';
 
@@ -451,7 +454,7 @@
 		<div id="sidebar_content">
 			<div>
 				<div id="inspector"></div>
-				<div id="chat">CHAT</div>
+				<div id="chat"></div>
 			</div>
 		</div>
 	</div>
@@ -475,11 +478,11 @@
 		
 		<div class="login_error"></div>
 		
-		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="root" id="login_username" class="login_input" />
+		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
 		
 		<br />
 		
-		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="steam" id="login_password" class="login_input" />
+		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="" id="login_password" class="login_input" autocomplete="off" />
 		
 		<br />
 		

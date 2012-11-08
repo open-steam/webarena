@@ -314,7 +314,11 @@ ObjectManager.init=function(){
     });
     
     Modules.Dispatcher.registerCall('inform',function(data){
-    	console.log(data.user+':',data.message);//TODO client side chat
+		
+		if (data.message.text !== undefined) {
+			GUI.chat.addMessage(data.user, data.message.text);
+		}
+
     });
 	
 }

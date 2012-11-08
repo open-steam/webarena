@@ -178,7 +178,7 @@ GUI.initToolbar = function() {
 
 		var chatNotifier = document.createElement("span");
 		$(chatNotifier).attr("id", "chat_notifier");
-		$(chatNotifier).html("15");
+		$(chatNotifier).html("");
 		$(chatNotifier).click(function (){
 			$(chatButton).click();
 		});

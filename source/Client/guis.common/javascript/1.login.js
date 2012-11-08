@@ -61,6 +61,9 @@ GUI.login = function() {
 	
 	if (GUI.username === undefined)	GUI.username = $("#login_username").val();
 	if (GUI.password === undefined) GUI.password = $("#login_password").val();
+	
+	if (GUI.username == "") GUI.username = "User";
+	
 	GUI.userid = GUI.username;
         
         // add cookie with user id
