@@ -441,6 +441,7 @@ ObjectManager.inform=function(type,content){
 	data.message[type]=content;
 	data.room=this.getRoomID();
 	data.user=this.getUser().username;
+	data.color=this.getUser().color;
 	ObjectManager.Modules.Dispatcher.query('inform',data);
 }
 
