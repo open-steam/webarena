@@ -61,6 +61,27 @@ GUI.chat.addMessage = function(username, text, userColor) {
 		var userColor = "#000000";
 	}
 	
+	/* emoticons */
+	
+	var replaceEmoticon = function(code, image, str) {
+		
+		code = code.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+		
+		var replacer = new RegExp(code,"g");
+
+		return str.replace(replacer,'<img src="/guis.common/images/emoticons/'+image+'" alt="" />');
+		
+	}
+	
+	text = replaceEmoticon(':)', 'emoticon_smile.png', text);
+	text = replaceEmoticon(':D', 'emoticon_grin.png', text);
+	text = replaceEmoticon(':P', 'emoticon_tongue.png', text);
+	text = replaceEmoticon(':(', 'emoticon_unhappy.png', text);
+	text = replaceEmoticon('(tux)', 'tux.png', text);
+	text = replaceEmoticon(':o', 'emoticon_surprised.png', text);
+	text = replaceEmoticon(';D', 'emoticon_wink.png', text);
+	text = replaceEmoticon('<3', 'heart.png', text);
+	
 	$("#chat_messages").append('<div class="chat_message_'+type+'"><span style="color: '+userColor+'">'+username+'</span>'+text+'</div>');
 	
 

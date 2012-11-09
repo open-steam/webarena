@@ -467,6 +467,10 @@ border-width: 9px;
 z-index: -1;
 }
 
+#chat_messages>div img {
+	position: relative;
+	top: 4px;
+}
 
 #chat_messages>div.chat_message_mine {
 	background: -moz-linear-gradient(
