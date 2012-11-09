@@ -26,6 +26,8 @@ GUI.loadGUI = function(step) {
 
 		if (!GUI.loaded) GUI.chat.init();
 		GUI.chat.clear();
+		
+		if (!GUI.loaded) GUI.sidebar.init();
 
 		/* login to server */
 		ObjectManager.login(GUI.username, GUI.password);

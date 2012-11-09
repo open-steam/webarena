@@ -5,6 +5,10 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
 	<title>Webarena 1.0</title>
+	
+	<meta content="minimum-scale=1.0, initial-scale=1.0, width=device-width, maximum-scale=1, user-scalable=yes" name="viewport" />
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<link rel="apple-touch-icon" sizes="72x72" href="/guis.common/images/ipad_icon.png" />
 
 	<script src="/socket.io/socket.io.js"></script>
 
@@ -105,6 +109,14 @@
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
 	
 	<script>
+	
+		//check if device is touch-device:
+		if (!!('ontouchstart' in window)) {
+			GUI.isTouchDevice = true;
+		}
+		
+		
+		
 	
 		GUI.uploadFile=function(object,message){
 		
@@ -295,6 +307,16 @@
 			},
 		};
 		
+		GUI.sidebar.transformX = function(target, x) {
+			
+			
+			var trans = "translate3d("+x+"px,0,0)";
+
+			target.css("-webkit-transform", trans);
+			target.css("-moz-transform", trans);
+			target.css("-o-transform", trans);
+			
+		}
 
 		GUI.sidebar.openPage = function(element, button) {
 			
@@ -314,18 +336,20 @@
 
 			
 			if (!GUI.sidebar.open) {
-				
-				$("#sidebar_content").children("div").css("margin-left", left);
+
+				//disable animation for the next 500ms
+				$("#sidebar_content>div").removeClass("animate");
+
+				window.setTimeout(function() {
+					$("#sidebar_content>div").addClass("animate");
+				}, 500);
 				
 				GUI.sidebar.openSidebar();
 				
-			} else {
-				
-				$("#sidebar_content").children("div").animate({
-					"margin-left" : left
-				}, 500);
-				
 			}
+			
+			GUI.sidebar.transformX($("#sidebar_content").children("div"), left);
+			
 			
 			$("#sidebar_title").children("span").html(GUI.sidebar.elementConfig[element]['title']);
 			
@@ -349,13 +373,8 @@
 		
 		GUI.sidebar.openSidebar = function() {
 			
-			$("#sidebar, #sidebar_title").animate({
-				right: 0
-			}, 500);
-			
-			$("#header").animate({
-				right: 230
-			}, 500);
+			GUI.sidebar.transformX($("#sidebar"), 0);
+			GUI.sidebar.transformX($("#header>.header_right"), -230);
 			
 			GUI.sidebar.open = true;
 			
@@ -364,13 +383,8 @@
 		
 		GUI.sidebar.closeSidebar = function(noReset) {
 			
-			$("#sidebar, #sidebar_title").animate({
-				right: -230
-			}, 500);
-			
-			$("#header").animate({
-				right: 0
-			}, 500);
+			GUI.sidebar.transformX($("#sidebar"), 230);
+			GUI.sidebar.transformX($("#header>.header_right"), 0);
 			
 			GUI.sidebar.open = false;
 			
@@ -411,7 +425,7 @@
 		
 		
 		GUI.sidebar.init = function() {
-			
+			$("#sidebar_content>div").addClass("animate");
 		}
 
 		
@@ -445,7 +459,6 @@
 		});
 
 		GUI.startRoom = '##START_ROOM##';
-
 	
 	</script>
 </head>

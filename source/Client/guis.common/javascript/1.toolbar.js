@@ -143,11 +143,12 @@ GUI.initToolbar = function() {
 
 		}
 
-		$(hiddenButton).bind("click", function() {
 
-			GUI.toggleHidden();
-
-		});
+		if (GUI.isTouchDevice) {
+			$(hiddenButton).bind("touchstart", GUI.toggleHidden);
+		} else {
+			$(hiddenButton).bind("mousedown", GUI.toggleHidden);
+		}
 
 		$("#header > .header_right").append(hiddenButton);
 	
@@ -168,20 +169,13 @@ GUI.initToolbar = function() {
 		$(chatButton).attr("id", "chat_button");
 		$(chatButton).addClass("sidebar_button");
 
-		$(chatButton).bind("click", function() {
-
-			GUI.sidebar.openPage("chat", chatButton);
-
-		});
-
 		$("#header > .header_right").append(chatButton);
+
 
 		var chatNotifier = document.createElement("span");
 		$(chatNotifier).attr("id", "chat_notifier");
 		$(chatNotifier).html("");
-		$(chatNotifier).click(function (){
-			$(chatButton).click();
-		});
+
 		$(chatNotifier).css("opacity", 0);
 
 		var buttonPos = $(chatButton).position();
@@ -189,6 +183,19 @@ GUI.initToolbar = function() {
 		$(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
 
 		$("#header > .header_right").append(chatNotifier);
+		
+		
+		var click = function() {
+			GUI.sidebar.openPage("chat", chatButton);
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(chatButton).bind("touchstart", click);
+			$(chatNotifier).bind("touchstart", click);
+		} else {
+			$(chatButton).bind("mousedown", click);
+			$(chatNotifier).bind("mousedown", click);
+		}
 	
 	}
 	
@@ -203,11 +210,15 @@ GUI.initToolbar = function() {
 		$(inspectorButton).attr("id", "inspector_button");
 		$(inspectorButton).addClass("sidebar_button");
 
-		$(inspectorButton).bind("click", function() {
-
+		var click = function() {
 			GUI.sidebar.openPage("inspector", inspectorButton);
-
-		});
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(inspectorButton).bind("touchstart", click);
+		} else {
+			$(inspectorButton).bind("mousedown", click);
+		}
 
 		$("#header > .header_right").append(inspectorButton);
 

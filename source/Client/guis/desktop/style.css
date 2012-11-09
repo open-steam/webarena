@@ -13,7 +13,7 @@ body {
 	position: fixed;
 	top: 0px;
 	left: 0px;
-	right: 230px;
+	right: 0px;
 	background: -moz-linear-gradient(
 		center top ,
 		#3E3E3E 0%,
@@ -242,12 +242,13 @@ body {
 	position: fixed;
 	width: 230px;
 	right: 0px;
-	top: 10px;
+	top: 0px;
 	bottom: 0px;
 	-webkit-box-shadow: inset 2px 0px 10px rgba(0,0,0,0.3);
 	box-shadow: rgba(0,0,0,0.3) 2px 0px 10px inset;
-	background-image: url(/guis.common/images/sidebar_bg.png);
-	z-index: 999;
+	/*background-image: url(/guis.common/images/sidebar_bg.png);*/
+	background-color: #DFDFDF;
+	z-index: 11002;
 	padding-top: 0px;
 }
 
@@ -301,6 +302,15 @@ body {
 }
 
 
+/* SIDEBAR ANIMATION */
+
+#header>.header_right, #sidebar, #sidebar_content>div.animate {
+	-webkit-transition-duration: 500ms;
+	-o-transition-duration: 500ms;
+	-moz-transition-duration: 500ms;
+	transition-duration: 500ms;
+}
+
 
 
 
@@ -352,7 +362,7 @@ body {
 #chat_users {
 	background-color: #333335;
 	position: absolute;
-	top: 0px;
+	top: 10px;
 	left: 0px;
 	right: 0px;
 	opacity: 0.9;
@@ -445,6 +455,18 @@ body {
 }
 
 
+#chat_messages > div::after {
+position: absolute;
+top: 5px;
+left: -16px;
+width: 0px;
+height: 0px;
+content: '';
+border-style: solid;
+border-width: 9px;
+z-index: -1;
+}
+
 
 #chat_messages>div.chat_message_mine {
 	background: -moz-linear-gradient(
@@ -483,3 +505,18 @@ body {
 #chat_messages>div.chat_message_other:before {
 	border-color: transparent #F8F8F8 transparent transparent;
 }
+
+
+
+#chat_messages>div.chat_message_mine:after {
+	left: 206px;
+	border-color: transparent transparent transparent #909090;
+}
+
+#chat_messages>div.chat_message_other:after {
+	border-color: transparent #909090 transparent transparent;
+}
+
+
+
+
