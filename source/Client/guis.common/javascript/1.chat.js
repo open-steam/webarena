@@ -61,6 +61,8 @@ GUI.chat.addMessage = function(username, text, userColor) {
 		var userColor = "#000000";
 	}
 	
+	text = text.replace(/<(?:.|\n)*?>/gm, '');
+	
 	/* emoticons */
 	
 	var replaceEmoticon = function(code, image, str) {
