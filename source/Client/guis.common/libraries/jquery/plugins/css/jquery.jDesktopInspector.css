@@ -4,16 +4,19 @@
 }
 
 .jDesktopInspector_pageHead {
-	margin-top: 5px;
-	font-size: 13px;
 	padding: 5px;
+	margin-top: 5px;
 	font-weight: bold;
+	text-shadow: #FFFFFF 1px 1px 1px;
+	font-size: 13px;
+	border-bottom: 1px solid rgba(58, 58, 58, 0.3);
+	-webkit-box-shadow: 0px 1px 0px rgba(255, 255, 255, 0.57);
+	padding-bottom: 2px;
 }
 
 
 
 .jDesktopInspector_page {
-	font-size: 13px;
 	color: #000000;
 	padding: 5px;
 	overflow: hidden;
@@ -45,7 +48,6 @@
 
 
 .jDesktopInspector div.jDesktopInspector_section div.jDesktopInspector_button_right input[type=text], .jDesktopInspector div.jDesktopInspector_section div.jDesktopInspector_button_right input[type=number] {
-	font-family: Helvetica;
 	border: 1px solid #858585;
 	box-shadow: none;
 	-webkit-box-shadow: 0px;
@@ -56,7 +58,6 @@
 	margin: 0px;
 	text-align: right;
 	width: 90px;
-	font-size: 13px;
 	border-radius: 3px;
 	position: relative;
 	top: -2px;
