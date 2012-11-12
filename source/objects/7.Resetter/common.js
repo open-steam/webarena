@@ -24,8 +24,7 @@ Resetter.execute=function(){
 	
 	for (var i in objects){
 		var object=objects[i];
-		if (object.type=='SimpleKeyword'){
-			//console.log(object.toString());
+		if (object.type=='SimpleKeyword' && (object.getAttribute('x')<minX || object.getAttribute('x')>maxX || object.getAttribute('y')<minY || object.getAttribute('y')>maxY)){
 			var x = Math.round(Math.random() * (maxX - minX)) + minX;
 			var y = Math.round(Math.random() * (maxY - minY)) + minY;
 			object.setAttribute('x',x);

@@ -13,6 +13,8 @@ GeneralObject.setTranslations('de',{
 	'font-color':'Schriftfarbe',
 	'Delete':'Löschen',
 	'Duplicate':'Duplizieren',
+	'Follow':'Folgen',
+	'Edit':'Bearbeiten',
 	'to front':'Nach vorne',
 	'to back':'Nach hinten',
 	'locked':'Angeheftet',

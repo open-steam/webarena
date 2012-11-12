@@ -5,6 +5,12 @@
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
 	<title>Webarena 1.0</title>
+	
+	<meta content="minimum-scale=1.0, initial-scale=1.0, width=device-width, maximum-scale=1, user-scalable=yes" name="viewport" />
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<link rel="apple-touch-icon" sizes="72x72" href="/guis.common/images/ipad_icon.png" />
+
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
 
 	<script src="/socket.io/socket.io.js"></script>
 
@@ -95,6 +101,7 @@
 	<script type="text/javascript" src="/guis.common/javascript/1.text.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.toolbar.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.dragDropUpload.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/1.chat.js"></script>
 	
 	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 	
@@ -113,6 +120,14 @@
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
 	
 	<script>
+	
+		//check if device is touch-device:
+		if (!!('ontouchstart' in window)) {
+			GUI.isTouchDevice = true;
+		}
+		
+		
+		
 	
 		GUI.uploadFile=function(object,message){
 		
@@ -188,153 +203,7 @@
 			});
 			
 		}
-
 		
-		
-		
-		/* inspector */
-		
-		GUI.updateInspector = function() {
-			
-			$("#inspector").data("jDesktopInspector").update();
-			
-		}
-		
-		
-		GUI.saveInspectorStateAndHide = function() {
-			
-			GUI.inspectorState = ($("#inspector").css("opacity") > 0);
-			GUI.hideInspector();
-			
-		}
-		
-		
-		GUI.restoreInspectorFromSavedState = function() {
-			
-			if (GUI.inspectorState) {
-				GUI.showInspector();
-			}
-			
-		}
-		
-		
-		GUI.hideInspector = function() {
-			
-			$("#inspector_button").html(GUI.translate("Show inspector"));
-			
-			$("#inspector").animate({
-				opacity: 0
-			}, 200, function() {
-				$("#inspector").hide();
-			});
-			
-		}
-		
-		
-		GUI.showInspector = function() {
-			
-			$("#inspector_button").html(GUI.translate("Hide inspector"));
-			
-			$("#inspector").show();
-			$("#inspector").animate({
-				opacity: 1
-			}, 200);
-			
-		}
-	
-		
-		GUI.toggleInspector = function() {
-			
-			if ($("#inspector").css("opacity") > 0) {
-				/* close */
-				
-				GUI.hideInspector();
-				
-			} else {
-				/* open */
-				
-				GUI.showInspector();
-				
-			}
-			
-		}
-		
-		
-		GUI.setupInspector = function() {
-			
-			$("#inspector").css("opacity", 0);
-			$("#inspector").hide();
-			
-			
-			/* add hidden-mode toggle button */
-			
-			var hiddenButton = document.createElement("span");
-			$(hiddenButton).addClass("header_button");
-			$(hiddenButton).attr("id", "hidden_button");
-			$(hiddenButton).html(GUI.translate("Show hidden objects"));
-			
-			GUI.onToggleHidden = function(hiddenMode) {
-				
-				if (hiddenMode) {
-					//hidden mode is active (hidden objects are visible)
-					$("#hidden_button").html(GUI.translate("Hide hidden objects"));
-					$("#hidden_button").addClass("button_active");
-				} else {
-					//hidden mode is inactive (no hidden objects are visible)
-					$("#hidden_button").html(GUI.translate("Show hidden objects"));
-					$("#hidden_button").removeClass("button_active");	
-				}
-				
-			}
-			
-			$(hiddenButton).bind("click", function() {
-				
-				GUI.toggleHidden();
-				
-			});
-			
-			if (!Modules.Config.presentationMode) $("#header > .header_right").append(hiddenButton);
-			
-			
-			
-			/* add inspector toggle button */
-		
-			var inspectorButton = document.createElement("span");
-			$(inspectorButton).addClass("header_button");
-			$(inspectorButton).attr("id", "inspector_button");
-			$(inspectorButton).html(GUI.translate("Show inspector"));
-			
-			$(inspectorButton).bind("click", GUI.toggleInspector);
-			
-			if (!Modules.Config.presentationMode) $("#header > .header_right").append(inspectorButton);
-			
-			
-			
-			/* add user info */
-			
-			var userinfo = document.createElement("span");
-			$(userinfo).addClass("header_info");
-			$(userinfo).css("font-size", "11px");
-			$(userinfo).html(GUI.translate("Current user")+": "+GUI.username);
-
-			$("#header > .header_right").prepend(userinfo);
-			
-			
-			
-			/* add inspector */
-
-			$("#inspector").jDesktopInspector({
-				onUpdate : function(domEl, inspector) {
-
-					GUI.setupInspectorContent(inspector);
-
-				}
-			});
-			
-			
-			if (!Modules.Config.presentationMode) GUI.showInspector();
-
-		}
 		
 		
 		GUI.error = function(heading, message, webarenaObject, fatal) {
@@ -431,11 +300,183 @@
 			
 			
 		};
-	
+		
+		
+		
+		
+		/* sidebar */
+		
+		GUI.sidebar = {};
+		
+		GUI.sidebar.open = false;
+		GUI.sidebar.currentElement = undefined;
+		
+		GUI.sidebar.savedState = undefined;
+		
+		GUI.sidebar.elementConfig = {
+			"inspector" : {
+				order : 0,
+				title : GUI.translate("Object inspector"),
+			},
+			"chat" : {
+				order : 1,
+				title : GUI.translate("Chat"),
+				onOpen : GUI.chat.opened
+			},
+		};
+		
+		GUI.sidebar.transformX = function(target, x) {
+			
+			
+			var trans = "translate3d("+x+"px,0,0)";
 
+			target.css("-webkit-transform", trans);
+			target.css("-moz-transform", trans);
+			target.css("-o-transform", trans);
+			
+		}
+
+		GUI.sidebar.openPage = function(element, button) {
+			
+			if (GUI.sidebar.elementConfig[element] == undefined) {
+				console.error("Open Sidebar: Unknown element ID");
+				return;
+			}
+			
+			if (GUI.sidebar.currentElement == element && GUI.sidebar.open) {
+				GUI.sidebar.closeSidebar();
+				return;
+			}
+			
+			GUI.sidebar.currentElement = element;
+
+			var left = GUI.sidebar.elementConfig[element]['order']*$("#sidebar").width()*(-1);
+
+			
+			if (!GUI.sidebar.open) {
+
+				//disable animation for the next 500ms
+				$("#sidebar_content>div").removeClass("animate");
+
+				window.setTimeout(function() {
+					$("#sidebar_content>div").addClass("animate");
+				}, 500);
+				
+				GUI.sidebar.openSidebar();
+				
+			}
+			
+			GUI.sidebar.transformX($("#sidebar_content").children("div"), left);
+			
+			
+			$("#sidebar_title").children("span").html(GUI.sidebar.elementConfig[element]['title']);
+			
+			$(".sidebar_button").removeClass("active");
+			
+			if (GUI.sidebar.elementConfig[element]['onOpen'] !== undefined) {
+				GUI.sidebar.elementConfig[element]['onOpen']();
+			}
+			
+			
+			if (button !== undefined) {
+				GUI.sidebar.elementConfig[element]['button'] = button;
+			}
+
+			if (GUI.sidebar.elementConfig[element]['button'] !== undefined) {
+				$(GUI.sidebar.elementConfig[element]['button']).addClass("active");
+			}
+
+			
+		}
+		
+		GUI.sidebar.openSidebar = function() {
+			
+			GUI.sidebar.transformX($("#sidebar"), 0);
+			GUI.sidebar.transformX($("#header>.header_right"), -230);
+			
+			GUI.sidebar.open = true;
+			
+		}
+		
+		
+		GUI.sidebar.closeSidebar = function(noReset) {
+			
+			GUI.sidebar.transformX($("#sidebar"), 230);
+			GUI.sidebar.transformX($("#header>.header_right"), 0);
+			
+			GUI.sidebar.open = false;
+			
+			if (noReset !== true) {
+				GUI.sidebar.currentElement = undefined;
+			}
+			
+			$(".sidebar_button").removeClass("active");
+			
+		}
+		
+		
+		GUI.sidebar.saveStateAndHide = function() {
+			
+			GUI.sidebar.savedState = {
+				"open" : GUI.sidebar.open,
+				"currentElement" : GUI.sidebar.currentElement
+			};
+			
+			GUI.sidebar.closeSidebar(true);
+			
+		}
+		
+		
+		GUI.sidebar.restoreFromSavedState = function() {
+
+			if (GUI.sidebar.savedState.open) {
+				
+				GUI.sidebar.openSidebar();
+				
+				if (GUI.sidebar.elementConfig[GUI.sidebar.savedState.currentElement]['button'] !== undefined) {
+					$(GUI.sidebar.elementConfig[GUI.sidebar.savedState.currentElement]['button']).addClass("active");
+				}
+				
+			}
+			
+		}
+		
+		
+		GUI.sidebar.init = function() {
+			$("#sidebar_content>div").addClass("animate");
+		}
+
+		
+		
+		
+		/* inspector */
+		
+		GUI.updateInspector = function() {
+			
+			$("#inspector").data("jDesktopInspector").update();
+			
+		}
+			
+		GUI.setupInspector = function() {
+			
+			/* add inspector */
+
+			$("#inspector").jDesktopInspector({
+				onUpdate : function(domEl, inspector) {
+
+					GUI.setupInspectorContent(inspector);
+
+				}
+			});
+			
+		}
+		
+		
+		$(function() {
+			$("#login_username").attr("placeholder", GUI.translate("Username"));
+		});
 
 		GUI.startRoom = '##START_ROOM##';
-
 	
 	</script>
 </head>
@@ -456,9 +497,14 @@
 
 	<div id="content"></div>
 	
-	
-	<div id="inspector">
-		
+	<div id="sidebar">
+		<div id="sidebar_title"><span></span></div>
+		<div id="sidebar_content">
+			<div>
+				<div id="inspector"></div>
+				<div id="chat"></div>
+			</div>
+		</div>
 	</div>
 	
 	<div id="actionsheet"></div>
@@ -480,11 +526,11 @@
 		
 		<div class="login_error"></div>
 		
-		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="root" id="login_username" class="login_input" />
+		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
 		
 		<br />
 		
-		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="steam" id="login_password" class="login_input" />
+		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="" id="login_password" class="login_input" autocomplete="off" />
 		
 		<br />
 		

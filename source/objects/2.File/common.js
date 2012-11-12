@@ -16,8 +16,6 @@ File.register=function(type){
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type);
 	
-	this.registerAttribute('shadow',{type:'boolean',standard:false,category:'Appearance'});
-	
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
 
 	this.registerAttribute('fillcolor',{hidden: true});

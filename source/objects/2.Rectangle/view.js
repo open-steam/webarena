@@ -20,17 +20,6 @@ Rectangle.draw=function(external){
 
 }
 
-Rectangle.getRepresentation=function(){
-
-	var rep=document.getElementById(this.getAttribute('id'));
-
-	if (!rep){
-		
-		return this.createRepresentation();
-		
-	}
-	return rep;
-}
 
 Rectangle.createRepresentation = function() {
 

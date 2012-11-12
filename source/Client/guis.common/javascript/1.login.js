@@ -38,11 +38,36 @@ GUI.hideLogin = function() {
 	$("#login_background").hide();
 	$("#login_background").css("opacity", 1);
 	
-	GUI.progressBarManager.updateProgress("login", 100);
+	window.setTimeout(function() {
+		GUI.progressBarManager.updateProgress("login", 100);
+
+		GUI.loginProcessActive = false;
+	}, 1000);
+
+}
+
+
+GUI.isLoggedIn = false;
+
+GUI.loggedIn = function() {
+	if (GUI.isLoggedIn) return;
 	
-	GUI.loginProcessActive = false;
+	GUI.isLoggedIn = true;
+
+	GUI.progressBarManager.updateProgress("login", 30, GUI.translate('loading room'));
 	
 }
+
+
+GUI.loginFailed = function(err) {
+	GUI.progressBarManager.removeProgress("login");
+	GUI.showLogin(err);
+	GUI.loginProcessActive = false;
+	GUI.username = undefined;
+	GUI.password = undefined;
+}
+
+
 
 GUI.username = undefined;
 GUI.password = undefined;
@@ -57,14 +82,19 @@ GUI.login = function() {
 
 	GUI.loginProcessActive = true;
 	
-	GUI.username = $("#login_username").val();
-	GUI.password = $("#login_password").val();
+	if (GUI.username === undefined)	GUI.username = $("#login_username").val();
+	if (GUI.password === undefined) GUI.password = $("#login_password").val();
+	
+	if (GUI.username == "") GUI.username = "User";
+	
 	GUI.userid = GUI.username;
         
         // add cookie with user id
 //        Webserver.response.writeHead(200, {
 //            'Set-Cookie': 'userid='+GUI.userid
 //        });
+	
+	$("#disconnected_message").remove();
 	
 	GUI.progressBarManager.addProgress(GUI.translate('checking login information'), "login");
 	

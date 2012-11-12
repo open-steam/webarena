@@ -21,23 +21,6 @@ GUI.translate=function(text){
 
 
 
-
-/* ---> needed!? <--- */
-GUI.objectSaved=function(object){
-}
-
-GUI.objectRemoved=function(object){
-}
-
-GUI.objectSelected=function(object){
-}
-
-GUI.objectUnselected=function(object){
-}
-
-
-
-
 GUI.isTouchDevice = false;
 
 
@@ -378,13 +361,27 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
 GUI.disconnected = function() {
 	
 	GUI.showDisconnected();
+	GUI.isLoggedIn = false;
+	
+}
+
+GUI.connected = function() {
+
+	if (GUI.relogin === true) {
+		GUI.relogin = false;
+		GUI.login();
+	}
 	
 }
 
 
 GUI.showDisconnected = function() {
 	
-	$("body").append('<div id="disconnected_message"><div>Die Verbindung wurde getrennt.<br /><br /><span onclick="window.location.reload()">Neu laden</span></div></div>');
+	if ($("#disconnected_message").length == 0)
+	$("body").append('<div id="disconnected_message"><div>Die Verbindung wurde getrennt.</div></div>');
+
+	GUI.isLoggedIn = false;
+	GUI.relogin = true;
 	
 }
 

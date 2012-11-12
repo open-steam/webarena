@@ -81,16 +81,11 @@ GeneralObject.register=function(type){
 	}});
 	
 	this.attributeManager.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
-	this.attributeManager.registerAttribute('linecolor',{type:'color',standard:'black',category:'Appearance'});
+	this.attributeManager.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
 	this.attributeManager.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
-	this.attributeManager.registerAttribute('shadow',{type:'boolean',standard:false,category:'Appearance'});
-	
+
 	this.attributeManager.registerAttribute('hidden',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
-		if (local) {
-			GUI.toggleHidden();
-		} else {
-			GUI.updateHiddenObjects();
-		}
+		GUI.updateHiddenObjects();
 	}});
 	this.attributeManager.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
 		
@@ -537,9 +532,12 @@ GeneralObject.refreshDelayed=function(){
 	
 	var that=this;
 	
+	//this timer is the time in which changes on the same object are discarded
+	var theTimer=400;
+	
 	this.refreshDelay=setTimeout(function(){
 		that.refresh();
-	},200);
+	},theTimer);
 }
 
 GeneralObject.getRoomID=function(){

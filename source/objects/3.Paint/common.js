@@ -22,7 +22,6 @@ Paint.register=function(type){
 	this.attributeManager.registerAttribute('fillcolor',{hidden: true});
 	this.attributeManager.registerAttribute('linecolor',{hidden: true});
 	this.attributeManager.registerAttribute('linesize',{hidden: true});
-	this.registerAttribute('shadow',{hidden: true});
 
 	this.registerAction('Edit',function(obj){
 		$.each(ObjectManager.getSelected(), function(key, object) {

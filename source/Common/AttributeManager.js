@@ -45,8 +45,8 @@ AttributeManager.toString=function(){
 *			min - integer
 *			max - integer
 *			standard
-*			setter - function
-*			getter - function
+*			setFunction - function
+*			getFunction - function
 *			readonly - true, false
 *			hidden - true, false
 *			category - a block or tab this attribute should be displayed in
@@ -62,28 +62,26 @@ AttributeManager.registerAttribute=function(attribute,data){
 	// fill in old properties, if the attribute has yet been registred.
 	var oldData=this.attributes[attribute] || {};
 	
-	//if (oldData) debug('Attribute '+attribute+' for '+this.proto+' type '+data.type+' has already been specified.');
+	//if (oldData) console.log('Attribute '+attribute+' for '+this.proto+' type '+data.type+' has already been specified.');
 	
 	for (var key in oldData){
 		var oldValue=oldData[key];
-		if (!data[key]) data[key]=oldValue;
+		if (data[key]===undefined) data[key]=oldValue;
 	}
 
 	
 	//debug('Registering attribute '+attribute+' for '+this.proto+' type '+data.type);
 	
-	if (!data.type) data.type='text';
+	if (data.type===undefined) data.type='text';
 	data.description=attribute;
-	if (!data.unit) data.unit='';
-	if (!data.min) data.min=-50000;
-	if (!data.max) data.max=50000;
+	if (data.unit===undefined) data.unit='';
+	if (data.min===undefined) data.min=-50000;
+	if (data.max===undefined) data.max=50000;
 	if (data.standard==undefined) data.standard=0;
 	if (data.category==undefined) data.category='Basic';
 	
-	data.setterInt=data.setter;
-	data.getterInt=data.getter;
-	
 	data.setter=function(object,value){
+		
 		if (value===undefined) value=data.standard;
 		if (data.type=='number' || data.type=='fontsize'){
 			value=parseInt(value,10);
@@ -91,8 +89,8 @@ AttributeManager.registerAttribute=function(attribute,data){
 			if (value<data.min) value=data.min;
 			if (value>data.max) value=data.max;
 		}
-		if (data.setterInt) {
-			data.setterInt(object,value);
+		if (data.setFunction) {
+			data.setFunction(object,value);
 		}
 		else {
 			object.data[attribute]=value;
@@ -100,10 +98,10 @@ AttributeManager.registerAttribute=function(attribute,data){
 	}
 
 	data.getter=function(object){
-		if (!data.getterInt) {
+		if (!data.getFunction) {
 			var result=object.data[attribute];
 		} else {
-			var result=data.getterInt(object);
+			var result=data.getFunction(object);
 		}
 		if (result===undefined) {
 			result=data.standard;
@@ -125,7 +123,6 @@ AttributeManager.registerAttribute=function(attribute,data){
 		
 		return result;
 	}
-
 	
 	this.attributes[attribute]=data;
 	
@@ -139,7 +136,6 @@ var saveDelays={};
 *	set an attribute to a value on a specified object
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
-	
 	if (attribute=='position'){
 		AttributeManager.setAttribute(object,'x',value.x,forced);
 		AttributeManager.setAttribute(object,'y',value.y,forced);
@@ -187,12 +183,15 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		
 		var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
 		
+		//this timer is the delay in which changes on the same object are discarded
+		var theTimer=200;
+		
 		if (forced) {
 			Modules.SocketClient.serverCall('setAttribute',data);
 		} else {
 			saveDelays[identifier]=window.setTimeout(function(){
 				Modules.SocketClient.serverCall('setAttribute',data);
-			},200);
+			},theTimer);
 		}
 		
 	}

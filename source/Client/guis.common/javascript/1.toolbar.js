@@ -116,4 +116,118 @@ GUI.initToolbar = function() {
 	
 	});
 	
+	
+	
+	
+	
+	
+	/* add hidden-mode toggle */
+	
+	if (!Modules.Config.presentationMode) {
+	
+		var hiddenButton = document.createElement("img");
+		$(hiddenButton).attr("src", "../../guis.common/images/hidden.png").attr("alt", "");
+		$(hiddenButton).attr("width", "24").attr("height", "24");
+
+		$(hiddenButton).attr("id", "hidden_button");
+
+		GUI.onToggleHidden = function(hiddenMode) {
+
+			if (hiddenMode) {
+				//hidden mode is active (hidden objects are visible)
+				$("#hidden_button").addClass("active");
+			} else {
+				//hidden mode is inactive (no hidden objects are visible)
+				$("#hidden_button").removeClass("active");
+			}
+
+		}
+
+
+		if (GUI.isTouchDevice) {
+			$(hiddenButton).bind("touchstart", GUI.toggleHidden);
+		} else {
+			$(hiddenButton).bind("mousedown", GUI.toggleHidden);
+		}
+
+		$("#header > .header_right").append(hiddenButton);
+	
+	}
+	
+	
+	
+	
+	
+	/* add chat toggle */
+	
+	if (!Modules.Config.presentationMode) {
+	
+		var chatButton = document.createElement("img");
+		$(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
+		$(chatButton).attr("width", "24").attr("height", "24");
+
+		$(chatButton).attr("id", "chat_button");
+		$(chatButton).addClass("sidebar_button");
+
+		$("#header > .header_right").append(chatButton);
+
+
+		var chatNotifier = document.createElement("span");
+		$(chatNotifier).attr("id", "chat_notifier");
+		$(chatNotifier).html("");
+
+		$(chatNotifier).css("opacity", 0);
+
+		var buttonPos = $(chatButton).position();
+
+		$(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
+
+		$("#header > .header_right").append(chatNotifier);
+		
+		
+		var click = function() {
+			GUI.sidebar.openPage("chat", chatButton);
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(chatButton).bind("touchstart", click);
+			$(chatNotifier).bind("touchstart", click);
+		} else {
+			$(chatButton).bind("mousedown", click);
+			$(chatNotifier).bind("mousedown", click);
+		}
+	
+	}
+	
+	/* add inspector toggle */
+	
+	if (!Modules.Config.presentationMode) {
+	
+		var inspectorButton = document.createElement("img");
+		$(inspectorButton).attr("src", "../../guis.common/images/inspector.png").attr("alt", "");
+		$(inspectorButton).attr("width", "24").attr("height", "24");
+
+		$(inspectorButton).attr("id", "inspector_button");
+		$(inspectorButton).addClass("sidebar_button");
+
+		var click = function() {
+			GUI.sidebar.openPage("inspector", inspectorButton);
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(inspectorButton).bind("touchstart", click);
+		} else {
+			$(inspectorButton).bind("mousedown", click);
+		}
+
+		$("#header > .header_right").append(inspectorButton);
+
+		GUI.sidebar.openPage("inspector", inspectorButton);
+	
+	}
+	
+
+	
+	
+	
 }

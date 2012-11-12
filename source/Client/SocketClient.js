@@ -13,6 +13,9 @@ SocketClient.init=function(){
 	socket.on('disconnect', function() {
 		GUI.disconnected();
 	});
+	socket.on('connect', function () {
+		GUI.connected();
+	});
 }
 
 SocketClient.sendCall=function(type, data, responseID){

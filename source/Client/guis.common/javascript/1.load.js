@@ -1,16 +1,6 @@
 "use strict";
 
 GUI.loaded = false;
-GUI.isLoggedIn = false;
-
-GUI.loggedIn = function() {
-	if (GUI.isLoggedIn) return;
-	
-	GUI.isLoggedIn = true;
-	
-	GUI.progressBarManager.updateProgress("login", 30, GUI.translate('loading room'));
-	
-}
 
 GUI.entered = function() {
 	
@@ -18,15 +8,9 @@ GUI.entered = function() {
 	
 }
 
-GUI.loginFailed = function(err) {
-	GUI.progressBarManager.removeProgress("login");
-	GUI.showLogin(err);
-}
 
 GUI.loadGUI = function(step) {
 
-	if (GUI.loaded) return;
-	
 	/* not logged in? */
 	if (!GUI.username) {
 		
@@ -40,12 +24,18 @@ GUI.loadGUI = function(step) {
 	if (step == undefined || step == 1) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
+		if (!GUI.loaded) GUI.chat.init();
+		GUI.chat.clear();
+		
+		if (!GUI.loaded) GUI.sidebar.init();
+
 		/* login to server */
 		ObjectManager.login(GUI.username, GUI.password);
 		
 	} else if (step == 2) {
 		GUI.progressBarManager.updateProgress("login", 40);
 
+		if (!GUI.loaded)
 		GUI.loadListOfPreviewableMimeTypes();
 
 		window.setTimeout(function() {
@@ -58,23 +48,22 @@ GUI.loadGUI = function(step) {
 		GUI.startNoAnimationTimer();
 		
 		/* toolbar */
-		GUI.initToolbar(); //needs: ObjectManager
+		if (!GUI.loaded) GUI.initToolbar(); //needs: ObjectManager
 
 		/* adjust svg area */
 		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
 
 		/* key handling */
-		GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
-		GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
-		GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown	
+		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
+		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
+		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown	
 
 		/* window resizing */
-		GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
+		if (!GUI.loaded) GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
 
 		/* inspector */
-		GUI.setupInspector(); //add inspector buttons, ...
-		GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
-
+		if (!GUI.loaded) GUI.setupInspector(); //add inspector buttons, ...
+		if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
 
 		window.setTimeout(function() {
 			GUI.loadGUI(4);
@@ -83,10 +72,7 @@ GUI.loadGUI = function(step) {
 	} else if (step == 4) {
 		GUI.progressBarManager.updateProgress("login", 80, GUI.translate('rendering objects'));
 		
-		/* load objects */
-		GUI.hideHiddenObjects(); //hide hidden objects / initially create representations when calling getRepresentation() //needs: ObjectManager.getObjects, SVG
-		
-		GUI.initMouseHandler();
+		if (!GUI.loaded) GUI.initMouseHandler();
 		
 		window.setTimeout(function() {
 			GUI.loadGUI(5);

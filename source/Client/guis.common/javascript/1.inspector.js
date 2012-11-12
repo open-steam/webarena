@@ -2,19 +2,9 @@
 
 /* inspector */
 
-/* the following three functions are overwritten by desktop GUI */
-GUI.saveInspectorStateAndHide = function() {
-	//overwritten
-}
-
 GUI.updateInspector = function() {
 	//overwritten	
 }
-
-GUI.restoreInspectorFromSavedState = function() {
-	//overwritten	
-}
-
 
 
 GUI.setupInspectorContent = function(inspector) {
@@ -187,15 +177,25 @@ GUI.setupInspectorContent = function(inspector) {
 					GUI.inspectorElementsSetter[attribute] = widget.setValue;
 					
 				} else if (info.type == "text") {
-					
-					var widget = element.addWidget("text");
+
+						var widget = element.addWidget("text");
+
+						widget.setValue(info.value);
+
+						widget.setMultipleValues(info.multipleValues);
+
+						GUI.inspectorElementsSetter[attribute] = widget.setValue;
+
+				} else if (info.type == "list") {
+
+					var widget = element.addWidget("list");
 
 					widget.setValue(info.value);
-					
+
 					widget.setMultipleValues(info.multipleValues);
-					
+
 					GUI.inspectorElementsSetter[attribute] = widget.setValue;
-				
+
 				} else if (info.type == "selection") {
 					
 					var widget = element.addWidget("selection");
@@ -267,9 +267,6 @@ GUI.setupInspectorContent = function(inspector) {
 							
 							object.setAttribute(attribute, value);
 							
-							if (info.changedFunction) {
-								info.changedFunction(object, value);
-							}
 							
 						});
 					
