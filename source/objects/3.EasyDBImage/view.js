@@ -37,8 +37,21 @@ EasyDBImage.draw = function(){
         var newImg = new Image();
         newImg.src = remoteUrl;
         $(newImg).one("load", function(){
-            var newheight = newImg.height;
-            var newwidth = newImg.width;
+            var orgHeight = newImg.height;
+            var orgWidth = newImg.width;
+            var maxBounds = 480;
+
+            var ratio = orgWidth / orgHeight;
+            var newheight, newwidth;
+
+            if(ratio < 1){
+                newheight = maxBounds;
+                newwidth = maxBounds * ratio;
+
+            } else {
+                newheight = maxBounds / ratio;
+                newwidth = maxBounds;
+            }
 
             that.setAttribute("width", newwidth);
             that.setAttribute("height", newheight);
