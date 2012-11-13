@@ -52,7 +52,12 @@ EasyDBImage.execute=function(){
         "Cancel": function () {
             return false;
         }
-    }, 500, {height : 200});
+    }, 500, {height : 200}).keyup(function(e){
+            console.log('asdf');
+            if(e.keyCode ==13){
+                $(':button:contains("OK")').click();
+            }
+        });
 }
 
 EasyDBImage.isResizable=function(){
