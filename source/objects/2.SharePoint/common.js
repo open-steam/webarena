@@ -72,7 +72,11 @@ SharePoint.execute=function(){
 
 
 SharePoint.isResizable=function(){
-   return false;
+    if(this.getAttribute('show_iframe'))   {
+        return true;
+    } else {
+        return false;
+    }
 }
 
 SharePoint.init=function(id){

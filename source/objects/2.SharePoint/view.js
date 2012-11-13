@@ -199,6 +199,23 @@ SharePoint.getViewBoundingBoxHeightIcon = function(){
     return 64
 }
 
+
+SharePoint.setViewHeight = function(value){
+
+    GeneralObject.setViewHeight.call(this, value);
+
+    var rep = this.getRepresentation();
+    $(rep).find('iframe').attr('height', (value-38)+ "px");
+}
+
+SharePoint.setViewWidth = function(value){
+
+    GeneralObject.setViewWidth.call(this, value);
+
+    var rep = this.getRepresentation();
+    $(rep).find('iframe').attr('width', (value-8)+ "px");
+}
+
 SharePoint.renderLoadScreen  = function(target){
     var that = this;
     var dialogPage2 = $('' +
