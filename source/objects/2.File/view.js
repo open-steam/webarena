@@ -47,7 +47,7 @@ File.draw = function(external) {
 }
 
 File.getFileIcon=function() {
-	
+
 	var typeIcon = "file";
 	var mimeType = this.getAttribute("mimeType");
 	

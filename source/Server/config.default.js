@@ -14,6 +14,12 @@ module.exports={
 	imageUpload: {
 		maxDimensions: 400
 	},
+    easydb: {
+        apiUrl : "easydb.uni-paderborn.de",
+        apiPath: "/easy/fs.php?",
+        username: "",
+        password: ""
+	},
 	koalaServer: 'www.bid-owl.de.localhost',
 	koalaPort: 80,
 	logLevels : {

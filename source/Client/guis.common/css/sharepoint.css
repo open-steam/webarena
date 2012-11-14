@@ -1,0 +1,103 @@
+/* line 3, ../sass/sharepoint.scss */
+.js-tree {
+  height: 100%;
+  overflow: auto;
+  padding-right: -1em;
+}
+
+/* line 9, ../sass/sharepoint.scss */
+.sharepoint-toolbar, .embedded-toolbar {
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #5a6775), color-stop(100%, #3d454f));
+  background: -webkit-linear-gradient(#5a6775, #3d454f);
+  background: -moz-linear-gradient(#5a6775, #3d454f);
+  background: -o-linear-gradient(#5a6775, #3d454f);
+  background: linear-gradient(#5a6775, #3d454f);
+  height: 20px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+/* line 18, ../sass/sharepoint.scss */
+.embedded-toolbar-button, .minimize-button, .open-extern-button {
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  display: block;
+  cursor: pointer;
+  padding-right: 5px;
+}
+
+/* line 27, ../sass/sharepoint.scss */
+.minimize-button {
+  background-image: url("../images/close.png");
+  float: left;
+}
+
+/* line 33, ../sass/sharepoint.scss */
+.open-extern-button {
+  background-image: url("../images/export.png");
+  float: right;
+}
+
+/* line 39, ../sass/sharepoint.scss */
+.iframe-container {
+  background-color: white;
+  border: 2px solid #3D454F;
+}
+
+/* line 44, ../sass/sharepoint.scss */
+.wrapped-text {
+  height: 50px;
+}
+
+/* line 48, ../sass/sharepoint.scss */
+.discussion-blob {
+  font-size: 12px;
+}
+
+/* line 54, ../sass/sharepoint.scss */
+.triangle-border {
+  position: relative;
+  padding: 5px;
+  margin: 1em 0 3em;
+  border: 5px solid RGBA(68, 78, 91, 1);
+  color: #333;
+  background: #fff;
+  /* css3 */
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  border-radius: 10px;
+}
+
+/* line 67, ../sass/sharepoint.scss */
+.triangle-border:before {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  /* value = - border-top-width - border-bottom-width */
+  left: 40px;
+  /* controls horizontal position */
+  border-width: 20px 20px 0;
+  border-style: solid;
+  border-color: RGBA(68, 78, 91, 1) transparent;
+  /* reduce the damage in FF3.0 */
+  display: block;
+  width: 0;
+}
+
+/* line 80, ../sass/sharepoint.scss */
+.triangle-border:after {
+  content: "";
+  position: absolute;
+  bottom: -13px;
+  /* value = - border-top-width - border-bottom-width */
+  left: 47px;
+  /* value = (:before left) + (:before border-left) - (:after border-left) */
+  border-width: 13px 13px 0;
+  border-style: solid;
+  border-color: #fff transparent;
+  /* reduce the damage in FF3.0 */
+  display: block;
+  width: 0;
+}

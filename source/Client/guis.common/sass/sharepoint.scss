@@ -1,0 +1,91 @@
+@import "compass/css3";
+
+.js-tree{
+  height: 100%;
+  overflow: auto;
+  padding-right: -1em;
+}
+
+.sharepoint-toolbar, .embedded-toolbar{
+  @include background(
+    linear-gradient(#5A6775, #3D454F));
+  height: 20px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+.embedded-toolbar-button{
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  display: block;
+  cursor: pointer;
+  padding-right: 5px;
+}
+
+.minimize-button{
+  @extend .embedded-toolbar-button;
+  background-image: url('../images/close.png');
+  float: left;
+}
+
+.open-extern-button{
+  @extend .embedded-toolbar-button;
+  background-image: url('../images/export.png');
+  float: right;
+}
+
+.iframe-container{
+  background-color: white;
+  border: 2px solid #3D454F;
+}
+
+.wrapped-text{
+  height: 50px;
+}
+
+.discussion-blob{
+  font-size: 12px;
+}
+
+
+
+.triangle-border {
+  position:relative;
+  padding:5px;
+  margin:1em 0 3em;
+  border:5px solid RGBA(68.00, 78.00, 91.00, 1.00);
+  color:#333;
+  background:#fff;
+  /* css3 */
+  -webkit-border-radius:10px;
+  -moz-border-radius:10px;
+  border-radius:10px;
+}
+
+.triangle-border:before {
+  content:"";
+  position:absolute;
+  bottom:-20px; /* value = - border-top-width - border-bottom-width */
+  left:40px; /* controls horizontal position */
+  border-width:20px 20px 0;
+  border-style:solid;
+  border-color:RGBA(68.00, 78.00, 91.00, 1.00) transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
+}
+
+.triangle-border:after {
+  content:"";
+  position:absolute;
+  bottom:-13px; /* value = - border-top-width - border-bottom-width */
+  left:47px; /* value = (:before left) + (:before border-left) - (:after border-left) */
+  border-width:13px 13px 0;
+  border-style:solid;
+  border-color:#fff transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
+}

@@ -18,24 +18,36 @@ Discussion.register=function(type){
 	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
 	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,unit:'px',category:'Appearance'});
 	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance'});
-	
-	this.registerAction('Edit',function(){
-		$.each(ObjectManager.getSelected(), function(key, object) {
-			object.execute();
-		});
-	}, true);
+
+    this.standardData.fillcolor='rgb('+240+','+240+','+240+')';
+    this.standardData.width=400;
+    this.standardData.height=400;
+
 }
 
 Discussion.execute=function(){
-	
-	this.editText();
-	
+    if(!this.getAttribute("show_embedded")){
+        this.switchState();
+    }
 }
 
-Discussion.register('Discussion');
-Discussion.isCreatable=false;
 
-Discussion.content='Neuer Text';
+
+Discussion.register('Discussion');
+
+Discussion.moveByTransform = function(){
+    if(this.getAttribute("show_embedded")){
+        return false;
+    } else {
+        return false;
+    }
+}
+
+Discussion.isCreatable=true;
+
+Discussion.restrictedMovingArea = true;
+
+Discussion.contentURLOnly = false;
 
 Discussion.category='Texts';
 

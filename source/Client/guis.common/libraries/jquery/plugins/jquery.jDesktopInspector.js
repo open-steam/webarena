@@ -843,7 +843,7 @@ $(function() { });
 			$(newHead).html(title);
 
 			var newPage = document.createElement("div");
-			$(newPage).hide();
+			//$(newPage).hide();
 			$(newPage).addClass("jDesktopInspector_page");
 			$(newPage).addClass("jDesktopInspector_page_"+pageId);
 
@@ -966,28 +966,11 @@ $(function() { });
 			
 			self.callEvent("onUpdate");
 			
-			self.open();
+
 
 		}
 
 
-		this.open = function() {
-			
-			$(self.pages).each(function(index) {
-			
-				$(this.page).show();
-
-				if ($(self.mainEl).outerHeight() >= $(self.el).outerHeight()) {
-					$(this.page).hide();
-				} else {
-					$(this.head).removeClass("jDesktopInspector_pageHead_closed");
-				}
-				
-			});
-			
-		}
-		
-		
 		this.openPage = function(page, head) {
 			
 			var open = $(page).is(":visible");

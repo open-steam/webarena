@@ -48,7 +48,7 @@ Exit.execute=function(){
 
 Exit.register('Exit');
 Exit.isCreatable=true;
-Exit.moveByTransform = true;
+Exit.moveByTransform = function(){return true;};
 
 Exit.category = 'Rooms';
 

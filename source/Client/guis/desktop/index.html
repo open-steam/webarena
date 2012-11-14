@@ -63,6 +63,12 @@
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jsTree/jquery.jstree.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.autogrow.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.autogrow.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.dotdotdot.js"></script>
 
 
 
@@ -81,6 +87,7 @@
 
 	<script type="text/javascript" src="/guis.common/javascript/0.GUI.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/0.cookies.js"></script>
+    <script type="text/javascript" src="/guis.common/javascript/0.string.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.progressBarManager.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.login.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.load.js"></script>
@@ -101,7 +108,9 @@
 	<link type="text/css" href="/guis.common/css/actionsheet.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/progressBar.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
-	
+	<link type="text/css" href="/guis.common/css/discussion.css" rel="Stylesheet" />
+    <link type="text/css" href="/guis.common/css/easydb.css" rel="Stylesheet" />
+    <link type="text/css" href="/guis.common/css/sharepoint.css" rel="Stylesheet" />
 	
 
 
@@ -237,7 +246,7 @@
 		 * 				}
 		 * 			}
 		 */
-		GUI.dialog = function(heading, content, buttons, dialogWidth) {
+		GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
 			
 			GUI.blockKeyEvents = true;
 			
@@ -269,18 +278,25 @@
 			if (dialogWidth == undefined) {
 				dialogWidth = "auto";
 			}
+
+            var dialogOptions = {
+                modal: true,
+                resizable: false,
+                buttons: buttons2,
+                zIndex: 100000,
+                width : dialogWidth,
+                close: function() {
+                    $(this).remove();
+                    GUI.blockKeyEvents = false;
+                }
+            }
+
+            if(typeof passThrough === "object"){
+                $.extend(dialogOptions, passThrough)
+            }
+
 			
-			$(dialogContent).dialog({
-				modal: true,
-				resizable: false,
-				buttons: buttons2,
-				zIndex: 100000,
-				width : dialogWidth,
-				close: function() {
-					$(this).remove();
-					GUI.blockKeyEvents = false;
-				}
-			});
+			return $(dialogContent).dialog(dialogOptions);
 			
 			
 		};

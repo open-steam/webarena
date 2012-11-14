@@ -270,11 +270,7 @@ GUI.initMouseHandler = function() {
 	} else {
 		
 		var mousedown = function(event) {
-
 			jPopoverManager.hideAll();
-
-			event.preventDefault();
-			event.stopPropagation();
 
 			var contentPosition = $("#content").offset();
 
@@ -283,12 +279,15 @@ GUI.initMouseHandler = function() {
 
 			if (clickedObject) {
 				if (clickedObject.restrictedMovingArea) {
-					return false;
+					return true;
 				}
-				
+                event.preventDefault();
+                event.stopPropagation();
 				clickedObject.click(event);
 			} else {
 				/* clicked on background */
+                event.preventDefault();
+                event.stopPropagation();
 				GUI.rubberbandStart(event);
 			}
 

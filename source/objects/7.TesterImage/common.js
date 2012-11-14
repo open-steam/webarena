@@ -31,6 +31,6 @@ TesterImage.isResizable=File.isResizable;
 
 TesterImage.register('TesterImage');
 TesterImage.isCreatable=true; 
-TesterImage.moveByTransform = true;
+TesterImage.moveByTransform = function(){return true;};
 
 module.exports=TesterImage;

@@ -70,12 +70,15 @@
 	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jsTree/jquery.jstree.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
 
 	<link type="text/css" href="/guis/ipad/style.css" rel="Stylesheet" />
 
 
 	<script type="text/javascript" src="/guis.common/javascript/0.GUI.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/0.cookies.js"></script>
+	<script type="text/javascript" src="/guis.common/javascript/0.string"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.progressBarManager.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.login.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.load.js"></script>
@@ -94,9 +97,13 @@
 
 	<link type="text/css" href="/guis.common/css/actionsheet.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/progressBar.css" rel="Stylesheet" />
-	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
-
+	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />	
+	<link type="text/css" href="/guis.common/css/easydb.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis.common/css/discussion.css" rel="Stylesheet" />
+    <link type="text/css" href="/guis.common/css/sharepoint.css" rel="Stylesheet" />
+	
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.ipad.css" rel="Stylesheet" />
+
 	
 	<script>
 	
@@ -252,7 +259,7 @@
 		 * 				}
 		 * 			}
 		 */
-		GUI.dialog = function(heading, content, buttons, dialogWidth) {
+		GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
 			
 			alert("TODO: GUI.dialog");
 			return false;
@@ -287,20 +294,24 @@
 			if (dialogWidth == undefined) {
 				dialogWidth = "auto";
 			}
+
+            var dialogOptions = {
+                modal: true,
+                resizable: false,
+                buttons: buttons2,
+                zIndex: 100000,
+                width : dialogWidth,
+                close: function() {
+                    $(this).remove();
+                    GUI.blockKeyEvents = false;
+                }
+            }
+
+            if(typeof passThrough === "object"){
+                $.extend(dialogOptions, passThrough)
+            }
 			
-			$(dialogContent).dialog({
-				modal: true,
-				resizable: false,
-				buttons: buttons2,
-				zIndex: 100000,
-				width : dialogWidth,
-				close: function() {
-					$(this).remove();
-					GUI.blockKeyEvents = false;
-				}
-			});
-			
-			
+			return $(dialogContent).dialog(dialogOptions);
 		};
 	
 

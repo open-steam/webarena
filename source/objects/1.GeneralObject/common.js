@@ -23,7 +23,7 @@ GeneralObject.isGraphical=true;
 GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
-GeneralObject.moveByTransform = false;			//TODO cient only??
+GeneralObject.moveByTransform = function(){return false;}			//TODO cient only??
 
 GeneralObject.restrictedMovingArea = false;
 
