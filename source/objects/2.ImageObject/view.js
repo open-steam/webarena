@@ -70,7 +70,7 @@ ImageObject.setViewWidth = function(value) {
 }
 
 ImageObject.setViewHeight = function(value) {
-	GeneralObject.setViewWidth.call(this, value);
+	GeneralObject.setViewHeight.call(this, value);
 	$(this.getRepresentation()).find("image").attr("height", parseInt(value));
 	$(this.getRepresentation()).find("rect").attr("height", parseInt(value));
 }
