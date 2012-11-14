@@ -115,7 +115,6 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current, ext
         });
     });
     $(button).on('click', function(){
-        console.log($(this));
         $(".paginator .current").removeClass('current');
         $(this).addClass('current');
 

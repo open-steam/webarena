@@ -9,7 +9,7 @@ SharePoint.register=function(type){
     GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
     GeneralObject.register.call(this,type);
 
-    this.registerAction('Open extern',function(){
+    this.registerAction('Extern öffnen',function(){
         var selected = ObjectManager.getSelected();
         for (var i in selected) {
             var obj = selected[i];
@@ -82,7 +82,6 @@ SharePoint.isResizable=function(){
 SharePoint.init=function(id){
     var r = GeneralObject.init.call(this, id);
 
-    console.log(this.getAttribute('sharepoint_src'));
     return r;
 }
 

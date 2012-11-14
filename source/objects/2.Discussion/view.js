@@ -102,20 +102,7 @@ Discussion.draw=function(){
 }
 
 
-Discussion.updateInnerHeight = function() {
-    var rep=this.getRepresentation();
-	
-    $(rep).find("body").css("height", this.getAttribute('height')+"px");
-    
-	//TODO : calculate size with input instead of fixed 75px
-    var hh = $(rep).find(".discussion-heading").height();
-    var ih = $(rep).find(".discussion-input").height();
 
-	$(rep).find(".discussion-text").css("height", (this.getAttribute('height')- hh - ih - 90)+"px");
-
-    $(rep).find(".wrapped-text").css("height", (this.getAttribute('height') - 50) + "px");
-    $(rep).find(".wrapped-text").dotdotdot();
-}
 
 Discussion.createRepresentationEmbedded = function(){
     var that = this;
@@ -245,9 +232,48 @@ Discussion.formatTimestamp = function(time){
 
 /* view setter */
 Discussion.setViewHeight = function(value) {
+    GeneralObject.setViewHeight.call(this, value);
     $(this.getRepresentation()).attr("height", parseInt(value));
-    GUI.adjustContent(this);
-    this.updateInnerHeight();
+    this.updateInnerHeight(parseInt(value));
+
+
+}
+
+Discussion.updateInnerHeight = function(value) {
+    var embedded = this.getAttribute("show_embedded");
+
+    if(embedded){
+        this.updateInnerHeightEmbedded(value);
+    } else {
+        this.updateInnerHeightIcon(value);
+    }
+}
+
+Discussion.updateInnerHeightEmbedded = function(value){
+    console.log('test');
+    var rep=this.getRepresentation();
+
+
+    $(rep).find("body").css("height", value+"px");
+
+    //TODO : calculate size with input instead of fixed 75px
+    var hh = $(rep).find(".discussion-heading").height();
+    var ih = $(rep).find(".discussion-input").height();
+
+    $(rep).find(".discussion-text").css("height", (value- hh - ih - 90)+"px");
+
+
+}
+
+Discussion.updateInnerHeightIcon = function(value){
+    console.log('test2');
+    var rep=this.getRepresentation();
+
+    $(rep).find("body").css("height", value+"px");
+    $(rep).find(".wrapped-text").css("height", (value - 50) + "px");
+    $(rep).find(".wrapped-text").dotdotdot();
+
+
 }
 
 
@@ -259,16 +285,6 @@ Discussion.getViewBoundingBoxX = function() {
 /* get the y position of the objects bounding box (this is the top position of the object) */
 Discussion.getViewBoundingBoxY = function() {
     return parseInt(this.getAttribute("y"));
-}
-
-/* get the width of the objects bounding box */
-Discussion.getViewBoundingBoxWidth = function() {
-    return parseInt(this.getAttribute("width"));
-}
-
-/* get the height of the objects bounding box */
-Discussion.getViewBoundingBoxHeight = function() {
-    return parseInt(this.getAttribute("height"));	
 }
 
 Discussion.representationCreated = function() {
