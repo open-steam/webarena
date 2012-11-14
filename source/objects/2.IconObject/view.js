@@ -47,3 +47,7 @@ IconObject.setViewHeight = function(value) {
 	GeneralObject.setViewHeight.call(this, value);
 
 }
+
+IconObject.dblclickHandler = function() {
+	this.execute();
+}

@@ -1122,7 +1122,7 @@ GeneralObject.deselectHandler = function() {
 }
 
 GeneralObject.dblclickHandler = function() {
-	this.execute();
+	
 }
 
 GeneralObject.selectedClickHandler = function(event) {
