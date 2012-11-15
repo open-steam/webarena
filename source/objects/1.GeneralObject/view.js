@@ -931,12 +931,14 @@ GeneralObject.getViewHeight = function() {
 /* get the x position of the objects bounding box (this is the left position of the object) */
 GeneralObject.getViewBoundingBoxX = function() {
 
+	return this.getViewX();
+
 	var rep = this.getRepresentation();
 	
 	if (this.moveByTransform()) {
 		return this.getViewX();
 	} else {
-			return this.getRepresentation().getBBox().x;
+		return this.getRepresentation().getBBox().x;
 	}
 
 }
@@ -944,12 +946,14 @@ GeneralObject.getViewBoundingBoxX = function() {
 /* get the y position of the objects bounding box (this is the top position of the object) */
 GeneralObject.getViewBoundingBoxY = function() {
 	
+	return this.getViewY();
+	
 	var rep = this.getRepresentation();
 	
 	if (this.moveByTransform()) {
 		return this.getViewY();
 	} else {
-			return this.getRepresentation().getBBox().y;
+		return this.getRepresentation().getBBox().y;
 	}
 	
 }
@@ -976,7 +980,14 @@ GeneralObject.setViewX = function(value) {
 	var rep = this.getRepresentation();
 	
 	if (this.moveByTransform()) {
-		$(rep).attr("transform", "translate("+value+","+self.getViewY()+")");	
+		
+		if (isNaN(self.getViewY())) {
+			var y = 0;
+		} else {
+			var y = self.getViewY();
+		}
+		
+		$(rep).attr("transform", "translate("+value+","+y+")");	
 	}
 	
 	$(rep).attr("x", value);
@@ -992,7 +1003,14 @@ GeneralObject.setViewY = function(value) {
 	var rep = this.getRepresentation();
 	
 	if (this.moveByTransform()) {
-		$(rep).attr("transform", "translate("+self.getViewX()+","+value+")");
+
+		if (isNaN(self.getViewX())) {
+			var x = 0;
+		} else {
+			var x = self.getViewX();
+		}
+		
+		$(rep).attr("transform", "translate("+x+","+value+")");
 	}
 	
 	$(rep).attr("y", value);

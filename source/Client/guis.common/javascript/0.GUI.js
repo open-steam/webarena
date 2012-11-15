@@ -64,59 +64,101 @@ GUI.adjustContent = function(webarenaObject) {
 	if (webarenaObject != undefined) {
 
 		if (!webarenaObject.isGraphical) return;
+		if (GUI.hiddenObjectsVisible && !webarenaObject.getAttribute("hidden")) return;
+		if (!GUI.hiddenObjectsVisible && webarenaObject.getAttribute("hidden")) return;
 
 		/* check if new position of webarenaObject needs a new room width/height */
 
 		var currentRoom = ObjectManager.getCurrentRoom();
 		
-		var maxX = Math.round(webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth());
-		var maxY = Math.round(webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight());
-		
-		//TODO BAUSTELLE Die Fenstergroesse und die Scrollposition muessen beruecksichtigt werden!!!!
-		
-		maxX=5000;maxY=5000;
-		
+		var maxX = Math.round(webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth())+300;
+		var maxY = Math.round(webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight())+300;
+
 		if (maxX > currentRoom.getAttribute("width")) {
-			currentRoom.setAttribute("width", maxX);
-			$("#content").css("width", maxX);			//TODO do not do this, if browser viewport is bigger
-			$("#content > svg").css("width", maxX);
+			GUI.setRoomWidth(maxX);
 		}
-		
+
 		if (maxY > currentRoom.getAttribute("height")) {
-			currentRoom.setAttribute("height", maxY);
-			$("#content").css("height", maxY);			//TODO do not do this, if browser viewport is bigger
-			$("#content > svg").css("height", maxY);
+			GUI.setRoomHeight(maxY);
 		}
+
 		
 	} else {
 		/* set room width/height */
 		var currentRoom = ObjectManager.getCurrentRoom();
-		
 		if (!currentRoom) return;
 		
 		var width = currentRoom.getAttribute("width");
 		var height = currentRoom.getAttribute("height");
 		
-		if (width < $(document).width()) {
-			width = $(document).width();
+		var maxX = 0;
+		var maxY = 0;
+		
+		$.each(ObjectManager.getObjects(), function(key, object) {
+
+			var mx = Math.round(object.getAttribute("x")+object.getAttribute("width"));
+			var my = Math.round(object.getAttribute("y")+object.getAttribute("height"));
+			
+			if (mx > maxX) {
+				maxX = mx;
+			}
+			
+			if (my > maxY) {
+				maxY = my;
+			}
+
+		});
+
+		maxX += 300;
+		maxY += 300;
+		
+		if (maxX < width) {
+			width = maxX;
 		}
 		
-		if (height < $(document).height()) {
-			height = $(document).height();
+		if (maxY < height) {
+ 			height = maxY;
 		}
 		
-		$("#content").css("width", width);
-		$("#content").css("height", height);
+		GUI.setRoomWidth(width);
+		GUI.setRoomHeight(height);
 		
-		
-		$("#content > svg").css("width", width);
-		$("#content > svg").css("height", height);
 	}
 	
 }
 
 
+GUI.setRoomWidth = function(width) {
+	
+	var currentRoom = ObjectManager.getCurrentRoom();
+	if (!currentRoom) return;
+	
+	currentRoom.setAttribute("width", width);
+	
+	if (width < $(window).width()) {
+		width = $(window).width();
+	}
+	
+	$("#content").css("width", width);
+	$("#content > svg").css("width", width);
+	
+}
 
+GUI.setRoomHeight = function(height) {
+
+	var currentRoom = ObjectManager.getCurrentRoom();
+	if (!currentRoom) return;
+	
+	currentRoom.setAttribute("height", height);
+
+	if (height < $(window).height()) {
+		height = $(window).height();
+	}
+	
+	$("#content").css("height", height);
+	$("#content > svg").css("height", height);
+	
+}
 
 
 /* object selection */

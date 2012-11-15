@@ -74,7 +74,10 @@ GUI.rubberbandStart = function(event) {
 		$.each(ObjectManager.getObjects(), function(index, object) {
 		
 			if (!object.getAttribute("visible")) return;
-
+			
+			if (GUI.hiddenObjectsVisible && !object.getAttribute("hidden")) return;
+			if (!GUI.hiddenObjectsVisible && object.getAttribute("hidden")) return;
+			
 			if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
 				if (object.isGraphical) {
 					object.select(true);

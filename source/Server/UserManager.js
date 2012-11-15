@@ -150,9 +150,9 @@ UserManager.enterRoom=function(socketOrUser,roomID){
 		if (mayEnter) {
 			
 			ObjectManager.getRoom(roomID,connection,function(room){			
-				socketServer.sendToSocket(socket,'entered',room.id);
 				connection.room=room;
-				ObjectManager.sendRoom(socket,room.id);				
+				ObjectManager.sendRoom(socket,room.id);
+				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
 			})
 
