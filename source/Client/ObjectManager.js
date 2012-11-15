@@ -238,6 +238,7 @@ ObjectManager.loadRoom=function(roomid){
 	
     if(!roomid) roomid='public';
     this.currentRoomID=roomid;
+
     Modules.SocketClient.serverCall('enter',roomid);
 }
 

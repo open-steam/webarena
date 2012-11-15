@@ -4,6 +4,11 @@ GUI.loaded = false;
 
 GUI.entered = function() {
 	
+	if (GUI.loaded) {
+		//GUI was loaded before --> this is a room change
+		GUI.progressBarManager.addProgress(GUI.translate('changing room'), "login");
+	}
+	
 	GUI.loadGUI(2);
 	
 }
@@ -82,6 +87,8 @@ GUI.loadGUI = function(step) {
 		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
 		
 		GUI.updateLayers(); //update z-order by layer-attribute
+		
+		GUI.updateInspector();
 		
 		GUI.loaded = true;
 		

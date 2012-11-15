@@ -38,11 +38,9 @@ GUI.hideLogin = function() {
 	$("#login_background").hide();
 	$("#login_background").css("opacity", 1);
 	
-	window.setTimeout(function() {
-		GUI.progressBarManager.updateProgress("login", 100);
+	GUI.progressBarManager.updateProgress("login", 100);
 
-		GUI.loginProcessActive = false;
-	}, 1000);
+	GUI.loginProcessActive = false;
 
 }
 

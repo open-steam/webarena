@@ -28,7 +28,7 @@ Line.register=function(type){
 Line.register('Line');
 Line.isCreatable=false;
 
-Line.moveByTransform = true;
+Line.moveByTransform = function() { return true; }
 
 
 Line.controlIsAllowed = function(control) {
