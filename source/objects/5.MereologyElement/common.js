@@ -8,6 +8,7 @@
 var Modules=require('../../server.js');
 
 var MereologyElement=Object.create(Modules.ObjectManager.getPrototype('ActiveObject'));
+//TODO this must be a semanticObject
 
 MereologyElement.register=function(type){
 	
