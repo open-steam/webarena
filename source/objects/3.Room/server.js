@@ -18,9 +18,9 @@ theObject.getEvaluatedPositionFor=function(object){
 	var reds=[];
 	
 	for (var i in inventory){
-		var evaluationObject=inventory[i];
-		if (!evaluationObject.isEvaluationObject) continue;
-		//console.log(evaluationObject.toString(),'is an evaluationObject');
+		var activeObject=inventory[i];
+		if (!activeObject.isActiveObject) continue;
+		//console.log(activeObject.toString(),'is an activeObject');
 		
 		//TODO calculate positions
 		
@@ -40,9 +40,9 @@ theObject.evaluatePositionFor=function(object,data){
 	var inventory=this.getInventory();
 	
 	for (var i in inventory){
-		var evaluationObject=inventory[i];
-		if (!evaluationObject.isEvaluationObject) continue;
-		evaluationObject.evaluate(object,data);
+		var activeObject=inventory[i];
+		if (!activeObject.isActiveObject) continue;
+		activeObject.evaluate(object,data);
 	}
 	
 }

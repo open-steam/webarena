@@ -265,8 +265,8 @@ theObject.evaluatePositionInt=function(data){
 	
 	room.evaluatePositionFor(this,data);
 	
-	//if this is an evaluationobject
-	//recalculate positions of nonevaluation objects
+	//if this is an activeobject
+	//recalculate positions of nonactive objects
 }
 
 theObject.getPosition=function(){

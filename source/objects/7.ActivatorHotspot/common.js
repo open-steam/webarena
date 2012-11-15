@@ -6,13 +6,13 @@
 */
 
 var Modules=require('../../server.js')
-var ActivatorHotspot=Object.create(Modules.ObjectManager.getPrototype('EvaluationObject'));
+var ActivatorHotspot=Object.create(Modules.ObjectManager.getPrototype('ActiveObject'));
 
 ActivatorHotspot.register=function(type){
 	
 	// Registering the object
-	EvaluationObject=Modules.ObjectManager.getPrototype('EvaluationObject');
-	EvaluationObject.register.call(this,type);
+	ActiveObject=Modules.ObjectManager.getPrototype('ActiveObject');
+	ActiveObject.register.call(this,type);
 	
 
 	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});

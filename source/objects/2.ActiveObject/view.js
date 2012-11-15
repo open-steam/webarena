@@ -5,7 +5,7 @@
 *
 */
 	
-EvaluationObject.draw=function(external){
+ActiveObject.draw=function(external){
 
 	var rep=this.getRepresentation();
 	
@@ -20,7 +20,7 @@ EvaluationObject.draw=function(external){
 
 }
 
-EvaluationObject.createRepresentation = function() {
+ActiveObject.createRepresentation = function() {
 
 	var rep = GUI.svg.rect(
 		10, //x

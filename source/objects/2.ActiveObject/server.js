@@ -14,7 +14,7 @@ module.exports=theObject;
 /**
 *	encloses
 *
-*	determines, if this evaluation object fully encloses another object.
+*	determines, if this Active object fully encloses another object.
 *	In this simple implementation, this is done by bounding box comparison.
 **/
 theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
@@ -72,7 +72,7 @@ theObject.getOverlappingObjects=function(){
 }
 
 /**
-*	evaluationObjects evaluate other objects in respect to themselves.
+*	ActiveObjects evaluate other objects in respect to themselves.
 *	this is not positioning in front of a background which shall be
 *	done by getGreenPositions and getRedPositions
 *
