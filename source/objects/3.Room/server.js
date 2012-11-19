@@ -37,12 +37,17 @@ theObject.getEvaluatedPositionFor=function(object){
 theObject.evaluatePositionFor=function(object,data){
 	//console.log('room','evaluatePositionFor',object.toString(),data);
 	
+	if (object.isActiveObject) return object.moved(data);
+	
 	var inventory=this.getInventory();
 	
 	for (var i in inventory){
 		var activeObject=inventory[i];
-		if (!activeObject.isActiveObject) continue;
-		activeObject.evaluate(object,data);
+		if (!activeObject.isActiveObject) {
+			continue;
+		} else {
+			activeObject.evaluate(object,data);
+		}
 	}
 	
 }
