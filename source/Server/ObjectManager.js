@@ -289,6 +289,25 @@ ObjectManager.init=function(theModules){
 	
 	ObjectManager.clientCode='//Object Code for WebArena Client '+enter;
 	
+	var whiteList={};
+	var blackList={};
+	var hasWhiteList=false;
+	
+	for (var i in Modules.config.objectWhitelist){
+		hasWhiteList=true;
+		whiteList[Modules.config.objectWhitelist[i]]=true;
+	}
+	
+	for (var i in Modules.config.objectBlacklist){
+		blackList[Modules.config.objectBlacklist[i]]=true;
+	}
+	
+	if (hasWhiteList){
+		whiteList.GeneralObject=true;
+		whiteList.Room=true;
+		whiteList.IconObject=true;
+	}
+	
 	files.forEach(function(filename){
 		
 		try {
@@ -298,6 +317,15 @@ ObjectManager.init=function(theModules){
 			var objName=fileinfo[1];
 			if (!index) return;
 			if (!objName) return;
+			
+			if (hasWhiteList && !whiteList[objName]) {
+				return;
+			}
+			
+			if (blackList[objName]){
+				console.log('Type '+objName+' is blacklisted.');
+				return;
+			}
 			
 			var filebase=__dirname+'/../objects/'+filename;
 	

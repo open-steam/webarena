@@ -7,13 +7,14 @@
 
 var Modules=require('../../server.js');
 
-var MereologyElement=Object.create(Modules.ObjectManager.getPrototype('EvaluationObject'));
+var MereologyElement=Object.create(Modules.ObjectManager.getPrototype('ActiveObject'));
+//TODO this must be a semanticObject
 
 MereologyElement.register=function(type){
 	
 	// Registering the object
-	EvaluationObject=Modules.ObjectManager.getPrototype('EvaluationObject');
-	EvaluationObject.register.call(this,type);
+	ActiveObject=Modules.ObjectManager.getPrototype('ActiveObject');
+	ActiveObject.register.call(this,type);
 	
 
 	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});

@@ -11,10 +11,33 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 module.exports=theObject;
 
+theObject.bBoxEncloses=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
+	
+	if (otherX<thisX-20) {
+		//console.log('too far left');
+		return false;
+	}
+	if (otherY<thisY-20) {
+		//console.log('too far up');
+		return false;
+	}
+	if ((otherX+otherWidth)>(thisX+thisWidth+20)) {
+		//console.log('too far right');
+		return false;
+	}
+	if ((otherY+otherHeight)>(thisY+thisWidth+20)) {
+		//console.log('too far bottom');
+		return false;
+	}
+	
+	return true;	
+	
+}
+
 /**
 *	encloses
 *
-*	determines, if this evaluation object fully encloses another object.
+*	determines, if this Active object fully encloses another object.
 *	In this simple implementation, this is done by bounding box comparison.
 **/
 theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
@@ -29,27 +52,9 @@ theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
 	
 	var bbox=this.getBoundingBox();
 	
-	if (otherX<bbox.x-20) {
-		//console.log('too far left');
-		return false;
-	}
-	if (otherY<bbox.y-20) {
-		//console.log('too far up');
-		return false;
-	}
-	if ((otherX+otherWidth)>(bbox.x+bbox.width+20)) {
-		//console.log('too far right');
-		return false;
-	}
-	if ((otherY+otherHeight)>(bbox.y+bbox.height+20)) {
-		//console.log('too far bottom');
-		return false;
-	}
-	
-	return true;
+	return this.bBoxEncloses(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
 	
 }
-
 /**
 *	getOverlappingObjcts
 *
@@ -71,8 +76,12 @@ theObject.getOverlappingObjects=function(){
 	return result;
 }
 
+theObject.moved=function(changeData){
+	//this is different for ResponsiveObjects and SemanticObjects
+}
+
 /**
-*	evaluationObjects evaluate other objects in respect to themselves.
+*	ActiveObjects evaluate other objects in respect to themselves.
 *	this is not positioning in front of a background which shall be
 *	done by getGreenPositions and getRedPositions
 *
@@ -100,25 +109,25 @@ theObject.evaluate=function(object,changeData){
 	
 	//handle move
 	
-	if (oldIntersects && newIntersects) return this.onMoveWithin(object,oldData,newData);
-	if (!oldIntersects && !newIntersects) return this.onMoveOutside(object,oldData,newData);
-	if (oldIntersects && !newIntersects) return this.onLeave(object,oldData,newData);
-	if (!oldIntersects && newIntersects) return this.onEnter(object,oldData,newData);
+	if (oldIntersects && newIntersects) return this.onMoveWithin(object,newData);
+	if (!oldIntersects && !newIntersects) return this.onMoveOutside(object,newData);
+	if (oldIntersects && !newIntersects) return this.onLeave(object,newData);
+	if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
 }
 
 
-theObject.onMoveWithin=function(object,oldData,newData){
+theObject.onMoveWithin=function(object,data){
 	
 };
 
-theObject.onMoveOutside=function(object,oldData,newData){
+theObject.onMoveOutside=function(object,data){
 	
 };
 
-theObject.onLeave=function(object,oldData,newData){
+theObject.onLeave=function(object,data){
 	
 };
 
-theObject.onEnter=function(object,oldData,newData){
+theObject.onEnter=function(object,data){
 	
 };
