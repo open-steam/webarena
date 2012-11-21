@@ -16,25 +16,7 @@ GUI.initSVG = function() {
 	GUI.svg = $("#content").svg('get');
 	GUI.svgDefs = GUI.svg.defs();
 
-	var clickHandler = function(event) {
-		if (event.target == $("#content>svg").get(0)) {
-			
-			/* deselect all objects */
-			GUI.deselectAllObjects();
-			
-			GUI.updateInspector();
-			
-			GUI.hideActionsheet();
-			
-		}
-	};
-	
-	if (GUI.isTouchDevice) {
-		$("#content>svg").get(0).addEventListener("touchstart", clickHandler, false);
-	} else {
-		$("#content>svg").click(clickHandler);
-	}
-	
+
 }
 
 

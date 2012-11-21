@@ -80,7 +80,7 @@ GUI.rubberbandStart = function(event) {
 			
 			if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
 				if (object.isGraphical) {
-					object.select(true);
+					object.click(event);
 				}
 			}
 			

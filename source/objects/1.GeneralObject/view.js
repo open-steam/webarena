@@ -714,7 +714,7 @@ GeneralObject.moveStart = function(event) {
 	} else {
 		var self = ObjectManager.getObject(this.id);
 	}
-	
+
 	if (!self.selected) self.select();
 	
 	var contentPosition = $("#content").offset();
@@ -722,7 +722,6 @@ GeneralObject.moveStart = function(event) {
 	if (!self.hasPixelAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top)) {
 		return;
 	}
-
 
 	event.preventDefault();
 	event.stopPropagation();
@@ -779,7 +778,7 @@ GeneralObject.moveStart = function(event) {
 	};
 	
 	var end = function(event) {
-	
+
 		event.preventDefault();
 		event.stopPropagation();
 		
@@ -1063,6 +1062,8 @@ GeneralObject.click = function(event) {
 		self.clickHandler(event);
 		return true;
 	}
+	
+	if (event.target == $("#content>svg").get(0)) return;
 
 	if (self.clickTimeout) {
 		/* second click */
@@ -1114,6 +1115,7 @@ GeneralObject.clickHandler = function(event) {
 		this.select();
 		this.moveStart(event);
 	}
+
 }
 
 GeneralObject.clickRevertHandler = function(event) {

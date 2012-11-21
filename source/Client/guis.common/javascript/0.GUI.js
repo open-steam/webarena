@@ -298,7 +298,7 @@ GUI.initMouseHandler = function() {
 			/* find objects at this position */
 			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
 
-			if (clickedObject) {
+			if (clickedObject && event.target != $("#content>svg").get(0)) {
 				if (clickedObject.restrictedMovingArea) return false;
 				event.preventDefault();
 				event.stopPropagation();
@@ -319,7 +319,7 @@ GUI.initMouseHandler = function() {
 			/* find objects at this position */
 			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
 
-			if (clickedObject) {
+			if (clickedObject && event.target != $("#content>svg").get(0)) {
 				if (clickedObject.restrictedMovingArea) {
 					return true;
 				}
