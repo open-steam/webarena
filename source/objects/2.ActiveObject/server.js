@@ -25,7 +25,7 @@ theObject.bBoxEncloses=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,o
 		//console.log('too far right');
 		return false;
 	}
-	if ((otherY+otherHeight)>(thisY+thisWidth+20)) {
+	if ((otherY+otherHeight)>(thisY+thisHeight+20)) {
 		//console.log('too far bottom');
 		return false;
 	}
