@@ -9,6 +9,5 @@ var Modules=require('../../server.js');
 var BlueActor=Object.create(Modules.ObjectManager.getPrototype('Actor'));
 
 BlueActor.isCreatable=true;
-BlueActor.category='Evaluations';
 
 module.exports=BlueActor;

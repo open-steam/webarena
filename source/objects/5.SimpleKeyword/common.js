@@ -9,6 +9,8 @@ var Modules=require('../../server.js');
 
 var SimpleKeyword=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
+SimpleKeyword.category='Actor';
+
 SimpleKeyword.register=function(type){
 	
 	// Registering the object
@@ -36,7 +38,5 @@ SimpleKeyword.isResizable=function(){
 
 SimpleKeyword.register('SimpleKeyword');
 SimpleKeyword.isCreatable=true;
-
-SimpleKeyword.category='Evaluations';
 
 module.exports=SimpleKeyword;

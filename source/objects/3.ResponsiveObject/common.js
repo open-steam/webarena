@@ -10,6 +10,7 @@ var Modules=require('../../server.js');
 var ResponsiveObject=Object.create(Modules.ObjectManager.getPrototype('ActiveObject'));
 
 ResponsiveObject.register('ResponsiveObject');
+ResponsiveObject.category = 'Responsive';
 ResponsiveObject.isResponsiveObject=true;
 
 module.exports=ResponsiveObject;

@@ -9,6 +9,5 @@ var Modules=require('../../server.js');
 var OrangeActor=Object.create(Modules.ObjectManager.getPrototype('Actor'));
 
 OrangeActor.isCreatable=true;
-OrangeActor.category='Evaluations';
 
 module.exports=OrangeActor;

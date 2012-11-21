@@ -20,9 +20,8 @@ Actor.register=function(type){
 }
 
 Actor.register('Actor');
+Actor.category='Actor';
 Actor.isCreatable=false;
 Actor.isActor=true;
-
-Actor.category='Evaluations';
 
 module.exports=Actor;
