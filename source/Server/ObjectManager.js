@@ -494,7 +494,7 @@ ObjectManager.init=function(theModules){
 
 
         var searchArgs = {
-            searchString : data.searchString,
+            searchParams : data.searchParams,
             offset : data.offset || 0,
             limit : data.limit || 10
         };

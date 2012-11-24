@@ -152,7 +152,8 @@ EasyDbAPI.apicall = function(args, callback){
  * @param callback
  */
 EasyDbAPI.search = function(searchArgs){
-    var searchTerm = searchArgs.searchString || searchArgs;
+    var searchParams = searchArgs.searchParams;
+    var searchTerm = searchParams.title;
 
     //dirty sql query - hack to get count in every row. To avoid need of second request.
     var sql = ""+
@@ -164,7 +165,7 @@ EasyDbAPI.search = function(searchArgs){
             ") as cnta " +
         "WHERE  "+
             "titel LIKE '%" + searchTerm + "%' "+
-            "OR kommentar LIKE '%"+searchTerm  +"%'"; // OR PERSON.KUENSTLER_ID LIKE '%" + searchTerm +"%'";
+            "OR kommentar LIKE '%"+searchTerm  +"%'";
 
     if(typeof searchArgs === "string"){
 

@@ -14,18 +14,31 @@ EasyDBImage.execute=function(){
 
     var dialogPage1 = $('' +
         '<div id="easydb-dialog">' +
-            '<input class="maxWidth" placeholder="Suchbegriff hier eingeben">',
+            '<input id="search-title" class="maxWidth" placeholder="Titel">' +
+            '<input id="search-artist" class="maxWidth" placeholder="Künstler">'+
+            '<input id="search-location" class="maxWidth" placeholder="Standort">'+
+            '<input id="search-presented-location" class="maxWidth" placeholder="Dargestellter Ort">'+
+            '<input id="search-tag" class="maxWidth" placeholder="Schlagwörter">'+
+            '<input id="search-reference" class="maxWidth" placeholder="Abbildungsnachweis">'+
         '</div>'
     );
 
 
     GUI.dialog(that.translate(GUI.currentLanguage, "EASYDB_SEARCH_HEADER"), dialogPage1, {
         "OK": function () {
-            var searchTerm =  $(dialogPage1).find("input").val();
+
+            var searchParams = {
+               title :  $(dialogPage1).find("#search-title").val(),
+               artist : $(dialogPage1).find("#search-artist").val(),
+                location : $(dialogPage1).find("#search-location").val(),
+                presentedLocation : $(dialogPage1).find("#search-presented-location").val(),
+                tag : $(dialogPage1).find("#search-tag").val(),
+                reference : $(dialogPage1).find("#search-reference").val()
+            };
             var data = {
                 roomID : that.getRoomID(),
                 objectID: that.getID(),
-                searchString: searchTerm
+                searchParams: searchParams
             }
 
             GUI.dialog(that.translate(GUI.currentLanguage, "EASYDB_IMAGE_SELECTION"), that.renderLoadScreen('.ui-dialog-content'), {
@@ -39,7 +52,7 @@ EasyDBImage.execute=function(){
             }, 500, {
                 create : function(){
                     Modules.Dispatcher.query('search', data ,function(searchResults){
-                        that.searchTerm = searchTerm;
+                        that.searchParams = searchParams;
                         that.renderResultPage(searchResults, ".ui-dialog-content");
                     });
                 },
@@ -52,7 +65,7 @@ EasyDBImage.execute=function(){
         "Cancel": function () {
             return false;
         }
-    }, 500, {height : 200}).keyup(function(e){
+    }, 500, {height : 600}).keyup(function(e){
             if(e.keyCode ==13){
                 $(':button:contains("OK")').click();
             }
