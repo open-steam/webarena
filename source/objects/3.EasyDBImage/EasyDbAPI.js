@@ -34,8 +34,6 @@ EasyDbAPI.methods = {
     ]
 };
 
-
-
 //private
 EasyDbAPI.getAuth = function(){
     return {username : Modules.config.easydb.username, password: Modules.config.easydb.password};
@@ -153,8 +151,8 @@ EasyDbAPI.apicall = function(args, callback){
  * @param searchTerm
  * @param callback
  */
-EasyDbAPI.search = function(searchArgs, callback){
-    var searchTerm = searchArgs.searchTerm || searchArgs;
+EasyDbAPI.search = function(searchArgs){
+    var searchTerm = searchArgs.searchString || searchArgs;
 
     //dirty sql query - hack to get count in every row. To avoid need of second request.
     var sql = ""+
@@ -168,8 +166,6 @@ EasyDbAPI.search = function(searchArgs, callback){
             "titel LIKE '%" + searchTerm + "%' "+
             "OR kommentar LIKE '%"+searchTerm  +"%'"; // OR PERSON.KUENSTLER_ID LIKE '%" + searchTerm +"%'";
 
-    console.log(searchArgs);
-
     if(typeof searchArgs === "string"){
 
     } else if(typeof searchArgs === "object"){
@@ -180,7 +176,6 @@ EasyDbAPI.search = function(searchArgs, callback){
             }
         }
     }
-    console.log(sql);
 
     Log.debug("EasyDbAPI","search", "Start search: " + sql);
     var that = this;
@@ -197,10 +192,11 @@ EasyDbAPI.search = function(searchArgs, callback){
         var searchResults = JSON.parse(data);
 
         if(searchResults['response']['data']){
-            that.retrieveDetailedImageInformation(searchResults['response']['data'], "150px", function(resultUrls){callback(resultUrls);});
+            that.retrieveDetailedImageInformation(searchResults['response']['data'], "150px", function(resultUrls){
+                searchArgs.callback(resultUrls);});
 
         } else {
-            callback({});
+            searchArgs.callback({});
         }
     });
 }

@@ -34,7 +34,6 @@ SharePoint.execute=function(){
         var data = {
             roomID : that.getRoomID(),
             objectID: that.getID(),
-            searchString: "Hund"
         }
 
         GUI.dialog(that.translate(GUI.currentLanguage, "FILE_SELECTION"), that.renderLoadScreen(".ui-dialog-content"), {
@@ -49,7 +48,7 @@ SharePoint.execute=function(){
             },
             "Cancel": function(){return false;}
         }, 500, {create : function(){
-            Modules.Dispatcher.query('search', data ,function(tree){
+            Modules.Dispatcher.query('browse', data ,function(tree){
 
                 var renderedTree = $("<div class='js-tree'></div>").jstree({
                     json_data  : {
