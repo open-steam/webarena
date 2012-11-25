@@ -18,7 +18,6 @@ EasyDBImage.execute=function(){
             '<input id="search-artist" class="maxWidth" placeholder="Künstler">'+
             '<input id="search-location" class="maxWidth" placeholder="Standort">'+
             '<input id="search-presented-location" class="maxWidth" placeholder="Dargestellter Ort">'+
-            '<input id="search-tag" class="maxWidth" placeholder="Schlagwörter">'+
             '<input id="search-reference" class="maxWidth" placeholder="Abbildungsnachweis">'+
         '</div>'
     );
@@ -32,7 +31,6 @@ EasyDBImage.execute=function(){
                artist : $(dialogPage1).find("#search-artist").val(),
                 location : $(dialogPage1).find("#search-location").val(),
                 presentedLocation : $(dialogPage1).find("#search-presented-location").val(),
-                tag : $(dialogPage1).find("#search-tag").val(),
                 reference : $(dialogPage1).find("#search-reference").val()
             };
             var data = {
@@ -65,7 +63,7 @@ EasyDBImage.execute=function(){
         "Cancel": function () {
             return false;
         }
-    }, 500, {height : 600}).keyup(function(e){
+    }, 500, {height : 500}).keyup(function(e){
             if(e.keyCode ==13){
                 $(':button:contains("OK")').click();
             }

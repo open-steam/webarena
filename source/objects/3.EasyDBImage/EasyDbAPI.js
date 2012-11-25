@@ -79,7 +79,7 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
                     titel : value.titel,
                     url : value['bild.image']['remote_uri'] || '',
                     kommentar : value['kommentar'],
-                    kuenstler : value['kuenstler_id.name'],
+                    kuenstler : value['kuenstler_name'],
                     easydbId : value['id'],
                     originalUrl : value['bild.image']['download_url'],
                     cnt : value['cnt']
@@ -121,6 +121,7 @@ EasyDbAPI.apicall = function(args, callback){
         callPath += index + "=" + encodeURIComponent(args[index]) + "&";
     }
 
+    console.log(callPath);
     Log.debug("EasyDbAPI","call path", callPath);
 
     var options = {
@@ -145,6 +146,56 @@ EasyDbAPI.apicall = function(args, callback){
     }).on('error', function(e) {Log.error(e);})
 }
 
+EasyDbAPI.buildSQL = function(sargs){
+
+    var sp = sargs.searchParams;
+    var limit = sargs.limit || false;
+    var offset = sargs.offset || false;
+
+    var defaults = {
+        artist : false,
+        presentedLocation:  false,
+        location : false,
+        title : false,
+        reference : false
+    }
+
+    sp = _.defaults(sp, defaults);
+
+
+    var intSQL = function(mod, innerQuery){
+        var sql = ""+
+        "SELECT " + (!innerQuery    ? "count(*) as cnt" : "b1.*, so1.name as standort , ho1.name as dargestellterort, p1.name AS kuenstler_name, ctna.cnt") + " FROM " + (innerQuery ? "(": "") +"Bilder b" + mod +" " +(innerQuery ? ", (" +innerQuery + ") as ctna) " : "")+
+             "LEFT JOIN person p"+mod+"    ON p"+mod+".id=b" + mod +".kuenstler_id "    +
+             "LEFT JOIN ort so"+mod+"      ON so"+mod+".id=b"+mod+".standort_id "       +
+             "LEFT JOIN ort ho"+mod+"      ON ho"+mod+".id=b"+mod+".herstellungsort_id " +
+
+        "WHERE  "+
+            ((sp.title ?            _.reduce(sp.title.split(" "),
+                function(mem, part){return mem + "titel               LIKE '%" + part +"%' AND "}, "").slice(0,-4) + " OR " : "")+
+            (sp.reference ?         _.reduce(sp.reference.split(" "),
+                function(mem, part){return mem + "abbildungsnachweis  LIKE '%" + part +"%' AND "}, "").slice(0,-4) + " OR ": "")+
+            (sp.artist ?            _.reduce(sp.artist.split(" "),
+                function(mem, part){return mem + "p"+mod+".name       LIKE '%" + part +"%' AND "}, "").slice(0,-4) + " OR ": "")+
+            (sp.presentedLocation ? _.reduce(sp.presentedLocation.split(" "),
+                function(mem, part){return mem + "so"+mod+".name      LIKE '%" + part +"%' AND "}, "").slice(0,-4) + " OR ": "")+
+            (sp.location ?          _.reduce(sp.location.split(" "),
+                function(mem, part){return mem + "ho"+mod+".name      LIKE '%" + part +"%' AND "}, "").slice(0,-4) + " OR ": "")).slice(0,-3)
+            if(innerQuery){
+                sql+=(limit ? " limit " + limit + " " : "")+
+                    (offset ? " offset " + offset + " " : "")
+            }
+
+
+        return sql;
+    }
+
+    var finishedSQL = intSQL(1, intSQL(2));
+
+    return finishedSQL;
+
+}
+
 /**
  * Search and retrieve urls
  *
@@ -153,53 +204,34 @@ EasyDbAPI.apicall = function(args, callback){
  */
 EasyDbAPI.search = function(searchArgs){
     var searchParams = searchArgs.searchParams;
-    var searchTerm = searchParams.title;
+    var sql = this.buildSQL(searchArgs);
 
-    //dirty sql query - hack to get count in every row. To avoid need of second request.
-    var sql = ""+
-        "SELECT * "+
-        "FROM Bilder, " +
-            "(" +
-                "SELECT COUNT(*) as cnt FROM Bilder WHERE  "+"titel LIKE '%" + searchTerm + "%' "+
-                "OR kommentar LIKE '%"+searchTerm  +"%'" +
-            ") as cnta " +
-        "WHERE  "+
-            "titel LIKE '%" + searchTerm + "%' "+
-            "OR kommentar LIKE '%"+searchTerm  +"%'";
-
-    if(typeof searchArgs === "string"){
-
-    } else if(typeof searchArgs === "object"){
-        if(searchArgs.limit !== undefined){
-            sql += " LIMIT " + searchArgs.limit;
-            if(searchArgs.offset !== undefined){
-                sql += " OFFSET " + searchArgs.offset;
-            }
-        }
-    }
-
-    Log.debug("EasyDbAPI","search", "Start search: " + sql);
+    Log.debug("EasyDbAPI","search", "Start search: ");
     var that = this;
 
-    var arguments = {
+    var argumentsItems = {
         function : 'object_search',
-        search : searchTerm,
-        //table_name : "Bilder",
         sql : sql,
         output : "json"
     };
 
-    that.apicall(arguments, function(data){
-        var searchResults = JSON.parse(data);
+    function executeGetItems(callback){
+        that.apicall(argumentsItems, function(data){
+            var searchResults = JSON.parse(data);
 
-        if(searchResults['response']['data']){
-            that.retrieveDetailedImageInformation(searchResults['response']['data'], "150px", function(resultUrls){
-                searchArgs.callback(resultUrls);});
+            if(searchResults['response']['data']){
+                that.retrieveDetailedImageInformation(searchResults['response']['data'], "150px", function(resultUrls){
+                    callback(resultUrls);
+                });
+            } else {
+                callback({});
+            }
+        });
+    }
 
-        } else {
-            searchArgs.callback({});
-        }
-    });
+    executeGetItems(searchArgs.callback);
+
+
 }
 
 module.exports=EasyDbAPI;
