@@ -264,26 +264,9 @@ theObject.evaluatePositionInt=function(data){
 	if (!room) return;
 	
 	room.evaluatePositionFor(this,data);
-	
-	//if this is an activeobject
-	//recalculate positions of nonactive objects
+
 }
 
-theObject.getPosition=function(){
-	
-	var room=this.getRoom();
-	
-	if (room){
-		return this.getRoom().getEvaluatedPositionFor(this);
-	} else {
-		var data={};
-		data.x=this.getAttribute('x',true);
-		data.y=this.getAttribute('y',true);
-		data.width=this.getAttribute('width',true);
-		data.height=this.getAttribute('height',true);
-		return data;
-	}
-}
 
 theObject.getRoom=function(callback){
 	if (!this.context) return;

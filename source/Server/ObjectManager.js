@@ -232,8 +232,6 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 	
 	var context=Modules.UserManager.getConnectionBySocket(socket);
 
-	if (type=='Dummy') return;
-
 	//TODO send error to client if there is a rights issue here
 		
 	var proto=this.getPrototypeFor(type);
@@ -249,7 +247,7 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 		
 		if (content) {
 			object.setContent(content);
-		}
+		}s
 		
 		if (socket && responseID) Modules.Dispatcher.respond(socket,responseID,object.id);
 		

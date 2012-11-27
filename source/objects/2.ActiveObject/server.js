@@ -30,6 +30,7 @@ theObject.bBoxEncloses=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,o
 		return false;
 	}
 	
+	//console.log('intersects');
 	return true;	
 	
 }
@@ -76,7 +77,16 @@ theObject.getOverlappingObjects=function(){
 	return result;
 }
 
-theObject.moved=function(changeData){
+/**
+*	evaluate is called, when the object itself has been moved or altered
+*	
+*	ResponsiveObjects should handle this as if other objects would have moved
+*	in respect to them (see ResponsiveObject.evaluate)
+*
+*	Semantiv Objects should rearrange other objects in their evaluation
+*
+**/
+theObject.evaluate=function(changeData){
 	//this is different for ResponsiveObjects and SemanticObjects
 }
 
@@ -88,7 +98,7 @@ theObject.moved=function(changeData){
 *	object the object that shall be evaluated
 *	changeData old and new values of positioning (e.g. changeData.old.x) 
 **/
-theObject.evaluate=function(object,changeData){
+theObject.evaluateObject=function(object,changeData){
 	
 	//complete data
 	

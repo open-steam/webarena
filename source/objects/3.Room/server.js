@@ -10,34 +10,11 @@
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 
-theObject.getEvaluatedPositionFor=function(object){
-	
-	var inventory=this.getInventory();
-	
-	var greens=[];
-	var reds=[];
-	
-	for (var i in inventory){
-		var activeObject=inventory[i];
-		if (!activeObject.isActiveObject) continue;
-		//console.log(activeObject.toString(),'is an activeObject');
-		
-		//TODO calculate positions
-		
-	}
-	
-	var data={};
-	data.x=object.getAttribute('x',true);
-	data.y=object.getAttribute('y',true);
-	data.width=object.getAttribute('width',true);
-	data.height=object.getAttribute('height',true);
-	return data;
-}
 
 theObject.evaluatePositionFor=function(object,data){
 	//console.log('room','evaluatePositionFor',object.toString(),data);
 	
-	if (object.isActiveObject) return object.moved(data);
+	if (object.isActiveObject) return object.evaluate(data);
 	
 	var inventory=this.getInventory();
 	
@@ -46,7 +23,7 @@ theObject.evaluatePositionFor=function(object,data){
 		if (!activeObject.isActiveObject) {
 			continue;
 		} else {
-			activeObject.evaluate(object,data);
+			activeObject.evaluateObject(object,data);
 		}
 	}
 	
