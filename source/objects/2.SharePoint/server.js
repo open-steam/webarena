@@ -75,18 +75,14 @@ SP.RestService.prototype.request = function(options, next) {
 theObject.buildTreeObject = function(data){
     var result = {data : "root"};
     var splitPath;
-
     var tmp;
-
-
 
     function insertRec(elem, pathSpliced, arrPointer){
 
         if(pathSpliced.length === 0){
             if(!arrPointer.children) arrPointer.children = new Array();
-
-            var extension = elem.__metadata.media_src.split('.').pop();
             var mediaUrl;
+            var extension = elem.__metadata.media_src.split('.').pop();
             if(extension === "docx" || extension === "doc"){
                 mediaUrl = Modules.config.sharepoint.basepath + "_layouts/WordViewer.aspx?id=" + elem.Pfad + "/" + elem.Name
             } else if(extension === "pptx" || extension === "ppt"){
@@ -140,29 +136,23 @@ theObject.buildTreeObject = function(data){
 
 }
 
+theObject.browse=function(){
+    var defaultArgs = {
+        location: 'https://projects.uni-paderborn.de/websites/studiolo/',
+        folder: 'FreigegebeneDokumente'
+    }
+    var args = _.defaults(arguments[0], defaultArgs);
 
+    var client = new SP.RestService(args['location']),
+        documents = client.list(args['folder']);
 
+    var that = this
 
-
-theObject.search=function(content, a, b, callback){
-
-    var that = this;
-
-    var url = 'https://projects.uni-paderborn.de/websites/studiolo/';
-
-    var client = new SP.RestService(url),
-        documents = client.list('FreigegebeneDokumente');
-
-    client.username =  that.context.user.username;
-    client.password2 = that.context.user.password;
-
+    client.username =  this.context.user.username;
+    client.password2 = this.context.user.password;
 
     var showResponse = function(err, data){
-
-
-        callback(that.buildTreeObject(data.results));
-
-
+        args['callback'](that.buildTreeObject(data.results));
     }
 
     documents.get(showResponse);

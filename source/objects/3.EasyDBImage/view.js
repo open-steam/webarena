@@ -96,7 +96,7 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current, ext
     var data = {
         roomID : that.getRoomID(),
         objectID: that.getID(),
-        searchString: that.searchTerm,
+        searchParams: that.searchParams,
         offset: offset,
         limit: limit
     }
