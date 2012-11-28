@@ -1,0 +1,1 @@
+echo "var server=require('./server.js');" | node -i
