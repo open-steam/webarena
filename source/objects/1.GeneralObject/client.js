@@ -202,12 +202,12 @@ GeneralObject.getRoom=function(){
 *	determine if the current object intersects with the square x,y,width,height
 */
 GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
-	
+
 	var thisx = this.getViewBoundingBoxX();
 	var thisy = this.getViewBoundingBoxY();
 	var thisw = this.getViewBoundingBoxWidth();
 	var thish = this.getViewBoundingBoxHeight();
-	
+
 	if (otherx+otherwidth<thisx) return false;
 	if (otherx>thisx+thisw) return false;
 	if (othery+otherheight<thisy) return false;

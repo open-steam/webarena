@@ -32,6 +32,12 @@ theObject.setContent=function(content,callback){
 		
 		/* trim image (remove transpartent "border") */
 		Modules.Connector.trimImage(self.inRoom, self.id, function(dX, dY, newWidth, newHeight) {
+
+			if (newWidth == 1 && newHeight == 1) {
+				console.log("IMAGE #"+self.id+" HAS NO CONTENT --> DELETE IT");
+				self.deleteIt();
+				return;
+			}
 			
 			if (dX) {
 				/* set new dimensions */

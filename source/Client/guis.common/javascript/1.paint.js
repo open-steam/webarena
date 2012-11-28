@@ -47,6 +47,8 @@ GUI.addPaintSize = function(size) {
 
 GUI.editPaint = function(webarenaObject, highlighterMode) {
 
+	if (webarenaObject === undefined) console.error("cannot paint on undefined object!");
+
 	GUI.currentPaintObject = webarenaObject;
 	GUI.currentPaintObjectIsHighlighter = highlighterMode;
 
@@ -157,7 +159,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	$(closeButton).addClass("jPaint_navi");
 	$(closeButton).html(GUI.translate("save"));
 	$(closeButton).bind("click", function(event) {
-		GUI.closePaintMode();
+		GUI.savePaintMode();
 	});
 
 	$("#header > div.header_right").append(closeButton);	
@@ -212,6 +214,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	
 	/* load content */
 	if (webarenaObject && webarenaObject.hasContent()) {
+
+		GUI.painted = true;
 
 		var img = new Image();
 		
@@ -465,6 +469,16 @@ GUI.paintErase = function(x,y) {
 
 GUI.cancelPaintMode = function() {
 	
+	if (!GUI.painted) {
+		GUI.currentPaintObject.deleteIt();
+	}
+	
+	GUI.closePaintMode();
+	
+}
+
+GUI.closePaintMode = function() {
+	
 	GUI.paintModeActive = false;
 	
 	$("#content").unbind("mousedown.paint");
@@ -483,10 +497,9 @@ GUI.cancelPaintMode = function() {
 	
 }
 
-GUI.closePaintMode = function() {
+GUI.savePaintMode = function() {
 	
 	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-	
 	
 	var pixelFound = true;
 	
@@ -495,12 +508,8 @@ GUI.closePaintMode = function() {
 	var minX = GUI.paintMinX-5;
 	var minY = GUI.paintMinY-5;
 	
-	
-	/* --- */
-	
 	var width = maxX-minX;
 	var height = maxY-minY;
-	
 	
 	/* resize image */
 	
@@ -511,56 +520,19 @@ GUI.closePaintMode = function() {
 	
 	canvasContext.putImageData(img,0,0);
 	
-	
-	
 	minX = minX+$(document).scrollLeft();
 	minY = minY+$(document).scrollTop();
 	
+	GUI.currentPaintObject.setAttribute("width", width, true);
+	GUI.currentPaintObject.setAttribute("height", height, true);
+
+	GUI.currentPaintObject.setAttribute("x", minX, true);
+	GUI.currentPaintObject.setAttribute("y", minY, true);
+
+	GUI.currentPaintObject.setContent($("#webarena_paintCanvas").get(0).toDataURL(), function() {
+		GUI.currentPaintObject.draw();
+	});
 	
-	if (GUI.currentPaintObject) {
-		/* save to existing object */
-
-		if (pixelFound) {
-
-			GUI.currentPaintObject.setAttribute("width", width, true);
-			GUI.currentPaintObject.setAttribute("height", height, true);
-
-			GUI.currentPaintObject.setAttribute("x", minX, true);
-			GUI.currentPaintObject.setAttribute("y", minY, true);
-
-			GUI.currentPaintObject.setContent($("#webarena_paintCanvas").get(0).toDataURL());
-			GUI.currentPaintObject.draw();
-			
-		} else {
-			//no pixels found --> delete object
-			GUI.currentPaintObject.deleteIt();
-		}
-	
-	} else { 
-		/* create new object */
-
-		if (pixelFound) {
-		
-			if (GUI.currentPaintObjectIsHighlighter) {
-				var type = "Highlighter";
-			} else {
-				var type = "Paint";
-			}
-
-			ObjectManager.createObject(type, {
-				"hidden": GUI.hiddenObjectsVisible,
-				"width": width,
-				"height": height,
-				"x": minX,
-				"y": minY
-			}, $("#webarena_paintCanvas").get(0).toDataURL());
-		
-		} else {
-			//no image to save
-		}
-		
-	}
-
-	GUI.cancelPaintMode();
+	GUI.closePaintMode();
 	
 }
