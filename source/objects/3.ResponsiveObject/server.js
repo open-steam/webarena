@@ -11,9 +11,7 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 module.exports=theObject;
 
-theObject.moved=function(changeData){
-	
-	console.log(this+' moved');
+theObject.evaluate=function(changeData){
 
 	//complete data
 	
@@ -35,9 +33,6 @@ theObject.moved=function(changeData){
 		var bbox=object.getBoundingBox();
 		
 		//determine intersections
-	
-	
-		//this.bBoxEncloses(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
 	
 		var oldIntersects=this.bBoxEncloses(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
 		var newIntersects=this.bBoxEncloses(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);

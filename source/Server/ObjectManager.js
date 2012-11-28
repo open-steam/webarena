@@ -232,8 +232,6 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 	
 	var context=Modules.UserManager.getConnectionBySocket(socket);
 
-	if (type=='Dummy') return;
-
 	//TODO send error to client if there is a rights issue here
 		
 	var proto=this.getPrototypeFor(type);
@@ -249,7 +247,7 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 		
 		if (content) {
 			object.setContent(content);
-		}
+		}s
 		
 		if (socket && responseID) Modules.Dispatcher.respond(socket,responseID,object.id);
 		
@@ -492,21 +490,52 @@ ObjectManager.init=function(theModules){
         var roomID=data.roomID
         var objectID=data.objectID;
 
-        var searchString = data.searchString;
-        var offset = data.offset || 0;
-        //TODO: default limit in config
-        var limit = data.limit || 10;
+
+        var searchArgs = {
+            searchParams : data.searchParams,
+            offset : data.offset || 0,
+            limit : data.limit || 10
+        };
+
+        var searchCallback = function(res){
+            console.log('Send search results to client.');
+            Modules.Dispatcher.respond(socket,responseID,res);
+        }
+        searchArgs['callback'] = searchCallback;
 
         var object=ObjectManager.getObject(roomID,objectID,context);
         if (!object){
             return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
         }
 
-        object.search(searchString, offset, limit, function(res){
-            console.log('Send search results to client.');
-            Modules.Dispatcher.respond(socket,responseID,res);
-        });
+        object.search(searchArgs);
+
     });
+
+    Modules.Dispatcher.registerCall('browse', function(socket, data, responseID){
+    	var context=Modules.UserManager.getConnectionBySocket(socket);
+        var roomID=data.roomID
+        var objectID=data.objectID;
+    	var browseLocation = data.browseLocation || null;
+	
+	    var object=ObjectManager.getObject(roomID,objectID,context);
+            if (!object){
+                return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+            }
+
+	    var responseCallback = function(res){
+            console.log('Send browse results to client.');
+            Modules.Dispatcher.respond(socket,responseID,res);
+        };
+
+	    var browseParams = {
+	        //location : browseLocation,
+	        callback : responseCallback
+	    };
+
+        object.browse(browseParams);
+    })
+	    
 	
 	Modules.Dispatcher.registerCall('memoryUsage',function(socket,data,responseID){
 		

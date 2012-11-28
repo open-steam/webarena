@@ -8,7 +8,7 @@
 var Modules=require('../../server.js')
 var Resetter=Object.create(Modules.ObjectManager.getPrototype('Ellipse'));
 
-Resetter.category = 'Evaluations';
+Resetter.category='Actor';
 
 Resetter.resizeProportional=function(){
 	return true;

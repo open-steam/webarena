@@ -206,19 +206,6 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 */
 AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	
-	if (object.ObjectManager.isServer && !noevaluation){	
-		
-		//if Attribute is of x,y,w,h call object.getPosition
-		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-			
-			var positionData=object.getPosition();
-			
-			return positionData[attribute];
-			
-		}
-		
-	}
-	
 	//on unregistred attributes directly return their value
 	if (this.attributes[attribute]==undefined){
 		return object.data[attribute];

@@ -14,22 +14,13 @@ var http = require('http');
 
 module.exports=theObject;
 
-theObject.search = function(searchTerm, offset, limit, callback){
-    //var easy = new EasyDbAPI();
+theObject.search = function(args){
     var that = this;
-    var searchArgs = {
-        limit : limit,
-        offset: offset,
-        searchTerm: searchTerm
-    }
-
 
     var api = Object.create( EasyDbAPI);
     api.getAuth = function(){
         return {username : that.context.user.username, password : that.context.user.password}
     }
 
-    api.search(searchArgs, function(res){
-        callback(res);
-    });
+    api.search(args);
 }

@@ -10,7 +10,7 @@ var Modules=require('../../server.js');
 var ActiveObject=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 ActiveObject.register('ActiveObject');
-ActiveObject.category = 'Evaluations';
+ActiveObject.category = 'Semantic';
 ActiveObject.isCreatable=false;
 ActiveObject.isActiveObject=true;
 
