@@ -251,16 +251,34 @@ WebServer.init=function(theModules){
 				      return res.end('Object not found');
 			  	}
 
-			  	var mimeType=object.getAttribute('mimeType') || 'text/plain';
-
 				object.getInlinePreviewMimeType(function(mimeType) {
 
 					object.getInlinePreview(function(data) {
 
 						if (!data) {
-							res.writeHead(404);
+							
 							Modules.Log.warn('no inline preview found (roomID: '+roomID+' objectID: '+objectID+')');
-							return res.end('Object not found');
+
+							if (mimeType.indexOf("image/") >= 0) {
+
+								fs.readFile(__dirname+'/../Client/guis.common/images/imageNotFound.png', function (err, data) {
+
+									if (err) {
+										res.writeHead(404);
+										Modules.Log.warn("Error loading imageNotFound.png file ("+url+")");
+										return res.end('404 Error loading imageNotFound.png file');
+									}
+
+									res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+									res.end(data);
+										
+								});
+								
+							} else {
+								res.writeHead(404);
+								res.end('Object not found');
+							}
+							
 						} else {
 							res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Disposition': 'inline'});
 							res.end(new Buffer(data));

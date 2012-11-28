@@ -51,4 +51,6 @@ SimpleText.content='Neuer Text';
 
 SimpleText.category='Texts';
 
+SimpleText.moveByTransform = function(){return true;};
+
 module.exports=SimpleText;
