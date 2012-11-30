@@ -31,3 +31,31 @@ theObject.onLeave=function(object,data){
 	
 	
 }
+
+/*
+theObject.evaluate=function(changeData){
+	console.log(this.toString(),'evaluate');
+	
+	var bbox=this.getBoundingBox();
+	var x=bbox.x;
+	var y=bbox.y;
+	var width=bbox.width;
+	var height=bbox.height;
+	
+	var attribute=this.getAttribute('attribute');
+	var value=this.getAttribute('value');
+	
+	var objects=this.getRoom().getInventory();
+	
+	for (var i in objects){
+		var object=objects[i];
+		if (object.getAttribute(attribute)==undefined) continue;
+		if (object.getAttribute(attribute)==value){
+			object.setAttribute('x',x);
+			object.setAttribute('y',y);
+		}
+	}
+	
+}
+
+*/

@@ -12,5 +12,6 @@ var ResponsiveObject=Object.create(Modules.ObjectManager.getPrototype('ActiveObj
 ResponsiveObject.register('ResponsiveObject');
 ResponsiveObject.category = 'Responsive';
 ResponsiveObject.isResponsiveObject=true;
+ResponsiveObject.isSemanticObject=false;
 
 module.exports=ResponsiveObject;

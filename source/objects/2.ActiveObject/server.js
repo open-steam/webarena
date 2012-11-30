@@ -88,6 +88,7 @@ theObject.getOverlappingObjects=function(){
 **/
 theObject.evaluate=function(changeData){
 	//this is different for ResponsiveObjects and SemanticObjects
+	this.getRoom().evaluatePositions();
 }
 
 /**

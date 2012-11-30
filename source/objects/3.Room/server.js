@@ -29,8 +29,31 @@ theObject.evaluatePositionFor=function(object,data){
 	
 }
 
+theObject.evaluatePositions=function(){
+	console.log('room','evluatePositions');
+	
+	var objects=this.getInventory();
+	var semanticObjects=this.getSemanticObjects(objects);  //idea hold semantic objects yet in ObjectManager for speedup
+	
+	console.log(objects,semanticObjects);
+	
+}
+
 theObject.getInventory=function(){
 	return Modules.ObjectManager.getObjects(this.id,this.context);
+}
+
+theObject.getSemanticObjects=function(inventory){
+	if (!inventory) inventory=this.getInventory();
+	
+	var result=[];
+	
+	for (var i in inventory){
+		var object=inventory[i];
+		if (object.isSemanticObject) result.push(object);
+	}
+	
+	return result;
 }
 
 module.exports=theObject;
