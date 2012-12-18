@@ -495,8 +495,28 @@ ObjectManager.init=function(theModules){
 	Modules.Dispatcher.registerCall('getPreviewableMimeTypes',function(socket,data,responseID){
 
 		Modules.Dispatcher.respond(socket,responseID,Modules.Connector.getInlinePreviewMimeTypes());
-		
+
 	});
+
+    Modules.Dispatcher.registerCall('customObjectFunctionCall', function(socket, data, responseID){
+        var context=Modules.UserManager.getConnectionBySocket(socket);
+        var roomID=data.roomID
+        var objectID=data.objectID;
+
+        var server_function         = data.customFunctionCall.name;
+        var server_function_params  = data.customFunctionCall.params;
+
+        var responseCallback = function(res){
+            Modules.Dispatcher.respond(socket,responseID,res);
+        };
+
+        var object=ObjectManager.getObject(roomID,objectID,context);
+
+        server_function_params['callback'] = responseCallback;
+
+        var fn = object[server_function];
+        fn(server_function_params);
+    });
 
     Modules.Dispatcher.registerCall('search',function(socket,data,responseID){
         var context=Modules.UserManager.getConnectionBySocket(socket);
