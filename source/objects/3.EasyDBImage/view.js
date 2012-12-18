@@ -5,7 +5,44 @@
 *
 */
 
+EasyDBImage.addControl = function(type, resizeFunction) {
 
+    var timeout;
+    var that = this;
+
+    var timedFunction = function(){
+        var data = {};
+        data['roomID'] = that.getRoomID();
+        data['objectID'] = that.getID();
+        var maxSideLength = Math.max(that.getViewWidth(), that.getViewHeight());
+        data['customFunctionCall'] = {
+            'name' : 'getUrls',
+            'params' : {
+                'id' : that.getAttribute('easydb_id'),//TODO
+                'size' : maxSideLength + 100 //TODO
+            }
+        }
+        Modules.Dispatcher.query('customObjectFunctionCall', data, function (searchResults) {
+            var old_url = that.getAttribute('remote_url')
+            if(old_url !== searchResults){
+                that.setAttribute('remote_url', searchResults);
+                that.draw();
+            }
+        });
+    }
+
+    var functionWrapper = function(){
+        console.log("Resize");
+        if (timeout){
+            clearTimeout(timeout);
+        }
+
+        timeout = setTimeout(timedFunction, 3000);
+        resizeFunction.apply(this, arguments);
+    }
+
+    GeneralObject.addControl.call(this, type, functionWrapper);
+}
 
 EasyDBImage.createRepresentation=function() {
     var rep = GUI.svg.group(this.getAttribute('id'));
@@ -13,8 +50,6 @@ EasyDBImage.createRepresentation=function() {
     var rect = GUI.svg.rect(rep, 0,0,10,10);
     $(rect).attr("fill", "transparent");
     $(rect).addClass("borderRect");
-
-
 
     var imgUrl = this.getAttribute('remote_url') || "../../guis.common/images/imageNotFound.png";
     GUI.svg.image(rep, 0, 0, 100, 100, imgUrl);
@@ -164,7 +199,7 @@ EasyDBImage.renderResultTable = function(data){
         "<table>";
     $.each(data, function(index, imageInformation){
         dialogPage2 += ""+
-            "<tr class='result-row' onclick='EasyDBImage.selectRow(event)' easydbdownloadurl='" + imageInformation.originalUrl +"'>" +
+            "<tr class='result-row' onclick='EasyDBImage.selectRow(event)' easydbimageid='"+ imageInformation.easydbId +"' easydbdownloadurl='" + imageInformation.originalUrl +"'>" +
             "<td>" +
             "<img class='result-row-image' src='" + imageInformation.url + "'>" +
             "</td>" +
