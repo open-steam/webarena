@@ -15,56 +15,67 @@ SharePoint.register=function(type){
             var obj = selected[i];
 
             obj.openWindow();
-
         }
-
     },false);
-
 }
 
 SharePoint.execute=function(){
     var that=this;
     var rep=this.getRepresentation();
 
-    if(this.getAttribute("sharepoint_src") && !this.getAttribute("show_iframe")){
+    var is_shown_in_iframe = this.getAttribute("show_iframe") || false;
+    var src_is_set = Boolean(this.getAttribute("sharepoint_src"));
+
+    if(src_is_set && !is_shown_in_iframe){
         this.switchState();
-
-
-    }  else if(!this.getAttribute("sharepoint_src")) {
+    }  else if(!src_is_set) {
         var data = {
             roomID : that.getRoomID(),
             objectID: that.getID(),
         }
 
-        GUI.dialog(that.translate(GUI.currentLanguage, "FILE_SELECTION"), that.renderLoadScreen(".ui-dialog-content"), {
-            "OK" : function(){
-                var selectedUrl = $('.js-tree').jstree('get_selected').data('media_src');
-                var selectedFilename = $('.js-tree').jstree('get_selected').data('filename');
-                that.setAttribute("sharepoint_src", selectedUrl);
-                that.setAttribute("name", selectedFilename);
+        var dialog_buttons = {
+                "OK" : function(){
+                    var jstree_selected_item = $('.js-tree').jstree('get_selected');
+                    var selectedUrl = jstree_selected_item.data('media_src');
+                    var selectedFilename = jstree_selected_item.data('filename');
+                    that.setAttribute("sharepoint_src", selectedUrl);
+                    that.setAttribute("name", selectedFilename);
 
-                that.renderFilename(rep, selectedFilename );
-                that.updateIcon();
-            },
-            "Cancel": function(){return false;}
-        }, 500, {create : function(){
-            Modules.Dispatcher.query('browse', data ,function(tree){
+                    that.renderFilename(rep, selectedFilename );
+                    that.updateIcon();
+                },
+                "Cancel": function(){return false;}
+        };
+        var dialog_width = 500;
+        var additional_dialog_options = {
+            create : function(){
+                Modules.Dispatcher.query('browse', data ,function(tree){
 
-                var renderedTree = $("<div class='js-tree'></div>").jstree({
-                    json_data  : {
-                        data  : tree
-                    },
-                    "plugins" : [ "themes", "json_data", "ui" ]
-                }).bind("select_node.jstree", function (event, data) {
-                        //console.log(data.rslt.obj.data("media_src"));
+                    var renderedTree = $("<div class='js-tree'></div>").jstree({
+                        json_data  : {
+                            data  : tree
+                        },
+                        "plugins" : [ "themes", "json_data", "ui" ]
+                    });
+                    $('.ui-dialog-content').html(renderedTree);
                 });
 
-                $('.ui-dialog-content').html(renderedTree);
-            });
+            }, 
+            height: 600
+        } 
 
-        }, height: 600}  ).on("dblclick", '.jstree-leaf', function(){
-                $(':button:contains("OK")').click();
-            })
+        var dialog = GUI.dialog(
+            that.translate(GUI.currentLanguage, "FILE_SELECTION"), 
+            that.renderLoadScreen(".ui-dialog-content"), 
+            dialog_buttons, 
+            dialog_width, 
+            additional_dialog_options
+        )
+        
+        dialog.on("dblclick", '.jstree-leaf', function(){
+            $(':button:contains("OK")').click();
+        });
     }
 
 }
