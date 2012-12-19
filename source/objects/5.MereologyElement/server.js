@@ -32,30 +32,40 @@ theObject.onLeave=function(object,data){
 	
 }
 
-/*
-theObject.evaluate=function(changeData){
-	console.log(this.toString(),'evaluate');
-	
-	var bbox=this.getBoundingBox();
-	var x=bbox.x;
-	var y=bbox.y;
-	var width=bbox.width;
-	var height=bbox.height;
+theObject.getGreenPositions=function(object){
 	
 	var attribute=this.getAttribute('attribute');
 	var value=this.getAttribute('value');
 	
-	var objects=this.getRoom().getInventory();
+	if (object.getAttribute(attribute)==undefined) return false;
 	
-	for (var i in objects){
-		var object=objects[i];
-		if (object.getAttribute(attribute)==undefined) continue;
-		if (object.getAttribute(attribute)==value){
-			object.setAttribute('x',x);
-			object.setAttribute('y',y);
-		}
-	}
+	if (object.getAttribute(attribute)==value){
+		var result={};
+		result.x=this.getAttribute('x');
+		result.y=this.getAttribute('y');
+		result.width=this.getAttribute('width');
+		result.height=this.getAttribute('height');
+		return result;
+	} else return false;
 	
 }
 
-*/
+theObject.getRedPositions=function(object){
+	
+	var attribute=this.getAttribute('attribute');
+	var value=this.getAttribute('value');
+	
+	if (object.getAttribute(attribute)==undefined) return false;
+	
+	if (object.getAttribute(attribute)==value) {
+		return false;
+	}else {
+		var result={};
+		result.x=this.getAttribute('x');
+		result.y=this.getAttribute('y');
+		result.width=this.getAttribute('width');
+		result.height=this.getAttribute('height');
+		return result;
+	}
+	
+}

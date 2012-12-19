@@ -142,3 +142,20 @@ theObject.onLeave=function(object,data){
 theObject.onEnter=function(object,data){
 	
 };
+
+theObject.getGreenPositions=function(object){
+	
+	var result=false;
+	
+	return result;
+	
+}
+
+theObject.getRedPositions=function(object){
+	
+	var result=false;
+	
+	return result;
+	
+}
+
