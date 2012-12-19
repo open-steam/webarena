@@ -288,8 +288,7 @@ koalaConnector.login=function(username,password,rp){
 
 			data.username=username;
 			data.password=password;
-			data.home='7655'; //TODO: replace with non static value
-
+			
 			rp(data);
 			
 		} else {
@@ -676,7 +675,14 @@ koalaConnector.createObject=function(roomID,type,data,callback,context){
 		return;
 	}
 	
-	Modules.Log.warn("koalaConnector", "+createObject", "No handler for creating object of type '"+type+"'!");
+	
+	//All other types:
+	connection.Document.create("NEW", roomID, function(newKoalaObject) {
+		
+		setData(newKoalaObject, data);
+		
+	});
+	
 	
 }
 

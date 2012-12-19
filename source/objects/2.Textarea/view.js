@@ -6,7 +6,7 @@
 */
 
 Textarea.draw=function(external){
-	
+
 	var rep=this.getRepresentation();
 	
 	this.drawDimensions(external);
@@ -52,6 +52,8 @@ Textarea.draw=function(external){
 		that.oldContent=text;
 		
 	});
+	
+	this.updateInnerHeight();
 
 }
 
@@ -59,9 +61,9 @@ Textarea.draw=function(external){
 Textarea.updateInnerHeight = function() {
 	
 	var rep=this.getRepresentation();
-	
-	$(rep).find("body").css("height", (this.getAttribute('height'))+"px");
-	$(rep).find("body>div").css("height", (this.getAttribute('height')-(2*parseInt(this.getAttribute('linesize'))))+"px");
+
+	$(rep).find("body").css("height", ($(rep).attr("height"))+"px");
+	$(rep).find("body>div").css("height", ($(rep).attr("height")-(2*parseInt(this.getAttribute('linesize'))))+"px");
 	
 }
 
@@ -94,37 +96,8 @@ Textarea.editText = function() {
 }
 
 
-
-
-/* view setter */
-
-
-Textarea.setViewHeight = function(value) {
+Textarea.adjustControls = function() {
 	this.updateInnerHeight();
-	$(this.getRepresentation()).attr("height", parseInt(value));
-	GUI.adjustContent(this);
+	GeneralObject.adjustControls.call(this);
 }
-
-
-
-/* get the x position of the objects bounding box (this is the left position of the object) */
-Textarea.getViewBoundingBoxX = function() {
-return parseInt(this.getAttribute("x"));
-}
-
-/* get the y position of the objects bounding box (this is the top position of the object) */
-Textarea.getViewBoundingBoxY = function() {
-	return parseInt(this.getAttribute("y"));
-}
-
-/* get the width of the objects bounding box */
-Textarea.getViewBoundingBoxWidth = function() {
-		return parseInt(this.getAttribute("width"));
-}
-
-/* get the height of the objects bounding box */
-Textarea.getViewBoundingBoxHeight = function() {
-		return parseInt(this.getAttribute("height"));	
-}
-
 

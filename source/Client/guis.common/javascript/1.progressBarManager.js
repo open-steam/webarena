@@ -65,7 +65,9 @@ GUI.progressBarManager.adjustPosition = function(noAnimation) {
 }
 	
 GUI.progressBarManager.addProgress = function(title, id) {
-
+	
+	if (this.progressList[id] !== undefined) return;
+	
 	if (id == undefined)
 		var id = this.generateId();
 
@@ -128,7 +130,7 @@ GUI.progressBarManager.updateProgress = function(id, value, title, ignoreUnknown
 	if (value >= 100) {
 		window.setTimeout(function() {
 			self.removeProgress(id);
-		}, 100);
+		}, 200);
 	}
 	
 	value = $(this.progressList[id].domElement).find(".progressBar_progress").outerWidth()*(parseInt(value)/100);

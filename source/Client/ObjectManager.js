@@ -299,7 +299,6 @@ ObjectManager.init=function(){
 	
     Modules.Dispatcher.registerCall('objectDelete',function(data){
         ObjectManager.removeLocally(data);
-		
     });
 	
     Modules.Dispatcher.registerCall('contentUpdate',function(data){

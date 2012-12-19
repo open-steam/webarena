@@ -69,11 +69,11 @@ ObjectManager.sendRoom=function(socket,roomID){
 ObjectManager.remove=function(obj){
 	
 	//Send remove to connector
-	
+
 	Modules.Connector.remove(obj.inRoom,obj.id,obj.context);
 	
 	//Inform clients about remove.
-	
+
 	obj.updateClients('objectDelete');
 	
 }
@@ -229,7 +229,7 @@ ObjectManager.getInventory=ObjectManager.getObjects;
 *
 **/
 ObjectManager.createObject=function(roomID,type, attributes, content,socket,responseID){
-	
+
 	var context=Modules.UserManager.getConnectionBySocket(socket);
 
 	//TODO send error to client if there is a rights issue here
@@ -238,8 +238,16 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 
 	Modules.Connector.createObject(roomID,type,proto.standardData,function(id){
 		var object=ObjectManager.getObject(roomID,id,context);
-	
+
+		//set default attributes
+		var defaultAttributes = object.standardData;
+		for (var key in defaultAttributes){
+			var value=defaultAttributes[key];			
+			object.setAttribute(key,value);
+		}
+
 		object.setAttribute('name',type);
+		
 		for (var key in attributes){
 			var value=attributes[key];
 			object.setAttribute(key,value);
@@ -247,9 +255,11 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 		
 		if (content) {
 			object.setContent(content);
-		}s
-		
-		if (socket && responseID) Modules.Dispatcher.respond(socket,responseID,object.id);
+		}
+
+		if (socket && responseID) {
+			Modules.Dispatcher.respond(socket,responseID,object.id);
+		}
 		
 	},context);
 	

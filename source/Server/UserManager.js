@@ -224,7 +224,7 @@ UserManager.getConnectionsForRoom=function(roomID){
 	var result={};
 	for (var connectionID in this.connections){
 		var connection=this.connections[connectionID];
-		if (roomID===connection.room.id) result[connectionID]=connection;
+		if (roomID==connection.room.id) result[connectionID]=connection;
 	}
 	return result;
 }

@@ -71,7 +71,7 @@ theObject.updateClients=function(mode){
 	if (!mode) mode='objectUpdate';
 	
 	var connections=Modules.UserManager.getConnectionsForRoom(this.inRoom);
-	
+
 	for (var i in connections){
 		this.updateClient(connections[i].socket,mode);
 	}
