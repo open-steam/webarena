@@ -144,6 +144,11 @@ GeneralObject.addSelectedIndicator = function() {
 	var rep = this.getRepresentation();
 
 	var borderRep = rep;
+
+	if (rep.tagName == "g") {
+		/* group --> search first child */
+		borderRep = $(rep).children();
+	}
 	
 	if ($(rep).find(".borderRect").length > 0) {
 		/* border rect exists */
@@ -168,6 +173,11 @@ GeneralObject.removeSelectedIndicator = function() {
 	var rep = this.getRepresentation();
 	
 	var borderRep = rep;
+	
+	if (rep.tagName == "g") {
+		/* group --> search first child */
+		borderRep = $(rep).children();
+	}
 	
 	if ($(rep).find(".borderRect").length > 0) {
 		/* border rect exists */

@@ -17,11 +17,21 @@ Line.draw=function(external){
 	
 	$(rep).children("line").attr("stroke-width", this.getAttribute('linesize'));
 
-	if (this.getAttribute("direction") == 1 || this.getAttribute("direction") == 3) {
+	if (this.getAttribute("direction") == 1) {
 		$(rep).children("line").attr("x1", 0);
 		$(rep).children("line").attr("y1", 0);
 		$(rep).children("line").attr("x2", this.getViewWidth());
 		$(rep).children("line").attr("y2", this.getViewHeight());
+	} else if (this.getAttribute("direction") == 2) {
+		$(rep).children("line").attr("x1", this.getViewWidth());
+		$(rep).children("line").attr("y1", 0);
+		$(rep).children("line").attr("x2", 0);
+		$(rep).children("line").attr("y2", this.getViewHeight());		
+	} else if (this.getAttribute("direction") == 3) {
+		$(rep).children("line").attr("x1", this.getViewWidth());
+		$(rep).children("line").attr("y1", this.getViewHeight());
+		$(rep).children("line").attr("x2", 0);
+		$(rep).children("line").attr("y2", 0);		
 	} else {
 		$(rep).children("line").attr("x1", 0);
 		$(rep).children("line").attr("y1", this.getViewHeight());
@@ -51,7 +61,7 @@ Line.createRepresentation = function() {
 
 
 Line.determineDirection = function(widthChanged, heightChanged) {
-	
+
 	if (this.getAttribute("direction") == 1) {
 		
 		if (widthChanged && heightChanged) {
@@ -103,7 +113,7 @@ Line.determineDirection = function(widthChanged, heightChanged) {
 
 Line.resizeHandler = function() {
 	var self = this;
-	
+
 	self.determineDirection(self.getViewWidth() < 0, self.getViewHeight() < 0);
 	
 	if (self.getViewHeight() < 0) {
@@ -120,27 +130,47 @@ Line.resizeHandler = function() {
 	self.addControls();
 	
 	GeneralObject.resizeHandler.call(this);
+	
+	self.draw();
+	
 }
 
 
 
 Line.setViewWidth = function(value) {
 	
-	$(this.getRepresentation()).attr("width", value);
-	$(this.getRepresentation()).children("line").attr("x2", value);
+	var rep = this.getRepresentation();
+	
+	if (this.getAttribute("direction") == 1) {
+		$(rep).children("line").attr("x2", value);
+	} else if (this.getAttribute("direction") == 2) {
+		$(rep).children("line").attr("x1", value);
+	} else if (this.getAttribute("direction") == 3) {
+		$(rep).children("line").attr("x1", value);
+	} else {
+		$(rep).children("line").attr("x2", value);
+	}
+	
+	$(rep).attr("width", value);
 	
 	GUI.adjustContent(this);
 }
 
 Line.setViewHeight = function(value) {
 	
-	$(this.getRepresentation()).attr("height", value);
+	var rep = this.getRepresentation();
 	
-	if (this.getAttribute("direction") == 1 || this.getAttribute("direction") == 3) {
-		$(this.getRepresentation()).children("line").attr("y2", value);
+	if (this.getAttribute("direction") == 1) {
+		$(rep).children("line").attr("y2", value);
+	} else if (this.getAttribute("direction") == 2) {
+		$(rep).children("line").attr("y2", value);
+	} else if (this.getAttribute("direction") == 3) {
+		$(rep).children("line").attr("y1", value);
 	} else {
-		$(this.getRepresentation()).children("line").attr("y1", value);
+		$(rep).children("line").attr("y1", value);
 	}
-
+	
+	$(rep).attr("height", value);
+	
 	GUI.adjustContent(this);
 }

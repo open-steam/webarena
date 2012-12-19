@@ -11,11 +11,11 @@ Polygon.draw=function(external){
 	
 	GeneralObject.draw.call(this, external);
 
-	$(rep).attr("fill", this.getAttribute('fillcolor'));
+	$(rep).find("polyline").attr("fill", this.getAttribute('fillcolor'));
 	
 	if (!$(rep).hasClass("selected")) {
-		$(rep).attr("stroke", this.getAttribute('linecolor'));
-		$(rep).attr("stroke-width", this.getAttribute('linesize'));
+		$(rep).find("polyline").attr("stroke", this.getAttribute('linecolor'));
+		$(rep).find("polyline").attr("stroke-width", this.getAttribute('linesize'));
 	}
 	
 	this.drawPolygon();
@@ -67,11 +67,11 @@ Polygon.createRepresentation = function() {
 	
 	this.points = [];
 
-	var rep = GUI.svg.polyline(this.points);
+	var rep = GUI.svg.group(this.getAttribute('id'));
+
+	var polyline = GUI.svg.polyline(rep, this.points);
 
 	rep.dataObject=this;
-
-	$(rep).attr("id", this.getAttribute('id'));
 
 	this.initGUI(rep);
 	

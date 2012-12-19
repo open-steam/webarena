@@ -71,6 +71,8 @@ GUI.rubberbandStart = function(event) {
 		if (GUI.rubberbandWidth < 4) GUI.rubberbandWidth = 4;
 		if (GUI.rubberbandHeight < 4) GUI.rubberbandHeight = 4;
 	
+		var count = 0;
+	
 		$.each(ObjectManager.getObjects(), function(index, object) {
 		
 			if (!object.getAttribute("visible")) return;
@@ -80,11 +82,17 @@ GUI.rubberbandStart = function(event) {
 			
 			if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
 				if (object.isGraphical) {
-					object.click(event);
+					object.select(true);
+					count++;
 				}
 			}
 			
 		});
+		
+		if (count == 0) {
+			/* clicked on background */
+			GUI.updateInspector();
+		}
 	
 		$("#content>svg").unbind("mousemove.webarenaRubberband");
 
