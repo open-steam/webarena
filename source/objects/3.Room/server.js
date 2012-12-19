@@ -76,9 +76,10 @@ theObject.evaluatePositions=function(){
 		
 		if (checkPosition(dataObject,green,reds)) continue;
 		
-		console.log(dataObject+' NEEDS REPOSITIONING');
 		
 		var position=getPosition(dataObject,green,reds);
+		
+		console.log(dataObject+' NEEDS REPOSITIONING',position,green);
 		
 		dataObject.setAttribute('x',position.x);
 		dataObject.setAttribute('y',position.y);
@@ -89,14 +90,16 @@ theObject.evaluatePositions=function(){
 
 function getPosition(dataObject,green,reds){
 	
+	//TODO choose more random positions.
+	
 	for (var x=green.x;x<=green.x2;x++){
-		for (var y=green.y;x<green.y2;y++){
+		for (var y=green.y;y<green.y2;y++){
 			
 			var inRed=false;
 			for (var i in reds){
 				var red=reds[i];
 				if ((x>red.x && x+w<red.x2) && (y>red.y && y+h<red.y2)){
-					red=true;
+					inRed=true;
 					break;
 				}
 			}
