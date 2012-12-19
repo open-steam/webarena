@@ -13,5 +13,6 @@ ActiveObject.register('ActiveObject');
 ActiveObject.category = 'Semantic';
 ActiveObject.isCreatable=false;
 ActiveObject.isActiveObject=true;
+ActiveObject.isSemanticObject=true;
 
 module.exports=ActiveObject;
