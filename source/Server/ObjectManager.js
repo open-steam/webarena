@@ -314,6 +314,7 @@ ObjectManager.init=function(theModules){
 		whiteList.GeneralObject=true;
 		whiteList.Room=true;
 		whiteList.IconObject=true;
+		whiteList.UnknownObject=true;
 	}
 	
 	files.forEach(function(filename){
