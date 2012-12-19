@@ -328,6 +328,7 @@ ObjectManager.init=function(theModules){
 			if (!objName) return;
 			
 			if (hasWhiteList && !whiteList[objName]) {
+				console.log('Type '+objName+' not whitelisted.');
 				return;
 			}
 			
