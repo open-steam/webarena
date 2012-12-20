@@ -61,42 +61,23 @@ EasyDBImage.createRepresentation=function() {
 
 }
 
-EasyDBImage.draw = function(){
-    var rep=this.getRepresentation();
+
+EasyDBImage._checkAndUpdateImage = function(){
     var that = this;
     var remoteUrl = this.getAttribute('remote_url')
+    var rep=this.getRepresentation();
 
-    if(remoteUrl && $(rep).find('image').attr("href")!== remoteUrl){
+    var imageHasChanged = (remoteUrl && $(rep).find('image').attr("href")!== remoteUrl);
+
+    if(imageHasChanged){
         $(rep).find('image').attr("href", remoteUrl);
-
-        var newImg = new Image();
-        newImg.src = remoteUrl;
-        $(newImg).one("load", function(){
-            var orgHeight = newImg.height;
-            var orgWidth = newImg.width;
-            var maxBounds = 480;
-
-            var ratio = orgWidth / orgHeight;
-            var newheight, newwidth;
-
-            if(ratio < 1){
-                newheight = maxBounds;
-                newwidth = maxBounds * ratio;
-
-            } else {
-                newheight = maxBounds / ratio;
-                newwidth = maxBounds;
-            }
-
-            that.setAttribute("width", newwidth);
-            that.setAttribute("height", newheight);
-
-            GeneralObject.draw.call(this);
-        });
-    } else {
-        GeneralObject.draw.call(this);
     }
+}
 
+EasyDBImage.draw = function(){
+    this._checkAndUpdateImage();
+
+    GeneralObject.draw.call(this);
 }
 
 EasyDBImage.renderPagination = function(data){

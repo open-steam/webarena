@@ -16,6 +16,38 @@ EasyDBImage.execute = function () {
         '</div>'
     );
 
+    var setAndConfigureImage = function(){
+        
+        var newUrl   = arguments[0]['url']
+        var easyDbId = arguments[0]['easyDbID']
+
+        that.setAttribute('remote_url', newUrl);
+        that.setAttribute('easydb_id', easyDbId);
+
+        var newImg = new Image();
+        newImg.src = newUrl;
+        $(newImg).one("load", function(){
+            var orgHeight = newImg.height;
+            var orgWidth = newImg.width;
+            var maxBounds = 480;
+
+            var ratio = orgWidth / orgHeight;
+            var newheight, newwidth;
+
+            if(ratio < 1){
+                newheight = maxBounds;
+                newwidth = maxBounds * ratio;
+            } else {
+                newheight = maxBounds / ratio;
+                newwidth = maxBounds;
+            }
+
+            that.setAttribute("width", newwidth);
+            that.setAttribute("height", newheight);
+        });
+
+    }
+
     var createPageTwo = function () {
         var searchParams = {
             title:$(pageOneContent).find("#search-title").val(),
@@ -35,8 +67,10 @@ EasyDBImage.execute = function () {
                 var pictureUrl = $('.selected-row').attr('easydbdownloadurl');
                 var easyDbId = $('.selected-row').attr('easydbimageid');
 
-                that.setAttribute('remote_url', pictureUrl);
-                that.setAttribute('easydb_id', easyDbId);
+                setAndConfigureImage({
+                    url: pictureUrl,
+                    easyDbID : easyDbId
+                });
             },
             "Cancel":function () {
                 return false;
