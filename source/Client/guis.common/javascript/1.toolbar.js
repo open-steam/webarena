@@ -156,12 +156,35 @@ GUI.initToolbar = function() {
 	
 	
 	
+	/* add bug report toggle */
+	if (!Modules.Config.presentationMode) {
+		
+		var bugButton = document.createElement("img");
+		$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
+		$(bugButton).attr("width", "24").attr("height", "24");
+
+		$(bugButton).attr("id", "bug_button");
+		$(bugButton).addClass("sidebar_button");
+
+		$("#header > .header_right").append(bugButton);
+		
+		var click = function() {
+			GUI.sidebar.openPage("bug", bugButton);
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(bugButton).bind("touchstart", click);
+		} else {
+			$(bugButton).bind("mousedown", click);
+		}
+		
+	}
 	
 	
 	/* add chat toggle */
 	
 	if (!Modules.Config.presentationMode) {
-	
+
 		var chatButton = document.createElement("img");
 		$(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
 		$(chatButton).attr("width", "24").attr("height", "24");

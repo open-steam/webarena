@@ -452,7 +452,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		this.hidePage = function() {
 			
 			this.page_open = false;
-			
+
 			widget.el.find("table").hide();
 			widget.el.find("table").remove();
 			
@@ -978,46 +978,7 @@ $(function() { });
 			$(head).removeClass("jDesktopInspector_pageHead_closed");
 			$(page).show();
 			
-			var closed = Array();
-
-			if ($(self.mainEl).outerHeight() >= $(self.el).outerHeight()) {
-
-				$(self.pages).each(function(index) {
-					
-					if ($(self.mainEl).outerHeight() >= $(self.el).outerHeight()) {
-			
-						if (this.page != page && $(this.page).is(":visible")) {
-			
-							$(this.page).hide();
-							
-							closed.push(this);
-					
-						}
-					
-					}
-				
-				});
-			
-			}
-
-
-			if (!open) {
-				$(page).hide();	
-				$(page).show("blind");
-			}
-
-			/* animation */
-			$(closed).each(function(index) {
-				
-				$(this.page).show();
-			
-				var that = this;
-			
-				$(this.page).hide("blind", function() {
-					$(that.head).addClass("jDesktopInspector_pageHead_closed");
-				});
-			
-			});
+		
 			
 		}
 

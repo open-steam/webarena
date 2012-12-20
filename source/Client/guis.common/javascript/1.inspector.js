@@ -258,8 +258,8 @@ GUI.setupInspectorContent = function(inspector) {
 							if (info.checkFunction) {
 								/* check new value */
 								var checkResult = info.checkFunction(object, value);
-								if (checkResult !== true && checkResult != undefined) {
-									GUI.error("unable to set value", checkResult, object, false);
+								if (checkResult !== true && checkResult !== undefined) {
+									GUI.error(GUI.translate("unable to set value"), checkResult, object, false);
 									GUI.updateInspector();
 									return;
 								}

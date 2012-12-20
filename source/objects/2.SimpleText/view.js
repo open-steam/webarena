@@ -36,6 +36,7 @@ SimpleText.draw=function(external){
 		
 		that.oldContent=data;
 		
+		$(rep).find("text").attr("y", 0);
 		$(rep).find("text").attr("y", rep.getBBox().y*(-1));
 		
 	});
@@ -74,12 +75,11 @@ SimpleText.editText = function() {
 
 /* get the y position of the objects bounding box (this is the top position of the object) */
 SimpleText.getViewBoundingBoxY = function() {
-	var rep = this.getRepresentation();
-	return this.getRepresentation().getBBox().y-this.getRepresentation().getBBox().height*0.66
+	return this.getViewY();
 }
 
 /* get the height of the objects bounding box */
 SimpleText.getViewBoundingBoxHeight = function() {
 	var rep = this.getRepresentation();
-	return this.getRepresentation().getBBox().height*0.66;
+	return this.getRepresentation().getBBox().height; //<--TODO: this value is too high
 }

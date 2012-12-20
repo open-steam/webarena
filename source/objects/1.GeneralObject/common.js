@@ -101,7 +101,7 @@ GeneralObject.register=function(type){
 	this.attributeManager.registerAttribute('visible',{type:'boolean',standard:true,category:'Basic',checkFunction: function(object, value) {
 		
 		if (!object.hasLinkedObjects() && value == false) {
-			return "you need at least one link from or to this object to hide it";
+			return object.translate(GUI.currentLanguage, "you need at least one link from or to this object to hide it");
 		} else {
 			return true;
 		}

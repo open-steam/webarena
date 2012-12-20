@@ -533,3 +533,31 @@ z-index: -1;
 input {
 	font-size: 12px;
 }
+
+
+
+
+
+/* BUG REPORT */
+
+#bug>div {
+	margin: 10px;
+	margin-top: 20px;
+}
+
+#bug textarea {
+	width: 100%;
+	height: 100px;
+}
+
+.bug_success {
+	color: #4AA03F;
+}
+
+.bug_error {
+	color: #A13F3F;
+}
+
+#bug>div span {
+	font-size: 11px;
+}

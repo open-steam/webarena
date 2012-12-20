@@ -22,5 +22,10 @@ GUI.setTranslations('de',{
 	'multiple values' : 'Verschiedene Werte',
 	'Username' : 'Benutzername',
 	'Message' : 'Nachricht',
+	'unable to set value' : 'Wert konnte nicht gesetzt werden',
+	'Close Dialog' : 'Schließen',
+	'Reload' : 'Neuladen',
+	'Bugreport' : 'Fehlerbericht',
+	'Object inspector' : 'Objektinspektor'
 }
 );

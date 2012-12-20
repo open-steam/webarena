@@ -323,6 +323,10 @@
 				title : GUI.translate("Chat"),
 				onOpen : GUI.chat.opened
 			},
+			"bug" : {
+				order : 2,
+				title : GUI.translate("Bugreport"),
+			},
 		};
 		
 		GUI.sidebar.transformX = function(target, x) {
@@ -386,6 +390,7 @@
 				$(GUI.sidebar.elementConfig[element]['button']).addClass("active");
 			}
 
+			$("#sidebar_content").scrollTop(0);
 			
 		}
 		
@@ -442,8 +447,26 @@
 		}
 		
 		
+		
+		$.fn.dontScrollParent = function()
+		{
+		    this.bind('mousewheel DOMMouseScroll',function(e)
+		    {
+		        var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+
+		        if (delta > 0 && $(this).scrollTop() <= 0)
+		            return false;
+		        if (delta < 0 && $(this).scrollTop() >= this.scrollHeight - $(this).height())
+		            return false;
+
+		        return true;
+		    });
+		}
+		
+		
 		GUI.sidebar.init = function() {
 			$("#sidebar_content>div").addClass("animate");
+			$("#sidebar_content").dontScrollParent();
 		}
 
 		
@@ -454,6 +477,7 @@
 		GUI.updateInspector = function() {
 			
 			$("#inspector").data("jDesktopInspector").update();
+			$("#sidebar_content").scrollTop(0);
 			
 		}
 			
@@ -477,6 +501,63 @@
 		});
 
 		GUI.startRoom = '##START_ROOM##';
+	
+	
+	
+	
+	
+		/* BUG REPORT */
+		
+		$(function() {
+		
+			$("#bug_submit").bind("click", function(event) {
+			
+				$("#bug_report").hide();
+				$("#bug_result").show();
+				$("#bug_result").html('Der Fehlerbericht wird gesendet...');
+			
+				var task = $("#bug_task").val();
+				var problem = $("#bug_problem").val();
+				
+				var objectsString = "";
+				
+				var objects = ObjectManager.getObjects();
+				for (var i in objects) {
+					var object = objects[i];
+					
+					objectsString += "\n"+i+":\n--------------------\n";
+					
+					for (var name in object.data) {
+						objectsString += name+": "+object.data[name]+"\n";
+					}
+					
+				}
+				
+				ObjectManager.reportBug({
+					"task" : task,
+					"problem" : problem,
+					"user" : GUI.username,
+					"objects" : objectsString
+				}, function(result) {
+
+					if (result === true) {
+						$("#bug_result").html('<p class="bug_success">Vielen Dank für Ihren Fehlerbericht.<br />Unsere Entwickler wurden informiert und werden sich schnellst möglich um das Problem kümmern.</p>');
+						$("#bug_task").val("");
+						$("#bug_problem").val("");
+					} else {
+						$("#bug_result").html('<p class="bug_error">Leider konnte der Fehlerbericht nicht gesendet werden. Bitte versuchen Sie es später noch einmal.</p>');
+					}
+					
+					window.setTimeout(function() {
+						$("#bug_report").show();
+						$("#bug_result").hide();
+					}, 10000);
+					
+				});
+				
+			});
+			
+		});
 	
 	</script>
 </head>
@@ -503,6 +584,32 @@
 			<div>
 				<div id="inspector"></div>
 				<div id="chat"></div>
+				<div id="bug">
+					
+					<div>
+						Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />
+						Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.
+						<span><br />
+						<br />
+							Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.
+						</span>
+					</div>
+					
+					<div id="bug_report">
+						
+						<span>Was wollten Sie tun?</span>
+						<textarea id="bug_task"></textarea>
+					
+						<span>Welches Problem ist aufgetreten?</span>
+						<textarea id="bug_problem"></textarea>
+					
+						<input type="submit" value="Senden" id="bug_submit" />
+					
+					</div>
+					
+					<div id="bug_result"></div>
+					
+				</div>
 			</div>
 		</div>
 	</div>

@@ -13,9 +13,9 @@ Paint.draw=function(external){
 	ImageObject.draw.call(this,external);
 
 	if (!this.hasContent()) {
-		$(rep).css("visibility", "hidden");
+		$(rep).css("display", "none");
 	} else {
-		$(rep).css("visibility", "visible");
+		$(rep).css("display", "");
 	}
 	
 }

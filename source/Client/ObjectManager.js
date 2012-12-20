@@ -471,3 +471,6 @@ ObjectManager.requestAttentionToObject=function(id){
 	ObjectManager.inform('requestAttention',id);
 }
 
+ObjectManager.reportBug=function(data, callback){
+	ObjectManager.Modules.Dispatcher.query('bugreport',data,callback);
+}
