@@ -598,6 +598,7 @@ ObjectManager.init=function(theModules){
 		var date = new Date();
 		
 		var text = "Datum: "+date.getDate()+"."+(date.getMonth() + 1)+"."+date.getFullYear()+", "+date.getHours()+":"+date.getMinutes()+" Uhr"+"\n";
+		text += "UserAgent: "+data.userAgent+"\n";
 		text += "Benutzer: "+data.user+"\n\n";
 		
 		text += "Was wollten Sie tun?\n----------------------------------\n";
