@@ -31,24 +31,15 @@ Discussion.execute=function(){
     }
 }
 
-
-
-Discussion.register('Discussion');
-
 Discussion.moveByTransform = function(){
-    if(this.getAttribute("show_embedded")){
-        return false;
-    } else {
-        return false;
-    }
+   return false
 }
 
 Discussion.isCreatable=true;
-
 Discussion.restrictedMovingArea = true;
-
 Discussion.contentURLOnly = false;
-
 Discussion.category='Texts';
+
+Discussion.register('Discussion');
 
 module.exports=Discussion;

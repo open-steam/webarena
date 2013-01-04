@@ -5,23 +5,6 @@
 *    @author Viktor Koop
 *
 */
-
-Discussion.switchState = function(){
-    var embedded = this.getAttribute("show_embedded");
-
-    this.setAttribute("show_embedded", !embedded);
-    if(!embedded){
-        this.setAttribute("width", 700);
-        this.setAttribute("height", 800);
-    } else {
-        this.setAttribute("width", 64*2.5);
-        this.setAttribute("height", 64*1.5)
-    }
-
-    $('#' + this.getAttribute('id')).remove();
-    this.getRepresentation();
-}
-
 Discussion.drawEmbedded = function(){
     var rep=this.getRepresentation();
     rep.dataObject=this;
@@ -101,7 +84,22 @@ Discussion.draw=function(){
     }
 }
 
+Discussion.switchState = function(){
+    var embedded = this.getAttribute("show_embedded") || false;
 
+    this.setAttribute("show_embedded", !embedded);
+    if(!embedded){
+        this.setAttribute("width", 700);
+        this.setAttribute("height", 800);
+    } else {
+        this.setAttribute("width", 64*2.5);
+        this.setAttribute("height", 64*1.5)
+    }
+
+    $('#' + this.getAttribute('id')).remove();
+    this.getRepresentation();
+    this.deselect()
+}
 
 
 Discussion.createRepresentationEmbedded = function(){
@@ -114,7 +112,15 @@ Discussion.createRepresentationEmbedded = function(){
     // content
     var body = document.createElement("body");
     $(body).append(
-        $('<div class="discussion"><div class="embedded-toolbar moveArea"><span class="minimize-button"></span></div><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
+        $('<div class="discussion">' +
+
+            '<div class="embedded-toolbar moveArea">' +
+            '<span class="minimize-button"></span>' +
+            '</div>' +
+            '<div class="discussion-heading">' +
+            '</div><div class="discussion-text"></div>' +
+            '<input class="discussion-input">' +
+            '</div>')
     );
 
 
@@ -218,25 +224,17 @@ Discussion.createRepresentation = function() {
     }
 
     return rep;
-
 }
 
 Discussion.renderMessage = function(message){
     return "<div class='discussion-statement'><div class='discussion-statement-heading'><span class='message-author'>" + message.author +"</span><span class='message-timestamp'>(" + this.formatTimestamp(message.timestamp) +")</span></div> <p class='discussion-statement-text'> " + message.text +"</p></div>";
 }
 
-Discussion.formatTimestamp = function(time){
-    return moment(time).format('DD.MM.YYYY HH:mm');
-}
-
-
 /* view setter */
 Discussion.setViewHeight = function(value) {
     GeneralObject.setViewHeight.call(this, value);
     $(this.getRepresentation()).attr("height", parseInt(value));
     this.updateInnerHeight(parseInt(value));
-
-
 }
 
 Discussion.updateInnerHeight = function(value) {
