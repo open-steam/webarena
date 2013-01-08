@@ -31,6 +31,7 @@
 
 .discussion-statement{
   background-color: white;
+  position: relative;
 }
 
 .discussion-statement-heading{
@@ -64,4 +65,35 @@
 
   padding: 10px;
   width: 100%;
+}
+
+.statement-operation{
+  display: none;
+  position: absolute;
+  right: 3px;
+  top: 25px;
+  font-size: 12px;
+  cursor: pointer;
+ background-color: rgba(200,200,200,0.5);
+}
+
+.statement-operation:hover{
+  font-weight: bold;
+}
+
+.statement-delete {
+  @extend .statement-operation;
+}
+
+.statement-edit{
+  @extend .statement-operation;
+  right: 50px;
+}
+
+.discussion-statement-deletable:hover .statement-delete{
+  display: block;
+}
+
+.discussion-statement-deletable:hover .statement-edit{
+  display: block;
 }

@@ -32,9 +32,10 @@
 /* line 32, ../sass/discussion.scss */
 .discussion-statement {
   background-color: white;
+  position: relative;
 }
 
-/* line 36, ../sass/discussion.scss */
+/* line 37, ../sass/discussion.scss */
 .discussion-statement-heading {
   border-top: 2px solid #CCCCCC;
   padding: 5px;
@@ -42,28 +43,59 @@
   color: #04138A;
 }
 
-/* line 45, ../sass/discussion.scss */
+/* line 46, ../sass/discussion.scss */
 .discussion-statement-heading .message-timestamp {
   float: right;
   font-size: 12px;
 }
-/* line 50, ../sass/discussion.scss */
+/* line 51, ../sass/discussion.scss */
 .discussion-statement-heading .message-author {
   font-size: 12px;
 }
 
-/* line 56, ../sass/discussion.scss */
+/* line 57, ../sass/discussion.scss */
 .discussion-statement-text {
   padding: 5px;
   font-size: 14px;
   margin: 0px;
 }
 
-/* line 62, ../sass/discussion.scss */
+/* line 63, ../sass/discussion.scss */
 .discussion-input {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
   padding: 10px;
   width: 100%;
+}
+
+/* line 70, ../sass/discussion.scss */
+.statement-operation, .statement-delete, .statement-edit {
+  display: none;
+  position: absolute;
+  right: 3px;
+  top: 25px;
+  font-size: 12px;
+  cursor: pointer;
+  background-color: rgba(200, 200, 200, 0.5);
+}
+
+/* line 80, ../sass/discussion.scss */
+.statement-operation:hover, .statement-delete:hover, .statement-edit:hover {
+  font-weight: bold;
+}
+
+/* line 88, ../sass/discussion.scss */
+.statement-edit {
+  right: 50px;
+}
+
+/* line 93, ../sass/discussion.scss */
+.discussion-statement-deletable:hover .statement-delete {
+  display: block;
+}
+
+/* line 97, ../sass/discussion.scss */
+.discussion-statement-deletable:hover .statement-edit {
+  display: block;
 }
