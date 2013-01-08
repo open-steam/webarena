@@ -48,6 +48,7 @@
  * @param String  options[select]    true or false, when true text is highlighted ??
  * @param String  options[placeholder] Placeholder text or html to insert when element is empty. **
  * @param String  options[onblur]    'cancel', 'submit', 'ignore' or function ??
+ * @param String  options[placeholderHTML5] HTML5 placeholder
  *
  * @param Function options[onsubmit] function(settings, original) { ... } called before submit
  * @param Function options[onreset]  function(settings, original) { ... } called before reset
@@ -237,6 +238,10 @@
                 content.apply(form, [input_content, settings, self]);
 
                 input.attr('name', settings.name);
+
+                if(settings.placeholderHTML5){
+                    input.attr('placeholder' ,settings.placeholderHTML5);
+                }
 
                 /* Add buttons to the form. */
                 buttons.apply(form, [settings, self]);
