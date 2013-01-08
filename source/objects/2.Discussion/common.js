@@ -11,14 +11,14 @@ var Discussion=Object.create(Modules.ObjectManager.getPrototype('GeneralObject')
 
 Discussion.register=function(type){
 	
-	// Registering the object
-	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
-	GeneralObject.register.call(this,type);
-	
-	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
-	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,unit:'px',category:'Appearance'});
-	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance'});
-
+    // Registering the object
+    GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
+    GeneralObject.register.call(this,type);
+    
+    this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
+    this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,unit:'px',category:'Appearance'});
+    this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance'});
+    
     this.standardData.fillcolor='rgb('+240+','+240+','+240+')';
     this.standardData.width=400;
     this.standardData.height=400;

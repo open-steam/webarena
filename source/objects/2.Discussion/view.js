@@ -27,10 +27,7 @@ Discussion.drawEmbedded = function(){
         $(rep).find(".discussion-text").css("border-color", "none");
         $(rep).find(".discussion-text").css("border-width", "0px");
         $(rep).find(".discussion-text").css("padding", "0px");
-
     }
-
-
 
     // apply properties
     $(rep).find(".discussion-text").css("background-color", this.getAttribute('fillcolor'));
@@ -39,7 +36,7 @@ Discussion.drawEmbedded = function(){
     $(rep).find("body").css("color", this.getAttribute('font-color'));
     $(rep).attr("layer", this.getAttribute('layer'));
 
-    var title = this.getAttribute('discussionTitle') || "Bitte hier klicken, um das Thema zu ändern.";
+    var title = this.getAttribute('discussionTitle') || "Titel nicht gesetzt. Zum Ändern bitte hier klicken.";
     $(rep).find(".discussion-heading").html(title);
     var that = this;
 
@@ -123,10 +120,7 @@ Discussion.createRepresentationEmbedded = function(){
             '</div>')
     );
 
-
-
     that.oldContent = new Array();
-
 
     this.fetchContentString(function(remoteContent){
         if(remoteContent){
@@ -196,14 +190,13 @@ Discussion.createRepresentationIcon = function(){
     var rep = GUI.svg.other("foreignObject");
 
     var body = document.createElement("body");
-    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text'>" + this.getAttribute('discussionTitle') + "</div></div>");
+    var title = this.getAttribute('discussionTitle') || "Nicht gesetzt.";
+
+    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text'>" + title  + "</div></div>");
 
     $(rep).append(body);
     $(rep).attr("id", this.getAttribute('id'));
     $(rep).find('.wrapped-text').dotdotdot();
-
-    //GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
-    //$(rep).find('image').addClass('moveArea');
 
     return rep;
 
@@ -251,7 +244,6 @@ Discussion.updateInnerHeightEmbedded = function(value){
     console.log('test');
     var rep=this.getRepresentation();
 
-
     $(rep).find("body").css("height", value+"px");
 
     //TODO : calculate size with input instead of fixed 75px
@@ -259,19 +251,14 @@ Discussion.updateInnerHeightEmbedded = function(value){
     var ih = $(rep).find(".discussion-input").height();
 
     $(rep).find(".discussion-text").css("height", (value- hh - ih - 90)+"px");
-
-
 }
 
 Discussion.updateInnerHeightIcon = function(value){
-    console.log('test2');
     var rep=this.getRepresentation();
 
     $(rep).find("body").css("height", value+"px");
     $(rep).find(".wrapped-text").css("height", (value - 50) + "px");
     $(rep).find(".wrapped-text").dotdotdot();
-
-
 }
 
 
@@ -293,15 +280,15 @@ Discussion.representationCreated = function() {
     $(rep).find('.discussion-heading').editable(function(value, settings) {
         that.setAttribute("discussionTitle", value);
 
-
         return(value);
     }, {
         type      : "autogrow",
         submit    : 'Speichern',
+        placeholderHTML5 : 'Diskussions-Titel',
+	data : function(){return that.getAttribute('discussionTitle') || ''},
         autogrow : {
             lineHeight : 16,
             maxHeight  : 512
         }
     });
-
 }
