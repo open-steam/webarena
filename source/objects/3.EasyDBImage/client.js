@@ -81,7 +81,11 @@ EasyDBImage.execute = function () {
             create:function () {
                 Modules.Dispatcher.query('search', data, function (searchResults) {
                     that.searchParams = searchParams;
-                    that.renderResultPage(searchResults, ".ui-dialog-content");
+                    if(Object.keys(searchResults).length === 0){
+                        $('.easy-load-wrapper').html("<h2>Es wurden keine Ergbnisse gefunden</h2>");
+                    } else {
+                        that.renderResultPage(searchResults, ".ui-dialog-content");
+                    }
                 });
             },
             height:600
