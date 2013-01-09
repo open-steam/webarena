@@ -469,6 +469,8 @@ CacheManager.updateUserRights = function(roomID,callback) {
 
 		numberOfUpdatesDone++;
 		
+		Modules.Log.debug("User update "+numberOfUpdatesDone+" of "+numberOfUpdates" done (roomID: '"+roomID+"')");
+		
 		if (numberOfUpdatesDone == numberOfUpdates) {
 			Modules.Log.debug("All users updated (roomID: '"+roomID+"')");
 			callback();
@@ -482,14 +484,15 @@ CacheManager.updateUserRights = function(roomID,callback) {
 	for (var i in CacheManager.cache.users) {
 		var user = CacheManager.cache.users[i];
 		
-		numberOfUpdates++;
-		
 		if (user.rights[roomID] != undefined) {
 			//update rights for user
+			
+			numberOfUpdates++;
 			
 			Modules.Log.debug("Updating cached user rights for user '"+user.userData.username+"' (roomID: '"+roomID+"')");
 			
 			CacheManager.loadUserRights(roomID,user.context,function() {
+				Modules.Log.debug("User rights loaded (roomID: '"+roomID+"')");
 				updateDone();
 			});
 			
