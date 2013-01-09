@@ -58,6 +58,8 @@ fileConnector.login=function(username,password,rp){
 	
 	if (Modules.Config.fileConnectorUsers) {
 		
+		data.username = data.username.toLowerCase();
+		
 		if (Modules.Config.fileConnectorUsers[data.username] == data.password) {
 			rp(data);
 		} else {
