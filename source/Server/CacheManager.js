@@ -469,7 +469,7 @@ CacheManager.updateUserRights = function(roomID,callback) {
 
 		numberOfUpdatesDone++;
 		
-		Modules.Log.debug("User update "+numberOfUpdatesDone+" of "+numberOfUpdates" done (roomID: '"+roomID+"')");
+		Modules.Log.debug("User update "+numberOfUpdatesDone+" of "+numberOfUpdates+" done (roomID: '"+roomID+"')");
 		
 		if (numberOfUpdatesDone == numberOfUpdates) {
 			Modules.Log.debug("All users updated (roomID: '"+roomID+"')");
