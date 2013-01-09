@@ -109,7 +109,8 @@ UserManager.login=function(socketOrUser,data){
 		
 			socketServer.sendToSocket(socket,'loggedIn',{
 				username: connection.user,
-				userhash: connection.user.hash
+				userhash: connection.user.hash,
+				home: connection.user.home
 			});
 			
 		} else {

@@ -52,13 +52,11 @@ fileConnector.login=function(username,password,rp){
 
 	var data={};
 	
-	data.username=username;
+	data.username=username.toLowerCase();
 	data.password=password;
-	data.home='public';
+	data.home=username.toLowerCase();
 	
 	if (Modules.Config.fileConnectorUsers) {
-		
-		data.username = data.username.toLowerCase();
 		
 		if (Modules.Config.fileConnectorUsers[data.username] == data.password) {
 			rp(data);

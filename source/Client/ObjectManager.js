@@ -286,7 +286,13 @@ ObjectManager.init=function(){
         GUI.loggedIn();
         ObjectManager.user = data.username;
 		ObjectManager.userHash = data.userhash;
-        ObjectManager.loadRoom(GUI.startRoom);
+
+		if (data.home !== undefined) {
+			ObjectManager.loadRoom(data.home);
+		} else {
+			ObjectManager.loadRoom(GUI.startRoom);
+		}
+        
     });
 	
     Modules.Dispatcher.registerCall('loginFailed',function(data){
