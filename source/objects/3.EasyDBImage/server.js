@@ -26,5 +26,11 @@ theObject.search = function(args){
 }
 
 theObject.getUrls = function(args){
-    EasyDbAPI.retrieveImageUrlForSize(args['id'], args['size'], args['callback']);
+    var that = this;
+    var api = Object.create( EasyDbAPI);
+    api.getAuth = function(){
+        return {username : that.context.user.username, password : that.context.user.password}
+    }
+
+    api.retrieveImageUrlForSize(args['id'], args['size'], args['callback']);
 }

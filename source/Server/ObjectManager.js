@@ -515,7 +515,8 @@ ObjectManager.init=function(theModules){
         server_function_params['callback'] = responseCallback;
 
         var fn = object[server_function];
-        fn(server_function_params);
+        //fn(server_function_params);
+        fn.call(object, server_function_params)
     });
 
     Modules.Dispatcher.registerCall('search',function(socket,data,responseID){
