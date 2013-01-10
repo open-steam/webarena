@@ -70,7 +70,6 @@ Discussion.drawEmbedded = function(){
             })
 
             $(rep).find(".statement-edit").click(function(){
-                console.log(this)
                 $(this).siblings(".discussion-statement-text").trigger("discussion-statement-edit")
             });
 
