@@ -117,6 +117,15 @@ Discussion.drawIcon = function(){
 
     this.setViewWidth(this.getAttribute('width'));
     this.setViewHeight(this.getAttribute('height'));
+    
+    $(rep).find(".discussion-blob").css("background-color", this.getAttribute('fillcolor'));
+    $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
+    $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
+    $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
+
+    $(rep).find(".triangle-border:after").css("background-color", this.getAttribute('fillcolor'));
+
+    $(rep).attr("layer", this.getAttribute('layer'));
 }
 
 Discussion.draw=function(){
@@ -133,8 +142,8 @@ Discussion.switchState = function(){
 
     this.setAttribute("show_embedded", !embedded);
     if(!embedded){
-        this.setAttribute("width", 700);
-        this.setAttribute("height", 800);
+        this.setAttribute("width", 400);
+        this.setAttribute("height" , 500);
     } else {
         this.setAttribute("width", 64*2.5);
         this.setAttribute("height", 64*1.5)
