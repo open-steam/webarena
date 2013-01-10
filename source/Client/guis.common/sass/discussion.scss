@@ -109,12 +109,14 @@
 }
 
 
+$triangle-border: 5px;
+$triangle-size: 4* $triangle-border;
 
 .triangle-border {
   position:relative;
   padding:5px;
   margin:1em 0 3em;
-  border:5px solid RGBA(68.00, 78.00, 91.00, 1.00);
+  border: $triangle-border solid RGBA(68.00, 78.00, 91.00, 1.00);
   color:#333;
   background:#fff;
   @include border-radius(10px);
@@ -123,22 +125,9 @@
 .triangle-border:before {
   content:"";
   position:absolute;
-  bottom:-20px; /* value = - border-top-width - border-bottom-width */
+  bottom:-($triangle-size);
   left:40px; /* controls horizontal position */
-  border-width:20px 20px 0;
-  border-style:solid;
-  border-color:RGBA(68.00, 78.00, 91.00, 1.00) transparent;
-  /* reduce the damage in FF3.0 */
-  display:block;
-  width:0;
-}
-
-.triangle-border:after {
-  content:"";
-  position:absolute;
-  bottom:-13px; /* value = - border-top-width - border-bottom-width */
-  left:47px; /* value = (:before left) + (:before border-left) - (:after border-left) */
-  border-width:13px 13px 0;
+  border-width:$triangle-size $triangle-size 0;
   border-style:solid;
   border-color:RGBA(68.00, 78.00, 91.00, 1.00) transparent;
   /* reduce the damage in FF3.0 */
