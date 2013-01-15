@@ -9,7 +9,7 @@ EasyDbAPI.apiUrl = Modules.config.easydb.apiUrl; //"easydb.uni-paderborn.de";
 EasyDbAPI.apiPath = Modules.config.easydb.apiPath; //"/easy/fs.php?";
 
 //Not used yet
-//TODO: should be used to check if apicall method exists/**/
+//TODO: should be used to check if apicall method exists
 EasyDbAPI.methods = {
     object_search : ['table_name',
         'search',
@@ -39,6 +39,23 @@ EasyDbAPI.getAuth = function(){
     return {username : Modules.config.easydb.username, password: Modules.config.easydb.password};
 }
 
+EasyDbAPI.retrieveImageUrlForSize = function(imageId, size, callback){
+    var args = {
+        function: 'object_retrieve_bulk',
+        ids : imageId,
+        image_size : "125px",
+        output : 'json',
+        download_size : size
+    }
+
+    this.apicall(args, function(results){
+        var decodedResponse = JSON.parse(results);
+        var imageURL = decodedResponse['response']['objects'][0]['data']['bild.image']['download_url'];
+
+        callback(imageURL);
+    });
+}
+
 EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback){
     var ids = _.map(data, function(dataEntry){
         return dataEntry['id'];
@@ -50,13 +67,12 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
         mappedIdObject[dataEntry['id']] = dataEntry;
     });
 
-    Log.debug("EasyDbAPI","retrieveImageUrls", "");
     var args = {
         function: 'object_retrieve_bulk',
         ids : ids.join(","),
         image_size : imageSize,
         output : 'json',
-        download_size : 'original'
+        download_size : '800'
     }
 
 
@@ -87,9 +103,6 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
             } catch(e){}
 
         });
-
-
-
 
         callback(filtered);
     });

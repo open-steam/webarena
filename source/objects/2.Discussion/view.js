@@ -5,23 +5,6 @@
 *    @author Viktor Koop
 *
 */
-
-Discussion.switchState = function(){
-    var embedded = this.getAttribute("show_embedded");
-
-    this.setAttribute("show_embedded", !embedded);
-    if(!embedded){
-        this.setAttribute("width", 700);
-        this.setAttribute("height", 800);
-    } else {
-        this.setAttribute("width", 64*2.5);
-        this.setAttribute("height", 64*1.5)
-    }
-
-    $('#' + this.getAttribute('id')).remove();
-    this.getRepresentation();
-}
-
 Discussion.drawEmbedded = function(){
     var rep=this.getRepresentation();
     rep.dataObject=this;
@@ -34,7 +17,7 @@ Discussion.drawEmbedded = function(){
     this.setViewHeight(this.getAttribute('height'));
 
     // draw outer line
-    var linesize = this.getAttribute('linesize')+0;
+    var linesize = this.getAttribute('linesize') || 0;
 
     if (linesize > 0) {  // draw line
         $(rep).find(".discussion-text").css("border-color", this.getAttribute('linecolor'));
@@ -44,10 +27,7 @@ Discussion.drawEmbedded = function(){
         $(rep).find(".discussion-text").css("border-color", "none");
         $(rep).find(".discussion-text").css("border-width", "0px");
         $(rep).find(".discussion-text").css("padding", "0px");
-
     }
-
-
 
     // apply properties
     $(rep).find(".discussion-text").css("background-color", this.getAttribute('fillcolor'));
@@ -56,7 +36,7 @@ Discussion.drawEmbedded = function(){
     $(rep).find("body").css("color", this.getAttribute('font-color'));
     $(rep).attr("layer", this.getAttribute('layer'));
 
-    var title = this.getAttribute('discussionTitle') || "Bitte hier klicken, um das Thema zu ändern.";
+    var title = this.getAttribute('discussionTitle') || "Titel nicht gesetzt. Zum Ändern bitte hier klicken.";
     $(rep).find(".discussion-heading").html(title);
     var that = this;
 
@@ -71,14 +51,61 @@ Discussion.drawEmbedded = function(){
 
             var text = '';
             var messageArray = remoteContent;
+
             for (var i = 0; i < messageArray.length; ++i){
                 text += that.renderMessage(messageArray[i]);
             }
             text = text.replace(/[\r\n]+/g, "<br />");
 
             $(rep).find(".discussion-text").html(text);
+            $(rep).find(".statement-delete").click(function(){
+                var deleteId = ($(this).parent('.discussion-statement').attr("data-message-id"))
+                var newArr = new Array();
+                for (var i = 0, j = messageArray.length; i < j; ++i){
+                    if(messageArray[i].timestamp !== deleteId){
+                        newArr.push(messageArray[i])
+                    }
+                }
+                that.setContent(JSON.stringify(newArr));
+            })
+
+            $(rep).find(".statement-edit").click(function(){
+                console.log(this)
+                $(this).siblings(".discussion-statement-text").trigger("discussion-statement-edit")
+            });
+
             that.oldContent=messageArray;
         }
+
+        that.enableInlineEditors();
+    });
+}
+
+Discussion.enableInlineEditors = function(){
+    var rep=this.getRepresentation();
+    var that = this;
+    $(rep).find('.discussion-statement-text').editable(function(value, settings) {
+        var deleteId = ($(this).parent('.discussion-statement').attr("data-message-id"))
+        var changedArr = new Array();
+        for (var i = 0; i < that.oldContent.length; ++i){
+            if(that.oldContent[i].timestamp !== deleteId){
+                changedArr.push(that.oldContent[i])
+            } else {
+                var message = that.oldContent[i];
+                message.text = value;
+                changedArr.push(message);
+            }
+        }
+        that.setContent(JSON.stringify(changedArr));
+    }, {
+        type      : "autogrow",
+        submit    : 'Speichern',
+        placeholderHTML5 : 'Diskussions-Titel',
+        autogrow : {
+            lineHeight : 16,
+            maxHeight  : 512
+        },
+        event : "discussion-statement-edit"
     });
 }
 
@@ -101,7 +128,22 @@ Discussion.draw=function(){
     }
 }
 
+Discussion.switchState = function(){
+    var embedded = this.getAttribute("show_embedded") || false;
 
+    this.setAttribute("show_embedded", !embedded);
+    if(!embedded){
+        this.setAttribute("width", 700);
+        this.setAttribute("height", 800);
+    } else {
+        this.setAttribute("width", 64*2.5);
+        this.setAttribute("height", 64*1.5)
+    }
+
+    $('#' + this.getAttribute('id')).remove();
+    this.getRepresentation();
+    this.deselect()
+}
 
 
 Discussion.createRepresentationEmbedded = function(){
@@ -114,13 +156,18 @@ Discussion.createRepresentationEmbedded = function(){
     // content
     var body = document.createElement("body");
     $(body).append(
-        $('<div class="discussion"><div class="embedded-toolbar moveArea"><span class="minimize-button"></span></div><div class="discussion-heading"></div><div class="discussion-text"></div><input class="discussion-input"></div>')
+        $('<div class="discussion">' +
+
+            '<div class="embedded-toolbar moveArea">' +
+            '<span class="minimize-button"></span>' +
+            '</div>' +
+            '<div class="discussion-heading">' +
+            '</div><div class="discussion-text"></div>' +
+            '<input class="discussion-input">' +
+            '</div>')
     );
 
-
-
     that.oldContent = new Array();
-
 
     this.fetchContentString(function(remoteContent){
         if(remoteContent){
@@ -190,14 +237,13 @@ Discussion.createRepresentationIcon = function(){
     var rep = GUI.svg.other("foreignObject");
 
     var body = document.createElement("body");
-    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text'>" + this.getAttribute('discussionTitle') + "</div></div>");
+    var title = this.getAttribute('discussionTitle') || "Nicht gesetzt.";
+
+    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text'>" + title  + "</div></div>");
 
     $(rep).append(body);
     $(rep).attr("id", this.getAttribute('id'));
     $(rep).find('.wrapped-text').dotdotdot();
-
-    //GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
-    //$(rep).find('image').addClass('moveArea');
 
     return rep;
 
@@ -218,25 +264,28 @@ Discussion.createRepresentation = function() {
     }
 
     return rep;
-
 }
 
 Discussion.renderMessage = function(message){
-    return "<div class='discussion-statement'><div class='discussion-statement-heading'><span class='message-author'>" + message.author +"</span><span class='message-timestamp'>(" + this.formatTimestamp(message.timestamp) +")</span></div> <p class='discussion-statement-text'> " + message.text +"</p></div>";
-}
+    var additionalClasses = (message.author === GUI.username)? "discussion-statement-deletable" : "";
 
-Discussion.formatTimestamp = function(time){
-    return moment(time).format('DD.MM.YYYY HH:mm');
+    return "" +
+        "<div class='discussion-statement " + additionalClasses +"' data-message-id='" + message.timestamp +"'>" +
+            "<div class='discussion-statement-heading'>" +
+                "<span class='message-author'>" + message.author +"</span>" +
+                "<span class='message-timestamp'>(" + this.formatTimestamp(message.timestamp) +")</span>" +
+            "</div> " +
+            "<div class='statement-delete'>löschen</div>"+
+	    "<div class='statement-edit'>bearbeiten</div>"+
+            "<p class='discussion-statement-text'> " + message.text +"</p>" +
+        "</div>";
 }
-
 
 /* view setter */
 Discussion.setViewHeight = function(value) {
     GeneralObject.setViewHeight.call(this, value);
     $(this.getRepresentation()).attr("height", parseInt(value));
     this.updateInnerHeight(parseInt(value));
-
-
 }
 
 Discussion.updateInnerHeight = function(value) {
@@ -250,9 +299,7 @@ Discussion.updateInnerHeight = function(value) {
 }
 
 Discussion.updateInnerHeightEmbedded = function(value){
-    console.log('test');
     var rep=this.getRepresentation();
-
 
     $(rep).find("body").css("height", value+"px");
 
@@ -261,19 +308,14 @@ Discussion.updateInnerHeightEmbedded = function(value){
     var ih = $(rep).find(".discussion-input").height();
 
     $(rep).find(".discussion-text").css("height", (value- hh - ih - 90)+"px");
-
-
 }
 
 Discussion.updateInnerHeightIcon = function(value){
-    console.log('test2');
     var rep=this.getRepresentation();
 
     $(rep).find("body").css("height", value+"px");
     $(rep).find(".wrapped-text").css("height", (value - 50) + "px");
     $(rep).find(".wrapped-text").dotdotdot();
-
-
 }
 
 
@@ -295,15 +337,15 @@ Discussion.representationCreated = function() {
     $(rep).find('.discussion-heading').editable(function(value, settings) {
         that.setAttribute("discussionTitle", value);
 
-
         return(value);
     }, {
         type      : "autogrow",
         submit    : 'Speichern',
+        placeholderHTML5 : 'Diskussions-Titel',
+	data : function(){return that.getAttribute('discussionTitle') || ''},
         autogrow : {
             lineHeight : 16,
             maxHeight  : 512
         }
     });
-
 }
