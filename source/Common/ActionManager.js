@@ -28,7 +28,7 @@ ActionManager.registerAction=function(name,func,single,visibilityFunc){
 	this.actions[name] = {
 		"func": func,
 		"single": single,
-		"visibilityFunc": visibilityFunc
+		"visibilityFunc": visibilityFunc,
 	};
 	
 	return this;
@@ -41,14 +41,14 @@ ActionManager.unregisterAction=function(name){
 }
 
 
-ActionManager.performAction=function(name){
+ActionManager.performAction=function(name, clickedObject){
 	
 	if (!this.actions[name]) {
 		debug(this + ' has no action ' + name);
 		return;
 	}
 	
-	this.actions[name]["func"]();
+	this.actions[name]["func"](clickedObject);
 	
 	return this;
 

@@ -280,8 +280,7 @@ GeneralObject.register=function(type){
 		
 	}, false);
 	
-	
-	
+
 }
 
 /**
@@ -369,8 +368,8 @@ GeneralObject.unregisterAction=function(name){
 	return this.actionManager.unregisterAction(name);
 }
 
-GeneralObject.performAction=function(name){
-	return this.actionManager.performAction(name,this);
+GeneralObject.performAction=function(name, clickedObject){
+	return this.actionManager.performAction(name,clickedObject);
 }
 
 GeneralObject.getActions=function(){
