@@ -33,7 +33,7 @@ GUI.showActionsheet = function(x, y, webarenaObject) {
 		
 		$(newButton).bind("click", function() {
 		
-			ObjectManager.performActionForSelected(action);
+			ObjectManager.performActionForSelected(action, webarenaObject);
 
 			actionsheet.hide();
 			
