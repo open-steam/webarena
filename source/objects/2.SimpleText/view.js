@@ -27,7 +27,7 @@ SimpleText.draw=function(external){
 
 	var that=this;
 	
-	this.fetchContentString(function(data){
+	this.getContentAsString(function(data){
 		
 		if(data!=that.oldContent){
 			$(rep).find("text").get(0).textContent=data;

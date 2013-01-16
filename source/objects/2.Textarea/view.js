@@ -42,7 +42,7 @@ Textarea.draw=function(external){
 
 	var that=this;
 	
-	this.fetchContentString(function(text){
+	this.getContentAsString(function(text){
 
 		if(text!=that.oldContent){
 			text = text.replace(/[\r\n]+/g, "<br />");

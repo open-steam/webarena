@@ -126,7 +126,7 @@ UserManager.login=function(socketOrUser,data){
 *
 *	let a user enter a room with a specific roomID
 **/
-UserManager.enterRoom=function(socketOrUser,roomID){
+UserManager.enterRoom=function(socketOrUser,roomID,responseID){
 	
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
 	
@@ -155,10 +155,13 @@ UserManager.enterRoom=function(socketOrUser,roomID){
 				ObjectManager.sendRoom(socket,room.id);
 				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
-			})
+			});
+			
+			Modules.Dispatcher.respond(socket,responseID,false);
 
 		} else {
-			socketServer.sendToSocket(socket,'error', 'User '+userID+' may not enter '+roomID);
+			socketServer.sendToSocket(socket,'error', 'User '+user.username+' may not enter '+roomID);
+			Modules.Dispatcher.respond(socket,responseID,true);
 		}
 		
 	});

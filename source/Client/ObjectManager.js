@@ -229,17 +229,26 @@ ObjectManager.login=function(username, password){
 
 ObjectManager.loadRoom=function(roomid){
 	
-    var objects = this.getObjects();
+	var self = this;
 	
-    for (var i in objects) {
-        var obj = objects[i];
-        ObjectManager.removeLocally(obj);
-    }
-	
-    if(!roomid) roomid='public';
-    this.currentRoomID=roomid;
+	Modules.Dispatcher.query('enter',roomid,function(error){
 
-    Modules.SocketClient.serverCall('enter',roomid);
+		if (error !== true) {
+
+			var objects = self.getObjects();
+
+		    for (var i in objects) {
+		        var obj = objects[i];
+		        ObjectManager.removeLocally(obj);
+		    }
+
+		    if(!roomid) roomid='public';
+		    self.currentRoomID=roomid;
+		
+		}
+		
+    });
+
 }
 
 ObjectManager.createObject=function(type,attributes,content,callback) {

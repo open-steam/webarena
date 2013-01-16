@@ -16,6 +16,14 @@ GUI.initSVG = function() {
 	GUI.svg = $("#content").svg('get');
 	GUI.svgDefs = GUI.svg.defs();
 
+	$("#content").droppable({
+		accept: ".toolbar_draggable",
+		drop: function( event, ui ) {
+			$(ui.helper).hide();
+			ui.helper[0].callback(ui.offset.left, ui.offset.top);
+			
+		}
+	});
 
 }
 

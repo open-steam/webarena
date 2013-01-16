@@ -40,7 +40,7 @@ Discussion.drawEmbedded = function(){
     $(rep).find(".discussion-heading").html(title);
     var that = this;
 
-    this.fetchContentString(function(remoteContent){
+    this.getContentAsString(function(remoteContent){
 
         if(remoteContent !== ""){
             remoteContent = JSON.parse(remoteContent);

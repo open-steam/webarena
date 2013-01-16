@@ -5,35 +5,18 @@
 *
 */
 
-/**
-*	A connector, as the name says, is the connection between different backends,
-*	which save the information persistently, and the WebArena server. Within these
-*	connectors, there is is no object logic. Objects are represented just as key=>value
-*	datastructures and are found by their room- and object id.
-*
-*	The fileconnector is the most simple connector strucure, which just persists
-*	object data in plain textfiles.
-*
-*	Most public functions are provided with a context attribute. This context is
-*	either a connection or 'true'. In case of a connection, user credentials are found
-*	in context.user.username and context.user.password. If context is just set to 'true'
-*	access to all objects should be granted (e.g. by using a root connection).
-*
-*/
 
 "use strict";
 
-var fs = require('fs');
 
-var Modules=false;
 var fileConnector={};
+
+fileConnector.init=function(theModules){
+	this.Modules=theModules;
+}
 
 fileConnector.info=function(){
 	return "FileConnector 1.0";
-}
-
-fileConnector.init=function(theModules){
-	Modules=theModules;
 }
 
 /**
@@ -48,19 +31,23 @@ fileConnector.init=function(theModules){
 *	response function.
 *
 */
-fileConnector.login=function(username,password,rp){
-
+fileConnector.login=function(username,password,rp,context){
+	
+	this.Modules.Log.debug("Login request for user '"+username+"'");
+	
 	var data={};
 	
 	data.username=username.toLowerCase();
 	data.password=password;
-	data.home=username.toLowerCase();
+	data.home= "public"; username.toLowerCase();
 	
-	if (Modules.Config.fileConnectorUsers) {
+	if (this.Modules.Config.fileConnectorUsers) {
 		
-		if (Modules.Config.fileConnectorUsers[data.username] == data.password) {
+		if (this.Modules.Config.fileConnectorUsers[data.username] == data.password) {
+			this.Modules.Log.debug("Login successfull for user '"+username+"'");
 			rp(data);
 		} else {
+			this.Modules.Log.debug("Login failed for user '"+username+"'");
 			rp(false);
 		}
 		
@@ -70,92 +57,92 @@ fileConnector.login=function(username,password,rp){
 	
 }
 
-/**
-*	 RIGHTS
-*/
 
-
-fileConnector.getUserRightsForObjects=function(roomID, ids, context, callback) {
-	
-	var rights = {};
-	
-	for (var i in ids) {
-		rights[ids[i]] = {
-			"read" : true,
-			"write" : true,
-			"evaluate" : true,
-			"delete" : true
-		}
-	}
-	
-	callback(rights);
-	
+fileConnector.isLoggedIn=function(context) {
+	return true;
 }
 
-fileConnector.getUserRightsForRoom=function(roomID, context, callback) {
-	callback({
-		"read" : true,
-		"write" : true,
-		"evaluate" : true,
-		"delete" : true,
-		"create" : {
-			"drawing" : true,
-			"ellipse" : false,
-			"unknown" : true
-		},
-		"enter" : true
-	});
+
+/* RIGHTS */
+
+fileConnector.mayWrite=function(roomID,objectID,connection,callback) {
+	callback(true);
+}
+
+fileConnector.mayRead=function(roomID,objectID,connection,callback) {
+	callback(true);
+}
+
+fileConnector.mayDelete=function(roomID,objectID,connection,callback) {
+	callback(true);
+}
+
+fileConnector.mayEnter=function(roomID,connection,callback) {
+	callback(true);
+}
+
+fileConnector.mayInsert=function(roomID,connection,callback) {
+	callback(true);
 }
 
 
 /**
 *	getInventory
 *
-*	returns all objects in a room (no actual objcts, just their attributeset)
+*	returns all objects in a room (no actual objects, just their attributeset)
 *
 */
-fileConnector.withInventory=function(roomID,context,callback){
+fileConnector.getInventory=function(roomID,context,callback){
+
+	var self = this;
+
+	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	if (!context) throw new Error('Missing context in fileConnector.getInventory');
+	if (!context) throw new Error('Missing context in getInventory');
 	
-	//load the rooms contents. Do not care about rights.
+	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	var filebase=Modules.Config.filebase;
-	
+	var filebase=this.Modules.Config.filebase;
+
 	var inventory=[];
-	
+
+	var fs = require('fs');
+
 	try {fs.mkdirSync(filebase+'/'+roomID)} catch(e){};
-	
+
 	var files=fs.readdirSync(filebase+'/'+roomID);
-	        
+
     files=(files)?files:[];
-	
+
 	files.forEach(function(value,index){
 		var position=value.indexOf('.object.txt');
 		if(position == -1) return; //not an object file
 		var filename=value;
 		var objectID=filename.substr(0,position);
-		
+
 		if (roomID==objectID) return; //leave out the room
-		
+
 		try {		
-			var obj=getObjectDataByFile(filebase,roomID,objectID);
-            fileConnector.getContent(roomID,objectID,context, function(content){
-                inventory.push({
-                    "attributes" : obj,
-                    "content" : content
-                });
-            });
+			var obj=self.getObjectDataByFile(roomID,objectID);
+			inventory.push(obj);
         } catch (e) {
-			console.log('ERROR: Cannot load '+objectID+' in '+roomID);
 			console.log(e);
+			self.Modules.Log.error("Cannot load object with id '"+objectID+"' (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
 		}
-		
+
 	});
-	
-	callback(inventory);
+
+	if (callback === undefined) {
+		/* sync */
+		return inventory;
+	} else {
+		/* async */
+		callback(inventory);
+	}
 	
 }
+
+
 
 /**
 *	getRoomData
@@ -163,12 +150,13 @@ fileConnector.withInventory=function(roomID,context,callback){
 *	returns the attribute set of the current room
 *
 */
-fileConnector.withRoomData=function(roomID,context,callback){
+fileConnector.getRoomData=function(roomID,context,callback){
+	this.Modules.Log.debug("Get data for room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	if (!context) throw new Error('Missing context in fileConnector.getRoomData');
-
-	var filebase=Modules.Config.filebase;
-	var obj=getObjectDataByFile(filebase,roomID,roomID);
+	if (!context) this.Modules.Log.error("Missing context");
+	
+	var filebase=this.Modules.Config.filebase;
+	var obj=this.getObjectDataByFile(roomID,roomID);
 	
 	callback(obj);
 	
@@ -181,13 +169,16 @@ fileConnector.withRoomData=function(roomID,context,callback){
 *
 */
 fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
-	
-	if (!context) throw new Error('Missing context in fileConnector.saveObjectData');
-	if (!data) throw new Error('Missing data in fileConnector.saveObjectData');
+	this.Modules.Log.debug("Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 
-	var filebase=Modules.Config.filebase;
+	if (!context) this.Modules.Log.error("Missing context");
+	if (!data) this.Modules.Log.error("Missing data");
+	
+	var filebase=this.Modules.Config.filebase;
 	
 	var foldername=filebase+'/'+roomID;
+	
+	var fs = require('fs');
 	
 	try {fs.mkdirSync(foldername)} catch(e){};
 	
@@ -195,7 +186,7 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
 	data=JSON.stringify(data);
 	
 	//TODO Change to asynchronous access
-	
+
 	fs.writeFileSync(filename, data,'utf-8');
 	if (after) after(objectID);
 	
@@ -208,10 +199,29 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
 *
 */
 fileConnector.saveContent=function(roomID,objectID,content,after,context){
-
-	if (!context) throw new Error('Missing context in fileConnector.saveContent');
+	this.Modules.Log.debug("Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	var filebase=Modules.Config.filebase;
+	var fs = require('fs');
+	
+	if (!context) this.Modules.Log.error("Missing context");
+
+	if (({}).toString.call(content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
+		/* create byte array */
+		
+		var byteArray = [];
+		var contentBuffer = new Buffer(content);
+		
+		for (var j = 0; j < contentBuffer.length; j++) {
+			
+			byteArray.push(contentBuffer.readUInt8(j));
+			
+		}
+		
+		content = byteArray;
+		
+	}
+
+	var filebase=this.Modules.Config.filebase;
 	
 	var foldername=filebase+'/'+roomID;
 	
@@ -221,27 +231,56 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context){
 	
 	fs.writeFile(filename, new Buffer(content), function (err) {
 		  if (err) {
-		  	console.log('Could not write: ',err);
+		  		this.Modules.Log.error("Could not write content to file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 		  }
 		  if (after) after(objectID);
 	});
-
 	
 }
 
 
+/**
+*	get the the object's content from a file and save it
+*
+*	if a callback function is specified, it is called after saving
+*
+*/
+fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, callback,context) {
+	
+	this.Modules.Log.debug("Copy content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', source: '"+sourceFilename+"')");
+	
+	if (!context) this.Modules.Log.error("Missing context");
+	
+	var fs = require('fs');
+	
+	var content = fs.readFileSync(sourceFilename);
+	
+	var byteArray = [];
+	var contentBuffer = new Buffer(content);
+	
+	for (var j = 0; j < contentBuffer.length; j++) {
+		
+		byteArray.push(contentBuffer.readUInt8(j));
+		
+	}
+
+	this.saveContent(roomID,objectID,byteArray,callback,context);
+
+}
 
 /**
 *	getContent
 *
-*	get an object's content as a an array of bytes;
+*	get an object's content as an array of bytes
 *	
 */
 fileConnector.getContent=function(roomID,objectID,context,callback){
 	
-	if (!context) throw new Error('Missing context in fileConnector.getContent');
+	this.Modules.Log.debug("Get content (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	var filebase=Modules.Config.filebase;
+	var fs = require('fs');
+	
+	var filebase=this.Modules.Config.filebase;
 	
 	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
 	
@@ -256,43 +295,27 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 			byteArray.push(contentBuffer.readUInt8(j));
 			
 		}
+
+		if (callback == undefined) {
+			//sync
+			return byteArray;
+		} else {
+			//async
+			callback(byteArray);
+		}
 		
-		callback(byteArray);
 	} catch (e) {
-		callback(false);
+		this.Modules.Log.debug("Could not read content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+		if (callback == undefined) {
+			//sync
+			return false;
+		} else {
+			//async
+			callback(false);
+		}
 	}
-}
-
-
-/**
-*	get the the object's content from a file and save it
-*
-*	if a callback function is specified, it is called after saving
-*
-*/
-fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, callback,context) {
-	
-	if (!context) throw new Error('Missing context in fileConnector.copyContentFromFile');
-	
-	var filebase=Modules.Config.filebase;
-	
-	var foldername=filebase+'/'+roomID;
-	
-	try {fs.mkdirSync(foldername)} catch(e){};
-	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
-	
-	fs.rename(sourceFilename, filename, function (err) {
-		  if (err) {
-		  	console.log('Could not write: ',err);
-		  }
-		  if (callback) callback(objectID);
-	});
-	
-	
 	
 }
-
 
 
 
@@ -303,21 +326,31 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, cal
 */
 fileConnector.remove=function(roomID,objectID,context){
 	
-	if (!context) throw new Error('Missing context in fileConnector.remove');
+	this.Modules.Log.debug("Remove object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	var filebase=Modules.Config.filebase;
+	if (!context) this.Modules.Log.error("Missing context");
 	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
+	var fs = require('fs');
 	
-	fs.unlink(filename, function (err) {});
+	try {
 	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
+		var filebase=this.Modules.Config.filebase;
+
+		var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
+
+		fs.unlink(filename, function (err) {});
+
+		var filename=filebase+'/'+roomID+'/'+objectID+'.content';
+
+		fs.unlink(filename, function (err) {});
+
+		var filename=filebase+'/'+roomID+'/'+objectID+'.preview';
+
+		fs.unlink(filename, function (err) {});
 	
-	fs.unlink(filename, function (err) {});
-	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.preview';
-	
-	fs.unlink(filename, function (err) {});
+	} catch (e) {
+		this.Modules.Log.error("Could not remove file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	}
 	
 }
 
@@ -332,8 +365,11 @@ fileConnector.remove=function(roomID,objectID,context){
 *
 */
 fileConnector.createObject=function(roomID,type,data,callback,context){
+
+	this.Modules.Log.debug("Create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	if (!context) throw new Error('Missing context in fileConnector.createObject');
+	if (!context) this.Modules.Log.error("Missing context");
+	
 	
 	var objectID=new Date().getTime()-1296055327011;
 	
@@ -347,7 +383,9 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 	}
 	
 	this.saveObjectData(roomID,objectID,data,callback,context);
+	
 }
+
 
 
 
@@ -363,13 +401,15 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 */
 fileConnector.duplicateObject=function(roomID,objectID,callback,context){
 	
-	if (!context) throw new Error('Missing context in fileConnector.context');
-
+	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	
+	if (!context) this.Modules.Log.error("Missing context");
+	
 	var self = this;
 
 	var newObjectID = new Date().getTime()-1296055327011;
 	
-	var filebase=Modules.Config.filebase;
+	var filebase=this.Modules.Config.filebase;
 	
 	var foldername=filebase+'/'+roomID;
 	
@@ -447,12 +487,40 @@ fileConnector.duplicateObject=function(roomID,objectID,callback,context){
 
 
 
+
+
+
+
+/**
+*	getObjectData
+*
+*	returns the attribute set of an object
+*
+*/
+fileConnector.getObjectData=function(roomID,objectID,context){
+	
+	this.Modules.Log.debug("Get object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	
+	if (!context) this.Modules.Log.error("Missing context");
+	
+	var obj = this.getObjectDataByFile(roomID,objectID);
+	
+	return obj;
+	
+}
+
+
+
 /**
 *	internal
 *
 *	read an object file and return the attribute set
 */
-var getObjectDataByFile=function(filebase,roomID,objectID){
+fileConnector.getObjectDataByFile=function(roomID,objectID){
+
+	var fs = require('fs');
+
+	var filebase = this.Modules.Config.filebase;
 	
 	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
 	
@@ -468,7 +536,7 @@ var getObjectDataByFile=function(filebase,roomID,objectID){
 	
 	//	automatically repair some values which could be wrong due
 	//  to manual file copying.
-	
+
 	data.attributes=attributes;
 	data.type=data.attributes.type;
 	data.id=objectID;
@@ -486,25 +554,443 @@ var getObjectDataByFile=function(filebase,roomID,objectID){
 		data.attributes.hasContent=true;
 		data.attributes.contentAge=new Date().getTime();
 	}
-	
-	//TODO check for content => hasConent
 
 	return data;
 }
 
-/**
-*	getObjectData
-*
-*	returns the attribute set of an object
-*
-*/
-fileConnector.getObjectData=function(roomID,objectID,context){
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+fileConnector.trimImage=function(roomID, objectID, callback, context) {
+
+	var self = this;
 	
-	if (!context) throw new Error('Missing context in fileConnector.getObjectData');
+	if (!context) this.Modules.Log.error("Missing context");
+
+	/* save content to temp. file */
+
+	var filename = __dirname+"/tmp/trim_"+roomID+"_"+objectID;
+
+	this.getContent(roomID,objectID,context,function(content) {
+		
+		var fs = require('fs');
+
+		fs.writeFile(filename, new Buffer(content), function (err) {
+		 	if (err) throw err;
+			/* temp. file saved */
+
+			var im = require('imagemagick');
+
+			//output: test.png PNG 192x154 812x481+226+131 8-bit DirectClass 0.010u 0:00.000
+			im.convert([filename, '-trim', 'info:-'], function(err,out,err2) {
+
+				if (!err) {
+
+					var results = out.split(" ");
+
+					var dimensions = results[2];
+					var dimensionsA = dimensions.split("x");
+
+					var newWidth = dimensionsA[0];
+					var newHeight = dimensionsA[1];
+
+					var d = results[3];
+					var dA = d.split("+");
+
+					var dX = dA[1];
+					var dY = dA[2];
+
+					im.convert([filename, '-trim', filename], function(err,out,err2) {
+
+						if (!err) {
+
+							//save new content:
+							self.copyContentFromFile(roomID, objectID, filename, function() {
+							
+								//delete temp. file
+								var fs = require('fs');
+								fs.unlink(filename);
+							
+								callback(dX, dY, newWidth, newHeight);
+								
+							},context);
+							
+						} else {
+							//TODO: delete temp. file
+							self.Modules.Log.error("Error while trimming "+roomID+"/"+objectID);
+						}
+
+					});
+
+				} else {
+					console.log(err);
+					self.Modules.Log.error("Error getting trim information of "+roomID+"/"+objectID);
+				}
+
+			});
+
+
+
+		});
+		
+	});
 	
-	var obj=getObjectDataByFile(Modules.Config.filebase,roomID,objectID);
 	
-	return obj;
+	
+};
+
+
+fileConnector.isInlineDisplayable=function(mimeType) {
+	
+	if (this.getInlinePreviewProviderName(mimeType) == false) {
+		return false;
+	} else {
+		return true;
+	}
+	
 }
+
+fileConnector.getMimeType=function(roomID,objectID,context,callback) {
+	
+	if (!context) throw new Error('Missing context in getMimeType');
+
+	var objectData = this.getObjectData(roomID,objectID,context);
+	var mimeType = objectData.attributes.mimeType;
+	
+	callback(mimeType);
+	
+}
+
+//SYNC
+fileConnector.getInlinePreviewProviderName=function(mimeType) {
+
+	if (!mimeType) return false;
+
+	if (this.getInlinePreviewProviders()[mimeType] != undefined) {
+		return this.getInlinePreviewProviders()[mimeType];
+	} else {
+		return false;
+	}
+	
+}
+
+//SYNC
+fileConnector.getInlinePreviewMimeTypes=function() {
+	
+	var mimeTypes = this.getInlinePreviewProviders();
+	var list = {};
+	
+	for (var mimeType in mimeTypes){
+		list[mimeType] = true;
+	}
+	
+	return list;
+	
+}
+
+//SYNC
+fileConnector.getInlinePreviewProviders=function() {
+	return {
+		//"application/pdf" : "pdf",
+		"image/jpeg" : "image",
+		"image/jpg" : "image",
+		"image/png" : "image",
+		"image/gif" : "image"
+	}
+}
+
+fileConnector.getInlinePreviewDimensions=function(roomID, objectID, callback, mimeType,context) {
+	
+	var self = this;
+	
+	if (!context) throw new Error('Missing context in getInlinePreviewDimensions');
+	
+	function mimeTypeDetected(mimeType) {
+		
+		/* find provider for inline content: */
+		var generatorName = self.getInlinePreviewProviderName(mimeType);
+
+		if (generatorName == false) {
+			self.Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
+			callback(false, false); //do not set width and height (just send update to clients)
+		} else {
+			self.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, callback, context);
+		}
+		
+	}
+	
+	if (!mimeType) {
+		
+		self.getMimeType(roomID,objectID,context,function(mimeType) {
+			mimeTypeDetected(mimeType);
+		});
+		
+	} else {
+		mimeTypeDetected(mimeType);
+	}
+	
+}
+
+fileConnector.getInlinePreview=function(roomID, objectID, callback, mimeType,context) {
+
+	var self = this;
+
+	if (!context) throw new Error('Missing context in getInlinePreview');
+	
+	function mimeTypeDetected(mimeType) {
+		
+		if (!mimeType) {
+			callback(false);
+		} else {
+
+			/* find provider for inline content: */
+			var generatorName = self.getInlinePreviewProviderName(mimeType);
+
+			if (generatorName == false) {
+				self.Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
+				callback(false); //do not set width and height (just send update to clients)
+			} else {
+				self.inlinePreviewProviders[generatorName].preview(roomID, objectID, callback, context);
+			}
+		
+		}
+		
+	}
+	
+	if (!mimeType) {
+		
+		self.getMimeType(roomID,objectID,context,function(mimeType) {
+			mimeTypeDetected(mimeType);
+		});
+		
+	} else {
+		mimeTypeDetected(mimeType);
+	}
+	
+}
+
+fileConnector.getInlinePreviewMimeType=function(roomID, objectID,context,callback) {
+	
+	var self = this;
+	
+	if (!context) throw new Error('Missing context in getInlinePreviewMimeType');
+	
+	this.getMimeType(roomID,objectID,context,function(mimeType) {
+		
+		if (!mimeType) {
+			callback(false);
+		}
+
+		/* find provider for inline content: */
+		var generatorName = self.getInlinePreviewProviderName(mimeType);
+
+		if (generatorName == false) {
+			self.Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
+			callback(false);
+		} else {
+			callback(self.inlinePreviewProviders[generatorName].mimeType(roomID, objectID, mimeType, context));
+		}
+		
+	});
+	
+}
+
+
+
+fileConnector.inlinePreviewProviders = {
+	
+	'image': {
+		'mimeType' : function(roomID, objectID, mimeType, context) {
+			
+			if (!context) throw new Error('Missing context in mimeType for image');
+			
+			return mimeType;
+		},
+		'dimensions' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in dimensions for image');
+
+			
+			var filename = __dirname+"/tmp/image_preview_dimensions_"+roomID+"_"+objectID;
+
+			fileConnector.getContent(roomID,objectID,context,function(content) {
+				
+				var fs = require('fs');
+
+				fs.writeFile(filename, Buffer(content), function (err) {
+				 	if (err) throw err;
+					/* temp. file saved */
+
+					var im = require('imagemagick');
+
+					im.identify(filename, function(err, features) {
+
+						if (err) throw err;
+
+						var width = features.width;
+						var height = features.height;
+
+						if (width > fileConnector.Modules.config.imageUpload.maxDimensions) {
+							height = height*(fileConnector.Modules.config.imageUpload.maxDimensions/width);
+							width = fileConnector.Modules.config.imageUpload.maxDimensions;
+						}
+
+						if (height > fileConnector.Modules.config.imageUpload.maxDimensions) {
+							width = width*(fileConnector.Modules.config.imageUpload.maxDimensions/height);
+							height = fileConnector.Modules.config.imageUpload.maxDimensions;
+						}
+
+						//delete temp. file
+						var fs = require('fs');
+						fs.unlink(filename);
+						
+						callback(width, height);
+
+					});
+
+				});
+				
+			});
+			
+
+		},
+		'preview' : function(roomID, objectID, callback, context) {
+			
+			if (!context) throw new Error('Missing context in preview for image');
+//TODO: change image orientation
+			fileConnector.getContent(roomID,objectID,context,function(content) {
+				
+				callback(content);
+				
+			});
+
+		}
+	},
+	
+	
+	'pdf_TODO': {
+		'mimeType' : function(roomID, objectID, mimeType, context) {
+			
+			if (!context) throw new Error('Missing context in mimeType for pdf');
+			
+			return 'image/jpeg';
+		},
+		'generatePreviewFile' : function(roomID, objectID, callback, context) {
+			
+			throw new Error("TODO!");
+			
+			if (!context) throw new Error('Missing context in generatePreviewFile for pdf');
+
+			var filebase=fileConnector.Modules.Config.filebase;
+
+			var filename = filebase+'/'+roomID+'/'+objectID+'.content';
+			var filenamePreview = filebase+'/'+roomID+'/'+objectID+'.preview';
+			
+
+			var im = require('imagemagick');
+			
+			im.convert(['-density', '200x200', 'pdf:'+filename+'[0]', '-quality', '100', 'jpg:'+filenamePreview], 
+			function(err, metadata){
+			  	if (err) {
+					fileConnector.Modules.Log.error("unable to create preview for pdf");
+				} else {
+
+					try {
+						var fs = require('fs');
+						var content = fs.readFileSync(filenamePreview);
+						callback(content);
+					} catch (e) {
+						fileConnector.Modules.Log.error("not able to read preview file");
+					}
+					
+				}
+			});
+	
+		},
+		'dimensions' : function(roomID, objectID, callback, context) {
+			
+			throw new Error("TODO!");
+			
+			if (!context) throw new Error('Missing context in dimensions for pdf');
+
+			var filebase=fileConnector.Modules.Config.filebase;
+
+			var filename=filebase+'/'+roomID+'/'+objectID+'.content';
+			
+
+			var im = require('imagemagick');
+
+			im.identify(filename, function(err, features) {
+
+				if (err) throw err;
+				
+				var width = features.width;
+				var height = features.height;
+
+				if (width > fileConnector.Modules.config.imageUpload.maxDimensions) {
+					height = height*(fileConnector.Modules.config.imageUpload.maxDimensions/width);
+					width = fileConnector.Modules.config.imageUpload.maxDimensions;
+				}
+
+				if (height > fileConnector.Modules.config.imageUpload.maxDimensions) {
+					width = width*(fileConnector.Modules.config.imageUpload.maxDimensions/height);
+					height = fileConnector.Modules.config.imageUpload.maxDimensions;
+				}
+
+				callback(width, height);
+			
+			});
+
+		},
+		'preview' : function(roomID, objectID, webserverResponse, context) {
+			
+			throw new Error("TODO!");
+			
+			if (!context) throw new Error('Missing context in preview for pdf');
+
+			var filebase=fileConnector.Modules.Config.filebase;
+
+			var filename=filebase+'/'+roomID+'/'+objectID+'.preview';
+
+			var path = require('path');
+
+			if (!path.existsSync(filename)) {
+				this.generatePreviewFile(roomID, objectID, function(data) {
+					/* preview file is generated */
+					callback(data);
+				});
+			} else {
+				/* preview file exists */
+				try {
+					var fs = require('fs');
+					var content = fs.readFileSync(filename);
+					callback(content);
+				} catch (e) {
+					callback(false);
+				}
+			}
+
+		}
+	}
+	
+}
+
+
+
+
+
 
 module.exports=fileConnector;

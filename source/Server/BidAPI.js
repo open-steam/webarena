@@ -8,7 +8,7 @@
 
 "use strict";
 
-function KoalaConnection(host, port, username, password) {
+function BidConnection(host, port, username, password) {
 	
 	this.host = host;
 	this.port = port;
@@ -189,6 +189,11 @@ function KoalaConnection(host, port, username, password) {
 		self.request("Object", "getObjectByPath", [path], callback);
 	}
 	
+	this.Object.checkRight = function(id, type, callback) {
+		self.request("Object", "checkRight", [id, type], callback);
+	}
+	
+	
 	
 	//CONTAINER
 	this.Container = {};
@@ -284,13 +289,13 @@ function KoalaConnection(host, port, username, password) {
 	
 }
 
-var KoalaHelper = {};
+var BidHelper = {};
 	
-KoalaHelper.convertId = function(id) {
+BidHelper.convertId = function(id) {
 	return id.replace('\\u2323', "").replace('\\u2323', "");
 }
 
-KoalaHelper.checkRight = function(rightName, bitRights) {
+BidHelper.checkRight = function(rightName, bitRights) {
 	
 	var bitMasks = {
 		"read": 	0x00000001, //1
@@ -312,7 +317,7 @@ KoalaHelper.checkRight = function(rightName, bitRights) {
 	
 }
 
-KoalaHelper.convertType = function(type) {
+BidHelper.convertType = function(type) {
 
 	var types = {
 		"OBJECT":       0x00000001,
@@ -362,12 +367,12 @@ KoalaHelper.convertType = function(type) {
 	
 }
 
-KoalaHelper.getTypes = function(type) {
-	return KoalaHelper.convertType(type);
+BidHelper.getTypes = function(type) {
+	return BidHelper.convertType(type);
 }
 
-KoalaHelper.getType = function(type) {
-	var types = KoalaHelper.convertType(type);
+BidHelper.getType = function(type) {
+	var types = BidHelper.convertType(type);
 	if (types.length > 0) {
 		return types[types.length-1];
 	} else {
@@ -377,12 +382,7 @@ KoalaHelper.getType = function(type) {
 
 
 module.exports = {
-	"KoalaConnection" : KoalaConnection,
-	"KoalaHelper" : KoalaHelper
+	"BidConnection" : BidConnection,
+	"BidHelper" : BidHelper
 };
-
-
-
-
-//var test = new KoalaConnection("www.bid-owl.de.localhost", 80, "root", "steam");
 
