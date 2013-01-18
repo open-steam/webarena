@@ -11,6 +11,43 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 module.exports=theObject;
 
+theObject.evaluate=function(changeData){
+
+	//complete data
+	
+	var oldData={};
+	var newData={};
+	var fields=['x','y','width','height'];
+	
+	for (var i=0;i<4;i++){
+		var field=fields[i];
+		oldData[field]=changeData['old'][field] || this.getAttribute(field);
+		newData[field]=changeData['new'][field] || this.getAttribute(field);
+	}
+	
+	var inventory=this.getRoom().getInventory();
+	
+	for (var i in inventory){
+		
+		var object=inventory[i];
+		var bbox=object.getBoundingBox();
+		
+		//determine intersections
+	
+		var oldIntersects=this.bBoxEncloses(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+		var newIntersects=this.bBoxEncloses(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+		
+		//handle move
+		
+		if (oldIntersects && newIntersects)  this.onMoveWithin(object,newData);
+		if (!oldIntersects && !newIntersects)  this.onMoveOutside(object,newData);
+		if (oldIntersects && !newIntersects)  this.onLeave(object,newData);
+		if (!oldIntersects && newIntersects)  this.onEnter(object,newData);
+	}
+	
+}
+
+
 theObject.bBoxEncloses=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
 	
 	if (otherX<thisX-20) {
@@ -77,24 +114,9 @@ theObject.getOverlappingObjects=function(){
 	return result;
 }
 
-/**
-*	evaluate is called, when the object itself has been moved or altered
-*	
-*	ResponsiveObjects should handle this as if other objects would have moved
-*	in respect to them (see ResponsiveObject.evaluate)
-*
-*	Semantiv Objects should rearrange other objects in their evaluation
-*
-**/
-theObject.evaluate=function(changeData){
-	//this is different for ResponsiveObjects and SemanticObjects
-	this.getRoom().evaluatePositions();
-}
 
 /**
 *	ActiveObjects evaluate other objects in respect to themselves.
-*	this is not positioning in front of a background which shall be
-*	done by getGreenPositions and getRedPositions
 *
 *	object the object that shall be evaluated
 *	changeData old and new values of positioning (e.g. changeData.old.x) 
