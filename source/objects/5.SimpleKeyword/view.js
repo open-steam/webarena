@@ -5,6 +5,8 @@
 *
 */
 
+
+
 SimpleKeyword.draw=function(external){
 	
 	var rep=this.getRepresentation();
@@ -25,5 +27,8 @@ SimpleKeyword.draw=function(external){
 	$(rep).attr("layer", this.getAttribute('layer'));
 	
 	$(rep).find("text").get(0).textContent=this.getAttribute('text');
+	
+	$(rep).find("text").attr("y", 0);
+	$(rep).find("text").attr("y", rep.getBBox().y*(-1));
 
 }
