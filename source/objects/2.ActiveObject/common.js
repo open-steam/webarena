@@ -10,9 +10,7 @@ var Modules=require('../../server.js');
 var ActiveObject=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 ActiveObject.register('ActiveObject');
-ActiveObject.category = 'Semantic';
+ActiveObject.category = 'Active';
 ActiveObject.isCreatable=false;
-ActiveObject.isActiveObject=true;
-ActiveObject.isSemanticObject=true;
 
 module.exports=ActiveObject;

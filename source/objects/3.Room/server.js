@@ -14,11 +14,13 @@ var Modules=require('../../server.js');
 theObject.evaluatePositionFor=function(object,data){
 	//console.log('room','evaluatePositionFor',object.toString(),data);
 	
+	if (object.evaluate) return object.evaluate(data);
+	
 	var inventory=this.getInventory();
 	
 	for (var i in inventory){
 		var activeObject=inventory[i];
-		if (!activeObject.isActiveObject) {
+		if (!activeObject.evaluateObject) {
 			continue;
 		} else {
 			activeObject.evaluateObject(object,data);
@@ -30,7 +32,7 @@ theObject.evaluatePositionFor=function(object,data){
 theObject.evaluatePositions=function(){
 	
 	var objects=this.getInventory();
-	var semanticObjects=this.getSemanticObjects(objects);  //idea hold semantic objects yet in ObjectManager for speedup
+	var activeObjects=this.getActiveObjects(objects);  //idea hold active objects yet in ObjectManager for speedup
 	
 	for (var j in objects){	
 		
@@ -38,11 +40,11 @@ theObject.evaluatePositions=function(){
 		var reds=[];
 		
 		var dataObject=objects[j];
-		for (var i in semanticObjects){
-			var semanticObject=semanticObjects[i];
-			if (dataObject.isSemanticObject) continue;
-			var g=semanticObject.getGreenPositions(dataObject);
-			var r=semanticObject.getRedPositions(dataObject);
+		for (var i in activeObjects){
+			var activeObject=activeObjects[i];
+			if (dataObject.evaluateObject) continue; //objects that evaluate are not evaluated themselves
+			var g=activeObject.getGreenPositions(dataObject);
+			var r=activeObject.getRedPositions(dataObject);
 			
 			if (g) greens.push(g);
 			if (r) reds.push(r);
@@ -148,14 +150,14 @@ theObject.getInventory=function(){
 	return Modules.ObjectManager.getObjects(this.id,this.context);
 }
 
-theObject.getSemanticObjects=function(inventory){
+theObject.getActiveObjects=function(inventory){
 	if (!inventory) inventory=this.getInventory();
 	
 	var result=[];
 	
 	for (var i in inventory){
 		var object=inventory[i];
-		if (object.isSemanticObject) result.push(object);
+		if (object.evaluateObject) result.push(object);
 	}
 	
 	return result;
