@@ -77,24 +77,9 @@ theObject.getOverlappingObjects=function(){
 	return result;
 }
 
-/**
-*	evaluate is called, when the object itself has been moved or altered
-*	
-*	ResponsiveObjects should handle this as if other objects would have moved
-*	in respect to them (see ResponsiveObject.evaluate)
-*
-*	Semantiv Objects should rearrange other objects in their evaluation
-*
-**/
-theObject.evaluate=function(changeData){
-	//this is different for ResponsiveObjects and SemanticObjects
-	this.getRoom().evaluatePositions();
-}
 
 /**
 *	ActiveObjects evaluate other objects in respect to themselves.
-*	this is not positioning in front of a background which shall be
-*	done by getGreenPositions and getRedPositions
 *
 *	object the object that shall be evaluated
 *	changeData old and new values of positioning (e.g. changeData.old.x) 

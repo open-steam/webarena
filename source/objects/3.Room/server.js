@@ -14,8 +14,6 @@ var Modules=require('../../server.js');
 theObject.evaluatePositionFor=function(object,data){
 	//console.log('room','evaluatePositionFor',object.toString(),data);
 	
-	if (object.isActiveObject) return object.evaluate(data);
-	
 	var inventory=this.getInventory();
 	
 	for (var i in inventory){
