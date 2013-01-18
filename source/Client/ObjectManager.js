@@ -296,10 +296,12 @@ ObjectManager.init=function(){
         ObjectManager.user = data.username;
 		ObjectManager.userHash = data.userhash;
 
-		if (data.home !== undefined) {
+		if (GUI.startRoom !== undefined && GUI.startRoom != '') {
+			ObjectManager.loadRoom(GUI.startRoom);
+		} else if (data.home !== undefined) {
 			ObjectManager.loadRoom(data.home);
 		} else {
-			ObjectManager.loadRoom(GUI.startRoom);
+			GUI.error("Unable to load room", "Unable to load room. (no room defined)", false, true);
 		}
         
     });

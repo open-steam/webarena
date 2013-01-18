@@ -39,7 +39,7 @@ fileConnector.login=function(username,password,rp,context){
 	
 	data.username=username.toLowerCase();
 	data.password=password;
-	data.home= "public"; username.toLowerCase();
+	data.home= "public";
 	
 	if (this.Modules.Config.fileConnectorUsers) {
 		

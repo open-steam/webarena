@@ -60,6 +60,7 @@ bidConnector.mayAnything=function(roomID, connection, callback) {
 	
 	var self = this;
 
+	//TODO: check if room is webarena
 	this.bidConnections[connection.socket.id].Object.checkRight(roomID, "write", function(resp) {
 	
 		self.Modules.Log.debug("Got right from bid server (not cached) (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(connection)+"')");
