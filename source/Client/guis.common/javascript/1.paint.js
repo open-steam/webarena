@@ -519,6 +519,12 @@ GUI.closePaintMode = function() {
 
 GUI.savePaintMode = function() {
 	
+	if (!GUI.painted) {
+		GUI.cancelPaintMode();
+		return;
+	}
+	
+
 	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 	
 	var pixelFound = true;

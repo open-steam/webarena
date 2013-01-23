@@ -39,6 +39,8 @@ ObjectManager.buildObject=function(type, attributes){
     var proto=this.getPrototype(type);
     var object=Object.create(proto);
 
+	object.setLanguage(GUI.currentLanguage);
+
     object.init(attributes.id);
 
     object.data=attributes;
@@ -275,6 +277,11 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
             object=Modules.ObjectManager.getObject(objectID);
             if (object){
                 clearTimeout(interval);
+
+				/* set a very high layer for the new object and renumber all layers */
+				object.setAttribute("layer", object.getAttribute("layer")+999999);
+				ObjectManager.renumberLayers();
+
                 object.justCreated();
 				if (callback != undefined) callback(object);
                 return;

@@ -25,6 +25,7 @@ GUI.initToolbar = function() {
 	});
 	
 	
+	var toolbar_locked_elements = {};
 	
 	$.each(types, function(key, object) { 
 
@@ -55,6 +56,8 @@ GUI.initToolbar = function() {
 
 						var click = function(attributes) {
 
+							popover.hide();
+
 							var proto = ObjectManager.getPrototype(object.type);
 							
 							if (!Modules.Config.presentationMode) {
@@ -64,8 +67,6 @@ GUI.initToolbar = function() {
 							} else {
 								alert(GUI.translate("You cannot create objects in presentation mode"));	
 							}
-							
-							popover.hide();
 							
 						}
 
@@ -115,6 +116,21 @@ GUI.initToolbar = function() {
 			
 			var click = function(attributes) {
 
+				if (toolbar_locked_elements[object[0].type] === true) return; //element is locked
+
+				if (object[0].type == "Paint" || object[0].type == "Highlighter") {
+					
+					toolbar_locked_elements[object[0].type] = true;
+					
+					/* create unlock timer */
+					window.setTimeout(function() {
+						toolbar_locked_elements[object[0].type] = undefined;
+					}, 2000);
+					
+				}
+
+				jPopoverManager.hideAll();
+
 				var proto = ObjectManager.getPrototype(object[0].type);
 				
 				if (!Modules.Config.presentationMode) {
@@ -122,8 +138,6 @@ GUI.initToolbar = function() {
 				} else {
 					alert(GUI.translate("You cannot create objects in presentation mode"));	
 				}
-				
-				jPopoverManager.hideAll();
 				
 			}
 			

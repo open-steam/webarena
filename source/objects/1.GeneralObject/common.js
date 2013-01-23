@@ -32,6 +32,7 @@ GeneralObject.duplicateLinkedObjects = false; //duplicate linked objects if this
 
 GeneralObject.contentURLOnly = true; //content is only accessible via URL
 
+GeneralObject.currentLanguage = undefined;
 
 GeneralObject.register=function(type){
 	
@@ -379,6 +380,10 @@ GeneralObject.getActions=function(){
 GeneralObject.translate=function(language, text){
 	if (!this.translationManager) return text;
 	return this.translationManager.get(language, text);
+}
+
+GeneralObject.setLanguage=function(currentLanguage) {
+	this.currentLanguage = currentLanguage;
 }
 
 GeneralObject.setTranslations=function(language,data){

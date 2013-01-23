@@ -30,6 +30,7 @@ GUI.setTranslations('de',{
 	'Toggle hidden mode' : 'Versteckt-Modus wechseln',
 	'Texts' : 'Texte',
 	'cancel' : 'Abbrechen',
-	'save' : 'Speichern'
+	'save' : 'Speichern',
+	'Upload file' : 'Datei hochladen',
 }
 );
