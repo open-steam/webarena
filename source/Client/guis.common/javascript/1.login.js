@@ -2,6 +2,10 @@
 
 GUI.showLogin = function(err) {
 	
+	if (window.location.hash != "" && window.location.hash.indexOf('externalSession') > -1) {
+		GUI.login();
+	}
+	
 	GUI.loginProcessActive = false;
 	
 	$("#login_background").show();
@@ -73,6 +77,8 @@ GUI.userid = undefined;
 
 GUI.loginProcessActive = false;
 
+GUI.externalSession = false;
+
 GUI.login = function() {
 	
 	if (GUI.loginProcessActive) return;
@@ -82,6 +88,22 @@ GUI.login = function() {
 	
 	if (GUI.username === undefined)	GUI.username = $("#login_username").val();
 	if (GUI.password === undefined) GUI.password = $("#login_password").val();
+	
+	if (window.location.hash != "" && window.location.hash.indexOf('externalSession/') > -1) {
+		
+		var hashData = window.location.hash.substr(1).split("/")
+		
+		if (hashData[0] == "externalSession") {
+		
+			GUI.username = hashData[1];
+			GUI.password = hashData[2];
+			
+			GUI.externalSession = true;
+			window.location.hash = "";
+		
+		}
+		
+	}
 	
 	if (GUI.username == "") GUI.username = "User";
 	

@@ -73,7 +73,7 @@ UserManager.login=function(socketOrUser,data){
 	var socketServer=Modules.SocketServer;
 	
 	//try to login on the connector
-	connector.login(data.username,data.password,function(data){
+	connector.login(data.username,data.password, data.externalSession, function(data){
 		
 		//if the connector returns data, login was successful. In this case
 		//a new user object is created and a loggedIn event is sent to the
@@ -103,6 +103,7 @@ UserManager.login=function(socketOrUser,data){
 			connection.user.username=data.username;
 			connection.user.password=data.password;
 			connection.user.color=userColor;
+			connection.user.externalSession = data.externalSession;
 		
 			connection.user.home=data.home;
 			connection.user.hash='___'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");

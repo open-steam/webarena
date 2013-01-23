@@ -5,11 +5,18 @@ var bidConnector=require('./FileConnector.js');
 bidConnector.bidConnections = {};
 bidConnector.bidRights = {};
 
-bidConnector.login=function(username,password,rp,context){
+bidConnector.externalSessions = {};
+
+bidConnector.login=function(username,password,externalSession,rp,context){
 
 	var self = this;
 
 	var data={};
+	
+	if (externalSession === true) {
+		if (self.externalSessions[password] === undefined) rp(false);
+		password = self.externalSessions[password].password; //get real password from external session
+	}
 
 	var BidConnection = require('./BidAPI.js').BidConnection;
 	self.bidConnections[context.socket.id] = new BidConnection(global.config.bidServer, global.config.bidPort, username, password);
@@ -42,6 +49,12 @@ bidConnector.isLoggedIn=function(context) {
 	return (this.bidConnections[context.socket.id] !== undefined);
 }
 
+
+
+bidConnector.addExternalSession=function(data) {
+	console.log(data);
+	this.externalSessions[data.id] = data;
+}
 
 
 /* RIGHTS */

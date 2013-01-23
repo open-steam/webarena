@@ -50,7 +50,7 @@ WebServer.init=function(theModules){
 	  
 	  if (url.substr(0,6)=='/room/') {
 		/* open room */
-		
+
 			try {
 		
 				var roomId = url.substr(6);
@@ -296,6 +296,30 @@ WebServer.init=function(theModules){
 			}
 
 	  	return;
+	  }
+	
+	  //get external session data
+	
+	  else if (url=='/pushSession' && req.method.toLowerCase() == 'post'){
+	
+			var qs = require('querystring');
+			var data = '';
+			req.on('data', function(chunk) {
+			  data += chunk;
+			});
+			req.on('end', function() {
+			  	var post = qs.parse(data);
+			
+				if (Modules.Connector.addExternalSession !== undefined) {
+					Modules.Connector.addExternalSession({
+						"id" : post.id,
+						"username" : post.username,
+						"password" : post.password
+					});
+				}
+			
+			});
+		
 	  }
 	  
 	  // objects

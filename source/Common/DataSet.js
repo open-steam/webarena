@@ -15,7 +15,7 @@ var DataSet=function(){
 	this.width=100;
 	this.height=100;
 	this.id=false;
-	this.layer=10;
+	this.layer=999999999;
 	this.fillcolor='#c0c0c0';
 	this.contentAge=0;	
 }

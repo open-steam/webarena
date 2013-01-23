@@ -32,5 +32,9 @@ GUI.setTranslations('de',{
 	'cancel' : 'Abbrechen',
 	'save' : 'Speichern',
 	'Upload file' : 'Datei hochladen',
+	'Upload completed' : 'Datei wurde hochgeladen',
+	'Error while uploading file' : 'Fehler während des Hochladens',
+	'Upload aborted' : 'Hochladen abgebrochen',
+	'Create file object' : 'Erstelle Objekt für Datei',
 }
 );

@@ -110,34 +110,10 @@ ObjectManager.getObjectsByLayer=function() {
  */
 ObjectManager.getObjectsByLayerInverted=function() {
 	
-    var objects = this.getObjects();
+    var objects = ObjectManager.getObjectsByLayer();
+	objects.reverse();
 	
-    var objectsArray = [];
-	
-    for (var i in objects){
-        var obj = objects[i];
-        objectsArray.push(obj);
-    }
-
-    objectsArray.sort(function(a,b) {
-		
-		if (a.alwaysOnTop === true) {
-			return -1;
-		}
-		
-		if (b.alwaysOnTop === true) {
-			return 1;
-		}
-		
-        if (a.getAttribute("layer") > b.getAttribute("layer")) {
-            return -1;
-        } else {
-            return 1;
-        }
-		
-    });
-	
-    return objectsArray;
+    return objects;
 	
 }
 
@@ -220,12 +196,13 @@ ObjectManager.removeLocally=function(data){
     delete(ObjectManager.objects[data.id]);
 }
 
-ObjectManager.login=function(username, password){
+ObjectManager.login=function(username, password, externalSession){
     if (!username) username='guest';
     if (!password) password='';
     Modules.SocketClient.serverCall('login',{
         'username':username,
-        'password':password
+        'password':password,
+		'externalSession' : externalSession
     });
 }
 
@@ -278,9 +255,7 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
             if (object){
                 clearTimeout(interval);
 
-				/* set a very high layer for the new object and renumber all layers */
-				object.setAttribute("layer", object.getAttribute("layer")+999999);
-				ObjectManager.renumberLayers();
+				ObjectManager.renumberLayers(true);
 
                 object.justCreated();
 				if (callback != undefined) callback(object);
@@ -424,7 +399,7 @@ ObjectManager.performActionForSelected = function(actionName, clickedObject) {
 }
 
 
-ObjectManager.renumberLayers = function() {
+ObjectManager.renumberLayers = function(noUpdate) {
 	
     /* get all objects and order by layer */
     var objects = ObjectManager.getObjects();
@@ -457,7 +432,9 @@ ObjectManager.renumberLayers = function() {
 		
     }
 	
-    GUI.updateLayers();
+	if (noUpdate === undefined) {
+    	GUI.updateLayers();
+	}
 	
 }
 

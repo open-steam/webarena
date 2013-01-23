@@ -31,7 +31,7 @@ fileConnector.info=function(){
 *	response function.
 *
 */
-fileConnector.login=function(username,password,rp,context){
+fileConnector.login=function(username,password,externalSession,rp,context){
 	
 	this.Modules.Log.debug("Login request for user '"+username+"'");
 	

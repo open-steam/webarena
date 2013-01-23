@@ -35,7 +35,8 @@ GUI.loadGUI = function(step) {
 		if (!GUI.loaded) GUI.sidebar.init();
 
 		/* login to server */
-		ObjectManager.login(GUI.username, GUI.password);
+		ObjectManager.login(GUI.username, GUI.password, GUI.externalSession);
+		GUI.externalSession = false;
 		
 	} else if (step == 2) {
 		GUI.progressBarManager.updateProgress("login", 40);

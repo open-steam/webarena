@@ -518,7 +518,8 @@ GeneralObject.mayResizeProportional=function() {
 
 
 GeneralObject.execute=function(){
-	this.toFront();
+	this.select();
+	this.selectedClickHandler();
 }
 
 GeneralObject.isSelected = function() {
