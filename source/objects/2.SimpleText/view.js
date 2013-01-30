@@ -30,8 +30,11 @@ SimpleText.draw=function(external){
 	this.getContentAsString(function(data){
 		
 		if(data!=that.oldContent){
-			$(rep).find("text").get(0).textContent=data;
-			if (!data) $(rep).find("text").get(0).textContent='No text yet!';
+			if ((!data && !that.oldContent) || data == "") {
+				$(rep).find("text").get(0).textContent=that.translate(that.currentLanguage, 'No text yet!');
+			} else {
+				$(rep).find("text").get(0).textContent=data;
+			}
 		}
 		
 		that.oldContent=data;
@@ -54,6 +57,7 @@ SimpleText.createRepresentation = function() {
 	rep.dataObject=this;
 
 	$(rep).attr("id", this.getAttribute('id'));
+	$(rep).css("cursor", "default");
 
 	this.initGUI(rep);
 	

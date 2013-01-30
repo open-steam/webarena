@@ -36,21 +36,23 @@ GeneralObject.setContent=function(content){
 	requestData.roomID=this.getRoomID();
     requestData.objectID=this.id;
     requestData.content=content;
-	
+
 	Modules.Dispatcher.query('setContent',requestData);
 	
 	if (this.afterSetContent) this.afterSetContent();
 	
 }
 
-GeneralObject.fetchContent=function(worker){
-	
+GeneralObject.fetchContent=function(worker, forced){
+
+	if (this.contentURLOnly) return;
+
 	if (!worker) worker=function(data){
-		console.log(data);
+		//console.log(data);
 	}
-	
-	if (this.contentFetched) {
-		
+
+	if (this.contentFetched && forced !== true) {
+
 		worker(this.content);
 		return;
 	}
@@ -59,7 +61,7 @@ GeneralObject.fetchContent=function(worker){
 	
 	requestData.roomID=this.getRoomID();
     requestData.objectID=this.id;
-	
+
 	var that=this;
 	//Do not use "this" in response fucntions as they do not refer to the object in there!
 	Modules.Dispatcher.query('getContent',requestData,function(newContent){
@@ -114,15 +116,8 @@ GeneralObject.hasContent=function(){
 }
 
 GeneralObject.contentUpdated=function(){
-	
-	//should be overwritten for objects that get binary content by HTTP;
-	
-	var requestData={};
-	
-	requestData.roomID=this.getRoomID();
-    requestData.objectID=this.id;
 
-	this.contentFetched=false;
+	this.fetchContent(false, true);
 	
 	this.draw();
 }

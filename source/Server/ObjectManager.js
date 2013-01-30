@@ -51,7 +51,7 @@ ObjectManager.sendRoom=function(socket,roomID){
 				var object=objects[i];
 				object.updateClient(socket);	//the object data
 				if (object.hasContent()) {		//and its content if there is some
-					object.updateClient(socket,'contentUpdate');
+					object.updateClient(socket,'contentUpdate',object.hasContent(socket));
 				}
 			}
 
@@ -407,7 +407,7 @@ ObjectManager.init=function(theModules){
 					return;
 				}
 
-				object.setContent(content,false,context);
+				object.setContent(content);
 				
 			} else {
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to set content '+objectID);
@@ -448,16 +448,16 @@ ObjectManager.init=function(theModules){
 
 	//getContent
 	Modules.Dispatcher.registerCall('getContent',function(socket,data,responseID){
-		
+
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 		
 		var roomID=data.roomID
 		var objectID=data.objectID;
 		
 		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-		
+
 			if (mayRead) {
-				
+
 				var object=ObjectManager.getObject(roomID,objectID,context);
 				if (!object){
 					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
