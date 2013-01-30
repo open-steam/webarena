@@ -90,10 +90,47 @@
   right: 50px;
 }
 
+
+
 .discussion-statement-deletable:hover .statement-delete{
   display: block;
 }
 
 .discussion-statement-deletable:hover .statement-edit{
   display: block;
+}
+
+.wrapped-text{
+  height: 50px;
+}
+
+.discussion-blob{
+  font-size: 12px;
+}
+
+
+$triangle-border: 5px;
+$triangle-size: 4* $triangle-border;
+
+.triangle-border {
+  position:relative;
+  padding:5px;
+  margin:1em 0 3em;
+  border: $triangle-border solid RGBA(68.00, 78.00, 91.00, 1.00);
+  color:#333;
+  background:#fff;
+  @include border-radius(10px);
+}
+
+.triangle-border:before {
+  content:"";
+  position:absolute;
+  bottom:-($triangle-size);
+  left:40px; /* controls horizontal position */
+  border-width:$triangle-size $triangle-size 0;
+  border-style:solid;
+  border-color:RGBA(68.00, 78.00, 91.00, 1.00) transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
 }

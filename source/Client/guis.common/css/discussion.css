@@ -1,7 +1,6 @@
 /**************************************/
 /*           Discussion               */
 /**************************************/
-/* line 7, ../sass/discussion.scss */
 .discussion {
   border: 2px solid #cccccc;
   -moz-border-radius-topleft: 5px;
@@ -14,14 +13,12 @@
   background-color: #FFFFFF;
 }
 
-/* line 16, ../sass/discussion.scss */
 .discussion-text {
   overflow-y: scroll;
   border-bottom: 2px solid #cccccc;
   border-top: 2px solid #cccccc;
 }
 
-/* line 23, ../sass/discussion.scss */
 .discussion-heading {
   margin-bottom: 5px;
   margin-top: 0px;
@@ -29,13 +26,11 @@
   font-size: 16px;
 }
 
-/* line 32, ../sass/discussion.scss */
 .discussion-statement {
   background-color: white;
   position: relative;
 }
 
-/* line 37, ../sass/discussion.scss */
 .discussion-statement-heading {
   border-top: 2px solid #CCCCCC;
   padding: 5px;
@@ -43,24 +38,20 @@
   color: #04138A;
 }
 
-/* line 46, ../sass/discussion.scss */
 .discussion-statement-heading .message-timestamp {
   float: right;
   font-size: 12px;
 }
-/* line 51, ../sass/discussion.scss */
 .discussion-statement-heading .message-author {
   font-size: 12px;
 }
 
-/* line 57, ../sass/discussion.scss */
 .discussion-statement-text {
   padding: 5px;
   font-size: 14px;
   margin: 0px;
 }
 
-/* line 63, ../sass/discussion.scss */
 .discussion-input {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
@@ -69,7 +60,6 @@
   width: 100%;
 }
 
-/* line 70, ../sass/discussion.scss */
 .statement-operation, .statement-delete, .statement-edit {
   display: none;
   position: absolute;
@@ -80,22 +70,54 @@
   background-color: rgba(200, 200, 200, 0.5);
 }
 
-/* line 80, ../sass/discussion.scss */
 .statement-operation:hover, .statement-delete:hover, .statement-edit:hover {
   font-weight: bold;
 }
 
-/* line 88, ../sass/discussion.scss */
 .statement-edit {
   right: 50px;
 }
 
-/* line 93, ../sass/discussion.scss */
 .discussion-statement-deletable:hover .statement-delete {
   display: block;
 }
 
-/* line 97, ../sass/discussion.scss */
 .discussion-statement-deletable:hover .statement-edit {
   display: block;
+}
+
+.wrapped-text {
+  height: 50px;
+}
+
+.discussion-blob {
+  font-size: 12px;
+}
+
+.triangle-border {
+  position: relative;
+  padding: 5px;
+  margin: 1em 0 3em;
+  border: 5px solid RGBA(68, 78, 91, 1);
+  color: #333;
+  background: #fff;
+  -webkit-border-radius: 10px;
+  -moz-border-radius: 10px;
+  -ms-border-radius: 10px;
+  -o-border-radius: 10px;
+  border-radius: 10px;
+}
+
+.triangle-border:before {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 40px;
+  /* controls horizontal position */
+  border-width: 20px 20px 0;
+  border-style: solid;
+  border-color: RGBA(68, 78, 91, 1) transparent;
+  /* reduce the damage in FF3.0 */
+  display: block;
+  width: 0;
 }

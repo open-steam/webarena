@@ -16,12 +16,15 @@ Discussion.register=function(type){
     GeneralObject.register.call(this,type);
     
     this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
-    this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,unit:'px',category:'Appearance'});
+    this.registerAttribute('font-size',{type:'fontsize',min:10,standard:12,unit:'px',category:'Appearance'});
     this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance'});
-    
+
     this.standardData.fillcolor='rgb('+240+','+240+','+240+')';
-    this.standardData.width=400;
-    this.standardData.height=400;
+    this.standardData.width=200;
+    this.standardData.height=100;
+
+    this.registerAttribute('linesize',{hidden: true});
+    this.registerAttribute('linecolor',{hidden: true});
 
 }
 

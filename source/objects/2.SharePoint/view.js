@@ -18,6 +18,7 @@ SharePoint.createRepresentation = function(){
 
 SharePoint.switchState = function(){
     var inIFrame = this.getAttribute("show_iframe");
+    var that = this;
 
     this.setAttribute("show_iframe", !inIFrame);
     if(!inIFrame){
@@ -30,6 +31,8 @@ SharePoint.switchState = function(){
 
     $('#' + this.getAttribute('id')).remove();
     this.getRepresentation();
+    this.deselect();
+    $('.actionsheet').hide();
 }
 
 SharePoint.openWindow = function(){
@@ -42,16 +45,21 @@ SharePoint.createRepresentationIFrame = function(){
     var rep = GUI.svg.other(rep, "foreignObject");
     var body = document.createElement("body");
 
-    $(body).append("<div class='sharepoint-toolbar moveArea' ><span class='minimize-button'></span><span class='open-extern-button'</div>")
+    $(body).append(
+        "<div class='sharepoint-toolbar moveArea' >" +
+            "<span class='minimize-button'></span>" +
+            "<span class='open-extern-button'></span>" +
+        "</div>")
     $(body).append("<div class='iframe-container'><iframe src='" + this.getAttribute("sharepoint_src") + "' width='" + (this.getAttribute('width')-8) + "px' height='" +  (this.getAttribute('height')-38)  +"px'></iframe> </div>");
 
 
-    $(body).on("click", ".minimize-button", function(){
+    $(body).on("click", ".minimize-button", function(event){
         that.switchState();
     });
 
     $(body).on("click", ".open-extern-button", function(){
         that.openWindow();
+        that.deselect();
     });
 
     $(rep).append(body);

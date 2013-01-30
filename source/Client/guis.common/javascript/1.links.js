@@ -34,15 +34,50 @@ GUI.showLinks = function(object) {
 
 		var targetX = target.object.getViewBoundingBoxX()+(target.object.getViewBoundingBoxWidth()/2);
 		var targetY = target.object.getViewBoundingBoxY()+(target.object.getViewBoundingBoxHeight()/2);
-	
+
+
 		var line = GUI.svg.line(objectX, objectY, targetX, targetY, {
-			strokeWidth: 1,
+			strokeWidth: 6,
 			stroke: "#CCCCCC"
 		});
-		
-		$(line).attr("layer", -100);
+
+
+
 		$(line).addClass("webarenaLink_"+object.data.id);
+
 		$(line).css("opacity", 0);
+
+        $(line).bind("mousedown",function(event){
+            event.preventDefault();
+            event.stopPropagation();
+        })
+
+        $(line).bind("mouseup", function(event){
+            var x = (parseFloat($(this).attr("x1")) + parseFloat($(this).attr("x2")))/2
+            var y = (parseFloat($(this).attr("y1")) + parseFloat($(this).attr("y2")))/2
+
+            GUI.showActionsheet(x,y, {
+                "actions" : [
+                    {
+                        "actionName" : "Entfernen",
+                        "actionFunction" : function(){
+                            object.removeLinkedObjectById(target.object.data.id);
+                            target.object.removeLinkedObjectById(object.data.id);
+                            object.deselect();
+                        }
+                    }
+                ]
+            }, false)
+        });
+
+        $(line).hover(
+            function(event){
+                $(this).attr("stroke-width", 10)
+            },
+            function(event){
+                $(this).attr("stroke-width", 6)
+            }
+        );
 		
 		
 		
@@ -64,6 +99,8 @@ GUI.showLinks = function(object) {
 			$(line).css("opacity", 1);
 
 		}, 1);
+
+        $("svg").prepend($(line));
 		
 	});
 	

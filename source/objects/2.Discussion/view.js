@@ -9,7 +9,6 @@ Discussion.drawEmbedded = function(){
     var rep=this.getRepresentation();
     rep.dataObject=this;
 
-
     // set properties
     this.setViewX(this.getAttribute('x'));
     this.setViewY(this.getAttribute('y'));
@@ -40,51 +39,28 @@ Discussion.drawEmbedded = function(){
     $(rep).find(".discussion-heading").html(title);
     var that = this;
 
-    this.getContentAsString(function(remoteContent){
+    this.bindAdminControlls();
+}
 
-        if(remoteContent !== ""){
-            remoteContent = JSON.parse(remoteContent);
-        }
+Discussion.bindAdminControlls = function(){
+    var rep=this.getRepresentation();
+    var that = this;
+    $(rep).find(".statement-delete").click(function(){
+        var deleteId = ($(this).parent('.discussion-statement').attr("data-message-id"))
 
-        // update content
-        if (that.oldContent !== remoteContent) {   //content has changed
+        that.deleteStatement(deleteId);
+    })
 
-            var text = '';
-            var messageArray = remoteContent;
-
-            for (var i = 0; i < messageArray.length; ++i){
-                text += that.renderMessage(messageArray[i]);
-            }
-            text = text.replace(/[\r\n]+/g, "<br />");
-
-            $(rep).find(".discussion-text").html(text);
-            $(rep).find(".statement-delete").click(function(){
-                var deleteId = ($(this).parent('.discussion-statement').attr("data-message-id"))
-                var newArr = new Array();
-                for (var i = 0, j = messageArray.length; i < j; ++i){
-                    if(messageArray[i].timestamp !== deleteId){
-                        newArr.push(messageArray[i])
-                    }
-                }
-                that.setContent(JSON.stringify(newArr));
-            })
-
-            $(rep).find(".statement-edit").click(function(){
-                console.log(this)
-                $(this).siblings(".discussion-statement-text").trigger("discussion-statement-edit")
-            });
-
-            that.oldContent=messageArray;
-        }
-
-        that.enableInlineEditors();
+    $(rep).find(".statement-edit").click(function(){
+        $(this).siblings(".discussion-statement-text").trigger("discussion-statement-edit")
     });
 }
 
 Discussion.enableInlineEditors = function(){
     var rep=this.getRepresentation();
     var that = this;
-    $(rep).find('.discussion-statement-text').editable(function(value, settings) {
+
+    var saveFunction = function(value, settings) {
         var deleteId = ($(this).parent('.discussion-statement').attr("data-message-id"))
         var changedArr = new Array();
         for (var i = 0; i < that.oldContent.length; ++i){
@@ -97,7 +73,14 @@ Discussion.enableInlineEditors = function(){
             }
         }
         that.setContent(JSON.stringify(changedArr));
-    }, {
+    };
+
+    var replaceBr = function(value){
+        var retval = value.replace(/<br[\s\/]?>/gi, '\n');
+        return retval;
+    }
+
+    $(rep).find('.discussion-statement-text').editable(saveFunction, {
         type      : "autogrow",
         submit    : 'Speichern',
         placeholderHTML5 : 'Diskussions-Titel',
@@ -105,7 +88,8 @@ Discussion.enableInlineEditors = function(){
             lineHeight : 16,
             maxHeight  : 512
         },
-        event : "discussion-statement-edit"
+        event : "discussion-statement-edit",
+        data: replaceBr
     });
 }
 
@@ -117,6 +101,13 @@ Discussion.drawIcon = function(){
 
     this.setViewWidth(this.getAttribute('width'));
     this.setViewHeight(this.getAttribute('height'));
+    
+    $(rep).find(".discussion-blob").css("background-color", this.getAttribute('fillcolor'));
+    $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
+    $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
+    $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
+
+    $(rep).attr("layer", this.getAttribute('layer'));
 }
 
 Discussion.draw=function(){
@@ -133,8 +124,8 @@ Discussion.switchState = function(){
 
     this.setAttribute("show_embedded", !embedded);
     if(!embedded){
-        this.setAttribute("width", 700);
-        this.setAttribute("height", 800);
+        this.setAttribute("width", 400);
+        this.setAttribute("height" , 500);
     } else {
         this.setAttribute("width", 64*2.5);
         this.setAttribute("height", 64*1.5)
@@ -167,17 +158,7 @@ Discussion.createRepresentationEmbedded = function(){
             '</div>')
     );
 
-    that.oldContent = new Array();
-
-    this.fetchContentString(function(remoteContent){
-        if(remoteContent){
-            remoteContent = JSON.parse(remoteContent)
-            if(remoteContent){
-                that.oldContent = remoteContent;
-            }
-        }
-
-    });
+        that.oldContent = new Array();
 
     that.title = this.getAttribute("discussionTitle") || "TITLE";
 

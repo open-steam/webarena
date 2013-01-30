@@ -66,6 +66,15 @@ EasyDBImage.execute = function () {
             "OK":function () {
                 var pictureUrl = $('.selected-row').attr('easydbdownloadurl');
                 var easyDbId = $('.selected-row').attr('easydbimageid');
+                var easydbkuenstler = $('.selected-row').attr('easydbkuenstler');
+                var easydbstandort = $('.selected-row').attr('easydbstandort');
+                var easydbdargestellter_ort = $('.selected-row').attr('easydbdargestellter_ort');
+                var easydbtitel = $('.selected-row').attr('easydbtitel');
+
+                if(easydbkuenstler) that.setAttribute('easydbkuenstler', easydbkuenstler);
+                if(easydbstandort) that.setAttribute('easydbstandort', easydbstandort);
+                if(easydbdargestellter_ort) that.setAttribute('easydbdargestellter_ort', easydbdargestellter_ort);
+                if(easydbtitel) that.setAttribute('easydbtitel', easydbtitel);
 
                 setAndConfigureImage({
                     url: pictureUrl,
