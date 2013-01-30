@@ -180,7 +180,12 @@ EasyDBImage.renderResultTable = function(data){
         "<table>";
     $.each(data, function(index, imageInformation){
         dialogPage2 += ""+
-            "<tr class='result-row' onclick='EasyDBImage.selectRow(event)' easydbimageid='"+ imageInformation.easydbId +"' easydbdownloadurl='" + imageInformation.originalUrl +"'>" +
+            "<tr class='result-row' onclick='EasyDBImage.selectRow(event)' easydbimageid='"+ imageInformation.easydbId+ "' " +
+                        "easydbtitel='" + imageInformation.titel + "' " +
+                        "easydbkuenstler='" + imageInformation.kuenstler + "' " +
+            "easydbstandort='" + imageInformation.standort + "' " +
+            "easydbdargestellter_ort='" + imageInformation.dargestellter_ort + "' " +
+            "easydbdownloadurl='" + imageInformation.originalUrl +"'>" +
             "<td>" +
             "<img class='result-row-image' src='" + imageInformation.url + "'>" +
             "</td>" +

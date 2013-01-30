@@ -98,7 +98,9 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
                     kuenstler : value['kuenstler_name'],
                     easydbId : value['id'],
                     originalUrl : value['bild.image']['download_url'],
-                    cnt : value['cnt']
+                    cnt : value['cnt'],
+                    standort: value.standort,
+                    dargestellter_ort : value.dargestellterort
                 });
             } catch(e){}
 

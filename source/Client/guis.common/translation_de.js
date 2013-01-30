@@ -37,5 +37,6 @@ GUI.setTranslations('de',{
 	'Upload aborted' : 'Hochladen abgebrochen',
 	'Create file object' : 'Erstelle Objekt für Datei',
 	'Edit text' : 'Text editieren',
+    'Meta Data': "Metadaten"
 }
 );
