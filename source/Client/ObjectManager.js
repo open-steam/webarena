@@ -173,7 +173,7 @@ ObjectManager.registerAttributeChangedFunction=function(theFunction){
 
 ObjectManager.contentUpdate=function(data){
     var object=ObjectManager.getObject(data.id);
-    object.contentUpdated(); 
+    object.contentUpdated();
 }
 
 ObjectManager.remove=function(object){

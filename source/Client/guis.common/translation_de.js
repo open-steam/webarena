@@ -36,5 +36,6 @@ GUI.setTranslations('de',{
 	'Error while uploading file' : 'Fehler während des Hochladens',
 	'Upload aborted' : 'Hochladen abgebrochen',
 	'Create file object' : 'Erstelle Objekt für Datei',
+	'Edit text' : 'Text editieren',
 }
 );
