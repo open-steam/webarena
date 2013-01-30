@@ -155,6 +155,38 @@ GeneralObject.register=function(type){
 		}
 		
 	},false);
+
+    this.registerAction(
+        'Verknüpfen',
+        function(lastClicked){
+            var selected = ObjectManager.getSelected();
+            var lastSelectedId = lastClicked.getId();
+
+            var newLinks = [];
+
+            if(_.isArray(lastClicked.data.link)){
+                newLinks = newLinks.concat(lastClicked.data.link)
+            } else if(lastClicked.data.link){
+                newLinks.push(lastClicked.data.link);
+            }
+
+            _.each(selected, function(current){
+                var selectedId = current.getId()
+                if(selectedId!==lastSelectedId && !_.contains(newLinks, current.getId())) newLinks.push(current.getId());
+            })
+
+            lastClicked.setAttribute("link", newLinks);
+            _.each(selected, function(current){
+                current.deselect()
+                //current.select()
+            })
+            lastClicked.select();
+        },
+        false,
+        function(){
+            return (ObjectManager.getSelected().length > 1)
+        }
+    );
 	
 	
 	this.registerAction('Group',function(){
@@ -553,7 +585,12 @@ GeneralObject.remove=function(){
 	Modules.ObjectManager.remove(this);
 }
 
+GeneralObject.removeLinkedObjectById = function(removeId){
+    var filteredIds = _.filter(this.data.link, function(elem){return elem != removeId})
 
+    this.setAttribute("link", filteredIds);
+
+}
 
 GeneralObject.hasLinkedObjects=function() {
 	
@@ -601,12 +638,13 @@ GeneralObject.getLinkedObjects=function() {
 	/* get objects linked by this object */
 	var ownLinkedObjectsIds = [];
 
+
 	if (this.data.link instanceof Array) {
-		ownLinkedObjectsIds.concat(this.data.link);
+        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.data.link);
 	} else {
 		ownLinkedObjectsIds.push(this.data.link);
 	}
-	
+
 	/* get objects which link to this object */
 	var linkingObjectsIds = [];
 	
@@ -641,7 +679,6 @@ GeneralObject.getLinkedObjects=function() {
 		
 	}
 
-	
 	var links = {};
 
 	if (ownLinkedObjectsIds) {
