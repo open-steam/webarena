@@ -158,17 +158,7 @@ Discussion.createRepresentationEmbedded = function(){
             '</div>')
     );
 
-    that.oldContent = new Array();
-
-    this.getContentAsString(function(remoteContent){
-        if(remoteContent){
-            remoteContent = JSON.parse(remoteContent)
-            if(remoteContent){
-                that.oldContent = remoteContent;
-            }
-        }
-
-    });
+        that.oldContent = new Array();
 
     that.title = this.getAttribute("discussionTitle") || "TITLE";
 
