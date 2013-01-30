@@ -11,3 +11,6 @@ node_modules/
 .config.rb.swp
 source/err.log
 source/out.log
+
+*.sublime-project
+*.sublime-workspace
