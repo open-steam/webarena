@@ -1,0 +1,4 @@
+HtmlTest.setTranslations('de',{
+
+}
+);

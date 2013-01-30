@@ -243,6 +243,14 @@ GUI.setupInspectorContent = function(inspector) {
 			
 					element.setValue(info.value);
 					element.setInactive();
+					
+					$(element.getDOM()).children("div").css({
+						"overflow": "hidden",
+						"display": "block",
+						"height": "18px",
+						"width": "110px",
+					}).attr("title", info.value);
+					
 					var widget = false;
 					
 					GUI.inspectorElementsSetter[attribute] = element.setValue;

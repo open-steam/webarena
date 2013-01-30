@@ -1,0 +1,4 @@
+HtmlObject.setTranslations('de',{
+
+}
+);
