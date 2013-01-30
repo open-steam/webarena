@@ -15,7 +15,7 @@ GUI.hideObject = function(webarenaObject) {
 		$(rep).css("opacity", 0.1);
 	}
 	
-	webarenaObject.draw();
+	//webarenaObject.draw();
 	
 }
 
@@ -36,7 +36,7 @@ GUI.showObject = function(webarenaObject) {
 	
 	$(rep).show();
 	
-	webarenaObject.draw();
+	//webarenaObject.draw();
 
 }
 
