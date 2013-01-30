@@ -109,7 +109,7 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('link',{type:'object_id',multiple: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
+	this.attributeManager.registerAttribute('link',{type:'object_id',multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
 		
 		var objects = ObjectManager.getObjects();
 		
