@@ -48,7 +48,7 @@ GeneralObject.fetchContent=function(worker, forced){
 	if (this.contentURLOnly) return;
 
 	if (!worker) worker=function(data){
-		console.log(data);
+		//console.log(data);
 	}
 
 	if (this.contentFetched && forced !== true) {
