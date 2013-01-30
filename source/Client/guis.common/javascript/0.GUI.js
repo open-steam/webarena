@@ -295,14 +295,25 @@ GUI.initMouseHandler = function() {
 			
 			var contentPosition = $("#content").offset();
 
+			var x = event.pageX-contentPosition.left;
+			var y = event.pageY-contentPosition.top;
+			
+			if (event.touches.length > 1) {
+				var x = event.touches[event.touches.length-1].pageX-contentPosition.left;
+				var y = event.touches[event.touches.length-1].pageY-contentPosition.top;
+			}
+			
 			/* find objects at this position */
-			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
+			var clickedObject = GUI.getObjectAt(x, y);
 
 			if (clickedObject && event.target != $("#content>svg").get(0)) {
 				if (clickedObject.restrictedMovingArea) return false;
 				event.preventDefault();
 				event.stopPropagation();
 				clickedObject.click(event);
+			} else {
+				GUI.deselectAllObjects();
+				GUI.updateInspector();
 			}
 			
 		}
