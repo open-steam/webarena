@@ -20,7 +20,7 @@ $(function() {
 
 			for (var i=0; i < files.length; i++) {
 				
-				var progressBarId = GUI.progressBarManager.addProgress("Create file object");
+				var progressBarId = GUI.progressBarManager.addProgress(GUI.translate("Create file object"));
 				
 				var filename = files[i].fileName;
 				var mimeType = files[i].type;
@@ -53,22 +53,22 @@ $(function() {
 					}, false);
 					
 					xhr.addEventListener("load",function() {
-						GUI.progressBarManager.updateProgress(progressBarId, 100, "Upload completed", true);
+						GUI.progressBarManager.updateProgress(progressBarId, 100, GUI.translate("Upload completed"), true);
 					},false);
 					
 					xhr.addEventListener("error",function() {
-						GUI.progressBarManager.error(progressBarId, "Error while uploading file");
+						GUI.progressBarManager.error(progressBarId, GUI.translate("Error while uploading file"));
 					},false);
 					
 					xhr.addEventListener("abort",function() {
-						GUI.progressBarManager.error(progressBarId, "Upload aborted");
+						GUI.progressBarManager.error(progressBarId, GUI.translate("Upload aborted"));
 					},false);
 					
 					xhr.open("POST", "/setContent/"+newObject.getCurrentRoom()+"/"+newObject.getAttribute('id')+"/"+ObjectManager.userHash);
 					xhr.send(fd);
 				
 				
-					GUI.progressBarManager.updateProgress(progressBarId, 0, "Upload file");
+					GUI.progressBarManager.updateProgress(progressBarId, 0, GUI.translate("Upload file"));
 				
 					
 				});

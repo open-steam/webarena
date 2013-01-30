@@ -16,11 +16,45 @@ GUI.initSVG = function() {
 	GUI.svg = $("#content").svg('get');
 	GUI.svgDefs = GUI.svg.defs();
 
+	$("#content").droppable({
+		accept: ".toolbar_draggable",
+		drop: function( event, ui ) {
+			$(ui.helper).hide();
+			ui.helper[0].callback(ui.offset.left, ui.offset.top);
+			
+		}
+	});
 
 }
 
 
 GUI.updateLayers = function() {
+
+	/* check if layers must be updated */
+	var oldOrder = "";
+	
+	$("#content>svg").children().each(function(i, el) {
+	
+		var id = $(el).attr("id");
+		
+		if (id !== undefined && id != "") {
+			oldOrder += id+"###";
+		}
+		
+	});
+	
+	var newOrder = "";
+	
+	var objectsArray = ObjectManager.getObjectsByLayer(); //get all objects ordered by layer
+	
+	for (var i in objectsArray){
+		var obj = objectsArray[i];
+		
+		newOrder += obj.id+"###";
+		
+	}
+	
+	if (oldOrder == newOrder) return; //no change of order
 
 	var objectsArray = ObjectManager.getObjectsByLayerInverted(); //get all objects ordered by layer
 	

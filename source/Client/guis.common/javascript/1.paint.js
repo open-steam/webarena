@@ -10,6 +10,9 @@ GUI.setPaintColor = function(color, colorName) {
 	GUI.paintColor = color;
 	GUI.setPaintCursor(colorName);
 	GUI.paintEraseModeActive = false;
+	$("#header").find(".jPaint_navi_color").removeClass("active");
+	$("#header").find(".jPaint_navi_eraser").removeClass("active");
+	$("#header").find(".jPaint_navi_color_"+colorName).addClass("active");
 }
 
 GUI.setPaintCursor = function(cursorName) {
@@ -19,6 +22,9 @@ GUI.setPaintCursor = function(cursorName) {
 GUI.setPaintSize = function(value) {
 	GUI.paintSize = value;
 	GUI.paintEraseModeActive = false;
+	$("#header").find(".jPaint_navi_size").removeClass("active");
+	$("#header").find(".jPaint_navi_eraser").removeClass("active");
+	$("#header").find(".jPaint_navi_size_"+value).addClass("active");
 }
 
 
@@ -67,12 +73,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	
 	if (highlighterMode) {
 		GUI.addPaintColor("#f6ff00", "yellow");
-		GUI.setPaintColor("#f6ff00", "yellow");
-		GUI.setPaintSize(20);
 	} else {
 		GUI.addPaintColor("#000000", "black");
-		GUI.setPaintColor("#000000", "black");
-		GUI.setPaintSize(3);
 	}
 	
 	GUI.addPaintColor("red");
@@ -94,6 +96,10 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	GUI.addPaintSize(24);
 	
 	
+	
+	
+	
+	
 	/* add color selection */
 	
 	$.each(GUI.paintColors, function(index, color) {
@@ -101,6 +107,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		var colorSelection = document.createElement("img");
 		$(colorSelection).attr("src", "../../guis.common/images/paint/colors/"+color[1]+".png");
 		$(colorSelection).addClass("jPaint_navi");
+		$(colorSelection).addClass("jPaint_navi_color");
+		$(colorSelection).addClass("jPaint_navi_color_"+color[1]);
 		$(colorSelection).bind("click", function(event) {
 			GUI.setPaintColor(color[0], color[1]);
 		});
@@ -117,6 +125,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		var sizeSelection = document.createElement("img");
 		$(sizeSelection).attr("src", "../../guis.common/images/paint/sizes/"+size+".png");
 		$(sizeSelection).addClass("jPaint_navi");
+		$(sizeSelection).addClass("jPaint_navi_size");
+		$(sizeSelection).addClass("jPaint_navi_size_"+size);
 		$(sizeSelection).bind("click", function(event) {
 			GUI.setPaintSize(size);
 		});
@@ -132,13 +142,28 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	var eraser = document.createElement("img");
 	$(eraser).attr("src", "../../guis.common/images/paint/eraser.png");
 	$(eraser).addClass("jPaint_navi");
+	$(eraser).addClass("jPaint_navi_eraser");
 	$(eraser).bind("click", function(event) {
 		GUI.setPaintCursor("eraser");
 		GUI.paintEraseModeActive = true;
+
+		$("#header").find(".jPaint_navi_eraser").addClass("active");
+		
 	});
 
 	$("#header > div.header_left").append(eraser);
 
+
+	
+	if (highlighterMode) {
+		GUI.setPaintColor("#f6ff00", "yellow");
+		GUI.setPaintSize(20);
+	} else {
+		GUI.setPaintColor("#000000", "black");
+		GUI.setPaintSize(3);
+	}
+
+	
 
 
 	/* add cancel button */
@@ -197,14 +222,11 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	
 
 
-	if (highlighterMode != true) {
-
-		/* set lower opacity to all objects */
-		$.each(ObjectManager.getObjects(), function(index, object) {
-			$(object.getRepresentation()).css("opacity", 0.4);
-		});
+	/* set lower opacity to all objects */
+	$.each(ObjectManager.getObjects(), function(index, object) {
+		$(object.getRepresentation()).css("opacity", 0.4);
+	});
 	
-	}
 	
 	/* hide representation of webarenaObject */
 	if (webarenaObject) {
@@ -240,8 +262,6 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		$(img).attr("src", webarenaObject.getPreviewContentURL());
 		
 	}
-	
-	
 	
 	
 	//unbind old events
@@ -499,6 +519,12 @@ GUI.closePaintMode = function() {
 
 GUI.savePaintMode = function() {
 	
+	if (!GUI.painted) {
+		GUI.cancelPaintMode();
+		return;
+	}
+	
+
 	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 	
 	var pixelFound = true;

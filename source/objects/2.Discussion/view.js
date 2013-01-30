@@ -160,7 +160,7 @@ Discussion.createRepresentationEmbedded = function(){
 
     that.oldContent = new Array();
 
-    this.fetchContentString(function(remoteContent){
+    this.getContentAsString(function(remoteContent){
         if(remoteContent){
             remoteContent = JSON.parse(remoteContent)
             if(remoteContent){

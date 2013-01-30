@@ -39,6 +39,8 @@ ObjectManager.buildObject=function(type, attributes){
     var proto=this.getPrototype(type);
     var object=Object.create(proto);
 
+	object.setLanguage(GUI.currentLanguage);
+
     object.init(attributes.id);
 
     object.data=attributes;
@@ -108,34 +110,10 @@ ObjectManager.getObjectsByLayer=function() {
  */
 ObjectManager.getObjectsByLayerInverted=function() {
 	
-    var objects = this.getObjects();
+    var objects = ObjectManager.getObjectsByLayer();
+	objects.reverse();
 	
-    var objectsArray = [];
-	
-    for (var i in objects){
-        var obj = objects[i];
-        objectsArray.push(obj);
-    }
-
-    objectsArray.sort(function(a,b) {
-		
-		if (a.alwaysOnTop === true) {
-			return -1;
-		}
-		
-		if (b.alwaysOnTop === true) {
-			return 1;
-		}
-		
-        if (a.getAttribute("layer") > b.getAttribute("layer")) {
-            return -1;
-        } else {
-            return 1;
-        }
-		
-    });
-	
-    return objectsArray;
+    return objects;
 	
 }
 
@@ -218,28 +196,38 @@ ObjectManager.removeLocally=function(data){
     delete(ObjectManager.objects[data.id]);
 }
 
-ObjectManager.login=function(username, password){
+ObjectManager.login=function(username, password, externalSession){
     if (!username) username='guest';
     if (!password) password='';
     Modules.SocketClient.serverCall('login',{
         'username':username,
-        'password':password
+        'password':password,
+		'externalSession' : externalSession
     });
 }
 
 ObjectManager.loadRoom=function(roomid){
 	
-    var objects = this.getObjects();
+	var self = this;
 	
-    for (var i in objects) {
-        var obj = objects[i];
-        ObjectManager.removeLocally(obj);
-    }
-	
-    if(!roomid) roomid='public';
-    this.currentRoomID=roomid;
+	Modules.Dispatcher.query('enter',roomid,function(error){
 
-    Modules.SocketClient.serverCall('enter',roomid);
+		if (error !== true) {
+
+			var objects = self.getObjects();
+
+		    for (var i in objects) {
+		        var obj = objects[i];
+		        ObjectManager.removeLocally(obj);
+		    }
+
+		    if(!roomid) roomid='public';
+		    self.currentRoomID=roomid;
+		
+		}
+		
+    });
+
 }
 
 ObjectManager.createObject=function(type,attributes,content,callback) {
@@ -266,6 +254,9 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
             object=Modules.ObjectManager.getObject(objectID);
             if (object){
                 clearTimeout(interval);
+
+				ObjectManager.renumberLayers(true);
+
                 object.justCreated();
 				if (callback != undefined) callback(object);
                 return;
@@ -287,10 +278,12 @@ ObjectManager.init=function(){
         ObjectManager.user = data.username;
 		ObjectManager.userHash = data.userhash;
 
-		if (data.home !== undefined) {
+		if (GUI.startRoom !== undefined && GUI.startRoom != '') {
+			ObjectManager.loadRoom(GUI.startRoom);
+		} else if (data.home !== undefined) {
 			ObjectManager.loadRoom(data.home);
 		} else {
-			ObjectManager.loadRoom(GUI.startRoom);
+			GUI.error("Unable to load room", "Unable to load room. (no room defined)", false, true);
 		}
         
     });
@@ -406,7 +399,7 @@ ObjectManager.performActionForSelected = function(actionName, clickedObject) {
 }
 
 
-ObjectManager.renumberLayers = function() {
+ObjectManager.renumberLayers = function(noUpdate) {
 	
     /* get all objects and order by layer */
     var objects = ObjectManager.getObjects();
@@ -439,7 +432,9 @@ ObjectManager.renumberLayers = function() {
 		
     }
 	
-    GUI.updateLayers();
+	if (noUpdate === undefined) {
+    	GUI.updateLayers();
+	}
 	
 }
 

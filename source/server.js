@@ -57,7 +57,6 @@ var  Modules={
 	SocketServer:require('./Server/SocketServer.js'),
 	UserManager:require('./Server/UserManager.js'),
 	Helper:require('./Server/Helper.js'),
-	CacheManager:require('./Server/CacheManager.js'),
 	
 	// These object exist for every object type or every single object. They shall not be
 	// modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
@@ -69,7 +68,7 @@ var  Modules={
 	
 };
 
-Modules.Connector=Modules.CacheManager; //shortcut
+Modules.Connector=Modules.config.connector; //shortcut
 
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports=Modules;

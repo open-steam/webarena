@@ -38,21 +38,39 @@ File.register=function(type){
 		
 	}});
 	
-	this.registerAction('Datei hochladen',function(){
+	this.registerAction(this.translate(this.currentLanguage, "Upload file"),function(){
 		
 		var selected = ObjectManager.getSelected();
 		
 		for (var i in selected) {
 			var obj = selected[i];
 			
-			GUI.uploadFile(obj,obj.translate(GUI.currentLanguage, "please select a file"));
+			GUI.uploadFile(obj,obj.translate(GUI.currentLanguage, "Please select a file"));
 			
 		}
 		
-	},true);
+	},true, function() {
+		return (ObjectManager.getSelected()[0].hasContent() === false);
+	});
 	
 	
-	this.registerAction('Datei öffnen',function(){
+	this.registerAction(this.translate(this.currentLanguage, "Change file"),function(){
+		
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var obj = selected[i];
+			
+			GUI.uploadFile(obj,obj.translate(GUI.currentLanguage, "Please select a file"));
+			
+		}
+		
+	},true, function() {
+		return (ObjectManager.getSelected()[0].hasContent() === true);
+	});
+	
+	
+	this.registerAction(this.translate(this.currentLanguage, "Open file"),function(){
 		
 		var selected = ObjectManager.getSelected();
 		
@@ -83,9 +101,9 @@ File.execute=function(){
 	var that=this;
 	
 	if (this.hasContent() == true) {
-		this.openFile();
+		//this.openFile();
 	} else {
-		GUI.uploadFile(this,this.translate(GUI.currentLanguage, "please select a file"));
+		GUI.uploadFile(this,this.translate(GUI.currentLanguage, "Please select a file"));
 	}
 
 }

@@ -32,6 +32,7 @@ GeneralObject.duplicateLinkedObjects = false; //duplicate linked objects if this
 
 GeneralObject.contentURLOnly = true; //content is only accessible via URL
 
+GeneralObject.currentLanguage = undefined;
 
 GeneralObject.register=function(type){
 	
@@ -413,6 +414,10 @@ GeneralObject.translate=function(language, text){
 	return this.translationManager.get(language, text);
 }
 
+GeneralObject.setLanguage=function(currentLanguage) {
+	this.currentLanguage = currentLanguage;
+}
+
 GeneralObject.setTranslations=function(language,data){
 	return this.translationManager.addTranslations(language, data);
 }
@@ -545,7 +550,8 @@ GeneralObject.mayResizeProportional=function() {
 
 
 GeneralObject.execute=function(){
-	this.toFront();
+	this.select();
+	this.selectedClickHandler();
 }
 
 GeneralObject.isSelected = function() {

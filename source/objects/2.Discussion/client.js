@@ -15,7 +15,7 @@ Discussion.deleteStatement = function(timestamp){
 Discussion.fetchDiscussion = function(callback){
     var that = this;
     var rep=this.getRepresentation();
-    this.fetchContentString(function(remoteContent){
+    this.getContentAsString(function(remoteContent){
 
         if(remoteContent !== ""){
             remoteContent = JSON.parse(remoteContent);

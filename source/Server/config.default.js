@@ -20,8 +20,8 @@ module.exports={
         username: "",
         password: ""
 	},
-	koalaServer: 'www.bid-owl.de.localhost',
-	koalaPort: 80,
+	bidServer: 'www.bid-owl.de.localhost',
+	bidPort: 80,
 	logLevels : {
 		"warn" : true,
 		"debug" : false,

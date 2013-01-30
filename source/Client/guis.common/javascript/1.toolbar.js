@@ -25,6 +25,7 @@ GUI.initToolbar = function() {
 	});
 	
 	
+	var toolbar_locked_elements = {};
 	
 	$.each(types, function(key, object) { 
 
@@ -35,6 +36,8 @@ GUI.initToolbar = function() {
 		$("#header>div.header_left").append(newCategoryIcon);
 
 		if (object.length > 1) {
+			
+			$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
 			
 			/* add Popover */
 			
@@ -51,25 +54,54 @@ GUI.initToolbar = function() {
 
 						var element = section.addElement('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" /> '+name);
 
-						var click = function() {
+						var click = function(attributes) {
+
+							popover.hide();
 
 							var proto = ObjectManager.getPrototype(object.type);
 							
 							if (!Modules.Config.presentationMode) {
-								proto.create();
+
+								proto.create(attributes);
+								
 							} else {
 								alert(GUI.translate("You cannot create objects in presentation mode"));	
 							}
 							
-							popover.hide();
-							
 						}
 
 						if (GUI.isTouchDevice) {
-							$(element.getDOM()).bind("touchstart", click);
+							$(element.getDOM()).bind("touchstart", function() { click(); });
 						} else {
-							$(element.getDOM()).bind("mousedown", click);
+							$(element.getDOM()).bind("click", function() { click(); });
 						}
+						
+						
+						/* make draggable */
+						var helper = $('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" />');
+						helper.get(0).callback = function(offsetX,offsetY) {
+							
+							var svgpos = $("#content").offset();
+							
+							var top = offsetY-svgpos.top;
+							var left = offsetX;
+
+							click({
+								"x" : left,
+								"y" : top
+							});
+						
+						}
+						
+						$(element.getDOM()).addClass("toolbar_draggable");
+						$(element.getDOM()).draggable({
+							revert: true,
+							distance : 20,
+							cursor: "move",
+							helper: function(event) {
+								return helper;
+							}
+						});
 
 					});
 					
@@ -80,26 +112,73 @@ GUI.initToolbar = function() {
 			
 			/* add link to icon (no Popover) */
 			
-			var click = function(event) {
+			$(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
+			
+			var click = function(attributes) {
+
+				if (toolbar_locked_elements[object[0].type] === true) return; //element is locked
+
+				if (object[0].type == "Paint" || object[0].type == "Highlighter") {
+					
+					toolbar_locked_elements[object[0].type] = true;
+					
+					/* create unlock timer */
+					window.setTimeout(function() {
+						toolbar_locked_elements[object[0].type] = undefined;
+					}, 2000);
+					
+				}
+
+				jPopoverManager.hideAll();
 
 				var proto = ObjectManager.getPrototype(object[0].type);
 				
 				if (!Modules.Config.presentationMode) {
-					proto.create();
+					proto.create(attributes);
 				} else {
 					alert(GUI.translate("You cannot create objects in presentation mode"));	
 				}
 				
-				jPopoverManager.hideAll();
-				
 			}
 			
 			if (GUI.isTouchDevice) {
-				$(newCategoryIcon).bind("touchstart", click);
+				$(newCategoryIcon).bind("touchstart", function() { click(); });
 			} else {
-				$(newCategoryIcon).bind("mousedown", click);
+				$(newCategoryIcon).bind("click", function() { click(); });
 			}
 			
+			
+			if (object[0].type != "Paint" && object[0].type != "Highlighter") {
+				
+				/* make draggable */
+				var helper = $('<img src="../../guis.common/images/categories/'+object[0].category+'.png" alt="" width="24" height="24" />');
+				helper.get(0).callback = function(offsetX,offsetY) {
+
+					var svgpos = $("#content").offset();
+
+					var top = offsetY-svgpos.top;
+					var left = offsetX;
+
+					click({
+						"x" : left,
+						"y" : top
+					});
+
+				}
+
+				$(newCategoryIcon).addClass("toolbar_draggable");
+				$(newCategoryIcon).draggable({
+					revert: true,
+					distance : 20,
+					cursor: "move",
+					helper: function(event) {
+						return helper;
+					}
+				});
+				
+			}
+			
+	
 		}
 		
 		var effect = function() {
@@ -130,6 +209,7 @@ GUI.initToolbar = function() {
 		$(hiddenButton).attr("width", "24").attr("height", "24");
 
 		$(hiddenButton).attr("id", "hidden_button");
+		$(hiddenButton).attr("title", GUI.translate("Toggle hidden mode"));
 
 		GUI.onToggleHidden = function(hiddenMode) {
 
@@ -165,6 +245,8 @@ GUI.initToolbar = function() {
 
 		$(bugButton).attr("id", "bug_button");
 		$(bugButton).addClass("sidebar_button");
+		
+		$(bugButton).attr("title", GUI.translate("Bugreport"));
 
 		$("#header > .header_right").append(bugButton);
 		
@@ -191,6 +273,8 @@ GUI.initToolbar = function() {
 
 		$(chatButton).attr("id", "chat_button");
 		$(chatButton).addClass("sidebar_button");
+		
+		$(chatButton).attr("title", GUI.translate("Chat"));
 
 		$("#header > .header_right").append(chatButton);
 
@@ -232,6 +316,8 @@ GUI.initToolbar = function() {
 
 		$(inspectorButton).attr("id", "inspector_button");
 		$(inspectorButton).addClass("sidebar_button");
+
+		$(inspectorButton).attr("title", GUI.translate("Object inspector"));
 
 		var click = function() {
 			GUI.sidebar.openPage("inspector", inspectorButton);

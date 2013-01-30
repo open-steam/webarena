@@ -109,7 +109,7 @@ function buildObjectFromObjectData(objectData,roomID,type){
 	var type=type||objectData.type;
 	
 	//get the object's prototype
-	
+
 	var proto=ObjectManager.getPrototypeFor(type);
 	
 	//build a new object
@@ -162,8 +162,7 @@ ObjectManager.getObject=function(roomID,objectID,context){
 *	gets an inventory of all objects in a room by roomID and context. Context
 *	is user credentials.
 *
-*	This function can either be called synchronous or asyncronous. Please not
-*	that syncronous usage only works when objects have yet been cached!
+*	This function can either be called synchronous or asyncronous.
 *
 */
 ObjectManager.getObjects=function(roomID,context,callback){
@@ -178,24 +177,19 @@ ObjectManager.getObjects=function(roomID,context,callback){
 	if (callback == undefined) {
 		/* sync. */
 		
-		/* check if inventory is cached */
-		if (Modules.Connector.inventoryIsCached(roomID,context)) {
+		var objectsData = Modules.Connector.getInventory(roomID, context);
 		
-			var objectsData = Modules.Connector.getCachedInventory(roomID, context);
-			
-			for (var i in objectsData){
-				var objectData=objectsData[i];
+		for (var i in objectsData){
+			var objectData=objectsData[i];
 
-				var object=buildObjectFromObjectData(objectData,roomID);
+			var object=buildObjectFromObjectData(objectData,roomID);
 
-				object.context=context;
+			object.context=context;
 
-				inventory.push(object);
-			}
-			
-			return inventory;
-		
-		} else throw Error("inventory is not cached for room "+roomID);
+			inventory.push(object);
+		}
+
+		return inventory;
 		
 	} else {
 		//async.
@@ -365,7 +359,7 @@ ObjectManager.init=function(theModules){
 	
 	
 	//setAttribute
-	Modules.Dispatcher.registerCall('setAttribute',function(socket,data){
+	Modules.Dispatcher.registerCall('setAttribute',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 		
@@ -373,20 +367,29 @@ ObjectManager.init=function(theModules){
 		var objectID=data.objectID;
 		var key=data.key;
 		var value=data.value;
+		
+		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
+		
+			if (mayWrite) {
+				
+				var object=ObjectManager.getObject(roomID,objectID,context);
+				if (!object){
+					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+					return;
+				}
 
-		var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-		}
-		
-		//TODO check write right
-		
-		object.setAttribute(key,value,false,context);
+				object.setAttribute(key,value,false,context);
+				
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to set attribute '+objectID);
+			}
+			
+		});
 		
 	});
 	
 	//setContent
-	Modules.Dispatcher.registerCall('setContent',function(socket,data){
+	Modules.Dispatcher.registerCall('setContent',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 		
@@ -394,19 +397,28 @@ ObjectManager.init=function(theModules){
 		var objectID=data.objectID;
 		var content=data.content;
 		
-		var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-		}
+		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
 		
-		//TODO check write right
-		
-		object.setContent(content,false,context);
+			if (mayWrite) {
+				
+				var object=ObjectManager.getObject(roomID,objectID,context);
+				if (!object){
+					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+					return;
+				}
+
+				object.setContent(content,false,context);
+				
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to set content '+objectID);
+			}
+			
+		});
 		
 	});
 	
 	//getAttribute
-	Modules.Dispatcher.registerCall('getAttribute',function(socket,data){
+	Modules.Dispatcher.registerCall('getAttribute',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 		
@@ -414,54 +426,87 @@ ObjectManager.init=function(theModules){
 		var objectID=data.objectID;
 		var key=data.key;
 		
-		var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-		}
+		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
 		
-		return object.getAttribute(key);
+			if (mayRead) {
+				
+				var object=ObjectManager.getObject(roomID,objectID,context);
+				if (!object){
+					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+					return;
+				}
+
+				Modules.Dispatcher.respond(socket,responseID,object.getAttribute(key));
+				
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+			}
+			
+		});
 		
 	});
 
 	//getContent
-	Modules.Dispatcher.registerCall('getContent',function(socket,data){
+	Modules.Dispatcher.registerCall('getContent',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 		
 		var roomID=data.roomID
 		var objectID=data.objectID;
-			
-		var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-		}
 		
-		return object.getContent(context);
+		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
+		
+			if (mayRead) {
+				
+				var object=ObjectManager.getObject(roomID,objectID,context);
+				if (!object){
+					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+					return;
+				}
+
+				Modules.Dispatcher.respond(socket,responseID,object.getContent(context));
+				
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+			}
+			
+		});
 		
 	});
 	
 	//deleteObject
-	Modules.Dispatcher.registerCall('deleteObject',function(socket,data){
+	Modules.Dispatcher.registerCall('deleteObject',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		//TODO check delete right
+
 		var roomID=data.roomID
 		var objectID=data.objectID;
+
+		Modules.Connector.mayDelete(roomID, objectID, context, function(mayDelete) {
 		
-		var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-		}
-		
-		object.remove();
+			if (mayDelete) {
+				
+				var object=ObjectManager.getObject(roomID,objectID,context);
+				if (!object){
+					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+					return;
+				}
+
+				object.remove();
+				
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+			}
+			
+		});
 		
 	});
 	
 	//createObject
 	Modules.Dispatcher.registerCall('createObject',function(socket,data,responseID){
-		
-		//TODO check create right
+
+		var context=Modules.UserManager.getConnectionBySocket(socket);
+
 		var roomID=data.roomID;
 		var type=data.type;
 		var attributes=data.attributes;
@@ -470,7 +515,18 @@ ObjectManager.init=function(theModules){
 		//Provide response id to inform the client of the newly created object
 		
 		//TODO: check why all clients get notified about object creation (spooky =) )
-		Modules.ObjectManager.createObject(roomID,type,attributes,content,socket,responseID);
+		
+		Modules.Connector.mayInsert(roomID, context, function(mayInsert) {
+		
+			if (mayInsert) {
+				
+				Modules.ObjectManager.createObject(roomID,type,attributes,content,socket,responseID);
+				
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+			}
+			
+		});
 		
 	});
 	
@@ -484,10 +540,30 @@ ObjectManager.init=function(theModules){
 		
 		var object=ObjectManager.getObject(roomID,objectID,context);
 		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 		}
 		
-		object.duplicate(socket,responseID);
+		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
+		
+			if (mayRead) {
+				
+				Modules.Connector.mayInsert(roomID, context, function(mayInsert) {
+
+					if (mayInsert) {
+
+						object.duplicate(socket,responseID);
+
+					} else {
+						Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+					}
+
+				});
+				
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+			}
+			
+		});
 		
 	});
 	
@@ -553,22 +629,40 @@ ObjectManager.init=function(theModules){
     	var browseLocation = data.browseLocation || null;
 	
 	    var object=ObjectManager.getObject(roomID,objectID,context);
-            if (!object){
-                return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-            }
+		if (!object){
+			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+		}
 
-	    var responseCallback = function(res){
-            console.log('Send browse results to client.');
-            Modules.Dispatcher.respond(socket,responseID,res);
-        };
 
-	    var browseParams = {
-	        //location : browseLocation,
-	        callback : responseCallback
-	    };
+		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
 
-        object.browse(browseParams);
-    })
+			if (mayRead) {
+
+				var object=ObjectManager.getObject(roomID,objectID,context);
+				if (!object){
+					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+					return;
+				}
+
+				var responseCallback = function(res){
+		            console.log('Send browse results to client.');
+		            Modules.Dispatcher.respond(socket,responseID,res);
+		        };
+
+			    var browseParams = {
+			        //location : browseLocation,
+			        callback : responseCallback
+			    };
+
+		        object.browse(browseParams);
+
+			} else {
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+			}
+
+		});
+		
+    });
 	    
 	
 	Modules.Dispatcher.registerCall('memoryUsage',function(socket,data,responseID){

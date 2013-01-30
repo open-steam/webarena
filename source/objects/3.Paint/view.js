@@ -26,7 +26,7 @@ Paint.createRepresentation = function() {
 
 	this.createCanvas();
 	this.updateCanvas(this.getPreviewContentURL());
-	
+
 }
 
 Paint.updateImage=function(){

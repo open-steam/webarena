@@ -26,6 +26,15 @@ GUI.setTranslations('de',{
 	'Close Dialog' : 'Schließen',
 	'Reload' : 'Neuladen',
 	'Bugreport' : 'Fehlerbericht',
-	'Object inspector' : 'Objektinspektor'
+	'Object inspector' : 'Objektinspektor',
+	'Toggle hidden mode' : 'Versteckt-Modus wechseln',
+	'Texts' : 'Texte',
+	'cancel' : 'Abbrechen',
+	'save' : 'Speichern',
+	'Upload file' : 'Datei hochladen',
+	'Upload completed' : 'Datei wurde hochgeladen',
+	'Error while uploading file' : 'Fehler während des Hochladens',
+	'Upload aborted' : 'Hochladen abgebrochen',
+	'Create file object' : 'Erstelle Objekt für Datei',
 }
 );

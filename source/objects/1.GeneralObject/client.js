@@ -99,23 +99,14 @@ GeneralObject.utf8.parse = function(byteArray) {
     return '';
 };
 
-GeneralObject.fetchContentString=function(worker){
-	
-	this.fetchContent(function(data){
 
-		data=GeneralObject.utf8.parse(data);
 
-		worker(data);
-		return;
-	
-	});
-
-}
-
-//ATTENTION. Do not use this, when you cannot be sure, the content has already been loaded (e.g. do not use it in draw)
-GeneralObject.getContentAsString=function(){
-	if (!this.contentFetched) alert('Timing error on getContentAsString. Call developer!');
-	return GeneralObject.utf8.parse(this.content);
+GeneralObject.getContentAsString=function(callback){
+	if (callback === undefined) {
+		return GeneralObject.utf8.parse(this.content);
+	} else {
+		callback(GeneralObject.utf8.parse(this.content));
+	}
 }
 
 GeneralObject.hasContent=function(){
@@ -152,11 +143,17 @@ GeneralObject.getContentURL = function() {
 	return "/getContent/"+this.getRoomID()+"/"+this.data.id+"/"+Math.round(new Date().getTime() / 1000)+"/"+ObjectManager.userHash;
 }
 
-GeneralObject.create = function() {
+GeneralObject.create = function(attributes) {
 	
-	ObjectManager.createObject(this.type, {
-		hidden: GUI.hiddenObjectsVisible
-	});
+	if (attributes === undefined) {
+		var attributes = {
+			hidden: GUI.hiddenObjectsVisible
+		};
+	} else {
+		attributes["hidden"] = GUI.hiddenObjectsVisible;
+	}
+	
+	ObjectManager.createObject(this.type, attributes);
 	
 }
 

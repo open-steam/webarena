@@ -87,7 +87,11 @@ Log.debug=function(message) {
 }
 
 Log.getUserFromContext=function(context) {
-	return Modules.CacheManager.getCacheUser(context);
+	if (context === true) {
+ 		return "root";
+	} else {
+		return context.user.username;
+	}
 }
 
 
