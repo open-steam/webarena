@@ -83,7 +83,13 @@ EasyDBImage.execute = function () {
             },
             "Cancel":function () {
                 return false;
+            },
+            "Zurück" : function(){
+
+                createPageOne();
+        
             }
+
         };
 
         var dialog_pass_through = {
@@ -109,26 +115,34 @@ EasyDBImage.execute = function () {
         )
     };
 
-    var pageOneButtons = {
-        "OK":function () {
-            createPageTwo().on("dblclick", ".result-row", function () {
-                $(':button:contains("OK")').click();
-            });
-        },
-        "Cancel":function () {
-            return false;
+    var createPageOne = function(){
+        var pageOneButtons = {
+            "OK":function () {
+                createPageTwo().on("dblclick", ".result-row", function () {
+                    $(':button:contains("OK")').click();
+                });
+            },
+            "Cancel":function () {
+                return false;
+            }
         }
+
+        var dialog = GUI.dialog(
+            that.translate("EASYDB_SEARCH_HEADER"),
+            pageOneContent, pageOneButtons, 500, {height:500}
+        )
+
+        dialog.keyup(function (e) {
+            if (e.keyCode == 13) {
+                $(':button:contains("OK")').click();
+            }
+        });
     }
 
+    createPageOne();
 
-    var dialog = GUI.dialog(
-        that.translate("EASYDB_SEARCH_HEADER"),
-        pageOneContent, pageOneButtons, 500, {height:500}
-    )
+    
 
-    dialog.keyup(function (e) {
-        if (e.keyCode == 13) {
-            $(':button:contains("OK")').click();
-        }
-    });
+
+    
 }
