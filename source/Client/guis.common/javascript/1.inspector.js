@@ -239,7 +239,20 @@ GUI.setupInspectorContent = function(inspector) {
 					widget.setValue(info.value);
 				*/
 				
-				} else {
+				} else if (info.type == "metadata"){
+					element.setValue(info.value);
+					element.setInactive();
+					
+					$(element.getDOM()).children("div").css({
+						"overflow": "hidden",
+						"display": "block",
+						"width": "110px",
+					}).attr("title", info.value);
+					
+					var widget = false;
+					
+					GUI.inspectorElementsSetter[attribute] = element.setValue;
+				}else {
 			
 					element.setValue(info.value);
 					element.setInactive();

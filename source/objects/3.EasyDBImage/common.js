@@ -31,11 +31,11 @@ EasyDBImage.register=function(type){
         }
     }
 
-    this.registerAttribute('easydbtitel',{category:'Meta Data',  getFunction : notNull("easydbtitel")});
-    this.registerAttribute('easydbkuenstler',{category:'Meta Data',  getFunction : notNull("easydbkuenstler")});
+    this.registerAttribute('easydbtitel',{type:'metadata', category:'Meta Data',  getFunction : notNull("easydbtitel")});
+    this.registerAttribute('easydbkuenstler',{ctype:'metadata', ategory:'Meta Data',  getFunction : notNull("easydbkuenstler")});
 
-    this.registerAttribute('easydbstandort',{category:'Meta Data',  getFunction: notNull("easydbstandort")});
-    this.registerAttribute('easydbdargestellter_ort',{category:'Meta Data',  getFunction : notNull("easydbdargestellter_ort")});
+    this.registerAttribute('easydbstandort',{type:'metadata', category:'Meta Data',  getFunction: notNull("easydbstandort")});
+    this.registerAttribute('easydbdargestellter_ort',{type:'metadata', category:'Meta Data',  getFunction : notNull("easydbdargestellter_ort")});
 }
 
 EasyDBImage.register('EasyDBImage');
