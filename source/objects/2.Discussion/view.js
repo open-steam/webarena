@@ -75,11 +75,7 @@ Discussion.enableInlineEditors = function(){
         that.setContent(JSON.stringify(changedArr));
     };
 
-    var replaceBr = function(value){
-        var retval = value.replace(/<br[\s\/]?>/gi, '\n');
-        retval = $("<div>").html(retval).text()
-        return retval;
-    }
+
 
     $(rep).find('.discussion-statement-text').editable(saveFunction, {
         type      : "autogrow",
@@ -90,7 +86,7 @@ Discussion.enableInlineEditors = function(){
             maxHeight  : 512
         },
         event : "discussion-statement-edit",
-        data: replaceBr
+        data: htmlDecode
     });
 }
 
@@ -311,13 +307,15 @@ Discussion.getViewBoundingBoxY = function() {
     return parseInt(this.getAttribute("y"));
 }
 
+
+
 Discussion.representationCreated = function() {
     GeneralObject.representationCreated.call(this);
     var that = this;
 
     var saveFunction = function(value, settings) {
-
-        that.setAttribute("discussionTitle", htmlEscape(value));
+        value = htmlEncode(value)
+        that.setAttribute("discussionTitle", value);
 
         return(value);
     }
@@ -329,7 +327,7 @@ Discussion.representationCreated = function() {
         placeholderHTML5 : 'Diskussions-Titel',
 	   data : function(){
             var headingText = that.getAttribute('discussionTitle') || '';
-            var retval = $("<div>").html(headingText).text();
+            var retval = htmlDecode(headingText)
             return retval;
         },
         autogrow : {
