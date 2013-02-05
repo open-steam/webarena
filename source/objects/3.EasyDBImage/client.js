@@ -81,7 +81,7 @@ EasyDBImage.execute = function () {
                     easyDbID : easyDbId
                 });
             },
-            "Cancel":function () {
+            "Abbrechen":function () {
                 return false;
             },
             "Zurück" : function(){
@@ -122,7 +122,7 @@ EasyDBImage.execute = function () {
                     $(':button:contains("OK")').click();
                 });
             },
-            "Cancel":function () {
+            "Abbrechen":function () {
                 return false;
             }
         }
