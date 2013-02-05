@@ -68,7 +68,7 @@ Discussion.enableInlineEditors = function(){
                 changedArr.push(that.oldContent[i])
             } else {
                 var message = that.oldContent[i];
-                message.text = value;
+                message.text = htmlEscape (value);
                 changedArr.push(message);
             }
         }
@@ -77,6 +77,7 @@ Discussion.enableInlineEditors = function(){
 
     var replaceBr = function(value){
         var retval = value.replace(/<br[\s\/]?>/gi, '\n');
+        retval = $("<div>").html(retval).text()
         return retval;
     }
 
@@ -169,7 +170,7 @@ Discussion.createRepresentationEmbedded = function(){
             var message = {};
             message.author = GUI.username;
             message.timestamp = new Date();
-            message.text = value;
+            message.text = htmlEscape( value ) ;
 
             if(!that.oldContent){
                 that.oldContent = new Array();
@@ -314,16 +315,23 @@ Discussion.representationCreated = function() {
     GeneralObject.representationCreated.call(this);
     var that = this;
 
-    var rep = this.getRepresentation();
-    $(rep).find('.discussion-heading').editable(function(value, settings) {
-        that.setAttribute("discussionTitle", value);
+    var saveFunction = function(value, settings) {
+
+        that.setAttribute("discussionTitle", htmlEscape(value));
 
         return(value);
-    }, {
+    }
+
+    var rep = this.getRepresentation();
+    $(rep).find('.discussion-heading').editable(saveFunction, {
         type      : "autogrow",
         submit    : 'Speichern',
         placeholderHTML5 : 'Diskussions-Titel',
-	data : function(){return that.getAttribute('discussionTitle') || ''},
+	   data : function(){
+            var headingText = that.getAttribute('discussionTitle') || '';
+            var retval = $("<div>").html(headingText).text();
+            return retval;
+        },
         autogrow : {
             lineHeight : 16,
             maxHeight  : 512

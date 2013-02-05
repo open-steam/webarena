@@ -18,8 +18,8 @@ EasyDBImage.addControl = function(type, resizeFunction) {
         data['customFunctionCall'] = {
             'name' : 'getUrls',
             'params' : {
-                'id' : that.getAttribute('easydb_id'),//TODO
-                'size' : maxSideLength + 100 //TODO
+                'id' : that.getAttribute('easydb_id'),
+                'size' : maxSideLength + 100 
             }
         }
         Modules.Dispatcher.query('customObjectFunctionCall', data, function (searchResults) {
