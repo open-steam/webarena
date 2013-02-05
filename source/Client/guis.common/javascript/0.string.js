@@ -16,3 +16,17 @@ function htmlEscape(str) {
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;');
 }
+
+function nl2br(str){
+	return str.replace(/\n/g, '<br />');
+}
+
+function htmlEncode(str){
+	var enc = nl2br(htmlEscape(str));
+	console.log(enc)
+	return enc
+}
+
+function htmlDecode(str){
+	return $("<div>").html(str.replace(/<br[\s\/]*>/gi, '\n')).text()
+}
