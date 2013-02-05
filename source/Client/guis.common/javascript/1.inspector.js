@@ -246,7 +246,9 @@ GUI.setupInspectorContent = function(inspector) {
 					$(element.getDOM()).children("div").css({
 						"overflow": "hidden",
 						"display": "block",
-						"width": "110px",
+						"width": "210px",
+						"float" : "none",
+						"text-align": "left"
 					}).attr("title", info.value);
 					
 					var widget = false;
@@ -261,7 +263,8 @@ GUI.setupInspectorContent = function(inspector) {
 						"overflow": "hidden",
 						"display": "block",
 						"height": "18px",
-						"width": "110px",
+						"width": "110px"
+
 					}).attr("title", info.value);
 					
 					var widget = false;
