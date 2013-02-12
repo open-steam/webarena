@@ -86,8 +86,10 @@ theObject.buildTreeObject = function(data){
             if(extension === "docx" || extension === "doc"){
                 mediaUrl = Modules.config.sharepoint.basepath + "_layouts/WordViewer.aspx?id=" + elem.Pfad + "/" + elem.Name
             } else if(extension === "pptx" || extension === "ppt"){
-                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/PowerpointViewer.aspx?id=" + elem.Pfad + "/" + elem.Name
-            } else {
+                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/PowerPoint.aspx?PowerPointView=ReadingView&PresentationId=" + elem.Pfad + "/" + elem.Name
+            } else if(extension === "xlsx" || extension === "xls"){
+                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/xlviewer.aspx?id=" + elem.Pfad + "/" + elem.Name
+            }else{
                 mediaUrl = elem.__metadata.media_src;
             }
 
