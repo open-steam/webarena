@@ -15,15 +15,30 @@ File.createRepresentation = function() {
 	$(rect).addClass("borderRect");
 
 	GUI.svg.image(rep, 0, 0, 10, 10, this.getFileIcon());
+
+
 	
 	rep.dataObject=this;
 	
 	this.initGUI(rep);
 	
 	this.updateThumbnail();
+    this.renderFilename(rep);
 	
 	return rep;
 	
+}
+
+File.renderFilename = function (rep){
+    var filename = this.getAttribute("name");
+    var splitTextVal = splitSubstr(filename, 14);
+    var cTexts = GUI.svg.createText();
+
+    for(var i = 0, len = splitTextVal.length; i< len ; i++){
+        cTexts.span(splitTextVal[i], {'y' : 78 + i * 14, 'x': 0});
+    }
+    var text = GUI.svg.text(rep, 0, 75, cTexts);
+    $(text).attr("font-size", 12);
 }
 
 File.draw = function(external) {
@@ -89,7 +104,6 @@ File.updateThumbnail=function(){
 		$(rep).find("image").attr("href", this.getPreviewContentURL());
 	
 	}
-
 }
 
 
