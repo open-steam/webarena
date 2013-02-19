@@ -151,7 +151,7 @@ Discussion.createRepresentationEmbedded = function(){
             '</div>' +
             '<div class="discussion-heading">' +
             '</div><div class="discussion-text"></div>' +
-            '<input class="discussion-input">' +
+            '<input class="discussion-input" placeholder=Texteingabe>' +
             '</div>')
     );
 
