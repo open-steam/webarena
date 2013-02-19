@@ -86,7 +86,7 @@ Discussion.enableInlineEditors = function(){
             maxHeight  : 512
         },
         event : "discussion-statement-edit",
-        data: htmlDecode
+        data: function(string) {return htmlDecode($.trim(string))}
     });
 }
 
@@ -253,9 +253,10 @@ Discussion.renderMessage = function(message){
                 "<span class='message-author'>" + message.author +"</span>" +
                 "<span class='message-timestamp'>(" + this.formatTimestamp(message.timestamp) +")</span>" +
             "</div> " +
-            "<div class='statement-delete'>löschen</div>"+
-	    "<div class='statement-edit'>bearbeiten</div>"+
             "<p class='discussion-statement-text'> " + message.text +"</p>" +
+
+            "<div class='statement-delete'>löschen</div>"+
+        "<div class='statement-edit'>bearbeiten</div>"+
         "</div>";
 }
 
