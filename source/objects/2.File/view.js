@@ -23,7 +23,11 @@ File.createRepresentation = function() {
 	this.initGUI(rep);
 	
 	this.updateThumbnail();
-    this.renderFilename(rep);
+
+    if(this.hasContent() != false && this.getAttribute("preview") == false){
+        this.renderFilename(rep);
+    }
+
 	
 	return rep;
 	
@@ -80,7 +84,7 @@ File.getFileIcon=function() {
 }
 
 File.updateThumbnail=function(){
-
+    console.log(this.getAttribute('name'))
 	var rep=this.getRepresentation();
 
 	if (this.hasContent() == false) {
@@ -104,6 +108,7 @@ File.updateThumbnail=function(){
 		$(rep).find("image").attr("href", this.getPreviewContentURL());
 	
 	}
+
 }
 
 
