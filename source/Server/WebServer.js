@@ -220,7 +220,11 @@ WebServer.init=function(theModules){
 		  	var mimeType = object.getAttribute('mimeType') || 'text/plain';
 
 		  	var data=object.getContent();
-		  	res.writeHead(200, {'Content-Type': mimeType,'Content-Disposition': 'inline'});
+		  	res.writeHead(200, {
+                  'Content-Type': mimeType,
+                  'Content-Disposition': 'attachment; filename="'+ object.getAttribute("name") + '"' //TODO: switch to inline? Doesn't work in firefox
+
+            });
 
 			res.end(new Buffer(data));
 		
