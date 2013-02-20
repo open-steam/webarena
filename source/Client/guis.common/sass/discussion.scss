@@ -101,6 +101,14 @@
   display: block;
 }
 
+.discussion-statement-deletable.active-editing:hover .statement-delete{
+  display: none;
+}
+
+.discussion-statement-deletable.active-editing:hover .statement-edit{
+  display: none;
+}
+
 .wrapped-text{
   height: 50px;
 }

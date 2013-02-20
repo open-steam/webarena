@@ -86,7 +86,10 @@ Discussion.enableInlineEditors = function(){
             maxHeight  : 512
         },
         event : "discussion-statement-edit",
-        data: function(string) {return htmlDecode($.trim(string))}
+        data: function(string) {return htmlDecode($.trim(string))},
+        onedit: function(){$(this).parent().addClass('active-editing') },
+        onreset: function(){$(this).parent().removeClass('active-editing')},
+        onsubmit: function(){$(this).parent().removeClass('active-editing')}
     });
 }
 
