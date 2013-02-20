@@ -100,7 +100,8 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
                     originalUrl : value['bild.image']['download_url'],
                     cnt : value['cnt'],
                     standort: value.standort,
-                    dargestellter_ort : value.dargestellterort
+                    dargestellter_ort : value.dargestellterort,
+                    datierung : value.datierung
                 });
             } catch(e){}
 

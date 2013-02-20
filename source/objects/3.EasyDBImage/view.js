@@ -185,6 +185,7 @@ EasyDBImage.renderResultTable = function(data){
                         "easydbkuenstler='" + imageInformation.kuenstler + "' " +
             "easydbstandort='" + imageInformation.standort + "' " +
             "easydbdargestellter_ort='" + imageInformation.dargestellter_ort + "' " +
+            "easydbdatierung='" + imageInformation.datierung + "' " +
             "easydbdownloadurl='" + imageInformation.originalUrl +"'>" +
             "<td>" +
             "<img class='result-row-image' src='" + imageInformation.url + "'>" +

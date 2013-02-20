@@ -36,6 +36,8 @@ EasyDBImage.register=function(type){
 
     this.registerAttribute('easydbstandort',{type:'metadata', category:'Meta Data',  getFunction: notNull("easydbstandort")});
     this.registerAttribute('easydbdargestellter_ort',{type:'metadata', category:'Meta Data',  getFunction : notNull("easydbdargestellter_ort")});
+    this.registerAttribute('easydbdatierung',{type:'metadata', category:'Meta Data',  getFunction : notNull("easydbdatierung")});
+
 
     this.registerAttribute('linesize',{hidden: true});
     this.registerAttribute('linecolor',{hidden: true});

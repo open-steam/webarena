@@ -70,11 +70,13 @@ EasyDBImage.execute = function () {
                 var easydbstandort = $('.selected-row').attr('easydbstandort');
                 var easydbdargestellter_ort = $('.selected-row').attr('easydbdargestellter_ort');
                 var easydbtitel = $('.selected-row').attr('easydbtitel');
+                var easydbdatierung = $('.selected-row').attr('easydbdatierung');
 
                 if(easydbkuenstler) that.setAttribute('easydbkuenstler', easydbkuenstler);
                 if(easydbstandort) that.setAttribute('easydbstandort', easydbstandort);
                 if(easydbdargestellter_ort) that.setAttribute('easydbdargestellter_ort', easydbdargestellter_ort);
                 if(easydbtitel) that.setAttribute('easydbtitel', easydbtitel);
+                if(easydbdatierung) that.setAttribute('easydbdatierung', easydbdatierung);
 
                 setAndConfigureImage({
                     url: pictureUrl,

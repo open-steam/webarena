@@ -7,6 +7,7 @@ EasyDBImage.setTranslations('de',{
         'easydbtitel' : 'Titel',
         'easydbkuenstler' : 'Künstler',
         'easydbstandort' : 'Standort',
-        'easydbdargestellter_ort' : "Dargestellter Ort"
+        'easydbdargestellter_ort' : "Dargestellter Ort",
+        'easydbdatierung' : "Datierung"
 }
 );
