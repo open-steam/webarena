@@ -11,13 +11,13 @@ Paint.draw=function(external){
 	var rep=this.getRepresentation();
 
 	ImageObject.draw.call(this,external);
-
+/*
 	if (!this.hasContent()) {
 		$(rep).css("display", "none");
 	} else {
 		$(rep).css("display", "");
 	}
-	
+	*/
 }
 
 Paint.createRepresentation = function() {

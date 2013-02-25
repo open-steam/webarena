@@ -415,11 +415,31 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		$("#webarena_paintCanvas").bind("mousedown", start);
 	}
 	
+	
+	$(document).bind("keydown.paint", function(event) {
+		
+		if (event.keyCode == 16) {
+			GUI.paintShiftKeyDown = true;
+			GUI.paintShiftKeyDirection = undefined;
+		}
+		
+	});
+	
+	$(document).bind("keyup.paint", function(event) {
+		
+		if (event.keyCode == 16) {
+			GUI.paintShiftKeyDown = false;
+		}
+		
+	});
+	
+	
 }
 
+GUI.paintShiftKeyDown = false;
+GUI.paintShiftKeyDirection = undefined;
 
 GUI.paintPaint = function(x,y) {
-
 
 	var svgpos = $("#content").offset();
 	y = y-svgpos.top;
@@ -428,11 +448,44 @@ GUI.paintPaint = function(x,y) {
 		GUI.paintLastPoint = [x,y];
 		return;
 	}
+	
+	if (GUI.paintShiftKeyDown) {
+		/* paint line */
+	
+		if (GUI.paintShiftKeyDirection == undefined && (Math.abs(GUI.paintLastPoint[1]-y) > 2 || Math.abs(GUI.paintLastPoint[0]-x) > 2)) {
+			if (Math.abs(GUI.paintLastPoint[1]-y) > Math.abs(GUI.paintLastPoint[0]-x)) {
+				/* Y direction */
+				GUI.paintShiftKeyDirection = "y";
+			} else {
+				/* X direction */
+				GUI.paintShiftKeyDirection = "x";
+			}
+		}
+		
+		if (GUI.paintShiftKeyDirection !== undefined) {
+			
+			if (GUI.paintShiftKeyDirection == "y") {
+				/* Y direction */
+				x = GUI.paintLastPoint[0];
+			} else {
+				/* X direction */
+				y = GUI.paintLastPoint[1];
+			}
+
+			var xc = x;
+			var yc = y;
+			
+		} else {
+			var xc = (GUI.paintLastPoint[0] + x) / 2;
+			var yc = (GUI.paintLastPoint[1] + y) / 2;
+		}
+	
+	} else {
+		var xc = (GUI.paintLastPoint[0] + x) / 2;
+		var yc = (GUI.paintLastPoint[1] + y) / 2;
+	}
 
 	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-
-	var xc = (GUI.paintLastPoint[0] + x) / 2;
-	var yc = (GUI.paintLastPoint[1] + y) / 2;
 
 	canvasContext.quadraticCurveTo(GUI.paintLastPoint[0], GUI.paintLastPoint[1], xc, yc);
 	
@@ -489,9 +542,7 @@ GUI.paintErase = function(x,y) {
 
 GUI.cancelPaintMode = function() {
 	
-	if (!GUI.painted) {
-		GUI.currentPaintObject.deleteIt();
-	}
+	GUI.currentPaintObject.deleteIt();
 	
 	GUI.closePaintMode();
 	
@@ -514,6 +565,9 @@ GUI.closePaintMode = function() {
 	
 	/* set normal opacity to all objects */
 	GUI.hideHiddenObjects();
+	
+	$(document).unbind("keyup.paint");
+	$(document).unbind("keydown.paint");
 	
 }
 

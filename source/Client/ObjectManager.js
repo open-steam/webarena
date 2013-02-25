@@ -309,7 +309,7 @@ ObjectManager.init=function(){
     });
 	
     Modules.Dispatcher.registerCall('error',function(data){
-        GUI.error("server error", data);
+        GUI.error("server error", data, false, true);
     });
     
     Modules.Dispatcher.registerCall('inform',function(data){

@@ -34,7 +34,7 @@ Paint.register=function(type){
 
 
 Paint.isResizable=function(){
-	return false;
+	return true;
 }
 
 Paint.removeObjectWithoutContent = true;
