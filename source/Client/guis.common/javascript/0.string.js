@@ -23,7 +23,6 @@ function nl2br(str){
 
 function htmlEncode(str){
 	var enc = nl2br(htmlEscape(str));
-	console.log(enc)
 	return enc
 }
 
