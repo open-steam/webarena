@@ -94,7 +94,7 @@ theObject.hasContent=function(){
 */
 theObject.setContent=function(content,callback){
 	
-	if (content.substr(0,22)=='data:image/png;base64,'){
+	if ((typeof content) != "object" && content.substr(0,22)=='data:image/png;base64,'){
 		
 		var base64Data = content.replace(/^data:image\/png;base64,/,""),
 		content = new Buffer(base64Data, 'base64');

@@ -1,0 +1,5 @@
+
+BidFile.setTranslations('de',{
+
+}
+);

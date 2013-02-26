@@ -45,7 +45,7 @@ File.register=function(type){
 		for (var i in selected) {
 			var obj = selected[i];
 			
-			GUI.uploadFile(obj,obj.translate(GUI.currentLanguage, "Please select a file"));
+			obj.upload();
 			
 		}
 		
@@ -54,14 +54,14 @@ File.register=function(type){
 	});
 	
 	
-	this.registerAction(this.translate(this.currentLanguage, "Change file"),function(){
+	this.registerAction(this.translate(this.currentLanguage, "Change content"),function(){
 		
 		var selected = ObjectManager.getSelected();
 		
 		for (var i in selected) {
 			var obj = selected[i];
 			
-			GUI.uploadFile(obj,obj.translate(GUI.currentLanguage, "Please select a file"));
+			obj.upload();
 			
 		}
 		
@@ -70,7 +70,7 @@ File.register=function(type){
 	});
 	
 	
-	this.registerAction(this.translate(this.currentLanguage, "Open file"),function(){
+	this.registerAction(this.translate(this.currentLanguage, "Download"),function(){
 		
 		var selected = ObjectManager.getSelected();
 		
