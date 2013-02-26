@@ -301,15 +301,6 @@ Discussion.updateInnerHeightIcon = function(value){
 }
 
 
-/* get the x position of the objects bounding box (this is the left position of the object) */
-Discussion.getViewBoundingBoxX = function() {
-    return parseInt(this.getAttribute("x"));
-}
-
-/* get the y position of the objects bounding box (this is the top position of the object) */
-Discussion.getViewBoundingBoxY = function() {
-    return parseInt(this.getAttribute("y"));
-}
 
 
 
