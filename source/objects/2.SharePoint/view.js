@@ -161,7 +161,7 @@ SharePoint.getFileIcon = function(){
 
 
 
-    return "../../guis.common/images/fileicons/"+typeIcon+".png";
+    return "../../guis.common/images/sharepoint/"+typeIcon+".png";
 }
 
 SharePoint.getViewBoundingBoxWidth = function() {
