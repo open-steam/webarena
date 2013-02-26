@@ -100,7 +100,19 @@ theObject.browse = function(data) {
 	if (data.location) {
 		var location = data.location;
 	} else {
-		var location = "7936"; //TODO
+
+		/* no id provided --> get workroom ID */
+		Modules.Connector.bidConnections[data.connection.socket.id].User.getMyWorkroom(function(workRoom) {
+			
+			var BidHelper = require('../../Server/BidAPI.js').BidHelper;
+			var id = BidHelper.convertId(workRoom.index);
+			
+			data.location = id;
+			self.browse(data);
+			
+		});
+		return;
+		
 	}
 	
 	Modules.Connector.bidConnections[data.connection.socket.id].Container.getInventory(location, function(resp) {	

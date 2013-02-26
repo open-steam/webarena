@@ -246,6 +246,10 @@ function BidConnection(host, port, username, password) {
 		self.request("User", "getWorkroom", [id], callback);
 	}
 	
+	this.User.getMyWorkroom = function(callback) {
+		self.request("User", "getMyWorkroom", [], callback);
+	}
+	
 	this.User.getUserByName = function(name, callback) {
 		self.request("User", "getUserByName", [name], callback);
 	}

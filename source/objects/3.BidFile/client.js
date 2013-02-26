@@ -107,7 +107,7 @@ BidFile.upload = function() {
 					trClass = "";
 				}
 
-				content.find("tbody").append('<tr valign="middle" class="'+trClass+'"><td><img src="'+Config.bidURL+'/Rest/Misc/getMimeTypeImage/'+id+'" alt="" /></td><td class="'+cls+'" id="bidFile-'+link+'">'+name+'</td><td>'+lastChanged+'</td><td><a href="'+Config.bidURL+'/explorer/ViewDocument/'+id+'/" target="_blank">In bid-owl anzeigen</a></td></tr>');
+				content.find("tbody").append('<tr valign="middle" class="'+trClass+'"><td><img src="'+Config.bidURL+'/Rest/Misc/getMimeTypeImage/'+id+'" alt="" /></td><td class="'+cls+'" id="bidFile-'+link+'">'+name+'</td><td>'+lastChanged+'</td><td><a href="'+Config.bidURL+'/explorer/ViewDocument/'+id+'/" target="_blank">'+self.translate(GUI.currentLanguage, "Show in bid-owl")+'</a></td></tr>');
 				
 			}
 			
@@ -141,7 +141,7 @@ BidFile.upload = function() {
 		
 	}
 	
-	var content = $('<div><div class="bidFile-location-box">Location: <span class="bidFile-location"></span></div><table border="0"><tbody><tr class="bidFile-do_not_remove"><th></th><th>Name</th><th>Änderungsdatum</th><th></th></tr></tbody></table></div>');
+	var content = $('<div><div class="bidFile-location-box">'+self.translate(GUI.currentLanguage, "Location")+': <span class="bidFile-location"></span></div><table border="0"><tbody><tr class="bidFile-do_not_remove"><th></th><th>'+self.translate(GUI.currentLanguage, "Name")+'</th><th>'+self.translate(GUI.currentLanguage, "Last change")+'</th><th></th></tr></tbody></table></div>');
 	
 	content.find("table").css("text-align", "left");
 	content.find("table").css("width", "100%");
@@ -149,11 +149,11 @@ BidFile.upload = function() {
 	content.find(".bidFile-location-box").css("margin-bottom", "5px");
 	
 	var buttons = {};
-	buttons["Close"] = function() {
+	buttons[self.translate(GUI.currentLanguage, "Close")] = function() {
 		$(this).dialog("close");
 	}
 	
-	dialog = GUI.dialog("Select file", content.get(0), buttons, 500);
+	dialog = GUI.dialog(self.translate(GUI.currentLanguage, "Select file"), content.get(0), buttons, 500);
 	
 	var history = [];
 	browse();
