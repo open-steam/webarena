@@ -5,7 +5,7 @@ BidFile.setTranslations('de',{
 	"Name" : "Name",
 	"Last change" : "Änderungsdatum",
 	"Close" : "Schließen",
-	"Select file" : "Dateiauswahl"
+	"Select file" : "Dateiauswahl",
 	'Upload file' : 'Datei auswählen',
 }
 );
