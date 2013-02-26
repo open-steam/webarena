@@ -63,6 +63,15 @@ EasyDBImage.execute = function () {
         }
 
         var pageTwoButtons = {
+            "Zurück" : function(){
+
+                createPageOne();
+
+            },
+            "Abbrechen":function () {
+            return false;
+            },
+
             "OK":function () {
                 var pictureUrl = $('.selected-row').attr('easydbdownloadurl');
                 var easyDbId = $('.selected-row').attr('easydbimageid');
@@ -82,14 +91,6 @@ EasyDBImage.execute = function () {
                     url: pictureUrl,
                     easyDbID : easyDbId
                 });
-            },
-            "Abbrechen":function () {
-                return false;
-            },
-            "Zurück" : function(){
-
-                createPageOne();
-        
             }
 
         };
@@ -119,14 +120,15 @@ EasyDBImage.execute = function () {
 
     var createPageOne = function(){
         var pageOneButtons = {
+            "Abbrechen":function () {
+                return false;
+            },
             "OK":function () {
                 createPageTwo().on("dblclick", ".result-row", function () {
                     $(':button:contains("OK")').click();
                 });
-            },
-            "Abbrechen":function () {
-                return false;
             }
+
         }
 
         var dialog = GUI.dialog(

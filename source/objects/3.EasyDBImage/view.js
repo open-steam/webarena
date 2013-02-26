@@ -98,7 +98,7 @@ EasyDBImage.renderPagination = function(data){
         } else{
             extraClass ="";
         }
-        $(result).append(this.renderPaginatorButton(i, rowsPerPage * i, rowsPerPage, false, extraClass));
+        $(result).append(this.renderPaginatorButton(i+1, rowsPerPage * i, rowsPerPage, false, extraClass));
     }
 
     return result;
