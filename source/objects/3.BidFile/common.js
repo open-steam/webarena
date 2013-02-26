@@ -20,11 +20,6 @@ BidFile.register=function(type){
 	
 }
 
-BidFile.execute=function(){
-
-
-}
-
 
 BidFile.register('BidFile');
 BidFile.isCreatable=true;

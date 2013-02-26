@@ -107,7 +107,7 @@ BidFile.upload = function() {
 					trClass = "";
 				}
 
-				content.find("tbody").append('<tr valign="middle" class="'+trClass+'"><td><img src="'+Config.bidURL+'/Rest/Misc/getMimeTypeImage/'+id+'" alt="" /></td><td class="'+cls+'" id="bidFile-'+link+'">'+name+'</td><td>'+lastChanged+'</td><td><a href="'+Config.bidURL+'/explorer/ViewDocument/'+id+'/" target="_blank">'+self.translate(GUI.currentLanguage, "Show in bid-owl")+'</a></td></tr>');
+				content.find("tbody").append('<tr valign="middle" class="'+trClass+'"><td><img src="'+Config.bidURL+'/Rest/Misc/getMimeTypeImage/'+id+'" alt="" /></td><td class="'+cls+'" id="bidFile-'+link+'">'+name+'</td><td>'+lastChanged+'</td><td><a href="'+Config.bidURL+'/explorer/ViewDocument/'+id+'/" target="_blank">'+self.translate(GUI.currentLanguage, "Show in bid")+'</a></td></tr>');
 				
 			}
 			
