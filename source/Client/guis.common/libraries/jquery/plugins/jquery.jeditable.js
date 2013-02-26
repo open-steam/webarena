@@ -253,7 +253,10 @@
                 plugin.apply(form, [settings, self]);
 
                 /* Focus to first visible form element. */
+                var tmpVal = $(':input:visible:enabled:first', form).val();
                 $(':input:visible:enabled:first', form).focus();
+                $(':input:visible:enabled:first', form).val('');
+                $(':input:visible:enabled:first', form).val(tmpVal);
 
                 /* Highlight input contents when requested. */
                 if (settings.select) {
