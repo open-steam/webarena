@@ -137,7 +137,6 @@ EasyDbAPI.apicall = function(args, callback){
         callPath += index + "=" + encodeURIComponent(args[index]) + "&";
     }
 
-    console.log(callPath);
     Log.debug("EasyDbAPI","call path", callPath);
 
     var options = {

@@ -32,7 +32,6 @@ EasyDBImage.addControl = function(type, resizeFunction) {
     }
 
     var functionWrapper = function(){
-        console.log("Resize");
         if (timeout){
             clearTimeout(timeout);
         }
