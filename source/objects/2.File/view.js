@@ -38,6 +38,8 @@ File.renderFilename = function (rep){
     var splitTextVal = splitSubstr(filename, 14);
     var cTexts = GUI.svg.createText();
 
+    $(rep).find("text").remove();
+
     for(var i = 0, len = splitTextVal.length; i< len ; i++){
         cTexts.span(splitTextVal[i], {'y' : 78 + i * 14, 'x': 0});
     }
@@ -57,6 +59,13 @@ File.draw = function(external) {
 	}
 	
 	var rep = this.getRepresentation();
+
+    if (this.getAttribute("preview") == false && this.hasContent()) {
+        this.renderFilename(rep);
+    } else {
+        $(rep).find("text").remove();
+    }
+
 	
 	if (!$(rep).hasClass("selected")) {
 		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
@@ -84,7 +93,7 @@ File.getFileIcon=function() {
 }
 
 File.updateThumbnail=function(){
-    console.log(this.getAttribute('name'))
+
 	var rep=this.getRepresentation();
 
 	if (this.hasContent() == false) {
@@ -106,6 +115,7 @@ File.updateThumbnail=function(){
 		GeneralObject.draw.call(this);
 	
 		$(rep).find("image").attr("href", this.getPreviewContentURL());
+
 	
 	}
 
