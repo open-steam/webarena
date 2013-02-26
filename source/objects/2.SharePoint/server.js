@@ -133,9 +133,11 @@ theObject.buildTreeObject = function(data){
         if(elem.Inhaltstyp ==="Dokument") insertRec(elem, elem.Pfad.split("/").splice(1), result);
     });
 
-    //remove root node
-    return new Array(result.children[0]);
-
+    if(result.children === undefined ){
+        return new Array();
+    } else {
+        return new Array(result.children[0]);
+    }
 }
 
 theObject.browse=function(){

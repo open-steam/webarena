@@ -232,15 +232,20 @@ EasyDbAPI.search = function(searchArgs){
 
     function executeGetItems(callback){
         that.apicall(argumentsItems, function(data){
-            var searchResults = JSON.parse(data);
-
-            if(searchResults['response']['data']){
-                that.retrieveDetailedImageInformation(searchResults['response']['data'], "150px", function(resultUrls){
-                    callback(resultUrls);
-                });
-            } else {
+            if(data == "LoginHTTPBasic requires correct username/password."){
                 callback({});
+            } else {
+                var searchResults = JSON.parse(data);
+
+                if(searchResults['response']['data']){
+                    that.retrieveDetailedImageInformation(searchResults['response']['data'], "150px", function(resultUrls){
+                        callback(resultUrls);
+                    });
+                } else {
+                    callback({});
+                }
             }
+
         });
     }
 

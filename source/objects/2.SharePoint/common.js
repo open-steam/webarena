@@ -35,6 +35,7 @@ SharePoint.execute=function(){
         }
 
         var dialog_buttons = {
+            "Cancel": function(){return false;},
                 "OK" : function(){
                     var jstree_selected_item = $('.js-tree').jstree('get_selected');
                     var selectedUrl = jstree_selected_item.data('media_src');
@@ -44,8 +45,8 @@ SharePoint.execute=function(){
 
                     that.renderFilename(rep, selectedFilename );
                     that.updateIcon();
-                },
-                "Cancel": function(){return false;}
+                }
+
         };
         var dialog_width = 500;
         var additional_dialog_options = {

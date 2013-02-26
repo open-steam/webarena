@@ -300,10 +300,6 @@ Discussion.updateInnerHeightIcon = function(value){
     $(rep).find(".wrapped-text").dotdotdot();
 }
 
-
-
-
-
 Discussion.representationCreated = function() {
     GeneralObject.representationCreated.call(this);
     var that = this;
