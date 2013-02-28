@@ -5,9 +5,7 @@ File.contentUpdated=function(){
 }
 
 File.justCreated=function(){
-	if (!this.getAttribute("hasContent")) {
-		this.execute();
-	}
+	this.upload();
 }
 
 
@@ -21,4 +19,8 @@ File.isPreviewable=function(){
 	
 	return GUI.mimeTypeIsPreviewable(this.getAttribute("mimeType"));
 	
+}
+
+File.upload = function() {
+	GUI.uploadFile(this,this.translate(GUI.currentLanguage, "Please select a file"));
 }

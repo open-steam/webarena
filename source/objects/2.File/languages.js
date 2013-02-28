@@ -1,8 +1,9 @@
 
 File.setTranslations('de',{
 	'Please select a file':'Bitte wählen Sie eine Datei',
-	'Open file' : 'Datei öffnen',
+	'Download' : 'Herunterladen',
 	'Upload file' : 'Datei hochladen',
-	'Change file' : 'Datei austauschen',
+	'Change content' : 'Austauschen',
+	'File' : 'Datei von Computer',
 }
 );

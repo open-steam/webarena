@@ -9,5 +9,6 @@
 
 var Config={
 	language:'de',
-	presentationMode:false
+	presentationMode:false,
+	bidURL:''
 };
