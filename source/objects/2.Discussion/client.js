@@ -12,14 +12,17 @@ Discussion.deleteStatement = function(timestamp){
     this.setContent(JSON.stringify(newArr));
 }
 
-Discussion.fetchDiscussion = function(callback){
+Discussion.fetchDiscussion = function(rep, callback){
+    if(!rep)rep = this.getRepresentation();
     var that = this;
-    var rep=this.getRepresentation();
+
     var remoteContent = this.getContentAsString();
 
     if(remoteContent !== ""){
         remoteContent = JSON.parse(remoteContent);
     }
+
+
     that.messageArray = remoteContent;
 
     // update content
@@ -39,16 +42,14 @@ Discussion.fetchDiscussion = function(callback){
 
     that.enableInlineEditors();
 
-
+    if(callback) callback();
 }
 
 
 Discussion.contentUpdated = function(){
-var that = this;
+    var that = this;
     this.fetchContent(function(){
         that.fetchDiscussion();
     }, true);
-
-
 
 }
