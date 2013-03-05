@@ -182,6 +182,14 @@ GUI.shiftKeyDown = false;
 
 GUI.initShiftKeyHandling = function() {
 
+    $(document).click(function(e) {
+        if (e.shiftKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+
 	$(document).bind("keydown", function(event) {
 		
 		if (event.keyCode == 16) {
@@ -286,6 +294,7 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 /* mouse handler */
 GUI.initMouseHandler = function() {
+
 
 	if (GUI.isTouchDevice) {
 		
