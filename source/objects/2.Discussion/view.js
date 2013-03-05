@@ -193,10 +193,8 @@ Discussion.createRepresentationEmbedded = function () {
         }
     });
 
-    $(body).on("click", ".discussion-text, .moveArea, .discussion-input", function () {
-        if (!that.selected) {
-            that.select();
-        }
+    $(body).on("click", ".discussion-input", function () {
+        $(this).focus();
     });
 
     $(body).on("click", ".minimize-button", function () {
