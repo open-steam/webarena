@@ -30,21 +30,7 @@ GUI.updateGUI = function(webarenaObject) {
 	
 	var rep = webarenaObject.getRepresentation();
 	
-	if (webarenaObject.getAttribute("hidden")) {
-		/* object is hidden */
-		if (GUI.hiddenObjectsVisible) {
-			GUI.showObject(webarenaObject);
-		} else {
-			GUI.hideObject(webarenaObject);
-		}
-	} else {
-		/* object is not hidden */
-		if (GUI.hiddenObjectsVisible) {
-			GUI.hideObject(webarenaObject);
-		} else {
-			GUI.showObject(webarenaObject);
-		}
-	}
+
 
 }
 
@@ -64,8 +50,6 @@ GUI.adjustContent = function(webarenaObject) {
 	if (webarenaObject != undefined) {
 
 		if (!webarenaObject.isGraphical) return;
-		if (GUI.hiddenObjectsVisible && !webarenaObject.getAttribute("hidden")) return;
-		if (!GUI.hiddenObjectsVisible && webarenaObject.getAttribute("hidden")) return;
 
 		/* check if new position of webarenaObject needs a new room width/height */
 
@@ -367,8 +351,6 @@ GUI.getObjectAt = function(x,y) {
 
 		var rep = object.getRepresentation();
 
-		if (GUI.hiddenObjectsVisible && !object.getAttribute("hidden")) return;
-		if (!GUI.hiddenObjectsVisible && object.getAttribute("hidden")) return;
 		if (!object.getAttribute("visible") && !$(rep).hasClass("webarena_ghost")) return;
 
 		if (object.hasPixelAt(x,y)) {

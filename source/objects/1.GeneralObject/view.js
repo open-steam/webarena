@@ -97,12 +97,6 @@ GeneralObject.getRepresentation=function(){
 
 GeneralObject.representationCreated = function() {
 
-	if (this.getAttribute("hidden")) {
-		GUI.hideObject(this);
-	} else {
-		GUI.showObject(this);
-	}
-	
 	GUI.updateLayersDelayed();
 	
 }
@@ -196,9 +190,6 @@ GeneralObject.select = function(multiple, groupSelect) {
 	if (this.selected) return;
 	
 	GUI.hideActionsheet();
-
-	if (GUI.hiddenObjectsVisible && !this.getAttribute("hidden")) return;
-	if (!GUI.hiddenObjectsVisible && this.getAttribute("hidden")) return;
 
 	if (!GUI.shiftKeyDown && !multiple) {
 

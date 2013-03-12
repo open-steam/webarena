@@ -1,22 +1,44 @@
+BidFile.filterObject = function(obj) {
+	
+	var allowedMimeTypes = [
+		"image/jpeg",
+		"image/png",
+		"image/jpg",
+	];
+	
+	var mimeType = obj.attributes.DOC_MIME_TYPE;
+	
+	if (allowedMimeTypes.indexOf(mimeType) > -1) {
+		return true;
+	}
+	
+	return false;
+	
+}
+
+BidFile.selectFile = function(id, name) {
+
+	var self = this;
+	
+	var data = {
+		"roomID" : self.data.inRoom,
+		"objectID" : self.id,
+		"bidObjectId" : id
+	};
+	
+	Modules.Dispatcher.query('bidFile-setFile',data,function(res){
+		self.dialog.dialog("close");
+		self.setAttribute("name", name);
+	});
+	
+}
+
+BidFile.dialog = undefined;
+
 BidFile.upload = function() {
 	
 	var self = this;
 	
-	var dialog;
-	
-	var selectFile = function(id) {
-		
-		var data = {
-			"roomID" : self.data.inRoom,
-			"objectID" : self.id,
-			"bidObjectId" : id
-		};
-		
-		Modules.Dispatcher.query('bidFile-setFile',data,function(res){
-			dialog.dialog("close");
-		});	
-		
-	}
 	
 	var browse = function(location, title) {
 		
@@ -83,31 +105,32 @@ BidFile.upload = function() {
 				var mimeType = obj.attributes.DOC_MIME_TYPE;
 
 				var date = new Date(lastChanged*1000);
-				lastChanged = date.getDate()+"."+date.getMonth()+"."+date.getFullYear()+", "+date.getHours()+":"+date.getMinutes()+" Uhr";
+				var min = date.getMinutes();
+				if (min < 10) {
+					min = 0+""+min;
+				}
+				lastChanged = date.getDate()+"."+(date.getMonth()+1)+"."+date.getFullYear()+", "+date.getHours()+":"+date.getMinutes()+" Uhr";
 
 
 				var cls = "";
 				var link = "none";
 				var trClass = "bidFile-inactive"
-				
-				var allowedMimeTypes = [
-					"image/jpeg",
-					"image/png",
-					"image/jpg",
-				];
+				var openLink = '';
 
 				if (type == undefined && obj.types.indexOf("OBJECT") > -1 && obj.types.indexOf("CONTAINER") > -1 && obj.types.indexOf("ROOM") > -1) {
 					/* folder */
 					cls = "bidFile-name";
 					link = "folder-"+id;
 					trClass = "";
-				} else if (allowedMimeTypes.indexOf(mimeType) > -1) {
+					openLink = "";
+				} else if (self.filterObject(obj)) {
 					cls = "bidFile-name";
 					link = "file-"+id;
 					trClass = "";
+					openLink = '<a href="'+Config.bidURL+'/explorer/Index/'+id+'/" target="_blank">'+self.translate(GUI.currentLanguage, "Show in bid")+'</a>';
 				}
 
-				content.find("tbody").append('<tr valign="middle" class="'+trClass+'"><td><img src="'+Config.bidURL+'/Rest/Misc/getMimeTypeImage/'+id+'" alt="" /></td><td class="'+cls+'" id="bidFile-'+link+'">'+name+'</td><td>'+lastChanged+'</td><td><a href="'+Config.bidURL+'/explorer/ViewDocument/'+id+'/" target="_blank">'+self.translate(GUI.currentLanguage, "Show in bid")+'</a></td></tr>');
+				content.find("tbody").append('<tr valign="middle" class="'+trClass+'"><td><img src="'+Config.bidURL+'/Rest/Misc/getMimeTypeImage/'+id+'" alt="" /></td><td class="'+cls+'" id="bidFile-'+link+'">'+name+'</td><td>'+lastChanged+'</td><td>'+openLink+'</td></tr>');
 				
 			}
 			
@@ -130,7 +153,8 @@ BidFile.upload = function() {
 					/* file */
 					
 					linkId = linkId.replace("bidFile-file-", "");
-					selectFile(linkId);
+
+					self.selectFile(linkId, $(this).html());
 					
 				}
 
@@ -153,7 +177,7 @@ BidFile.upload = function() {
 		$(this).dialog("close");
 	}
 	
-	dialog = GUI.dialog(self.translate(GUI.currentLanguage, "Select file"), content.get(0), buttons, 500);
+	self.dialog = GUI.dialog(self.translate(GUI.currentLanguage, "Select file"), content.get(0), buttons, 500);
 	
 	var history = [];
 	browse();

@@ -5,3 +5,6 @@
 *
 */
 
+BidFile.getUploadIcon = function() {
+	return "../../guis.common/images/fileicons/selectBidFile.png";
+}

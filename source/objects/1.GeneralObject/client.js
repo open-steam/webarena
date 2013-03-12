@@ -142,10 +142,10 @@ GeneralObject.create = function(attributes) {
 	
 	if (attributes === undefined) {
 		var attributes = {
-			hidden: GUI.hiddenObjectsVisible
+
 		};
 	} else {
-		attributes["hidden"] = GUI.hiddenObjectsVisible;
+
 	}
 	
 	ObjectManager.createObject(this.type, attributes);

@@ -101,9 +101,6 @@ GeneralObject.register=function(type){
 	this.attributeManager.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
 	this.attributeManager.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
 
-	this.attributeManager.registerAttribute('hidden',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
-		GUI.updateHiddenObjects();
-	}});
 	this.attributeManager.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
 		
 		window.setTimeout(function() {
@@ -117,7 +114,23 @@ GeneralObject.register=function(type){
 	
 	this.attributeManager.registerAttribute('visible',{type:'boolean',standard:true,category:'Basic',checkFunction: function(object, value) {
 		
-		if (!object.hasLinkedObjects() && value == false) {
+		if (value != false) {
+			return true;
+		}
+		
+		var linkedVisibleObjectsCounter = 0;
+
+		var linkedObjects = object.getLinkedObjects();
+		
+		for (var i in linkedObjects) {
+			var linkedObject = linkedObjects[i];
+			
+			if (linkedObject.object.getAttribute("visible") == true) {
+				linkedVisibleObjectsCounter++;
+			}
+		}
+		
+		if (linkedVisibleObjectsCounter == 0) {
 			return object.translate(GUI.currentLanguage, "you need at least one link from or to this object to hide it");
 		} else {
 			return true;
@@ -478,11 +491,11 @@ GeneralObject.mayChangeContent=function(){
 }
 
 GeneralObject.hide=function(){
-	this.setAttribute('hidden',true);
+	this.setAttribute('visible',true);
 }
 
 GeneralObject.unHide=function(){
-	this.setAttribute('hidden',false);
+	this.setAttribute('visible',false);
 }
 
 GeneralObject.unhide=GeneralObject.unHide;

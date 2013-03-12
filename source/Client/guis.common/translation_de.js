@@ -38,5 +38,6 @@ GUI.setTranslations('de',{
 	'Create file object' : 'Erstelle Objekt für Datei',
 	'Edit text' : 'Text editieren',
     'Meta Data': "Metadaten",
+	'this file is not previewable' : 'Diese Datei kann nicht als Vorschau angezeigt werden.',
 }
 );

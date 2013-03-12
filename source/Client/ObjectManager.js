@@ -498,3 +498,14 @@ ObjectManager.requestAttentionToObject=function(id){
 ObjectManager.reportBug=function(data, callback){
 	ObjectManager.Modules.Dispatcher.query('bugreport',data,callback);
 }
+
+ObjectManager.showAll=function() {
+
+	var objects = ObjectManager.getObjects();
+
+    for (var i in objects){
+        var obj = objects[i];
+        obj.setAttribute("visible", true);
+    }
+
+}

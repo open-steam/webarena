@@ -33,8 +33,15 @@ File.createRepresentation = function() {
 	
 }
 
-File.renderFilename = function (rep){
-    var filename = this.getAttribute("name");
+File.getFilename = function() {
+	return this.getAttribute("name");
+}
+
+File.renderFilename = function (){
+	
+	var rep = this.getRepresentation();
+	
+    var filename = this.getFilename();
     var splitTextVal = splitSubstr(filename, 14);
     var cTexts = GUI.svg.createText();
 
@@ -45,13 +52,34 @@ File.renderFilename = function (rep){
     }
     var text = GUI.svg.text(rep, 0, 75, cTexts);
     $(text).attr("font-size", 12);
+
+	if ($(rep).find("text tspan").length == 0) {
+		/* single line text */
+		
+		var w = 32-Math.floor($(rep).find("text").width()/2);
+		$(rep).find("text").attr("x", w);
+		
+	} else {
+		/* multi line text */
+		
+		$(rep).find("text").find("tspan").each(function() {
+		
+			var w = 32-Math.floor($(this).width()/2);
+			$(this).attr("x", w);
+			
+		});
+		
+	}
+
 }
 
 File.draw = function(external) {
 	
+	this.updateThumbnail();
+	
 	GeneralObject.draw.call(this,external);
 	
-	if (this.hasContent() == false || this.getAttribute("preview") == false) {
+	if (this.hasContent() == false || this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {
 		
 		this.setViewWidth(64);
 		this.setViewHeight(64);
@@ -60,8 +88,8 @@ File.draw = function(external) {
 	
 	var rep = this.getRepresentation();
 
-    if (this.getAttribute("preview") == false && this.hasContent()) {
-        this.renderFilename(rep);
+    if ((this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) && this.hasContent()) {
+        this.renderFilename();
     } else {
         $(rep).find("text").remove();
     }
@@ -92,6 +120,10 @@ File.getFileIcon=function() {
 	
 }
 
+File.getUploadIcon = function() {
+	return "../../guis.common/images/fileicons/upload.png";
+}
+
 File.updateThumbnail=function(){
 
 	var rep=this.getRepresentation();
@@ -100,9 +132,9 @@ File.updateThumbnail=function(){
 		
 		GeneralObject.draw.call(this);
 		
-		$(rep).find("image").attr("href", "../../guis.common/images/fileicons/upload.png");
+		$(rep).find("image").attr("href", this.getUploadIcon());
 		
-	} else if (this.getAttribute("preview") == false) {	
+	} else if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
 		/* show object type icon */
 		
 		GeneralObject.draw.call(this);
