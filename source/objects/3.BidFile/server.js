@@ -121,7 +121,7 @@ theObject.browse = function(data) {
 		
 		var BidHelper = require('../../Server/BidAPI.js').BidHelper;
 		
-		if (resp.length == null) {
+		if (!resp || resp.length == null) {
 			data.callback([]); return;
 		}
 		
