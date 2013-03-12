@@ -42,6 +42,10 @@ EasyDBImage.register=function(type){
     this.registerAttribute('linesize',{hidden: true});
     this.registerAttribute('linecolor',{hidden: true});
         this.registerAttribute('fillcolor',{hidden: true});
+
+    this.registerAttribute('name',{hidden: true});
+
+    
 }
 
 EasyDBImage.register('EasyDBImage');

@@ -73,7 +73,8 @@ AttributeManager.registerAttribute=function(attribute,data){
 	//debug('Registering attribute '+attribute+' for '+this.proto+' type '+data.type);
 	
 	if (data.type===undefined) data.type='text';
-	data.description=attribute;
+	if (data.description==undefined && data.readable==undefined) data.description=attribute;
+	if (data.readable!==undefined) data.description=data.readable;
 	if (data.unit===undefined) data.unit='';
 	if (data.min===undefined) data.min=-50000;
 	if (data.max===undefined) data.max=50000;

@@ -250,6 +250,7 @@ GUI.setupInspectorContent = function(inspector) {
 						"float" : "none",
 						"text-align": "left"
 					}).attr("title", info.value);
+					$(element.getDOM()).find("br").remove();
 					
 					var widget = false;
 					

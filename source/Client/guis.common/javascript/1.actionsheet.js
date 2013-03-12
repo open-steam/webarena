@@ -21,8 +21,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
     if(isWebarenaObject === undefined){
         isWebarenaObject = true;
     }
-    console.log(x)
-    console.log(y)
+
 
 	if (Modules.Config.presentationMode) return;
 
@@ -80,7 +79,6 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
     } else {
 
         $.each(webarenaObject.actions, function(key, action) {
-            console.log(action)
             var newButton = document.createElement("div");
 
             $(newButton).html(action.actionName );

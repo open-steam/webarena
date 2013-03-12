@@ -153,7 +153,10 @@
 				var fd = new FormData();
 				fd.append("file", form.files[0]);
 
-                object.setAttribute('name', $(this).val().replace("C:\\fakepath\\", ""));
+				
+				var filename = $(this).val().replace("C:\\fakepath\\", "");
+				object.setAttribute('name', filename, true);
+              
 
 				var xhr = new XMLHttpRequest();
 				xhr.upload.addEventListener("progress", function(evt) {

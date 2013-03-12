@@ -182,6 +182,14 @@ GUI.shiftKeyDown = false;
 
 GUI.initShiftKeyHandling = function() {
 
+    $(document).click(function(e) {
+        if (e.shiftKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
+
 	$(document).bind("keydown", function(event) {
 		
 		if (event.keyCode == 16) {
@@ -287,6 +295,7 @@ GUI.initObjectDeletionByKeyboard = function() {
 /* mouse handler */
 GUI.initMouseHandler = function() {
 
+
 	if (GUI.isTouchDevice) {
 		
 		var touchHandler = function(event) {
@@ -307,7 +316,6 @@ GUI.initMouseHandler = function() {
 			var clickedObject = GUI.getObjectAt(x, y);
 
 			if (clickedObject && event.target != $("#content>svg").get(0)) {
-				if (clickedObject.restrictedMovingArea) return false;
 				event.preventDefault();
 				event.stopPropagation();
 				clickedObject.click(event);
@@ -331,9 +339,6 @@ GUI.initMouseHandler = function() {
 			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
 
 			if (clickedObject && event.target != $("#content>svg").get(0)) {
-				if (clickedObject.restrictedMovingArea) {
-					return true;
-				}
                 event.preventDefault();
                 event.stopPropagation();
 				clickedObject.click(event);

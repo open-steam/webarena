@@ -96,9 +96,7 @@ GeneralObject.getRepresentation=function(){
 
 
 GeneralObject.representationCreated = function() {
-	
-	this.bindMoveArea();
-	
+
 	if (this.getAttribute("hidden")) {
 		GUI.hideObject(this);
 	} else {
@@ -725,6 +723,7 @@ GeneralObject.moveStart = function(event) {
 		var self = ObjectManager.getObject(this.id);
 	}
 
+
 	if (!self.selected) self.select();
 	
 	var contentPosition = $("#content").offset();
@@ -834,10 +833,14 @@ GeneralObject.moveStart = function(event) {
 GeneralObject.makeMovable = function() {
 
 	var self = this;
-	
-	var rep = this.getRepresentation();
+    var rep;
 
-	if (!this.restrictedMovingArea) {
+    if(this.restrictedMovingArea){
+        rep = $(this.getRepresentation()).find(".moveArea").get(0);
+    } else {
+        rep = this.getRepresentation();
+    }
+
 
 		if (GUI.isTouchDevice) {
 			/* touch */
@@ -847,28 +850,9 @@ GeneralObject.makeMovable = function() {
 			$(rep).bind("mousedown", self.moveStart);
 		}
 	
-	}
+
 	
 }
-
-
-GeneralObject.bindMoveArea = function() {
-
-	if (!this.restrictedMovingArea) return;
-
-	//find move area
-	var rep = $(this.getRepresentation()).find(".moveArea").get(0);
-
-	if (GUI.isTouchDevice) {
-		/* touch */
-		rep.ontouchstart = this.moveStart;
-	} else {
-		/* mouse */
-		$(rep).bind("mousedown", this.moveStart);
-	}
-	
-}
-
 
 GeneralObject.moveRelative = function(dx, dy) {
 
@@ -878,7 +862,6 @@ GeneralObject.moveRelative = function(dx, dy) {
 	this.setViewY(this.moveObjectStartY+dy);
 	
 	this.adjustControls();
-	
 	this.moveHandler();
 	
 }
@@ -901,7 +884,12 @@ GeneralObject.moveBy = function(x, y) {
 
 GeneralObject.unmakeMovable = function() {
 
-	var rep = this.getRepresentation();
+	var rep;
+    if(this.restrictedMovingArea){
+        rep = $(this.getRepresentation()).find(".moveArea").get(0);
+    } else {
+        rep = this.getRepresentation();
+    }
 	
 	$(rep).unbind("mousedown");
 
@@ -1065,7 +1053,6 @@ GeneralObject.clickTimeout = false;
 
 /* our own click handler (because we have to differ single click and double click) */
 GeneralObject.click = function(event) {
-
 	var self = this;
 	
 	if (GUI.isTouchDevice) {
@@ -1110,7 +1097,6 @@ GeneralObject.click = function(event) {
 /* handler functions */
 
 GeneralObject.clickHandler = function(event) {
-
 	if (GUI.isTouchDevice && event.touches.length > 1) {
 		this.select(true); //multi select
 		event.stopPropagation();
@@ -1119,7 +1105,13 @@ GeneralObject.clickHandler = function(event) {
 	}
 	
 	if (this.selected) {
-		this.selectedClickHandler(event);
+        if(this.restrictedMovingArea){
+            if($(event.target).hasClass("moveArea")){
+                this.selectedClickHandler(event);
+            }
+        } else {
+            this.selectedClickHandler(event);
+        }
 	} else {
 		this.selectionClickActive = true; //this is used to prevent a second click-call by mouseup of move when selecting an object (otherwise this would result in an doubleclick)
 		this.select();
@@ -1157,6 +1149,7 @@ GeneralObject.dblclickHandler = function(event) {
 }
 
 GeneralObject.selectedClickHandler = function(event) {
+
 
 	if (GUI.shiftKeyDown) {
 		this.deselect();
