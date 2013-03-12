@@ -31,10 +31,18 @@ ObjectManager.getPrototype=function(objType){
 }
 
 ObjectManager.getObject=function(objectID){
+	
+	//room?
+	if (objectID==this.currentRoomID){
+		return this.currentRoom;
+	}
+	
     return ObjectManager.objects[objectID];
 }
 
 ObjectManager.buildObject=function(type, attributes){
+	
+	if (!type) console.trace();
 
     var proto=this.getPrototype(type);
     var object=Object.create(proto);
@@ -52,6 +60,7 @@ ObjectManager.buildObject=function(type, attributes){
     } else {
 
         this.currentRoom=object;
+        
         this.currentRoom.isGraphical=false; // the current room cannot be positioned
 		
     }
@@ -136,6 +145,18 @@ ObjectManager.objectUpdate=function(data){
         var oldData=object.data;
 		
         object.data=data;
+        
+        /**
+        
+        TODO Room updated come with no object type. Why?
+        
+        if (!data.type){
+    		console.log('No type');
+    		console.log(data);
+    		console.trace();
+    	}
+    	**/
+        
 		
         for (var key in oldData){
             var oldValue=oldData[key];
@@ -146,6 +167,7 @@ ObjectManager.objectUpdate=function(data){
         }
 		
     } else {
+    	
         object = ObjectManager.buildObject(data.type,data);
     }
 	
@@ -293,6 +315,7 @@ ObjectManager.init=function(){
     });
 
     Modules.Dispatcher.registerCall('objectUpdate',function(data){
+    	
         ObjectManager.objectUpdate(data);
     })
 	
@@ -337,7 +360,7 @@ ObjectManager.getRoomID=function(){
 }
 
 ObjectManager.getCurrentRoom=function(){
-    return this.currentRoom;
+	return this.currentRoom;
 }
 
 
