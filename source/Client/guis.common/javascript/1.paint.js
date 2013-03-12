@@ -564,7 +564,9 @@ GUI.closePaintMode = function() {
 	$("#webarena_paintCanvas").remove();
 	
 	/* set normal opacity to all objects */
-	GUI.hideHiddenObjects();
+	$.each(ObjectManager.getObjects(), function(index, object) {
+		$(object.getRepresentation()).css("opacity", object.normalOpacity);
+	});
 	
 	$(document).unbind("keyup.paint");
 	$(document).unbind("keydown.paint");

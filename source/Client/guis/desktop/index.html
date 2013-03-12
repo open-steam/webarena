@@ -94,7 +94,6 @@
 	<script type="text/javascript" src="/guis.common/javascript/1.login.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.load.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.actionsheet.js"></script>
-	<script type="text/javascript" src="/guis.common/javascript/1.hiddenObjects.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.inspector.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.links.js"></script>
 	<script type="text/javascript" src="/guis.common/javascript/1.paint.js"></script>
@@ -571,7 +570,19 @@
 			
 		});
 		
-		
+		GUI.huu = function() {
+			
+			var huu = new Audio("");
+			$("body").append(huu);
+			
+			huu.src = "/guis/desktop/huu.m4a";
+			huu.play();
+			
+			window.setTimeout(function() {
+				$(huu).remove();
+			}, 4000);
+			
+		}
 	
 	</script>
 </head>

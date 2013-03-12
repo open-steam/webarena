@@ -17,7 +17,7 @@ BidFile.filterObject = function(obj) {
 }
 
 BidFile.selectFile = function(id, name) {
-	
+
 	var self = this;
 	
 	var data = {
@@ -28,9 +28,8 @@ BidFile.selectFile = function(id, name) {
 	
 	Modules.Dispatcher.query('bidFile-setFile',data,function(res){
 		self.dialog.dialog("close");
+		self.setAttribute("name", name);
 	});
-	
-	self.setAttribute("name", name);
 	
 }
 

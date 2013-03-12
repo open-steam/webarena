@@ -75,6 +75,10 @@ GUI.chat.addMessage = function(username, text, userColor) {
 		
 	}
 	
+	if (text.indexOf('(ghost)') > -1) {
+		GUI.huu();
+	}
+	
 	text = replaceEmoticon(':)', 'emoticon_smile.png', text);
 	text = replaceEmoticon(':D', 'emoticon_grin.png', text);
 	text = replaceEmoticon(':P', 'emoticon_tongue.png', text);
@@ -83,6 +87,7 @@ GUI.chat.addMessage = function(username, text, userColor) {
 	text = replaceEmoticon(':o', 'emoticon_surprised.png', text);
 	text = replaceEmoticon(';D', 'emoticon_wink.png', text);
 	text = replaceEmoticon('<3', 'heart.png', text);
+	text = replaceEmoticon('(ghost)', 'ghost.png', text);
 	
 	$("#chat_messages").append('<div class="chat_message_'+type+'"><span style="color: '+userColor+'">'+username+'</span>'+text+'</div>');
 	

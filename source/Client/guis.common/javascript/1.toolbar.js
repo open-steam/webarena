@@ -198,42 +198,7 @@ GUI.initToolbar = function() {
 	
 	
 	
-	
-	
-	/* add hidden-mode toggle */
-	
-	if (!Modules.Config.presentationMode) {
-	
-		var hiddenButton = document.createElement("img");
-		$(hiddenButton).attr("src", "../../guis.common/images/hidden.png").attr("alt", "");
-		$(hiddenButton).attr("width", "24").attr("height", "24");
 
-		$(hiddenButton).attr("id", "hidden_button");
-		$(hiddenButton).attr("title", GUI.translate("Toggle hidden mode"));
-
-		GUI.onToggleHidden = function(hiddenMode) {
-
-			if (hiddenMode) {
-				//hidden mode is active (hidden objects are visible)
-				$("#hidden_button").addClass("active");
-			} else {
-				//hidden mode is inactive (no hidden objects are visible)
-				$("#hidden_button").removeClass("active");
-			}
-
-		}
-
-
-		if (GUI.isTouchDevice) {
-			$(hiddenButton).bind("touchstart", GUI.toggleHidden);
-		} else {
-			$(hiddenButton).bind("mousedown", GUI.toggleHidden);
-		}
-
-		$("#header > .header_right").append(hiddenButton);
-	
-	}
-	
 	
 	
 	/* add bug report toggle */
