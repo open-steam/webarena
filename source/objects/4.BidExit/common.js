@@ -49,6 +49,6 @@ BidExit.isCreatable=true;
 
 //BidExit.moveByTransform = function(){return true;};
 
-BidExit.category='Rooms';
+BidExit.category='WebarenaLinks';
 
 module.exports=BidExit;

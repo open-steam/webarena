@@ -304,6 +304,8 @@ GeneralObject.adjustControls = function() {
 	});
 	}
 	
+	GUI.userMarker.setPosition(this.id);
+	
 }
 
 GeneralObject.addControls = function() {

@@ -53,23 +53,19 @@ File.renderFilename = function (){
     var text = GUI.svg.text(rep, 0, 75, cTexts);
     $(text).attr("font-size", 12);
 
-	if ($(rep).find("text tspan").length == 0) {
-		/* single line text */
-		
-		var w = 32-Math.floor($(rep).find("text").width()/2);
-		$(rep).find("text").attr("x", w);
-		
-	} else {
-		/* multi line text */
-		
-		$(rep).find("text").find("tspan").each(function() {
-		
+	/* center text */
+	$(rep).find("text").find("tspan").each(function() {
+	
+		/* width of tspan elements is 0 in Firefox --> display multiline text left aligned in Firefox */
+		if ($(rep).find("text").width() == 0) {
+			var w = 0;
+		} else {
 			var w = 32-Math.floor($(this).width()/2);
-			$(this).attr("x", w);
-			
-		});
+		}
 		
-	}
+		$(this).attr("x", w);
+		
+	});
 
 }
 

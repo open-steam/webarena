@@ -275,7 +275,7 @@ ObjectManager.init=function(){
 	
     Modules.Dispatcher.registerCall('loggedIn',function(data){
         GUI.loggedIn();
-        ObjectManager.user = data.username;
+        ObjectManager.user = data.userData;
 		ObjectManager.userHash = data.userhash;
 
 		if (GUI.startRoom !== undefined && GUI.startRoom != '') {
@@ -327,6 +327,36 @@ ObjectManager.init=function(){
 		if (data.message.text !== undefined) {
 			GUI.chat.addMessage(data.user, data.message.text, data.color);
 		}
+		
+		if (data.message.selection) {
+			
+			if (data.userId != ObjectManager.user.id) { //do not display own selections
+				
+				GUI.userMarker.select({
+					"objectId" : data.message.selection,
+					"title" : data.user,
+					"identifier" : data.userId,
+					"color" : data.color
+				});
+				
+			}
+			
+		}
+		
+		if (data.message.deselection) {
+			
+			if (data.userId != ObjectManager.user.id) { //do not display own selections
+			
+				GUI.userMarker.deselect({
+					"objectId" : data.message.deselection,
+					"identifier" : data.userId,
+				});
+			
+			}
+			
+		}
+		
+		console.log(data);
 
     });
 	
@@ -453,6 +483,7 @@ ObjectManager.inform=function(type,content){
 	data.room=this.getRoomID();
 	data.user=this.getUser().username;
 	data.color=this.getUser().color;
+	data.userId=this.getUser().id;
 	ObjectManager.Modules.Dispatcher.query('inform',data);
 }
 

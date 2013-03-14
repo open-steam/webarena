@@ -104,12 +104,13 @@ UserManager.login=function(socketOrUser,data){
 			connection.user.password=data.password;
 			connection.user.color=userColor;
 			connection.user.externalSession = data.externalSession;
+			connection.user.id = socket.id;
 		
 			connection.user.home=data.home;
 			connection.user.hash='___'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
 		
 			socketServer.sendToSocket(socket,'loggedIn',{
-				username: connection.user,
+				userData: connection.user,
 				userhash: connection.user.hash,
 				home: connection.user.home
 			});
