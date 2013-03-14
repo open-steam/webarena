@@ -58,6 +58,7 @@ GeneralObject.register=function(type){
 		GUI.updateLayers();
 	}});
 	
+	/*
 	if (!ObjectManager.isServer){
 	
 		this.attributeManager.registerAttribute('x',{type:'number',min:0,category:'Dimensions',getFunction:function(object){
@@ -76,6 +77,10 @@ GeneralObject.register=function(type){
 			return object.setAttribute('y_'+context,value);
 		}});
 	}
+	*/
+	
+	this.attributeManager.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
+	this.attributeManager.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
 	
 	this.attributeManager.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
