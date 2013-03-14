@@ -81,7 +81,7 @@ AttributeManager.registerAttribute=function(attribute,data){
 	if (data.standard==undefined) data.standard=0;
 	if (data.category==undefined) data.category='Basic';
 	
-	data.setter=function(object,value){
+	data.setter=function(object,value){	
 		
 		if (value===undefined) value=data.standard;
 		if (data.type=='number' || data.type=='fontsize'){
@@ -138,8 +138,8 @@ var saveDelays={};
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
 	if (attribute=='position'){
-		AttributeManager.setAttribute(object,'x',value.x,forced);
-		AttributeManager.setAttribute(object,'y',value.y,forced);
+		this.setAttribute(object,'x',value.x,forced);
+		this.setAttribute(object,'y',value.y,forced);
 		return true;
 	} 	
 	
@@ -156,7 +156,13 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
 	// specified value
-	var setter=(this.attributes[attribute])?this.attributes[attribute].setter:function(object,value){object.data[attribute]=value;};
+	var setter=false;
+	
+	if(this.attributes[attribute]){
+		setter=this.attributes[attribute].setter;
+	} else {
+		setter=function(object,value){object.data[attribute]=value;};
+	}
 	
 	// check if the attribute is read only
 	if (this.attributes[attribute] && this.attributes[attribute].readonly) {
@@ -165,7 +171,6 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	}
 	
 	// call the setter function
-	
 	setter(object,value);
 	
 	// persist the results
