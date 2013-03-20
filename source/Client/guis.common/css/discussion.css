@@ -24,6 +24,8 @@
   padding: 7px;
   font-size: 16px;
   border-bottom: 2px solid #CCCCCC;
+  max-height: 400px;
+  overflow-y: scroll;
 }
 
 .discussion-statement {
