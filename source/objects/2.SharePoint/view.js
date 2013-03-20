@@ -74,6 +74,10 @@ SharePoint.createRepresentationIcon = function(){
 
     GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
 
+    var rect = GUI.svg.rect(rep, 0,0,10,10);
+    $(rect).attr("fill", "transparent");
+    $(rect).addClass("borderRect");
+
 
     if(this.getAttribute("sharepoint_src")){
         textVal = this.getAttribute("name");
@@ -124,6 +128,11 @@ SharePoint.drawIcon = function(){
 
     this.setViewWidth(64);
     this.setViewHeight(64);
+
+    if (!$(rep).hasClass("selected")) {
+        $(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
+        $(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+    }
 }
 
 SharePoint.updateIcon = function(){
@@ -214,6 +223,7 @@ SharePoint.setViewHeight = function(value){
 
     var rep = this.getRepresentation();
     $(rep).find('iframe').attr('height', (value-38)+ "px");
+    $(this.getRepresentation()).find("rect").attr("height", parseInt(value));
 }
 
 SharePoint.setViewWidth = function(value){
@@ -222,6 +232,7 @@ SharePoint.setViewWidth = function(value){
 
     var rep = this.getRepresentation();
     $(rep).find('iframe').attr('width', (value-8)+ "px");
+    $(this.getRepresentation()).find("rect").attr("width", parseInt(value));
 }
 
 SharePoint.renderLoadScreen  = function(target){
