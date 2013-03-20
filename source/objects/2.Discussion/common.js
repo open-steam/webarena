@@ -10,7 +10,7 @@ var Modules=require('../../server.js');
 var Discussion=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 Discussion.register=function(type){
-	
+	var that = this;
     // Registering the object
     GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
     GeneralObject.register.call(this,type);
@@ -25,6 +25,13 @@ Discussion.register=function(type){
 
     this.registerAttribute('linesize',{hidden: true});
     this.registerAttribute('linecolor',{hidden: true});
+
+    this.registerAttribute("show_embedded",{
+        hidden: true,
+        changedFunction: function(object, value) {
+            object.switchStateView();
+        }
+    })
 
 }
 

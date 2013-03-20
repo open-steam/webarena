@@ -42,6 +42,32 @@ Discussion.drawEmbedded = function () {
     this.bindAdminControlls();
 }
 
+Discussion.drawIcon = function () {
+    var rep = this.getRepresentation();
+
+    this.setViewX(this.getAttribute('x'));
+    this.setViewY(this.getAttribute('y'));
+
+    this.setViewWidth(this.getAttribute('width'));
+    this.setViewHeight(this.getAttribute('height'));
+
+    $(rep).find(".discussion-blob").css("background-color", this.getAttribute('fillcolor'));
+    $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
+    $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
+    $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
+
+    $(rep).attr("layer", this.getAttribute('layer'));
+}
+
+Discussion.draw = function () {
+    var embedded = this.getAttribute("show_embedded");
+    if (embedded) {
+        this.drawEmbedded();
+    } else {
+        this.drawIcon();
+    }
+}
+
 Discussion.bindAdminControlls = function () {
     var rep = this.getRepresentation();
     var that = this;
@@ -100,36 +126,17 @@ Discussion.enableInlineEditors = function () {
     });
 }
 
-Discussion.drawIcon = function () {
-    var rep = this.getRepresentation();
-
-    this.setViewX(this.getAttribute('x'));
-    this.setViewY(this.getAttribute('y'));
-
-    this.setViewWidth(this.getAttribute('width'));
-    this.setViewHeight(this.getAttribute('height'));
-
-    $(rep).find(".discussion-blob").css("background-color", this.getAttribute('fillcolor'));
-    $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
-    $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
-    $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
-
-    $(rep).attr("layer", this.getAttribute('layer'));
+Discussion.switchStateView = function(){
+    $('#' + this.getAttribute('id')).remove();
+    this.getRepresentation();
+    this.deselect()
 }
 
-Discussion.draw = function () {
-    var embedded = this.getAttribute("show_embedded");
-    if (embedded) {
-        this.drawEmbedded();
-    } else {
-        this.drawIcon();
-    }
-}
 
 Discussion.switchState = function () {
     var embedded = this.getAttribute("show_embedded") || false;
-
     this.setAttribute("show_embedded", !embedded);
+
     if (!embedded) {
         this.setAttribute("width", 400);
         this.setAttribute("height", 500);
@@ -138,10 +145,7 @@ Discussion.switchState = function () {
         this.setAttribute("width", 64 * 2.5);
         this.setAttribute("height", 64 * 1.5)
     }
-
-    $('#' + this.getAttribute('id')).remove();
-    this.getRepresentation();
-    this.deselect()
+    this.switchStateView();
 }
 
 
@@ -156,7 +160,6 @@ Discussion.createRepresentationEmbedded = function () {
     var body = document.createElement("body");
     $(body).append(
         $('<div class="discussion">' +
-
             '<div class="embedded-toolbar moveArea">' +
             '<span class="minimize-button"></span>' +
             '</div>' +
