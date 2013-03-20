@@ -13,8 +13,6 @@ var Modules=require('../../server.js');
 
 var GeneralObject=Object.create(Object);
 
-GeneralObject.data=false;	  //the attributes
-GeneralObject.attributes=GeneralObject.data;
 GeneralObject.attributeManager=false;
 GeneralObject.translationManager=false;
 GeneralObject.actionManager=false;
@@ -38,6 +36,7 @@ GeneralObject.register=function(type){
 	
 	var that=this;
 	var ObjectManager=this.ObjectManager;
+	var AttributeManager=this.attributeManager;
 	
 	this.type=type;
 	this.standardData=new Modules.DataSet;
@@ -54,35 +53,36 @@ GeneralObject.register=function(type){
     
 	this.registerAttribute('hasContent',{type:'boolean',hidden:true,standard:false});
   
-	this.attributeManager.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {
+	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {
 		GUI.updateLayers();
 	}});
 	
-	/*
 	if (!ObjectManager.isServer){
+		
+		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
+		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
 	
-		this.attributeManager.registerAttribute('x',{type:'number',min:0,category:'Dimensions',getFunction:function(object){
-			var context=ObjectManager.getCurrentRoom().getContext();
-			return object.getAttribute('x_'+context);
-		},setFunction:function(object,value){
-			var context=ObjectManager.getCurrentRoom().getContext();
-			return object.setAttribute('x_'+context,value);
+	} else {
+	
+		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
+			var context=object.getRoom().getContext();
+			object.setAttribute('x_'+context,value);
+			object.set('x',value);
 		}});
 		
-		this.attributeManager.registerAttribute('y',{type:'number',min:0,category:'Dimensions',getFunction:function(object){
-			var context=ObjectManager.getCurrentRoom().getContext();
-			return object.getAttribute('y_'+context);
-		},setFunction:function(object,value){
-			var context=ObjectManager.getCurrentRoom().getContext();
-			return object.setAttribute('y_'+context,value);
+		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
+			var context=object.getRoom().getContext();
+			object.setAttribute('y_'+context,value);
+			object.set('y',value);
 		}});
+		
+		//for switching see room attribute registration for current_context
+		
 	}
-	*/
 	
-	this.attributeManager.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
-	this.attributeManager.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
+
 	
-	this.attributeManager.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+	this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
 		if (object.resizeProportional()) {
 			object.setAttribute("height", object.getAttribute("height")*(value/object.getAttribute("width")));
@@ -92,7 +92,7 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+	this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
 		if (object.resizeProportional()) {
 			object.setAttribute("width", object.getAttribute("width")*(value/object.getAttribute("height")));
@@ -102,11 +102,11 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
-	this.attributeManager.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
-	this.attributeManager.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
+	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
+	this.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
+	this.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
 
-	this.attributeManager.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
+	this.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
 		
 		window.setTimeout(function() {
 			object.deselect();
@@ -117,7 +117,7 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('visible',{type:'boolean',standard:true,category:'Basic',checkFunction: function(object, value) {
+	this.registerAttribute('visible',{type:'boolean',standard:true,category:'Basic',checkFunction: function(object, value) {
 		
 		if (value != false) {
 			return true;
@@ -143,7 +143,7 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('link',{type:'object_id',multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
+	this.registerAttribute('link',{type:'object_id',multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
 		
 		var objects = ObjectManager.getObjects();
 		
@@ -160,7 +160,7 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('group',{type:'group',readonly:false,category:'Basic',standard:0});
+	this.registerAttribute('group',{type:'group',readonly:false,category:'Basic',standard:0});
 	
 	this.registerAction('Delete',function(){
 		
@@ -199,10 +199,10 @@ GeneralObject.register=function(type){
 
             var newLinks = [];
 
-            if(_.isArray(lastClicked.data.link)){
-                newLinks = newLinks.concat(lastClicked.data.link)
-            } else if(lastClicked.data.link){
-                newLinks.push(lastClicked.data.link);
+            if(_.isArray(ObjectManager.get(lastClicked,'link'))){
+                newLinks = newLinks.concat(ObjectManager.get(lastClicked,'link'))
+            } else if(ObjectManager.get(lastClicked,'link')){
+                newLinks.push(ObjectManager.get(lastClicked,'link'));
             }
 
             _.each(selected, function(current){
@@ -350,6 +350,19 @@ GeneralObject.register=function(type){
 
 }
 
+
+GeneralObject.get=function(key){
+	return this.attributeManager.get(this.id,key);
+}
+
+GeneralObject.set=function(key,value){
+	return this.attributeManager.set(this.id,key,value);
+}
+
+GeneralObject.setAll=function(data){
+	return this.attributeManager.setAll(this.id,data);
+}
+
 /**
 *
 *	Call this on actual objects! (should be done by the object manager)
@@ -357,20 +370,19 @@ GeneralObject.register=function(type){
 *	@param id the id of the actual object
 */	
 GeneralObject.init=function(id){
-	if (!this.data) this.data=new Modules.DataSet;
-	
-	if(this.data.id) return;
-	
-	this.data.id=id;
+	if (!id) return;
 	this.id=id;
-	this.data.type=this.type;
+	if(this.attributeManager.get(id,'id')) return;
+	
+	this.attributeManager.set(id,'id',id);
+	this.attributeManager.set(id,'type',this.type);
 }
 
 GeneralObject.toString=function(){
-	    if (!this.data) {
+	    if (!this.get('id')) {
 	    	return 'type '+this.type;
 	    }
-		return this.type+' #'+this.data.id;//+' '+this.data;
+		return this.type+' #'+this.get('id');
 }
 
 GeneralObject.getCategory=function(){
@@ -472,7 +484,7 @@ GeneralObject.getId=function(){
 }
 
 GeneralObject.getCurrentRoom=function(){
-	return ObjectManager.currentRoom.data.id;
+	return ObjectManager.currentRoom.get('id');
 }
 
 GeneralObject.stopOperation=function(){
@@ -612,7 +624,7 @@ GeneralObject.refreshDelayed=function(){
 }
 
 GeneralObject.getRoomID=function(){
-	return this.data.inRoom;
+	return this.get('inRoom');
 }
 
 
@@ -626,7 +638,7 @@ GeneralObject.remove=function(){
 }
 
 GeneralObject.removeLinkedObjectById = function(removeId){
-    var filteredIds = _.filter(this.data.link, function(elem){return elem != removeId})
+    var filteredIds = _.filter(this.get('link'), function(elem){return elem != removeId})
 
     this.setAttribute("link", filteredIds);
 
@@ -660,10 +672,10 @@ GeneralObject.getLinkedObjects=function() {
 	if (self.ObjectManager.isServer) {
 		/* server */
 		var getObject = function(id) {
-			return Modules.ObjectManager.getObject(self.data.inRoom, id, self.context);
+			return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
 		}
 		var getObjects = function() {
-			return Modules.ObjectManager.getObjects(self.data.inRoom, self.context);
+			return Modules.ObjectManager.getObjects(self.get('inRoom'), self.context);
 		}
 	} else {
 		/* client */
@@ -679,10 +691,10 @@ GeneralObject.getLinkedObjects=function() {
 	var ownLinkedObjectsIds = [];
 
 
-	if (this.data.link instanceof Array) {
-        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.data.link);
+	if (this.get('link') instanceof Array) {
+        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.get('link'));
 	} else {
-		ownLinkedObjectsIds.push(this.data.link);
+		ownLinkedObjectsIds.push(this.get('link'));
 	}
 
 	/* get objects which link to this object */
@@ -694,23 +706,23 @@ GeneralObject.getLinkedObjects=function() {
 	for (var index in objects) {
 		var object = objects[index];
 
-		if (object.data.link) {
+		if (object.get('link')) {
 			
-			if (object.data.link instanceof Array) {
+			if (object.get('link') instanceof Array) {
 
-				for (var index in object.data.link) {
-					var objectId = object.data.link[index];
+				for (var index in object.get('link')) {
+					var objectId = object.get('link')[index];
 				
-					if (objectId == self.data.id) {
-						linkingObjectsIds.push(object.data.id);
+					if (objectId == self.get('id')) {
+						linkingObjectsIds.push(object.get('id'));
 					}
 					
 				}
 				
 			} else {
 
-				if (object.data.link == self.data.id) {
-					linkingObjectsIds.push(object.data.id);
+				if (object.get('link') == self.get('id')) {
+					linkingObjectsIds.push(object.get('id'));
 				}
 				
 			}
@@ -768,7 +780,7 @@ GeneralObject.getGroupMembers = function() {
 	for (var i in objects) {
 		var obj = objects[i];
 		
-		if (obj.data.id != this.data.id && obj.getAttribute("group") == this.getAttribute("group")) {
+		if (obj.get('id') != this.get('id') && obj.getAttribute("group") == this.getAttribute("group")) {
 			list.push(obj);
 		}
 		
@@ -791,7 +803,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 		
 	}
 	
-	list[self.data.id] = true; //add this object to list
+	list[self.get('id')] = true; //add this object to list
 	
 	var linkedObjects = this.getLinkedObjects();
 
@@ -799,7 +811,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 		var target = linkedObjects[id];
 		var targetObject = target.object;
 		
-		if (!list[targetObject.data.id]) {
+		if (!list[targetObject.get('id')]) {
 			targetObject.getObjectsToDuplicate(list);
 		}
 		
@@ -820,7 +832,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 
 GeneralObject.updateLinkIds = function(idTranslationList) {
 
-	if (!this.data.link || this.data.link == "") {
+	if (!this.get('link') || this.get('link') == "") {
 		return;
 	}
 	
@@ -832,14 +844,14 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 		return id;
 	}
 	
-	if (this.data.link instanceof Array) {
+	if (this.get('link') instanceof Array) {
 
-		for (var i in this.data.link) {
-			this.setAttribute("link", update(this.data.link[i]));
+		for (var i in this.get('link')) {
+			this.setAttribute("link", update(this.get('link')[i]));
 		}
 		
 	} else {
-		this.setAttribute("link", update(this.data.link));
+		this.setAttribute("link", update(this.get('link')));
 	}
 	
 }

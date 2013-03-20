@@ -3,7 +3,7 @@
 /**
 *    Webarena - A webclient for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
+*    @author Felix Winkelnkemper, University of Paderborn, 2012,2013
 *
 */
 
@@ -14,27 +14,75 @@
 *   for GUIs to implement an object inspector as well as for channelling data
 *   access to the server.
 *
-*   Note: There is no data stored in the attribute manager. These data, which
-*   is unique for every single object, is saved in the data member of the
-*   respective object
+*   Note: Data is stored in the static attributeData member. This assures that
+*   even when several instances of the same object exist (which is common on
+*   the server side), they all have the same attribute set they operate on.
 */
-var AttributeManager=Object.create(Object);
+var AttributeManager=new function(){
+	
+	//actual attribute data is kept private, so it can only be maniplulated
+	//by setter and getter functions.
+	
+	var attributeData={};
+	
+	//setters and getter for attribute data. For conveiniance, object.set
+	//and object.get can be used instead.
+	
+	//Notice: These functions set and get unfiltered data. It is not checked
+	//if these data are within a specific range, of a certain type or even
+	//exist at all. Changes made this way are not automatically distributed
+	//to the server or other client. Use this.set only when you can be sure 
+	//the data you are storing fits range and type and make sure you persist
+	//your data afterwards. In the general case use setAttribute instead.
+	
+	this.set=function(id,key,value){
+		if (id==undefined || value==undefined){
+			console.log('undefined set',id,key,value);
+			console.trace();
+			return;
+		}
+		if (!attributeData[id]) attributeData[id]=this.proto.standardData||{};
+		attributeData[id][key]=value;
+	}
 
-AttributeManager.proto=false;
-AttributeManager.attributes=false;
+	this.get=function(id,key){
+		if (!attributeData[id]) return undefined;
+		if (!key) return attributeData[id];
+		return attributeData[id][key];
+	}
+	
+	//setAll is used, when an object is loaded and gets its primary data. The
+	//loaded data is accepted as is without any further checks.
+	
+	this.setAll=function(id,data){
+		if (id==undefined){
+			console.log('undefined setAll',id,data);
+			console.trace();
+			return;
+		}
+		attributeData[id]=data;
+	}
+	
+	this.toString=function(){
+		return 'AttributeManager for '+this.proto;
+	}
+	
+};
 
+
+/**
+*	init
+*	
+*	called when an object type is registred (see GeneralObject). During this
+*	project, each object type derives an Attributemanager whicht is herein
+*	bound to its prototype and gets an empty attribute array which is then
+*	again filled in the registration procress.
+**/
 AttributeManager.init=function(proto){
-	
-	// The attribute manager is initialized during the registration of object
-	// types so we create the datastructure for the prototype
-	
+
 	this.proto=proto;
 	this.attributes={};
 	
-}
-
-AttributeManager.toString=function(){
-	return 'AttributeManager for '+this.proto;
 }
 
 /**
@@ -47,10 +95,10 @@ AttributeManager.toString=function(){
 *			standard
 *			setFunction - function
 *			getFunction - function
+*			checkFunction - function
 *			readonly - true, false
 *			hidden - true, false
 *			category - a block or tab this attribute should be displayed in
-*
 *
 */
 AttributeManager.registerAttribute=function(attribute,data){
@@ -68,9 +116,6 @@ AttributeManager.registerAttribute=function(attribute,data){
 		var oldValue=oldData[key];
 		if (data[key]===undefined) data[key]=oldValue;
 	}
-
-	
-	//debug('Registering attribute '+attribute+' for '+this.proto+' type '+data.type);
 	
 	if (data.type===undefined) data.type='text';
 	if (data.description==undefined && data.readable==undefined) data.description=attribute;
@@ -80,6 +125,7 @@ AttributeManager.registerAttribute=function(attribute,data){
 	if (data.max===undefined) data.max=50000;
 	if (data.standard==undefined) data.standard=0;
 	if (data.category==undefined) data.category='Basic';
+	
 	
 	data.setter=function(object,value){	
 		
@@ -94,13 +140,14 @@ AttributeManager.registerAttribute=function(attribute,data){
 			data.setFunction(object,value);
 		}
 		else {
-			object.data[attribute]=value;
+			object.set(attribute,value);
 		}
 	}
+	
 
 	data.getter=function(object){
 		if (!data.getFunction) {
-			var result=object.data[attribute];
+			var result=object.get(attribute);
 		} else {
 			var result=data.getFunction(object);
 		}
@@ -151,7 +198,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	}	
 	
 	// do nothing, if value has not changed
-	if (object.data[attribute]===value) return false;
+	if (object.get(attribute)===value) return false;
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
@@ -161,7 +208,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	if(this.attributes[attribute]){
 		setter=this.attributes[attribute].setter;
 	} else {
-		setter=function(object,value){object.data[attribute]=value;};
+		setter=function(object,value){object.set(attribute,value);};
 	}
 	
 	// check if the attribute is read only
@@ -187,7 +234,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		}
 		
 		
-		var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
+		var data={'roomID':object.get('inRoom'), 'objectID':object.id, 'key':attribute, 'value':value};
 		
 		//this timer is the delay in which changes on the same object are discarded
 		var theTimer=200;
@@ -214,7 +261,7 @@ AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	
 	//on unregistred attributes directly return their value
 	if (this.attributes[attribute]==undefined){
-		return object.data[attribute];
+		return object.get(attribute);
 	}
 	
 	var getter=this.attributes[attribute].getter;
@@ -232,7 +279,7 @@ AttributeManager.getAttributeSet=function(object){
 	
 	var result={};
 	
-	for (var key in object.data){
+	for (var key in object.get()){
 		result[key]=AttributeManager.getAttribute(object,key);
 	}
 	

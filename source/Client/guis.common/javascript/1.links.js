@@ -43,7 +43,7 @@ GUI.showLinks = function(object) {
 
 
 
-		$(line).addClass("webarenaLink_"+object.data.id);
+		$(line).addClass("webarenaLink_"+object.id);
 
 		$(line).css("opacity", 0);
 
@@ -61,8 +61,8 @@ GUI.showLinks = function(object) {
                     {
                         "actionName" : "Entfernen",
                         "actionFunction" : function(){
-                            object.removeLinkedObjectById(target.object.data.id);
-                            target.object.removeLinkedObjectById(object.data.id);
+                            object.removeLinkedObjectById(target.object.id);
+                            target.object.removeLinkedObjectById(object.id);
                             object.deselect();
                         }
                     }
@@ -85,7 +85,7 @@ GUI.showLinks = function(object) {
 
 		var rep = target.object.getRepresentation();
 		
-		if (target.object.data.visible == false) {
+		if (target.object.get('visible') == false) {
 			$(rep).css("opacity", 0.4);
 			$(rep).css("visibility", "visible");
 			$(rep).addClass("webarena_ghost");
@@ -108,7 +108,7 @@ GUI.showLinks = function(object) {
 
 GUI.hideLinks = function(object) {
 	
-	$(".webarenaLink_"+object.data.id).remove();
+	$(".webarenaLink_"+object.id).remove();
 
 	$.each(ObjectManager.getObjects(), function(index, object) {
 		

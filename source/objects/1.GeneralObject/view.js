@@ -559,7 +559,7 @@ GeneralObject.showControls = function() {
 
 GeneralObject.removeControls = function() {
 	
-	$("#content").find(".webarenaControl_"+this.data.id).each(function() {
+	$("#content").find(".webarenaControl_"+this.id).each(function() {
 		GUI.svg.remove(this);
 	});
 
@@ -594,7 +594,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		}
 	);
 	
-	$(control).attr("class", "webarenaControl webarenaControl_"+this.data.id);
+	$(control).attr("class", "webarenaControl webarenaControl_"+this.id);
 	$(control).attr("layer", 10000000);
 
 	control.moving = false;

@@ -42,8 +42,8 @@ theObject.setContent=function(content,callback){
 			if (dX) {
 				/* set new dimensions */
 
-				self.setAttribute("x", parseInt(self.data.x)+parseInt(dX));
-				self.setAttribute("y", parseInt(self.data.y)+parseInt(dY));
+				self.setAttribute("x", parseInt(self.get('x'))+parseInt(dX));
+				self.setAttribute("y", parseInt(self.get('y'))+parseInt(dY));
 				self.setAttribute("width", parseInt(newWidth));
 				self.setAttribute("height", parseInt(newHeight));
 				
@@ -51,8 +51,8 @@ theObject.setContent=function(content,callback){
 
 			if (callback) callback(); //callback of setContent
 			
-			self.data.hasContent=!!content;
-			self.data.contentAge=new Date().getTime();
+			self.set('hasContent',!!content);
+			self.set('contentAge',new Date().getTime());
 
 			//send object update to all listeners
 			self.persist();

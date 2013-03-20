@@ -131,11 +131,11 @@ GeneralObject.refresh = function() {
 
 
 GeneralObject.getPreviewContentURL = function() {
-	return "/getPreviewContent/"+this.getRoomID()+"/"+this.data.id+"/"+Math.round(new Date().getTime() / 1000)+"/"+ObjectManager.userHash;
+	return "/getPreviewContent/"+this.getRoomID()+"/"+this.id+"/"+Math.round(new Date().getTime() / 1000)+"/"+ObjectManager.userHash;
 }
 
 GeneralObject.getContentURL = function() {
-	return "/getContent/"+this.getRoomID()+"/"+this.data.id+"/"+Math.round(new Date().getTime() / 1000)+"/"+ObjectManager.userHash;
+	return "/getContent/"+this.getRoomID()+"/"+this.id+"/"+Math.round(new Date().getTime() / 1000)+"/"+ObjectManager.userHash;
 }
 
 GeneralObject.create = function(attributes) {

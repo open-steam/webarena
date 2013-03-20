@@ -82,7 +82,7 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
 
         _.each(decodedResponse['response']['objects'], function(obj){
             if(obj.error === undefined){
-                _.extend(mappedIdObject[obj.data.id], obj['data']);
+                _.extend(mappedIdObject[obj.id], obj['data']);
 
             }
         });

@@ -21,7 +21,7 @@ BidFile.selectFile = function(id, name) {
 	var self = this;
 	
 	var data = {
-		"roomID" : self.data.inRoom,
+		"roomID" : self.get('inRoom'),
 		"objectID" : self.id,
 		"bidObjectId" : id
 	};
@@ -88,7 +88,7 @@ BidFile.upload = function() {
 		content.find(".bidFile-location").find("span").css("cursor", "pointer");
 
 		var data = {
-			"roomID" : self.data.inRoom,
+			"roomID" : self.get('inRoom'),
 			"objectID" : self.id,
 			"browseLocation" : location
 		};

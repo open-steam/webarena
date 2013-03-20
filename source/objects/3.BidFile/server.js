@@ -168,19 +168,19 @@ theObject.setFile = function(bidObjectId, socket, callback) {
 
 			self.setContent(data, function() {
 				
-				self.data.mimeType = mimeType;
-				self.data.hasContent = true;
-				self.data.contentAge=new Date().getTime();
+				self.set('mimeType',mimeType);
+				self.set('hasContent',true);
+				self.set('contentAge',new Date().getTime());
 
 				/* check if content is inline displayable */
 				if (Modules.Connector.isInlineDisplayable(mimeType)) {
 
-					self.data.preview = true;
+					self.set('preview',true);
 
 					self.persist();
 
 					/* get dimensions */
-					Modules.Connector.getInlinePreviewDimensions(self.data.inRoom, self.id, function(width, height) {
+					Modules.Connector.getInlinePreviewDimensions(self.get('inRoom'), self.id, function(width, height) {
 
 						if (width != false)	self.setAttribute("width", width);
 						if (height != false) self.setAttribute("height", height);
@@ -194,7 +194,7 @@ theObject.setFile = function(bidObjectId, socket, callback) {
 					}, mimeType, true);
 
 				} else {
-					self.data.inline = false;
+					self.set('inline') = false;
 
 					//send object update to all listeners
 					self.persist();

@@ -148,14 +148,14 @@ WebServer.init=function(theModules){
 
 						object.copyContentFromFile(files.file.path, function() {
 
-							object.data.hasContent = true;
-							object.data.contentAge=new Date().getTime();
-							object.data.mimeType = files.file.type;
+							object.set('hasContent',true);
+							object.set('contentAge',new Date().getTime());
+							object.set('mimeType',files.file.type);
 
 							/* check if content is inline displayable */
 							if (Modules.Connector.isInlineDisplayable(files.file.type)) {
 
-								object.data.preview = true;
+								object.set('preview',true);
 
 								object.persist();
 
@@ -175,7 +175,7 @@ WebServer.init=function(theModules){
 								}, files.file.type,true);
 
 							} else {
-								object.data.inline = false;
+								object.set('inline',false);
 
 								//send object update to all listeners
 								object.persist();

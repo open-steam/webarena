@@ -51,11 +51,11 @@ ObjectManager.buildObject=function(type, attributes){
 
     object.init(attributes.id);
 
-    object.data=attributes;
+    object.setAll(attributes);
     object.type=proto.type;
-    object.data.type=proto.type;
+    object.set('type',proto.type);
 
-    if (object.data.id != this.currentRoomID) {
+    if (object.get('id') != this.currentRoomID) {
         this.objects[object.id]=object;
     } else {
 
@@ -142,9 +142,9 @@ ObjectManager.objectUpdate=function(data){
 		
         if (object.moving) return;
 		
-        var oldData=object.data;
+        var oldData=object.get();
 		
-        object.data=data;
+        object.setAll(data);
         
         /**
         
@@ -378,8 +378,6 @@ ObjectManager.init=function(){
 			}
 			
 		}
-		
-		console.log(data);
 
     });
 	

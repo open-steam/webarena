@@ -119,12 +119,12 @@ function buildObjectFromObjectData(objectData,roomID,type){
 	
 	//set the object's attributes and rights
 
-	obj.data=objectData.attributes;
+	obj.setAll(objectData.attributes);
 	obj.rights=objectData.rights;
 	obj.id=objectData.id;
-	obj.data.id=objectData.id;
+	obj.attributeManager.set(objectData.id,'id',objectData.id);
 	obj.inRoom=roomID;
-	obj.data.type=type;
+	obj.set('type',type);
 	
 	if (!runtimeData[obj.id])runtimeData[obj.id]={}; //create runtime data for this object if there is none
 	
@@ -688,9 +688,7 @@ ObjectManager.init=function(theModules){
 			var socket=connections[i].socket;
 			Modules.SocketServer.sendToSocket(socket,'inform',data);
 		}
-		
-		console.log(data.user+'@'+data.room+':',data.message);
-		
+
 	});
 	
 	Modules.Dispatcher.registerCall('bugreport',function(socket,data,responseID){

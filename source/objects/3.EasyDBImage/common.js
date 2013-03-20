@@ -23,8 +23,8 @@ EasyDBImage.register=function(type){
 
     var notNull = function(attrName){
         return function(object){
-            if(object.data[attrName] && object.data[attrName] !== "null"){
-                return object.data[attrName]
+            if(object.get(attrName) && object.get(attrName) !== "null"){
+                return object.get(attrName)
             } else {
                 return "";
             }

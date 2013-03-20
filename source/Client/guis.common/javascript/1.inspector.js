@@ -214,7 +214,7 @@ GUI.setupInspectorContent = function(inspector) {
 					var widget = element.addWidget("objectid");
 
 					widget.setValue(info.value);
-					widget.setOwnObjectId(object.data.id);
+					widget.setOwnObjectId(object.id);
 					
 					GUI.inspectorElementsSetter[attribute] = widget.setValue;
 					
@@ -315,7 +315,7 @@ GUI.initInspectorAttributeUpdate = function() {
 	
 		if (!GUI.currentInspectorObject) return false; //multiple objects selected
 	
-		if (GUI.currentInspectorObject.data.id == object.data.id) {
+		if (GUI.currentInspectorObject.id == object.id) {
 	
 			if (GUI.inspectorElementsSetter[key]) GUI.inspectorElementsSetter[key](value);
 		

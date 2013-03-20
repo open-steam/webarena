@@ -25,7 +25,7 @@ module.exports=theObject;
 *	getAttributeSet
 *
 *	all of the objects Attributes as key,value pairs.
-*	This may be different from actual object.data
+*	This may be different from actual object data
 *	as evaluations may be involved
 */
 theObject.getAttributeSet=function(){
@@ -55,7 +55,7 @@ theObject.updateClient=function(socket,mode){
 *
 */
 theObject.persist=function(){
-	Modules.Connector.saveObjectData(this.inRoom, this.id, this.data, false, this.context);
+	Modules.Connector.saveObjectData(this.inRoom, this.id, this.get(), false, this.context);
 	this.updateClients();
 }
 
@@ -102,8 +102,8 @@ theObject.setContent=function(content,callback){
 
 	Modules.Connector.saveContent(this.inRoom, this.id, content, callback, this.context);
 	
-	this.data.hasContent=!!content;
-	this.data.contentAge=new Date().getTime();
+	this.set('hasContent',!!content);
+	this.set('contentAge',new Date().getTime());
 
 	//send object update to all listeners
 	this.persist();
@@ -114,8 +114,8 @@ theObject.copyContentFromFile=function(filename,callback) {
 
 	Modules.Connector.copyContentFromFile(this.inRoom, this.id, filename, callback, this.context);
 	
-	this.data.hasContent=true;
-	this.data.contentAge=new Date().getTime();
+	this.set('hasContent',true);
+	this.set('contentAge',new Date().getTime());
 
 	//send object update to all listeners
 	this.persist();
@@ -188,7 +188,7 @@ theObject.duplicate=function(socket,responseID) {
 
 				object.updateClients();
 				
-				idList.push(object.data.id);
+				idList.push(object.id);
 				
 			}
 			

@@ -545,6 +545,12 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 	data.attributes.inRoom=roomID;
 	data.attributes.hasContent=false;
 	
+	//assure rooms do not loose their type
+	if (roomID==objectID){
+		data.type='Room';
+		data.attributes.type='Room';
+	}
+	
 	var path = require('path');
 	
 	filename=filebase+'/'+roomID+'/'+objectID+'.content';
