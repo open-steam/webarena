@@ -228,7 +228,7 @@ Discussion.createRepresentationIcon = function () {
     var body = document.createElement("body");
     var title = this.getAttribute('discussionTitle') || "Nicht gesetzt.";
 
-    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text'>" + title + "</div></div>");
+    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text moveArea'>" + title + "</div></div>");
 
     $(rep).append(body);
     $(rep).attr("id", this.getAttribute('id'));
