@@ -21,6 +21,8 @@ GeneralObject.isGraphical=true;
 GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
+
+
 GeneralObject.moveByTransform = function(){return false;}			//TODO cient only??
 
 GeneralObject.restrictedMovingArea = false;
@@ -47,23 +49,26 @@ GeneralObject.register=function(type){
 	this.translationManager=Object.create(Modules.TranslationManager);
 	this.translationManager.init(this);
 	this.actionManager.init(this);
+	
+	
 	this.registerAttribute('id',{type:'number',readonly:true});
 	this.registerAttribute('type',{type:'text',readonly:true});
 	this.registerAttribute('name',{type:'text'});
     
 	this.registerAttribute('hasContent',{type:'boolean',hidden:true,standard:false});
-  
-	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {
-		GUI.updateLayers();
-	}});
+	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {GUI.updateLayers();}});
 	
-	if (!ObjectManager.isServer){
-		
+	//registring x and y coordinates. on the client side, they are just plain coordinates
+	//while on the server, the position data are also put into context specific attributes
+	//switching the context attribute on the room swichtes positions
+	
+	if (!ObjectManager.isServer || Modules.Config.noContexts){	
 		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
 		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
-	
 	} else {
-	
+		
+		this.registerAttribute('position_on_all_contexts',{type:'boolean',standard:false,category:'Context'});
+		
 		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
 			var context=object.getRoom().getContext();
 			object.setAttribute('x_'+context,value);
@@ -80,7 +85,10 @@ GeneralObject.register=function(type){
 		
 	}
 	
-
+	
+	if (!Modules.Config.noContexts){
+		this.registerAttribute('position_on_all_contexts',{type:'boolean',readable:'same position on all contexts',standard:false,category:'Context'});
+	}
 	
 	this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
@@ -515,25 +523,13 @@ GeneralObject.unHide=function(){
 	this.setAttribute('visible',false);
 }
 
-GeneralObject.unhide=GeneralObject.unHide;
-
-/**
-*	move the object by dx,dy pixels
-*/
-GeneralObject.move=function(dx,dy){
-	this.setAttribute('x',this.getAttribute('x')+dx);
-	this.setAttribute('y',this.getAttribute('y')+dy);
-}		
+GeneralObject.unhide=GeneralObject.unHide;	
 	
 /**
 *	put the top left edge of the bounding box to x,y
 */
 GeneralObject.setPosition=function(x,y){
-	
-	/*
-	this.setAttribute('x',x);
-	this.setAttribute('y',y);
-	*/
+
 	this.setAttribute('position',{'x':x,'y':y});
 }
 		

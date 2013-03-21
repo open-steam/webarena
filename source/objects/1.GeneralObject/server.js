@@ -281,3 +281,12 @@ theObject.getBoundingBox=function(){
 	return {'x':x,'y':y,'width':width,'height':height};
 	
 }
+
+theObject.onSwitchContext=function(context){
+	
+	if (this.getAttribute('position_on_all_contexts')) return;
+
+	this.setAttribute('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
+	this.setAttribute('y',this.getAttribute('y_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
+	
+}

@@ -28,5 +28,6 @@ module.exports={
 		"info" : false
 	},
 	objectWhitelist: [],	//an empty whitelist whitelists everything
-	objectBlacklist: []     //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
+	objectBlacklist: [],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
+	noContexts: false
 };
