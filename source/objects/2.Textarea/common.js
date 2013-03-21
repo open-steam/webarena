@@ -17,8 +17,13 @@ Textarea.register=function(type){
 	GeneralObject.register.call(this,type);
 	
 	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
-	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,unit:'px',category:'Appearance'});
+	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:14,unit:'px',category:'Appearance'});
 	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance'});
+	
+	this.standardData.fillcolor='rgb(255,255,255)';
+	this.standardData.linecolor='rgb(0,0,0)';
+    this.standardData.width=250;
+    this.standardData.height=100;
 
 	
 	this.registerAction('Edit',function(){
