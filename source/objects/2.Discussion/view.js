@@ -163,8 +163,10 @@ Discussion.createRepresentationEmbedded = function () {
             '<div class="embedded-toolbar moveArea">' +
             '<span class="minimize-button"></span>' +
             '</div>' +
+            '<div class="discussion-content">' +
             '<div class="discussion-heading">' +
             '</div><div class="discussion-text"></div>' +
+            '</div>'+
             '<input class="discussion-input" placeholder=Texteingabe>' +
             '</div>')
     );
@@ -295,19 +297,22 @@ Discussion.updateInnerHeightEmbedded = function (value) {
     var rep = this.getRepresentation();
 
     $(rep).find("body").css("height", value + "px");
+    $(rep).find(".discussion").css("height", value + "px");
 
     //TODO : calculate size with input instead of fixed 75px
-    var hh = $(rep).find(".discussion-heading").height();
     var ih = $(rep).find(".discussion-input").height();
 
-    $(rep).find(".discussion-text").css("height", (value - hh - ih - 90) + "px");
+    console.log("Input: " + ih)
+
+    $(rep).find(".discussion-content").css("height", (value  - ih - 60) + "px");
 }
 
 Discussion.updateInnerHeightIcon = function (value) {
     var rep = this.getRepresentation();
 
     $(rep).find("body").css("height", value + "px");
-    $(rep).find(".wrapped-text").css("height", (value - 50) + "px");
+
+    $(rep).find(".wrapped-text").css("height", (value - 47) + "px");
     $(rep).find(".wrapped-text").dotdotdot();
 }
 
