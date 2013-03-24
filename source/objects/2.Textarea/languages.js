@@ -1,5 +1,5 @@
 Textarea.setTranslations('de',{
-	'SimpleText':'Einfacher Text',
+	'Textarea':'Textfeld',
 	'font-family':'Schriftart',
 	'font-size':'Schriftgröße',
 	'font-color':'Schriftfarbe'
