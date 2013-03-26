@@ -6,6 +6,7 @@
  *
  */
 Discussion.drawEmbedded = function () {
+
     var rep = this.getRepresentation();
     rep.dataObject = this;
 
@@ -35,11 +36,14 @@ Discussion.drawEmbedded = function () {
     $(rep).find("body").css("color", this.getAttribute('font-color'));
     $(rep).attr("layer", this.getAttribute('layer'));
 
-    var title = this.getAttribute('discussionTitle') || "Titel nicht gesetzt. Zum Ändern bitte hier klicken.";
-    $(rep).find(".discussion-heading").html(title);
     var that = this;
 
     this.bindAdminControlls();
+}
+
+Discussion.updateHeading = function(newHeading){
+    var rep = this.getRepresentation();
+    $(rep).find(".discussion-heading").html(newHeading);
 }
 
 Discussion.drawIcon = function () {
@@ -105,6 +109,7 @@ Discussion.enableInlineEditors = function () {
     $(rep).find('.discussion-statement-text').editable(saveFunction, {
         type: "autogrow",
         submit: 'Speichern',
+        cancel: 'Abbrechen',
         placeholderHTML5: 'Diskussions-Titel',
         autogrow: {
             lineHeight: 16,
@@ -156,6 +161,8 @@ Discussion.createRepresentationEmbedded = function () {
     var rep = GUI.svg.other("foreignObject");
     rep.dataObject = this;
 
+    var heading = this.getAttribute("discussionTitle") || "Bitte klicken Sie hier, um den Text zu ändern."
+
     // content
     var body = document.createElement("body");
     $(body).append(
@@ -164,7 +171,7 @@ Discussion.createRepresentationEmbedded = function () {
             '<span class="minimize-button"></span>' +
             '</div>' +
             '<div class="discussion-content">' +
-            '<div class="discussion-heading">' +
+            '<div class="discussion-heading">' + heading +
             '</div><div class="discussion-text"></div>' +
             '</div>'+
             '<input class="discussion-input" placeholder=Texteingabe>' +
@@ -205,6 +212,7 @@ Discussion.createRepresentationEmbedded = function () {
     $(body).on("click", ".minimize-button", function () {
         that.switchState();
     });
+
 
     // add content to wrapper
     $(rep).append(body);
@@ -302,8 +310,6 @@ Discussion.updateInnerHeightEmbedded = function (value) {
     //TODO : calculate size with input instead of fixed 75px
     var ih = $(rep).find(".discussion-input").height();
 
-    console.log("Input: " + ih)
-
     $(rep).find(".discussion-content").css("height", (value  - ih - 60) + "px");
 }
 
@@ -332,11 +338,15 @@ Discussion.representationCreated = function () {
         type: "autogrow",
         submit: 'Speichern',
         placeholderHTML5: 'Diskussions-Titel',
+        cancel: "Abbrechen",
+
         data: function () {
             var headingText = that.getAttribute('discussionTitle') || '';
             var retval = htmlDecode(headingText)
+            console.log("SAAAAVE")
             return retval;
         },
+
         autogrow: {
             lineHeight: 16,
             maxHeight: 512
