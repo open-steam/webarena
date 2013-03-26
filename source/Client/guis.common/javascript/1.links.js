@@ -1,22 +1,37 @@
 "use strict";
 
-/* Links */
+/**
+ * Functions for displaying links between objects
+ */
 
+/**
+ * The object for which the links are shown
+ */
 GUI.currentLinkObject = undefined;
 
+/**
+ * update all links for the current object
+ */
 GUI.updateLinks = function() {
 	GUI.hideLinks(GUI.currentLinkObject);
 	GUI.showLinks(GUI.currentLinkObject);
 }
 
+/**
+ * show links for a given object
+ * @param {webarenaObject} object The webarena objects the links will be displayed for
+ */
 GUI.showLinks = function(object) {
 
 	if (object == undefined) return;
 
+	/* set current link object */
 	GUI.currentLinkObject = object;
 
+	/* check if more than one object is selected */
 	if (ObjectManager.getSelected().length > 1) {
 	
+		/* hide links for all selected objects */
 		$.each(ObjectManager.getSelected(), function(index, obj) {
 			GUI.hideLinks(obj);
 		});
@@ -24,7 +39,9 @@ GUI.showLinks = function(object) {
 		return;
 	}
 
-
+	/**
+	 * get all objects linked with this object
+	 */
 	$.each(object.getLinkedObjects(), function(index, target) {
 	
 		if (!target.object) return;
@@ -35,7 +52,7 @@ GUI.showLinks = function(object) {
 		var targetX = target.object.getViewBoundingBoxX()+(target.object.getViewBoundingBoxWidth()/2);
 		var targetY = target.object.getViewBoundingBoxY()+(target.object.getViewBoundingBoxHeight()/2);
 
-
+		/* draw link line */
 		var line = GUI.svg.line(objectX, objectY, targetX, targetY, {
 			strokeWidth: 6,
 			stroke: "#CCCCCC"
@@ -92,8 +109,6 @@ GUI.showLinks = function(object) {
 		}
 		
 		
-		
-		
 		window.setTimeout(function() {
 
 			$(line).css("opacity", 1);
@@ -106,6 +121,10 @@ GUI.showLinks = function(object) {
 	
 }
 
+/**
+ * Hide all shown links
+ * @param {webarenaObject} object
+ */
 GUI.hideLinks = function(object) {
 	
 	$(".webarenaLink_"+object.id).remove();

@@ -1,11 +1,17 @@
 "use strict";
 
+/**
+ * Show login prompt
+ * @param {bool|String} [err=false] Optional error message 
+ */
 GUI.showLogin = function(err) {
 	
+	/* check for an external session login request in the URL hash */
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession') > -1) {
 		GUI.login();
 	}
 	
+	/* true if the login process is active */
 	GUI.loginProcessActive = false;
 	
 	$("#login_background").show();
@@ -36,6 +42,9 @@ GUI.showLogin = function(err) {
 	
 }
 
+/**
+ * hide the login prompt
+ */
 GUI.hideLogin = function() {
 	
 	$("#login").hide();
@@ -48,9 +57,14 @@ GUI.hideLogin = function() {
 
 }
 
-
+/**
+ * true if the user is logged in
+ */
 GUI.isLoggedIn = false;
 
+/**
+ * called when the user is logged in
+ */
 GUI.loggedIn = function() {
 	if (GUI.isLoggedIn) return;
 	
@@ -60,7 +74,10 @@ GUI.loggedIn = function() {
 	
 }
 
-
+/**
+ * called when the login failed
+ * @param {bool|String} [err=false] Optional error message
+ */
 GUI.loginFailed = function(err) {
 	GUI.progressBarManager.removeProgress("login");
 	GUI.showLogin(err);
@@ -79,6 +96,9 @@ GUI.loginProcessActive = false;
 
 GUI.externalSession = false;
 
+/**
+ * called when hitting the login-button
+ */
 GUI.login = function() {
 	
 	if (GUI.loginProcessActive) return;

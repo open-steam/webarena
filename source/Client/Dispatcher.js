@@ -7,9 +7,19 @@
 
 "use strict";
 
+/**
+ * @namespace Object holding functions for server communication
+ */
 var Dispatcher={};
 
+/**
+ * List of calls
+ */
 var calls={};
+
+/**
+ * List of waiting response functions
+ */
 var responseFunctions={};
 
 Dispatcher.call=function(message){

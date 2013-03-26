@@ -2,10 +2,17 @@
 
 /* paint */
 
+/**
+ * true if paint mode is active
+ */
 GUI.paintModeActive = false;
 
 
-
+/**
+ * Set a color to paint with
+ * @param {String} color The (hex-) color to paint with
+ * @param {String} colorName The colors name
+ */
 GUI.setPaintColor = function(color, colorName) {
 	GUI.paintColor = color;
 	GUI.setPaintCursor(colorName);
@@ -15,10 +22,18 @@ GUI.setPaintColor = function(color, colorName) {
 	$("#header").find(".jPaint_navi_color_"+colorName).addClass("active");
 }
 
+/**
+ * Set the cursor
+ * @param {String} cursorName The name of the cursor icon
+ */
 GUI.setPaintCursor = function(cursorName) {
 	GUI.paintCursor = "../../guis.common/images/paint/cursors/"+cursorName+".png";
 }
 
+/**
+ * Set the size of the "pencil"
+ * @param {int} value Size of the "pencil"
+ */
 GUI.setPaintSize = function(value) {
 	GUI.paintSize = value;
 	GUI.paintEraseModeActive = false;
@@ -32,14 +47,25 @@ GUI.paintColors = [];
 GUI.paintSizes = [];
 
 
+/**
+ * Reset all paint colors
+ */
 GUI.resetPaintColors = function() {
 	GUI.paintColors = [];
 }
 
+/**
+ * Reset all paint sizes
+ */
 GUI.resetPaintSizes = function() {
 	GUI.paintSizes = [];
 }
 
+/**
+ * Add a paint color
+ * @param {String} color The (hex-) color value
+ * @param {String} colorName The colors name
+ */
 GUI.addPaintColor = function(color, colorName) {
 	if (colorName == undefined) {
 		colorName = color;
@@ -47,10 +73,19 @@ GUI.addPaintColor = function(color, colorName) {
 	GUI.paintColors.push([color,colorName]);
 }
 
+/**
+ * Set the size of the "pencil"
+ * @param {int} size Size of the "pencil"
+ */
 GUI.addPaintSize = function(size) {
 	GUI.paintSizes.push(size);
 }
 
+/**
+ * Enter the paint edit mode
+ * @param {webarenaObject} webarenaObject The webarena object to save/load the paint data
+ * @param {bool} highlighterMode True if the paint mode should be displayed in highlighter mode (different colors, sizes and opacity)
+ */
 GUI.editPaint = function(webarenaObject, highlighterMode) {
 
 	if (webarenaObject === undefined) console.error("cannot paint on undefined object!");
@@ -436,9 +471,21 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	
 }
 
+/**
+ * True if the shift key is pushed (to draw straight lines)
+ */
 GUI.paintShiftKeyDown = false;
+
+/**
+ * Direction of straight line
+ */
 GUI.paintShiftKeyDirection = undefined;
 
+/**
+ * Paint a line to position x,y
+ * @param {int} x x position of the lines end
+ * @param {int} y y position of the lines end
+ */
 GUI.paintPaint = function(x,y) {
 
 	var svgpos = $("#content").offset();
@@ -450,7 +497,7 @@ GUI.paintPaint = function(x,y) {
 	}
 	
 	if (GUI.paintShiftKeyDown) {
-		/* paint line */
+		/* paint straight line */
 	
 		if (GUI.paintShiftKeyDirection == undefined && (Math.abs(GUI.paintLastPoint[1]-y) > 2 || Math.abs(GUI.paintLastPoint[0]-x) > 2)) {
 			if (Math.abs(GUI.paintLastPoint[1]-y) > Math.abs(GUI.paintLastPoint[0]-x)) {
@@ -481,6 +528,7 @@ GUI.paintPaint = function(x,y) {
 		}
 	
 	} else {
+		/* normal paint */
 		var xc = (GUI.paintLastPoint[0] + x) / 2;
 		var yc = (GUI.paintLastPoint[1] + y) / 2;
 	}
@@ -513,6 +561,11 @@ GUI.paintPaint = function(x,y) {
 }
 
 
+/**
+ * Move to position x,y without painting
+ *@param {int} x x position
+ *@param {int} y y position
+ */
 GUI.paintMove = function(x,y) {
 
 	var svgpos = $("#content").offset();
@@ -524,6 +577,11 @@ GUI.paintMove = function(x,y) {
 	
 }
 
+/**
+ * Erease around position x,y
+ *@param {int} x x position
+ *@param {int} y y position
+ */
 GUI.paintErase = function(x,y) {
 	
 	var svgpos = $("#content").offset();
@@ -540,6 +598,9 @@ GUI.paintErase = function(x,y) {
 	
 }
 
+/**
+ * Cancel the paint mode (without saving) and close it
+ */
 GUI.cancelPaintMode = function() {
 	
 	GUI.currentPaintObject.deleteIt();
@@ -548,6 +609,9 @@ GUI.cancelPaintMode = function() {
 	
 }
 
+/**
+ * Close the paint mode
+ */
 GUI.closePaintMode = function() {
 	
 	GUI.paintModeActive = false;
@@ -573,6 +637,9 @@ GUI.closePaintMode = function() {
 	
 }
 
+/**
+ * Save the wonderful painting and close the paint mode
+ */
 GUI.savePaintMode = function() {
 	
 	if (!GUI.painted) {

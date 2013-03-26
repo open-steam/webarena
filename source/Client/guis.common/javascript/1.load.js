@@ -1,7 +1,13 @@
 "use strict";
 
+/**
+ * indicated if the GUI is fully loaded
+ */
 GUI.loaded = false;
 
+/**
+ * called when a room is entered
+ */
 GUI.entered = function() {
 	
 	if (GUI.loaded) {
@@ -13,7 +19,10 @@ GUI.entered = function() {
 	
 }
 
-
+/**
+ * Load of GUI (seperated in different steps to ensure working dependencies)
+ * @param {int} step Loading step which should be performed
+ */
 GUI.loadGUI = function(step) {
 
 	/* not logged in? */
@@ -30,9 +39,9 @@ GUI.loadGUI = function(step) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
 		if (!GUI.loaded) GUI.chat.init();
-		GUI.chat.clear();
+		GUI.chat.clear(); //clear chats messages
 		
-		if (!GUI.loaded) GUI.sidebar.init();
+		if (!GUI.loaded) GUI.sidebar.init(); //init sidebar
 
 		/* login to server */
 		ObjectManager.login(GUI.username, GUI.password, GUI.externalSession);
@@ -51,7 +60,7 @@ GUI.loadGUI = function(step) {
 	} else if (step == 3) {
 		GUI.progressBarManager.updateProgress("login", 60, GUI.translate('loading GUI'));
 		
-		GUI.startNoAnimationTimer();
+		GUI.startNoAnimationTimer(); //timer to prevent "flying" objects when getting the new list of objects for the room
 		
 		/* toolbar */
 		if (!GUI.loaded) GUI.initToolbar(); //needs: ObjectManager
@@ -101,6 +110,9 @@ GUI.loadGUI = function(step) {
 
 }
 
+/**
+ * start loading with step 1 when the document is ready
+ */
 $(function() {
 
 	GUI.loadGUI(1);

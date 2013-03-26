@@ -1,18 +1,25 @@
 "use strict";
 
-/* upload files via drag and drop (HTML5) */
-
+/**
+ * Upload of files via drag and drop (HTML5)
+ */
 $(function() {
-	
+
+	/**
+	 * called when an object was dropped
+	 * @param {event} event The drop event
+	 */
 	var drop = function(event) {
 		
+		/* get position of drop */
 		var x = event.clientX+parseInt($("body").scrollLeft());
 		var y = event.clientY+parseInt($("body").scrollTop())-$("#content").offset().top;
-		
+
 		event.stopPropagation();
 		event.preventDefault();
 		event.dataTransfer.dropEffect = 'copy'; //show that this is a copy
 		
+		/* get dropped files */
 		var files = event.dataTransfer.files;
 		
 		if (files != undefined && files != null && files.length > 0) {
@@ -26,8 +33,7 @@ $(function() {
 				var mimeType = files[i].type;
 				var file = files[i];
 
-				/* create new object */
-					//x,y
+				/* create new File object and set position */
 				ObjectManager.createObject("File",{
 					"x":x,
 					"y":y,
@@ -35,13 +41,10 @@ $(function() {
 				},false,function(newObject) {
 					/* object created --> upload content */
 					
-					
-					
 					var fd=new FormData();
 					fd.append("file", file); // Append the file
 					
 					var xhr = new XMLHttpRequest();
-					
 					
 					xhr.upload.addEventListener("progress",function(evt) {
 						if (evt.lengthComputable){
@@ -79,6 +82,9 @@ $(function() {
 		
 	}
 	
+	/**
+	 * register event handlers for drag and drop events (using body to ensure all events are captured)
+	 */
 	$("body").get(0).addEventListener("drop", drop, false);
 	
 	

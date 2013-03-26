@@ -1,7 +1,12 @@
 "use strict";
 
-/* actionsheet */
+/**
+ * actionsheets are horizontal context menus
+ */
 
+/**
+ * hide currently visible actionsheet
+ */
 GUI.hideActionsheet = function() {
 
 	$("#actionsheet").hide();
@@ -9,6 +14,14 @@ GUI.hideActionsheet = function() {
 	$(document).unbind("click.actionsheetHide");
 }
 
+
+/**
+ * show actionsheet at position x,y (opt.: bound to a webarena object)
+ * @param {int} x initial x position
+ * @param {int} y initial y position
+ * @param {webarenaObject} webarenaObject webarena object to bind actionsheet to
+ * @param {bool} isWebarenaObject ?
+ */
 GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
     //TODO: Es muss nicht unbedingt ein webarenaObject übergeben werden
@@ -116,6 +129,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
     }
 	
 	
+	/* calculate dimensions and show (little delay to ensure working width/height DOM getter methods) */
 	window.setTimeout(function() {
 
 		var actionsheetWidth = actionsheet.find(".actionsheet_buttons").outerWidth()+1; //+1 (little extra space for firefox ;-) )

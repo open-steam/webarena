@@ -2,13 +2,17 @@
 
 /* SVG */
 
+/**
+ * Refresh the SVG
+ */
 GUI.refreshSVG = function() {
 	$("#content").hide().show();
 	GUI.updateLayers();
 }
 
-/* setup SVG */
-
+/**
+ * Create the SVG area
+ */
 GUI.initSVG = function() {
 	
 	$("#content").svg();
@@ -27,7 +31,9 @@ GUI.initSVG = function() {
 
 }
 
-
+/**
+ * Resort all svg elements by their layer
+ */
 GUI.updateLayers = function() {
 
 	/* check if layers must be updated */
@@ -71,6 +77,9 @@ GUI.updateLayers = function() {
 
 GUI.updateLayersDelayedTimer = undefined;
 
+/**
+ * Resort all svg elements by their layer (delayed by 1 sec.)
+ */
 GUI.updateLayersDelayed = function() {
 	
 	if (GUI.updateLayersDelayedTimer !== undefined) window.clearTimeout(GUI.updateLayersDelayedTimer);
@@ -82,7 +91,12 @@ GUI.updateLayersDelayed = function() {
 }
 
 
-
+/**
+ * Get DOM ID of svg marker (svg markers are used to define design of arrow line caps)
+ * @param {String} type Type of the marker (e.g. "arrow")
+ * @param {String} color Color of the marker
+ * @param {bool} up True if the direction of the marker is up
+ */
 GUI.getSvgMarkerId = function(type, color, up) {
 	
 	var defs = GUI.svgDefs;

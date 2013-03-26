@@ -8,6 +8,9 @@ function splitSubstr(str, len) {
     return ret;
 }
 
+/**
+ * convert special chars to html their representations
+ */
 function htmlEscape(str) {
     return String(str)
             .replace(/&/g, '&amp;')
@@ -17,6 +20,9 @@ function htmlEscape(str) {
             .replace(/>/g, '&gt;');
 }
 
+/**
+ * convert line breaks to html <br>-tags
+ */
 function nl2br(str){
 	return str.replace(/\n/g, '<br />');
 }

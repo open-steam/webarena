@@ -1,9 +1,18 @@
 "use strict";
 
+/**
+ * @namespace Holding methods and variables to display and send chat messages to other users
+ */
 GUI.chat = {};
 
+/**
+ * counter for new messages (displayed as a badge)
+ */
 GUI.chat.newMessages = 0;
 
+/**
+ * adds components for chat and event handlers for sending chat messages
+ */
 GUI.chat.init = function() {
 
 	$("#chat").append('<div id="chat_messages"></div><div id="chat_message"><textarea id="chat_message_input"></textarea></div><div id="chat_users"></div>');
@@ -26,6 +35,19 @@ GUI.chat.init = function() {
 	
 }
 
+/**
+ * Sets active users for chat online list
+ * Content of users:
+ * [
+ * 	{
+ * 		color : The assigned (hex-) color of the user	
+ * 		username : The username of the user
+ *  },
+ *  ...
+ * ]
+ * 
+ * @param {UserInfo[]} users Array of active users information
+ */
 GUI.chat.setUsers = function(users) {
 	$("#chat_users").html("");
 	for (var i = 0; i < users.length; i++) {
@@ -35,15 +57,24 @@ GUI.chat.setUsers = function(users) {
 }
 
 
+/**
+ * clears all chat messages
+ */
 GUI.chat.clear = function() {
 	
 	$("#chat_messages").html('<span id="chat_messages_spacer"></span>');
 	
 }
 
-
+/**
+ * add a single message to the chat window
+ * @param {String} username The username of the sender
+ * @param {String} text The text of the message
+ * @param {String} [userColor=#000000] The senders user color
+ */
 GUI.chat.addMessage = function(username, text, userColor) {
 	
+	/* check if the message was send by the own user */
 	if (username == GUI.username) {
 		var type = "mine";
 	} else {
@@ -57,6 +88,7 @@ GUI.chat.addMessage = function(username, text, userColor) {
 		
 	}
 	
+	/* set default user color */
 	if (userColor == undefined) {
 		var userColor = "#000000";
 	}
@@ -92,11 +124,14 @@ GUI.chat.addMessage = function(username, text, userColor) {
 	$("#chat_messages").append('<div class="chat_message_'+type+'"><span style="color: '+userColor+'">'+username+'</span>'+text+'</div>');
 	
 
-	$("#chat_messages").scrollTop(200000);
+	$("#chat_messages").scrollTop(200000); //scroll down
 
 }
 
 
+/**
+ * called when chat is opened in GUI
+ */
 GUI.chat.opened = function() {
 	GUI.chat.newMessages = 0;
 	GUI.chat.hideNotifier();
@@ -104,11 +139,18 @@ GUI.chat.opened = function() {
 }
 
 
+/**
+ * show a notification (e.g. an icon badge) with the number of unread messages
+ * called by GUI.chat.addMessage
+ */
 GUI.chat.showNotifier = function() {
 	$("#chat_notifier").html(GUI.chat.newMessages);
 	$("#chat_notifier").css("opacity", 1);
 }
 
+/**
+ * hide the notification
+ */
 GUI.chat.hideNotifier = function() {
 	$("#chat_notifier").css("opacity", 0);
 }

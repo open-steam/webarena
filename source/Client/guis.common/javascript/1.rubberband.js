@@ -2,6 +2,10 @@
 
 /* rubberband */
 
+/**
+ * Called when a user clicks on the rooms background to start the rubberband (called by DOM event)
+ * @param {event} event Mouse/Touch down DOM event
+ */
 GUI.rubberbandStart = function(event) {
 
 	if (GUI.shiftKeyDown) return;

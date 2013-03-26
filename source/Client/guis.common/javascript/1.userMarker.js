@@ -1,9 +1,31 @@
 "use strict";
 
+/**
+ * @namespace Functions to control markers which display user activity
+ */
 GUI.userMarker = {
 	
+	/**
+	 * List of markers
+	 * 
+	 * {
+	 * 		"objectId" : {
+	 * 			"markers" : {
+	 * 				"marker identifier" : MarkerDOMElement,
+	 * 				...
+	 * 			}, 
+	 * 			...
+	 * 		},
+	 * 		...
+	 * }
+	 * 
+	 */
 	"markers" : {},
 	
+	/**
+	 * set position of markers for an webarena object
+	 * @param {int} objId ID of webarena object
+	 */
 	"setPosition" : function(objId) {
 	
 		if (GUI.userMarker.markers[objId] == undefined) return;
@@ -24,6 +46,14 @@ GUI.userMarker = {
 		
 	},
 	
+	/**
+	 * Add new marker
+	 * @param {Object} data Object of options
+	 * @param {int} data.objectId The webarena object id
+	 * @param {String} data.identifier Unique use identifier for the marker
+	 * @param {String} data.color The users color
+	 * @param {String} data.title The title of the marker (e.g. the username)
+	 */
 	"select" : function(data) {
 		
 		var infoBox = GUI.svg.group("selection_"+data.objectId+"_"+data.identifier);
@@ -53,6 +83,12 @@ GUI.userMarker = {
 		
 	},
 	
+	/**
+	 * Remove a marker
+	 * @param {Object} data Object of options
+	 * @param {int} data.objectId The webarena object id
+	 * @param {String} data.identifier Unique use identifier for the marker
+	 */
 	"deselect" : function(data) {
 
 		$(GUI.userMarker.markers[data.objectId]["markers"][data.identifier]).remove();

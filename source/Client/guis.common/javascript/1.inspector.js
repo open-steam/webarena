@@ -2,13 +2,20 @@
 
 /* inspector */
 
+/**
+ * This method gets overwritten by the specific GUI
+ */
 GUI.updateInspector = function() {
 	//overwritten	
 }
 
-
+/**
+ * Get inspectors content and provide it to the given inspector object
+ * @param {InspectorObject} inspector The inspector object (e.g. jquery.jDesktopInspector)
+ */
 GUI.setupInspectorContent = function(inspector) {
 	
+	/* get all selected webarena objects */
 	var selectedObjects = ObjectManager.getSelected();
 
 	if (selectedObjects.length > 0) {
@@ -22,12 +29,14 @@ GUI.setupInspectorContent = function(inspector) {
 		}
 	
 	} else {
+		/* if no objects are selected the current room is shown in the inspector */
 		var objects = [ObjectManager.currentRoom];
 		GUI.currentInspectorObject = ObjectManager.currentRoom;
 	}
 	
 	var object = objects[0]; //needed for translations
-		
+	
+	/* reset the inspector */
 	inspector.reset();
 
 	
@@ -35,7 +44,7 @@ GUI.setupInspectorContent = function(inspector) {
 	var categories = {};
 	
 
-	
+	/* get attributes for all selected objects */
 	$.each(objects, function(index, object) {
 		
 		if (!object) return;
@@ -69,7 +78,7 @@ GUI.setupInspectorContent = function(inspector) {
 	});
 	
 	
-	
+	/* get categories for all selected objects */
 	$.each(categories, function(category, attributes) {
 		
 		$.each(attributes, function(attributeName, attribute) {
@@ -84,7 +93,7 @@ GUI.setupInspectorContent = function(inspector) {
 	});
 	
 	
-	
+	/* delete categories without attributes */
 	$.each(categories, function(category, attributes) {
 		
 		var counter = 0;
@@ -104,6 +113,7 @@ GUI.setupInspectorContent = function(inspector) {
 
 	GUI.inspectorElementsSetter = {};
 
+	/* provide information to inspector object */
 	$.each(categories, function(category, elements) {
 	
 		var page = inspector.addPage(GUI.translate(category)); 
@@ -124,6 +134,8 @@ GUI.setupInspectorContent = function(inspector) {
 				element.setInactive();
 				
 			} else {
+				
+				/* map to inspector widgets for different types of attributes */
 				
 				if (info.type == "number") {
 					
@@ -276,10 +288,12 @@ GUI.setupInspectorContent = function(inspector) {
 				
 				if (widget) {
 				
+					/* define a function called when a widgets content changes */
 					widget.onChange(function(value) {
 					
 						$.each(objects, function(index, object) {
 							
+							/* use attributes check function to check if an value change is allowed */
 							if (info.checkFunction) {
 								/* check new value */
 								var checkResult = info.checkFunction(object, value);
@@ -308,7 +322,9 @@ GUI.setupInspectorContent = function(inspector) {
 }
 
 
-
+/**
+ * ?
+ */
 GUI.initInspectorAttributeUpdate = function() {
 	
 	Modules.ObjectManager.registerAttributeChangedFunction(function(object,key,value) {

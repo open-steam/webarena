@@ -1,7 +1,14 @@
 "use strict";
 
+/**
+ * @namespace holds methods and variables for GUI
+ */
 var GUI={};
 
+/**
+ * language of the client (used by translate function)
+ * @default de
+ */
 GUI.currentLanguage='de';
 
 
@@ -20,22 +27,24 @@ GUI.translate=function(text){
 }
 
 
-
+/**
+ * variable to check if client is a touch device (to add suitable event handlers)
+ */
 GUI.isTouchDevice = false;
 
 
 
-
+/**
+ * @deprecated still needed?
+ */
 GUI.updateGUI = function(webarenaObject) {
-	
-	var rep = webarenaObject.getRepresentation();
-	
-
 
 }
 
 
-
+/**
+ * check room size on browser window resize
+ */
 GUI.initResizeHandler = function() {
 
 	$(document).bind("resize", function() {
@@ -45,6 +54,10 @@ GUI.initResizeHandler = function() {
 }
 
 
+/**
+ * set room width and height depending on objects in room
+ * @param {webarenaObject} [webarenaObject] concrete object to check for
+ */
 GUI.adjustContent = function(webarenaObject) {
 	
 	if (webarenaObject != undefined) {
@@ -112,6 +125,10 @@ GUI.adjustContent = function(webarenaObject) {
 }
 
 
+/**
+ * set width of room / svg area
+ * @param {int} width new width of the room
+ */
 GUI.setRoomWidth = function(width) {
 	
 	var currentRoom = ObjectManager.getCurrentRoom();
@@ -128,6 +145,10 @@ GUI.setRoomWidth = function(width) {
 	
 }
 
+/**
+ * set height of room / svg area
+ * @param {int} height new height of the room
+ */
 GUI.setRoomHeight = function(height) {
 
 	var currentRoom = ObjectManager.getCurrentRoom();
@@ -145,8 +166,10 @@ GUI.setRoomHeight = function(height) {
 }
 
 
-/* object selection */
 
+/**
+ * deselects all objects in the current room
+ */
 GUI.deselectAllObjects = function() {
 	
 	$.each(ObjectManager.getSelected(), function(index, object) {
@@ -162,8 +185,15 @@ GUI.deselectAllObjects = function() {
 
 /* multi selection */
 
+/**
+ * set to true if the clients shift key is pressed (used for multiple selection)
+ */
 GUI.shiftKeyDown = false;
 
+
+/**
+ * add event handlers for shift key
+ */
 GUI.initShiftKeyHandling = function() {
 
     $(document).click(function(e) {
@@ -196,8 +226,14 @@ GUI.initShiftKeyHandling = function() {
 
 /* move by keyboard */
 
+/**
+ * @deprecated ?
+ */
 GUI.blockKeyEvents = false;
 
+/**
+ * add event handlers for object movement by arrow-keys
+ */
 GUI.initMoveByKeyboard = function() {
 
 	$(document).bind("keydown", function(event) {
@@ -244,7 +280,9 @@ GUI.initMoveByKeyboard = function() {
 
 
 
-
+/**
+ * add event handler for removing selected objects by pressing delete-key
+ */
 GUI.initObjectDeletionByKeyboard = function() {
 	
 	$(document).bind("keydown", function(event) {
@@ -276,7 +314,9 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 
 
-/* mouse handler */
+/**
+ * add event handler for object selection (based on clicked position and layers)
+ */
 GUI.initMouseHandler = function() {
 
 
@@ -342,7 +382,11 @@ GUI.initMouseHandler = function() {
 }
 
 
-/* get the topmost object at point x,y which is visible */
+/**
+ * get the topmost object at point x,y which is visible
+ * @param {int} x x position
+ * @param {int} y y position
+ */
 GUI.getObjectAt = function(x,y) {
 	
 	var clickedObject = false;
@@ -369,9 +413,14 @@ GUI.getObjectAt = function(x,y) {
 
 
 
-
+/**
+ * list of object mime types which can be represented by a preview image
+ */
 GUI.previewableMimeTypes = undefined;
 
+/**
+ * load list of mime types for GUI.previewableMimeTypes
+ */
 GUI.loadListOfPreviewableMimeTypes=function() {
 	/* get list of inline displayable mime types */
 			
@@ -381,6 +430,10 @@ GUI.loadListOfPreviewableMimeTypes=function() {
 	
 }
 
+/**
+ * check if a preview image can be generated for an object with the given mime type
+ * @param {String} mimeType mime type to check for
+ */
 GUI.mimeTypeIsPreviewable=function(mimeType) {
 	
 	if (GUI.previewableMimeTypes == undefined) {
@@ -397,7 +450,9 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
 }
 
 
-
+/**
+ * called when the socket is disconnected
+ */
 GUI.disconnected = function() {
 	
 	GUI.showDisconnected();
@@ -405,6 +460,10 @@ GUI.disconnected = function() {
 	
 }
 
+
+/**
+ * called when the socket is connected
+ */
 GUI.connected = function() {
 
 	if (GUI.relogin === true) {
@@ -414,7 +473,9 @@ GUI.connected = function() {
 	
 }
 
-
+/**
+ * display a error message on disconnect
+ */
 GUI.showDisconnected = function() {
 	
 	if ($("#disconnected_message").length == 0)
@@ -426,8 +487,9 @@ GUI.showDisconnected = function() {
 }
 
 
-
-
+/**
+ * timer to prevent objects "flying in" when getting a bunch of new objects (room load)
+ */
 GUI.startNoAnimationTimer = function() {
 	GUI.noAnimation = window.setTimeout(function() {
 		GUI.noAnimation = undefined;

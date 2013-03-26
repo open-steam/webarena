@@ -8,6 +8,13 @@
 
 "use strict";
 
+/**
+ * @class Connection to bidowl server
+ * @param {String} host The host to connect to
+ * @param {int} port The port number of the service
+ * @param {String} username The username
+ * @param {String} password The password
+ */
 function BidConnection(host, port, username, password) {
 	
 	this.host = host;
@@ -19,7 +26,16 @@ function BidConnection(host, port, username, password) {
 	
 	var self = this;
 	
-	
+	/**
+	 * Perform a request
+	 * @param {String} command The command name
+	 * @param {String} functionName The name of the function
+	 * @param {Array} parameters Array of parameters
+	 * @param {Function} callback The callback function for successful requests
+	 * @param {bool} [returnRaw] True if response should be passed to callback-function without JSON parsing
+	 * @param {String} [contentName] Name of the POST content
+	 * @param {String} [content] The POST content
+	 */
 	this.request = function(command, functionName, parameters, callback, returnRaw, contentName, content) {
 
 		self.requestCounter = self.requestCounter+1;
@@ -118,6 +134,11 @@ function BidConnection(host, port, username, password) {
 		return escape(JSON.stringify(s));
 	}
 	
+	
+	/**
+	 * check login data
+	 * @param {Function} callback Callback function
+	 */
 	this.checkLogin = function(callback) {
 		
 		function check(status) {
@@ -321,6 +342,10 @@ BidHelper.checkRight = function(rightName, bitRights) {
 	
 }
 
+/**
+ * Convert bidowl bit types to list of human readable types
+ * @param {Byte} type Type converted as Byte
+ */
 BidHelper.convertType = function(type) {
 
 	var types = {

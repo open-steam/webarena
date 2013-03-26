@@ -1,11 +1,15 @@
 "use strict";
 
+/**
+ * Init. the toolbar
+ */
 GUI.initToolbar = function() {
 
 	/* insert icons for creating new objects: */
 	
 	var types = {};
 	
+	/* get types of objects */
 	$.each(ObjectManager.getTypes(), function(key, object) { 
 	
 		if (object.isCreatable) {
@@ -27,6 +31,7 @@ GUI.initToolbar = function() {
 	
 	var toolbar_locked_elements = {};
 	
+	/* build categories for each type */
 	$.each(types, function(key, object) { 
 
 		var newCategoryIcon = document.createElement("img");
@@ -147,7 +152,7 @@ GUI.initToolbar = function() {
 				$(newCategoryIcon).bind("click", function() { click(); });
 			}
 			
-			
+			/* All objects (except for Paint and Highlighter) can be created by dragging them to the svg area */
 			if (object[0].type != "Paint" && object[0].type != "Highlighter") {
 				
 				/* make draggable */

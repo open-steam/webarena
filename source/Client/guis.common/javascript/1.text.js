@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * Edit a text using a dialog
+ * @param {webarenaObject} webarenaObject The web arena object
+ * @param {bool} multiLine True if multiple lines should be edited
+ * @param {int} width Width of the dialog
+ * @param {int} [height] Height of the dialog
+ */
 GUI.editText = function(webarenaObject, multiLine, width, height) {
 	
 	var style = 'font-family: '+webarenaObject.getAttribute("font-family")+'; ';

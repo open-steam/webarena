@@ -58,9 +58,6 @@
 
 	<script src="/objects"></script>
 	
-	
-	
-	
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
@@ -123,14 +120,20 @@
 	
 	<script>
 	
-		//check if device is touch-device:
+		/**
+		 * check if device is touch-device
+		 */
 		if (!!('ontouchstart' in window)) {
 			GUI.isTouchDevice = true;
 		}
 		
 		
 		
-	
+		/**
+		 * GUI specific file upload method
+		 * @param {webarenaObject} object The webarena object to upload the file
+		 * @param {String} message A message displayed when selecting the file
+		 */
 		GUI.uploadFile=function(object,message){
 		
 			var uploadDialog = document.createElement("div");
@@ -212,7 +215,13 @@
 		}
 		
 		
-		
+		/**
+		 * GUI specific display of errors
+		 * @param {String} heading A title for the upload dialog
+		 * @param {String} message A message including the errors message
+		 * @param {webarenaObject} [webarenaObject] An optional webarena object the error is related to
+		 * @param {bool} fatal True if the error is fatal and the webpage has to be reloaded after displaying the error
+		 */
 		GUI.error = function(heading, message, webarenaObject, fatal) {
 
 			var translate = function(text) {
@@ -243,15 +252,24 @@
 		}
 		
 		
-		/*
-		 * heading: string
-		 * content: html content of dialog
-		 * buttons: object of buttons e.g.:
-		 * 			{
-		 * 				"title of this button" : function() {
-		 * 					//button callback
-		 * 				}
-		 * 			}
+		/**
+		 * GUI specific display of general messages (and complex control dialogs)
+		 * @param {String} heading A title for the dialog
+		 * @param {String|DOMObject} content A message or DOM object that will be used as the body of the dialog
+		 * @param {Object} [buttons] The Buttons of the dialog (e.g. close, save, ...)
+		 * @param {int} [dialogWidth=auto] The width of the dialog
+		 * @param {bool} [passThrough] Additional options for the dialog
+		 * @returns {jQueryDialogObject} The created jQuery dialog object
+		 * 
+		 * Form of buttons param:
+		 * 
+		 * {
+		 * 		"title of this button" : function() {
+		 * 			//button callback
+		 * 		},
+		 * 		...
+		 * }
+		 * 			
 		 */
 		GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
 			
@@ -311,15 +329,29 @@
 		
 		
 		
-		/* sidebar */
-		
+		/**
+		 * @namespace Holding methods and variables for displaying a sidebar
+		 */
 		GUI.sidebar = {};
 		
+		/**
+		 * True if the sidebar is shown
+		 */
 		GUI.sidebar.open = false;
+		
+		/**
+		 * Currently shown element
+		 */
 		GUI.sidebar.currentElement = undefined;
 		
+		/**
+		 * A saved state of the sidebar
+		 */
 		GUI.sidebar.savedState = undefined;
 		
+		/**
+		 * Available sidebar pages
+		 */
 		GUI.sidebar.elementConfig = {
 			"inspector" : {
 				order : 0,
@@ -336,8 +368,12 @@
 			},
 		};
 		
+		/**
+		 * move (scroll) sidebar to x position
+		 * @param {DomElement} target The targets DOM element
+		 * @param {int} x The x position to move the sidebar to
+		 */
 		GUI.sidebar.transformX = function(target, x) {
-			
 			
 			var trans = "translate3d("+x+"px,0,0)";
 
@@ -347,25 +383,34 @@
 			
 		}
 
+		/**
+		 * open a sidebar page
+		 * @param {String} element The name of the page to open (see GUI.sidebar.elementConfig)
+		 * @param {DomElement} [button] The button which triggered the opening 
+		 */
 		GUI.sidebar.openPage = function(element, button) {
 			
+			/* check if the given element name exists */
 			if (GUI.sidebar.elementConfig[element] == undefined) {
 				console.error("Open Sidebar: Unknown element ID");
 				return;
 			}
 			
+			/* check if the page is already open */
 			if (GUI.sidebar.currentElement == element && GUI.sidebar.open) {
 				GUI.sidebar.closeSidebar();
 				return;
 			}
 			
+			/* set currently opened element/page */
 			GUI.sidebar.currentElement = element;
 
 			var left = GUI.sidebar.elementConfig[element]['order']*$("#sidebar").width()*(-1);
 
-			
+			/* check if sidebar is shown */
 			if (!GUI.sidebar.open) {
-
+				/* disable page flip animation and open sidebar (prevent multiple animations at once) */
+				
 				//disable animation for the next 500ms
 				$("#sidebar_content>div").removeClass("animate");
 
@@ -401,6 +446,9 @@
 			
 		}
 		
+		/**
+		 * open the sidebar using animation
+		 */
 		GUI.sidebar.openSidebar = function() {
 			
 			GUI.sidebar.transformX($("#sidebar"), 0);
@@ -410,7 +458,10 @@
 			
 		}
 		
-		
+		/**
+		 * close the sidebar
+		 * @param {bool} noReset True if the current element should not be reset (used by GUI.sidebar.saveStateAndHide)
+		 */
 		GUI.sidebar.closeSidebar = function(noReset) {
 			
 			GUI.sidebar.transformX($("#sidebar"), 230);
@@ -426,7 +477,9 @@
 			
 		}
 		
-		
+		/**
+		 * saves the current sidebar state and hides it
+		 */
 		GUI.sidebar.saveStateAndHide = function() {
 			
 			GUI.sidebar.savedState = {
@@ -438,7 +491,9 @@
 			
 		}
 		
-		
+		/**
+		 * restores the sidebar from the saved state and shows it
+		 */
 		GUI.sidebar.restoreFromSavedState = function() {
 
 			if (GUI.sidebar.savedState.open) {
@@ -454,7 +509,9 @@
 		}
 		
 		
-		
+		/**
+		 * jQuery extension used to prevent scrolling of sidebar/body when scrolling of sidebar contents hits top/bottom (e.g. for chat messages container)
+		 */
 		$.fn.dontScrollParent = function()
 		{
 		    this.bind('mousewheel DOMMouseScroll',function(e)
@@ -470,7 +527,9 @@
 		    });
 		}
 		
-		
+		/**
+		 * init. the sidebar
+		 */
 		GUI.sidebar.init = function() {
 			$("#sidebar_content>div").addClass("animate");
 			$("#sidebar_content").dontScrollParent();
@@ -479,8 +538,9 @@
 		
 		
 		
-		/* inspector */
-		
+		/**
+		 * GUI specific inspector update
+		 */
 		GUI.updateInspector = function() {
 			
 			$("#inspector").data("jDesktopInspector").update();
@@ -488,10 +548,12 @@
 			
 		}
 			
+		/**
+		 * GUI specific setup of inspector
+		 */
 		GUI.setupInspector = function() {
 			
-			/* add inspector */
-
+			/* add jQuery inspector plugin to inspector-div */
 			$("#inspector").jDesktopInspector({
 				onUpdate : function(domEl, inspector) {
 
@@ -502,23 +564,24 @@
 			
 		}
 		
-		
+		/**
+		 * Set translated placeholder for username input at login screen
+		 */
 		$(function() {
 			$("#login_username").attr("placeholder", GUI.translate("Username"));
 		});
 
-
+		/**
+		 * Define room which will be loaded (value will be replaced by node.js Webserver)
+		 */
 		GUI.startRoom = '##START_ROOM##';
 	
-		var ß;
-		$(function() {
-			ß = ObjectManager.getObject; //DEV
-		});
+
 	
 	
-	
-		/* BUG REPORT */
-		
+		/**
+		 * Reporting of bugs
+		 */
 		$(function() {
 		
 			$("#bug_submit").bind("click", function(event) {
@@ -571,6 +634,9 @@
 			
 		});
 		
+		/**
+		 * Used to play a "huu" sound in chat ;)
+		 */
 		GUI.huu = function() {
 			
 			var huu = new Audio("");
