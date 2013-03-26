@@ -284,9 +284,21 @@ theObject.getBoundingBox=function(){
 
 theObject.onSwitchContext=function(context){
 	
-	if (this.getAttribute('position_on_all_contexts')) return;
-
-	this.setAttribute('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
-	this.setAttribute('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
+	if (Modules.Config.noContext) return;
+	
+	if (!this.getAttribute('position_on_all_contexts')){
+		this.setAttribute('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
+		this.setAttribute('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
+	}
+	
+	var contexts=this.whichContexts();
+	if (contexts!==true){
+		var visible=false;
+		for (var i in contexts){
+			var comp=contexts[i];
+			if (comp==context) visible=true;
+		}
+		this.setAttribute('visible',visible);
+	}
 	
 }

@@ -65,6 +65,15 @@ ObjectManager.buildObject=function(type, attributes){
 		
     }
 
+	//Determine this room's contexts
+
+	if (!Config.noContexts){
+		var room=object.getRoom();
+		if (room){
+			room.updateContexts();
+		}
+	}
+
     return object;
 
 }

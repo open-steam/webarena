@@ -67,7 +67,7 @@ GeneralObject.register=function(type){
 		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
 	} else {
 		
-		this.registerAttribute('position_on_all_contexts',{type:'boolean',standard:false,category:'Context'});
+		this.registerAttribute('position_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
 		
 		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
 			var context=object.getRoom().getContext();
@@ -87,6 +87,9 @@ GeneralObject.register=function(type){
 	
 	
 	if (!Modules.Config.noContexts){
+		this.registerAttribute('only_in_contexts',{type:'text',readable:'only in these contexts',standard:'all',category:'Context',checkFunction: function(object,value){
+			object.getRoom().updateContexts();
+		}});
 		this.registerAttribute('position_on_all_contexts',{type:'boolean',readable:'same position on all contexts',standard:false,category:'Context'});
 	}
 	
@@ -380,10 +383,10 @@ GeneralObject.setAll=function(data){
 GeneralObject.init=function(id){
 	if (!id) return;
 	this.id=id;
-	if(this.attributeManager.get(id,'id')) return;
+	if(this.get(id,'id')) return;
 	
-	this.attributeManager.set(id,'id',id);
-	this.attributeManager.set(id,'type',this.type);
+	this.set(id,'id',id);
+	this.set(id,'type',this.type);
 }
 
 GeneralObject.toString=function(){
@@ -850,6 +853,19 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 		this.setAttribute("link", update(this.get('link')));
 	}
 	
+}
+
+GeneralObject.whichContexts=function(){
+	
+	if (!String.prototype.trim){
+		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+	}
+	
+	var data=this.getAttribute('only_in_contexts').trim();
+	if (!data) return true;
+	if (data=='all') return true;
+	
+	return data.split(",");
 }
 
 GeneralObject.deleteIt=GeneralObject.remove;
