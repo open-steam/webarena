@@ -77,7 +77,7 @@ SharePoint.createRepresentationIcon = function(){
     var rect = GUI.svg.rect(rep, 0,0,10,10);
     $(rect).attr("fill", "transparent");
     $(rect).addClass("borderRect");
-
+    $(rect).addClass("moveArea");
 
     if(this.getAttribute("sharepoint_src")){
         textVal = this.getAttribute("name");

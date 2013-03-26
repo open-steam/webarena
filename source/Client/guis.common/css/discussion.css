@@ -11,10 +11,14 @@
   border-top-right-radius: 5px;
   padding-bottom: 5px;
   background-color: #FFFFFF;
+  max-height: 100%;
+}
+
+.discussion-content {
+  overflow-y: scroll;
 }
 
 .discussion-text {
-  overflow-y: scroll;
   border-bottom: 2px solid #cccccc;
   border-top: 2px solid #cccccc;
 }

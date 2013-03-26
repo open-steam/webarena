@@ -834,14 +834,13 @@ GeneralObject.makeMovable = function() {
         rep = this.getRepresentation();
     }
 
-
-		if (GUI.isTouchDevice) {
-			/* touch */
-			rep.ontouchstart = self.moveStart;
-		} else {
-			/* mouse */
-			$(rep).bind("mousedown", self.moveStart);
-		}
+	if (GUI.isTouchDevice) {
+		/* touch */
+		rep.ontouchstart = self.moveStart;
+	} else {
+		/* mouse */
+		$(rep).bind("mousedown", self.moveStart);
+	}
 	
 
 	
@@ -1088,29 +1087,31 @@ GeneralObject.click = function(event) {
 
 
 /* handler functions */
-
 GeneralObject.clickHandler = function(event) {
 	if (GUI.isTouchDevice && event.touches.length > 1) {
-		this.select(true); //multi select
+		this.select(true); 
 		event.stopPropagation();
 		event.preventDefault();
 		return true;
 	}
 	
 	if (this.selected) {
-        if(this.restrictedMovingArea){
-            if($(event.target).hasClass("moveArea")){
-                this.selectedClickHandler(event);
-            }
+        if(this.restrictedMovingArea && !$(event.target).hasClass("moveArea")){
+
         } else {
             this.selectedClickHandler(event);
         }
 	} else {
 		this.selectionClickActive = true; //this is used to prevent a second click-call by mouseup of move when selecting an object (otherwise this would result in an doubleclick)
 		this.select();
-		this.moveStart(event);
-	}
 
+		if(this.restrictedMovingArea && !$(event.target).hasClass("moveArea")){
+
+		} else {
+			
+			this.moveStart(event);
+		}
+	}
 }
 
 GeneralObject.clickRevertHandler = function(event) {

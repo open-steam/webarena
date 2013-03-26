@@ -6,6 +6,7 @@
  *
  */
 Discussion.drawEmbedded = function () {
+
     var rep = this.getRepresentation();
     rep.dataObject = this;
 
@@ -35,11 +36,40 @@ Discussion.drawEmbedded = function () {
     $(rep).find("body").css("color", this.getAttribute('font-color'));
     $(rep).attr("layer", this.getAttribute('layer'));
 
-    var title = this.getAttribute('discussionTitle') || "Titel nicht gesetzt. Zum Ändern bitte hier klicken.";
-    $(rep).find(".discussion-heading").html(title);
     var that = this;
 
     this.bindAdminControlls();
+}
+
+Discussion.updateHeading = function(newHeading){
+    var rep = this.getRepresentation();
+    $(rep).find(".discussion-heading").html(newHeading);
+}
+
+Discussion.drawIcon = function () {
+    var rep = this.getRepresentation();
+
+    this.setViewX(this.getAttribute('x'));
+    this.setViewY(this.getAttribute('y'));
+
+    this.setViewWidth(this.getAttribute('width'));
+    this.setViewHeight(this.getAttribute('height'));
+
+    $(rep).find(".discussion-blob").css("background-color", this.getAttribute('fillcolor'));
+    $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
+    $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
+    $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
+
+    $(rep).attr("layer", this.getAttribute('layer'));
+}
+
+Discussion.draw = function () {
+    var embedded = this.getAttribute("show_embedded");
+    if (embedded) {
+        this.drawEmbedded();
+    } else {
+        this.drawIcon();
+    }
 }
 
 Discussion.bindAdminControlls = function () {
@@ -79,6 +109,7 @@ Discussion.enableInlineEditors = function () {
     $(rep).find('.discussion-statement-text').editable(saveFunction, {
         type: "autogrow",
         submit: 'Speichern',
+        cancel: 'Abbrechen',
         placeholderHTML5: 'Diskussions-Titel',
         autogrow: {
             lineHeight: 16,
@@ -100,36 +131,17 @@ Discussion.enableInlineEditors = function () {
     });
 }
 
-Discussion.drawIcon = function () {
-    var rep = this.getRepresentation();
-
-    this.setViewX(this.getAttribute('x'));
-    this.setViewY(this.getAttribute('y'));
-
-    this.setViewWidth(this.getAttribute('width'));
-    this.setViewHeight(this.getAttribute('height'));
-
-    $(rep).find(".discussion-blob").css("background-color", this.getAttribute('fillcolor'));
-    $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
-    $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
-    $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
-
-    $(rep).attr("layer", this.getAttribute('layer'));
+Discussion.switchStateView = function(){
+    $('#' + this.getAttribute('id')).remove();
+    this.getRepresentation();
+    this.deselect()
 }
 
-Discussion.draw = function () {
-    var embedded = this.getAttribute("show_embedded");
-    if (embedded) {
-        this.drawEmbedded();
-    } else {
-        this.drawIcon();
-    }
-}
 
 Discussion.switchState = function () {
     var embedded = this.getAttribute("show_embedded") || false;
-
     this.setAttribute("show_embedded", !embedded);
+
     if (!embedded) {
         this.setAttribute("width", 400);
         this.setAttribute("height", 500);
@@ -138,10 +150,7 @@ Discussion.switchState = function () {
         this.setAttribute("width", 64 * 2.5);
         this.setAttribute("height", 64 * 1.5)
     }
-
-    $('#' + this.getAttribute('id')).remove();
-    this.getRepresentation();
-    this.deselect()
+    this.switchStateView();
 }
 
 
@@ -152,16 +161,19 @@ Discussion.createRepresentationEmbedded = function () {
     var rep = GUI.svg.other("foreignObject");
     rep.dataObject = this;
 
+    var heading = this.getAttribute("discussionTitle") || "Bitte klicken Sie hier, um den Text zu ändern."
+
     // content
     var body = document.createElement("body");
     $(body).append(
         $('<div class="discussion">' +
-
             '<div class="embedded-toolbar moveArea">' +
             '<span class="minimize-button"></span>' +
             '</div>' +
-            '<div class="discussion-heading">' +
+            '<div class="discussion-content">' +
+            '<div class="discussion-heading">' + heading +
             '</div><div class="discussion-text"></div>' +
+            '</div>'+
             '<input class="discussion-input" placeholder=Texteingabe>' +
             '</div>')
     );
@@ -200,6 +212,7 @@ Discussion.createRepresentationEmbedded = function () {
     $(body).on("click", ".minimize-button", function () {
         that.switchState();
     });
+
 
     // add content to wrapper
     $(rep).append(body);
@@ -292,19 +305,20 @@ Discussion.updateInnerHeightEmbedded = function (value) {
     var rep = this.getRepresentation();
 
     $(rep).find("body").css("height", value + "px");
+    $(rep).find(".discussion").css("height", value + "px");
 
     //TODO : calculate size with input instead of fixed 75px
-    var hh = $(rep).find(".discussion-heading").height();
     var ih = $(rep).find(".discussion-input").height();
 
-    $(rep).find(".discussion-text").css("height", (value - hh - ih - 90) + "px");
+    $(rep).find(".discussion-content").css("height", (value  - ih - 60) + "px");
 }
 
 Discussion.updateInnerHeightIcon = function (value) {
     var rep = this.getRepresentation();
 
     $(rep).find("body").css("height", value + "px");
-    $(rep).find(".wrapped-text").css("height", (value - 50) + "px");
+
+    $(rep).find(".wrapped-text").css("height", (value - 47) + "px");
     $(rep).find(".wrapped-text").dotdotdot();
 }
 
@@ -324,11 +338,15 @@ Discussion.representationCreated = function () {
         type: "autogrow",
         submit: 'Speichern',
         placeholderHTML5: 'Diskussions-Titel',
+        cancel: "Abbrechen",
+
         data: function () {
             var headingText = that.getAttribute('discussionTitle') || '';
             var retval = htmlDecode(headingText)
+            console.log("SAAAAVE")
             return retval;
         },
+
         autogrow: {
             lineHeight: 16,
             maxHeight: 512
