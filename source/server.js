@@ -20,10 +20,10 @@ console.log('##########################################');
 
 "use strict";
 
-//General error handling
+//General error handling. Let the server try to continue
+//if an error occured and log the error
 
 process.on('uncaughtException', function (err) {
-  //console.log('Caught exception: ' + err);
 	Modules.Log.error(err);
 });
 

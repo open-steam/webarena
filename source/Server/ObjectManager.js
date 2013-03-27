@@ -13,15 +13,13 @@ var fs=require('fs');
 var Modules=false;
 var ObjectManager={};
 var runtimeData={};
-ObjectManager.isServer=true;
+var prototypes={};
 
+ObjectManager.isServer=true;
 
 var enter=String.fromCharCode(10);
 
-
 ObjectManager.toString=function(){return 'ObjectManager (server)';}
-
-var prototypes={};
 
 /**
 *	registerType
