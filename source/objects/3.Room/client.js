@@ -14,29 +14,40 @@ Room.updateContexts=function(){
 	
 	if (Config.noContexts) return;
 	
-	var contexts=[];
-	var temp={}
+	if (this.updateContextDelay){
+		clearTimeout(this.updateContextDelay);
+		this.updateContextDelay=false;
+	}
 	
-	var inventory=this.getInventory();
+	var that=this;
+	this.updateContextDelay=setTimeout(function(){
 	
-	var loopFunction=function(element){
-		var list=element.whichContexts();
-		for (var j in list){
-			var context=list[j];
-			if (!temp[context]) contexts.push(context);
-			temp[context]=true;
+		var contexts=[];
+		var temp={}
+		
+		var inventory=that.getInventory();
+		
+		var loopFunction=function(element){
+			var list=element.whichContexts();
+			for (var j in list){
+				var context=list[j];
+				if (!temp[context]) contexts.push(context);
+				temp[context]=true;
+			}
 		}
-	}
+		
+		for (var i in inventory){
+			var element=inventory[i];
+			loopFunction(element);
+		}
+		
+		if (!contexts.length) contexts=['general'];
+		
+		that.registerAttribute('current_context',{type:'selection',options:contexts,standard:'general',readable:'current context',category:'Context'});
+		
+		GUI.updateInspector();
+	},1000);
 	
-	for (var i in inventory){
-		var element=inventory[i];
-		loopFunction(element);
-	}
-	
-	if (!contexts.length) contexts=['general'];
-	
-	this.registerAttribute('current_context',{type:'selection',options:contexts,standard:'general',readable:'current context',category:'Context'});
-
 }
 
 Room.getInventory=function(){
