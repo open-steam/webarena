@@ -295,6 +295,11 @@ theObject.onSwitchContext=function(context){
 		this.setAttribute('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
 	}
 	
+	if (!this.getAttribute('appearance_on_all_contexts')){
+		this.setAttribute('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
+		this.setAttribute('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
+	}
+	
 	var contexts=this.whichContexts();
 	if (contexts!==true){
 		var visible=false;

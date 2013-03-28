@@ -13,15 +13,13 @@ var fs=require('fs');
 var Modules=false;
 var ObjectManager={};
 var runtimeData={};
-ObjectManager.isServer=true;
+var prototypes={};
 
+ObjectManager.isServer=true;
 
 var enter=String.fromCharCode(10);
 
-
 ObjectManager.toString=function(){return 'ObjectManager (server)';}
-
-var prototypes={};
 
 /**
 *	registerType
@@ -591,6 +589,9 @@ ObjectManager.init=function(theModules){
         server_function_params['callback'] = responseCallback;
 
         var fn = object[server_function];
+        
+        if (!fn.public) return false;
+        
         //fn(server_function_params);
         fn.call(object, server_function_params)
     });

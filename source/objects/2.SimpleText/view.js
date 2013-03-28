@@ -24,6 +24,13 @@ SimpleText.draw=function(external){
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
 
+	if (!$(rep).hasClass("webarena_ghost")) {
+		if (this.getAttribute("visible") || this.selected) {
+			$(rep).css("visibility", "visible");
+		} else {
+			$(rep).css("visibility", "hidden");
+		}
+	}
 
 	var that=this;
 	

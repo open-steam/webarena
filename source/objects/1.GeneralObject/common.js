@@ -95,9 +95,29 @@ GeneralObject.register=function(type){
 	if (!ObjectManager.isServer || Modules.Config.noContexts){	
 		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
 		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
+		this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+			
+			if (object.resizeProportional()) {
+				object.setAttribute("height", object.getAttribute("height")*(value/object.getAttribute("width")));
+			}
+	
+			return true;
+			
+		}});
+		
+		this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+			
+			if (object.resizeProportional()) {
+				object.setAttribute("width", object.getAttribute("width")*(value/object.getAttribute("height")));
+			}
+	
+			return true;
+			
+		}});
 	} else {
 		
 		this.registerAttribute('position_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
+		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
 		
 		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
 			var context=object.getRoom().getContext();
@@ -111,37 +131,36 @@ GeneralObject.register=function(type){
 			object.set('y',value);
 		}});
 		
+		this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', setFunction: function(object, value) {
+			
+			var context=object.getRoom().getContext();
+			object.setAttribute('width_'+context,value);
+			object.set('width',value);
+			
+		}});
+		
+		this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', setFunction: function(object, value) {
+			
+			var context=object.getRoom().getContext();
+			object.setAttribute('height_'+context,value);
+			object.set('height',value);
+			
+		}});
+		
 		//for switching see room attribute registration for current_context
 		
 	}
 	
+	//context attribute itself is set on swtichcontext
 	
 	if (!Modules.Config.noContexts){
 		this.registerAttribute('only_in_contexts',{type:'text',readable:'only in these contexts',standard:'all',category:'Context',checkFunction: function(object,value){
 			object.getRoom().updateContexts();
 		}});
-		this.registerAttribute('position_on_all_contexts',{type:'boolean',readable:'same position on all contexts',standard:false,category:'Context'});
+		this.registerAttribute('position_on_all_contexts',{type:'boolean',readable:'same position on all contexts',standard:true,category:'Context'});
+		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',readable:'same appearance on all contexts',standard:true,category:'Context'});
 	}
-	
-	this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
-		
-		if (object.resizeProportional()) {
-			object.setAttribute("height", object.getAttribute("height")*(value/object.getAttribute("width")));
-		}
 
-		return true;
-		
-	}});
-	
-	this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
-		
-		if (object.resizeProportional()) {
-			object.setAttribute("width", object.getAttribute("width")*(value/object.getAttribute("height")));
-		}
-
-		return true;
-		
-	}});
 	
 	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
 	this.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});

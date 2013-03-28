@@ -21,7 +21,6 @@ Room.updateContexts=function(){
 	
 	var loopFunction=function(element){
 		var list=element.whichContexts();
-		console.log(element.toString(),list);
 		for (var j in list){
 			var context=list[j];
 			if (!temp[context]) contexts.push(context);
@@ -37,8 +36,7 @@ Room.updateContexts=function(){
 	if (!contexts.length) contexts=['general'];
 	
 	this.registerAttribute('current_context',{type:'selection',options:contexts,standard:'general',readable:'current context',category:'Context'});
-	    
-	console.log(this+' updateContexts',contexts);
+
 }
 
 Room.getInventory=function(){

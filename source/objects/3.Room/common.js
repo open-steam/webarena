@@ -42,6 +42,18 @@ Room.register=function(type){
 	
 	    }
     }
+    
+	//Hide unnecessary attributes (at least for now)
+    
+    this.registerAttribute('only_in_contexts',{hidden:true});
+    this.registerAttribute('position_on_all_contexts',{hidden:true});
+    this.registerAttribute('appearance_on_all_contexts',{hidden:true});
+    this.registerAttribute('locked',{hidden:true});
+	this.registerAttribute('visible',{hidden:true});
+    this.registerAttribute('x',{hidden:true});
+	this.registerAttribute('y',{hidden:true});
+	this.registerAttribute('group',{hidden:true});
+    
 }
 
 Room.execute=function(){

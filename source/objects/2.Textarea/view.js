@@ -39,6 +39,14 @@ Textarea.draw=function(external){
 	$(rep).find("body").css("color", this.getAttribute('font-color'));
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
+	
+	if (!$(rep).hasClass("webarena_ghost")) {
+		if (this.getAttribute("visible") || this.selected) {
+			$(rep).css("visibility", "visible");
+		} else {
+			$(rep).css("visibility", "hidden");
+		}
+	}
 
 	var that=this;
 	

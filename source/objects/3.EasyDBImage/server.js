@@ -34,3 +34,5 @@ theObject.getUrls = function(args){
 
     api.retrieveImageUrlForSize(args['id'], args['size'], args['callback']);
 }
+
+theObject.getUrls.public=true; //Function can be accessed by customObjectFunctionCall
