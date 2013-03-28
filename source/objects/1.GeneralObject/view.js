@@ -26,11 +26,49 @@ GeneralObject.draw=function(external){
 	$(rep).attr("layer", this.getAttribute('layer'));
 	
 	if (!$(rep).hasClass("webarena_ghost")) {
-		if (this.getAttribute("visible") || this.selected) {
+		
+		if (this.selected) {
 			$(rep).css("visibility", "visible");
 		} else {
-			$(rep).css("visibility", "hidden");
+			
+			if (this.getAttribute("visible")) {
+				
+				if (external) {
+					if ($(rep).css("visibility") == "hidden") {
+						/* fade in */
+						$(rep).css("opacity", 0);
+						$(rep).css("visibility", "visible");
+						$(rep).animate({
+							"opacity" : 1
+						}, 500, function() {
+							$(rep).css("visibility", "visible");
+						});
+					}
+				} else {
+					$(rep).css("visibility", "visible");
+				}
+				
+			} else {
+				
+				if (external) {
+					if ($(rep).css("visibility") == "visible") {
+						/* fade out */
+						$(rep).css("opacity", 1);
+						$(rep).animate({
+							"opacity" : 0
+						}, 500, function() {
+							$(rep).css("visibility", "hidden");
+						});
+					}
+				} else {
+					$(rep).css("visibility", "hidden");
+				}
+				
+			}
+			
 		}
+
+		
 	}
 	
 	this.adjustControls();
