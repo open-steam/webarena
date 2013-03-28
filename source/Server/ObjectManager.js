@@ -589,6 +589,9 @@ ObjectManager.init=function(theModules){
         server_function_params['callback'] = responseCallback;
 
         var fn = object[server_function];
+        
+        if (!fn.public) return false;
+        
         //fn(server_function_params);
         fn.call(object, server_function_params)
     });
