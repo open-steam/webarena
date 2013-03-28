@@ -7,6 +7,10 @@
 *
 */
 
+/**
+ * Updates the representation using the attributes
+ * @param {bool} external True if triggered externally (and not by the object itself)
+ */
 GeneralObject.draw=function(external){
 	
 	if (!this.isGraphical) return;
@@ -17,7 +21,7 @@ GeneralObject.draw=function(external){
 	this.setViewWidth(this.getAttribute('width'));
 	this.setViewHeight(this.getAttribute('height'));
 	
-	this.drawDimensions(external);
+	this.drawPosition(external);
 			
 	$(rep).attr("layer", this.getAttribute('layer'));
 	
@@ -33,19 +37,29 @@ GeneralObject.draw=function(external){
 	
 }
 
+/**
+ * Updates the position of the representation
+ * @param {bool} external True if triggered externally (and not by the object itself)
+ */
+GeneralObject.drawPosition = function(external) {
 
-GeneralObject.drawDimensions = function(external) {
-
+	/* animations can be prevented using the objects function "startNoAnimationTimer" and the clients global function "GUI.startNoAnimationTimer" */
 	if (external === true && !this.selected && this.noAnimation == undefined && GUI.noAnimation == undefined) {
-		//animated
+		/* set position animated when not called locally */
 		this.setViewXYAnimated(this.getAttribute('x'), this.getAttribute('y'));
 	} else {
+		/* set position without animation */
 		this.setViewX(this.getAttribute('x'));
 		this.setViewY(this.getAttribute('y'));
 	}
 	
 }
 
+GeneralObject.drawDimensions = GeneralObject.drawPosition;
+
+/**
+ * Prevents all animations by drawPosition for the next second
+ */
 GeneralObject.startNoAnimationTimer = function() {
 	var self = this;
 	this.noAnimation = window.setTimeout(function() {
@@ -54,6 +68,9 @@ GeneralObject.startNoAnimationTimer = function() {
 }
 
 
+/**
+ * @deprecated still used?
+ */
 GeneralObject.updateGUI=function(){
 	
 	//check if we are allowed to paint
@@ -71,12 +88,13 @@ GeneralObject.updateGUI=function(){
 }
 
 /**
- * getRepresentation - get access to the dom representation of the object on
- *					   the surface.
+ * Gets access to the dom representation of the object on the surface.
  *
  * Always use this function to gain access to the representation. This should 
  * always be done in view-subsections of the objects and must never be done 
  * elsewhere.
+ *
+ * @returns {DomObject} The DOM object representing the object
  */
 GeneralObject.getRepresentation=function(){
 
@@ -94,14 +112,20 @@ GeneralObject.getRepresentation=function(){
 	return rep;
 }
 
-
+/**
+ * Called when the representation for this object was created
+ */
 GeneralObject.representationCreated = function() {
 
 	GUI.updateLayersDelayed();
 	
 }
 
-
+/**
+ * Creates a new representation for this object
+ * 
+ * @returns {DomObject} The new DOM object representing the object
+ */
 GeneralObject.createRepresentation = function() {
 
 	if (!this.isGraphical) return;
@@ -124,6 +148,9 @@ GeneralObject.createRepresentation = function() {
 }
 
 
+/**
+ * @deprecated ? (called by all createRepresentation functions)
+ */
 GeneralObject.initGUI = function(rep) {
 	
 	var self = this;
@@ -131,6 +158,11 @@ GeneralObject.initGUI = function(rep) {
 }
 
 
+/**
+ * Adds a graphical indicator for selected objects
+ * This typically is a blue border around the objects SVG representation
+ * (If the SVG object itself has no border property, an SVG rect with the class "borderRect" can be used as the indicator)
+ */
 GeneralObject.addSelectedIndicator = function() {
 
 	var rep = this.getRepresentation();
@@ -160,6 +192,9 @@ GeneralObject.addSelectedIndicator = function() {
 	
 }
 
+/**
+ * Removes the graphical indicator of selected objects
+ */
 GeneralObject.removeSelectedIndicator = function() {
 
 	var rep = this.getRepresentation();
@@ -184,7 +219,12 @@ GeneralObject.removeSelectedIndicator = function() {
 	
 }
 
-
+/**
+ * Selects the object
+ * 
+ * @param {bool} multiple True is multiple objects should be selected (otherwise the selection of an object will deselect all other objects)
+ * @param {bool} groupSelect ?
+ */
 GeneralObject.select = function(multiple, groupSelect) {
 
 	if (this.selected) return;
@@ -211,10 +251,12 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	
 	if (this.mayResize()) {
+		/* add controls for resizing */
 		this.addControls();
 	}
 	
 	if (this.mayMove()) {
+		/* add event handlers to make the object movable */
 		this.makeMovable();
 	}
 	
@@ -224,9 +266,14 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	this.draw();
 	
+	/* inform all clients about the selection */
 	ObjectManager.informAboutSelection(this.id);
+	
 }
 
+/**
+ * Deselects the object
+ */
 GeneralObject.deselect = function() {
 
 	if (!this.selected) return;
@@ -244,13 +291,17 @@ GeneralObject.deselect = function() {
 	
 	this.draw();
 	
+	/* inform all clients about the deselection */
 	ObjectManager.informAboutDeselection(this.id);
 	
 }
 
 
+/**
+ * Adjusts the positions of all GUI controls of the object
+ */
 GeneralObject.adjustControls = function() {
-	
+
 	var self = this;
 	
 	var rep = this.getRepresentation();
@@ -258,41 +309,49 @@ GeneralObject.adjustControls = function() {
 	if (this.controls) {
 	$.each(this.controls, function(index, control) {
 		
+		/* Position: right, vertically centered */
 		if (control.type == "x") {
 			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth();
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
 		}
 		
+		/* Position: left, vertically centered */
 		if (control.type == "x2") {
 			var x = self.getViewBoundingBoxX();
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
 		}
 
+		/* Position: bottom, horizontally centered */
 		if (control.type == "y") {
 			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight();
 		}
 		
+		/* Position: top, horizontally centered */
 		if (control.type == "y2") {
 			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
 			var y = self.getViewBoundingBoxY();
 		}
 		
+		/* Position: left, top */
 		if (control.type == "xy1") {
 			var x = self.getViewX();
 			var y = self.getViewY();
 		}
 		
+		/* Position: right, top */
 		if (control.type == "xy2") {
 			var x = self.getViewX()+self.getViewWidth();
 			var y = self.getViewY();
 		}
 		
+		/* Position: right, bottom */
 		if (control.type == "xy3") {
 			var x = self.getViewX()+self.getViewWidth();
 			var y = self.getViewY()+self.getViewHeight();
 		}
 		
+		/* Position: left, bottom */
 		if (control.type == "xy4") {
 			var x = self.getViewX();
 			var y = self.getViewY()+self.getViewHeight();
@@ -308,6 +367,9 @@ GeneralObject.adjustControls = function() {
 	
 }
 
+/**
+ * Adds all possible controls for the object
+ */
 GeneralObject.addControls = function() {
 		
 	var self = this;
@@ -549,14 +611,23 @@ GeneralObject.addControls = function() {
 	
 }
 
+/**
+ * Hides all controls of the object
+ */
 GeneralObject.hideControls = function() {
 	$("#content").find(".webarenaControl").hide();
 }
 
+/**
+ * Shows all controls of the object
+ */
 GeneralObject.showControls = function() {
 	$("#content").find(".webarenaControl").show();
 }
 
+/**
+ * Removes all controls of the object
+ */
 GeneralObject.removeControls = function() {
 	
 	$("#content").find(".webarenaControl_"+this.id).each(function() {
@@ -567,6 +638,11 @@ GeneralObject.removeControls = function() {
 	
 }
 
+/**
+ * Adds a single control
+ * @param {ControlType} type The type of the new control (see GeneralObject.adjustControls / GeneralObject.addControls)
+ * @param {Function} resizeFunction The function called when resizing the object
+ */
 GeneralObject.addControl = function(type, resizeFunction) {
 
 	var self = this;
@@ -698,6 +774,10 @@ GeneralObject.addControl = function(type, resizeFunction) {
 }
 
 
+/**
+ * Saves the current position of the object
+ * (used by GeneralObject.moveRelative)
+ */
 GeneralObject.saveMoveStartPosition = function() {
 	
 	this.moveObjectStartX = this.getViewX();
@@ -706,8 +786,10 @@ GeneralObject.saveMoveStartPosition = function() {
 }
 
 
-
-
+/**
+ * Start moving an object
+ * @param {DomEvent} event The DOM event
+ */
 GeneralObject.moveStart = function(event) {
 
 	if (!this.id || this.id == "") {
@@ -721,6 +803,7 @@ GeneralObject.moveStart = function(event) {
 	
 	var contentPosition = $("#content").offset();
 	
+	/* check if the object has a graphical representation at the clicked position */
 	if (!self.hasPixelAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top)) {
 		return;
 	}
@@ -823,6 +906,9 @@ GeneralObject.moveStart = function(event) {
 	
 }
 
+/**
+ * Sets event handlers to make the objects representation movable
+ */
 GeneralObject.makeMovable = function() {
 
 	var self = this;
@@ -846,6 +932,12 @@ GeneralObject.makeMovable = function() {
 	
 }
 
+/**
+ * Moves the object relative to the saved position of GeneralObject.saveMoveStartPosition
+ * (used when moving groups of objects)
+ * @param {int} dx Moved x distance
+ * @param {int} dy Moved x distance
+ */
 GeneralObject.moveRelative = function(dx, dy) {
 
 	if (this.getAttribute("locked")) return;
@@ -858,7 +950,11 @@ GeneralObject.moveRelative = function(dx, dy) {
 	
 }
 
-
+/**
+ * Moves the object by x/y px
+ * @param {int} x Movement in x direction
+ * @param {int} y Movement in y direction
+ */
 GeneralObject.moveBy = function(x, y) {
 
 	this.setViewX(this.getViewX()+x);
@@ -873,7 +969,9 @@ GeneralObject.moveBy = function(x, y) {
 	
 }
 
-
+/**
+ * Removes all event handles for moving the object
+ */
 GeneralObject.unmakeMovable = function() {
 
 	var rep;
@@ -893,19 +991,25 @@ GeneralObject.unmakeMovable = function() {
 
 /* view getter */
 
-/* get the x position of the object (this must not be the left position of the object) */
+/**
+ * get the x position of the object
+ */
 GeneralObject.getViewX = function() {
 	var rep = this.getRepresentation();
 	return parseInt($(rep).attr("x"));
 }
 
-/* get the y position of the object (this must not be the top position of the object) */
+/**
+ * get the y position of the object
+ */
 GeneralObject.getViewY = function() {
 	var rep = this.getRepresentation();
 	return parseInt($(rep).attr("y"));
 }
 
-/* get the width of the object */
+/**
+ * get the width of the object
+ */
 GeneralObject.getViewWidth = function() {
 	var rep = this.getRepresentation();
 	return parseInt($(rep).attr("width"));
@@ -917,7 +1021,9 @@ GeneralObject.getViewHeight = function() {
 	return parseInt($(rep).attr("height"));
 }
 
-/* get the x position of the objects bounding box (this is the left position of the object) */
+/**
+ * get the x position of the objects bounding box (this is the left position of the object)
+ */
 GeneralObject.getViewBoundingBoxX = function() {
 
 	return this.getViewX();
@@ -932,7 +1038,9 @@ GeneralObject.getViewBoundingBoxX = function() {
 
 }
 
-/* get the y position of the objects bounding box (this is the top position of the object) */
+/**
+ * get the y position of the objects bounding box (this is the top position of the object)
+ */
 GeneralObject.getViewBoundingBoxY = function() {
 	
 	return this.getViewY();
@@ -947,12 +1055,18 @@ GeneralObject.getViewBoundingBoxY = function() {
 	
 }
 
-/* get the width of the objects bounding box */
+/**
+ * get the width of the objects bounding box
+ * @deprecated Some kind of deprecated because the objects width should be equal
+ */
 GeneralObject.getViewBoundingBoxWidth = function() {
 	return parseInt(this.getRepresentation().getBBox().width);
 }
 
-/* get the height of the objects bounding box */
+/**
+ * get the height of the objects bounding box
+ * @deprecated Some kind of deprecated because the objects width should be equal
+ */
 GeneralObject.getViewBoundingBoxHeight = function() {
 	return parseInt(this.getRepresentation().getBBox().height);
 }
@@ -962,6 +1076,10 @@ GeneralObject.getViewBoundingBoxHeight = function() {
 
 /* view setter */
 
+/**
+ * Sets the objects X position
+ * @param {int} value The new X position
+ */
 GeneralObject.setViewX = function(value) {
 
 	var self = this;
@@ -985,6 +1103,10 @@ GeneralObject.setViewX = function(value) {
 	
 }
 
+/**
+ * Sets the objects Y position
+ * @param {int} value The new Y position
+ */
 GeneralObject.setViewY = function(value) {
 
 	var self = this;
@@ -1008,7 +1130,11 @@ GeneralObject.setViewY = function(value) {
 
 }
 
-
+/**
+ * Sets the objects X and Y position (animated)
+ * @param {int} x The new X position
+ * @param {int} y The new Y position
+ */
 GeneralObject.setViewXYAnimated = function(x,y) {
 
 	var self = this;
@@ -1029,21 +1155,35 @@ GeneralObject.setViewXYAnimated = function(x,y) {
 
 
 
-
+/**
+ * Sets the objects width
+ * @param {int} value The new width
+ */
 GeneralObject.setViewWidth = function(value) {
 	$(this.getRepresentation()).attr("width", value);
 	GUI.adjustContent(this);
 }
 
+/**
+ * Sets the objects height
+ * @param {int} value The new height
+ */
 GeneralObject.setViewHeight = function(value) {
 	$(this.getRepresentation()).attr("height", value);
 	GUI.adjustContent(this);
 }
 
 
+/**
+ * Used by GeneralObject.click
+ */
 GeneralObject.clickTimeout = false;
 
-/* our own click handler (because we have to differ single click and double click) */
+/**
+ * Click handler
+ * (because we have to differ single click and double click)
+ * @param {DomEvent} event The DOM click event
+ */
 GeneralObject.click = function(event) {
 	var self = this;
 	
@@ -1052,6 +1192,7 @@ GeneralObject.click = function(event) {
 		return true;
 	}
 	
+	/* stop when the clicked object is the SVG canvas */
 	if (event.target == $("#content>svg").get(0)) return;
 
 	if (self.clickTimeout) {
@@ -1070,6 +1211,7 @@ GeneralObject.click = function(event) {
 	} else {
 		/* first click */
 
+		/* set a timer (if another click is called while the timer is active, a second click is performed) */
 		self.clickTimeout = window.setTimeout(function() {
 
 			self.clickTimeout = false;
@@ -1085,9 +1227,14 @@ GeneralObject.click = function(event) {
 }
 
 
+/* HANDLER FUNCTIONS */
 
-/* handler functions */
+/**
+ * Called after a click if performed
+ * @param {DomEvent} event DOM click event
+ */
 GeneralObject.clickHandler = function(event) {
+	
 	if (GUI.isTouchDevice && event.touches.length > 1) {
 		this.select(true); 
 		event.stopPropagation();
@@ -1112,36 +1259,61 @@ GeneralObject.clickHandler = function(event) {
 			this.moveStart(event);
 		}
 	}
+	
 }
 
+/**
+ * Called when a click was reverted by an double click event
+ * @param {DomEvent} event DOM click event
+ */
 GeneralObject.clickRevertHandler = function(event) {
 	/* for a faster feeling the click event is called when the first click is recognized, even if there will be a second (double) click. In case of a double click we have to revert the click action */
 	this.deselect();
 }
 
+/**
+ * Called after an object movement
+ */
 GeneralObject.moveHandler = function() {
 	this.setPosition(this.getViewX(), this.getViewY());	
 }
 
+/**
+ * Called after an object resizing
+ */
 GeneralObject.resizeHandler = function() {
 	this.setDimensions(this.getViewWidth(), this.getViewHeight());
 	this.setPosition(this.getViewX(), this.getViewY());
 }
 
+/**
+ * Called after object selection
+ */
 GeneralObject.selectHandler = function() {
 	GUI.updateInspector();
 	GUI.showLinks(this);
 }
 
+/**
+ * Called after object deselection
+ */
 GeneralObject.deselectHandler = function() {
 	GUI.hideLinks(this);
 }
 
+/**
+ * Called when a double click was performed
+ * @param {DomEvent} event DOM click event
+ */
 GeneralObject.dblclickHandler = function(event) {
 
 	this.execute(event);
 }
 
+/**
+ * Called when a click was performed and the object is selected
+ * @param {DomEvent} event DOM click event
+ */
 GeneralObject.selectedClickHandler = function(event) {
 
 
@@ -1158,6 +1330,9 @@ GeneralObject.selectedClickHandler = function(event) {
 	
 }
 
+/**
+ * @deprecated No reference found. Remove?
+ */
 GeneralObject.setDisplayGhost = function(s) {
 	this.displayGhost = s;
 	this.draw();

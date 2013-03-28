@@ -126,21 +126,21 @@ File.updateThumbnail=function(){
 
 	if (this.hasContent() == false) {
 		
-		GeneralObject.draw.call(this);
+		//GeneralObject.draw.call(this);
 		
 		$(rep).find("image").attr("href", this.getUploadIcon());
 		
 	} else if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
 		/* show object type icon */
 		
-		GeneralObject.draw.call(this);
+		//GeneralObject.draw.call(this);
 		
 		$(rep).find("image").attr("href", this.getFileIcon());
 	
 	} else {
 		/* show thumbnail */
 		
-		GeneralObject.draw.call(this);
+		//GeneralObject.draw.call(this);
 	
 		$(rep).find("image").attr("href", this.getPreviewContentURL());
 

@@ -101,7 +101,7 @@ File.execute=function(){
 	var that=this;
 	
 	if (this.hasContent() == true) {
-		//this.openFile();
+		this.openFile();
 	} else {
 		this.upload();
 	}

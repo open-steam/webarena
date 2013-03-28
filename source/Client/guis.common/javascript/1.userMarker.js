@@ -25,8 +25,9 @@ GUI.userMarker = {
 	/**
 	 * set position of markers for an webarena object
 	 * @param {int} objId ID of webarena object
+	 * @param {bool} noAnimation True to prevent animation
 	 */
-	"setPosition" : function(objId) {
+	"setPosition" : function(objId, noAnimation) {
 	
 		if (GUI.userMarker.markers[objId] == undefined) return;
 		
@@ -40,7 +41,11 @@ GUI.userMarker = {
 			
 			y = y-$(marker).find("rect").attr("height")-2;
 			
-			$(marker).attr("transform", "translate("+x+","+y+")");
+			if (obj.selected || noAnimation) {
+				$(marker).attr("transform", "translate("+x+","+y+")");	
+			} else {
+				$(marker).animate({svgTransform: "translate("+x+","+y+")"}, 1000);
+			}
 			
 		}
 		
@@ -55,6 +60,10 @@ GUI.userMarker = {
 	 * @param {String} data.title The title of the marker (e.g. the username)
 	 */
 	"select" : function(data) {
+		
+		if (GUI.userMarker.markers[data.objectId] && GUI.userMarker.markers[data.objectId]["markers"][data.identifier]) {
+			$(GUI.userMarker.markers[data.objectId]["markers"][data.identifier]).remove();
+		}
 		
 		var infoBox = GUI.svg.group("selection_"+data.objectId+"_"+data.identifier);
 
@@ -79,7 +88,7 @@ GUI.userMarker = {
 		
 		GUI.userMarker.markers[data.objectId]["markers"][data.identifier] = infoBox;
 
-		GUI.userMarker.setPosition(data.objectId);
+		GUI.userMarker.setPosition(data.objectId, true);
 		
 	},
 	
@@ -91,8 +100,10 @@ GUI.userMarker = {
 	 */
 	"deselect" : function(data) {
 
-		$(GUI.userMarker.markers[data.objectId]["markers"][data.identifier]).remove();
-		GUI.userMarker.markers[data.objectId]["markers"][data.identifier] = undefined;
+		if (GUI.userMarker.markers[data.objectId] && GUI.userMarker.markers[data.objectId]["markers"][data.identifier]) {
+			$(GUI.userMarker.markers[data.objectId]["markers"][data.identifier]).remove();
+			GUI.userMarker.markers[data.objectId]["markers"][data.identifier] = undefined;
+		}
 		
 	}
 	

@@ -603,7 +603,9 @@ GUI.paintErase = function(x,y) {
  */
 GUI.cancelPaintMode = function() {
 	
-	GUI.currentPaintObject.deleteIt();
+	if (!GUI.painted) {
+		GUI.currentPaintObject.deleteIt();
+	}
 	
 	GUI.closePaintMode();
 	

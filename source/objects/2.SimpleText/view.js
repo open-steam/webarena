@@ -44,6 +44,8 @@ SimpleText.draw=function(external){
 		
 	});
 	
+	this.adjustControls();
+	
 }
 
 

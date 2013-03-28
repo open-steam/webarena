@@ -96,6 +96,7 @@ AttributeManager.init=function(proto){
 *			setFunction - function
 *			getFunction - function
 *			checkFunction - function
+* 			changedFunction - function
 *			readonly - true, false
 *			hidden - true, false
 *			category - a block or tab this attribute should be displayed in

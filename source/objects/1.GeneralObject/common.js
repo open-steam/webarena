@@ -11,6 +11,11 @@
 
 var Modules=require('../../server.js');
 
+/**
+ * GeneralObject
+ * @class
+ * @classdesc Common elements for view and server
+ */
 var GeneralObject=Object.create(Object);
 
 GeneralObject.attributeManager=false;
@@ -23,17 +28,42 @@ GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
 
 
-GeneralObject.moveByTransform = function(){return false;}			//TODO cient only??
+/**
+ * Checks if an objects is moved by transform
+ * @returns {bool} True if moved by transform
+ * TODO: client only??
+ */
+GeneralObject.moveByTransform = function(){return false;}
 
+/**
+ * True if the object has a special area where it can be moved
+ */
 GeneralObject.restrictedMovingArea = false;
 
-GeneralObject.duplicateWithLinkedObjects = false; //duplicate this object if a linked object gets duplicated
-GeneralObject.duplicateLinkedObjects = false; //duplicate linked objects if this object gets duplicated
+/**
+ * duplicate this object if a linked object gets duplicated
+ */
+GeneralObject.duplicateWithLinkedObjects = false;
 
-GeneralObject.contentURLOnly = true; //content is only accessible via URL
+/**
+ * duplicate linked objects if this object gets duplicated
+ */
+GeneralObject.duplicateLinkedObjects = false;
 
+/**
+ * content is only accessible via URL
+ */
+GeneralObject.contentURLOnly = true;
+
+/**
+ * The currrent language
+ */
 GeneralObject.currentLanguage = undefined;
 
+/**
+ * Registers the object
+ * @param {ObjectType} type The type of the object
+ */
 GeneralObject.register=function(type){
 	
 	var that=this;
@@ -375,10 +405,9 @@ GeneralObject.setAll=function(data){
 }
 
 /**
+* Call this on actual objects! (should be done by the object manager)
 *
-*	Call this on actual objects! (should be done by the object manager)
-*
-*	@param id the id of the actual object
+* @param {int} id the id of the actual object
 */	
 GeneralObject.init=function(id){
 	if (!id) return;

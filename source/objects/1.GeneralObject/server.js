@@ -188,6 +188,10 @@ theObject.duplicate=function(socket,responseID) {
 
 				object.updateClients();
 				
+				if (object.hasContent()) {
+					object.updateClient(socket,'contentUpdate',object.hasContent(socket));
+				}
+				
 				idList.push(object.id);
 				
 			}

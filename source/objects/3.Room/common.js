@@ -17,6 +17,12 @@ Room.register=function(type){
     IconObject=Modules.ObjectManager.getPrototype('IconObject');
     IconObject.register.call(this,type);
     
+	this.registerAttribute('locked',{hidden:true});
+	this.registerAttribute('visible',{hidden:true});
+	this.registerAttribute('x',{hidden:true});
+	this.registerAttribute('y',{hidden:true});
+	this.registerAttribute('group',{hidden:true});
+
     if (!Modules.Config.noContexts){
     
 	    if (!ObjectManager.isServer){
