@@ -40,9 +40,7 @@ GeneralObject.draw=function(external){
 						$(rep).css("visibility", "visible");
 						$(rep).animate({
 							"opacity" : 1
-						}, 500, function() {
-							$(rep).css("visibility", "visible");
-						});
+						}, {queue:false, duration:500});
 					}
 				} else {
 					$(rep).css("visibility", "visible");
@@ -56,9 +54,11 @@ GeneralObject.draw=function(external){
 						$(rep).css("opacity", 1);
 						$(rep).animate({
 							"opacity" : 0
-						}, 500, function() {
-							$(rep).css("visibility", "hidden");
-						});
+						}, {queue:false, 
+							complete:function() {
+								$(rep).css("visibility", "hidden");
+							}
+							});
 					}
 				} else {
 					$(rep).css("visibility", "hidden");
