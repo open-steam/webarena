@@ -45,7 +45,10 @@ ObjectManager.getObject=function(objectID){
 
 ObjectManager.buildObject=function(type, attributes){
 	
-	if (!type) console.trace();
+	if (!type) {
+		console.log('buildObject without type');
+		console.trace();
+	}
 
     var proto=this.getPrototype(type);
     var object=Object.create(proto);
@@ -161,13 +164,12 @@ ObjectManager.objectUpdate=function(data){
         /**
         
         TODO Room updated come with no object type. Why?
-        
+        **/
         if (!data.type){
     		console.log('No type');
     		console.log(data);
     		console.trace();
     	}
-    	**/
         
 		
         for (var key in oldData){
@@ -197,6 +199,10 @@ ObjectManager.attributeChanged=function(object,key,newValue,local){
 	
     if (this.informGUI) this.informGUI(object,key,newValue,local)
     else console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
+    
+    //updating room contexts on every attribut change, as contexts can be derived from various
+    //attributes. These evaluation is done by the objects themselves.
+    if (!Config.noContexts) object.getRoom().updateContexts();
 	
 }
 
@@ -243,6 +249,7 @@ ObjectManager.login=function(username, password, externalSession){
 ObjectManager.loadRoom=function(roomid){
 	
 	var self = this;
+	this.entering=true;
 	
 	Modules.Dispatcher.query('enter',roomid,function(error){
 
@@ -257,6 +264,7 @@ ObjectManager.loadRoom=function(roomid){
 
 		    if(!roomid) roomid='public';
 		    self.currentRoomID=roomid;
+		    this.entering=false;
 		
 		}
 		

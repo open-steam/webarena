@@ -106,6 +106,12 @@ function buildObjectFromObjectData(objectData,roomID,type){
 	
 	var type=type||objectData.type;
 	
+	if(!type){
+		console.log('No type in buildObjectFromObjectData');
+		console.log(objectData,roomID,type);
+		console.trace();
+	}
+	
 	//get the object's prototype
 
 	var proto=ObjectManager.getPrototypeFor(type);
