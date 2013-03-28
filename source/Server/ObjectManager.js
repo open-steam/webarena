@@ -689,6 +689,22 @@ ObjectManager.init=function(theModules){
 			var socket=connections[i].socket;
 			Modules.SocketServer.sendToSocket(socket,'inform',data);
 		}
+		
+		if (data.message.text !== undefined) {
+			/* chat message */
+
+			var context=Modules.UserManager.getConnectionBySocket(socket);
+			ObjectManager.getRoom(data.room,context,function(room) {
+				
+				var oldMessages = room.get('chatMessages');
+				if (oldMessages === undefined) oldMessages = [];
+				oldMessages.push(data);
+				
+				oldMessages = oldMessages.slice(-20); //only save the last 20 messages
+				room.set('chatMessages', oldMessages); room.persist();
+				
+			});			
+		}
 
 	});
 	
@@ -798,6 +814,22 @@ ObjectManager.getClientCode=function(){
 	}
 	
 	return code;
+}
+
+ObjectManager.sendChatMessages=function(roomID,socket) {
+	
+	var context=Modules.UserManager.getConnectionBySocket(socket);
+	ObjectManager.getRoom(roomID,context,function(room) {
+		
+		var oldMessages = room.get('chatMessages');
+		if (oldMessages === undefined) oldMessages = [];
+		
+		for (var i in oldMessages) {
+			Modules.SocketServer.sendToSocket(socket,'inform',oldMessages[i]);
+		}
+		
+	});
+	
 }
 
 module.exports=ObjectManager;
