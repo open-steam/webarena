@@ -252,7 +252,7 @@ GeneralObject.register=function(type){
 	},false);
 
     this.registerAction(
-        'Verknüpfen',
+        'Link',
         function(lastClicked){
             var selected = ObjectManager.getSelected();
             var lastSelectedId = lastClicked.getId();
