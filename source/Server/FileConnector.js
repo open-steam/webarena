@@ -124,7 +124,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 		try {		
 			var obj=self.getObjectDataByFile(roomID,objectID);
-			inventory.push(obj);
+			if (obj) inventory.push(obj);
         } catch (e) {
 			console.log(e);
 			self.Modules.Log.error("Cannot load object with id '"+objectID+"' (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
@@ -158,7 +158,18 @@ fileConnector.getRoomData=function(roomID,context,callback){
 	var filebase=this.Modules.Config.filebase;
 	var obj=this.getObjectDataByFile(roomID,roomID);
 	
-	callback(obj);
+	if (!obj){
+		obj={};
+		obj.id=roomID;
+		obj.name=roomID;
+		var self=this;
+		this.saveObjectData(roomID,roomID,obj,function(){
+			self.Modules.Log.debug("Created room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+		},context,true)
+	}
+	
+    else callback(obj);
+
 	
 }
 
@@ -168,7 +179,7 @@ fileConnector.getRoomData=function(roomID,context,callback){
 *	if an "after" function is specified, it is called after saving
 *
 */
-fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
+fileConnector.saveObjectData=function(roomID,objectID,data,after,context,createIfNotExists){
 	this.Modules.Log.debug("Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 
 	if (!context) this.Modules.Log.error("Missing context");
@@ -186,6 +197,12 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
 	data=JSON.stringify(data);
 	
 	//TODO Change to asynchronous access
+	
+	if (!createIfNotExists){
+		if (!fs.existsSync(filename)){
+			this.Modules.Log.error("File does not exist")
+		}
+	}
 
 	fs.writeFileSync(filename, data,'utf-8');
 	if (after) after(objectID);
@@ -382,7 +399,7 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 		
 	}
 	
-	this.saveObjectData(roomID,objectID,data,callback,context);
+	this.saveObjectData(roomID,objectID,data,callback,context,true);
 	
 }
 
@@ -528,8 +545,9 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 		var attributes = fs.readFileSync(filename, 'utf8');
 		attributes=JSON.parse(attributes);
 	} catch (e) {								//if the attribute file does not exist, create an empty one
-		var attributes={};
-		attributes.name=objectID;
+	
+		//when an object is not there, false is returned as a sign of an error
+		return false;
 	}
 	
 	var data={};
