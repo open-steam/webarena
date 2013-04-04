@@ -264,6 +264,7 @@ GeneralObject.register=function(type){
             } else if(lastClicked.getAttribute('link')){
                 newLinks.push(lastClicked.getAttribute('link'));
             }
+            
 
             _.each(selected, function(current){
                 var selectedId = current.getId()
