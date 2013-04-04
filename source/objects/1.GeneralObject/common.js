@@ -258,11 +258,12 @@ GeneralObject.register=function(type){
             var lastSelectedId = lastClicked.getId();
 
             var newLinks = [];
+            var oldLinks = lastClicked.getAttribute('link');
 
-            if(_.isArray(lastClicked.getAttribute('link'))){
-                newLinks = newLinks.concat(lastClicked.getAttribute('link'))
-            } else if(lastClicked.getAttribute('link')){
-                newLinks.push(lastClicked.getAttribute('link'));
+            if(_.isArray(oldLinks)){
+                newLinks = newLinks.concat(oldLinks)
+            } else if(oldLinks){
+                newLinks.push(oldLinks);
             }
             
 
