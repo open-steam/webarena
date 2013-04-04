@@ -254,15 +254,16 @@ GeneralObject.register=function(type){
     this.registerAction(
         'Verknüpfen',
         function(lastClicked){
+            console.log(lastClicked.id)
             var selected = ObjectManager.getSelected();
             var lastSelectedId = lastClicked.getId();
 
             var newLinks = [];
-
-            if(_.isArray(ObjectManager.get(lastClicked,'link'))){
-                newLinks = newLinks.concat(ObjectManager.get(lastClicked,'link'))
-            } else if(ObjectManager.get(lastClicked,'link')){
-                newLinks.push(ObjectManager.get(lastClicked,'link'));
+            var oldLinks = ObjectManager.getObject(lastClicked,'link');
+            if(_.isArray(oldLinks)){
+                newLinks = newLinks.concat(oldLinks)
+            } else if(oldLinks){
+                newLinks.push(oldLinks);
             }
 
             _.each(selected, function(current){
