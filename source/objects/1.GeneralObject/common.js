@@ -259,10 +259,10 @@ GeneralObject.register=function(type){
 
             var newLinks = [];
 
-            if(_.isArray(ObjectManager.get(lastClicked,'link'))){
-                newLinks = newLinks.concat(ObjectManager.get(lastClicked,'link'))
-            } else if(ObjectManager.get(lastClicked,'link')){
-                newLinks.push(ObjectManager.get(lastClicked,'link'));
+            if(_.isArray(lastClicked.getAttribute('link'))){
+                newLinks = newLinks.concat(lastClicked.getAttribute('link'))
+            } else if(lastClicked.getAttribute('link')){
+                newLinks.push(lastClicked.getAttribute('link'));
             }
 
             _.each(selected, function(current){
@@ -454,12 +454,6 @@ GeneralObject.registerAttribute=function(attribute,setter,type,min,max){
 
 GeneralObject.setAttribute=function(attribute,value,forced){
 	
-	/*
-	if (this.ObjectManager.entering){
-		//console.log('Trying to set an attribute during entering process');
-		return;
-	}
-	*/
 	
 	if (this.mayChangeAttributes()){
 		
