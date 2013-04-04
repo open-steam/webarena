@@ -260,13 +260,16 @@ GeneralObject.register=function(type){
             var newLinks = [];
             var oldLinks = lastClicked.getAttribute('link');
 
+            //check if there already existing links
+            //	if yes - reinsert them
             if(_.isArray(oldLinks)){
                 newLinks = newLinks.concat(oldLinks)
             } else if(oldLinks){
                 newLinks.push(oldLinks);
             }
             
-
+            //check if selected object already is a link of the object
+            //	if no - add it
             _.each(selected, function(current){
                 var selectedId = current.getId()
                 if(selectedId!==lastSelectedId && !_.contains(newLinks, current.getId())) newLinks.push(current.getId());
