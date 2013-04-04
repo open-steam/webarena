@@ -23,6 +23,8 @@ Room.register=function(type){
 	this.registerAttribute('y',{hidden:true});
 	this.registerAttribute('group',{hidden:true});
 
+	this.registerAttribute('chatMessages',{hidden: true, readonly:true, standard: []});
+
     if (!Modules.Config.noContexts){
     
 	    if (!ObjectManager.isServer){

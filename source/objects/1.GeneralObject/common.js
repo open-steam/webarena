@@ -454,6 +454,13 @@ GeneralObject.registerAttribute=function(attribute,setter,type,min,max){
 
 GeneralObject.setAttribute=function(attribute,value,forced){
 	
+	/*
+	if (this.ObjectManager.entering){
+		//console.log('Trying to set an attribute during entering process');
+		return;
+	}
+	*/
+	
 	if (this.mayChangeAttributes()){
 		
 		//rights could also be checked in the attribute manager but HAVE to

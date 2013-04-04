@@ -159,6 +159,8 @@ UserManager.enterRoom=function(socketOrUser,roomID,responseID){
 				UserManager.sendAwarenessData(room.id);
 			});
 			
+			ObjectManager.sendChatMessages(roomID,socket);
+			
 			Modules.Dispatcher.respond(socket,responseID,false);
 
 		} else {
