@@ -55,8 +55,11 @@ theObject.updateClient=function(socket,mode){
 *
 */
 theObject.persist=function(){
-	Modules.Connector.saveObjectData(this.inRoom, this.id, this.get(), false, this.context);
-	this.updateClients();
+	var data=this.get();
+	if (data){
+		Modules.Connector.saveObjectData(this.inRoom, this.id, data, false, this.context);
+		this.updateClients();
+	} 
 }
 
 /**

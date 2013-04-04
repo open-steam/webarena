@@ -104,6 +104,10 @@ ObjectManager.getPrototypeFor=ObjectManager.getPrototype;
 */
 function buildObjectFromObjectData(objectData,roomID,type){
 	
+	if (!objectData){
+		Modules.Log.error('No object data!');
+	}
+	
 	var type=type||objectData.type;
 	
 	//get the object's prototype
@@ -145,6 +149,8 @@ ObjectManager.getObject=function(roomID,objectID,context){
 	if (!context) throw new Error('Missing context in ObjectManager.getObject');
 	
 	var objectData=Modules.Connector.getObjectData(roomID,objectID,context);
+	
+	if (!objectData) return false;
 
 	var object=buildObjectFromObjectData(objectData,roomID);
 	
@@ -366,15 +372,17 @@ ObjectManager.init=function(theModules){
 		var key=data.key;
 		var value=data.value;
 		
+
 		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
 		
 			if (mayWrite) {
 				
 				var object=ObjectManager.getObject(roomID,objectID,context);
 				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+					//Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 					return;
 				}
+		
 
 				object.setAttribute(key,value,false,context);
 				
