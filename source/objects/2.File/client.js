@@ -5,7 +5,7 @@ File.contentUpdated=function(){
 }
 
 File.justCreated=function(){
-	this.upload();
+	if (!this.getAttribute('hasContent')) this.upload();
 }
 
 
