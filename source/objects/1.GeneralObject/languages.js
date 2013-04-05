@@ -15,6 +15,7 @@ GeneralObject.setTranslations('de',{
 	'Duplicate':'Duplizieren',
 	'Follow':'Folgen',
 	'Edit':'Bearbeiten',
+	'Link':'Verknüpfen',
 	'to front':'Nach vorne',
 	'to back':'Nach hinten',
 	'locked':'Angeheftet',
