@@ -814,11 +814,16 @@ ObjectManager.getClientCode=function(){
 	var code='"use strict";';
 	
 	var lines=this.clientCode.split(enter);
-	
+
+    var showDebugLineNumbers = !!Modules.config.showDebugLineNumbers;
 	//fill in line numbers for debugging
 	for (var i=0;i<lines.length;i++){
 		var line=lines[i];
-		code+=line+' //'+(i+1)+enter;
+        code+=line
+
+        if(showDebugLineNumbers) code += ' //'+(i+1)
+
+        code += enter
 	}
 	
 	return code;
