@@ -293,15 +293,19 @@ theObject.onSwitchContext=function(context){
 	
 	if (Modules.Config.noContext) return;
 	
+	//using set instead of setObject to avoid evaluation of these changes.
+	
 	if (!this.getAttribute('position_on_all_contexts')){
-		this.setAttribute('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
-		this.setAttribute('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
+		this.set('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
+		this.set('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
 	}
 	
 	if (!this.getAttribute('appearance_on_all_contexts')){
-		this.setAttribute('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
-		this.setAttribute('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
+		this.set('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
+		this.set('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
 	}
+	
+	this.persist();
 	
 	var contexts=this.whichContexts();
 	if (contexts!==true){
