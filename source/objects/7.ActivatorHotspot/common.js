@@ -6,7 +6,7 @@
 */
 
 var Modules=require('../../server.js')
-var ActivatorHotspot=Object.create(Modules.ObjectManager.getPrototype('ResponsiveObject'));
+var ActivatorHotspot=Object.create(Modules.ObjectManager.getPrototype('ActiveObject'));
 
 ActivatorHotspot.register=function(type){
 	

@@ -6,12 +6,12 @@
 */
 
 var Modules=require('../../server.js')
-var TesterImage=Object.create(Modules.ObjectManager.getPrototype('ResponsiveObject'));
+var TesterImage=Object.create(Modules.ObjectManager.getPrototype('ActiveObject'));
 
 TesterImage.register=function(type){
 	
 	// Registering the object
-	ActiveObject=Modules.ObjectManager.getPrototype('ResponsiveObject');
+	ActiveObject=Modules.ObjectManager.getPrototype('ActiveObject');
 	File.register.call(this,type);
 	
 
