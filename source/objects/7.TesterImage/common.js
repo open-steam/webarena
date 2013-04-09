@@ -18,7 +18,7 @@ TesterImage.register=function(type){
 	this.registerAttribute('key',{type:'text',standard:'',category:'Keyword'});
 	this.registerAttribute('value',{type:'text',standard:'',category:'Keyword'});
 	
-	this.registerAttribute('mimeType',{type:'text',standard:'image/png'});
+	this.registerAttribute('mimeType',{type:'text',standard:'image/png',readonly:true});
 	
 }
 

@@ -36,7 +36,7 @@ BidExit.execute=function(){
 	var destination=this.getAttribute('destination');
 	
 	if (!destination) {
-		this.upload();
+		return this.upload();
 	}
 	
 	ObjectManager.loadRoom(destination);
