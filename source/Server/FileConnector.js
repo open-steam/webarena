@@ -164,7 +164,7 @@ fileConnector.getRoomData=function(roomID,context,callback){
 		obj.name=roomID;
 		var self=this;
 		this.saveObjectData(roomID,roomID,obj,function(){
-			self.Modules.Log.debug("Created room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+			self.Modules.Log.debug("Created room (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
 		},context,true)
 	}
 	
