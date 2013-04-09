@@ -30,6 +30,8 @@ GUI.showLogin = function(err) {
 		opacity: 1
 	}, 1000);
 	
+	$("#login_title").html(Config.projectTitle||'WebArena');
+	
 	$("#login_username").focus();
 	
 	$("#login_submit").click(GUI.login);
