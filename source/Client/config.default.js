@@ -10,6 +10,6 @@
 var Config={
 	language:'de',
 	presentationMode:false,
-	noContext:false,
+	noContexts:false,
 	bidURL:''
 };
