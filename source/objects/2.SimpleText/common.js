@@ -17,7 +17,7 @@ SimpleText.register=function(type){
 	GeneralObject.register.call(this,type);
 	
 	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
-	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,unit:'px',category:'Appearance'});
+	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,max:80,unit:'px',category:'Appearance'});
 	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance'});
 	
 	this.attributeManager.registerAttribute('width',{hidden:true});
