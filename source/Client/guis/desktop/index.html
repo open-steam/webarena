@@ -601,8 +601,10 @@
 					
 					objectsString += "\n"+i+":\n--------------------\n";
 					
-					for (var name in object.get()) {
-						objectsString += name+": "+object.data[name]+"\n";
+					var data=object.get();
+					console.log(data);
+					for (var name in data) {
+						objectsString += name+": "+data[name]+"\n";
 					}
 					
 				}
