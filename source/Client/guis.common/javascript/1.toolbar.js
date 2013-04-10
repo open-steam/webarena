@@ -199,10 +199,51 @@ GUI.initToolbar = function() {
 		}
 	
 	});
+		
+	/*add parent button*/
 	
+	var parentButton = document.createElement("img");
+	$(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
+	$(parentButton).attr("width", "24").attr("height", "24");
+
+	$(parentButton).attr("id", "bug_button");
+	$(parentButton).addClass("sidebar_button");
 	
+	$(parentButton).attr("title", GUI.translate("Home"));
+
+	$("#header > .header_right").append(parentButton);
 	
+	var click = function() {
+		Modules.ObjectManager.goParent();
+	}
 	
+	if (GUI.isTouchDevice) {
+		$(parentButton).bind("touchstart", click);
+	} else {
+		$(parentButton).bind("mousedown", click);
+	}
+	
+	/*add home button*/
+	var homeButton = document.createElement("img");
+	$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
+	$(homeButton).attr("width", "24").attr("height", "24");
+
+	$(homeButton).attr("id", "bug_button");
+	$(homeButton).addClass("sidebar_button");
+	
+	$(homeButton).attr("title", GUI.translate("Home"));
+
+	$("#header > .header_right").append(homeButton);
+	
+	var click = function() {
+		Modules.ObjectManager.goHome();
+	}
+	
+	if (GUI.isTouchDevice) {
+		$(homeButton).bind("touchstart", click);
+	} else {
+		$(homeButton).bind("mousedown", click);
+	}
 
 	
 	

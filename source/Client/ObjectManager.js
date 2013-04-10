@@ -244,6 +244,20 @@ ObjectManager.login=function(username, password, externalSession){
     });
 }
 
+
+ObjectManager.goParent=function(){
+	var parent=ObjectManager.getCurrentRoom().getAttribute('parent');
+	if (parent){
+		ObjectManager.loadRoom(ObjectManager.getCurrentRoom().getAttribute('parent'));
+	} else {
+		alert(GUI.translate('This room has no parent.'))
+	}
+}
+
+ObjectManager.goHome=function(){
+	ObjectManager.loadRoom(ObjectManager.user.home);
+}
+
 ObjectManager.loadRoom=function(roomid){
 	
 	var self = this;

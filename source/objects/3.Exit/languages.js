@@ -1,5 +1,5 @@
 Exit.setTranslations('de',{
-	'Exit':'Durchgang',
+	'Exit':'Verknüpfung',
 	'destination':'Ziel'
 }
 );

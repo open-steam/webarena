@@ -135,6 +135,8 @@ UserManager.enterRoom=function(socketOrUser,roomID,responseID){
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;
 	
+	var oldRoomId=connection.room.id; //oldrooom is sent down to the connector, which may use it for parent creation
+	
 	if (!connection) {
 		Modules.Log.error("UserManager", "+enter", "There is no connection for this user (user: '"+userID+"')");
 		return;
@@ -157,7 +159,7 @@ UserManager.enterRoom=function(socketOrUser,roomID,responseID){
 				ObjectManager.sendRoom(socket,room.id);
 				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
-			});
+			},oldRoomId);
 			
 			ObjectManager.sendChatMessages(roomID,socket);
 			

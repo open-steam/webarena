@@ -791,7 +791,7 @@ ObjectManager.init=function(theModules){
 *
 *	returns the a room object for a given roomID
 **/
-ObjectManager.getRoom=function(roomID,context,callback){
+ObjectManager.getRoom=function(roomID,context,callback,oldRoomId){
 	
 	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
 	
@@ -799,7 +799,7 @@ ObjectManager.getRoom=function(roomID,context,callback){
 		var obj=buildObjectFromObjectData(data,roomID,'Room');
 		obj.context=context;
 		callback(obj);
-	});
+	},oldRoomId);
 	
 }
 

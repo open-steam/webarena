@@ -150,7 +150,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 *	returns the attribute set of the current room
 *
 */
-fileConnector.getRoomData=function(roomID,context,callback){
+fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 	this.Modules.Log.debug("Get data for room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
@@ -162,10 +162,16 @@ fileConnector.getRoomData=function(roomID,context,callback){
 		obj={};
 		obj.id=roomID;
 		obj.name=roomID;
+		if (oldRoomId) {
+			obj.parent=oldRoomId;
+		}
 		var self=this;
 		this.saveObjectData(roomID,roomID,obj,function(){
-			self.Modules.Log.debug("Created room (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
+			self.Modules.Log.debug("Created room (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"', parent:'"+oldRoomId+"')");
 		},context,true)
+		
+		return self.getRoomData(roomID,context,callback,oldRoomId);
+		
 	}
 	
     else callback(obj);
