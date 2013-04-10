@@ -12,6 +12,20 @@ var GUI={};
 GUI.currentLanguage='de';
 
 
+//This is called then forward or backwards-buttons are used in the browser.
+//See ObjectManager.onload for pushState
+window.onpopstate = function(event) {
+ 
+  if (!event.state) return;
+  var room=event.state.room;
+  if (!room) return;
+  if (GUI.isLoggedIn){
+  	ObjectManager.loadRoom(room,true);
+  }
+
+};
+
+
 GUI.translationManager=Object.create(TranslationManager);
 GUI.translationManager.init(undefined);
 

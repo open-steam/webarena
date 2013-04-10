@@ -258,7 +258,7 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
-ObjectManager.loadRoom=function(roomid){
+ObjectManager.loadRoom=function(roomid,byBrowserNav){
 	
 	var self = this;
 	
@@ -275,6 +275,10 @@ ObjectManager.loadRoom=function(roomid){
 
 		    if(!roomid) roomid='public';
 		    self.currentRoomID=roomid;
+		   
+		    if (!byBrowserNav){
+				history.pushState({ 'room':roomid }, roomid, roomid);
+		    }
 		
 		}
 		
