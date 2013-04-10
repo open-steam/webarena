@@ -438,8 +438,8 @@ GeneralObject.init=function(id){
 	this.id=id;
 	if(this.get(id,'id')) return;
 	
-	this.set(id,'id',id);
-	this.set(id,'type',this.type);
+	this.set('id',id);
+	this.set('type',this.type);
 }
 
 GeneralObject.toString=function(){

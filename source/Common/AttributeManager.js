@@ -41,6 +41,13 @@ var AttributeManager=new function(){
 			console.trace();
 			return;
 		}
+		
+		if (parseInt(key,10)==key){
+			console.log('numberic key in set',id,key,value);
+			console.trace();
+			return;
+		}
+		
 		if (!attributeData[id]) attributeData[id]=this.proto.standardData||{};
 		attributeData[id][key]=value;
 	}
@@ -215,6 +222,10 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	// check if the attribute is read only
 	if (this.attributes[attribute] && this.attributes[attribute].readonly) {
 		console.log('Attribute '+attribute+' is read only for '+this.proto);
+		if(attribute=='id'){
+			console.log('TRIED TO SET ID');
+			console.trace();
+		}
 		return undefined;
 	}
 	

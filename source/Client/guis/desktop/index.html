@@ -602,11 +602,9 @@
 					objectsString += "\n"+i+":\n--------------------\n";
 					
 					var data=object.get();
-					console.log(data);
 					for (var name in data) {
 						objectsString += name+": "+data[name]+"\n";
 					}
-					
 				}
 				
 				ObjectManager.reportBug({
