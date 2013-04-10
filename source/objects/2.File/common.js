@@ -100,11 +100,13 @@ File.register=function(type){
 }
 
 File.execute=function(){
-	
-	var that=this;
-	
+
 	if (this.hasContent() == true) {
+		
+		if (this.getAttribute('preview')) return;
+		
 		this.openFile();
+		
 	} else {
 		this.upload();
 	}
