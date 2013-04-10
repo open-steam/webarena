@@ -601,7 +601,7 @@
 					
 					objectsString += "\n"+i+":\n--------------------\n";
 					
-					for (var name in object.data) {
+					for (var name in object.get()) {
 						objectsString += name+": "+object.data[name]+"\n";
 					}
 					
