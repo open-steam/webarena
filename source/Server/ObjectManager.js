@@ -833,7 +833,9 @@ ObjectManager.sendChatMessages=function(roomID,socket) {
 		if (oldMessages === undefined) oldMessages = [];
 		
 		for (var i in oldMessages) {
-			Modules.SocketServer.sendToSocket(socket,'inform',oldMessages[i]);
+			var data=oldMessages[i];
+			data.message.read=true;
+			Modules.SocketServer.sendToSocket(socket,'inform',data);
 		}
 		
 	});

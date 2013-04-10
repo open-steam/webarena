@@ -279,6 +279,8 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav){
 		    if (!byBrowserNav){
 				history.pushState({ 'room':roomid }, roomid, roomid);
 		    }
+		    
+		    GUI.chat.clear();
 		
 		}
 		
@@ -382,7 +384,7 @@ ObjectManager.init=function(){
 		}
 		
 		if (data.message.text !== undefined) {
-			GUI.chat.addMessage(data.user, data.message.text, data.color);
+			GUI.chat.addMessage(data.user, data.message.text, data.color, data.message.read);
 		}
 		
 		if (data.message.selection) {
