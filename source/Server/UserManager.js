@@ -17,6 +17,8 @@ var Modules=false;
 
 var UserManager={};
 
+var enter=String.fromCharCode(10);
+
 UserManager.connections={};
 
 UserManager.init=function(theModules){
@@ -24,6 +26,20 @@ UserManager.init=function(theModules){
 	var Dispatcher=Modules.Dispatcher;
 	Dispatcher.registerCall('login',UserManager.login);
     Dispatcher.registerCall('enter',UserManager.enterRoom);
+    
+    setInterval(function(){
+    	var connections=UserManager.connections;
+    	
+    	var count=0;
+    	var userInfo='';
+    	for (var i in connections){
+    		var data=connections[i];
+    		count++;
+    		if (count>1) userInfo+='; ';
+    		userInfo+=data.user.username+' in '+data.room.id;
+    	}
+    	console.log(count+' users: '+userInfo);
+    },10000);    
 }
 
 /**
