@@ -343,7 +343,7 @@ Discussion.representationCreated = function () {
         data: function () {
             var headingText = that.getAttribute('discussionTitle') || '';
             var retval = htmlDecode(headingText)
-            console.log("SAAAAVE")
+
             return retval;
         },
 
