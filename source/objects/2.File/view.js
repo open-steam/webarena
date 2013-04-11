@@ -42,7 +42,28 @@ File.renderFilename = function (){
 	var rep = this.getRepresentation();
 	
     var filename = this.getFilename();
-    var splitTextVal = splitSubstr(filename, 14);
+    
+    //split the text after a maximum of 14 characters
+    
+    var lineLength=14;
+    var splitTextVal=[];
+    var temp=filename;
+    
+    while(temp){
+    	var test=temp.substring(0,lineLength);
+    	var length=0;
+    	
+    	if (test.lastIndexOf(' ')>0 && test.lastIndexOf(' ')>length) length=test.lastIndexOf(' ')+1;
+    	if (test.lastIndexOf('.')>0 && test.lastIndexOf('.')>length) length=test.lastIndexOf('.')+1;
+    	if (test.lastIndexOf('-')>0 && test.lastIndexOf('-')>length) length=test.lastIndexOf('-')+1;
+    	
+    	if (length==0) length=lineLength;
+    	
+    	var line=temp.substring(0,length);
+    	splitTextVal.push(line);
+    	var temp=temp.substring(length);
+    }
+    
     var cTexts = GUI.svg.createText();
 
     $(rep).find("text").remove();
