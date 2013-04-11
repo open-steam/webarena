@@ -16,6 +16,8 @@ Subroom.register=function(type){
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type);
 	
+	this.unregisterAction('Duplicate');
+	
 }
 
 Subroom.execute=function(){
