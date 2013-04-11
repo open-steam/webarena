@@ -43,9 +43,9 @@ File.renderFilename = function (){
 	
     var filename = this.getFilename();
     
-    //split the text after a maximum of 14 characters
+    //split the text after a maximum of 17 characters
     
-    var lineLength=14;
+    var lineLength=17;
     var splitTextVal=[];
     var temp=filename;
     
