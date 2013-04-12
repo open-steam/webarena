@@ -372,11 +372,12 @@ GUI.initMouseHandler = function() {
 			jPopoverManager.hideAll();
 
 			var contentPosition = $("#content").offset();
-
-			/* find objects at this position */
-			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
-
-			if (clickedObject && event.target != $("#content>svg").get(0)) {
+			
+			var clickedObject=$(event.target).parent()[0].dataObject;
+			
+			//TODO check if this can be cone similarly for touch devices
+		
+			if (clickedObject) {
                 event.preventDefault();
                 event.stopPropagation();
 				clickedObject.click(event);
