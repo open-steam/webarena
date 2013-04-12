@@ -45,14 +45,25 @@
 		'ActionManager':ActionManager,
 	};
 
-	for (var name in Modules){
-		var module=Modules[name];
-		if (module.init) {
-			console.log('Initializing '+name);
-			module.init(Modules);
-			module.Modules=Modules;
+	function mainInit(){
+		if (window.GUI) {
+			for (var name in Modules){
+				var module=Modules[name];
+				if (module.init) {
+					console.log('Initializing '+name);
+					module.init(Modules);
+					module.Modules=Modules;
+				}
+			}
+		} else {
+			console.log('Waiting for GUI');
+			window.setTimeout(function(){
+				mainInit();
+			},100);
 		}
 	}
+
+	mainInit();
 
 	</script>
 
