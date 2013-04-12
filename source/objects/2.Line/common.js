@@ -20,13 +20,16 @@ Line.register=function(type){
 	this.registerAttribute('height',{type:'number',min:0,standard:100,unit:'px',category:'Dimensions'});
 	
 	this.registerAttribute('direction',{type:'number',standard:1,readonly:false,hidden:true});
+	
+    this.attributeManager.registerAttribute('linesize',{type:'number',min:4,standard:4,category:'Appearance'});
+	this.attributeManager.registerAttribute('linecolor',{standard:'black'});
 
 	this.registerAttribute('fillcolor',{hidden:true});
 
 }
 
 Line.register('Line');
-Line.isCreatable=false;
+Line.isCreatable=true;
 
 Line.moveByTransform = function() { return true; }
 
