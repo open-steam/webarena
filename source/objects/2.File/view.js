@@ -77,9 +77,9 @@ File.renderFilename = function (){
 	/* center text */
 	$(rep).find("text").find("tspan").each(function() {
 	
-		/* width of tspan elements is 0 in Firefox --> display multiline text left aligned in Firefox */
-		if ($(rep).find("text").width() == 0) {
-			var w = 0;
+		/* .width() returns 0 in firefox. Trying to get the value differently then. */
+		if ($(this).width() == 0) {
+			var w = 32-Math.floor($(this)[0].getBoundingClientRect().width/2);
 		} else {
 			var w = 32-Math.floor($(this).width()/2);
 		}
