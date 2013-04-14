@@ -66,7 +66,7 @@ ImageObject.createPixelMap=function(SVGImage){
 			var y=mouseY-bbox.top;
 			var isThere=false;
 			
-			var imgd = ctx.getImageData(x-3, y-3, 6, 6);
+			var imgd = ctx.getImageData(x-5, y-5, 10, 10);
 			var pix = imgd.data;
 			
 			for (var i = 0, n = pix.length; i < n; i += 4) {
