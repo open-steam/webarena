@@ -373,7 +373,13 @@ GUI.initMouseHandler = function() {
 
 			var contentPosition = $("#content").offset();
 			
-			var clickedObject=$(event.target).parent()[0].dataObject;
+			var temp=$(event.target);
+			
+			while (temp && !temp.dataObject) {
+				temp=$(temp).parent()[0];
+			}
+			
+			var clickedObject=(temp)?temp.dataObject:false;
 			
 			//TODO check if this can be done similarly for touch devices
 		
