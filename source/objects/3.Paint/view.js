@@ -22,10 +22,12 @@ Paint.draw=function(external){
 
 Paint.createRepresentation = function() {
 
-	ImageObject.createRepresentation.call(this);
+	var rep=ImageObject.createRepresentation.call(this);
 
 	this.createCanvas();
 	this.updateCanvas(this.getPreviewContentURL());
+	
+	return rep;
 
 }
 
