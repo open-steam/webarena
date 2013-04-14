@@ -58,28 +58,62 @@ GUI.loadGUI = function(step) {
 		}, 200);
 		
 	} else if (step == 3) {
+		
+		console.log('Step 3 - 1');
+		
 		GUI.progressBarManager.updateProgress("login", 60, GUI.translate('loading GUI'));
 		
+		console.log('Step 3 - 2');
+		
 		GUI.startNoAnimationTimer(); //timer to prevent "flying" objects when getting the new list of objects for the room
+		
+		console.log('Step 3 - 3');
 		
 		/* toolbar */
 		if (!GUI.loaded) GUI.initToolbar(); //needs: ObjectManager
 
+		console.log('Step 3 - 4');
+
 		/* adjust svg area */
 		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
+
+		console.log('Step 3 - 5');
+
+		/* key handling */
+		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
+		
+		console.log('Step 3 - 6');		
+		
+		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
+		
+		console.log('Step 3 - 7');
+
+		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown	
+
+		console.log('Step 3 - 8');
 
 		/* window resizing */
 		if (!GUI.loaded) GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
 
+		console.log('Step 3 - 9');
+
 		/* inspector */
 		if (!GUI.loaded) GUI.setupInspector(); //add inspector buttons, ...
+		
+		console.log('Step 3 - 10');
+
 		if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
+		
+		console.log('Step 3 - 11');
 
 		window.setTimeout(function() {
 			GUI.loadGUI(4);
 		}, 200);
 		
 	} else if (step == 4) {
+		
+		console.log('Step 4');
+		
 		GUI.progressBarManager.updateProgress("login", 80, GUI.translate('rendering objects'));
 		
 		if (!GUI.loaded) GUI.initMouseHandler();
@@ -90,10 +124,7 @@ GUI.loadGUI = function(step) {
 		
 	} else if (step == 5) {
 		
-		/* key handling */
-		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
-		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
-		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown			
+		console.log('Step 5');
 		
 		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
 		
