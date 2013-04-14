@@ -89,6 +89,15 @@ WebServer.init=function(theModules){
 	  		try {
 	
 				var objectType=url.substr(13);
+				
+				var separator=objectType.indexOf('/');
+				
+				if (separator>0) {
+					
+					var section = objectType.substring(separator+1);
+					objectType=objectType.substring(0,separator);
+					
+				} else var section=false;
 
 				var obj=Modules.ObjectManager.getPrototype(objectType);
 
@@ -97,7 +106,7 @@ WebServer.init=function(theModules){
 				      return res.end('Object not found '+objectType);
 			  	}	  	
 
-			  	fs.readFile(obj.localIconPath,
+			  	fs.readFile(obj.localIconPath(section),
 				  function (err, data) {
 				    if (err) {
 				      res.writeHead(404);
