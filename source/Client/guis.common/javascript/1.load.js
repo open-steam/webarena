@@ -59,6 +59,7 @@ GUI.loadGUI = function(step) {
 		
 	} else if (step == 3) {
 		
+		
 		console.log('Step 3 - 1');
 		
 		GUI.progressBarManager.updateProgress("login", 60, GUI.translate('loading GUI'));
@@ -69,16 +70,10 @@ GUI.loadGUI = function(step) {
 		
 		console.log('Step 3 - 3');
 		
-		/* toolbar */
-		if (!GUI.loaded) GUI.initToolbar(); //needs: ObjectManager
+		console.log('Step 3 - 10');
 
-		console.log('Step 3 - 4');
-
-		/* adjust svg area */
-		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
-
-		console.log('Step 3 - 5');
-
+		if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
+		
 		/* key handling */
 		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
 		
@@ -88,7 +83,18 @@ GUI.loadGUI = function(step) {
 		
 		console.log('Step 3 - 7');
 
-		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown	
+		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown		
+		
+		
+		/* toolbar */
+		if (!GUI.loaded) GUI.initToolbar(); //needs: ObjectManager
+
+		console.log('Step 3 - 4');
+
+		/* adjust svg area */
+		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
+
+		console.log('Step 3 - 5');	
 
 		console.log('Step 3 - 8');
 
@@ -100,9 +106,6 @@ GUI.loadGUI = function(step) {
 		/* inspector */
 		if (!GUI.loaded) GUI.setupInspector(); //add inspector buttons, ...
 		
-		console.log('Step 3 - 10');
-
-		if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
 		
 		console.log('Step 3 - 11');
 
