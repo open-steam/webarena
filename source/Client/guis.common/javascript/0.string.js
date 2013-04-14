@@ -1,5 +1,12 @@
 "use strict";
 
+/**
+ * Split a string into parts of length L - last part can be shorter.
+ *
+ * @param {String} Item that should be split
+ * @param {Number} length of resulting parts
+ * @returns {Array.<String>} Array with split items
+ */
 function splitSubstr(str, len) {
     var ret = [ ];
     for (var offset = 0, strLen = str.length; offset < strLen; offset += len) {
@@ -9,7 +16,11 @@ function splitSubstr(str, len) {
 }
 
 /**
- * convert special chars to html their representations
+ *
+ * Convert special chars to html their representations
+ *
+ * @param {String} String that should be escaped
+ * @returns {String} escaped string
  */
 function htmlEscape(str) {
     return String(str)
@@ -21,17 +32,29 @@ function htmlEscape(str) {
 }
 
 /**
- * convert line breaks to html <br>-tags
+ * Convert line breaks to html <br>-tags
+ *
+ * @param {String} Input
+ * @returns {String} Output
  */
 function nl2br(str){
 	return str.replace(/\n/g, '<br />');
 }
 
+/**
+ *
+ * @param {String}
+ * @returns {String}
+ */
 function htmlEncode(str){
-	var enc = nl2br(htmlEscape(str));
-	return enc
+    return nl2br(htmlEscape(str));
 }
 
+/**
+ *
+ * @param {String}
+ * @returns {String}
+ */
 function htmlDecode(str){
 	return $("<div>").html(str.replace(/<br[\s\/]*>/gi, '\n')).text()
 }
