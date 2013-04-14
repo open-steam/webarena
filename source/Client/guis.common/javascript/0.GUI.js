@@ -377,8 +377,11 @@ GUI.initMouseHandler = function() {
 			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
 
 			if (clickedObject && event.target != $("#content>svg").get(0)) {
-                event.preventDefault();
-                event.stopPropagation();
+                if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
 				clickedObject.click(event);
 			} else {
 				/* clicked on background */
