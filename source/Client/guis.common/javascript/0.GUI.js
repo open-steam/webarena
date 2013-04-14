@@ -375,7 +375,7 @@ GUI.initMouseHandler = function() {
 			
 			var clickedObject=$(event.target).parent()[0].dataObject;
 			
-			//TODO check if this can be cone similarly for touch devices
+			//TODO check if this can be done similarly for touch devices
 		
 			if (clickedObject) {
                 event.preventDefault();
@@ -390,7 +390,34 @@ GUI.initMouseHandler = function() {
 
 		}
 		
+		var mousemove = function(event) {
+			
+			var x=event.clientX;
+			var y=event.clientY;
+			
+			var images=$('image');
+			
+			$.each(images, function(index, image) {
+				
+				var parent=$(image).parent();
+				
+				if (!image.hasPixelAtMousePosition) {
+					//console.log('Missing hasPixelAtMousePosition for ',parent);
+					return;
+				}
+				
+				if(image.hasPixelAtMousePosition(x,y)){
+					parent.attr('pointer-events','visiblePainted');
+				} else {
+					parent.attr('pointer-events','none');
+				}
+				
+			});
+
+		}		
+		
 		$("#content>svg").bind("mousedown", mousedown);
+		$("#content>svg").bind("mousemove", mousemove);
 		
 	}
 	

@@ -14,9 +14,9 @@ File.createRepresentation = function() {
 	$(rect).attr("fill", "transparent");
 	$(rect).addClass("borderRect");
 
-	GUI.svg.image(rep, 0, 0, 10, 10, this.getFileIcon());
+	var SVGImage=GUI.svg.image(rep, 0, 0, 10, 10, this.getFileIcon());
 
-
+	this.createPixelMap(SVGImage);
 	
 	rep.dataObject=this;
 	
@@ -32,6 +32,8 @@ File.createRepresentation = function() {
 	return rep;
 	
 }
+
+File.createPixelMap=ImageObject.createPixelMap;
 
 File.getFilename = function() {
 	return this.getAttribute("name");
@@ -142,31 +144,33 @@ File.getUploadIcon = function() {
 }
 
 File.updateThumbnail=function(){
+	
+	var newURL='';
 
 	var rep=this.getRepresentation();
 
 	if (this.hasContent() == false) {
 		
-		//GeneralObject.draw.call(this);
-		
-		$(rep).find("image").attr("href", this.getUploadIcon());
+		newURL=this.getUploadIcon();
 		
 	} else if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
 		/* show object type icon */
 		
-		//GeneralObject.draw.call(this);
-		
-		$(rep).find("image").attr("href", this.getFileIcon());
+		newURL=this.getFileIcon();
 	
 	} else {
 		/* show thumbnail */
 		
-		//GeneralObject.draw.call(this);
-	
-		$(rep).find("image").attr("href", this.getPreviewContentURL());
-
+		newURL=this.getPreviewContentURL();
 	
 	}
+	
+	if (newURL!==$(rep).find("image").attr("href")){
+		
+		$(rep).find("image").attr("href", newURL);
+	}
+	
+	this.createPixelMap();
 
 }
 
