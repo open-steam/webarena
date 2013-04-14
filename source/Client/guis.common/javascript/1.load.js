@@ -68,11 +68,6 @@ GUI.loadGUI = function(step) {
 		/* adjust svg area */
 		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
 
-		/* key handling */
-		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
-		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
-		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown	
-
 		/* window resizing */
 		if (!GUI.loaded) GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
 
@@ -94,6 +89,12 @@ GUI.loadGUI = function(step) {
 		}, 200);
 		
 	} else if (step == 5) {
+		
+		/* key handling */
+		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
+		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
+		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown			
+		
 		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
 		
 		GUI.updateLayers(); //update z-order by layer-attribute
@@ -115,6 +116,7 @@ GUI.loadGUI = function(step) {
  */
 $(function() {
 
+	console.log('Load GUI');
 	GUI.loadGUI(1);
 	
 });
