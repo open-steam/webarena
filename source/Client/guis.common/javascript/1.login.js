@@ -111,6 +111,9 @@ GUI.login = function() {
 	if (GUI.username === undefined)	GUI.username = $("#login_username").val();
 	if (GUI.password === undefined) GUI.password = $("#login_password").val();
 	
+	$("#login_username").blur();
+	$("#login_password").blur();
+	
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession/') > -1) {
 		
 		var hashData = window.location.hash.substr(1).split("/")
