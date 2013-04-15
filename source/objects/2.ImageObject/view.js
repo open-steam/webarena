@@ -45,10 +45,10 @@ ImageObject.createPixelMap=function(SVGImage){
 		
 		if (image.width>image.height){
 			width=bbox.width;
-			height=bbox.height*(image.height/image.width);
+			height=bbox.width*(image.height/image.width);
 		} else {
-			height=bbox.width;
-			width=bbox.width*(image.width/image.height);
+			height=bbox.height;
+			width=bbox.height*(image.width/image.height);
 		}
 		
 		newCanvas.height=bbox.height;
@@ -77,21 +77,8 @@ ImageObject.createPixelMap=function(SVGImage){
 			for (var i = 0, n = pix.length; i < n; i += 4) {
 			    if(pix[i+3]) isThere=true;
 			}
+			
 			return(isThere);
-		}
-		
-		SVGImage.hasPixelAt=function(x,y){
-			
-			var contentPosition = $("#content").offset();
-			
-			var x = x+contentPosition.left;
-			var y = y+contentPosition.top;
-			
-			return this.hasPixelAtMousePosition(x,y);
-		}
-		
-		self.hasPixelAt=function(x,y){
-			return SVGImage.hasPixelAt(x,y);
 		}
 		
 	}
