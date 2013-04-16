@@ -144,9 +144,10 @@ GeneralObject.getRepresentation=function(){
 
 		var rep = this.createRepresentation();
 		this.representationCreated();
-		return rep;
 		
 	}
+	
+	rep.dataObject=this;
 	return rep;
 }
 
@@ -840,11 +841,6 @@ GeneralObject.moveStart = function(event) {
 	if (!self.selected) self.select();
 	
 	var contentPosition = $("#content").offset();
-	
-	/* check if the object has a graphical representation at the clicked position */
-	if (!self.hasPixelAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top)) {
-		return;
-	}
 
 	event.preventDefault();
 	event.stopPropagation();

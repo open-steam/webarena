@@ -672,6 +672,12 @@ GeneralObject.refreshDelayed=function(){
 	var theTimer=400;
 	
 	this.refreshDelay=setTimeout(function(){
+		
+		//If the current room has changed in the meantime, do not refresh at all
+		if (that.getAttribute('inRoom')!==ObjectManager.getRoomID()){
+			return;
+		}
+		
 		that.refresh();
 	},theTimer);
 }

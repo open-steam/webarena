@@ -14,9 +14,9 @@ File.createRepresentation = function() {
 	$(rect).attr("fill", "transparent");
 	$(rect).addClass("borderRect");
 
-	GUI.svg.image(rep, 0, 0, 10, 10, this.getFileIcon());
+	var SVGImage=GUI.svg.image(rep, 0, 0, 10, 10, this.getFileIcon());
 
-
+	this.createPixelMap(SVGImage);
 	
 	rep.dataObject=this;
 	
@@ -33,6 +33,8 @@ File.createRepresentation = function() {
 	
 }
 
+File.createPixelMap=ImageObject.createPixelMap;
+
 File.getFilename = function() {
 	return this.getAttribute("name");
 }
@@ -42,7 +44,28 @@ File.renderFilename = function (){
 	var rep = this.getRepresentation();
 	
     var filename = this.getFilename();
-    var splitTextVal = splitSubstr(filename, 14);
+    
+    //split the text after a maximum of 17 characters
+    
+    var lineLength=17;
+    var splitTextVal=[];
+    var temp=filename;
+    
+    while(temp){
+    	var test=temp.substring(0,lineLength);
+    	var length=0;
+    	
+    	if (test.lastIndexOf(' ')>0 && test.lastIndexOf(' ')>length) length=test.lastIndexOf(' ')+1;
+    	if (test.lastIndexOf('.')>0 && test.lastIndexOf('.')>length) length=test.lastIndexOf('.')+1;
+    	if (test.lastIndexOf('-')>0 && test.lastIndexOf('-')>length) length=test.lastIndexOf('-')+1;
+    	
+    	if (length==0) length=lineLength;
+    	
+    	var line=temp.substring(0,length);
+    	splitTextVal.push(line);
+    	var temp=temp.substring(length);
+    }
+    
     var cTexts = GUI.svg.createText();
 
     $(rep).find("text").remove();
@@ -56,9 +79,9 @@ File.renderFilename = function (){
 	/* center text */
 	$(rep).find("text").find("tspan").each(function() {
 	
-		/* width of tspan elements is 0 in Firefox --> display multiline text left aligned in Firefox */
-		if ($(rep).find("text").width() == 0) {
-			var w = 0;
+		/* .width() returns 0 in firefox. Trying to get the value differently then. */
+		if ($(this).width() == 0) {
+			var w = 32-Math.floor($(this)[0].getBoundingClientRect().width/2);
 		} else {
 			var w = 32-Math.floor($(this).width()/2);
 		}
@@ -121,31 +144,33 @@ File.getUploadIcon = function() {
 }
 
 File.updateThumbnail=function(){
+	
+	var newURL='';
 
 	var rep=this.getRepresentation();
 
 	if (this.hasContent() == false) {
 		
-		//GeneralObject.draw.call(this);
-		
-		$(rep).find("image").attr("href", this.getUploadIcon());
+		newURL=this.getUploadIcon();
 		
 	} else if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
 		/* show object type icon */
 		
-		//GeneralObject.draw.call(this);
-		
-		$(rep).find("image").attr("href", this.getFileIcon());
+		newURL=this.getFileIcon();
 	
 	} else {
 		/* show thumbnail */
 		
-		//GeneralObject.draw.call(this);
-	
-		$(rep).find("image").attr("href", this.getPreviewContentURL());
-
+		newURL=this.getPreviewContentURL();
 	
 	}
+	
+	if (newURL!==$(rep).find("image").attr("href")){
+		
+		$(rep).find("image").attr("href", newURL);
+	}
+	
+	this.createPixelMap();
 
 }
 

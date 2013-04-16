@@ -349,7 +349,10 @@ ObjectManager.init=function(theModules){
 			obj.ObjectManager=Modules.ObjectManager;
 			obj.register(objName);
 			
-			obj.localIconPath=filebase+'/icon.png';
+			obj.localIconPath=function(selection){
+				selection=(selection)?'_'+selection:'';
+				return filebase+'/icon'+selection+'.png';
+			}
 			
 		} catch (e) {
 			Modules.Log.warn('Could not register '+objName);

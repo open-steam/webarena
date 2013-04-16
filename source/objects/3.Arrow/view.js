@@ -13,16 +13,16 @@ Arrow.draw=function(external){
 	
 	if (this.getAttribute("markerStart")) {
 		var markerId = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), false);
-		$(rep).find("line").attr("marker-start", "url(#"+markerId+")");
+		$(rep).find("line.borderRect").attr("marker-start", "url(#"+markerId+")");
 	} else {
-		$(rep).find("line").attr("marker-start", "");
+		$(rep).find("line.borderRect").attr("marker-start", "");
 	}
 	
 	if (this.getAttribute("markerEnd")) {
 		var markerId = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
-		$(rep).find("line").attr("marker-end", "url(#"+markerId+")");
+		$(rep).find("line.borderRect").attr("marker-end", "url(#"+markerId+")");
 	} else {
-		$(rep).find("line").attr("marker-end", "");
+		$(rep).find("line.borderRect").attr("marker-end", "");
 	}
 
 

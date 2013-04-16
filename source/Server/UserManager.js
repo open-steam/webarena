@@ -17,13 +17,15 @@ var Modules=false;
 
 var UserManager={};
 
+var enter=String.fromCharCode(10);
+
 UserManager.connections={};
 
 UserManager.init=function(theModules){
  	Modules=theModules;
 	var Dispatcher=Modules.Dispatcher;
 	Dispatcher.registerCall('login',UserManager.login);
-    Dispatcher.registerCall('enter',UserManager.enterRoom);
+    Dispatcher.registerCall('enter',UserManager.enterRoom);  
 }
 
 /**
@@ -51,6 +53,20 @@ UserManager.socketDisconnect=function(socket){
 	
 	UserManager.sendAwarenessData(roomID);
 	
+}
+
+function loggedInInfo(){
+	var connections=UserManager.connections;
+   	
+   	var count=0;
+   	var userInfo='';
+   	for (var i in connections){
+   		var data=connections[i];
+   		count++;
+   		if (count>1) userInfo+='; ';
+   		userInfo+=data.user.username+' in '+data.room.id;
+   	}
+   	console.log(count+' users: '+userInfo);
 }
 
 
@@ -220,6 +236,7 @@ UserManager.sendAwarenessData=function(roomID){
 		
 		Modules.SocketServer.sendToSocket(sock,'inform',data);
 	}
+	loggedInInfo();
 }
 
 /**

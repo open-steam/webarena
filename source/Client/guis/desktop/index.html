@@ -14,6 +14,29 @@
 
 	<script src="/socket.io/socket.io.js"></script>
 
+	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jsTree/jquery.jstree.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/underscore-min.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.autogrow.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.autogrow.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.dotdotdot.js"></script>
+
+
+
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
+
+	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
+	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
+
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
+
+
 	<script src="/config.default.js"></script>
 	<script src="/config.local.js"></script>
 	<script src="/Helper.js"></script>
@@ -45,41 +68,24 @@
 		'ActionManager':ActionManager,
 	};
 
-	for (var name in Modules){
-		var module=Modules[name];
-		if (module.init) {
-			console.log('Initializing '+name);
-			module.init(Modules);
-			module.Modules=Modules;
+	
+	$(document).ready(function() {
+		for (var name in Modules){
+			var module=Modules[name];
+			if (module.init) {
+				module.init(Modules);
+				module.Modules=Modules;
+			}
 		}
-	}
+		
+		document.title=Modules.Config.projectTitle||'WebArena';
+		
+	});
 
 	</script>
 
 	<script src="/objects"></script>
-	
 
-	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
-	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jsTree/jquery.jstree.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/underscore-min.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.autogrow.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.autogrow.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.dotdotdot.js"></script>
-
-
-
-	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
-	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
-	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
-	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
-
-	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
-	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
-
-	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
 
 	<link type="text/css" href="/guis/desktop/style.css" rel="Stylesheet" />
 
