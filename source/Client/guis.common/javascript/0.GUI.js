@@ -375,7 +375,7 @@ GUI.initMouseHandler = function() {
 
 			var contentPosition = $("#content").offset();
 			
-			var temp=$(event.target);
+			var temp=event.target;
 			
 			while (temp && !temp.dataObject) {
 				temp=$(temp).parent()[0];
