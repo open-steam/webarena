@@ -386,8 +386,14 @@ GUI.initMouseHandler = function() {
 			//TODO check if this can be done similarly for touch devices
 		
 			if (clickedObject) {
-                event.preventDefault();
-                event.stopPropagation();
+				// Objects with restricted moving areas should get the "native" events
+				// Only if clicked on the moving area, e.g. actionbar the default event handling
+				// should be prevented
+                if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
 				clickedObject.click(event);
 			} else {
 				/* clicked on background */
