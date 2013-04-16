@@ -344,7 +344,7 @@ Discussion.representationCreated = function () {
 
         data: function () {
             var headingText = that.getAttribute('discussionTitle') || '';
-            return retval = htmlDecode(headingText)
+            return htmlDecode(headingText)
         },
 
         autogrow: {
