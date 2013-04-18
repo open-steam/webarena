@@ -173,6 +173,13 @@ EasyDBImage.renderResultPage = function(data, target){
 }
 
 EasyDBImage.renderResultTable = function(data){
+
+    var checkIfNull = function(toCheck){
+        if(toCheck === null || toCheck === undefined){
+            return "";
+        } else return toCheck;
+    }
+
     var dialogPage2 = '';
     dialogPage2 += ""+
         "<div class='easydb-result-wrapper'>"+
@@ -194,13 +201,13 @@ EasyDBImage.renderResultTable = function(data){
             "<tr>" +
             "<th>Titel" +
             "</th>" +
-            "<td>" + imageInformation.titel +
+            "<td>" + checkIfNull(imageInformation.titel) +
             "</td>" +
             "</tr>" +
             "<tr>" +
             "<th>Künstler" +
             "</th>" +
-            "<td>" + imageInformation.kuenstler +
+            "<td>" + checkIfNull(imageInformation.kuenstler) +
             "</td>" +
             "</tr>" +
             "</table>" +
