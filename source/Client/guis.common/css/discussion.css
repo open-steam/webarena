@@ -10,7 +10,7 @@
   -webkit-border-top-right-radius: 5px;
   border-top-right-radius: 5px;
   padding-bottom: 5px;
-  background-color: #FFFFFF;
+  background-color: #EEEEEE;
   max-height: 100%;
 }
 
@@ -28,26 +28,26 @@
   padding: 7px;
   font-size: 16px;
   border-bottom: 2px solid #CCCCCC;
+  background-color: #FFFFFF;
 }
 
 .discussion-statement {
   background-color: white;
   position: relative;
+  border: 2px solid #CCCCCC;
 }
 
 .discussion-statement-heading {
-  border-top: 2px solid #CCCCCC;
   padding: 5px;
   font-size: 16px;
   color: #04138A;
 }
 
-.discussion-statement-heading .message-timestamp {
-  float: right;
+.discussion-statement-heading {
   font-size: 12px;
 }
-.discussion-statement-heading .message-author {
-  font-size: 12px;
+.discussion-statement-heading .message-timestamp {
+  float: right;
 }
 
 .discussion-statement-text {
@@ -82,19 +82,11 @@
   right: 50px;
 }
 
-.discussion-statement-deletable:hover .statement-delete {
+.discussion-statement-deletable:hover .statement-delete, .discussion-statement-deletable:hover .statement-edit {
   display: block;
 }
 
-.discussion-statement-deletable:hover .statement-edit {
-  display: block;
-}
-
-.discussion-statement-deletable.active-editing:hover .statement-delete {
-  display: none;
-}
-
-.discussion-statement-deletable.active-editing:hover .statement-edit {
+.discussion-statement-deletable.active-editing:hover .statement-delete, .discussion-statement-deletable.active-editing:hover .statement-edit {
   display: none;
 }
 
@@ -106,6 +98,7 @@
   font-size: 12px;
 }
 
+/** Speech Bubble **/
 .triangle-border {
   position: relative;
   padding: 5px;
