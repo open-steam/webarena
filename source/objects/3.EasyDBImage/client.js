@@ -132,7 +132,7 @@ EasyDBImage.execute = function () {
         }
 
         var dialog = GUI.dialog(
-            that.translate("EASYDB_SEARCH_HEADER"),
+            "easydb-Suche",
             pageOneContent, pageOneButtons, 500, {height:500}
         )
 
