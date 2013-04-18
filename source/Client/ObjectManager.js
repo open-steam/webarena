@@ -381,6 +381,7 @@ ObjectManager.init=function(){
 				users.push(d);
 			}
 			GUI.chat.setUsers(users);
+			GUI.userMarker.removeOfflineUsers(users);
 		}
 		
 		if (data.message.text !== undefined) {

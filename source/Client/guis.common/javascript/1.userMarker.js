@@ -39,6 +39,8 @@ GUI.userMarker = {
 		for (var i in GUI.userMarker.markers[objId]["markers"]) {
 			var marker = GUI.userMarker.markers[objId]["markers"][i];
 			
+			if (!marker) continue;
+			
 			y = y-$(marker).find("rect").attr("height")-2;
 			
 			if (obj.selected || noAnimation) {
@@ -48,6 +50,7 @@ GUI.userMarker = {
 			}
 			
 		}
+		
 		
 	},
 	
@@ -105,6 +108,30 @@ GUI.userMarker = {
 			GUI.userMarker.markers[data.objectId]["markers"][data.identifier] = undefined;
 		}
 		
+	},
+		
+	/**
+	 * Remove markers of offline listenres
+	 * @param {Object} an array of user objects who are online
+	 */	
+	"removeOfflineUsers": function (users){
+		
+		var present={};
+		
+		for (var i in users){
+			var user=users[i];
+			present[user.id]=true;
+		}
+		
+		for (var objectId in GUI.userMarker.markers){
+			var markers=GUI.userMarker.markers[objectId].markers;
+			for (var identifier in markers){
+				if (!present[identifier]) {
+					var data={"objectId":objectId,"identifier":identifier};
+					this.deselect(data);
+				}
+			}
+		}
 	}
 	
 }
