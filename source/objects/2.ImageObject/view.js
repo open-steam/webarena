@@ -116,10 +116,16 @@ ImageObject.updateImage=function(){
 		this.setViewHeight(101);
 		
 	} else {
-		
-		this.draw();
 	
 		$(rep).find("image").attr("href", this.getPreviewContentURL());
+		
+		var self=this;
+		
+		$(rep).find("image").bind("load",function(){
+			self.draw();
+		});
+		
+		this.draw();
 	
 	}
 
