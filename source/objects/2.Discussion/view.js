@@ -65,7 +65,6 @@ Discussion.drawIcon = function () {
 
 Discussion.draw = function () {
 
-    console.log("redraw")
     var embedded = this.getAttribute("show_embedded");
     if (embedded) {
         this.drawEmbedded();
