@@ -10,6 +10,7 @@
 var Modules=false;
 
 var WebServer={};
+var _ = require('underscore');
 
 /*
 *	init
@@ -334,6 +335,52 @@ WebServer.init=function(theModules){
 			});
 		
 	  }
+
+      else if(url =='/defaultJavascripts'){
+
+          //combine all javascript files in guis.common/javascript
+          var files=fs.readdirSync('Client/guis.common/javascript');
+          files.sort();
+          var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
+
+          files = _.filter(files, function(fname){
+             return fileReg.test(fname);
+          })
+
+          var combinedJavascript = "";
+
+          //Asynchron file loading!
+          //In order to get right order, second file is loaded in the callback of first file
+          //and so on.
+          var processFiles = function (){
+
+              // check for termination - we worked through all files
+              // then we want to send the result.
+              if(files.length === 0) sendResult()
+              // take first element - call recursion with remaining files,
+              // after first file was loaded.
+              else {
+                  var filename = files.shift();
+
+                  fs.readFile('Client/guis.common/javascript/' + filename, function(err,data){
+                      if(!err)  combinedJavascript += data + "\n";
+
+                      processFiles()
+                  });
+              }
+
+          }
+
+          var sendResult = function(){
+              var mimeType='application/javascript';
+
+              res.writeHead(200, {'Content-Type':mimeType});
+              res.end(combinedJavascript);
+          }
+
+          processFiles();
+
+      }
 	  
 	  // objects
 	  
