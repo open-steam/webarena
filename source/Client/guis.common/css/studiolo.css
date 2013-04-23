@@ -244,12 +244,12 @@
 }
 
 .minimize-button {
-  background-image: url("../../images/close.png");
+  background-image: url("../images/close.png");
   float: left;
 }
 
 .open-extern-button {
-  background-image: url("../../images/export.png");
+  background-image: url("../images/export.png");
   float: right;
 }
 
