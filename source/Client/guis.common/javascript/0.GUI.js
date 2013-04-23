@@ -249,8 +249,6 @@ GUI.blockKeyEvents = false;
  * add event handlers for object movement by arrow-keys
  */
 GUI.initMoveByKeyboard = function() {
-	
-	console.log('HIER SIND WIR');
 
 	$(document).bind("keydown", function(event) {
 		
