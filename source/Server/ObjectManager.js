@@ -609,32 +609,7 @@ ObjectManager.init=function(theModules){
         fn.apply(object, server_function_params)
     });
 
-    Modules.Dispatcher.registerCall('search',function(socket,data,responseID){
-        var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
 
-
-        var searchArgs = {
-            searchParams : data.searchParams,
-            offset : data.offset || 0,
-            limit : data.limit || 10
-        };
-
-        var searchCallback = function(res){
-            console.log('Send search results to client.');
-            Modules.Dispatcher.respond(socket,responseID,res);
-        }
-        searchArgs['callback'] = searchCallback;
-
-        var object=ObjectManager.getObject(roomID,objectID,context);
-        if (!object){
-            return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-        }
-
-        object.search(searchArgs);
-
-    });
 
     Modules.Dispatcher.registerCall('browse', function(socket, data, responseID){
     	var context=Modules.UserManager.getConnectionBySocket(socket);
