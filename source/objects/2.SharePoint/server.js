@@ -140,12 +140,12 @@ theObject.buildTreeObject = function(data){
     }
 }
 
-theObject.browse=function(){
+theObject.browse=function(argsIn, callback){
     var defaultArgs = {
         location: 'https://projects.uni-paderborn.de/websites/studiolo/',
         folder: 'FreigegebeneDokumente'
     }
-    var args = _.defaults(arguments[0], defaultArgs);
+    var args = _.defaults(argsIn, defaultArgs);
 
     var client = new SP.RestService(args['location']),
         documents = client.list(args['folder']);
@@ -156,8 +156,10 @@ theObject.browse=function(){
     client.password2 = this.context.user.password;
 
     var showResponse = function(err, data){
-        args['callback'](that.buildTreeObject(data.results));
+        callback(that.buildTreeObject(data.results));
     }
 
     documents.get(showResponse);
 }
+
+theObject.browse.public = true;

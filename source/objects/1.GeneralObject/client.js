@@ -71,7 +71,7 @@ GeneralObject.serverCall = function(){
 	//check if all needed arguments are present
 	//and of right type
 	var remoteFnName = args.shift();
-    console.log("Calling: " + remoteFnName)
+
 	if( remoteFnName === undefined) throw "Function name is missing.";
 	if( remoteFnName &&  ! _.isString(remoteFnName)) throw "Function names can be strings only.";
 

@@ -610,50 +610,6 @@ ObjectManager.init=function(theModules){
     });
 
 
-
-    Modules.Dispatcher.registerCall('browse', function(socket, data, responseID){
-    	var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
-    	var browseLocation = data.browseLocation || null;
-	
-	    var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-		}
-
-
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-
-			if (mayRead) {
-
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				var responseCallback = function(res){
-		            console.log('Send browse results to client.');
-		            Modules.Dispatcher.respond(socket,responseID,res);
-		        };
-
-			    var browseParams = {
-			        //location : browseLocation,
-			        callback : responseCallback
-			    };
-
-		        object.browse(browseParams);
-
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-			}
-
-		});
-		
-    });
-	    
-	
 	Modules.Dispatcher.registerCall('memoryUsage',function(socket,data,responseID){
 		
 		var util=require('util');

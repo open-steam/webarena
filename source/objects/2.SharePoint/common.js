@@ -29,10 +29,7 @@ SharePoint.execute=function(){
     if(src_is_set && !is_shown_in_iframe){
         this.switchState();
     }  else if(!src_is_set) {
-        var data = {
-            roomID : that.getRoomID(),
-            objectID: that.getID(),
-        }
+
 
         var dialog_buttons = {
             "Cancel": function(){return false;},
@@ -51,7 +48,7 @@ SharePoint.execute=function(){
         var dialog_width = 500;
         var additional_dialog_options = {
             create : function(){
-                Modules.Dispatcher.query('browse', data ,function(tree){
+                var resCallback = function(tree){
 
                     var renderedTree = $("<div class='js-tree'></div>").jstree({
                         json_data  : {
@@ -60,7 +57,8 @@ SharePoint.execute=function(){
                         "plugins" : [ "themes", "json_data", "ui" ]
                     });
                     $('.ui-dialog-content').html(renderedTree);
-                });
+                };
+                that.serverCall("browse", {}, resCallback);
 
             }, 
             height: 600
