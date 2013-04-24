@@ -17,18 +17,22 @@ EasyDBImage.addControl = function(type, resizeFunction) {
         var maxSideLength = Math.max(that.getViewWidth(), that.getViewHeight());
         data['customFunctionCall'] = {
             'name' : 'getUrls',
-            'params' : {
-                'id' : that.getAttribute('easydb_id'),
-                'size' : maxSideLength + 100 
-            }
+            
         }
-        Modules.Dispatcher.query('customObjectFunctionCall', data, function (searchResults) {
+
+        var params =  {
+            'id' : that.getAttribute('easydb_id'),
+            'size' : maxSideLength + 100 
+        }
+
+        var callback = function (searchResults) {
             var old_url = that.getAttribute('remote_url')
             if(old_url !== searchResults){
                 that.setAttribute('remote_url', searchResults);
                 that.draw();
             }
-        });
+        }
+        this.serverCall("getUrls", params, callback);
     }
 
     var functionWrapper = function(){

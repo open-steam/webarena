@@ -582,14 +582,17 @@ ObjectManager.init=function(theModules){
 		Modules.Dispatcher.respond(socket,responseID,Modules.Connector.getInlinePreviewMimeTypes());
 
 	});
+	
 
-    Modules.Dispatcher.registerCall('customObjectFunctionCall', function(socket, data, responseID){
+    Modules.Dispatcher.registerCall('serverCall', function(socket, data, responseID){
         var context=Modules.UserManager.getConnectionBySocket(socket);
         var roomID=data.roomID
         var objectID=data.objectID;
 
-        var server_function         = data.customFunctionCall.name;
-        var server_function_params  = data.customFunctionCall.params;
+        if(!roomID) throw "Room id is missing."
+
+        var server_function         = data.fn.name;
+        var server_function_params  = data.fn.params;
 
         var responseCallback = function(res){
             Modules.Dispatcher.respond(socket,responseID,res);
@@ -597,14 +600,13 @@ ObjectManager.init=function(theModules){
 
         var object=ObjectManager.getObject(roomID,objectID,context);
 
-        server_function_params['callback'] = responseCallback;
+        server_function_params.push(responseCallback);
 
         var fn = object[server_function];
         
         if (!fn.public) return false;
         
-        //fn(server_function_params);
-        fn.call(object, server_function_params)
+        fn.apply(object, server_function_params)
     });
 
     Modules.Dispatcher.registerCall('search',function(socket,data,responseID){

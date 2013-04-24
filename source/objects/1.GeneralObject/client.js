@@ -43,6 +43,52 @@ GeneralObject.setContent=function(content){
 	
 }
 
+/**
+ * Call RPC-Method on server-side. Could be called like:
+ *
+ * this.serverCall("rpcMethod", arg1, arg2, arg3, ..., optionalCallback)
+ * 
+ * @param{...mixed} - 
+ * 		remoteFnName : Name of the function that should be called
+ * 		...args :  arbitrary number of arguments
+ * 		callback: if the last element is a function, it is used as a callback. 
+ */
+GeneralObject.serverCall = function(){
+    var args = Array.prototype.slice.call(arguments);
+	var callback = false;
+
+	//Look if last element is function 
+	//don't use pop directly, because function
+	//can be called without callback.
+	var lastArg = args[args.length - 1];
+	if ( _.isFunction( lastArg )) {
+		callback = lastArg;
+        console.log()
+        console.log(_.isArray(args))
+        args.pop();
+	}
+
+	//check if all needed arguments are present
+	//and of right type
+	var remoteFnName = args.shift();
+    console.log("Calling: " + remoteFnName)
+	if( remoteFnName === undefined) throw "Function name is missing.";
+	if( remoteFnName &&  ! _.isString(remoteFnName)) throw "Function names can be strings only.";
+
+	var remoteCall = {
+		roomID : this.getRoomID(),
+		objectID : this.getId(),
+		fn : {
+			name : remoteFnName,
+			params : args
+		}
+	}
+
+	if (callback) Modules.Dispatcher.query('serverCall',remoteCall, callback);
+	else Modules.Dispatcher.query('serverCall',remoteCall);
+	
+}
+
 GeneralObject.fetchContent=function(worker, forced){
 
 	if (this.contentURLOnly) return;
