@@ -112,6 +112,7 @@ theObject.setContent=function(content,callback){
 	this.persist();
 	this.updateClients('contentUpdate');
 }
+theObject.setContent.public = true;
 
 theObject.copyContentFromFile=function(filename,callback) {
 

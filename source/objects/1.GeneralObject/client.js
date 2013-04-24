@@ -31,16 +31,7 @@ GeneralObject.setContent=function(content){
 	this.content=content;
 	this.contentFetched=true;
 	
-	var requestData={};
-	
-	requestData.roomID=this.getRoomID();
-    requestData.objectID=this.id;
-    requestData.content=content;
-
-	Modules.Dispatcher.query('setContent',requestData);
-	
-	if (this.afterSetContent) this.afterSetContent();
-	
+    this.serverCall('setContent', content, this.afterSetContent)	
 }
 
 /**

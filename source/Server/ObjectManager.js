@@ -397,34 +397,6 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
-	//setContent
-	Modules.Dispatcher.registerCall('setContent',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var content=data.content;
-		
-		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
-		
-			if (mayWrite) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				object.setContent(content);
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to set content '+objectID);
-			}
-			
-		});
-		
-	});
 	
 	//getAttribute
 	Modules.Dispatcher.registerCall('getAttribute',function(socket,data,responseID){
@@ -506,9 +478,7 @@ ObjectManager.init=function(theModules){
 			} else {
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
 			}
-			
 		});
-		
 	});
 	
 	//createObject
@@ -585,14 +555,14 @@ ObjectManager.init=function(theModules){
 	
 
     Modules.Dispatcher.registerCall('serverCall', function(socket, data, responseID){
-        var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
+        var context  = Modules.UserManager.getConnectionBySocket(socket);
+        var roomID   = data.roomID
+        var objectID = data.objectID;
 
         if(!roomID) throw "Room id is missing."
 
-        var server_function         = data.fn.name;
-        var server_function_params  = data.fn.params;
+        var serverFunction         = data.fn.name;
+        var serverFunctionParams  = data.fn.params;
 
         var responseCallback = function(res){
             Modules.Dispatcher.respond(socket,responseID,res);
@@ -600,13 +570,13 @@ ObjectManager.init=function(theModules){
 
         var object=ObjectManager.getObject(roomID,objectID,context);
 
-        server_function_params.push(responseCallback);
+        serverFunctionParams.push(responseCallback);
 
-        var fn = object[server_function];
+        var fn = object[serverFunction];
         
         if (!fn.public) return false;
         
-        fn.apply(object, server_function_params)
+        fn.apply(object, serverFunctionParams)
     });
 
 
