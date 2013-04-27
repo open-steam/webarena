@@ -76,9 +76,19 @@ GUI.initToolbar = function() {
 						}
 
 						if (GUI.isTouchDevice) {
-							$(element.getDOM()).bind("touchstart", function() { click(); });
+							$(element.getDOM()).bind("touchstart", function() {
+								click({
+									"x" : window.pageXOffset + 40, 
+									"y" : window.pageYOffset + 40
+								}); 
+							});
 						} else {
-							$(element.getDOM()).bind("click", function() { click(); });
+							$(element.getDOM()).bind("click", function() { 
+								click({
+									"x" : window.pageXOffset + 40, 
+									"y" : window.pageYOffset + 40
+								}); 
+							});
 						}
 						
 						
@@ -147,9 +157,19 @@ GUI.initToolbar = function() {
 			}
 			
 			if (GUI.isTouchDevice) {
-				$(newCategoryIcon).bind("touchstart", function() { click(); });
+				$(newCategoryIcon).bind("touchstart", function() { 
+					click({
+						"x" : window.pageXOffset + 40, 
+						"y" : window.pageYOffset + 40
+					}); 
+				});
 			} else {
-				$(newCategoryIcon).bind("click", function() { click(); });
+				$(newCategoryIcon).bind("click", function() {
+					click({
+						"x" : window.pageXOffset + 40, 
+						"y" : window.pageYOffset + 40
+					}); 
+				});
 			}
 			
 			/* All objects (except for Paint and Highlighter) can be created by dragging them to the svg area */
