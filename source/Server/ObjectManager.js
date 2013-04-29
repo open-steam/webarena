@@ -361,73 +361,9 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
-	//This is the interface for clients. Registering functions for attribute access and
+ 	//This is the interface for clients. Registering functions for attribute access and
 	//other object updates
-	
-	
-	//setAttribute
-	Modules.Dispatcher.registerCall('setAttribute',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var key=data.key;
-		var value=data.value;
-		
 
-		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
-		
-			if (mayWrite) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					//Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-		
-
-				object.setAttribute(key,value,false,context);
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to set attribute '+objectID);
-			}
-			
-		});
-		
-	});
-	
-	
-	//getAttribute
-	Modules.Dispatcher.registerCall('getAttribute',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var key=data.key;
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-		
-			if (mayRead) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				Modules.Dispatcher.respond(socket,responseID,object.getAttribute(key));
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
-			}
-			
-		});
-		
-	});
-
-	
 	//deleteObject
 	Modules.Dispatcher.registerCall('deleteObject',function(socket,data,responseID){
 		
