@@ -448,6 +448,7 @@ WebServer.init=function(theModules){
 					if (url.indexOf('.htm')!=-1) contentType='text/html';
 					if (url.indexOf('.js')!=-1) contentType='application/javascript';
 					if (url.indexOf('.css')!=-1) contentType='text/css';
+					if (url.indexOf('.ico')!=-1) contentType='image/x-icon';
 
 					if (!contentType) {
 						Modules.Log.warn('WebServer ERROR: No content type for '+url);
