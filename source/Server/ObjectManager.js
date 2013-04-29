@@ -701,8 +701,9 @@ ObjectManager.init=function(theModules){
 			Modules.SocketServer.sendToSocket(socket,'inform',data);
 		}
 		
+		/*
 		if (data.message.text !== undefined) {
-			/* chat message */
+			// chat message
 
 			var context=Modules.UserManager.getConnectionBySocket(socket);
 			ObjectManager.getRoom(data.room,context,function(room) {
@@ -716,6 +717,7 @@ ObjectManager.init=function(theModules){
 				
 			});			
 		}
+		*/
 
 	});
 	
@@ -832,6 +834,7 @@ ObjectManager.getClientCode=function(){
 	return code;
 }
 
+/*
 ObjectManager.sendChatMessages=function(roomID,socket) {
 	
 	var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -849,5 +852,6 @@ ObjectManager.sendChatMessages=function(roomID,socket) {
 	});
 	
 }
+*/
 
 module.exports=ObjectManager;
