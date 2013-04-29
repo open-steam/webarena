@@ -277,7 +277,7 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav){
 		    self.currentRoomID=roomid;
 		   
 		    if (!byBrowserNav){
-				history.pushState({ 'room':roomid }, roomid, roomid);
+				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
 		    }
 		    
 		    GUI.chat.clear();
