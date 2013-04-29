@@ -114,6 +114,10 @@ theObject.setContent=function(content,callback){
 	this.updateClients('contentUpdate');
 }
 theObject.setContent.public = true;
+theObject.setContent.neededRights = {
+    write : true
+}
+
 
 theObject.copyContentFromFile=function(filename,callback) {
 
@@ -145,7 +149,9 @@ theObject.getContent=function(callback){
 
 }
 theObject.getContent.public = true;
-
+theObject.getContent.neededRights = {
+    read : true
+}
 
 
 

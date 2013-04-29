@@ -525,7 +525,6 @@ ObjectManager.init=function(theModules){
 		Modules.Dispatcher.respond(socket,responseID,Modules.Connector.getInlinePreviewMimeTypes());
 
 	});
-	
 
     Modules.Dispatcher.registerCall('serverCall', function(socket, data, responseID){
         var context  = Modules.UserManager.getConnectionBySocket(socket);
@@ -546,10 +545,36 @@ ObjectManager.init=function(theModules){
         serverFunctionParams.push(responseCallback);
 
         var fn = object[serverFunction];
-        
+
         if (!fn.public) return false;
-        
-        fn.apply(object, serverFunctionParams)
+
+        var callbackStack = [];
+
+        var getNext = function(lastRes){
+            //Abort because a test failed - no permission
+            if(lastRes === false) return false
+            var next = callbackStack.shift()
+            next();
+        }
+
+
+        //check needed rights
+        if(fn.neededRights && fn.neededRights.write) callbackStack.push(function(){
+            Modules.Connector.mayWrite(roomID, objectID, context, getNext)
+        })
+        if(fn.neededRights && fn.neededRights.read) callbackStack.push(function(){
+            Modules.Connector.mayRead(roomID, objectID, context, getNext)
+        })
+        if(fn.neededRights && fn.neededRights.delete) callbackStack.push(function(){
+            Modules.Connector.mayDelete(roomID, objectID, context, getNext)
+        })
+
+        callbackStack.push(function(){
+            fn.apply(object, serverFunctionParams)
+        })
+
+        //Call first method from callbackstack
+        callbackStack.shift().call()
     });
 
 
