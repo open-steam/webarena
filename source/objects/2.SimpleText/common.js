@@ -53,4 +53,8 @@ SimpleText.category='Texts';
 
 SimpleText.moveByTransform = function(){return true;};
 
+SimpleText.justCreated=function(){
+	this.setContent(this.translate(this.currentLanguage, 'No text yet!'));
+}
+
 module.exports=SimpleText;
