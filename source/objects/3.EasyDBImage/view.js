@@ -12,13 +12,8 @@ EasyDBImage.addControl = function(type, resizeFunction) {
 
     var timedFunction = function(){
         var data = {};
-        data['roomID'] = that.getRoomID();
-        data['objectID'] = that.getID();
+
         var maxSideLength = Math.max(that.getViewWidth(), that.getViewHeight());
-        data['customFunctionCall'] = {
-            'name' : 'getUrls',
-            
-        }
 
         var params =  {
             'id' : that.getAttribute('easydb_id'),
@@ -112,6 +107,13 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current, ext
 
     //TODO: searchTerm
     var that=this;
+    var data = {
+        roomID : that.getRoomID(),
+        objectID: that.getID(),
+        searchParams: that.searchParams,
+        offset: offset,
+        limit: limit
+    }
 
     //var button = "<div class='paginator-button'>" + number + "</div>";
     var button = document.createElement("div");
@@ -122,15 +124,14 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current, ext
 
     $(button).on('click', function(){
         that.renderLoadScreen(".ui-dialog-content");
-        var cbFinish = function(searchResults){
+        Modules.Dispatcher.query('search', data ,function(searchResults){
             that.renderResultPage(searchResults, ".ui-dialog-content");
-        };
-
-        that.serverCall("search", that.searchParams, offset, limit, cbFinish);
+        });
     });
     $(button).on('click', function(){
         $(".paginator .current").removeClass('current');
         $(this).addClass('current');
+
     })
 
     return (button);

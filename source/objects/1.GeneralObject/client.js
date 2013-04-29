@@ -7,20 +7,6 @@
 *
 */
 
-GeneralObject.getAttributeFromServer=function(attribute,respFunction){
-	if (!respFunction) respFunction=function(data){
-		console.log(data);
-	}
-	
-	var requestData={};
-	
-	requestData.roomID=this.getRoomID();
-    requestData.objectID=this.id;
-    requestData.key=attribute;
-	
-	Modules.Dispatcher.query('getAttribute',requestData,respFunction);
-	
-}
 
 GeneralObject.content=false;
 GeneralObject.contentFetched=false;
@@ -54,8 +40,6 @@ GeneralObject.serverCall = function(){
 	var lastArg = args[args.length - 1];
 	if ( _.isFunction( lastArg )) {
 		callback = lastArg;
-        console.log()
-        console.log(_.isArray(args))
         args.pop();
 	}
 
@@ -89,24 +73,21 @@ GeneralObject.fetchContent=function(worker, forced){
 	}
 
 	if (this.contentFetched && forced !== true) {
-
 		worker(this.content);
 		return;
 	}
 
-	var requestData={};
-	
-	requestData.roomID=this.getRoomID();
-    requestData.objectID=this.id;
-
 	var that=this;
 	//Do not use "this" in response fucntions as they do not refer to the object in there!
-	Modules.Dispatcher.query('getContent',requestData,function(newContent){
+	
+	var functionLoadedCallback = function(newContent){
 		that.content=newContent;
 		that.contentFetched=true;
 		worker(newContent);
 	    return;
-	});
+	}
+
+	this.serverCall('getContent', functionLoadedCallback);
 }
 
 GeneralObject.utf8={};

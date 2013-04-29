@@ -427,33 +427,6 @@ ObjectManager.init=function(theModules){
 		
 	});
 
-	//getContent
-	Modules.Dispatcher.registerCall('getContent',function(socket,data,responseID){
-
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-
-			if (mayRead) {
-
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				Modules.Dispatcher.respond(socket,responseID,object.getContent(context));
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
-			}
-			
-		});
-		
-	});
 	
 	//deleteObject
 	Modules.Dispatcher.registerCall('deleteObject',function(socket,data,responseID){
