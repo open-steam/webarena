@@ -356,39 +356,48 @@ WebServer.init=function(theModules){
              return fileReg.test(fname);
           })
 
-          var combinedJavascript = "";
+          var etag ="";
+          _.each(files, function(file){
+              var stats = fs.statSync('Client/guis.common/javascript/' + file);
+              etag += stats.size + '-' + Date.parse(stats.mtime);
+          })
 
-          //Asynchron file loading!
-          //In order to get right order, second file is loaded in the callback of first file
-          //and so on.
-          var processFiles = function (){
+          if (req.headers['if-none-match'] === etag) {
+              res.statusCode = 304;
+              res.end();
+          } else {
+              var combinedJavascript = "";
 
-              // check for termination - we worked through all files
-              // then we want to send the result.
-              if(files.length === 0) sendResult()
-              // take first element - call recursion with remaining files,
-              // after first file was loaded.
-              else {
-                  var filename = files.shift();
+              //Asynchron file loading!
+              //In order to get right order, second file is loaded in the callback of first file
+              //and so on.
+              var processFiles = function (){
 
-                  fs.readFile('Client/guis.common/javascript/' + filename, function(err,data){
-                      if(!err)  combinedJavascript += data + "\n";
+                  // check for termination - we worked through all files
+                  // then we want to send the result.
+                  if(files.length === 0) sendResult()
+                  // take first element - call recursion with remaining files,
+                  // after first file was loaded.
+                  else {
+                      var filename = files.shift();
 
-                      processFiles()
-                  });
+                      fs.readFile('Client/guis.common/javascript/' + filename, function(err,data){
+                          if(!err)  combinedJavascript += data + "\n";
+
+                          processFiles()
+                      });
+                  }
               }
 
+              var sendResult = function(){
+                  var mimeType='application/javascript';
+                  res.setHeader('ETag', etag);
+                  res.writeHead(200, {'Content-Type':mimeType});
+                  res.end(combinedJavascript);
+              }
+
+              processFiles();
           }
-
-          var sendResult = function(){
-              var mimeType='application/javascript';
-
-              res.writeHead(200, {'Content-Type':mimeType});
-              res.end(combinedJavascript);
-          }
-
-          processFiles();
-
       }
 	  
 	  // objects
