@@ -63,3 +63,7 @@ theObject.setContent=function(content,callback){
 	},self.context);
 	
 }
+theObject.setContent.public = true;
+theObject.setContent.neededRights = {
+    write : true
+}
