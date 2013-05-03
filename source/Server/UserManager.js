@@ -177,7 +177,7 @@ UserManager.enterRoom=function(socketOrUser,roomID,responseID){
 				UserManager.sendAwarenessData(room.id);
 			},oldRoomId);
 			
-			ObjectManager.sendChatMessages(roomID,socket);
+			//ObjectManager.sendChatMessages(roomID,socket);
 			
 			Modules.Dispatcher.respond(socket,responseID,false);
 

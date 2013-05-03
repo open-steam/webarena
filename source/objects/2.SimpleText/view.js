@@ -38,7 +38,7 @@ SimpleText.draw=function(external){
 		
 		if(data!=that.oldContent){
 			if ((!data && !that.oldContent) || data == "") {
-				$(rep).find("text").get(0).textContent=that.translate(that.currentLanguage, 'No text yet!');
+				$(rep).find("text").get(0).textContent='';
 			} else {
 				$(rep).find("text").get(0).textContent=data;
 			}

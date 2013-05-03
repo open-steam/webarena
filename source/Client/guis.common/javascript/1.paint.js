@@ -216,6 +216,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	/* add save/close button */
 	var closeButton = document.createElement("span");
 	$(closeButton).addClass("header_button");
+	$(closeButton).addClass("button_save");
 	$(closeButton).addClass("jPaint_navi");
 	$(closeButton).html(GUI.translate("save"));
 	$(closeButton).bind("click", function(event) {
@@ -456,6 +457,10 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		if (event.keyCode == 16) {
 			GUI.paintShiftKeyDown = true;
 			GUI.paintShiftKeyDirection = undefined;
+		}
+		
+		if (event.keyCode == 13) {
+			GUI.savePaintMode();
 		}
 		
 	});

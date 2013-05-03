@@ -120,13 +120,17 @@ GeneralObject.register=function(type){
 		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
 		
 		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
-			var context=object.getRoom().getContext();
+			var room=object.getRoom();
+			if (!room) return;
+			var context=room.getContext();
 			object.setAttribute('x_'+context,value);
 			object.set('x',value);
 		}});
 		
 		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
-			var context=object.getRoom().getContext();
+			var room=object.getRoom();
+			if (!room) return;
+			var context=room.getContext();
 			object.setAttribute('y_'+context,value);
 			object.set('y',value);
 		}});

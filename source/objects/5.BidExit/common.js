@@ -29,6 +29,19 @@ BidExit.register=function(type){
 		
 	});
 	
+	this.registerAction('Follow',function(){
+		
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var object = selected[i];
+			
+			object.execute();
+			
+		}
+		
+	},true);
+	
 }
 
 BidExit.execute=function(){

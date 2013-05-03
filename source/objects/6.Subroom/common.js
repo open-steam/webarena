@@ -18,6 +18,21 @@ Subroom.register=function(type){
 	
 	this.unregisterAction('Duplicate');
 	
+	
+	this.registerAction('Follow',function(){
+		
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected) {
+			var object = selected[i];
+			
+			object.execute();
+			
+		}
+		
+	},true);
+	
+	
 }
 
 Subroom.execute=function(){
