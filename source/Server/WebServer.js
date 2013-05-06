@@ -349,7 +349,9 @@ WebServer.init=function(theModules){
 
           //combine all javascript files in guis.common/javascript
           var files=fs.readdirSync('Client/guis.common/javascript');
-          files.sort();
+          files.sort(function(a,b){
+             return parseInt(a) - parseInt(b);
+          });
           var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
 
           files = _.filter(files, function(fname){
@@ -382,7 +384,14 @@ WebServer.init=function(theModules){
                       var filename = files.shift();
 
                       fs.readFile('Client/guis.common/javascript/' + filename, function(err,data){
-                          if(!err)  combinedJavascript += data + "\n";
+                          if(!err)  {
+                              combinedJavascript += "/******************************/\n";
+                              combinedJavascript += "/* " + filename + "\n";
+                              combinedJavascript += "/******************************/\n";
+                              combinedJavascript += data + "\n";
+                          } else {
+                              console.log("Error combining JavaScript files.");
+                          }
 
                           processFiles()
                       });
