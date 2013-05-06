@@ -14,7 +14,7 @@ var http = require('http');
 
 module.exports=theObject;
 
-theObject.search = function(args){
+theObject.search = function(searchArgs, offset, limit, callback){
     var that = this;
 
     var api = Object.create( EasyDbAPI);
@@ -22,17 +22,22 @@ theObject.search = function(args){
         return {username : that.context.user.username, password : that.context.user.password}
     }
 
-    api.search(args);
+    searchArgs.offset = offset;
+    searchArgs.limit = limit;
+    searchArgs.callback = callback;
+
+    api.search(searchArgs);
 }
 
-theObject.getUrls = function(args){
+theObject.getUrls = function(imgId, imgSize, callback){
     var that = this;
     var api = Object.create( EasyDbAPI);
     api.getAuth = function(){
         return {username : that.context.user.username, password : that.context.user.password}
     }
 
-    api.retrieveImageUrlForSize(args['id'], args['size'], args['callback']);
+    api.retrieveImageUrlForSize(imgId, imgSize, callback);
 }
 
 theObject.getUrls.public=true; //Function can be accessed by customObjectFunctionCall
+theObject.search.public=true;

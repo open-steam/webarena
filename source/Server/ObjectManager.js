@@ -361,128 +361,9 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
-	//This is the interface for clients. Registering functions for attribute access and
+ 	//This is the interface for clients. Registering functions for attribute access and
 	//other object updates
-	
-	
-	//setAttribute
-	Modules.Dispatcher.registerCall('setAttribute',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var key=data.key;
-		var value=data.value;
-		
 
-		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
-		
-			if (mayWrite) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					//Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-		
-
-				object.setAttribute(key,value,false,context);
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to set attribute '+objectID);
-			}
-			
-		});
-		
-	});
-	
-	//setContent
-	Modules.Dispatcher.registerCall('setContent',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var content=data.content;
-		
-		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
-		
-			if (mayWrite) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				object.setContent(content);
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to set content '+objectID);
-			}
-			
-		});
-		
-	});
-	
-	//getAttribute
-	Modules.Dispatcher.registerCall('getAttribute',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var key=data.key;
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-		
-			if (mayRead) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				Modules.Dispatcher.respond(socket,responseID,object.getAttribute(key));
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
-			}
-			
-		});
-		
-	});
-
-	//getContent
-	Modules.Dispatcher.registerCall('getContent',function(socket,data,responseID){
-
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-
-			if (mayRead) {
-
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				Modules.Dispatcher.respond(socket,responseID,object.getContent(context));
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
-			}
-			
-		});
-		
-	});
-	
 	//deleteObject
 	Modules.Dispatcher.registerCall('deleteObject',function(socket,data,responseID){
 		
@@ -506,9 +387,7 @@ ObjectManager.init=function(theModules){
 			} else {
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
 			}
-			
 		});
-		
 	});
 	
 	//createObject
@@ -583,13 +462,15 @@ ObjectManager.init=function(theModules){
 
 	});
 
-    Modules.Dispatcher.registerCall('customObjectFunctionCall', function(socket, data, responseID){
-        var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
+    Modules.Dispatcher.registerCall('serverCall', function(socket, data, responseID){
+        var context  = Modules.UserManager.getConnectionBySocket(socket);
+        var roomID   = data.roomID
+        var objectID = data.objectID;
 
-        var server_function         = data.customFunctionCall.name;
-        var server_function_params  = data.customFunctionCall.params;
+        if(!roomID) throw "Room id is missing."
+
+        var serverFunction         = data.fn.name;
+        var serverFunctionParams  = data.fn.params;
 
         var responseCallback = function(res){
             Modules.Dispatcher.respond(socket,responseID,res);
@@ -597,86 +478,42 @@ ObjectManager.init=function(theModules){
 
         var object=ObjectManager.getObject(roomID,objectID,context);
 
-        server_function_params['callback'] = responseCallback;
+        serverFunctionParams.push(responseCallback);
 
-        var fn = object[server_function];
-        
+        var fn = object[serverFunction];
+
         if (!fn.public) return false;
-        
-        //fn(server_function_params);
-        fn.call(object, server_function_params)
-    });
 
-    Modules.Dispatcher.registerCall('search',function(socket,data,responseID){
-        var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
+        var callbackStack = [];
 
-
-        var searchArgs = {
-            searchParams : data.searchParams,
-            offset : data.offset || 0,
-            limit : data.limit || 10
-        };
-
-        var searchCallback = function(res){
-            console.log('Send search results to client.');
-            Modules.Dispatcher.respond(socket,responseID,res);
-        }
-        searchArgs['callback'] = searchCallback;
-
-        var object=ObjectManager.getObject(roomID,objectID,context);
-        if (!object){
-            return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+        var getNext = function(lastRes){
+            //Abort because a test failed - no permission
+            if(lastRes === false) return false
+            var next = callbackStack.shift()
+            next();
         }
 
-        object.search(searchArgs);
 
+        //check needed rights
+        if(fn.neededRights && fn.neededRights.write) callbackStack.push(function(){
+            Modules.Connector.mayWrite(roomID, objectID, context, getNext)
+        })
+        if(fn.neededRights && fn.neededRights.read) callbackStack.push(function(){
+            Modules.Connector.mayRead(roomID, objectID, context, getNext)
+        })
+        if(fn.neededRights && fn.neededRights.delete) callbackStack.push(function(){
+            Modules.Connector.mayDelete(roomID, objectID, context, getNext)
+        })
+
+        callbackStack.push(function(){
+            fn.apply(object, serverFunctionParams)
+        })
+
+        //Call first method from callbackstack
+        callbackStack.shift().call()
     });
 
-    Modules.Dispatcher.registerCall('browse', function(socket, data, responseID){
-    	var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
-    	var browseLocation = data.browseLocation || null;
-	
-	    var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-		}
 
-
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-
-			if (mayRead) {
-
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				var responseCallback = function(res){
-		            console.log('Send browse results to client.');
-		            Modules.Dispatcher.respond(socket,responseID,res);
-		        };
-
-			    var browseParams = {
-			        //location : browseLocation,
-			        callback : responseCallback
-			    };
-
-		        object.browse(browseParams);
-
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-			}
-
-		});
-		
-    });
-	    
-	
 	Modules.Dispatcher.registerCall('memoryUsage',function(socket,data,responseID){
 		
 		var util=require('util');

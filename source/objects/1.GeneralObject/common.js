@@ -480,6 +480,10 @@ GeneralObject.setAttribute=function(attribute,value,forced){
 		return false;
 	}
 }
+GeneralObject.setAttribute.public = true;
+GeneralObject.setAttribute.neededRights = {
+    write : true
+}
 
 GeneralObject.getAttribute=function(attribute,noevaluation){
 	return this.attributeManager.getAttribute(this,attribute,noevaluation);
