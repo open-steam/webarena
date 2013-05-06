@@ -32,6 +32,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("change", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			$(this).blur();
 		});
 		
 		widget.valueBox.children("input").bind("mouseup", function() {
@@ -42,6 +43,11 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("blur", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			inspector.hasFocus=false;
+		});
+		
+		widget.valueBox.children("input").bind("focus", function() {
+			inspector.hasFocus=true;
 		});
 		
 	}
@@ -72,11 +78,17 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("change", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			$(this).blur();
 		});
 		
-		widget.valueBox.children("input").bind("keyup", function() {
+		widget.valueBox.children("input").bind("blur", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			inspector.hasFocus=false;
+		});
+		
+		widget.valueBox.children("input").bind("focus", function() {
+			inspector.hasFocus=true;
 		});
 		
 	}
@@ -812,6 +824,8 @@ $(function() { });
 		this.prevPage = 0;
 	
 		this.mainEl = undefined;
+		
+		this.hasFocus = false;
 	
 		
 		/* used to reference object in context where "this" is already in use */

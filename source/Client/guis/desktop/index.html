@@ -532,6 +532,11 @@
 		 */
 		GUI.updateInspector = function() {
 			
+			if ($("#inspector").data("jDesktopInspector").hasFocus) {
+				return; // do not update inspector content when the inspector has focus
+			}
+			
+			
 			$("#inspector").data("jDesktopInspector").update();
 			$("#sidebar_content").scrollTop(0);
 			
