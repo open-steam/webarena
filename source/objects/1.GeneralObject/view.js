@@ -677,6 +677,15 @@ GeneralObject.removeControls = function() {
 	
 }
 
+GeneralObject.onMoveStart=function(){
+	GUI.hideActionsheet();
+	GUI.hideLinks(this);
+}
+
+GeneralObject.onMoveEnd=function(){
+	GUI.showLinks(this);
+}
+
 /**
  * Adds a single control
  * @param {ControlType} type The type of the new control (see GeneralObject.adjustControls / GeneralObject.addControls)
@@ -722,8 +731,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		event.preventDefault();
 		event.stopPropagation();
 		
-		GUI.hideActionsheet();
-		GUI.hideLinks(self);
+		self.onMoveStart();
 
 		control.startMouseX = event.pageX;
 		control.startMouseY = event.pageY;
@@ -769,7 +777,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			
 			self.resizeHandler();
 			
-			GUI.showLinks(self);
+			self.onMoveEnd();
 			
 			if (!GUI.isTouchDevice) {
 				/* mouse */

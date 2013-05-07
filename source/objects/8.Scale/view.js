@@ -4,7 +4,18 @@
 *    @author Felix Winkelnkemper, University of Paderborn, 2011
 *
 */
-	
+
+Scale.onMoveStart=function(){
+	GUI.hideActionsheet();
+	GUI.hideLinks(this);
+	var rep=this.getRepresentation();
+	$(rep).children(".numbers").remove();
+}
+
+Scale.onMoveEnd=function(){
+	GUI.showLinks(this);
+}
+
 Scale.draw=function(external){
 
 	var rep=this.getRepresentation();
