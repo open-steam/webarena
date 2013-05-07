@@ -627,24 +627,7 @@
 			});
 			
 		});
-		
-		/**
-		 * Used to play a "huu" sound in chat ;)
-		 */
-		GUI.huu = function() {
 			
-			var huu = new Audio("");
-			$("body").append(huu);
-			
-			huu.src = "/guis/desktop/huu.m4a";
-			huu.play();
-			
-			window.setTimeout(function() {
-				$(huu).remove();
-			}, 4000);
-			
-		}
-	
 	</script>
 </head>
 <body>

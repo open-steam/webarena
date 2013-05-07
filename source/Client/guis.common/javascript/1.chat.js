@@ -108,9 +108,7 @@ GUI.chat.addMessage = function(username, text, userColor, read) {
 		
 	}
 	
-	if (text.indexOf('(ghost)') > -1) {
-		GUI.huu();
-	}
+
 	
 	text = replaceEmoticon(':)', 'emoticon_smile.png', text);
 	text = replaceEmoticon(':D', 'emoticon_grin.png', text);
