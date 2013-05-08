@@ -30,6 +30,8 @@ GeneralObject.setTranslations('de',{
 	'no object slected':'Kein Objekt ausgewählt',
 	'you need at least one link from or to this object to hide it':'Es muss mindestens eine Verknüpfung von oder zu diesem Objekt existieren, um es zu verstecken.',
 	'mimeType' : 'Dateityp',
-	'preview' : 'Vorschau'
+	'preview' : 'Vorschau',
+	'Copy' : 'Kopieren',
+	'Cut' : 'Ausschneiden'
 }
 );

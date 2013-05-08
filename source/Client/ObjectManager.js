@@ -16,6 +16,7 @@ ObjectManager.currentRoom=false;
 ObjectManager.clientID = new Date().getTime()-1296055327011;
 ObjectManager.prototypes={};
 ObjectManager.user={};
+ObjectManager.clipBoard={};
 
 ObjectManager.registerType=function(type,constr){
     this.prototypes[type]=constr;
@@ -574,4 +575,79 @@ ObjectManager.showAll=function() {
         obj.setAttribute("visible", true);
     }
 
+}
+
+ObjectManager.copyObjects=function(objects) {
+	if (objects != undefined && objects.length > 0) {
+		ObjectManager.clipBoard.cut = false;
+
+		var array = new Array();
+
+		for (var key in objects) {
+	        var object = objects[key];
+	        array.push(object.getId());
+	    }
+	    
+	    ObjectManager.clipBoard.room = objects[0].getCurrentRoom();
+		ObjectManager.clipBoard.objects = array;
+	}
+}
+
+ObjectManager.cutObjects=function(objects) {
+	if (objects != undefined && objects.length > 0) {
+		ObjectManager.clipBoard.cut = true;
+
+		var array = new Array();
+
+		for (var key in objects) {
+	        var object = objects[key];
+	        array.push(object.getId());
+	    }
+	    
+	    ObjectManager.clipBoard.room = objects[0].getCurrentRoom();
+		ObjectManager.clipBoard.objects = array;
+	}
+}
+
+ObjectManager.pasteObjects=function() {
+
+	if (ObjectManager.clipBoard.objects != undefined && ObjectManager.clipBoard.objects.length > 0) {
+		var requestData={};
+		
+		requestData.fromRoom=ObjectManager.clipBoard.room;
+		requestData.toRoom=this.getRoomID();
+	    requestData.objects=ObjectManager.clipBoard.objects;
+	    requestData.cut=ObjectManager.clipBoard.cut;
+
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(){
+
+		});
+
+		if (ObjectManager.clipBoard.cut) {
+			ObjectManager.clipBoard={};
+		}
+		GUI.deselectAllObjects();
+	}
+}
+
+ObjectManager.duplicateObjects=function(objects) {
+	if (objects != undefined && objects.length > 0) {
+
+		var array = new Array();
+
+		for (var key in objects) {
+	        var object = objects[key];
+	        array.push(object.getId());
+	    }
+	    
+	    var requestData={};
+		requestData.fromRoom=this.getRoomID();
+		requestData.toRoom=this.getRoomID();
+	    requestData.objects=array;
+	    requestData.cut=false;
+
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(){
+
+		});
+	}
 }

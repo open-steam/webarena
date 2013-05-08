@@ -265,7 +265,27 @@ GUI.initToolbar = function() {
 		$(homeButton).bind("mousedown", click);
 	}
 
+	/*add paste button*/
+	var pasteButton = document.createElement("img");
+	$(pasteButton).attr("src", "../../guis.common/images/hidden.png").attr("alt", "");
+	$(pasteButton).attr("width", "24").attr("height", "24");
+
+	$(pasteButton).attr("id", "paste_button");
+	$(pasteButton).addClass("sidebar_button");
 	
+	$(pasteButton).attr("title", GUI.translate("Paste"));
+
+	$("#header > .header_right").append(pasteButton);
+	
+	var click = function() {
+		Modules.ObjectManager.pasteObjects();
+	}
+	
+	if (GUI.isTouchDevice) {
+		$(pasteButton).bind("touchstart", click);
+	} else {
+		$(pasteButton).bind("mousedown", click);
+	}
 	
 	/* add bug report toggle */
 	if (!Modules.Config.presentationMode) {

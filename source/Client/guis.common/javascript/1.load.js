@@ -77,6 +77,8 @@ GUI.loadGUI = function(step) {
 		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown		
 		
 		
+		if (!GUI.loaded) GUI.initObjectCopyCutPasteHandlingByKeyboard(); //handle ctrl+c, ctrl+x, ctrl+v for copy, cut and paste objects //needs: ObjectManager.cutObjects, ObjectManager.copyObjects, ObjectManager.pasteObjets, ObjectManager.getSelected on keydown
+		
 		/* toolbar */
 		if (!GUI.loaded) GUI.initToolbar(); //needs: ObjectManager
 

@@ -420,43 +420,117 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
-	//duplicate
-	Modules.Dispatcher.registerCall('duplicate',function(socket,data,responseID){
+	// duplicateObjects
+	Modules.Dispatcher.registerCall('duplicateObjects',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		
-		var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+
+		var cut=data.cut;
+		var fromRoom=data.fromRoom;
+		var toRoom=data.toRoom;
+		var objects=data.objects;
+
+		// collect unique objects to duplicate (each linked object only once)
+		var objectList = {};
+		var objectCount = 0;
+		for (var key in objects) {
+			var object=ObjectManager.getObject(fromRoom,objects[key],context);
+			if (!object){
+				continue;
+			}
+			if (!(objects[key] in objectList)) {
+				objectList[objects[key]] = object;
+				objectCount++;
+				var linkedObjects = object.getObjectsToDuplicate();
+				for (var linkedKey in linkedObjects) {
+					if (!(linkedObjects[linkedKey] in objectList)) {
+						objectList[linkedObjects[linkedKey]] = ObjectManager.getObject(fromRoom,linkedObjects[linkedKey],context);
+						objectCount++;
+					}
+				}
+			}
 		}
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-		
-			if (mayRead) {
-				
-				Modules.Connector.mayInsert(roomID, context, function(mayInsert) {
 
-					if (mayInsert) {
+		var counter = 0;
+		var idTranslationList = {}; //list of object ids and their duplicated new ids
+		var newObjects = []; //list of new (duplicated) objects
+		var idList = [];
 
-						object.duplicate(socket,responseID);
+		// this function will be called by the last duplicate-callback 
+		var updateObjects = function() {
+			counter++;
+			if (counter == objectCount) {
+				// all objects are duplicated 
+				for (var i in newObjects) {
+					var object = newObjects[i];
 
-					} else {
-						Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+					object.updateLinkIds(idTranslationList); //update links
+
+					object.setAttribute("x", object.getAttribute("x")+30);
+					object.setAttribute("y", object.getAttribute("y")+30);
+
+					// add group id if source object was grouped 
+					if (object.getAttribute("group") && object.getAttribute("group") > 0) {
+						object.setAttribute("group", object.getAttribute("group")+1);
 					}
 
-				});
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+					object.updateClients();
+					
+					if (object.hasContent()) {
+						object.updateClient(socket,'contentUpdate',object.hasContent(socket));
+					}
+					
+					idList.push(object.id);
+					
+				}
 			}
+		}
+
+		for (var key in objectList) {
+			var object=objectList[key];
+
+			Modules.Connector.mayRead(fromRoom, object.id, context, function(mayRead) {
 			
-		});
-		
-	});
+				if (mayRead) {
+					
+					Modules.Connector.mayInsert(toRoom, context, function(mayInsert) {
+
+						if (mayInsert) {
+
+							Modules.Connector.duplicateObject(fromRoom,object.id,function(newId,oldId) {
+								var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+
+								// remove old object if the action was cut
+								if (cut) {
+									var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
+									oldObject.remove();
+								}
+
+								newObjects.push(obj);
+								idTranslationList[oldId] = newId;
+
+								updateObjects(); //try to update objects
+
+							},context,toRoom);
+						
+						} else {
+							Modules.SocketServer.sendToSocket(socket,'error','No rights to insert in room '+toRoom);
+						}
+
+					});
+					
+				} else {
+					Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+object.id);
+				}
+				
+			});
+		}
 	
+		if (socket && responseID) {
+			Modules.Dispatcher.respond(socket,responseID,idList);
+		}
+	});
+
 	//TODO: find a better place for this...
 	Modules.Dispatcher.registerCall('getPreviewableMimeTypes',function(socket,data,responseID){
 

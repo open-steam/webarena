@@ -393,8 +393,8 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
-	
-	var objectID=new Date().getTime()-1296055327011;
+	var uuid = require('node-uuid');
+	var objectID = uuid.v4();
 	
 	data.type=type;
 	
@@ -422,15 +422,16 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 *	after(objectID)
 *
 */
-fileConnector.duplicateObject=function(roomID,objectID,callback,context){
-	
-	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+fileConnector.duplicateObject=function(roomID,objectID,callback,context,toRoom){
+
+	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', toRoom: '"+toRoom+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var self = this;
 
-	var newObjectID = new Date().getTime()-1296055327011;
+	var uuid = require('node-uuid');
+	var newObjectID = uuid.v4();
 	
 	var filebase=this.Modules.Config.filebase;
 	
@@ -440,10 +441,9 @@ fileConnector.duplicateObject=function(roomID,objectID,callback,context){
 	var contentFilename = filebase+'/'+roomID+'/'+objectID+'.content';
 	var previewFilename = filebase+'/'+roomID+'/'+objectID+'.preview';
 	
-	var objectFilenameNew = filebase+'/'+roomID+'/'+newObjectID+'.object.txt';
-	var contentFilenameNew = filebase+'/'+roomID+'/'+newObjectID+'.content';
-	var previewFilenameNew = filebase+'/'+roomID+'/'+newObjectID+'.preview';
-	
+	var objectFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.object.txt';
+	var contentFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.content';
+	var previewFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.preview';
 	
 	var sys = require("util");
 	var fs = require("fs");

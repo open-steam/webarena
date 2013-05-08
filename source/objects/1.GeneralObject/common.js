@@ -241,19 +241,21 @@ GeneralObject.register=function(type){
 	
 	this.registerAction('Duplicate',function(){
 		
-		var selected = ObjectManager.getSelected();
-		
-		var date = new Date();
-		var groupID = date.getTime();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
-			obj.duplicate(groupID);
-			
-		}
+		ObjectManager.duplicateObjects(ObjectManager.getSelected());
 		
 	},false);
+
+	this.registerAction('Copy',function(){
+	
+		ObjectManager.copyObjects(ObjectManager.getSelected());
+		
+	}, false);
+
+	this.registerAction('Cut',function(){
+	
+		ObjectManager.cutObjects(ObjectManager.getSelected());
+		
+	}, false);
 
     this.registerAction(
         'Link',

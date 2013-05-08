@@ -327,6 +327,51 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 
 
+/**
+ * add event handler for copy, cut and paste by ctrl + c, ctrl + x, ctrl + v
+ */
+GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.ctrlKey && event.which == 67) {
+				event.preventDefault();
+				ObjectManager.copyObjects(ObjectManager.getSelected());
+			}
+			
+		}
+		
+	});
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.ctrlKey && event.which == 88) {
+				event.preventDefault();
+				ObjectManager.cutObjects(ObjectManager.getSelected());
+			}
+			
+		}
+		
+	});
+
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.ctrlKey && event.which == 86) {
+				event.preventDefault();
+				ObjectManager.pasteObjects();
+			}
+			
+		}
+		
+	});
+}
+
 
 /**
  * add event handler for object selection (based on clicked position and layers)
