@@ -189,21 +189,6 @@ GeneralObject.justCreated=function(){
 	//react on client side if an object has just been created and needs further input
 }
 
-GeneralObject.duplicate=function() {
-	
-	var requestData={};
-	
-	requestData.roomID=this.getRoomID();
-    requestData.objectID=this.id;
-
-	Modules.Dispatcher.query('duplicate',requestData,function(){
-		
-	});
-	
-	GUI.deselectAllObjects();
-	
-}
-
 GeneralObject.getRoom=function(){
 	return Modules.ObjectManager.getCurrentRoom();
 }

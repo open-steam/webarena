@@ -649,5 +649,7 @@ ObjectManager.duplicateObjects=function(objects) {
 		Modules.Dispatcher.query('duplicateObjects',requestData, function(){
 
 		});
+		
+		GUI.deselectAllObjects();
 	}
 }
