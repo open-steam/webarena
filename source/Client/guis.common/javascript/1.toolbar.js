@@ -267,7 +267,7 @@ GUI.initToolbar = function() {
 
 	/*add paste button*/
 	var pasteButton = document.createElement("img");
-	$(pasteButton).attr("src", "../../guis.common/images/hidden.png").attr("alt", "");
+	$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
 	$(pasteButton).attr("width", "24").attr("height", "24");
 
 	$(pasteButton).attr("id", "paste_button");
