@@ -1,6 +1,7 @@
 "use strict";
 
 /* SVG */
+// http://keith-wood.name/svgRef.html
 
 /**
  * Refresh the SVG
