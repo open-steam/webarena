@@ -71,8 +71,9 @@ GUI.chat.clear = function() {
  * @param {String} username The username of the sender
  * @param {String} text The text of the message
  * @param {String} [userColor=#000000] The senders user color
+ * @param {Boolean} read True, if it is an old message
  */
-GUI.chat.addMessage = function(username, text, userColor) {
+GUI.chat.addMessage = function(username, text, userColor, read) {
 	
 	/* check if the message was send by the own user */
 	if (username == GUI.username) {
@@ -81,7 +82,7 @@ GUI.chat.addMessage = function(username, text, userColor) {
 		
 		var type = "other";
 		
-		if (GUI.sidebar.currentElement != "chat" || !GUI.sidebar.open) {
+		if (!read && (GUI.sidebar.currentElement != "chat" || !GUI.sidebar.open)) {
 			GUI.chat.newMessages++;
 			GUI.chat.showNotifier();
 		}

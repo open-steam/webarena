@@ -120,13 +120,17 @@ GeneralObject.register=function(type){
 		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
 		
 		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
-			var context=object.getRoom().getContext();
+			var room=object.getRoom();
+			if (!room) return;
+			var context=room.getContext();
 			object.setAttribute('x_'+context,value);
 			object.set('x',value);
 		}});
 		
 		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
-			var context=object.getRoom().getContext();
+			var room=object.getRoom();
+			if (!room) return;
+			var context=room.getContext();
 			object.setAttribute('y_'+context,value);
 			object.set('y',value);
 		}});
@@ -164,7 +168,7 @@ GeneralObject.register=function(type){
 	
 	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
 	this.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
-	this.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
+	this.registerAttribute('linesize',{type:'number',min:1,standard:1,max:30,category:'Appearance'});
 
 	this.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
 		
@@ -237,34 +241,41 @@ GeneralObject.register=function(type){
 	
 	this.registerAction('Duplicate',function(){
 		
-		var selected = ObjectManager.getSelected();
-		
-		var date = new Date();
-		var groupID = date.getTime();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
-			obj.duplicate(groupID);
-			
-		}
+		ObjectManager.duplicateObjects(ObjectManager.getSelected());
 		
 	},false);
 
+	this.registerAction('Copy',function(){
+	
+		ObjectManager.copyObjects(ObjectManager.getSelected());
+		
+	}, false);
+
+	this.registerAction('Cut',function(){
+	
+		ObjectManager.cutObjects(ObjectManager.getSelected());
+		
+	}, false);
+
     this.registerAction(
-        'Verknüpfen',
+        'Link',
         function(lastClicked){
             var selected = ObjectManager.getSelected();
             var lastSelectedId = lastClicked.getId();
 
             var newLinks = [];
+            var oldLinks = lastClicked.getAttribute('link');
 
-            if(_.isArray(ObjectManager.get(lastClicked,'link'))){
-                newLinks = newLinks.concat(ObjectManager.get(lastClicked,'link'))
-            } else if(ObjectManager.get(lastClicked,'link')){
-                newLinks.push(ObjectManager.get(lastClicked,'link'));
+            //check if there already existing links
+            //	if yes - reinsert them
+            if(_.isArray(oldLinks)){
+                newLinks = newLinks.concat(oldLinks)
+            } else if(oldLinks){
+                newLinks.push(oldLinks);
             }
-
+            
+            //check if selected object already is a link of the object
+            //	if no - add it
             _.each(selected, function(current){
                 var selectedId = current.getId()
                 if(selectedId!==lastSelectedId && !_.contains(newLinks, current.getId())) newLinks.push(current.getId());
@@ -433,8 +444,8 @@ GeneralObject.init=function(id){
 	this.id=id;
 	if(this.get(id,'id')) return;
 	
-	this.set(id,'id',id);
-	this.set(id,'type',this.type);
+	this.set('id',id);
+	this.set('type',this.type);
 }
 
 GeneralObject.toString=function(){
@@ -454,10 +465,6 @@ GeneralObject.registerAttribute=function(attribute,setter,type,min,max){
 
 GeneralObject.setAttribute=function(attribute,value,forced){
 	
-	if (this.ObjectManager.entering){
-		//console.log('Trying to set an attribute during entering process');
-		return;
-	}
 	
 	if (this.mayChangeAttributes()){
 		
@@ -474,6 +481,10 @@ GeneralObject.setAttribute=function(attribute,value,forced){
 		GUI.error('Missing rights','No right to change '+attribute+' on '+this,this);
 		return false;
 	}
+}
+GeneralObject.setAttribute.public = true;
+GeneralObject.setAttribute.neededRights = {
+    write : true
 }
 
 GeneralObject.getAttribute=function(attribute,noevaluation){
@@ -671,6 +682,12 @@ GeneralObject.refreshDelayed=function(){
 	var theTimer=400;
 	
 	this.refreshDelay=setTimeout(function(){
+		
+		//If the current room has changed in the meantime, do not refresh at all
+		if (that.getAttribute('inRoom')!==ObjectManager.getRoomID()){
+			return;
+		}
+		
 		that.refresh();
 	},theTimer);
 }

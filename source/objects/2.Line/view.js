@@ -38,6 +38,9 @@ Line.draw=function(external){
 		$(rep).children("line").attr("x2", this.getViewWidth());
 		$(rep).children("line").attr("y2", 0);
 	}
+	
+	$(rep).children("line.clickTarget").attr("stroke-width", 20);
+	$(rep).children("line.clickTarget").attr("stroke", 'rgba(255,255,255,0)');
 
 }
 
@@ -46,12 +49,14 @@ Line.createRepresentation = function() {
 
 	var rep = GUI.svg.group(this.getAttribute('id'));
 
- 	GUI.svg.line(rep, 0, 0, 20, 20, {});
+	var selectLine=GUI.svg.line(rep, 0, 0, 20, 20, {});
+ 	var line=GUI.svg.line(rep, 0, 0, 20, 20, {});
 
 	rep.dataObject=this;
 
 	$(rep).attr("id", this.getAttribute('id'));
-	$(rep).children("line").addClass("borderRect");
+	$(line).addClass("borderRect");
+	$(selectLine).addClass("clickTarget");
 
 	this.initGUI(rep);
 	

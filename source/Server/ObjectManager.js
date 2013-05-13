@@ -104,13 +104,11 @@ ObjectManager.getPrototypeFor=ObjectManager.getPrototype;
 */
 function buildObjectFromObjectData(objectData,roomID,type){
 	
-	var type=type||objectData.type;
-	
-	if(!type){
-		console.log('No type in buildObjectFromObjectData');
-		console.log(objectData,roomID,type);
-		console.trace();
+	if (!objectData){
+		Modules.Log.error('No object data!');
 	}
+	
+	var type=type||objectData.type;
 	
 	//get the object's prototype
 
@@ -151,6 +149,8 @@ ObjectManager.getObject=function(roomID,objectID,context){
 	if (!context) throw new Error('Missing context in ObjectManager.getObject');
 	
 	var objectData=Modules.Connector.getObjectData(roomID,objectID,context);
+	
+	if (!objectData) return false;
 
 	var object=buildObjectFromObjectData(objectData,roomID);
 	
@@ -291,7 +291,9 @@ ObjectManager.init=function(theModules){
 	var files=fs.readdirSync('objects');
 	var objectTypes={};
 	
-	files.sort();
+	files.sort(function(a,b){
+        return parseInt(a) - parseInt(b);
+    });
 	
 	ObjectManager.clientCode='//Object Code for WebArena Client '+enter;
 	
@@ -349,7 +351,10 @@ ObjectManager.init=function(theModules){
 			obj.ObjectManager=Modules.ObjectManager;
 			obj.register(objName);
 			
-			obj.localIconPath=filebase+'/icon.png';
+			obj.localIconPath=function(selection){
+				selection=(selection)?'_'+selection:'';
+				return filebase+'/icon'+selection+'.png';
+			}
 			
 		} catch (e) {
 			Modules.Log.warn('Could not register '+objName);
@@ -358,126 +363,9 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
-	//This is the interface for clients. Registering functions for attribute access and
+ 	//This is the interface for clients. Registering functions for attribute access and
 	//other object updates
-	
-	
-	//setAttribute
-	Modules.Dispatcher.registerCall('setAttribute',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var key=data.key;
-		var value=data.value;
-		
-		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
-		
-			if (mayWrite) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
 
-				object.setAttribute(key,value,false,context);
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to set attribute '+objectID);
-			}
-			
-		});
-		
-	});
-	
-	//setContent
-	Modules.Dispatcher.registerCall('setContent',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var content=data.content;
-		
-		Modules.Connector.mayWrite(roomID, objectID, context, function(mayWrite) {
-		
-			if (mayWrite) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				object.setContent(content);
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to set content '+objectID);
-			}
-			
-		});
-		
-	});
-	
-	//getAttribute
-	Modules.Dispatcher.registerCall('getAttribute',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		var key=data.key;
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-		
-			if (mayRead) {
-				
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				Modules.Dispatcher.respond(socket,responseID,object.getAttribute(key));
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
-			}
-			
-		});
-		
-	});
-
-	//getContent
-	Modules.Dispatcher.registerCall('getContent',function(socket,data,responseID){
-
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-
-			if (mayRead) {
-
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				Modules.Dispatcher.respond(socket,responseID,object.getContent(context));
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
-			}
-			
-		});
-		
-	});
-	
 	//deleteObject
 	Modules.Dispatcher.registerCall('deleteObject',function(socket,data,responseID){
 		
@@ -501,9 +389,7 @@ ObjectManager.init=function(theModules){
 			} else {
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
 			}
-			
 		});
-		
 	});
 	
 	//createObject
@@ -534,43 +420,117 @@ ObjectManager.init=function(theModules){
 		
 	});
 	
-	//duplicate
-	Modules.Dispatcher.registerCall('duplicate',function(socket,data,responseID){
+	// duplicateObjects
+	Modules.Dispatcher.registerCall('duplicateObjects',function(socket,data,responseID){
 		
 		var context=Modules.UserManager.getConnectionBySocket(socket);
-		
-		var roomID=data.roomID
-		var objectID=data.objectID;
-		
-		var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
+
+		var cut=data.cut;
+		var fromRoom=data.fromRoom;
+		var toRoom=data.toRoom;
+		var objects=data.objects;
+
+		// collect unique objects to duplicate (each linked object only once)
+		var objectList = {};
+		var objectCount = 0;
+		for (var key in objects) {
+			var object=ObjectManager.getObject(fromRoom,objects[key],context);
+			if (!object){
+				continue;
+			}
+			if (!(objects[key] in objectList)) {
+				objectList[objects[key]] = object;
+				objectCount++;
+				var linkedObjects = object.getObjectsToDuplicate();
+				for (var linkedKey in linkedObjects) {
+					if (!(linkedObjects[linkedKey] in objectList)) {
+						objectList[linkedObjects[linkedKey]] = ObjectManager.getObject(fromRoom,linkedObjects[linkedKey],context);
+						objectCount++;
+					}
+				}
+			}
 		}
-		
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-		
-			if (mayRead) {
-				
-				Modules.Connector.mayInsert(roomID, context, function(mayInsert) {
 
-					if (mayInsert) {
+		var counter = 0;
+		var idTranslationList = {}; //list of object ids and their duplicated new ids
+		var newObjects = []; //list of new (duplicated) objects
+		var idList = [];
 
-						object.duplicate(socket,responseID);
+		// this function will be called by the last duplicate-callback 
+		var updateObjects = function() {
+			counter++;
+			if (counter == objectCount) {
+				// all objects are duplicated 
+				for (var i in newObjects) {
+					var object = newObjects[i];
 
-					} else {
-						Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+					object.updateLinkIds(idTranslationList); //update links
+
+					object.setAttribute("x", object.getAttribute("x")+30);
+					object.setAttribute("y", object.getAttribute("y")+30);
+
+					// add group id if source object was grouped 
+					if (object.getAttribute("group") && object.getAttribute("group") > 0) {
+						object.setAttribute("group", object.getAttribute("group")+1);
 					}
 
-				});
-				
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+					object.updateClients();
+					
+					if (object.hasContent()) {
+						object.updateClient(socket,'contentUpdate',object.hasContent(socket));
+					}
+					
+					idList.push(object.id);
+					
+				}
 			}
+		}
+
+		for (var key in objectList) {
+			var object=objectList[key];
+
+			Modules.Connector.mayRead(fromRoom, object.id, context, function(mayRead) {
 			
-		});
-		
-	});
+				if (mayRead) {
+					
+					Modules.Connector.mayInsert(toRoom, context, function(mayInsert) {
+
+						if (mayInsert) {
+
+							Modules.Connector.duplicateObject(fromRoom,object.id,function(newId,oldId) {
+								var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+
+								// remove old object if the action was cut
+								if (cut) {
+									var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
+									oldObject.remove();
+								}
+
+								newObjects.push(obj);
+								idTranslationList[oldId] = newId;
+
+								updateObjects(); //try to update objects
+
+							},context,toRoom);
+						
+						} else {
+							Modules.SocketServer.sendToSocket(socket,'error','No rights to insert in room '+toRoom);
+						}
+
+					});
+					
+				} else {
+					Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+object.id);
+				}
+				
+			});
+		}
 	
+		if (socket && responseID) {
+			Modules.Dispatcher.respond(socket,responseID,idList);
+		}
+	});
+
 	//TODO: find a better place for this...
 	Modules.Dispatcher.registerCall('getPreviewableMimeTypes',function(socket,data,responseID){
 
@@ -578,13 +538,15 @@ ObjectManager.init=function(theModules){
 
 	});
 
-    Modules.Dispatcher.registerCall('customObjectFunctionCall', function(socket, data, responseID){
-        var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
+    Modules.Dispatcher.registerCall('serverCall', function(socket, data, responseID){
+        var context  = Modules.UserManager.getConnectionBySocket(socket);
+        var roomID   = data.roomID
+        var objectID = data.objectID;
 
-        var server_function         = data.customFunctionCall.name;
-        var server_function_params  = data.customFunctionCall.params;
+        if(!roomID) throw "Room id is missing."
+
+        var serverFunction         = data.fn.name;
+        var serverFunctionParams  = data.fn.params;
 
         var responseCallback = function(res){
             Modules.Dispatcher.respond(socket,responseID,res);
@@ -592,86 +554,42 @@ ObjectManager.init=function(theModules){
 
         var object=ObjectManager.getObject(roomID,objectID,context);
 
-        server_function_params['callback'] = responseCallback;
+        serverFunctionParams.push(responseCallback);
 
-        var fn = object[server_function];
-        
+        var fn = object[serverFunction];
+
         if (!fn.public) return false;
-        
-        //fn(server_function_params);
-        fn.call(object, server_function_params)
-    });
 
-    Modules.Dispatcher.registerCall('search',function(socket,data,responseID){
-        var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
+        var callbackStack = [];
 
-
-        var searchArgs = {
-            searchParams : data.searchParams,
-            offset : data.offset || 0,
-            limit : data.limit || 10
-        };
-
-        var searchCallback = function(res){
-            console.log('Send search results to client.');
-            Modules.Dispatcher.respond(socket,responseID,res);
-        }
-        searchArgs['callback'] = searchCallback;
-
-        var object=ObjectManager.getObject(roomID,objectID,context);
-        if (!object){
-            return Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
+        var getNext = function(lastRes){
+            //Abort because a test failed - no permission
+            if(lastRes === false) return false
+            var next = callbackStack.shift()
+            next();
         }
 
-        object.search(searchArgs);
 
+        //check needed rights
+        if(fn.neededRights && fn.neededRights.write) callbackStack.push(function(){
+            Modules.Connector.mayWrite(roomID, objectID, context, getNext)
+        })
+        if(fn.neededRights && fn.neededRights.read) callbackStack.push(function(){
+            Modules.Connector.mayRead(roomID, objectID, context, getNext)
+        })
+        if(fn.neededRights && fn.neededRights.delete) callbackStack.push(function(){
+            Modules.Connector.mayDelete(roomID, objectID, context, getNext)
+        })
+
+        callbackStack.push(function(){
+            fn.apply(object, serverFunctionParams)
+        })
+
+        //Call first method from callbackstack
+        callbackStack.shift().call()
     });
 
-    Modules.Dispatcher.registerCall('browse', function(socket, data, responseID){
-    	var context=Modules.UserManager.getConnectionBySocket(socket);
-        var roomID=data.roomID
-        var objectID=data.objectID;
-    	var browseLocation = data.browseLocation || null;
-	
-	    var object=ObjectManager.getObject(roomID,objectID,context);
-		if (!object){
-			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-		}
 
-
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
-
-			if (mayRead) {
-
-				var object=ObjectManager.getObject(roomID,objectID,context);
-				if (!object){
-					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
-					return;
-				}
-
-				var responseCallback = function(res){
-		            console.log('Send browse results to client.');
-		            Modules.Dispatcher.respond(socket,responseID,res);
-		        };
-
-			    var browseParams = {
-			        //location : browseLocation,
-			        callback : responseCallback
-			    };
-
-		        object.browse(browseParams);
-
-			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+objectID);
-			}
-
-		});
-		
-    });
-	    
-	
 	Modules.Dispatcher.registerCall('memoryUsage',function(socket,data,responseID){
 		
 		var util=require('util');
@@ -696,8 +614,9 @@ ObjectManager.init=function(theModules){
 			Modules.SocketServer.sendToSocket(socket,'inform',data);
 		}
 		
+		/*
 		if (data.message.text !== undefined) {
-			/* chat message */
+			// chat message
 
 			var context=Modules.UserManager.getConnectionBySocket(socket);
 			ObjectManager.getRoom(data.room,context,function(room) {
@@ -711,6 +630,7 @@ ObjectManager.init=function(theModules){
 				
 			});			
 		}
+		*/
 
 	});
 	
@@ -789,7 +709,7 @@ ObjectManager.init=function(theModules){
 *
 *	returns the a room object for a given roomID
 **/
-ObjectManager.getRoom=function(roomID,context,callback){
+ObjectManager.getRoom=function(roomID,context,callback,oldRoomId){
 	
 	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
 	
@@ -797,7 +717,7 @@ ObjectManager.getRoom=function(roomID,context,callback){
 		var obj=buildObjectFromObjectData(data,roomID,'Room');
 		obj.context=context;
 		callback(obj);
-	});
+	},oldRoomId);
 	
 }
 
@@ -812,16 +732,22 @@ ObjectManager.getClientCode=function(){
 	var code='"use strict";';
 	
 	var lines=this.clientCode.split(enter);
-	
+
+    var showDebugLineNumbers = !!Modules.config.showDebugLineNumbers;
 	//fill in line numbers for debugging
 	for (var i=0;i<lines.length;i++){
 		var line=lines[i];
-		code+=line+' //'+(i+1)+enter;
+        code+=line
+
+        if(showDebugLineNumbers) code += ' //'+(i+1)
+
+        code += enter
 	}
 	
 	return code;
 }
 
+/*
 ObjectManager.sendChatMessages=function(roomID,socket) {
 	
 	var context=Modules.UserManager.getConnectionBySocket(socket);
@@ -831,11 +757,14 @@ ObjectManager.sendChatMessages=function(roomID,socket) {
 		if (oldMessages === undefined) oldMessages = [];
 		
 		for (var i in oldMessages) {
-			Modules.SocketServer.sendToSocket(socket,'inform',oldMessages[i]);
+			var data=oldMessages[i];
+			data.message.read=true;
+			Modules.SocketServer.sendToSocket(socket,'inform',data);
 		}
 		
 	});
 	
 }
+*/
 
 module.exports=ObjectManager;

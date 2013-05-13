@@ -76,9 +76,19 @@ GUI.initToolbar = function() {
 						}
 
 						if (GUI.isTouchDevice) {
-							$(element.getDOM()).bind("touchstart", function() { click(); });
+							$(element.getDOM()).bind("touchstart", function() {
+								click({
+									"x" : window.pageXOffset + 40, 
+									"y" : window.pageYOffset + 40
+								}); 
+							});
 						} else {
-							$(element.getDOM()).bind("click", function() { click(); });
+							$(element.getDOM()).bind("click", function() { 
+								click({
+									"x" : window.pageXOffset + 40, 
+									"y" : window.pageYOffset + 40
+								}); 
+							});
 						}
 						
 						
@@ -147,9 +157,19 @@ GUI.initToolbar = function() {
 			}
 			
 			if (GUI.isTouchDevice) {
-				$(newCategoryIcon).bind("touchstart", function() { click(); });
+				$(newCategoryIcon).bind("touchstart", function() { 
+					click({
+						"x" : window.pageXOffset + 40, 
+						"y" : window.pageYOffset + 40
+					}); 
+				});
 			} else {
-				$(newCategoryIcon).bind("click", function() { click(); });
+				$(newCategoryIcon).bind("click", function() {
+					click({
+						"x" : window.pageXOffset + 40, 
+						"y" : window.pageYOffset + 40
+					}); 
+				});
 			}
 			
 			/* All objects (except for Paint and Highlighter) can be created by dragging them to the svg area */
@@ -199,12 +219,73 @@ GUI.initToolbar = function() {
 		}
 	
 	});
+		
+	/*add parent button*/
 	
-	
-	
-	
+	var parentButton = document.createElement("img");
+	$(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
+	$(parentButton).attr("width", "24").attr("height", "24");
 
+	$(parentButton).attr("id", "bug_button");
+	$(parentButton).addClass("sidebar_button");
 	
+	$(parentButton).attr("title", GUI.translate("Home"));
+
+	$("#header > .header_right").append(parentButton);
+	
+	var click = function() {
+		Modules.ObjectManager.goParent();
+	}
+	
+	if (GUI.isTouchDevice) {
+		$(parentButton).bind("touchstart", click);
+	} else {
+		$(parentButton).bind("mousedown", click);
+	}
+	
+	/*add home button*/
+	var homeButton = document.createElement("img");
+	$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
+	$(homeButton).attr("width", "24").attr("height", "24");
+
+	$(homeButton).attr("id", "bug_button");
+	$(homeButton).addClass("sidebar_button");
+	
+	$(homeButton).attr("title", GUI.translate("Home"));
+
+	$("#header > .header_right").append(homeButton);
+	
+	var click = function() {
+		Modules.ObjectManager.goHome();
+	}
+	
+	if (GUI.isTouchDevice) {
+		$(homeButton).bind("touchstart", click);
+	} else {
+		$(homeButton).bind("mousedown", click);
+	}
+
+	/*add paste button*/
+	var pasteButton = document.createElement("img");
+	$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
+	$(pasteButton).attr("width", "24").attr("height", "24");
+
+	$(pasteButton).attr("id", "paste_button");
+	$(pasteButton).addClass("sidebar_button");
+	
+	$(pasteButton).attr("title", GUI.translate("Paste"));
+
+	$("#header > .header_right").append(pasteButton);
+	
+	var click = function() {
+		Modules.ObjectManager.pasteObjects();
+	}
+	
+	if (GUI.isTouchDevice) {
+		$(pasteButton).bind("touchstart", click);
+	} else {
+		$(pasteButton).bind("mousedown", click);
+	}
 	
 	/* add bug report toggle */
 	if (!Modules.Config.presentationMode) {

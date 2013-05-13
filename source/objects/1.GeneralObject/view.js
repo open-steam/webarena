@@ -144,9 +144,10 @@ GeneralObject.getRepresentation=function(){
 
 		var rep = this.createRepresentation();
 		this.representationCreated();
-		return rep;
 		
 	}
+	
+	rep.dataObject=this;
 	return rep;
 }
 
@@ -676,6 +677,15 @@ GeneralObject.removeControls = function() {
 	
 }
 
+GeneralObject.onMoveStart=function(){
+	GUI.hideActionsheet();
+	GUI.hideLinks(this);
+}
+
+GeneralObject.onMoveEnd=function(){
+	GUI.showLinks(this);
+}
+
 /**
  * Adds a single control
  * @param {ControlType} type The type of the new control (see GeneralObject.adjustControls / GeneralObject.addControls)
@@ -721,8 +731,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		event.preventDefault();
 		event.stopPropagation();
 		
-		GUI.hideActionsheet();
-		GUI.hideLinks(self);
+		self.onMoveStart();
 
 		control.startMouseX = event.pageX;
 		control.startMouseY = event.pageY;
@@ -768,7 +777,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			
 			self.resizeHandler();
 			
-			GUI.showLinks(self);
+			self.onMoveEnd();
 			
 			if (!GUI.isTouchDevice) {
 				/* mouse */
@@ -840,11 +849,6 @@ GeneralObject.moveStart = function(event) {
 	if (!self.selected) self.select();
 	
 	var contentPosition = $("#content").offset();
-	
-	/* check if the object has a graphical representation at the clicked position */
-	if (!self.hasPixelAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top)) {
-		return;
-	}
 
 	event.preventDefault();
 	event.stopPropagation();

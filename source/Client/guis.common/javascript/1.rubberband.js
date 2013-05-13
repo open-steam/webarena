@@ -72,27 +72,30 @@ GUI.rubberbandStart = function(event) {
 	
 	var end = function(event) {
 
-		if (GUI.rubberbandWidth < 4) GUI.rubberbandWidth = 4;
-		if (GUI.rubberbandHeight < 4) GUI.rubberbandHeight = 4;
-	
-		var count = 0;
-	
-		$.each(ObjectManager.getObjects(), function(index, object) {
+		if (GUI.rubberbandWidth || GUI.rubberbandHeight){
+
+			if (GUI.rubberbandWidth < 4) GUI.rubberbandWidth = 4;
+			if (GUI.rubberbandHeight < 4) GUI.rubberbandHeight = 4;
 		
-			if (!object.getAttribute("visible")) return;
+			var count = 0;
+		
+			$.each(ObjectManager.getObjects(), function(index, object) {
 			
-			if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
-				if (object.isGraphical) {
-					object.select(true);
-					count++;
+				if (!object.getAttribute("visible")) return;
+				
+				if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
+					if (object.isGraphical) {
+						object.select(true);
+						count++;
+					}
 				}
-			}
+				
+			});
 			
-		});
-		
-		if (count == 0) {
-			/* clicked on background */
-			GUI.updateInspector();
+			if (count == 0) {
+				/* clicked on background */
+				GUI.updateInspector();
+			}
 		}
 	
 		$("#content>svg").unbind("mousemove.webarenaRubberband");

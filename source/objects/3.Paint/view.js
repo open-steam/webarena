@@ -11,6 +11,7 @@ Paint.draw=function(external){
 	var rep=this.getRepresentation();
 
 	ImageObject.draw.call(this,external);
+	
 /*
 	if (!this.hasContent()) {
 		$(rep).css("display", "none");
@@ -22,25 +23,13 @@ Paint.draw=function(external){
 
 Paint.createRepresentation = function() {
 
-	ImageObject.createRepresentation.call(this);
+	var rep=ImageObject.createRepresentation.call(this);
 
 	this.createCanvas();
 	this.updateCanvas(this.getPreviewContentURL());
-
-}
-
-Paint.updateImage=function(){
-
-	ImageObject.updateImage.call(this);
-
-	if (this.hasContent() == false) {
-		
-		this.updateCanvas("../../guis.common/images/imageNotFound.png");
-		
-	} else {
-		
-		this.updateCanvas(this.getPreviewContentURL());
 	
-	}
+	return rep;
 
 }
+
+Paint.updateImage=ImageObject.updateImage;

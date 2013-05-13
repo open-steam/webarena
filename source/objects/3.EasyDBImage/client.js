@@ -54,13 +54,10 @@ EasyDBImage.execute = function () {
             artist:$(pageOneContent).find("#search-artist").val(),
             location:$(pageOneContent).find("#search-location").val(),
             presentedLocation:$(pageOneContent).find("#search-presented-location").val(),
-            reference:$(pageOneContent).find("#search-reference").val()
+            reference:$(pageOneContent).find("#search-reference").val(),
+
         };
-        var data = {
-            roomID:that.getRoomID(),
-            objectID:that.getID(),
-            searchParams:searchParams
-        }
+
 
         var pageTwoButtons = {
             "Zurück" : function(){
@@ -69,7 +66,7 @@ EasyDBImage.execute = function () {
 
             },
             "Abbrechen":function () {
-            return false;
+                return false;
             },
 
             "OK":function () {
@@ -97,14 +94,16 @@ EasyDBImage.execute = function () {
 
         var dialog_pass_through = {
             create:function () {
-                Modules.Dispatcher.query('search', data, function (searchResults) {
+                var finishedSearchCallback = function (searchResults) {
                     that.searchParams = searchParams;
                     if(Object.keys(searchResults).length === 0){
                         $('.easy-load-wrapper').html("<h2>Es wurden keine Ergbnisse gefunden</h2>");
                     } else {
                         that.renderResultPage(searchResults, ".ui-dialog-content");
                     }
-                });
+                }
+
+                that.serverCall("search", searchParams, 0, 10 , finishedSearchCallback);
             },
             height:600
         }
@@ -132,7 +131,7 @@ EasyDBImage.execute = function () {
         }
 
         var dialog = GUI.dialog(
-            that.translate("EASYDB_SEARCH_HEADER"),
+            "easydb-Suche",
             pageOneContent, pageOneButtons, 500, {height:500}
         )
 

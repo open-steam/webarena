@@ -16,6 +16,7 @@ ObjectManager.currentRoom=false;
 ObjectManager.clientID = new Date().getTime()-1296055327011;
 ObjectManager.prototypes={};
 ObjectManager.user={};
+ObjectManager.clipBoard={};
 
 ObjectManager.registerType=function(type,constr){
     this.prototypes[type]=constr;
@@ -45,10 +46,7 @@ ObjectManager.getObject=function(objectID){
 
 ObjectManager.buildObject=function(type, attributes){
 	
-	if (!type) {
-		console.log('buildObject without type');
-		console.trace();
-	}
+	if (!type) console.trace();
 
     var proto=this.getPrototype(type);
     var object=Object.create(proto);
@@ -164,12 +162,13 @@ ObjectManager.objectUpdate=function(data){
         /**
         
         TODO Room updated come with no object type. Why?
-        **/
+        
         if (!data.type){
     		console.log('No type');
     		console.log(data);
     		console.trace();
     	}
+    	**/
         
 		
         for (var key in oldData){
@@ -246,10 +245,23 @@ ObjectManager.login=function(username, password, externalSession){
     });
 }
 
-ObjectManager.loadRoom=function(roomid){
+
+ObjectManager.goParent=function(){
+	var parent=ObjectManager.getCurrentRoom().getAttribute('parent');
+	if (parent){
+		ObjectManager.loadRoom(ObjectManager.getCurrentRoom().getAttribute('parent'));
+	} else {
+		alert(GUI.translate('This room has no parent.'))
+	}
+}
+
+ObjectManager.goHome=function(){
+	ObjectManager.loadRoom(ObjectManager.user.home);
+}
+
+ObjectManager.loadRoom=function(roomid,byBrowserNav){
 	
 	var self = this;
-	this.entering=true;
 	
 	Modules.Dispatcher.query('enter',roomid,function(error){
 
@@ -264,7 +276,12 @@ ObjectManager.loadRoom=function(roomid){
 
 		    if(!roomid) roomid='public';
 		    self.currentRoomID=roomid;
-		    this.entering=false;
+		   
+		    if (!byBrowserNav){
+				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
+		    }
+		    
+		    GUI.chat.clear();
 		
 		}
 		
@@ -365,10 +382,11 @@ ObjectManager.init=function(){
 				users.push(d);
 			}
 			GUI.chat.setUsers(users);
+			GUI.userMarker.removeOfflineUsers(users);
 		}
 		
 		if (data.message.text !== undefined) {
-			GUI.chat.addMessage(data.user, data.message.text, data.color);
+			GUI.chat.addMessage(data.user, data.message.text, data.color, data.message.read);
 		}
 		
 		if (data.message.selection) {
@@ -557,4 +575,81 @@ ObjectManager.showAll=function() {
         obj.setAttribute("visible", true);
     }
 
+}
+
+ObjectManager.copyObjects=function(objects) {
+	if (objects != undefined && objects.length > 0) {
+		ObjectManager.clipBoard.cut = false;
+
+		var array = new Array();
+
+		for (var key in objects) {
+	        var object = objects[key];
+	        array.push(object.getId());
+	    }
+	    
+	    ObjectManager.clipBoard.room = objects[0].getCurrentRoom();
+		ObjectManager.clipBoard.objects = array;
+	}
+}
+
+ObjectManager.cutObjects=function(objects) {
+	if (objects != undefined && objects.length > 0) {
+		ObjectManager.clipBoard.cut = true;
+
+		var array = new Array();
+
+		for (var key in objects) {
+	        var object = objects[key];
+	        array.push(object.getId());
+	    }
+	    
+	    ObjectManager.clipBoard.room = objects[0].getCurrentRoom();
+		ObjectManager.clipBoard.objects = array;
+	}
+}
+
+ObjectManager.pasteObjects=function() {
+
+	if (ObjectManager.clipBoard.objects != undefined && ObjectManager.clipBoard.objects.length > 0) {
+		var requestData={};
+		
+		requestData.fromRoom=ObjectManager.clipBoard.room;
+		requestData.toRoom=this.getRoomID();
+	    requestData.objects=ObjectManager.clipBoard.objects;
+	    requestData.cut=ObjectManager.clipBoard.cut;
+
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(){
+
+		});
+
+		if (ObjectManager.clipBoard.cut) {
+			ObjectManager.clipBoard={};
+		}
+		GUI.deselectAllObjects();
+	}
+}
+
+ObjectManager.duplicateObjects=function(objects) {
+	if (objects != undefined && objects.length > 0) {
+
+		var array = new Array();
+
+		for (var key in objects) {
+	        var object = objects[key];
+	        array.push(object.getId());
+	    }
+	    
+	    var requestData={};
+		requestData.fromRoom=this.getRoomID();
+		requestData.toRoom=this.getRoomID();
+	    requestData.objects=array;
+	    requestData.cut=false;
+
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(){
+
+		});
+		
+		GUI.deselectAllObjects();
+	}
 }

@@ -36,7 +36,6 @@ Discussion.register=function(type){
     this.registerAttribute("discussionTitle",{
         hidden: true,
         changedFunction: function(object, value) {
-            console.log("UDPATE")
             object.updateHeading(value);
         }
     })

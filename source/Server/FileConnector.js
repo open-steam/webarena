@@ -124,7 +124,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 		try {		
 			var obj=self.getObjectDataByFile(roomID,objectID);
-			inventory.push(obj);
+			if (obj) inventory.push(obj);
         } catch (e) {
 			console.log(e);
 			self.Modules.Log.error("Cannot load object with id '"+objectID+"' (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
@@ -150,7 +150,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 *	returns the attribute set of the current room
 *
 */
-fileConnector.getRoomData=function(roomID,context,callback){
+fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 	this.Modules.Log.debug("Get data for room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
@@ -158,7 +158,24 @@ fileConnector.getRoomData=function(roomID,context,callback){
 	var filebase=this.Modules.Config.filebase;
 	var obj=this.getObjectDataByFile(roomID,roomID);
 	
-	callback(obj);
+	if (!obj){
+		obj={};
+		obj.id=roomID;
+		obj.name=roomID;
+		if (oldRoomId) {
+			obj.parent=oldRoomId;
+		}
+		var self=this;
+		this.saveObjectData(roomID,roomID,obj,function(){
+			self.Modules.Log.debug("Created room (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"', parent:'"+oldRoomId+"')");
+		},context,true)
+		
+		return self.getRoomData(roomID,context,callback,oldRoomId);
+		
+	}
+	
+    else callback(obj);
+
 	
 }
 
@@ -168,7 +185,7 @@ fileConnector.getRoomData=function(roomID,context,callback){
 *	if an "after" function is specified, it is called after saving
 *
 */
-fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
+fileConnector.saveObjectData=function(roomID,objectID,data,after,context,createIfNotExists){
 	this.Modules.Log.debug("Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 
 	if (!context) this.Modules.Log.error("Missing context");
@@ -186,6 +203,12 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after,context){
 	data=JSON.stringify(data);
 	
 	//TODO Change to asynchronous access
+	
+	if (!createIfNotExists){
+		if (!fs.existsSync(filename)){
+			this.Modules.Log.error("File does not exist")
+		}
+	}
 
 	fs.writeFileSync(filename, data,'utf-8');
 	if (after) after(objectID);
@@ -370,8 +393,8 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
-	
-	var objectID=new Date().getTime()-1296055327011;
+	var uuid = require('node-uuid');
+	var objectID = uuid.v4();
 	
 	data.type=type;
 	
@@ -382,7 +405,7 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 		
 	}
 	
-	this.saveObjectData(roomID,objectID,data,callback,context);
+	this.saveObjectData(roomID,objectID,data,callback,context,true);
 	
 }
 
@@ -399,15 +422,16 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 *	after(objectID)
 *
 */
-fileConnector.duplicateObject=function(roomID,objectID,callback,context){
-	
-	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+fileConnector.duplicateObject=function(roomID,objectID,callback,context,toRoom){
+
+	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', toRoom: '"+toRoom+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var self = this;
 
-	var newObjectID = new Date().getTime()-1296055327011;
+	var uuid = require('node-uuid');
+	var newObjectID = uuid.v4();
 	
 	var filebase=this.Modules.Config.filebase;
 	
@@ -417,10 +441,9 @@ fileConnector.duplicateObject=function(roomID,objectID,callback,context){
 	var contentFilename = filebase+'/'+roomID+'/'+objectID+'.content';
 	var previewFilename = filebase+'/'+roomID+'/'+objectID+'.preview';
 	
-	var objectFilenameNew = filebase+'/'+roomID+'/'+newObjectID+'.object.txt';
-	var contentFilenameNew = filebase+'/'+roomID+'/'+newObjectID+'.content';
-	var previewFilenameNew = filebase+'/'+roomID+'/'+newObjectID+'.preview';
-	
+	var objectFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.object.txt';
+	var contentFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.content';
+	var previewFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.preview';
 	
 	var sys = require("util");
 	var fs = require("fs");
@@ -528,8 +551,9 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 		var attributes = fs.readFileSync(filename, 'utf8');
 		attributes=JSON.parse(attributes);
 	} catch (e) {								//if the attribute file does not exist, create an empty one
-		var attributes={};
-		attributes.name=objectID;
+	
+		//when an object is not there, false is returned as a sign of an error
+		return false;
 	}
 	
 	var data={};

@@ -82,7 +82,7 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
 
         _.each(decodedResponse['response']['objects'], function(obj){
             if(obj.error === undefined){
-                _.extend(mappedIdObject[obj.id], obj['data']);
+                _.extend(mappedIdObject[obj.data.id], obj['data']);
 
             }
         });
@@ -163,7 +163,7 @@ EasyDbAPI.apicall = function(args, callback){
 
 EasyDbAPI.buildSQL = function(sargs){
 
-    var sp = sargs.searchParams;
+    var sp = sargs;
     var limit = sargs.limit || false;
     var offset = sargs.offset || false;
 
@@ -218,7 +218,7 @@ EasyDbAPI.buildSQL = function(sargs){
  * @param callback
  */
 EasyDbAPI.search = function(searchArgs){
-    var searchParams = searchArgs.searchParams;
+
     var sql = this.buildSQL(searchArgs);
 
     Log.debug("EasyDbAPI","search", "Start search: ");

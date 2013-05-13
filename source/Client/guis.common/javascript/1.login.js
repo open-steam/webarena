@@ -30,6 +30,8 @@ GUI.showLogin = function(err) {
 		opacity: 1
 	}, 1000);
 	
+	$("#login_title").html(Config.projectTitle||'WebArena');
+	
 	$("#login_username").focus();
 	
 	$("#login_submit").click(GUI.login);
@@ -108,6 +110,9 @@ GUI.login = function() {
 	
 	if (GUI.username === undefined)	GUI.username = $("#login_username").val();
 	if (GUI.password === undefined) GUI.password = $("#login_password").val();
+	
+	$("#login_username").blur();
+	$("#login_password").blur();
 	
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession/') > -1) {
 		

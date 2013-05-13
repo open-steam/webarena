@@ -3,46 +3,40 @@ Discussion.formatTimestamp = function(time){
 }
 
 Discussion.deleteStatement = function(timestamp){
-    var newArr = new Array();
-    for (var i = 0, j = this.messageArray.length; i < j; ++i){
-        if(this.messageArray[i].timestamp !== timestamp){
-            newArr.push(this.messageArray[i])
-        }
-    }
+    var newArr = _.filter(this.messageArray,
+        function(message){return message.timestamp !== timestamp});
+
     this.setContent(JSON.stringify(newArr));
 }
 
-Discussion.fetchDiscussion = function(rep, callback){
+Discussion.fetchDiscussion = function(rep){
     if(!rep)rep = this.getRepresentation();
     var that = this;
 
     var remoteContent = this.getContentAsString();
 
-    if(remoteContent !== ""){
-        remoteContent = JSON.parse(remoteContent);
-    }
+    if(remoteContent !== "") remoteContent = JSON.parse(remoteContent);
 
 
     that.messageArray = remoteContent;
 
     // update content
     if (that.oldContent !== remoteContent) {   //content has changed
-
-        var text = '';
         var messageArray = remoteContent;
 
-        for (var i = 0; i < messageArray.length; ++i){
-            text += that.renderMessage(messageArray[i]);
-        }
-        text = text.replace(/[\r\n]+/g, "<br />");
+        var text = _.reduce(messageArray, function(memo, message){
+            return memo + that.renderMessage(message);
+        }, "")
+
+
         $(rep).find(".discussion-text").html(text);
 
         that.oldContent=messageArray;
+
+        that.enableInlineEditors();
     }
 
-    that.enableInlineEditors();
 
-    if(callback) callback();
 }
 
 

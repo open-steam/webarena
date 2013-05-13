@@ -6,19 +6,19 @@
 */
 
 var Modules=require('../../server.js')
-var TesterImage=Object.create(Modules.ObjectManager.getPrototype('ResponsiveObject'));
+var TesterImage=Object.create(Modules.ObjectManager.getPrototype('ActiveObject'));
 
 TesterImage.register=function(type){
 	
 	// Registering the object
-	ActiveObject=Modules.ObjectManager.getPrototype('ResponsiveObject');
+	ActiveObject=Modules.ObjectManager.getPrototype('ActiveObject');
 	File.register.call(this,type);
 	
 
 	this.registerAttribute('key',{type:'text',standard:'',category:'Keyword'});
 	this.registerAttribute('value',{type:'text',standard:'',category:'Keyword'});
 	
-	this.registerAttribute('mimeType',{type:'text',standard:'image/png'});
+	this.registerAttribute('mimeType',{type:'text',standard:'image/png',readonly:true});
 	
 }
 

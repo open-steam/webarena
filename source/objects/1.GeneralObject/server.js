@@ -17,6 +17,7 @@ var theObject=Object.create(require('./common.js'));
 // Module.ObjectManager
 
 var Modules=require('../../server.js');
+var _ = require('underscore');
 
 // Make the object public
 module.exports=theObject;
@@ -55,8 +56,11 @@ theObject.updateClient=function(socket,mode){
 *
 */
 theObject.persist=function(){
-	Modules.Connector.saveObjectData(this.inRoom, this.id, this.get(), false, this.context);
-	this.updateClients();
+	var data=this.get();
+	if (data){
+		Modules.Connector.saveObjectData(this.inRoom, this.id, data, false, this.context);
+		this.updateClients();
+	} 
 }
 
 /**
@@ -109,6 +113,11 @@ theObject.setContent=function(content,callback){
 	this.persist();
 	this.updateClients('contentUpdate');
 }
+theObject.setContent.public = true;
+theObject.setContent.neededRights = {
+    write : true
+}
+
 
 theObject.copyContentFromFile=function(filename,callback) {
 
@@ -128,13 +137,22 @@ theObject.copyContentFromFile=function(filename,callback) {
 *
 *	get the object's content
 */
-theObject.getContent=function(){
+theObject.getContent=function(callback){
+
 	
 	if (!this.context) throw new Error('Missing context in GeneralObject.getContent');
 	
 	var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
-	return content;
+
+    if(_.isFunction(callback)) callback(content);
+    else return content;
+
 }
+theObject.getContent.public = true;
+theObject.getContent.neededRights = {
+    read : true
+}
+
 
 
 /**
@@ -150,76 +168,6 @@ theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
 }
 
-
-theObject.duplicate=function(socket,responseID) {
-
-	var self = this;
-
-	var roomId = this.inRoom;
-	
-	
-	var list = this.getObjectsToDuplicate();
-	
-	var counter = 0;
-	var idTranslationList = {}; //list of object ids and their duplicated new ids
-	var newObjects = []; //list of new (duplicated) objects
-	
-	/* this function will be called by the last duplicate-callback */
-	var updateObjects = function() {
-		counter++;
-		
-		if (counter == list.length) {
-			/* all objects are duplicated */
-
-			var idList = [];
-			
-			for (var i in newObjects) {
-				var object = newObjects[i];
-
-				object.updateLinkIds(idTranslationList); //update links
-
-				object.setAttribute("x", object.getAttribute("x")+30);
-				object.setAttribute("y", object.getAttribute("y")+30);
-
-				/* add group id if source object was grouped */
-				if (object.getAttribute("group") && object.getAttribute("group") > 0) {
-					object.setAttribute("group", object.getAttribute("group")+1);
-				}
-
-				object.updateClients();
-				
-				if (object.hasContent()) {
-					object.updateClient(socket,'contentUpdate',object.hasContent(socket));
-				}
-				
-				idList.push(object.id);
-				
-			}
-			
-			if (socket && responseID) {
-				Modules.Dispatcher.respond(socket,responseID,idList);
-			}
-			
-		}
-	}
-	
-	for (var i in list) {
-		var objectId = list[i];
-		
-		Modules.Connector.duplicateObject(roomId,objectId,function(newId,oldId) {
-			var obj = Modules.ObjectManager.getObject(roomId, newId, self.context);
-
-			newObjects.push(obj);
-			idTranslationList[oldId] = newId;
-
-			updateObjects(); //try to update objects
-
-		},self.context);
-		
-	}
-	
-	
-}
 
 theObject.evaluatePosition=function(key,value,oldvalue){
 
@@ -290,15 +238,19 @@ theObject.onSwitchContext=function(context){
 	
 	if (Modules.Config.noContext) return;
 	
+	//using set instead of setObject to avoid evaluation of these changes.
+	
 	if (!this.getAttribute('position_on_all_contexts')){
-		this.setAttribute('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
-		this.setAttribute('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
+		this.set('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
+		this.set('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
 	}
 	
 	if (!this.getAttribute('appearance_on_all_contexts')){
-		this.setAttribute('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
-		this.setAttribute('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
+		this.set('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
+		this.set('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
 	}
+	
+	this.persist();
 	
 	var contexts=this.whichContexts();
 	if (contexts!==true){

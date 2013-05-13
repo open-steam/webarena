@@ -32,6 +32,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("change", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			$(this).blur();
 		});
 		
 		widget.valueBox.children("input").bind("mouseup", function() {
@@ -42,6 +43,11 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("blur", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			inspector.hasFocus=false;
+		});
+		
+		widget.valueBox.children("input").bind("focus", function() {
+			inspector.hasFocus=true;
 		});
 		
 	}
@@ -72,11 +78,17 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("change", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			$(this).blur();
 		});
 		
-		widget.valueBox.children("input").bind("keyup", function() {
+		widget.valueBox.children("input").bind("blur", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			inspector.hasFocus=false;
+		});
+		
+		widget.valueBox.children("input").bind("focus", function() {
+			inspector.hasFocus=true;
 		});
 		
 	}
@@ -438,6 +450,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 				widget.valueBox.children("div").css("background-color", color);
 			}
 			
+			
+			
 		}
 		
 		widget.valueBox.html('<div class="jDesktopInspectorWidget_color_preview" style="cursor: pointer"></div>');
@@ -471,6 +485,12 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 				var hues=[51,213,2,80,267,193,27];  // Word's colors
 
 				var selector='<table style="margin:auto; width: 100%;" class="jDesktopInspectorWidget_selector">';
+				selector+='<tr>';
+				selector+='<td colspan="3">'+GUI.translate('Custom')+':</td>';
+				selector+='<td colspan="2" style="text-align:center;height:20px;margin:4px" class="selector"><input type="color" style="width:100%;height:100%" value="#FF00FF"></td>';
+				selector+='<td colspan="1" style="text-align:center;height:20px;margin:4px" class="save"><input type="button" value="'+GUI.translate('Save')+'"></td>';
+
+				selector+='</tr>';
 				selector+='<tr>';
 				selector+='<td colspan="6" style="text-align:center;height:20px;margin:4px;background-color:transparent;background-image:url(../../guis.common/images/transparent.jpg); border: 1px solid #CCCCCC">transparent</td>';
 				selector+='</tr>';
@@ -515,6 +535,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			
 
 			widget.el.find("table").find("td").click(function(event) {
+				
+				if ($(this).attr('class')=='selector') return;
 
 				self.setColor($(this).css("background-color"));
 				self.callChange();
@@ -522,7 +544,17 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 				self.hidePage();
 
 			});
-		
+			
+			widget.el.find("table").find(".save input").click(function(event) {
+				
+				var value=widget.el.find("table").find(".selector input").val();
+				
+				self.setColor(value);
+				self.callChange();
+				
+				self.hidePage();
+			});
+				
 		}
 		
 		
@@ -812,6 +844,8 @@ $(function() { });
 		this.prevPage = 0;
 	
 		this.mainEl = undefined;
+		
+		this.hasFocus = false;
 	
 		
 		/* used to reference object in context where "this" is already in use */

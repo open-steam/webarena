@@ -12,6 +12,20 @@ var GUI={};
 GUI.currentLanguage='de';
 
 
+//This is called then forward or backwards-buttons are used in the browser.
+//See ObjectManager.onload for pushState
+window.onpopstate = function(event) {
+ 
+  if (!event.state) return;
+  var room=event.state.room;
+  if (!room) return;
+  if (GUI.isLoggedIn){
+  	ObjectManager.loadRoom(room,true);
+  }
+
+};
+
+
 GUI.translationManager=Object.create(TranslationManager);
 GUI.translationManager.init(undefined);
 
@@ -313,6 +327,51 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 
 
+/**
+ * add event handler for copy, cut and paste by ctrl + c, ctrl + x, ctrl + v
+ */
+GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.ctrlKey && event.which == 67) {
+				event.preventDefault();
+				ObjectManager.copyObjects(ObjectManager.getSelected());
+			}
+			
+		}
+		
+	});
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.ctrlKey && event.which == 88) {
+				event.preventDefault();
+				ObjectManager.cutObjects(ObjectManager.getSelected());
+			}
+			
+		}
+		
+	});
+
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.ctrlKey && event.which == 86) {
+				event.preventDefault();
+				ObjectManager.pasteObjects();
+			}
+			
+		}
+		
+	});
+}
+
 
 /**
  * add event handler for object selection (based on clicked position and layers)
@@ -358,13 +417,26 @@ GUI.initMouseHandler = function() {
 			jPopoverManager.hideAll();
 
 			var contentPosition = $("#content").offset();
+			
+			var temp=event.target;
+			
+			while (temp && !temp.dataObject) {
+				temp=$(temp).parent()[0];
+			}
+			
+			var clickedObject=(temp)?temp.dataObject:false;
+			
+			//TODO check if this can be done similarly for touch devices
+		
+			if (clickedObject) {
+				// Objects with restricted moving areas should get the "native" events
+				// Only if clicked on the moving area, e.g. actionbar the default event handling
+				// should be prevented
+                if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
 
-			/* find objects at this position */
-			var clickedObject = GUI.getObjectAt(event.pageX-contentPosition.left, event.pageY-contentPosition.top);
-
-			if (clickedObject && event.target != $("#content>svg").get(0)) {
-                event.preventDefault();
-                event.stopPropagation();
 				clickedObject.click(event);
 			} else {
 				/* clicked on background */
@@ -375,7 +447,34 @@ GUI.initMouseHandler = function() {
 
 		}
 		
+		var mousemove = function(event) {
+			
+			var x=event.clientX;
+			var y=event.clientY;
+			
+			var images=$('image');
+			
+			$.each(images, function(index, image) {
+				
+				var parent=$(image).parent();
+				
+				if (!image.hasPixelAtMousePosition) {
+					//console.log('Missing hasPixelAtMousePosition for ',parent);
+					return;
+				}
+				
+				if(image.hasPixelAtMousePosition(x,y)){
+					parent.attr('pointer-events','visiblePainted');
+				} else {
+					parent.attr('pointer-events','none');
+				}
+				
+			});
+
+		}		
+		
 		$("#content>svg").bind("mousedown", mousedown);
+		$("#content>svg").bind("mousemove", mousemove);
 		
 	}
 	

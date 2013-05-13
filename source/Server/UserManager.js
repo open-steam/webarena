@@ -17,13 +17,15 @@ var Modules=false;
 
 var UserManager={};
 
+var enter=String.fromCharCode(10);
+
 UserManager.connections={};
 
 UserManager.init=function(theModules){
  	Modules=theModules;
 	var Dispatcher=Modules.Dispatcher;
 	Dispatcher.registerCall('login',UserManager.login);
-    Dispatcher.registerCall('enter',UserManager.enterRoom);
+    Dispatcher.registerCall('enter',UserManager.enterRoom);  
 }
 
 /**
@@ -51,6 +53,20 @@ UserManager.socketDisconnect=function(socket){
 	
 	UserManager.sendAwarenessData(roomID);
 	
+}
+
+function loggedInInfo(){
+	var connections=UserManager.connections;
+   	
+   	var count=0;
+   	var userInfo='';
+   	for (var i in connections){
+   		var data=connections[i];
+   		count++;
+   		if (count>1) userInfo+='; ';
+   		userInfo+=data.user.username+' in '+data.room.id;
+   	}
+   	console.log(count+' users: '+userInfo);
 }
 
 
@@ -135,6 +151,8 @@ UserManager.enterRoom=function(socketOrUser,roomID,responseID){
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;
 	
+	var oldRoomId=connection.room.id; //oldrooom is sent down to the connector, which may use it for parent creation
+	
 	if (!connection) {
 		Modules.Log.error("UserManager", "+enter", "There is no connection for this user (user: '"+userID+"')");
 		return;
@@ -157,9 +175,9 @@ UserManager.enterRoom=function(socketOrUser,roomID,responseID){
 				ObjectManager.sendRoom(socket,room.id);
 				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
-			});
+			},oldRoomId);
 			
-			ObjectManager.sendChatMessages(roomID,socket);
+			//ObjectManager.sendChatMessages(roomID,socket);
 			
 			Modules.Dispatcher.respond(socket,responseID,false);
 
@@ -218,6 +236,7 @@ UserManager.sendAwarenessData=function(roomID){
 		
 		Modules.SocketServer.sendToSocket(sock,'inform',data);
 	}
+	loggedInInfo();
 }
 
 /**

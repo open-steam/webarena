@@ -10,6 +10,7 @@
 var Modules=false;
 
 var WebServer={};
+var _ = require('underscore');
 
 /*
 *	init
@@ -28,7 +29,16 @@ WebServer.init=function(theModules){
 	app.listen(global.config.port);  // start server (port set in config)
 
 	function handler (req, res) {
+		
 	  var url=req.url.replace('%20',' ');
+	  var agent=req.headers['user-agent'];
+	  
+	  if(agent.indexOf('MSIE')>0){
+	  		res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
+			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
+			res.end(data);
+			return;
+	  }
 	
 		/* get userHash */
 		var userHashIndex = url.indexOf("/___");
@@ -89,6 +99,15 @@ WebServer.init=function(theModules){
 	  		try {
 	
 				var objectType=url.substr(13);
+				
+				var separator=objectType.indexOf('/');
+				
+				if (separator>0) {
+					
+					var section = objectType.substring(separator+1);
+					objectType=objectType.substring(0,separator);
+					
+				} else var section=false;
 
 				var obj=Modules.ObjectManager.getPrototype(objectType);
 
@@ -97,7 +116,7 @@ WebServer.init=function(theModules){
 				      return res.end('Object not found '+objectType);
 			  	}	  	
 
-			  	fs.readFile(obj.localIconPath,
+			  	fs.readFile(obj.localIconPath(section),
 				  function (err, data) {
 				    if (err) {
 				      res.writeHead(404);
@@ -325,6 +344,70 @@ WebServer.init=function(theModules){
 			});
 		
 	  }
+
+      else if(url =='/defaultJavascripts'){
+
+          //combine all javascript files in guis.common/javascript
+          var files=fs.readdirSync('Client/guis.common/javascript');
+          files.sort(function(a,b){
+             return parseInt(a) - parseInt(b);
+          });
+          var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
+
+          files = _.filter(files, function(fname){
+             return fileReg.test(fname);
+          })
+
+          var etag ="";
+          _.each(files, function(file){
+              var stats = fs.statSync('Client/guis.common/javascript/' + file);
+              etag += stats.size + '-' + Date.parse(stats.mtime);
+          })
+
+          if (req.headers['if-none-match'] === etag) {
+              res.statusCode = 304;
+              res.end();
+          } else {
+              var combinedJavascript = "";
+
+              //Asynchron file loading!
+              //In order to get right order, second file is loaded in the callback of first file
+              //and so on.
+              var processFiles = function (){
+
+                  // check for termination - we worked through all files
+                  // then we want to send the result.
+                  if(files.length === 0) sendResult()
+                  // take first element - call recursion with remaining files,
+                  // after first file was loaded.
+                  else {
+                      var filename = files.shift();
+
+                      fs.readFile('Client/guis.common/javascript/' + filename, function(err,data){
+                          if(!err)  {
+                              combinedJavascript += "/******************************/\n";
+                              combinedJavascript += "/* " + filename + "\n";
+                              combinedJavascript += "/******************************/\n";
+                              combinedJavascript += data + "\n";
+                          } else {
+                              console.log("Error combining JavaScript files.");
+                          }
+
+                          processFiles()
+                      });
+                  }
+              }
+
+              var sendResult = function(){
+                  var mimeType='application/javascript';
+                  res.setHeader('ETag', etag);
+                  res.writeHead(200, {'Content-Type':mimeType});
+                  res.end(combinedJavascript);
+              }
+
+              processFiles();
+          }
+      }
 	  
 	  // objects
 	  
@@ -383,6 +466,7 @@ WebServer.init=function(theModules){
 					if (url.indexOf('.htm')!=-1) contentType='text/html';
 					if (url.indexOf('.js')!=-1) contentType='application/javascript';
 					if (url.indexOf('.css')!=-1) contentType='text/css';
+					if (url.indexOf('.ico')!=-1) contentType='image/x-icon';
 
 					if (!contentType) {
 						Modules.Log.warn('WebServer ERROR: No content type for '+url);

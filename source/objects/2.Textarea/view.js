@@ -53,7 +53,8 @@ Textarea.draw=function(external){
 	this.getContentAsString(function(text){
 
 		if(text!=that.oldContent){
-			text = text.replace(/[\r\n]+/g, "<br />");
+			text = text.replace(/\n/g,"<br />")
+			text = text.replace(/\s\s/g,"&nbsp; ")
 			$(rep).find("body>div>div").html(text);
 		}
 		

@@ -19,6 +19,11 @@ thisScript.export='';
 
 thisScript.run=function(url){
 	
+	if (!Modules.Config.developerInfo){
+		this.export='';
+		return;
+	}
+	
 	this.url=url;
 	
 	var result='<h1>Things to do</h1><table>';

@@ -40,5 +40,7 @@ GUI.setTranslations('de',{
     'Meta Data': "Metadaten",
 	'this file is not previewable' : 'Diese Datei kann nicht als Vorschau angezeigt werden.',
 	'Files' : 'Dateien',
+	'This room has no parent.':'Für diesen Raum gibt es keinen übergeordneten Raum.',
+	'Paste' : 'Einfügen'
 }
 );

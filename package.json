@@ -6,6 +6,7 @@
         "formidable": "*",
         "imagemagick": "0.1.2",
         "underscore": "*",
-        "sharepoint" : "*"
+        "sharepoint" : "*",
+        "node-uuid" : "*"
     }
 }

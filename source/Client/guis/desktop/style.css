@@ -90,7 +90,10 @@ body {
 	padding-right: 10px;
 }
 
-
+#header>div.header_right>span.button_save {
+	background-color: #e5e31f;
+	color:black;
+}
 
 #chat_notifier {
 	background-color: #D60000;

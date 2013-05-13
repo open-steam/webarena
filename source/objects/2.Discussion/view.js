@@ -64,6 +64,7 @@ Discussion.drawIcon = function () {
 }
 
 Discussion.draw = function () {
+
     var embedded = this.getAttribute("show_embedded");
     if (embedded) {
         this.drawEmbedded();
@@ -98,7 +99,7 @@ Discussion.enableInlineEditors = function () {
                 changedArr.push(that.oldContent[i])
             } else {
                 var message = that.oldContent[i];
-                message.text = htmlEscape(value);
+                message.text = htmlEncode(value);
                 changedArr.push(message);
             }
         }
@@ -269,6 +270,8 @@ Discussion.createRepresentation = function () {
 }
 
 Discussion.renderMessage = function (message) {
+    var text = message.text
+
     var additionalClasses = (message.author === GUI.username) ? "discussion-statement-deletable" : "";
 
     return "" +
@@ -277,7 +280,7 @@ Discussion.renderMessage = function (message) {
         "<span class='message-author'>" + message.author + "</span>" +
         "<span class='message-timestamp'>(" + this.formatTimestamp(message.timestamp) + ")</span>" +
         "</div> " +
-        "<p class='discussion-statement-text'> " + message.text + "</p>" +
+        "<p class='discussion-statement-text'> " + text + "</p>" +
 
         "<div class='statement-delete'>löschen</div>" +
         "<div class='statement-edit'>bearbeiten</div>" +
@@ -342,9 +345,7 @@ Discussion.representationCreated = function () {
 
         data: function () {
             var headingText = that.getAttribute('discussionTitle') || '';
-            var retval = htmlDecode(headingText)
-            console.log("SAAAAVE")
-            return retval;
+            return htmlDecode(headingText)
         },
 
         autogrow: {

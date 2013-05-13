@@ -8,8 +8,9 @@
 "use strict";
 
 var Config={
+	projectTitle:'WebArena 1.0',
 	language:'de',
 	presentationMode:false,
-	noContext:false,
+	noContexts:false,
 	bidURL:''
 };
