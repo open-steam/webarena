@@ -33,7 +33,7 @@ WebServer.init=function(theModules){
 	  var url=req.url.replace('%20',' ');
 	  var agent=req.headers['user-agent'];
 	  
-	  if(agent.indexOf('MSIE')>0){
+	  if(agent && agent.indexOf('MSIE')>0){
 	  		res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
 			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
 			res.end(data);
