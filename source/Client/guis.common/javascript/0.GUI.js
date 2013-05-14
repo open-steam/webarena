@@ -535,6 +535,115 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
 	
 }
 
+/**
+ * GUI specific display of general messages (and complex control dialogs)
+ * @param {String} heading A title for the dialog
+ * @param {String|DOMObject} content A message or DOM object that will be used as the body of the dialog
+ * @param {Object} [buttons] The Buttons of the dialog (e.g. close, save, ...)
+ * @param {int} [dialogWidth=auto] The width of the dialog
+ * @param {bool} [passThrough] Additional options for the dialog
+ * @returns {jQueryDialogObject} The created jQuery dialog object
+ *
+ * Form of buttons param:
+ *
+ * {
+ * 		"title of this button" : function() {
+ * 			//button callback
+ * 		},
+ * 		...
+ * }
+ *
+ */
+GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
+
+    GUI.blockKeyEvents = true;
+
+    if (buttons == undefined) {
+
+        var buttons = {};
+
+        buttons[GUI.translate("close")] = function() {
+            //nothing
+        }
+
+    }
+
+    var dialogContent = document.createElement("div");
+    $(dialogContent).attr("title", heading);
+    $(dialogContent).append(content);
+
+    var buttons2 = {};
+
+    $.each(buttons, function(title, callback) {
+
+        buttons2[title] = function() {
+            callback(dialogContent);
+            $(this).dialog("close");
+        }
+
+    });
+
+    if (dialogWidth == undefined) {
+        dialogWidth = "auto";
+    }
+
+    var dialogOptions = {
+        modal: true,
+        resizable: false,
+        buttons: buttons2,
+        zIndex: 100000,
+        width : dialogWidth,
+        close: function() {
+            $(this).remove();
+            GUI.blockKeyEvents = false;
+        }
+    }
+
+    if(typeof passThrough === "object"){
+        $.extend(dialogOptions, passThrough)
+    }
+
+
+    return $(dialogContent).dialog(dialogOptions);
+
+
+};
+
+/**
+ * GUI specific display of errors
+ * @param {String} heading A title for the upload dialog
+ * @param {String} message A message including the errors message
+ * @param {webarenaObject} [webarenaObject] An optional webarena object the error is related to
+ * @param {bool} fatal True if the error is fatal and the webpage has to be reloaded after displaying the error
+ */
+GUI.error = function(heading, message, webarenaObject, fatal) {
+
+    var translate = function(text) {
+        if (!webarenaObject) {
+            return GUI.translate(text);
+        } else {
+            return webarenaObject.translate(GUI.currentLanguage, text);
+        }
+    }
+
+    var errorButtons = {};
+
+    if (fatal) {
+        errorButtons[GUI.translate("Reload")] = function() {
+            window.location.reload();
+        }
+    } else {
+        errorButtons[GUI.translate("Close Dialog")] = function() {
+            $(this).dialog("close");
+        }
+    }
+
+    var heading = translate(heading);
+    var message = '<p>'+translate(message)+'</p>';
+
+    GUI.dialog(heading, message, errorButtons);
+
+}
 
 /**
  * called when the socket is disconnected
