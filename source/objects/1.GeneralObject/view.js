@@ -281,7 +281,6 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	this.selected = true;
 	
-	
 	if (this.getAttribute("group") != 0 && !groupSelect) {
 		$.each(this.getGroupMembers(), function(index, object) {
 			object.select(true, true);
@@ -301,7 +300,18 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	this.addSelectedIndicator();
 	
-	this.selectHandler();
+	//this.selectHandler();
+	
+	if (GUI.updateInspectorDelay){
+		window.clearTimeout(GUI.updateInspectorDelay);
+		GUI.updateInspectorDelay=false;
+	}
+	
+	GUI.updateInspectorDelay=window.setTimeout(function(){
+		GUI.updateInspector();
+	},100);
+	
+	if (!groupSelect) GUI.showLinks(this);
 	
 	this.draw();
 	
