@@ -619,14 +619,24 @@ ObjectManager.pasteObjects=function() {
 	    requestData.objects=ObjectManager.clipBoard.objects;
 	    requestData.cut=ObjectManager.clipBoard.cut;
 
-		Modules.Dispatcher.query('duplicateObjects',requestData, function(){
+		// select new objects after duplication
+	    var newIDs=[];
+	    var selectNewObjects = function() {
+			for (var key in newIDs) {
+				var newObject = ObjectManager.getObject(newIDs[key]);
+				newObject.select(true);
+			}
+		};
 
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList){
+			newIDs = idList;
+			GUI.deselectAllObjects();
+			setTimeout(selectNewObjects, 200);
 		});
 
 		if (ObjectManager.clipBoard.cut) {
 			ObjectManager.clipBoard={};
 		}
-		GUI.deselectAllObjects();
 	}
 }
 
@@ -646,10 +656,19 @@ ObjectManager.duplicateObjects=function(objects) {
 	    requestData.objects=array;
 	    requestData.cut=false;
 
-		Modules.Dispatcher.query('duplicateObjects',requestData, function(){
+	    // select new objects after duplication
+	    var newIDs=[];
+	    var selectNewObjects = function() {
+			for (var key in newIDs) {
+				var newObject = ObjectManager.getObject(newIDs[key]);
+				newObject.select(true);
+			}
+		};
 
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
+			newIDs = idList;
+			GUI.deselectAllObjects();
+			setTimeout(selectNewObjects, 200);
 		});
-		
-		GUI.deselectAllObjects();
 	}
 }

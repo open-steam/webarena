@@ -483,6 +483,10 @@ ObjectManager.init=function(theModules){
 					idList.push(object.id);
 					
 				}
+
+				if (socket && responseID) {
+					Modules.Dispatcher.respond(socket,responseID,idList);
+				}
 			}
 		}
 
@@ -524,10 +528,6 @@ ObjectManager.init=function(theModules){
 				}
 				
 			});
-		}
-	
-		if (socket && responseID) {
-			Modules.Dispatcher.respond(socket,responseID,idList);
 		}
 	});
 
