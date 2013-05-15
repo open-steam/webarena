@@ -336,33 +336,20 @@ GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
 		
 		if ($("input:focus,textarea:focus").get(0) == undefined) {
 		
-			if (event.ctrlKey && event.which == 67) {
+			var ctrlDown = event.ctrlKey||event.metaKey // Mac support
+			
+		
+			if (ctrlDown && event.which == 67) {
 				event.preventDefault();
 				ObjectManager.copyObjects(ObjectManager.getSelected());
 			}
-			
-		}
-		
-	});
-	
-	$(document).bind("keydown", function(event) {
-		
-		if ($("input:focus,textarea:focus").get(0) == undefined) {
-		
-			if (event.ctrlKey && event.which == 88) {
+
+			if (ctrlDown && event.which == 88) {
 				event.preventDefault();
 				ObjectManager.cutObjects(ObjectManager.getSelected());
 			}
-			
-		}
 		
-	});
-
-	$(document).bind("keydown", function(event) {
-		
-		if ($("input:focus,textarea:focus").get(0) == undefined) {
-		
-			if (event.ctrlKey && event.which == 86) {
+			if (ctrlDown && event.which == 86) {
 				event.preventDefault();
 				ObjectManager.pasteObjects();
 			}
