@@ -105,15 +105,7 @@ EasyDBImage.renderPagination = function(data){
 
 EasyDBImage.renderPaginatorButton = function(number, offset, limit, current, extraClass){
 
-    //TODO: searchTerm
     var that=this;
-    var data = {
-        roomID : that.getRoomID(),
-        objectID: that.getID(),
-        searchParams: that.searchParams,
-        offset: offset,
-        limit: limit
-    }
 
     //var button = "<div class='paginator-button'>" + number + "</div>";
     var button = document.createElement("div");
@@ -124,9 +116,9 @@ EasyDBImage.renderPaginatorButton = function(number, offset, limit, current, ext
 
     $(button).on('click', function(){
         that.renderLoadScreen(".ui-dialog-content");
-        Modules.Dispatcher.query('search', data ,function(searchResults){
+        that.serverCall("search", that.searchParams, offset, limit, function(searchResults){
             that.renderResultPage(searchResults, ".ui-dialog-content");
-        });
+        })
     });
     $(button).on('click', function(){
         $(".paginator .current").removeClass('current');
