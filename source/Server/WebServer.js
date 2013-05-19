@@ -399,8 +399,7 @@ WebServer.init = function (theModules) {
 
                 var sendResult = function () {
                     var mimeType = 'application/javascript';
-                    res.setHeader('ETag', etag);
-                    res.writeHead(200, {'Content-Type': mimeType});
+                    res.writeHead(200, {'Content-Type': mimeType,'ETag': etag});
                     res.end(combinedJavascript);
                 }
 
@@ -462,7 +461,7 @@ WebServer.init = function (theModules) {
                                 res.end()
                             } else {
                                 var etag = stat.size + '-' + Date.parse(stat.mtime);
-                                res.setHeader('Last-Modified', stat.mtime);
+
 
                                 if (req.headers['if-none-match'] === etag) {
                                     res.statusCode = 304;
@@ -484,9 +483,14 @@ WebServer.init = function (theModules) {
                                         contentType = 'text/plain';
                                     }
 
-                                    res.setHeader('Content-Length', data.length);
-                                    res.setHeader('ETag', etag);
-                                    res.writeHead(200, {'Content-Type': contentType, 'Content-Disposition': 'inline'});
+
+                                    res.writeHead(200, {
+                                        'Content-Type': contentType,
+                                        'ETag': etag,
+                                        'Content-Length': data.length,
+                                        'Content-Disposition': 'inline',
+                                        'Last-Modified': stat.mtime
+                                    });
 
                                     if (url.search(".html") != -1) {
                                         data = data.toString('utf8');
