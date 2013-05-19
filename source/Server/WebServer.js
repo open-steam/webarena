@@ -429,7 +429,7 @@ WebServer.init=function(theModules){
 				Modules.Log.error(err);
 			}
 		
-	  } else {
+	  } else if(url.substr(0,10) !== "/socket.io") {
 		 
 		  	// plain files
 
