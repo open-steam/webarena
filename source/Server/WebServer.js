@@ -1,543 +1,541 @@
 /**
-*    Webarena - A web application for responsive graphical knowledge work
-*
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
-*
-*/
+ *    Webarena - A web application for responsive graphical knowledge work
+ *
+ *    @author Felix Winkelnkemper, University of Paderborn, 2012
+ *
+ */
 
 "use strict";
 
-var Modules=false;
+var Modules = false;
 
-var WebServer={};
+var WebServer = {};
 var _ = require('underscore');
 
 /*
-*	init
-*
-*	starts the webserver
-*/
-WebServer.init=function(theModules){
-	
-	Modules=theModules;
-	
-	var app = require('http').createServer(handler),
-		fs = require('fs');
-	
-	WebServer.server=app;
-	 
-	app.listen(global.config.port);  // start server (port set in config)
+ *	init
+ *
+ *	starts the webserver
+ */
+WebServer.init = function (theModules) {
 
-	function handler (req, res) {
-		
-	  var url=req.url.replace('%20',' ');
-	  var agent=req.headers['user-agent'];
-	  
-	  if(agent && agent.indexOf('MSIE')>0){
-	  		res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
-			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
-			res.end(data);
-			return;
-	  }
-	
-		/* get userHash */
-		var userHashIndex = url.indexOf("/___");
-		if (userHashIndex > -1) {
-			/* userHash found */
-			
-			var userHash = url.slice(userHashIndex+1);
-			url = url.slice(0, userHashIndex);
-			
-			var context = Modules.UserManager.getConnectionByUserHash(userHash);
-			
-		} else {
-			var userHash = false;
-			var context = false;
-		}
-			
-	  
-	  if (url=='/') url=Modules.config.homepage;
-	  
-	  if (url.substr(0,6)=='/room/') {
-		/* open room */
+    Modules = theModules;
 
-			try {
-		
-				var roomId = url.substr(6);
+    var app = require('http').createServer(handler),
+        fs = require('fs');
 
-				var indexFilename = '/../Client/guis/desktop/index.html';
+    WebServer.server = app;
 
-				fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
+    app.listen(global.config.port);  // start server (port set in config)
 
-				    	if (err) {
-				      		res.writeHead(404);
-							Modules.Log.warn("Error loading index file ("+url+")");
-				      		return res.end('404 Error loading index file');
-				    	}
+    function handler(req, res) {
 
-						res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
+        var url = req.url.replace('%20', ' ');
+        var agent = req.headers['user-agent'];
 
-						data = data.replace("##START_ROOM##", roomId);
+        if (agent && agent.indexOf('MSIE') > 0) {
+            res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
+            data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
+            res.end(data);
+            return;
+        }
 
-						res.end(data);
-				  });
-		
-			} catch(err) {
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
-		
-		return;
-	  }
-	
-	
-	  // Object Icons
-	  if (url.substr(0,12)=='/objectIcons'){
-	
-	  		try {
-	
-				var objectType=url.substr(13);
-				
-				var separator=objectType.indexOf('/');
-				
-				if (separator>0) {
-					
-					var section = objectType.substring(separator+1);
-					objectType=objectType.substring(0,separator);
-					
-				} else var section=false;
+        /* get userHash */
+        var userHashIndex = url.indexOf("/___");
+        if (userHashIndex > -1) {
+            /* userHash found */
 
-				var obj=Modules.ObjectManager.getPrototype(objectType);
+            var userHash = url.slice(userHashIndex + 1);
+            url = url.slice(0, userHashIndex);
 
-			  	if (!obj){
-			  		  res.writeHead(404);
-				      return res.end('Object not found '+objectType);
-			  	}	  	
+            var context = Modules.UserManager.getConnectionByUserHash(userHash);
 
-			  	fs.readFile(obj.localIconPath(section),
-				  function (err, data) {
-				    if (err) {
-				      res.writeHead(404);
-					  Modules.Log.warn('Icon file is missing for '+objectType+" ("+url+")");
-				      return res.end('Icon file is missing for '+objectType);
-				    }
-
-				    res.writeHead(200, {'Content-Type': 'image/png','Content-Disposition': 'inline'});
-				    res.end(data);
-				  });
-	  	
-			} catch(err) {
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
-	
-	  	return;
-	  }
-	  
-	  // setContent
-	  
-	  else if (url.substr(0,11)=='/setContent' && req.method.toLowerCase() == 'post'){
-
-			try {
-	
-				var ids=url.substr(12).split('/');
-			  	var roomID=ids[0];
-			  	var objectID=ids[1];
-
-				var object=Modules.ObjectManager.getObject(roomID,objectID,context);
-
-			  	if (!object){
-			  		  res.writeHead(404);
-					  Modules.Log.warn('Object not found (roomID: '+roomID+' objectID: '+objectID+')');
-				      return res.end('Object not found');
-			  	}
+        } else {
+            var userHash = false;
+            var context = false;
+        }
 
 
+        if (url == '/') url = Modules.config.homepage;
 
-				var formidable = require('formidable');
-				var util = require('util');
+        if (url.substr(0, 6) == '/room/') {
+            /* open room */
 
-				var form = new formidable.IncomingForm();
+            try {
 
-				form.parse(req, function(err, fields, files) {
+                var roomId = url.substr(6);
 
-						object.copyContentFromFile(files.file.path, function() {
+                var indexFilename = '/../Client/guis/desktop/index.html';
 
-							object.set('hasContent',true);
-							object.set('contentAge',new Date().getTime());
-							object.set('mimeType',files.file.type);
+                fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
 
-							/* check if content is inline displayable */
-							if (Modules.Connector.isInlineDisplayable(files.file.type)) {
+                    if (err) {
+                        res.writeHead(404);
+                        Modules.Log.warn("Error loading index file (" + url + ")");
+                        return res.end('404 Error loading index file');
+                    }
 
-								object.set('preview',true);
+                    res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
 
-								object.persist();
+                    data = data.replace("##START_ROOM##", roomId);
 
-								/* get dimensions */
-								Modules.Connector.getInlinePreviewDimensions(roomID, objectID, function(width, height) {
+                    res.end(data);
+                });
 
-									if (width != false)	object.setAttribute("width", width);
-									if (height != false) object.setAttribute("height", height);
+            } catch (err) {
+                res.writeHead(500, {"Content-Type": "text/plain"});
+                res.write("500 Internal Server Error");
+                res.end();
+                Modules.Log.error(err);
+            }
 
-									//send object update to all listeners
-									object.persist();
-									object.updateClients('contentUpdate');
-
-									res.writeHead(200);
-									res.end();
-
-								}, files.file.type,true);
-
-							} else {
-								object.set('inline',false);
-
-								//send object update to all listeners
-								object.persist();
-								object.updateClients('contentUpdate');
-
-								res.writeHead(200);
-								res.end();
-							}
+            return;
+        }
 
 
-						});
+        // Object Icons
+        if (url.substr(0, 12) == '/objectIcons') {
 
-				});
-		
-			} catch(err) {
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
-		
-	  	return;
-	  }
-	  
-	  // getContent
+            try {
 
-	  else if (url.substr(0,11)=='/getContent'){
+                var objectType = url.substr(13);
 
-	  	try {
-		
-			var ids=url.substr(12).split('/');
-		  	var roomID=ids[0];
-		  	var objectID=ids[1];
-		  	var object=Modules.ObjectManager.getObject(roomID,objectID,context);
+                var separator = objectType.indexOf('/');
 
-		  	if (!object){
-		  		  res.writeHead(404);
-				  Modules.Log.warn('Object not found (roomID: '+roomID+' objectID: '+objectID+')');
-			      return res.end('Object not found');
-		  	}
+                if (separator > 0) {
 
-		  	var mimeType = object.getAttribute('mimeType') || 'text/plain';
+                    var section = objectType.substring(separator + 1);
+                    objectType = objectType.substring(0, separator);
 
-		  	var data=object.getContent();
-		  	res.writeHead(200, {
-                  'Content-Type': mimeType,
-                  'Content-Disposition': 'inline; filename="'+ object.getAttribute("name") + '"'
+                } else var section = false;
+
+                var obj = Modules.ObjectManager.getPrototype(objectType);
+
+                if (!obj) {
+                    res.writeHead(404);
+                    return res.end('Object not found ' + objectType);
+                }
+
+                fs.readFile(obj.localIconPath(section),
+                    function (err, data) {
+                        if (err) {
+                            res.writeHead(404);
+                            Modules.Log.warn('Icon file is missing for ' + objectType + " (" + url + ")");
+                            return res.end('Icon file is missing for ' + objectType);
+                        }
+
+                        res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+                        res.end(data);
+                    });
+
+            } catch (err) {
+                res.writeHead(500, {"Content-Type": "text/plain"});
+                res.write("500 Internal Server Error");
+                res.end();
+                Modules.Log.error(err);
+            }
+
+            return;
+        }
+
+        // setContent
+
+        else if (url.substr(0, 11) == '/setContent' && req.method.toLowerCase() == 'post') {
+
+            try {
+
+                var ids = url.substr(12).split('/');
+                var roomID = ids[0];
+                var objectID = ids[1];
+
+                var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+
+                if (!object) {
+                    res.writeHead(404);
+                    Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+                    return res.end('Object not found');
+                }
+
+
+                var formidable = require('formidable');
+                var util = require('util');
+
+                var form = new formidable.IncomingForm();
+
+                form.parse(req, function (err, fields, files) {
+
+                    object.copyContentFromFile(files.file.path, function () {
+
+                        object.set('hasContent', true);
+                        object.set('contentAge', new Date().getTime());
+                        object.set('mimeType', files.file.type);
+
+                        /* check if content is inline displayable */
+                        if (Modules.Connector.isInlineDisplayable(files.file.type)) {
+
+                            object.set('preview', true);
+
+                            object.persist();
+
+                            /* get dimensions */
+                            Modules.Connector.getInlinePreviewDimensions(roomID, objectID, function (width, height) {
+
+                                if (width != false)    object.setAttribute("width", width);
+                                if (height != false) object.setAttribute("height", height);
+
+                                //send object update to all listeners
+                                object.persist();
+                                object.updateClients('contentUpdate');
+
+                                res.writeHead(200);
+                                res.end();
+
+                            }, files.file.type, true);
+
+                        } else {
+                            object.set('inline', false);
+
+                            //send object update to all listeners
+                            object.persist();
+                            object.updateClients('contentUpdate');
+
+                            res.writeHead(200);
+                            res.end();
+                        }
+
+
+                    });
+
+                });
+
+            } catch (err) {
+                res.writeHead(500, {"Content-Type": "text/plain"});
+                res.write("500 Internal Server Error");
+                res.end();
+                Modules.Log.error(err);
+            }
+
+            return;
+        }
+
+        // getContent
+
+        else if (url.substr(0, 11) == '/getContent') {
+
+            try {
+
+                var ids = url.substr(12).split('/');
+                var roomID = ids[0];
+                var objectID = ids[1];
+                var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+
+                if (!object) {
+                    res.writeHead(404);
+                    Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+                    return res.end('Object not found');
+                }
+
+                var mimeType = object.getAttribute('mimeType') || 'text/plain';
+
+                var data = object.getContent();
+                res.writeHead(200, {
+                    'Content-Type': mimeType,
+                    'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'
+
+                });
+
+                res.end(new Buffer(data));
+
+            } catch (err) {
+                res.writeHead(500, {"Content-Type": "text/plain"});
+                res.write("500 Internal Server Error");
+                res.end();
+                Modules.Log.error(err);
+            }
+
+            return;
+        }
+
+
+        // getPreviewContent
+
+        else if (url.substr(0, 18) == '/getPreviewContent') {
+
+            try {
+
+                var ids = url.substr(19).split('/');
+                var roomID = ids[0];
+                var objectID = ids[1];
+                var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+
+                if (!object) {
+                    res.writeHead(404);
+                    return res.end('Object not found');
+                }
+
+                object.getInlinePreviewMimeType(function (mimeType) {
+
+                    object.getInlinePreview(function (data) {
+
+                        if (!data) {
+
+                            Modules.Log.warn('no inline preview found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+
+                            if (mimeType.indexOf("image/") >= 0) {
+
+                                fs.readFile(__dirname + '/../Client/guis.common/images/imageNotFound.png', function (err, data) {
+
+                                    if (err) {
+                                        res.writeHead(404);
+                                        Modules.Log.warn("Error loading imageNotFound.png file (" + url + ")");
+                                        return res.end('404 Error loading imageNotFound.png file');
+                                    }
+
+                                    res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+                                    res.end(data);
+
+                                });
+
+                            } else {
+                                res.writeHead(404);
+                                res.end('Object not found');
+                            }
+
+                        } else {
+                            res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Disposition': 'inline'});
+                            res.end(new Buffer(data));
+                        }
+
+                    }, mimeType, true);
+
+                });
+
+            } catch (err) {
+                res.writeHead(500, {"Content-Type": "text/plain"});
+                res.write("500 Internal Server Error");
+                res.end();
+                Modules.Log.error(err);
+            }
+
+            return;
+        }
+
+        //get external session data
+
+        else if (url == '/pushSession' && req.method.toLowerCase() == 'post') {
+
+            var qs = require('querystring');
+            var data = '';
+            req.on('data', function (chunk) {
+                data += chunk;
+            });
+            req.on('end', function () {
+                var post = qs.parse(data);
+
+                if (Modules.Connector.addExternalSession !== undefined) {
+                    Modules.Connector.addExternalSession({
+                        "id": post.id,
+                        "username": post.username,
+                        "password": post.password
+                    });
+                }
 
             });
 
-			res.end(new Buffer(data));
-		
-		} catch(err) {
-			res.writeHead(500, {"Content-Type": "text/plain"});
-			res.write("500 Internal Server Error");
-			res.end();
-			Modules.Log.error(err);
-		}
-		
-	  	return;
-	  }
-	
-	
-	// getPreviewContent
+        }
 
-	  else if (url.substr(0,18)=='/getPreviewContent'){
-		
-			try {
-		
-	  			var ids=url.substr(19).split('/');
-			  	var roomID=ids[0];
-			  	var objectID=ids[1];
-			  	var object=Modules.ObjectManager.getObject(roomID,objectID,context);
+        else if (url == '/defaultJavascripts') {
 
-			  	if (!object){
-			  		  res.writeHead(404);
-				      return res.end('Object not found');
-			  	}
+            //combine all javascript files in guis.common/javascript
+            var files = fs.readdirSync('Client/guis.common/javascript');
+            files.sort(function (a, b) {
+                return parseInt(a) - parseInt(b);
+            });
+            var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
 
-				object.getInlinePreviewMimeType(function(mimeType) {
+            files = _.filter(files, function (fname) {
+                return fileReg.test(fname);
+            })
 
-					object.getInlinePreview(function(data) {
+            var etag = "";
+            _.each(files, function (file) {
+                var stats = fs.statSync('Client/guis.common/javascript/' + file);
+                etag += stats.size + '-' + Date.parse(stats.mtime);
+            })
 
-						if (!data) {
-							
-							Modules.Log.warn('no inline preview found (roomID: '+roomID+' objectID: '+objectID+')');
+            if (req.headers['if-none-match'] === etag) {
+                res.statusCode = 304;
+                res.end();
+            } else {
+                var combinedJavascript = "";
 
-							if (mimeType.indexOf("image/") >= 0) {
+                //Asynchron file loading!
+                //In order to get right order, second file is loaded in the callback of first file
+                //and so on.
+                var processFiles = function () {
 
-								fs.readFile(__dirname+'/../Client/guis.common/images/imageNotFound.png', function (err, data) {
+                    // check for termination - we worked through all files
+                    // then we want to send the result.
+                    if (files.length === 0) sendResult()
+                    // take first element - call recursion with remaining files,
+                    // after first file was loaded.
+                    else {
+                        var filename = files.shift();
 
-									if (err) {
-										res.writeHead(404);
-										Modules.Log.warn("Error loading imageNotFound.png file ("+url+")");
-										return res.end('404 Error loading imageNotFound.png file');
-									}
+                        fs.readFile('Client/guis.common/javascript/' + filename, function (err, data) {
+                            if (!err) {
+                                combinedJavascript += "/******************************/\n";
+                                combinedJavascript += "/* " + filename + "\n";
+                                combinedJavascript += "/******************************/\n";
+                                combinedJavascript += data + "\n";
+                            } else {
+                                console.log("Error combining JavaScript files.");
+                            }
 
-									res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
-									res.end(data);
-										
-								});
-								
-							} else {
-								res.writeHead(404);
-								res.end('Object not found');
-							}
-							
-						} else {
-							res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Disposition': 'inline'});
-							res.end(new Buffer(data));
-						}
+                            processFiles()
+                        });
+                    }
+                }
 
-					},mimeType,true);
+                var sendResult = function () {
+                    var mimeType = 'application/javascript';
+                    res.setHeader('ETag', etag);
+                    res.writeHead(200, {'Content-Type': mimeType});
+                    res.end(combinedJavascript);
+                }
 
-				});
-		
-			} catch(err) {
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
+                processFiles();
+            }
+        }
 
-	  	return;
-	  }
-	
-	  //get external session data
-	
-	  else if (url=='/pushSession' && req.method.toLowerCase() == 'post'){
-	
-			var qs = require('querystring');
-			var data = '';
-			req.on('data', function(chunk) {
-			  data += chunk;
-			});
-			req.on('end', function() {
-			  	var post = qs.parse(data);
-			
-				if (Modules.Connector.addExternalSession !== undefined) {
-					Modules.Connector.addExternalSession({
-						"id" : post.id,
-						"username" : post.username,
-						"password" : post.password
-					});
-				}
-			
-			});
-		
-	  }
+        // objects
 
-      else if(url =='/defaultJavascripts'){
+        else if (url == '/objects') {
 
-          //combine all javascript files in guis.common/javascript
-          var files=fs.readdirSync('Client/guis.common/javascript');
-          files.sort(function(a,b){
-             return parseInt(a) - parseInt(b);
-          });
-          var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
+            try {
 
-          files = _.filter(files, function(fname){
-             return fileReg.test(fname);
-          })
+                var code = Modules.ObjectManager.getClientCode();
 
-          var etag ="";
-          _.each(files, function(file){
-              var stats = fs.statSync('Client/guis.common/javascript/' + file);
-              etag += stats.size + '-' + Date.parse(stats.mtime);
-          })
+                var mimeType = 'application/javascript';
 
-          if (req.headers['if-none-match'] === etag) {
-              res.statusCode = 304;
-              res.end();
-          } else {
-              var combinedJavascript = "";
+                res.writeHead(200, {'Content-Type': mimeType});
+                res.end(code);
 
-              //Asynchron file loading!
-              //In order to get right order, second file is loaded in the callback of first file
-              //and so on.
-              var processFiles = function (){
+            } catch (err) {
+                res.writeHead(500, {"Content-Type": "text/plain"});
+                res.write("500 Internal Server Error");
+                res.end();
+                Modules.Log.error(err);
+            }
 
-                  // check for termination - we worked through all files
-                  // then we want to send the result.
-                  if(files.length === 0) sendResult()
-                  // take first element - call recursion with remaining files,
-                  // after first file was loaded.
-                  else {
-                      var filename = files.shift();
+        } else if (url.substr(0, 10) !== "/socket.io") {
 
-                      fs.readFile('Client/guis.common/javascript/' + filename, function(err,data){
-                          if(!err)  {
-                              combinedJavascript += "/******************************/\n";
-                              combinedJavascript += "/* " + filename + "\n";
-                              combinedJavascript += "/******************************/\n";
-                              combinedJavascript += data + "\n";
-                          } else {
-                              console.log("Error combining JavaScript files.");
-                          }
+            // plain files
 
-                          processFiles()
-                      });
-                  }
-              }
+            try {
 
-              var sendResult = function(){
-                  var mimeType='application/javascript';
-                  res.setHeader('ETag', etag);
-                  res.writeHead(200, {'Content-Type':mimeType});
-                  res.end(combinedJavascript);
-              }
+                var urlParts = url.split('/');
 
-              processFiles();
-          }
-      }
-	  
-	  // objects
-	  
-	  else if (url=='/objects'){
-	    
-			try {
-	
-				var code=Modules.ObjectManager.getClientCode();
-	    
-	    		var mimeType='application/javascript';
-	  
-	  			res.writeHead(200, {'Content-Type':mimeType});
-				res.end(code);
-		
-			} catch(err) {
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
-		
-	  } else if(url.substr(0,10) !== "/socket.io") {
-		 
-		  	// plain files
+                var filebase = __dirname + '/../Client';
+                var filePath = filebase + url;
 
-		  	try {
-			
-				var urlParts=url.split('/');
+                if (urlParts.length > 2) {
+                    switch (urlParts[1]) {
+                        case 'Common':
+                            filebase = __dirname + '/..';
+                            filePath = filebase + url;
+                            break;
+                    }
+                }
 
-				  var filebase=__dirname + '/../Client';
-				  var filePath=filebase+url;
+                fs.readFile(filePath,
+                    function (err, data) {
+                        if (err) {
+                            res.writeHead(404);
+                            Modules.Log.warn('Error loading ' + url);
+                            return res.end('Error loading ' + url);
+                        }
 
-				  if(urlParts.length>2){
-				  	switch(urlParts[1]){
-				  		case 'Common':
-				  			filebase=__dirname + '/..';
-				  			filePath=filebase+url;
-				  		break;
-				  	}
-				  }
+                        fs.stat(filePath, function (err, stat) {
+                            if (err) {
+                                res.statusCode = 500;
+                                res.end()
+                            } else {
+                                var etag = stat.size + '-' + Date.parse(stat.mtime);
+                                res.setHeader('Last-Modified', stat.mtime);
 
-				  fs.readFile(filePath,
-				  function (err, data) {
-				    if (err) {
-				      	res.writeHead(404);
-						Modules.Log.warn('Error loading '+url);
-				      	return res.end('Error loading '+url);				      
-				    }
+                                if (req.headers['if-none-match'] === etag) {
+                                    res.statusCode = 304;
+                                    res.end();
+                                } else {
+                                    var contentType = false;
 
-                      fs.stat(filePath, function (err, stat) {
-                          if (err) {
-                              res.statusCode = 500;
-                              res.end()
-                          } else {
-                              etag = stat.size + '-' + Date.parse(stat.mtime);
-                              res.setHeader('Last-Modified', stat.mtime);
+                                    if (url.indexOf('.m4a') != -1) contentType = 'audio/mpeg';
+                                    if (url.indexOf('.png') != -1) contentType = 'image/png';
+                                    if (url.indexOf('.jpg') != -1) contentType = 'image/jpeg';
+                                    if (url.indexOf('.gif') != -1) contentType = 'image/gif';
+                                    if (url.indexOf('.htm') != -1) contentType = 'text/html';
+                                    if (url.indexOf('.js') != -1) contentType = 'application/javascript';
+                                    if (url.indexOf('.css') != -1) contentType = 'text/css';
+                                    if (url.indexOf('.ico') != -1) contentType = 'image/x-icon';
 
-                              if (req.headers['if-none-match'] === etag) {
-                                  res.statusCode = 304;
-                                  res.end();
-                              } else {
-                                  var contentType=false;
+                                    if (!contentType) {
+                                        Modules.Log.warn('WebServer ERROR: No content type for ' + url);
+                                        contentType = 'text/plain';
+                                    }
 
-                                  if (url.indexOf('.m4a')!=-1) contentType='audio/mpeg';
-                                  if (url.indexOf('.png')!=-1) contentType='image/png';
-                                  if (url.indexOf('.jpg')!=-1) contentType='image/jpeg';
-                                  if (url.indexOf('.gif')!=-1) contentType='image/gif';
-                                  if (url.indexOf('.htm')!=-1) contentType='text/html';
-                                  if (url.indexOf('.js')!=-1) contentType='application/javascript';
-                                  if (url.indexOf('.css')!=-1) contentType='text/css';
-                                  if (url.indexOf('.ico')!=-1) contentType='image/x-icon';
+                                    res.setHeader('Content-Length', data.length);
+                                    res.setHeader('ETag', etag);
+                                    res.writeHead(200, {'Content-Type': contentType, 'Content-Disposition': 'inline'});
 
-                                  if (!contentType) {
-                                      Modules.Log.warn('WebServer ERROR: No content type for '+url);
-                                      contentType='text/plain';
-                                  }
+                                    if (url.search(".html") != -1) {
+                                        data = data.toString('utf8');
+                                        var position1 = data.search('<serverscript');
+                                        if (position1 != -1) {
+                                            var src = data;
+                                            src = src.substr(position1);
 
-                                  res.setHeader('Content-Length', data.length);
-                                  res.setHeader('ETag', etag);
-                                  res.writeHead(200, {'Content-Type': contentType, 'Content-Disposition': 'inline'});
+                                            var position2 = src.search('"') + 1;
+                                            src = src.substr(position2);
 
-                                  if (url.search(".html") != -1){
-                                      data=data.toString('utf8');
-                                      var position1=data.search('<serverscript');
-                                      if (position1!=-1){
-                                          var src=data;
-                                          src=src.substr(position1);
+                                            var position3 = src.search('"');
+                                            src = src.substr(0, position3);
 
-                                          var position2=src.search('"')+1;
-                                          src=src.substr(position2);
+                                            var pre = data.substr(0, position1);
+                                            var post = data.substr(position1 + position2 + position3 + 2);
 
-                                          var position3=src.search('"');
-                                          src=src.substr(0,position3);
+                                            var theScript = require('./scripts/' + src);
 
-                                          var pre=data.substr(0,position1);
-                                          var post=data.substr(position1+position2+position3+2);
+                                            theScript.run(url);
 
-                                          var theScript=require('./scripts/'+src);
+                                            var result = theScript.export;
 
-                                          theScript.run(url);
+                                            data = pre + result + post;
 
-                                          var result=theScript.export;
+                                        }
+                                    }
+                                    ;
 
-                                          data=pre+result+post;
+                                    res.end(data);
+                                }
+                            }
+                        })
 
-                                      }
-                                  };
+                    });
 
-                                  res.end(data);
-                              }
-                          }
-                      })
+            } catch (err) {
+                res.writeHead(500, {"Content-Type": "text/plain"});
+                res.write("500 Internal Server Error");
+                res.end();
+                Modules.Log.error(err);
+            }
 
-				  });
-			
-			} catch(err) {
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
-	
-	  }
-		
-		
-		
-	}  // handler
-	
-	
-	
+        }
+
+
+    }  // handler
+
+
 };
 
-module.exports=WebServer;
+module.exports = WebServer;
