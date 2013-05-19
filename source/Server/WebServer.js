@@ -457,52 +457,70 @@ WebServer.init=function(theModules){
 				      	return res.end('Error loading '+url);				      
 				    }
 
-					var contentType=false;
+                      fs.stat(filePath, function (err, stat) {
+                          if (err) {
+                              res.statusCode = 500;
+                              res.end()
+                          } else {
+                              etag = stat.size + '-' + Date.parse(stat.mtime);
+                              res.setHeader('Last-Modified', stat.mtime);
 
-					if (url.indexOf('.m4a')!=-1) contentType='audio/mpeg';
-					if (url.indexOf('.png')!=-1) contentType='image/png';
-					if (url.indexOf('.jpg')!=-1) contentType='image/jpeg';
-					if (url.indexOf('.gif')!=-1) contentType='image/gif';
-					if (url.indexOf('.htm')!=-1) contentType='text/html';
-					if (url.indexOf('.js')!=-1) contentType='application/javascript';
-					if (url.indexOf('.css')!=-1) contentType='text/css';
-					if (url.indexOf('.ico')!=-1) contentType='image/x-icon';
+                              if (req.headers['if-none-match'] === etag) {
+                                  res.statusCode = 304;
+                                  res.end();
+                              } else {
+                                  var contentType=false;
 
-					if (!contentType) {
-						Modules.Log.warn('WebServer ERROR: No content type for '+url);
-						contentType='text/plain';
-					}
+                                  if (url.indexOf('.m4a')!=-1) contentType='audio/mpeg';
+                                  if (url.indexOf('.png')!=-1) contentType='image/png';
+                                  if (url.indexOf('.jpg')!=-1) contentType='image/jpeg';
+                                  if (url.indexOf('.gif')!=-1) contentType='image/gif';
+                                  if (url.indexOf('.htm')!=-1) contentType='text/html';
+                                  if (url.indexOf('.js')!=-1) contentType='application/javascript';
+                                  if (url.indexOf('.css')!=-1) contentType='text/css';
+                                  if (url.indexOf('.ico')!=-1) contentType='image/x-icon';
 
-					res.writeHead(200, {'Content-Type': contentType, 'Content-Disposition': 'inline'});
+                                  if (!contentType) {
+                                      Modules.Log.warn('WebServer ERROR: No content type for '+url);
+                                      contentType='text/plain';
+                                  }
 
-				    if (url.search(".html") != -1){
-				    	data=data.toString('utf8');
-				    	var position1=data.search('<serverscript');
-				    	if (position1!=-1){
-				    		var src=data;
-				    		src=src.substr(position1);
+                                  res.setHeader('Content-Length', data.length);
+                                  res.setHeader('ETag', etag);
+                                  res.writeHead(200, {'Content-Type': contentType, 'Content-Disposition': 'inline'});
 
-				    		var position2=src.search('"')+1;
-				    		src=src.substr(position2);
+                                  if (url.search(".html") != -1){
+                                      data=data.toString('utf8');
+                                      var position1=data.search('<serverscript');
+                                      if (position1!=-1){
+                                          var src=data;
+                                          src=src.substr(position1);
 
-				    		var position3=src.search('"');
-				    		src=src.substr(0,position3);
+                                          var position2=src.search('"')+1;
+                                          src=src.substr(position2);
 
-				    		var pre=data.substr(0,position1);
-				    		var post=data.substr(position1+position2+position3+2);
+                                          var position3=src.search('"');
+                                          src=src.substr(0,position3);
 
-				    		var theScript=require('./scripts/'+src);
+                                          var pre=data.substr(0,position1);
+                                          var post=data.substr(position1+position2+position3+2);
 
-				    		theScript.run(url);
+                                          var theScript=require('./scripts/'+src);
 
-				    		var result=theScript.export;
+                                          theScript.run(url);
 
-				    		data=pre+result+post;
+                                          var result=theScript.export;
 
-				    	}
-				    };
+                                          data=pre+result+post;
 
-				    res.end(data);
+                                      }
+                                  };
+
+                                  res.end(data);
+                              }
+                          }
+                      })
+
 				  });
 			
 			} catch(err) {
