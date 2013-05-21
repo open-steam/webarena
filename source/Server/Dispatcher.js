@@ -5,6 +5,8 @@
 *
 */
 
+"use strict";
+
 var Modules=false; //set in init
 var Dispatcher={};
 var calls={};
@@ -25,15 +27,16 @@ Dispatcher.call=function(socket,message){
 	if (calls[type]){
 		process.nextTick(function(){ 
 			
-		  try {
+		  /*try {*/
 			 
 			//provide callFunction with the responseID (for asynchronous responding)
 		  	var response=calls[type](socket,data,responseID); 		// this is still blocking, swtich to callbacks if necessary
-		  	
+		  /*	
 		  } catch (e) {
 		  	console.log('ERROR: Function for '+type,e);
 		  	SocketServer.sendToSocket(socket,'error','ERROR: Function for '+type);
 		  }
+		  */
 		  
 		  /**
 		  *	Clients can provide a unique responseID when calling a function on the server. If the

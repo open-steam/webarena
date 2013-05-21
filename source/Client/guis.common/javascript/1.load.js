@@ -1,26 +1,30 @@
+"use strict";
+
+/**
+ * indicated if the GUI is fully loaded
+ */
 GUI.loaded = false;
-GUI.isLoggedIn = false;
 
-GUI.loggedIn = function() {
-	if (GUI.isLoggedIn) return;
+/**
+ * called when a room is entered
+ */
+GUI.entered = function() {
 	
-	GUI.isLoggedIn = true;
+	if (GUI.loaded) {
+		//GUI was loaded before --> this is a room change
+		GUI.progressBarManager.addProgress(GUI.translate('changing room'), "login");
+	}
 	
-	window.setTimeout(function() {
-		GUI.loadGUI(2);
-	}, 200);
+	GUI.loadGUI(2);
 	
 }
 
-GUI.loginFailed = function(err) {
-	GUI.progressBarManager.removeProgress("login");
-	GUI.showLogin(err);
-}
-
+/**
+ * Load of GUI (seperated in different steps to ensure working dependencies)
+ * @param {int} step Loading step which should be performed
+ */
 GUI.loadGUI = function(step) {
 
-	if (GUI.loaded) return;
-	
 	/* not logged in? */
 	if (!GUI.username) {
 		
@@ -34,12 +38,19 @@ GUI.loadGUI = function(step) {
 	if (step == undefined || step == 1) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
+		if (!GUI.loaded) GUI.chat.init();
+		GUI.chat.clear(); //clear chats messages
+		
+		if (!GUI.loaded) GUI.sidebar.init(); //init sidebar
+
 		/* login to server */
-		ObjectManager.login(GUI.username, GUI.password);
+		ObjectManager.login(GUI.username, GUI.password, GUI.externalSession);
+		GUI.externalSession = false;
 		
 	} else if (step == 2) {
 		GUI.progressBarManager.updateProgress("login", 40);
 
+		if (!GUI.loaded)
 		GUI.loadListOfPreviewableMimeTypes();
 
 		window.setTimeout(function() {
@@ -47,50 +58,60 @@ GUI.loadGUI = function(step) {
 		}, 200);
 		
 	} else if (step == 3) {
-		GUI.progressBarManager.updateProgress("login", 60, "Benutzeroberfläche laden");
+		
+		GUI.progressBarManager.updateProgress("login", 60, GUI.translate('loading GUI'));
+
+		
+		GUI.startNoAnimationTimer(); //timer to prevent "flying" objects when getting the new list of objects for the room
+		
+
+		if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
+		
+		/* key handling */
+		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
+	
+		
+		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
+
+
+		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown		
+		
+		
+		if (!GUI.loaded) GUI.initObjectCopyCutPasteHandlingByKeyboard(); //handle ctrl+c, ctrl+x, ctrl+v for copy, cut and paste objects //needs: ObjectManager.cutObjects, ObjectManager.copyObjects, ObjectManager.pasteObjets, ObjectManager.getSelected on keydown
 		
 		/* toolbar */
-		GUI.initToolbar(); //needs: ObjectManager
+		if (!GUI.loaded) GUI.initToolbar(); //needs: ObjectManager
 
 		/* adjust svg area */
 		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
 
-		/* key handling */
-		GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
-		GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
-		GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown	
-
-		/* rubberband */
-		GUI.initRubberband(); //init rubberband //needs: ObjectManager.getObjects on usage
-
 		/* window resizing */
-		GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
+		if (!GUI.loaded) GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
 
 		/* inspector */
-		GUI.setupInspector(); //add inspector buttons, ...
-		GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
-
+		if (!GUI.loaded) GUI.setupInspector(); //add inspector buttons, ...
 
 		window.setTimeout(function() {
 			GUI.loadGUI(4);
 		}, 200);
 		
 	} else if (step == 4) {
-		GUI.progressBarManager.updateProgress("login", 80, "Objekte darstellen");
 		
-		/* load objects */
-		GUI.hideHiddenObjects(); //hide hidden objects / initially create representations when calling getRepresentation() //needs: ObjectManager.getObjects, SVG
+		GUI.progressBarManager.updateProgress("login", 80, GUI.translate('rendering objects'));
 		
-		GUI.initMouseHandler();
+		if (!GUI.loaded) GUI.initMouseHandler();
 		
 		window.setTimeout(function() {
 			GUI.loadGUI(5);
 		}, 200);
 		
 	} else if (step == 5) {
-		GUI.progressBarManager.updateProgress("login", 90, "Objekte anordnen");
+		
+		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
 		
 		GUI.updateLayers(); //update z-order by layer-attribute
+		
+		GUI.updateInspector();
 		
 		GUI.loaded = true;
 		
@@ -102,6 +123,9 @@ GUI.loadGUI = function(step) {
 
 }
 
+/**
+ * start loading with step 1 when the document is ready
+ */
 $(function() {
 
 	GUI.loadGUI(1);

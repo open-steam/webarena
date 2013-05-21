@@ -1,10 +1,30 @@
+"use strict";
+
+/**
+ * @namespace Holds functions and variables for displaying a progress bar
+ */
 GUI.progressBarManager = {};
 
 GUI.progressBarManager.currentId = 0;
+
+/**
+ * List of active progresses
+ */
 GUI.progressBarManager.progressList = {};
+
+/**
+ * Number of active progresses
+ */
 GUI.progressBarManager.progressCounter = 0;
+
+/**
+ * True if the progress bar manager is visible
+ */
 GUI.progressBarManager.visible = false;
 	
+/**
+ * Show progress bar manager
+ */
 GUI.progressBarManager.show = function() {
 
 	if (this.visible) return;
@@ -18,6 +38,9 @@ GUI.progressBarManager.show = function() {
 	
 }
 
+/**
+ * Hide progress bar manager
+ */
 GUI.progressBarManager.hide = function() {
 
 	if (!this.visible) return;
@@ -34,11 +57,18 @@ GUI.progressBarManager.hide = function() {
 	
 }
 	
+/**
+ * Generate a unique id for a progress
+ */
 GUI.progressBarManager.generateId = function() {
 	this.currentId++;
 	return this.currentId;
 }
 	
+/**
+ * Adjust position of all shown progress bares
+ * @param {bool} [noAnimation=false] True to prevent animation
+ */
 GUI.progressBarManager.adjustPosition = function(noAnimation) {
 		
 	var container = $("#progressBar > .progressBar_container");
@@ -62,8 +92,16 @@ GUI.progressBarManager.adjustPosition = function(noAnimation) {
 		
 }
 	
+/**
+ * Add a new progress
+ * @param {String} title Initial Title of the new progress
+ * @param {int|String} [id] Custom ID of the new progress
+ * @returns {int|String} ID of new progress
+ */
 GUI.progressBarManager.addProgress = function(title, id) {
-
+	
+	if (this.progressList[id] !== undefined) return;
+	
 	if (id == undefined)
 		var id = this.generateId();
 
@@ -92,6 +130,10 @@ GUI.progressBarManager.addProgress = function(title, id) {
 		
 }
 
+/**
+ * Remove progress
+ * @param {int|String} id Id of the progress to remove
+ */
 GUI.progressBarManager.removeProgress = function(id) {
 
 	if (this.progressList[id] == undefined) {
@@ -111,6 +153,12 @@ GUI.progressBarManager.removeProgress = function(id) {
 	
 }
 
+/**
+ * Update progress bar for a progress
+ * @param {int|String} id Id of the progress to update
+ * @param {String} value New title for the progress
+ * @param {bool} [ignoreUnknownId=false] True if an unknown ID should be ignored
+ */
 GUI.progressBarManager.updateProgress = function(id, value, title, ignoreUnknownId) {
 	var self = this;
 
@@ -126,7 +174,7 @@ GUI.progressBarManager.updateProgress = function(id, value, title, ignoreUnknown
 	if (value >= 100) {
 		window.setTimeout(function() {
 			self.removeProgress(id);
-		}, 100);
+		}, 200);
 	}
 	
 	value = $(this.progressList[id].domElement).find(".progressBar_progress").outerWidth()*(parseInt(value)/100);
@@ -139,7 +187,12 @@ GUI.progressBarManager.updateProgress = function(id, value, title, ignoreUnknown
 	
 }
 
-
+/**
+ * Display and error for a progress and remove it after 2 sec.
+ * @param {int|String} id Id of the progress
+ * @param {String} title New title for the progress
+ * @param {bool} [ignoreUnknownId=false] True if an unknown ID should be ignored
+ */
 GUI.progressBarManager.error = function(id, title, ignoreUnknownId) {
 	var self = this;
 

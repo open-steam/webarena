@@ -1,5 +1,12 @@
-/* actionsheet */
+"use strict";
 
+/**
+ * actionsheets are horizontal context menus
+ */
+
+/**
+ * hide currently visible actionsheet
+ */
 GUI.hideActionsheet = function() {
 
 	$("#actionsheet").hide();
@@ -7,7 +14,29 @@ GUI.hideActionsheet = function() {
 	$(document).unbind("click.actionsheetHide");
 }
 
-GUI.showActionsheet = function(x, y, webarenaObject) {
+
+/**
+ * show actionsheet at position x,y (opt.: bound to a webarena object)
+ * @param {int} x initial x position
+ * @param {int} y initial y position
+ * @param {webarenaObject} webarenaObject webarena object to bind actionsheet to
+ * @param {bool} isWebarenaObject ?
+ */
+GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
+
+    //TODO: Es muss nicht unbedingt ein webarenaObject übergeben werden
+    //{
+    //actions : [
+    // {"actionName": "ex1", "actionFunction" : fnc},
+    // {"actionName": "ex2", "actionFunction" : fnc}
+    //]
+    //}
+    if(isWebarenaObject === undefined){
+        isWebarenaObject = true;
+    }
+
+
+	if (Modules.Config.presentationMode) return;
 
 	$(document).unbind("click.actionsheetHide");
 
@@ -21,42 +50,86 @@ GUI.showActionsheet = function(x, y, webarenaObject) {
 	
 	actionsheet.html('<div class="actionsheet_arrow"></div><div class="actionsheet_buttons"></div>'); //clear actionsheet
 
-	$.each(ObjectManager.getActionsForSelected(), function(key, action) {
+    if(isWebarenaObject){
+        $.each(ObjectManager.getActionsForSelected(), function(key, action) {
 
-		var newButton = document.createElement("div");
-		$(newButton).html(webarenaObject.translate('de', action));
-		$(newButton).addClass("actionsheet_button");
-		
-		$(newButton).bind("click", function() {
-		
-			ObjectManager.performActionForSelected(action);
+            var newButton = document.createElement("div");
+            if(isWebarenaObject){
+                $(newButton).html(webarenaObject.translate('de', action));
+            } else {
 
-			actionsheet.hide();
-			
-		});
-		
-		/* effects: */
-		newButton.addEventListener("touchstart", function() {
-			$(newButton).addClass("actionsheet_button_hover");
-		}, false);
-		
-		newButton.addEventListener("touchend", function() {
-			$(newButton).removeClass("actionsheet_button_hover");
-		}, false);
-					
-		$(newButton).bind("mousedown", function() {
-			$(newButton).addClass("actionsheet_button_hover");
-		});
-		
-		$(newButton).bind("mouseup", function() {
-			$(newButton).removeClass("actionsheet_button_hover");
-		});
-		
-		actionsheet.find(".actionsheet_buttons").append(newButton);
-		
-	});
+            }
+
+            $(newButton).addClass("actionsheet_button");
+
+            $(newButton).bind("click", function() {
+                ObjectManager.performActionForSelected(action, webarenaObject);
+
+                actionsheet.hide();
+
+            });
+
+            /* effects: */
+            newButton.addEventListener("touchstart", function() {
+                $(newButton).addClass("actionsheet_button_hover");
+            }, false);
+
+            newButton.addEventListener("touchend", function() {
+                $(newButton).removeClass("actionsheet_button_hover");
+            }, false);
+
+            $(newButton).bind("mousedown", function() {
+                $(newButton).addClass("actionsheet_button_hover");
+            });
+
+            $(newButton).bind("mouseup", function() {
+                $(newButton).removeClass("actionsheet_button_hover");
+            });
+
+            actionsheet.find(".actionsheet_buttons").append(newButton);
+
+        });
+    } else {
+
+        $.each(webarenaObject.actions, function(key, action) {
+            var newButton = document.createElement("div");
+
+            $(newButton).html(action.actionName );
+
+
+            $(newButton).addClass("actionsheet_button");
+
+            $(newButton).bind("click", function() {
+                action.actionFunction()
+
+                actionsheet.hide();
+
+            });
+
+            /* effects: */
+            newButton.addEventListener("touchstart", function() {
+                $(newButton).addClass("actionsheet_button_hover");
+            }, false);
+
+            newButton.addEventListener("touchend", function() {
+                $(newButton).removeClass("actionsheet_button_hover");
+            }, false);
+
+            $(newButton).bind("mousedown", function() {
+                $(newButton).addClass("actionsheet_button_hover");
+            });
+
+            $(newButton).bind("mouseup", function() {
+                $(newButton).removeClass("actionsheet_button_hover");
+            });
+
+            actionsheet.find(".actionsheet_buttons").append(newButton);
+
+        });
+    }
 	
 	
+	/* calculate dimensions and show (little delay to ensure working width/height DOM getter methods) */
 	window.setTimeout(function() {
 
 		var actionsheetWidth = actionsheet.find(".actionsheet_buttons").outerWidth()+1; //+1 (little extra space for firefox ;-) )

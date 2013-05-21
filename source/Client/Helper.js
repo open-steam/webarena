@@ -5,6 +5,8 @@
 *
 */
 
+"use strict";
+
 var module={};  // For compatibility with node.js models.
 
 function require(input){
@@ -14,8 +16,7 @@ function require(input){
 	}
 }
 
-if (true) {							//TODO this overrides how object derivation works. Maybe find a function
-									//that does not override the native one.
+if (true) {	
 	Object.create = function (o) {
 		function F() {}
 		F.prototype = o;
@@ -33,7 +34,7 @@ if (true) {							//TODO this overrides how object derivation works. Maybe find 
 	        var tempClone = {};
 	
 	        if (typeof(oldObject) == "object")
-	            for (prop in oldObject)
+	            for (var prop in oldObject)
 	                // for array use private method getCloneOfArray
 	                if ((typeof(oldObject[prop]) == "object") &&
 	                                (oldObject[prop]).__isArray)

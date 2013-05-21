@@ -1,0 +1,46 @@
+@import "compass/css3";
+
+.js-tree{
+  height: 100%;
+  overflow: auto;
+  padding-right: -1em;
+}
+
+.sharepoint-toolbar, .embedded-toolbar{
+  @include background(
+    linear-gradient(#5A6775, #3D454F));
+  height: 20px;
+  padding-left: 5px;
+  padding-top: 5px;
+  padding-bottom: 2px;
+}
+
+.embedded-toolbar-button{
+  width: 16px;
+  height: 16px;
+  background-repeat: no-repeat;
+  display: block;
+  cursor: pointer;
+  padding-right: 5px;
+}
+
+.minimize-button{
+  @extend .embedded-toolbar-button;
+  background-image: url('../images/close.png');
+  float: left;
+}
+
+.open-extern-button{
+  @extend .embedded-toolbar-button;
+  background-image: url('../images/export.png');
+  float: right;
+}
+
+.iframe-container{
+  background-color: white;
+  border: 2px solid #3D454F;
+}
+
+.jstree-default.jstree-focused{
+  background: #ffffff;
+}

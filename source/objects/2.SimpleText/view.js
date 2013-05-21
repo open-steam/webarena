@@ -5,45 +5,68 @@
 *
 */
 
-SimpleText.draw=function(){
+SimpleText.draw=function(external){
 	
 	var rep=this.getRepresentation();
 	
-	this.setViewX(this.getAttribute('x'));
-	this.setViewY(this.getAttribute('y'));
+	this.drawDimensions(external);
 
 	//$(rep).attr("fill", this.getAttribute('fillcolor'));
 	
 	if (!$(rep).hasClass("selected")) {
-		$(rep).attr("stroke", this.getAttribute('linecolor'));
-		$(rep).attr("stroke-width", this.getAttribute('linesize'));
+		$(rep).find("text").attr("stroke", this.getAttribute('linecolor'));
+		$(rep).find("text").attr("stroke-width", this.getAttribute('linesize'));
 	}
 	
-	$(rep).attr("font-size", this.getAttribute('font-size'));
-	$(rep).attr("font-family", this.getAttribute('font-family'));
-	$(rep).attr("fill", this.getAttribute('font-color'));
+	$(rep).find("text").attr("font-size", this.getAttribute('font-size'));
+	$(rep).find("text").attr("font-family", this.getAttribute('font-family'));
+	$(rep).find("text").attr("fill", this.getAttribute('font-color'));
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
 
-
-	if (this.oldContent!=this.getContentAsString()) {   //content has changed
-		rep.textContent = this.getContentAsString();
-		if (!rep.textContent) rep.textContent='No text yet!';
+	if (!$(rep).hasClass("webarena_ghost")) {
+		if (this.getAttribute("visible") || this.selected) {
+			$(rep).css("visibility", "visible");
+		} else {
+			$(rep).css("visibility", "hidden");
+		}
 	}
-	
-	this.oldContent=this.getContentAsString();
 
+	var that=this;
+	
+	this.getContentAsString(function(data){
+		
+		if(data!=that.oldContent){
+			if ((!data && !that.oldContent) || data == "") {
+				$(rep).find("text").get(0).textContent='';
+			} else {
+				$(rep).find("text").get(0).textContent=data;
+			}
+		}
+		
+		that.oldContent=data;
+		
+		$(rep).find("text").attr("y", 0);
+		$(rep).find("text").attr("y", rep.getBBox().y*(-1));
+		
+	});
+	
+	this.adjustControls();
+	
 }
 
 
 
 SimpleText.createRepresentation = function() {
 	
-	rep = GUI.svg.text(10, 10, "Text");
+	var rep = GUI.svg.group(this.getAttribute('id'));
+	
+	GUI.svg.text(rep, 0, 0, "Text");
 
 	rep.dataObject=this;
 
 	$(rep).attr("id", this.getAttribute('id'));
+	$(rep).css("cursor", "default");
 
 	this.initGUI(rep);
 	
@@ -61,3 +84,15 @@ SimpleText.editText = function() {
 }
 
 
+
+
+/* get the y position of the objects bounding box (this is the top position of the object) */
+SimpleText.getViewBoundingBoxY = function() {
+	return this.getViewY();
+}
+
+/* get the height of the objects bounding box */
+SimpleText.getViewBoundingBoxHeight = function() {
+	var rep = this.getRepresentation();
+	return this.getRepresentation().getBBox().height; //<--TODO: this value is too high
+}

@@ -32,11 +32,22 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("change", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			$(this).blur();
 		});
 		
 		widget.valueBox.children("input").bind("mouseup", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+		});
+		
+		widget.valueBox.children("input").bind("blur", function() {
+			if ($(this).val() == "") return;
+			self.callChange();
+			inspector.hasFocus=false;
+		});
+		
+		widget.valueBox.children("input").bind("focus", function() {
+			inspector.hasFocus=true;
 		});
 		
 	}
@@ -67,6 +78,17 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		widget.valueBox.children("input").bind("change", function() {
 			if ($(this).val() == "") return;
 			self.callChange();
+			$(this).blur();
+		});
+		
+		widget.valueBox.children("input").bind("blur", function() {
+			if ($(this).val() == "") return;
+			self.callChange();
+			inspector.hasFocus=false;
+		});
+		
+		widget.valueBox.children("input").bind("focus", function() {
+			inspector.hasFocus=true;
 		});
 		
 	}
@@ -428,6 +450,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 				widget.valueBox.children("div").css("background-color", color);
 			}
 			
+			
+			
 		}
 		
 		widget.valueBox.html('<div class="jDesktopInspectorWidget_color_preview" style="cursor: pointer"></div>');
@@ -442,7 +466,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		this.hidePage = function() {
 			
 			this.page_open = false;
-			
+
 			widget.el.find("table").hide();
 			widget.el.find("table").remove();
 			
@@ -461,6 +485,12 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 				var hues=[51,213,2,80,267,193,27];  // Word's colors
 
 				var selector='<table style="margin:auto; width: 100%;" class="jDesktopInspectorWidget_selector">';
+				selector+='<tr>';
+				selector+='<td colspan="3">'+GUI.translate('Custom')+':</td>';
+				selector+='<td colspan="2" style="text-align:center;height:20px;margin:4px" class="selector"><input type="color" style="width:100%;height:100%" value="#FF00FF"></td>';
+				selector+='<td colspan="1" style="text-align:center;height:20px;margin:4px" class="save"><input type="button" value="'+GUI.translate('Save')+'"></td>';
+
+				selector+='</tr>';
 				selector+='<tr>';
 				selector+='<td colspan="6" style="text-align:center;height:20px;margin:4px;background-color:transparent;background-image:url(../../guis.common/images/transparent.jpg); border: 1px solid #CCCCCC">transparent</td>';
 				selector+='</tr>';
@@ -505,6 +535,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			
 
 			widget.el.find("table").find("td").click(function(event) {
+				
+				if ($(this).attr('class')=='selector') return;
 
 				self.setColor($(this).css("background-color"));
 				self.callChange();
@@ -512,7 +544,17 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 				self.hidePage();
 
 			});
-		
+			
+			widget.el.find("table").find(".save input").click(function(event) {
+				
+				var value=widget.el.find("table").find(".selector input").val();
+				
+				self.setColor(value);
+				self.callChange();
+				
+				self.hidePage();
+			});
+				
 		}
 		
 		
@@ -628,7 +670,110 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 	}
 	
 	
+	
+	/* list widget */
+	this.list = function() {
+		var self = this;
+		self.value = [];
+		
+		this.setMultipleValues = function(multipleValues) {
+			if (multipleValues) widget.valueBox.html(GUI.translate("multiple values"));
+		}
+		
+		this.getValue = function() {
+			
+			var newValue = [];
+			
+			widget.el.find("table").find("input").each(function(index,el) {
 
+				if ($(el).val() != undefined && $(el).val() != "") {
+					newValue.push($(el).val());
+				}
+				
+			});
+			
+			return newValue;
+			
+		}
+
+		this.setValue = function(value) {
+
+			self.value = value;
+			
+		}
+		
+		widget.valueBox.html('<div style="cursor: pointer">...</div>');
+		widget.valueBox.children("div").bind("click", function() {
+			self.showSelectPage();
+		});
+		
+		
+		this.page_open = false;
+		
+		
+		this.hidePage = function() {
+			
+			this.page_open = false;
+			
+			widget.el.find("table").hide();
+			widget.el.find("table").remove();
+			
+			widget.el.find("input.inspector_addValueButton").hide();
+			widget.el.find("input.inspector_addValueButton").remove();
+			
+		}
+		
+		
+		this.showSelectPage = function() {
+			
+			if (this.page_open) {
+				this.hidePage();
+				return;
+			} else {
+				this.page_open = true;
+			}
+			
+			var selector='<table style="margin:auto; width: 100%;">';
+			
+			for (var i=0; i<self.value.length;i++) {
+				
+				var value = self.value[i];
+				
+				selector+='<tr><td><input type="text" value="'+value+'" style="width: 95%" /></td></tr>';
+				
+			}
+
+			selector+='</table><input type="submit" value="'+GUI.translate('Add value')+'" class="inspector_addValueButton" style="margin-top: 10px; margin-left: 5px;" />';
+
+			$(widget.el).find(".jDesktopInspectorWidget_selector").remove();
+			$(widget.el).find("input.inspector_addValueButton").remove();
+
+			widget.el.append(selector);
+
+			widget.el.find("table").hide();
+			
+			widget.el.find("table").show();
+			inspector.openPage(page.page, page.head);
+			
+
+			widget.el.find("table").find("input").bind("keyup", function(event) {
+
+				self.callChange();
+				
+			});
+			
+			widget.el.find("input.inspector_addValueButton").click(function() {
+				widget.el.find("table").append('<tr><td><input type="text" value="" style="width: 95%" /></td></tr>');
+				widget.el.find("table").find("input").last().bind("keyup", function(event) {
+					self.callChange();
+				}).focus();
+			});
+	
+		}
+		
+		
+	}
+	
 	
 	
 	
@@ -699,6 +844,8 @@ $(function() { });
 		this.prevPage = 0;
 	
 		this.mainEl = undefined;
+		
+		this.hasFocus = false;
 	
 		
 		/* used to reference object in context where "this" is already in use */
@@ -727,36 +874,12 @@ $(function() { });
 
 			var newHead = document.createElement("div");
 			$(newHead).addClass("jDesktopInspector_pageHead");
-			$(newHead).addClass("jDesktopInspector_pageHead_closed");
 			$(newHead).html(title);
-			$(newHead).css("cursor", "pointer");
 
 			var newPage = document.createElement("div");
-			$(newPage).hide();
+			//$(newPage).hide();
 			$(newPage).addClass("jDesktopInspector_page");
 			$(newPage).addClass("jDesktopInspector_page_"+pageId);
-
-			$(newHead).bind("click", function(event) {
-			
-				if (!$(newPage).is(":visible")) {
-					/* open */
-					
-					$(self.mainEl).find(".jDesktopInspectorWidget_selector").remove();
-					
-					self.openPage(newPage, newHead);
-					
-				} else {
-					/* close */
-					
-					$(newPage).hide("blind", function() {
-						$(newHead).addClass("jDesktopInspector_pageHead_closed");
-					});
-					
-					$(newPage).find(".jDesktopInspectorWidget_selector").remove();
-					
-				}
-				
-			});
 
 			$(this.el).children("div").append(newHead);
 			$(this.el).children("div").append(newPage);
@@ -877,28 +1000,11 @@ $(function() { });
 			
 			self.callEvent("onUpdate");
 			
-			self.open();
+
 
 		}
 
 
-		this.open = function() {
-			
-			$(self.pages).each(function(index) {
-			
-				$(this.page).show();
-
-				if ($(self.mainEl).outerHeight() >= $(self.el).outerHeight()) {
-					$(this.page).hide();
-				} else {
-					$(this.head).removeClass("jDesktopInspector_pageHead_closed");
-				}
-				
-			});
-			
-		}
-		
-		
 		this.openPage = function(page, head) {
 			
 			var open = $(page).is(":visible");
@@ -906,46 +1012,7 @@ $(function() { });
 			$(head).removeClass("jDesktopInspector_pageHead_closed");
 			$(page).show();
 			
-			var closed = Array();
-
-			if ($(self.mainEl).outerHeight() >= $(self.el).outerHeight()) {
-
-				$(self.pages).each(function(index) {
-					
-					if ($(self.mainEl).outerHeight() >= $(self.el).outerHeight()) {
-			
-						if (this.page != page && $(this.page).is(":visible")) {
-			
-							$(this.page).hide();
-							
-							closed.push(this);
-					
-						}
-					
-					}
-				
-				});
-			
-			}
-
-
-			if (!open) {
-				$(page).hide();	
-				$(page).show("blind");
-			}
-
-			/* animation */
-			$(closed).each(function(index) {
-				
-				$(this.page).show();
-			
-				var that = this;
-			
-				$(this.page).hide("blind", function() {
-					$(that.head).addClass("jDesktopInspector_pageHead_closed");
-				});
-			
-			});
+		
 			
 		}
 

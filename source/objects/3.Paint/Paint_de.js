@@ -1,5 +1,0 @@
-
-Paint.setTranslations('de',{
-
-}
-);

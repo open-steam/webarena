@@ -10,7 +10,26 @@ module.exports={
 	connector:require('./FileConnector.js'), // The chosen connector
 	language:'de', // The current language (e.g. for error messages)
 	port: 8080,     // HTTP Port for server
+	homepage: '/index.html',
 	imageUpload: {
 		maxDimensions: 400
-	}
+	},
+    easydb: {
+        apiUrl : "easydb.uni-paderborn.de",
+        apiPath: "/easy/fs.php?",
+        username: "",
+        password: ""
+	},
+	bidServer: 'www.bid-owl.de.localhost',
+	bidPort: 80,
+	logLevels : {
+		"warn" : true,
+		"debug" : false,
+		"info" : false
+	},
+	developerInfo: false,
+	objectWhitelist: [],	//an empty whitelist whitelists everything
+	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
+	noContexts: false,
+    showDebugLineNumbers: false
 };

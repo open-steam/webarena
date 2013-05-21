@@ -1,91 +1,69 @@
-/* SVG */
+"use strict";
 
+/* SVG */
+// http://keith-wood.name/svgRef.html
+
+/**
+ * Refresh the SVG
+ */
 GUI.refreshSVG = function() {
 	$("#content").hide().show();
+	GUI.updateLayers();
 }
 
-/* setup SVG */
-
+/**
+ * Create the SVG area
+ */
 GUI.initSVG = function() {
 	
 	$("#content").svg();
 	
-//	$("#content").css("background-color", "#D8EFFF");
-	
 	GUI.svg = $("#content").svg('get');
-	
-	/* shadow effect filter */
-	var filter = GUI.svg.filter("svg-drop-shadow", "-20%", "-20%", "200%", "200%");
-	
-	GUI.svg.filters.offset(filter, "offOut", "SourceGraphic", 1, 1); //move shadow graphic by 1px in each direction
-	
-	GUI.svg.filters.colorMatrix(filter, "matrixOut", "offOut", "matrix", "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.5 0"); //this colormatrix sets the alpha channel to 50% (soft shadow)
-	
-	GUI.svg.filters.gaussianBlur(filter, "blurOut", "matrixOut", 2, 2); //blur by 2px in each direction
-	GUI.svg.filters.blend(filter, "blendOut", "normal", "SourceGraphic", "blurOut"); //blend source and shadow graphics
+	GUI.svgDefs = GUI.svg.defs();
 
-	/* selected effect filter */
-	var filter = GUI.svg.filter("svg-selected", "-300%", "-300%", "800%", "800%");
-	
-	/* the following shadow graphics will be created by moving SourceAlpha (this is the alpha channel of the graphic and black) */
-	GUI.svg.filters.offset(filter, "borderTopLeft", "SourceAlpha", -1, -1); //move shadow graphic to left/top
-	GUI.svg.filters.offset(filter, "borderTopRight", "SourceAlpha", 1, -1); //move shadow graphic to right/top
-	GUI.svg.filters.blend(filter, "borderTop", "normal", "borderTopLeft", "borderTopRight"); //merge both shadow graphics (this will result in an 1px border on left, top and right)
-	
-	GUI.svg.filters.offset(filter, "borderBottomLeft", "SourceAlpha", 1, 1); //move shadow graphic to right/bottom
-	GUI.svg.filters.offset(filter, "borderBottomRight", "SourceAlpha", -1, 1); //move shadow graphic to left/bottom
-	GUI.svg.filters.blend(filter, "borderBottom", "normal", "borderBottomLeft", "borderBottomRight"); //merge both shadow graphics (this will result in an 1px border on left, bottom and right)
-	
-	GUI.svg.filters.blend(filter, "border", "normal", "borderTop", "borderBottom"); //merge both shadow graphics (top and bottom)
-	
-	GUI.svg.filters.colorMatrix(filter, "borderColorized", "border", "matrix", "0 0 0 0 0, 0 0 0 0 0.2, 0 0 0 0 1, 0 0 0 1 0"); //colorize the black shadow graphic
-
-	GUI.svg.filters.blend(filter, "out", "normal", "SourceGraphic", "borderColorized"); //merge graphic and shadow graphic
-
-	
-	var clickHandler = function(event) {
-		if (event.target == $("#content>svg").get(0)) {
-			
-			/* deselect all objects */
-			GUI.deselectAllObjects();
-			
-			GUI.updateInspector();
-			
-			GUI.hideActionsheet();
+	$("#content").droppable({
+		accept: ".toolbar_draggable",
+		drop: function( event, ui ) {
+			$(ui.helper).hide();
+			ui.helper[0].callback(ui.offset.left, ui.offset.top);
 			
 		}
-	};
-	
-	if (GUI.isTouchDevice) {
-		$("#content>svg").get(0).addEventListener("touchstart", clickHandler, false);
-	} else {
-		$("#content>svg").click(clickHandler);
-	}
-	
+	});
+
 }
 
-
+/**
+ * Resort all svg elements by their layer
+ */
 GUI.updateLayers = function() {
-	
-	/* get all objects and order by layer */
-	var objects = ObjectManager.getObjects();
-	
-	var objectsArray = [];
-	
-	for (var i in objects){
-		var obj = objects[i];
-		objectsArray.push(obj);
-	}
 
-	objectsArray.sort(function(a,b) {
+	/* check if layers must be updated */
+	var oldOrder = "";
+	
+	$("#content>svg").children().each(function(i, el) {
+	
+		var id = $(el).attr("id");
 		
-		if (a.getAttribute("layer") > b.getAttribute("layer")) {
-			return -1;
-		} else {
-			return 1;
+		if (id !== undefined && id != "") {
+			oldOrder += id+"###";
 		}
 		
 	});
+	
+	var newOrder = "";
+	
+	var objectsArray = ObjectManager.getObjectsByLayer(); //get all objects ordered by layer
+	
+	for (var i in objectsArray){
+		var obj = objectsArray[i];
+		
+		newOrder += obj.id+"###";
+		
+	}
+	
+	if (oldOrder == newOrder) return; //no change of order
+
+	var objectsArray = ObjectManager.getObjectsByLayerInverted(); //get all objects ordered by layer
 	
 	for (var i in objectsArray){
 		var obj = objectsArray[i];
@@ -96,12 +74,90 @@ GUI.updateLayers = function() {
 		
 	}
 	
+}
+
+GUI.updateLayersDelayedTimer = undefined;
+
+/**
+ * Resort all svg elements by their layer (delayed by 1 sec.)
+ */
+GUI.updateLayersDelayed = function() {
 	
+	if (GUI.updateLayersDelayedTimer !== undefined) window.clearTimeout(GUI.updateLayersDelayedTimer);
+	
+	GUI.updateLayersDelayedTimer = window.setTimeout(function() {
+		window.clearTimeout(GUI.updateLayersDelayedTimer);
+		GUI.updateLayers();
+	}, 1000);
 }
 
 
+/**
+ * Get DOM ID of svg marker (svg markers are used to define design of arrow line caps)
+ * @param {String} type Type of the marker (e.g. "arrow")
+ * @param {String} color Color of the marker
+ * @param {bool} up True if the direction of the marker is up
+ */
+GUI.getSvgMarkerId = function(type, color, up) {
+	
+	var defs = GUI.svgDefs;
 
+	if (up) {
+		var upS = "1";
+	} else {
+		var upS = "0";
+	}
+	
+	var colorId = color;
+	colorId = colorId.replace(/\#/g, '');
+	colorId = colorId.replace(/\ /g, '');
+	colorId = colorId.replace(/\(/g, '');
+	colorId = colorId.replace(/\)/g, '');
+	colorId = colorId.replace(/\,/g, '_');
 
+	var markerId = "svgMarker_"+type+"_"+colorId+"_"+upS;
+
+	if ($(defs).find("#"+markerId).length > 0) {
+		//marker found
+		return markerId;
+	} else {
+		//marker not found --> create
+		
+		if (type == "arrow") {
+			
+			if (up) {
+				var refX = 0;
+			} else {
+				var refX = 10;
+			}
+
+			var arrowMarker = GUI.svg.marker(defs, markerId, refX, 5, 4, 3);
+
+			$(arrowMarker).attr("viewBox", "0 0 10 10");
+			$(arrowMarker).attr("markerUnits", "strokeWidth");
+
+			var path = GUI.svg.createPath();
+			
+			if (up) {
+				var p = GUI.svg.path(arrowMarker, path.move(0, 0).line(10, 5).line(0, 10).close());
+			} else {
+				var p = GUI.svg.path(arrowMarker, path.move(10, 0).line(10, 10).line(0, 5).close());
+			}
+
+			$(p).attr("fill", color);
+			
+		} else {
+			console.error("Unknown marker type '"+type+"'!");
+			return;
+		}
+		
+		return markerId;
+		
+	}
+	
+
+	
+}
 
 
 

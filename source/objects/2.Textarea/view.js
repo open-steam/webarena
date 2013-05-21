@@ -5,12 +5,12 @@
 *
 */
 
-Textarea.draw=function(){
-	
+Textarea.draw=function(external){
+
 	var rep=this.getRepresentation();
 	
-	this.setViewX(this.getAttribute('x'));
-	this.setViewY(this.getAttribute('y'));
+	this.drawDimensions(external);
+	
 	this.setViewWidth(this.getAttribute('width'));
 	this.setViewHeight(this.getAttribute('height'));
 
@@ -39,15 +39,30 @@ Textarea.draw=function(){
 	$(rep).find("body").css("color", this.getAttribute('font-color'));
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
-
-
-	if (this.oldContent!=this.getContentAsString()) {   //content has changed
-		var text = this.getContentAsString();
-		text = text.replace(/[\r\n]+/g, "<br />");
-		$(rep).find("body>div>div").html(text);
-	}
 	
-	this.oldContent=this.getContentAsString();
+	if (!$(rep).hasClass("webarena_ghost")) {
+		if (this.getAttribute("visible") || this.selected) {
+			$(rep).css("visibility", "visible");
+		} else {
+			$(rep).css("visibility", "hidden");
+		}
+	}
+
+	var that=this;
+	
+	this.getContentAsString(function(text){
+
+		if(text!=that.oldContent){
+			text = text.replace(/\n/g,"<br />")
+			text = text.replace(/\s\s/g,"&nbsp; ")
+			$(rep).find("body>div>div").html(text);
+		}
+		
+		that.oldContent=text;
+		
+	});
+	
+	this.updateInnerHeight();
 
 }
 
@@ -55,16 +70,16 @@ Textarea.draw=function(){
 Textarea.updateInnerHeight = function() {
 	
 	var rep=this.getRepresentation();
-	
-	$(rep).find("body").css("height", (this.getAttribute('height'))+"px");
-	$(rep).find("body>div").css("height", (this.getAttribute('height')-(2*parseInt(this.getAttribute('linesize'))))+"px");
+
+	$(rep).find("body").css("height", ($(rep).attr("height"))+"px");
+	$(rep).find("body>div").css("height", ($(rep).attr("height")-(2*parseInt(this.getAttribute('linesize'))))+"px");
 	
 }
 
 
 Textarea.createRepresentation = function() {
 	
-	rep = GUI.svg.other("foreignObject");
+	var rep = GUI.svg.other("foreignObject");
 
 	rep.dataObject=this;
 	
@@ -90,37 +105,8 @@ Textarea.editText = function() {
 }
 
 
-
-
-/* view setter */
-
-
-Textarea.setViewHeight = function(value) {
+Textarea.adjustControls = function() {
 	this.updateInnerHeight();
-	$(this.getRepresentation()).attr("height", parseInt(value));
-	GUI.adjustContent(this);
+	GeneralObject.adjustControls.call(this);
 }
-
-
-
-/* get the x position of the objects bounding box (this is the left position of the object) */
-GeneralObject.getViewBoundingBoxX = function() {
-return parseInt(this.getAttribute("x"));
-}
-
-/* get the y position of the objects bounding box (this is the top position of the object) */
-GeneralObject.getViewBoundingBoxY = function() {
-	return parseInt(this.getAttribute("y"));
-}
-
-/* get the width of the objects bounding box */
-GeneralObject.getViewBoundingBoxWidth = function() {
-		return parseInt(this.getAttribute("width"));
-}
-
-/* get the height of the objects bounding box */
-GeneralObject.getViewBoundingBoxHeight = function() {
-		return parseInt(this.getAttribute("height"));	
-}
-
 

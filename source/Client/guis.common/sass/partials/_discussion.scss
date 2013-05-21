@@ -1,0 +1,145 @@
+@import "compass/css3";
+
+/**************************************/
+/*           Discussion               */
+/**************************************/
+
+.discussion {
+  border: 2px solid #cccccc ;
+
+  @include border-top-radius(5px);
+
+  padding-bottom: 5px;
+  background-color: #EEEEEE;
+
+  max-height: 100%
+}
+
+.discussion-content{
+  overflow-y: scroll;
+}
+
+.discussion-text{
+  border-bottom:  2px solid #cccccc ;
+  border-top:  2px solid #cccccc ;
+}
+
+.discussion-heading{
+  margin-top: 0px;
+
+  padding: 7px;
+  font-size: 16px;
+
+  border-bottom: 2px solid #CCCCCC;
+
+  background-color: #FFFFFF;
+}
+
+.discussion-statement{
+  background-color: white;
+  position: relative;
+
+  border: 2px solid #CCCCCC;
+
+}
+
+.discussion-statement-heading{
+  padding: 5px;
+
+  font-size: 16px;
+  color: #04138A;
+}
+
+.discussion-statement-heading{
+  font-size: 12px;
+  .message-timestamp{
+    float: right;
+  }
+}
+
+.discussion-statement-text{
+  padding: 5px;
+  font-size: 14px;
+  margin: 0px;
+}
+
+.discussion-input{
+  @include box-sizing(border-box);
+
+  padding: 10px;
+  width: 100%;
+}
+
+.statement-operation{
+  display: none;
+  position: absolute;
+  right: 3px;
+  top: 25px;
+  font-size: 12px;
+  cursor: pointer;
+ background-color: rgba(200,200,200,0.5);
+}
+
+.statement-operation:hover{
+  font-weight: bold;
+}
+
+.statement-delete {
+  @extend .statement-operation;
+}
+
+.statement-edit{
+  @extend .statement-operation;
+  right: 50px;
+}
+
+
+
+.discussion-statement-deletable:hover {
+  .statement-delete, .statement-edit {
+     display: block;
+  }
+}
+
+.discussion-statement-deletable.active-editing:hover {
+  .statement-delete, .statement-edit{
+    display: none;
+  }
+}
+
+
+.wrapped-text{
+  height: 50px;
+}
+
+.discussion-blob{
+  font-size: 12px;
+}
+
+/** Speech Bubble **/
+
+$triangle-border: 5px;
+$triangle-size: 4* $triangle-border;
+
+.triangle-border {
+  position:relative;
+  padding:5px;
+  margin:1em 0 3em;
+  border: $triangle-border solid RGBA(68.00, 78.00, 91.00, 1.00);
+  color:#333;
+  background:#fff;
+  @include border-radius(10px);
+}
+
+.triangle-border:before {
+  content:"";
+  position:absolute;
+  bottom:-($triangle-size);
+  left:40px; /* controls horizontal position */
+  border-width:$triangle-size $triangle-size 0;
+  border-style:solid;
+  border-color:RGBA(68.00, 78.00, 91.00, 1.00) transparent;
+  /* reduce the damage in FF3.0 */
+  display:block;
+  width:0;
+}

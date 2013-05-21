@@ -1,3 +1,12 @@
+"use strict";
+
+/**
+ * Edit a text using a dialog
+ * @param {webarenaObject} webarenaObject The web arena object
+ * @param {bool} multiLine True if multiple lines should be edited
+ * @param {int} width Width of the dialog
+ * @param {int} [height] Height of the dialog
+ */
 GUI.editText = function(webarenaObject, multiLine, width, height) {
 	
 	var style = 'font-family: '+webarenaObject.getAttribute("font-family")+'; ';
@@ -12,27 +21,34 @@ GUI.editText = function(webarenaObject, multiLine, width, height) {
 	}
 	
 	if (multiLine) {
-		var dom = '<textarea name="textedit" style="'+style+'">'+webarenaObject.getContentAsString()+'</textarea>';
+		var dom = $('<textarea name="textedit" style="'+style+'">'+webarenaObject.getContentAsString()+'</textarea>');
 	} else {
-		var dom = '<input type="text" name="textedit" value="'+webarenaObject.getContentAsString()+'" style="'+style+'" />';
+		var dom = $('<input type="text" name="textedit" value="'+webarenaObject.getContentAsString()+'" style="'+style+'" />');
+		dom.bind("keyup", function(event) {
+			if (event.keyCode == 13) {
+				dom.parent().parent().find(".ui-button-text").click();
+			}
+		});
 	}
 	
-	GUI.dialog("edit text", dom, {
-		"save" : function(domContent){
-			
-			if (multiLine) {
-			
-				var value = $(domContent).find("textarea").val();
-				webarenaObject.setContent(value);
-			
-			} else {
-			
-				var value = $(domContent).find("input").val();
-				webarenaObject.setContent(value);
-			
-			}
-			
+	var buttons = {};
+	
+	buttons[GUI.translate("save")] = function(domContent){
+		
+		if (multiLine) {
+		
+			var value = $(domContent).find("textarea").val();
+			webarenaObject.setContent(value);
+		
+		} else {
+		
+			var value = $(domContent).find("input").val();
+			webarenaObject.setContent(value);
+		
 		}
-	}, width);
+		
+	};
+	
+	GUI.dialog(GUI.translate("Edit text"), dom, buttons, width);
 	
 }

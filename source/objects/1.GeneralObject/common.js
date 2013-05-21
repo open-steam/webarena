@@ -11,29 +11,64 @@
 
 var Modules=require('../../server.js');
 
+/**
+ * GeneralObject
+ * @class
+ * @classdesc Common elements for view and server
+ */
 var GeneralObject=Object.create(Object);
 
-GeneralObject.data=false;	  //the attributes
-GeneralObject.attributes=GeneralObject.data;
 GeneralObject.attributeManager=false;
 GeneralObject.translationManager=false;
 GeneralObject.actionManager=false;
 GeneralObject.isCreatable=false;
 GeneralObject.isGraphical=true;
-GeneralObject.name='Graphical Object';
 GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
-GeneralObject.moveByTransform = false;			//TODO cient only??
-
-GeneralObject.duplicateWithLinkedObjects = false; //duplicate this object if a linked object gets duplicated
-GeneralObject.duplicateLinkedObjects = false; //duplicate linked objects if this object gets duplicated
 
 
+/**
+ * Checks if an objects is moved by transform
+ * @returns {bool} True if moved by transform
+ * TODO: client only??
+ */
+GeneralObject.moveByTransform = function(){return false;}
+
+/**
+ * True if the object has a special area where it can be moved
+ */
+GeneralObject.restrictedMovingArea = false;
+
+/**
+ * duplicate this object if a linked object gets duplicated
+ */
+GeneralObject.duplicateWithLinkedObjects = false;
+
+/**
+ * duplicate linked objects if this object gets duplicated
+ */
+GeneralObject.duplicateLinkedObjects = false;
+
+/**
+ * content is only accessible via URL
+ */
+GeneralObject.contentURLOnly = true;
+
+/**
+ * The currrent language
+ */
+GeneralObject.currentLanguage = undefined;
+
+/**
+ * Registers the object
+ * @param {ObjectType} type The type of the object
+ */
 GeneralObject.register=function(type){
 	
 	var that=this;
 	var ObjectManager=this.ObjectManager;
+	var AttributeManager=this.attributeManager;
 	
 	this.type=type;
 	this.standardData=new Modules.DataSet;
@@ -44,52 +79,98 @@ GeneralObject.register=function(type){
 	this.translationManager=Object.create(Modules.TranslationManager);
 	this.translationManager.init(this);
 	this.actionManager.init(this);
+	
+	
 	this.registerAttribute('id',{type:'number',readonly:true});
 	this.registerAttribute('type',{type:'text',readonly:true});
 	this.registerAttribute('name',{type:'text'});
     
-	this.registerAttribute('hasContent',{type:'boolean',hidden:true});
-  
-	this.attributeManager.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {
-		GUI.updateLayers();
-	}});
+	this.registerAttribute('hasContent',{type:'boolean',hidden:true,standard:false});
+	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {GUI.updateLayers();}});
 	
-	this.attributeManager.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
-	this.attributeManager.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
+	//registring x and y coordinates. on the client side, they are just plain coordinates
+	//while on the server, the position data are also put into context specific attributes
+	//switching the context attribute on the room swichtes positions
 	
-	this.attributeManager.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+	if (!ObjectManager.isServer || Modules.Config.noContexts){	
+		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
+		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
+		this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+			
+			if (object.resizeProportional()) {
+				object.setAttribute("height", object.getAttribute("height")*(value/object.getAttribute("width")));
+			}
+	
+			return true;
+			
+		}});
 		
-		if (object.resizeProportional()) {
-			object.setAttribute("height", object.getAttribute("height")*(value/object.getAttribute("width")));
-		}
+		this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+			
+			if (object.resizeProportional()) {
+				object.setAttribute("width", object.getAttribute("width")*(value/object.getAttribute("height")));
+			}
+	
+			return true;
+			
+		}});
+	} else {
+		
+		this.registerAttribute('position_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
+		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
+		
+		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
+			var room=object.getRoom();
+			if (!room) return;
+			var context=room.getContext();
+			object.setAttribute('x_'+context,value);
+			object.set('x',value);
+		}});
+		
+		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
+			var room=object.getRoom();
+			if (!room) return;
+			var context=room.getContext();
+			object.setAttribute('y_'+context,value);
+			object.set('y',value);
+		}});
+		
+		this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', setFunction: function(object, value) {
+			
+			var context=object.getRoom().getContext();
+			object.setAttribute('width_'+context,value);
+			object.set('width',value);
+			
+		}});
+		
+		this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', setFunction: function(object, value) {
+			
+			var context=object.getRoom().getContext();
+			object.setAttribute('height_'+context,value);
+			object.set('height',value);
+			
+		}});
+		
+		//for switching see room attribute registration for current_context
+		
+	}
+	
+	//context attribute itself is set on swtichcontext
+	
+	if (!Modules.Config.noContexts){
+		this.registerAttribute('only_in_contexts',{type:'text',readable:'only in these contexts',standard:'all',category:'Context',checkFunction: function(object,value){
+			object.getRoom().updateContexts();
+		}});
+		this.registerAttribute('position_on_all_contexts',{type:'boolean',readable:'same position on all contexts',standard:true,category:'Context'});
+		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',readable:'same appearance on all contexts',standard:true,category:'Context'});
+	}
 
-		return true;
-		
-	}});
 	
-	this.attributeManager.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
-		
-		if (object.resizeProportional()) {
-			object.setAttribute("width", object.getAttribute("width")*(value/object.getAttribute("height")));
-		}
+	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
+	this.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
+	this.registerAttribute('linesize',{type:'number',min:1,standard:1,max:30,category:'Appearance'});
 
-		return true;
-		
-	}});
-	
-	this.attributeManager.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
-	this.attributeManager.registerAttribute('linecolor',{type:'color',standard:'black',category:'Appearance'});
-	this.attributeManager.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
-	this.attributeManager.registerAttribute('shadow',{type:'boolean',standard:false,category:'Appearance'});
-	
-	this.attributeManager.registerAttribute('hidden',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
-		if (local) {
-			GUI.toggleHidden();
-		} else {
-			GUI.updateHiddenObjects();
-		}
-	}});
-	this.attributeManager.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
+	this.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
 		
 		window.setTimeout(function() {
 			object.deselect();
@@ -100,21 +181,37 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('visible',{type:'boolean',standard:true,category:'Basic',checkFunction: function(object, value) {
+	this.registerAttribute('visible',{type:'boolean',standard:true,category:'Basic',checkFunction: function(object, value) {
 		
-		if (!object.hasLinkedObjects() && value == false) {
-			return "you need at least one link from or to this object to hide it";
+		if (value != false) {
+			return true;
+		}
+		
+		var linkedVisibleObjectsCounter = 0;
+
+		var linkedObjects = object.getLinkedObjects();
+		
+		for (var i in linkedObjects) {
+			var linkedObject = linkedObjects[i];
+			
+			if (linkedObject.object.getAttribute("visible") == true) {
+				linkedVisibleObjectsCounter++;
+			}
+		}
+		
+		if (linkedVisibleObjectsCounter == 0) {
+			return object.translate(GUI.currentLanguage, "you need at least one link from or to this object to hide it");
 		} else {
 			return true;
 		}
 		
 	}});
 	
-	this.attributeManager.registerAttribute('link',{type:'object_id',multiple: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
+	this.registerAttribute('link',{type:'object_id',multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
 		
 		var objects = ObjectManager.getObjects();
 		
-		for (index in objects) {
+		for (var index in objects) {
 			var object = objects[index];
 
 			if (!object.hasLinkedObjects() && object.getAttribute("visible") != true) {
@@ -127,7 +224,7 @@ GeneralObject.register=function(type){
 		
 	}});
 	
-	this.attributeManager.registerAttribute('group',{type:'group',readonly:false,category:'Basic',standard:0});
+	this.registerAttribute('group',{type:'group',readonly:false,category:'Basic',standard:0});
 	
 	this.registerAction('Delete',function(){
 		
@@ -144,16 +241,58 @@ GeneralObject.register=function(type){
 	
 	this.registerAction('Duplicate',function(){
 		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
-			obj.duplicate();
-			
-		}
+		ObjectManager.duplicateObjects(ObjectManager.getSelected());
 		
 	},false);
+
+	this.registerAction('Copy',function(){
+	
+		ObjectManager.copyObjects(ObjectManager.getSelected());
+		
+	}, false);
+
+	this.registerAction('Cut',function(){
+	
+		ObjectManager.cutObjects(ObjectManager.getSelected());
+		
+	}, false);
+
+    this.registerAction(
+        'Link',
+        function(lastClicked){
+            var selected = ObjectManager.getSelected();
+            var lastSelectedId = lastClicked.getId();
+
+            var newLinks = [];
+            var oldLinks = lastClicked.getAttribute('link');
+
+            //check if there already existing links
+            //	if yes - reinsert them
+            if(_.isArray(oldLinks)){
+                newLinks = newLinks.concat(oldLinks)
+            } else if(oldLinks){
+                newLinks.push(oldLinks);
+            }
+            
+            //check if selected object already is a link of the object
+            //	if no - add it
+            _.each(selected, function(current){
+                var selectedId = current.getId()
+                if(selectedId!==lastSelectedId && !_.contains(newLinks, current.getId())) newLinks.push(current.getId());
+            })
+
+            lastClicked.setAttribute("link", newLinks);
+            _.each(selected, function(current){
+                current.deselect()
+                //current.select()
+            })
+            lastClicked.select();
+        },
+        false,
+        function(){
+            return (ObjectManager.getSelected().length > 1)
+        }
+    );
 	
 	
 	this.registerAction('Group',function(){
@@ -279,31 +418,41 @@ GeneralObject.register=function(type){
 		
 	}, false);
 	
-	
-	
+
+}
+
+
+GeneralObject.get=function(key){
+	return this.attributeManager.get(this.id,key);
+}
+
+GeneralObject.set=function(key,value){
+	return this.attributeManager.set(this.id,key,value);
+}
+
+GeneralObject.setAll=function(data){
+	return this.attributeManager.setAll(this.id,data);
 }
 
 /**
+* Call this on actual objects! (should be done by the object manager)
 *
-*	Call this on actual objects! (should be done by the object manager)
-*
-*	@param id the id of the actual object
+* @param {int} id the id of the actual object
 */	
 GeneralObject.init=function(id){
-	if (!this.data) this.data=new Modules.DataSet;
-	
-	if(this.data.id) return;
-	
-	this.data.id=id;
+	if (!id) return;
 	this.id=id;
-	this.data.type=this.type;
+	if(this.get(id,'id')) return;
+	
+	this.set('id',id);
+	this.set('type',this.type);
 }
 
 GeneralObject.toString=function(){
-	    if (!this.data) {
+	    if (!this.get('id')) {
 	    	return 'type '+this.type;
 	    }
-		return this.type+' #'+this.data.id;//+' '+this.data;
+		return this.type+' #'+this.get('id');
 }
 
 GeneralObject.getCategory=function(){
@@ -315,6 +464,7 @@ GeneralObject.registerAttribute=function(attribute,setter,type,min,max){
 }
 
 GeneralObject.setAttribute=function(attribute,value,forced){
+	
 	
 	if (this.mayChangeAttributes()){
 		
@@ -332,9 +482,13 @@ GeneralObject.setAttribute=function(attribute,value,forced){
 		return false;
 	}
 }
+GeneralObject.setAttribute.public = true;
+GeneralObject.setAttribute.neededRights = {
+    write : true
+}
 
-GeneralObject.getAttribute=function(attribute){
-	return this.attributeManager.getAttribute(this,attribute);
+GeneralObject.getAttribute=function(attribute,noevaluation){
+	return this.attributeManager.getAttribute(this,attribute,noevaluation);
 }
 
 
@@ -368,8 +522,8 @@ GeneralObject.unregisterAction=function(name){
 	return this.actionManager.unregisterAction(name);
 }
 
-GeneralObject.performAction=function(name){
-	return this.actionManager.performAction(name,this);
+GeneralObject.performAction=function(name, clickedObject){
+	return this.actionManager.performAction(name,clickedObject);
 }
 
 GeneralObject.getActions=function(){
@@ -379,6 +533,10 @@ GeneralObject.getActions=function(){
 GeneralObject.translate=function(language, text){
 	if (!this.translationManager) return text;
 	return this.translationManager.get(language, text);
+}
+
+GeneralObject.setLanguage=function(currentLanguage) {
+	this.currentLanguage = currentLanguage;
 }
 
 GeneralObject.setTranslations=function(language,data){
@@ -401,7 +559,7 @@ GeneralObject.getId=function(){
 }
 
 GeneralObject.getCurrentRoom=function(){
-	return ObjectManager.currentRoom.data.id;
+	return ObjectManager.currentRoom.get('id');
 }
 
 GeneralObject.stopOperation=function(){
@@ -425,27 +583,21 @@ GeneralObject.mayChangeContent=function(){
 }
 
 GeneralObject.hide=function(){
-	this.setAttribute('hidden',true);
+	this.setAttribute('visible',true);
 }
 
 GeneralObject.unHide=function(){
-	this.setAttribute('hidden',false);
+	this.setAttribute('visible',false);
 }
 
-/**
-*	move the object by dx,dy pixels
-*/
-GeneralObject.move=function(dx,dy){
-	this.setAttribute('x',this.getAttribute('x')+dx);
-	this.setAttribute('y',this.getAttribute('y')+dy);
-}		
+GeneralObject.unhide=GeneralObject.unHide;	
 	
 /**
 *	put the top left edge of the bounding box to x,y
 */
 GeneralObject.setPosition=function(x,y){
-	this.setAttribute('x',x);
-	this.setAttribute('y',y);
+
+	this.setAttribute('position',{'x':x,'y':y});
 }
 		
 /**
@@ -457,59 +609,6 @@ GeneralObject.setDimensions=function(width,height){
 	this.setAttribute('height',height);
 }
 
-	
-/**
-*	determine if a given point is within the current object
-*/
-GeneralObject.boxContainsPoint=function(px,py){
-	return this.boxIntersectsWith(px,py,0,0);
-}
-
-/**
-*	determine if the current object intersects with the square x1,y1,x2,y2
-*/
-GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
-	
-	var thisx = this.getViewBoundingBoxX();
-	var thisy = this.getViewBoundingBoxY();
-	var thisw = this.getViewBoundingBoxWidth();
-	var thish = this.getViewBoundingBoxHeight();
-	
-	if (otherx+otherwidth<thisx) return false;
-	if (otherx>thisx+thisw) return false;
-	if (othery+otherheight<thisy) return false;
-	if (othery>thisy+thish) return false;
-	
-	return true;
-	
-}
-
-GeneralObject.intersectsWith=function(other){
-	return false;
-	//TODO
-}
-
-GeneralObject.contains=function(other){
-	return false;
-	//TODO
-}
-
-GeneralObject.hasPixelAt=function(x,y){
-	
-	//assume, that the GeneralObject is full of pixels.
-	//override this if you can determine better, where there
-	//object is nontransparent
-	
-	return this.boxIntersectsWith(x,y,0,0);
-	//TODO: duplicate of GeneralObject.boxContainsPoint !?
-}
-
-
-
-GeneralObject.evaluate=function(){
-	//Should be overwritten for client and server and not called
-	//directly
-}
 
 GeneralObject.toFront=function(){
 	ObjectManager.performAction("toFront");
@@ -560,42 +659,12 @@ GeneralObject.mayResizeProportional=function() {
 
 
 GeneralObject.execute=function(){
-	this.toFront();
+	this.select();
+	this.selectedClickHandler();
 }
 
 GeneralObject.isSelected = function() {
 	return this.selected;
-}
-
-GeneralObject.evaluateDelayed=function(){
-	// Prevent a loop of evaluations. When an evaluation is taking place,
-	// further operations on the same object are not evaluated any morge
-	if (this.evaluating) return;
-	if (this.evaluateTimeout) {
-		window.clearTimeout(this.evaluateTimeout);
-		this.evaluateTimeout=false;
-	}
-	var that=this;
-	this.evaluateTimeout=window.setTimeout(function() {
-		this.evaluateInt.call(that);
-	},100,this);
-}
-
-GeneralObject.evaluateNow=function(){
-	// Prevent a loop of evaluations. When an evaluation is taking place,
-	// further operations on the same object are not evaluated any morge
-	if (this.evaluating) return;
-	if (this.evaluateTimeout) {
-		window.clearTimeout(this.evaluateTimeout);
-		this.evaluateTimeout=false;
-		this.evaluateInt(this);
-	}
-}
-
-GeneralObject.evaluateInt=function(that){
-		that.evaluating=true;
-		that.evaluate();
-		that.evaluating=false;
 }
 
 GeneralObject.refresh=function(){
@@ -609,14 +678,25 @@ GeneralObject.refreshDelayed=function(){
 	
 	var that=this;
 	
+	//this timer is the time in which changes on the same object are discarded
+	var theTimer=400;
+	
 	this.refreshDelay=setTimeout(function(){
+		
+		//If the current room has changed in the meantime, do not refresh at all
+		if (that.getAttribute('inRoom')!==ObjectManager.getRoomID()){
+			return;
+		}
+		
 		that.refresh();
-	},200);
+	},theTimer);
 }
 
 GeneralObject.getRoomID=function(){
-	return this.data.inRoom;
+	return this.get('inRoom');
 }
+
+
 
 GeneralObject.getID=function(){
 	return this.id;
@@ -626,7 +706,12 @@ GeneralObject.remove=function(){
 	Modules.ObjectManager.remove(this);
 }
 
+GeneralObject.removeLinkedObjectById = function(removeId){
+    var filteredIds = _.filter(this.get('link'), function(elem){return elem != removeId})
 
+    this.setAttribute("link", filteredIds);
+
+}
 
 GeneralObject.hasLinkedObjects=function() {
 	
@@ -656,10 +741,10 @@ GeneralObject.getLinkedObjects=function() {
 	if (self.ObjectManager.isServer) {
 		/* server */
 		var getObject = function(id) {
-			return Modules.ObjectManager.getObject(self.data.inRoom, id);
+			return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
 		}
 		var getObjects = function() {
-			return Modules.ObjectManager.getObjects(self.data.inRoom);
+			return Modules.ObjectManager.getObjects(self.get('inRoom'), self.context);
 		}
 	} else {
 		/* client */
@@ -674,12 +759,13 @@ GeneralObject.getLinkedObjects=function() {
 	/* get objects linked by this object */
 	var ownLinkedObjectsIds = [];
 
-	if (this.data.link instanceof Array) {
-		ownLinkedObjectsIds.concat(this.data.link);
+
+	if (this.get('link') instanceof Array) {
+        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.get('link'));
 	} else {
-		ownLinkedObjectsIds.push(this.data.link);
+		ownLinkedObjectsIds.push(this.get('link'));
 	}
-	
+
 	/* get objects which link to this object */
 	var linkingObjectsIds = [];
 	
@@ -689,23 +775,23 @@ GeneralObject.getLinkedObjects=function() {
 	for (var index in objects) {
 		var object = objects[index];
 
-		if (object.data.link) {
+		if (object.get('link')) {
 			
-			if (object.data.link instanceof Array) {
+			if (object.get('link') instanceof Array) {
 
-				for (var index in object.data.link) {
-					var objectId = object.data.link[index];
+				for (var index in object.get('link')) {
+					var objectId = object.get('link')[index];
 				
-					if (objectId == self.data.id) {
-						linkingObjectsIds.push(object.data.id);
+					if (objectId == self.get('id')) {
+						linkingObjectsIds.push(object.get('id'));
 					}
 					
 				}
 				
 			} else {
 
-				if (object.data.link == self.data.id) {
-					linkingObjectsIds.push(object.data.id);
+				if (object.get('link') == self.get('id')) {
+					linkingObjectsIds.push(object.get('id'));
 				}
 				
 			}
@@ -714,7 +800,6 @@ GeneralObject.getLinkedObjects=function() {
 		
 	}
 
-	
 	var links = {};
 
 	if (ownLinkedObjectsIds) {
@@ -764,7 +849,7 @@ GeneralObject.getGroupMembers = function() {
 	for (var i in objects) {
 		var obj = objects[i];
 		
-		if (obj.data.id != this.data.id && obj.getAttribute("group") == this.getAttribute("group")) {
+		if (obj.get('id') != this.get('id') && obj.getAttribute("group") == this.getAttribute("group")) {
 			list.push(obj);
 		}
 		
@@ -787,7 +872,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 		
 	}
 	
-	list[self.data.id] = true; //add this object to list
+	list[self.get('id')] = true; //add this object to list
 	
 	var linkedObjects = this.getLinkedObjects();
 
@@ -795,7 +880,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 		var target = linkedObjects[id];
 		var targetObject = target.object;
 		
-		if (!list[targetObject.data.id]) {
+		if (!list[targetObject.get('id')]) {
 			targetObject.getObjectsToDuplicate(list);
 		}
 		
@@ -816,7 +901,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 
 GeneralObject.updateLinkIds = function(idTranslationList) {
 
-	if (!this.data.link || this.data.link == "") {
+	if (!this.get('link') || this.get('link') == "") {
 		return;
 	}
 	
@@ -828,16 +913,29 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 		return id;
 	}
 	
-	if (this.data.link instanceof Array) {
+	if (this.get('link') instanceof Array) {
 
-		for (var i in this.data.link) {
-			this.setAttribute("link", update(this.data.link[i]));
+		for (var i in this.get('link')) {
+			this.setAttribute("link", update(this.get('link')[i]));
 		}
 		
 	} else {
-		this.setAttribute("link", update(this.data.link));
+		this.setAttribute("link", update(this.get('link')));
 	}
 	
+}
+
+GeneralObject.whichContexts=function(){
+	
+	if (!String.prototype.trim){
+		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
+	}
+	
+	var data=this.getAttribute('only_in_contexts').trim();
+	if (!data) return true;
+	if (data=='all') return true;
+	
+	return data.split(",");
 }
 
 GeneralObject.deleteIt=GeneralObject.remove;

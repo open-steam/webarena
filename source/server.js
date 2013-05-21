@@ -5,19 +5,28 @@
 *
 */
 
-console.log('#######################################');
-console.log('#    W E B A R E N A   S E R V E R    #');
-console.log('#                                     #');
-console.log('#    (c) 2012, Felix Winkelnkemper    #');
-console.log('#######################################');
+console.log('##########################################');
+console.log('#    W E B A R E N A   S E R V E R       #');
+console.log('#                                        #');
+console.log('#    (c) 2012-13 Contextual Informatics, #');
+console.log('#                Universität Paderborn   #');
+console.log('#                                        #');
+console.log('#    Main contributors:                  #');
+console.log('#                                        #');
+console.log('#        Felix Winkelnkemper             #');
+console.log('#        Tobias Kempkensteffen           #');
+console.log('#                                        #');
+console.log('##########################################');
 
-//General error handling
+"use strict";
 
-/*
+//General error handling. Let the server try to continue
+//if an error occured and log the error
+
 process.on('uncaughtException', function (err) {
-  console.log('Caught exception: ' + err);
+	Modules.Log.error(err);
 });
-*/
+
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
 
 var config=require('./Server/config.default.js');
@@ -35,6 +44,8 @@ try {
 //Load server modules
 var  Modules={
 	
+	Log:require('./Common/Log.js'),
+	
 	// These modules are accessible everywhere by accessing the global variable Modules
 	// They shall exist only once for the whole server
 	
@@ -42,9 +53,8 @@ var  Modules={
 	'Config':config,
 	ObjectManager:require('./Server/ObjectManager.js'),
 	Dispatcher:require('./Server/Dispatcher.js'),
-	WebServer:require('./Server/Webserver.js'),
+	WebServer:require('./Server/WebServer.js'),
 	SocketServer:require('./Server/SocketServer.js'),
-	ServerCore:require('./Server/ServerCore.js'),
 	UserManager:require('./Server/UserManager.js'),
 	Helper:require('./Server/Helper.js'),
 	
@@ -55,7 +65,7 @@ var  Modules={
 	AttributeManager:require('./Common/AttributeManager.js'),
 	TranslationManager:require('./Common/TranslationManager.js'),
 	ActionManager:require('./Common/ActionManager.js'),
-
+	
 };
 
 Modules.Connector=Modules.config.connector; //shortcut
@@ -69,4 +79,10 @@ for (var name in Modules){
 	if (module.init) {
 		module.init(Modules);
 	}
+}
+
+//create temp. directory
+var fs = require('fs');
+if (!fs.existsSync("./Server/tmp")) {
+	fs.mkdirSync("./Server/tmp", 0777);
 }

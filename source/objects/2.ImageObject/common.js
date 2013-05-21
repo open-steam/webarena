@@ -16,9 +16,7 @@ ImageObject.register=function(type){
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type);
 	
-	this.registerAttribute('mimeType',{type:'text',standard:'image/png'});
-	
-	this.registerAttribute('shadow',{type:'boolean',standard:false,category:'Appearance'});
+	this.registerAttribute('mimeType',{type:'text',standard:'image/png',readonly:true});
 	
 }
 
@@ -44,7 +42,9 @@ ImageObject.isResizable=function(){
 }
 
 ImageObject.register('ImageObject');
-ImageObject.isCreatable=true;
+ImageObject.isCreatable=false;
+
+ImageObject.moveByTransform = function(){return true;};
 
 ImageObject.category='Images';
 

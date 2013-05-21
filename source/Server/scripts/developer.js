@@ -19,6 +19,11 @@ thisScript.export='';
 
 thisScript.run=function(url){
 	
+	if (!Modules.Config.developerInfo){
+		this.export='';
+		return;
+	}
+	
 	this.url=url;
 	
 	var result='<h1>Things to do</h1><table>';
@@ -72,6 +77,7 @@ function traverse(folder){
 		files.forEach(function(filename){
 			
 			if (filename.search('svn')!=-1) return;
+			if (filename.search('libraries')!=-1) return;
 			
 			filename=folder+filename;
 			
@@ -112,6 +118,7 @@ function traverseLog(folder){
 		files.forEach(function(filename){
 			
 			if (filename.search('svn')!=-1) return;
+			if (filename.search('libraries')!=-1) return;
 			
 			filename=folder+filename;
 			

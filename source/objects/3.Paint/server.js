@@ -5,6 +5,8 @@
 *
 */
 
+"use strict";
+
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 module.exports=theObject;
@@ -30,12 +32,18 @@ theObject.setContent=function(content,callback){
 		
 		/* trim image (remove transpartent "border") */
 		Modules.Connector.trimImage(self.inRoom, self.id, function(dX, dY, newWidth, newHeight) {
+
+			if (newWidth == 1 && newHeight == 1) {
+				console.log("IMAGE #"+self.id+" HAS NO CONTENT --> DELETE IT");
+				self.deleteIt();
+				return;
+			}
 			
 			if (dX) {
 				/* set new dimensions */
 
-				self.setAttribute("x", parseInt(self.data.x)+parseInt(dX));
-				self.setAttribute("y", parseInt(self.data.y)+parseInt(dY));
+				self.setAttribute("x", parseInt(self.get('x'))+parseInt(dX));
+				self.setAttribute("y", parseInt(self.get('y'))+parseInt(dY));
 				self.setAttribute("width", parseInt(newWidth));
 				self.setAttribute("height", parseInt(newHeight));
 				
@@ -43,15 +51,19 @@ theObject.setContent=function(content,callback){
 
 			if (callback) callback(); //callback of setContent
 			
-			self.data.hasContent=!!content;
-			self.data.contentAge=new Date().getTime();
+			self.set('hasContent',!!content);
+			self.set('contentAge',new Date().getTime());
 
 			//send object update to all listeners
 			self.persist();
 			self.updateClients('contentUpdate');
 		
-		});
+		},self.context);
 		
-	});
+	},self.context);
 	
+}
+theObject.setContent.public = true;
+theObject.setContent.neededRights = {
+    write : true
 }

@@ -5,6 +5,7 @@
 *
 */
 
+/*
 Textarea.afterSetContent=function(){
 
 	GUI.updateLayers();
@@ -16,3 +17,4 @@ Textarea.afterSetAttribute=function(){
 	GUI.updateLayers();
 
 }
+*/

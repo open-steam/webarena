@@ -1,22 +1,45 @@
+"use strict";
+
 /* paint */
 
+/**
+ * true if paint mode is active
+ */
 GUI.paintModeActive = false;
 
 
-
+/**
+ * Set a color to paint with
+ * @param {String} color The (hex-) color to paint with
+ * @param {String} colorName The colors name
+ */
 GUI.setPaintColor = function(color, colorName) {
 	GUI.paintColor = color;
 	GUI.setPaintCursor(colorName);
 	GUI.paintEraseModeActive = false;
+	$("#header").find(".jPaint_navi_color").removeClass("active");
+	$("#header").find(".jPaint_navi_eraser").removeClass("active");
+	$("#header").find(".jPaint_navi_color_"+colorName).addClass("active");
 }
 
+/**
+ * Set the cursor
+ * @param {String} cursorName The name of the cursor icon
+ */
 GUI.setPaintCursor = function(cursorName) {
 	GUI.paintCursor = "../../guis.common/images/paint/cursors/"+cursorName+".png";
 }
 
+/**
+ * Set the size of the "pencil"
+ * @param {int} value Size of the "pencil"
+ */
 GUI.setPaintSize = function(value) {
 	GUI.paintSize = value;
 	GUI.paintEraseModeActive = false;
+	$("#header").find(".jPaint_navi_size").removeClass("active");
+	$("#header").find(".jPaint_navi_eraser").removeClass("active");
+	$("#header").find(".jPaint_navi_size_"+value).addClass("active");
 }
 
 
@@ -24,14 +47,25 @@ GUI.paintColors = [];
 GUI.paintSizes = [];
 
 
+/**
+ * Reset all paint colors
+ */
 GUI.resetPaintColors = function() {
 	GUI.paintColors = [];
 }
 
+/**
+ * Reset all paint sizes
+ */
 GUI.resetPaintSizes = function() {
 	GUI.paintSizes = [];
 }
 
+/**
+ * Add a paint color
+ * @param {String} color The (hex-) color value
+ * @param {String} colorName The colors name
+ */
 GUI.addPaintColor = function(color, colorName) {
 	if (colorName == undefined) {
 		colorName = color;
@@ -39,11 +73,22 @@ GUI.addPaintColor = function(color, colorName) {
 	GUI.paintColors.push([color,colorName]);
 }
 
+/**
+ * Set the size of the "pencil"
+ * @param {int} size Size of the "pencil"
+ */
 GUI.addPaintSize = function(size) {
 	GUI.paintSizes.push(size);
 }
 
+/**
+ * Enter the paint edit mode
+ * @param {webarenaObject} webarenaObject The webarena object to save/load the paint data
+ * @param {bool} highlighterMode True if the paint mode should be displayed in highlighter mode (different colors, sizes and opacity)
+ */
 GUI.editPaint = function(webarenaObject, highlighterMode) {
+
+	if (webarenaObject === undefined) console.error("cannot paint on undefined object!");
 
 	GUI.currentPaintObject = webarenaObject;
 	GUI.currentPaintObjectIsHighlighter = highlighterMode;
@@ -52,7 +97,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 
 	GUI.paintModeActive = true;
 
-	GUI.saveInspectorStateAndHide();
+	GUI.sidebar.saveStateAndHide();
 
 	
 	$("#header > div.header_left").children().hide();
@@ -63,12 +108,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	
 	if (highlighterMode) {
 		GUI.addPaintColor("#f6ff00", "yellow");
-		GUI.setPaintColor("#f6ff00", "yellow");
-		GUI.setPaintSize(20);
 	} else {
 		GUI.addPaintColor("#000000", "black");
-		GUI.setPaintColor("#000000", "black");
-		GUI.setPaintSize(3);
 	}
 	
 	GUI.addPaintColor("red");
@@ -90,6 +131,10 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	GUI.addPaintSize(24);
 	
 	
+	
+	
+	
+	
 	/* add color selection */
 	
 	$.each(GUI.paintColors, function(index, color) {
@@ -97,6 +142,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		var colorSelection = document.createElement("img");
 		$(colorSelection).attr("src", "../../guis.common/images/paint/colors/"+color[1]+".png");
 		$(colorSelection).addClass("jPaint_navi");
+		$(colorSelection).addClass("jPaint_navi_color");
+		$(colorSelection).addClass("jPaint_navi_color_"+color[1]);
 		$(colorSelection).bind("click", function(event) {
 			GUI.setPaintColor(color[0], color[1]);
 		});
@@ -113,6 +160,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		var sizeSelection = document.createElement("img");
 		$(sizeSelection).attr("src", "../../guis.common/images/paint/sizes/"+size+".png");
 		$(sizeSelection).addClass("jPaint_navi");
+		$(sizeSelection).addClass("jPaint_navi_size");
+		$(sizeSelection).addClass("jPaint_navi_size_"+size);
 		$(sizeSelection).bind("click", function(event) {
 			GUI.setPaintSize(size);
 		});
@@ -128,13 +177,28 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	var eraser = document.createElement("img");
 	$(eraser).attr("src", "../../guis.common/images/paint/eraser.png");
 	$(eraser).addClass("jPaint_navi");
+	$(eraser).addClass("jPaint_navi_eraser");
 	$(eraser).bind("click", function(event) {
 		GUI.setPaintCursor("eraser");
 		GUI.paintEraseModeActive = true;
+
+		$("#header").find(".jPaint_navi_eraser").addClass("active");
+		
 	});
 
 	$("#header > div.header_left").append(eraser);
 
+
+	
+	if (highlighterMode) {
+		GUI.setPaintColor("#f6ff00", "yellow");
+		GUI.setPaintSize(20);
+	} else {
+		GUI.setPaintColor("#000000", "black");
+		GUI.setPaintSize(3);
+	}
+
+	
 
 
 	/* add cancel button */
@@ -152,16 +216,14 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	/* add save/close button */
 	var closeButton = document.createElement("span");
 	$(closeButton).addClass("header_button");
+	$(closeButton).addClass("button_save");
 	$(closeButton).addClass("jPaint_navi");
 	$(closeButton).html(GUI.translate("save"));
 	$(closeButton).bind("click", function(event) {
-		GUI.closePaintMode();
+		GUI.savePaintMode();
 	});
 
-	$("#header > div.header_right").append(closeButton);
-	
-	$("#header img").css("opacity", 1);
-	
+	$("#header > div.header_right").append(closeButton);	
 	
 	/* create html canvas */
 	GUI.paintCanvas = document.createElement("canvas");
@@ -196,14 +258,11 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	
 
 
-	if (highlighterMode != true) {
-
-		/* set lower opacity to all objects */
-		$.each(ObjectManager.getObjects(), function(index, object) {
-			$(object.getRepresentation()).css("opacity", 0.4);
-		});
+	/* set lower opacity to all objects */
+	$.each(ObjectManager.getObjects(), function(index, object) {
+		$(object.getRepresentation()).css("opacity", 0.4);
+	});
 	
-	}
 	
 	/* hide representation of webarenaObject */
 	if (webarenaObject) {
@@ -214,10 +273,12 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	/* load content */
 	if (webarenaObject && webarenaObject.hasContent()) {
 
+		GUI.painted = true;
+
 		var img = new Image();
 		
 		$(img).bind("load", function() {
-			
+
 			var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 			
 			var x = webarenaObject.getAttribute("x");
@@ -234,11 +295,9 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		
 		var rep = webarenaObject.getRepresentation();
 		
-		$(img).attr("src", $(rep).attr("href"));
+		$(img).attr("src", webarenaObject.getPreviewContentURL());
 		
 	}
-	
-	
 	
 	
 	//unbind old events
@@ -392,11 +451,47 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		$("#webarena_paintCanvas").bind("mousedown", start);
 	}
 	
+	
+	$(document).bind("keydown.paint", function(event) {
+		
+		if (event.keyCode == 16) {
+			GUI.paintShiftKeyDown = true;
+			GUI.paintShiftKeyDirection = undefined;
+		}
+		
+		if (event.keyCode == 13) {
+			GUI.savePaintMode();
+		}
+		
+	});
+	
+	$(document).bind("keyup.paint", function(event) {
+		
+		if (event.keyCode == 16) {
+			GUI.paintShiftKeyDown = false;
+		}
+		
+	});
+	
+	
 }
 
+/**
+ * True if the shift key is pushed (to draw straight lines)
+ */
+GUI.paintShiftKeyDown = false;
 
+/**
+ * Direction of straight line
+ */
+GUI.paintShiftKeyDirection = undefined;
+
+/**
+ * Paint a line to position x,y
+ * @param {int} x x position of the lines end
+ * @param {int} y y position of the lines end
+ */
 GUI.paintPaint = function(x,y) {
-
 
 	var svgpos = $("#content").offset();
 	y = y-svgpos.top;
@@ -405,11 +500,45 @@ GUI.paintPaint = function(x,y) {
 		GUI.paintLastPoint = [x,y];
 		return;
 	}
+	
+	if (GUI.paintShiftKeyDown) {
+		/* paint straight line */
+	
+		if (GUI.paintShiftKeyDirection == undefined && (Math.abs(GUI.paintLastPoint[1]-y) > 2 || Math.abs(GUI.paintLastPoint[0]-x) > 2)) {
+			if (Math.abs(GUI.paintLastPoint[1]-y) > Math.abs(GUI.paintLastPoint[0]-x)) {
+				/* Y direction */
+				GUI.paintShiftKeyDirection = "y";
+			} else {
+				/* X direction */
+				GUI.paintShiftKeyDirection = "x";
+			}
+		}
+		
+		if (GUI.paintShiftKeyDirection !== undefined) {
+			
+			if (GUI.paintShiftKeyDirection == "y") {
+				/* Y direction */
+				x = GUI.paintLastPoint[0];
+			} else {
+				/* X direction */
+				y = GUI.paintLastPoint[1];
+			}
+
+			var xc = x;
+			var yc = y;
+			
+		} else {
+			var xc = (GUI.paintLastPoint[0] + x) / 2;
+			var yc = (GUI.paintLastPoint[1] + y) / 2;
+		}
+	
+	} else {
+		/* normal paint */
+		var xc = (GUI.paintLastPoint[0] + x) / 2;
+		var yc = (GUI.paintLastPoint[1] + y) / 2;
+	}
 
 	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-
-	var xc = (GUI.paintLastPoint[0] + x) / 2;
-	var yc = (GUI.paintLastPoint[1] + y) / 2;
 
 	canvasContext.quadraticCurveTo(GUI.paintLastPoint[0], GUI.paintLastPoint[1], xc, yc);
 	
@@ -437,6 +566,11 @@ GUI.paintPaint = function(x,y) {
 }
 
 
+/**
+ * Move to position x,y without painting
+ *@param {int} x x position
+ *@param {int} y y position
+ */
 GUI.paintMove = function(x,y) {
 
 	var svgpos = $("#content").offset();
@@ -448,6 +582,11 @@ GUI.paintMove = function(x,y) {
 	
 }
 
+/**
+ * Erease around position x,y
+ *@param {int} x x position
+ *@param {int} y y position
+ */
 GUI.paintErase = function(x,y) {
 	
 	var svgpos = $("#content").offset();
@@ -464,82 +603,59 @@ GUI.paintErase = function(x,y) {
 	
 }
 
+/**
+ * Cancel the paint mode (without saving) and close it
+ */
 GUI.cancelPaintMode = function() {
+	
+	if (!GUI.painted) {
+		GUI.currentPaintObject.deleteIt();
+	}
+	
+	GUI.closePaintMode();
+	
+}
+
+/**
+ * Close the paint mode
+ */
+GUI.closePaintMode = function() {
 	
 	GUI.paintModeActive = false;
 	
 	$("#content").unbind("mousedown.paint");
 	
-	GUI.restoreInspectorFromSavedState();
+	GUI.sidebar.restoreFromSavedState();
 	
 	$("#header").find(".jPaint_navi").remove();
 	
 	$("#header > div.header_left").children().show();
 	$("#header > div.header_right").children().show();
 	
-	$("#header img").css("opacity", 0.6);
-	
 	$("#webarena_paintCanvas").remove();
 	
 	/* set normal opacity to all objects */
-	GUI.hideHiddenObjects();
+	$.each(ObjectManager.getObjects(), function(index, object) {
+		$(object.getRepresentation()).css("opacity", object.normalOpacity);
+	});
+	
+	$(document).unbind("keyup.paint");
+	$(document).unbind("keydown.paint");
 	
 }
 
-GUI.closePaintMode = function() {
+/**
+ * Save the wonderful painting and close the paint mode
+ */
+GUI.savePaintMode = function() {
 	
-	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-	
-//<---
-
-	/* calculate new min/max values */
-
-/*
-	GUI.paintMaxX = GUI.paintMaxX+5;
-	GUI.paintMaxY = GUI.paintMaxY+5;
-	GUI.paintMinX = GUI.paintMinX-5;
-	GUI.paintMinY = GUI.paintMinY-5;
-
-	var minX = undefined;
-	var minY = undefined;
-	var maxX = undefined;
-	var maxY = undefined;
-
-	var pixelFound = false;
-
-	for (var x = GUI.paintMinX; x < GUI.paintMaxX; x++) {
-		for (var y = GUI.paintMinY; y < GUI.paintMaxY; y++) {
-
-			var pixelData = canvasContext.getImageData(x, y, 1, 1).data;
-
-			if (pixelData[3] > 0) {
-				// pixel found at x,y
-				pixelFound = true;
-
-				if (x < minX || minX == undefined) { minX = x }
-				if (y < minY || minY == undefined) { minY = y }
-				if (x > maxX || maxX == undefined) { maxX = x }
-				if (y > maxY || maxY == undefined) { maxY = y }
-
-			}
-
-		}
+	if (!GUI.painted) {
+		GUI.cancelPaintMode();
+		return;
 	}
+	
 
-	if (minX == undefined) { minX = 0 }
-	if (minY == undefined) { minY = 0 }
-	if (maxX == undefined) { maxX = 0 }
-	if (maxY == undefined) { maxY = 0 }
-
-	maxX = maxX+5;
-	maxY = maxY+5;
-	minX = minX-5;
-	minY = minY-5;
-
-	if (minX < 0) { minX = 0 }
-	if (minY < 0) { minY = 0 }
-
-*/
+	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 	
 	var pixelFound = true;
 	
@@ -548,12 +664,8 @@ GUI.closePaintMode = function() {
 	var minX = GUI.paintMinX-5;
 	var minY = GUI.paintMinY-5;
 	
-	
-	/* --- */
-	
 	var width = maxX-minX;
 	var height = maxY-minY;
-	
 	
 	/* resize image */
 	
@@ -564,56 +676,19 @@ GUI.closePaintMode = function() {
 	
 	canvasContext.putImageData(img,0,0);
 	
-	
-	
 	minX = minX+$(document).scrollLeft();
 	minY = minY+$(document).scrollTop();
 	
+	GUI.currentPaintObject.setAttribute("width", width, true);
+	GUI.currentPaintObject.setAttribute("height", height, true);
+
+	GUI.currentPaintObject.setAttribute("x", minX, true);
+	GUI.currentPaintObject.setAttribute("y", minY, true);
+
+	GUI.currentPaintObject.setContent($("#webarena_paintCanvas").get(0).toDataURL(), function() {
+		GUI.currentPaintObject.draw();
+	});
 	
-	if (GUI.currentPaintObject) {
-		/* save to existing object */
-
-		if (pixelFound) {
-
-			GUI.currentPaintObject.setAttribute("width", width, true);
-			GUI.currentPaintObject.setAttribute("height", height, true);
-
-			GUI.currentPaintObject.setAttribute("x", minX, true);
-			GUI.currentPaintObject.setAttribute("y", minY, true);
-
-			GUI.currentPaintObject.setContent($("#webarena_paintCanvas").get(0).toDataURL());
-			GUI.currentPaintObject.draw();
-			
-		} else {
-			//no pixels found --> delete object
-			GUI.currentPaintObject.deleteIt();
-		}
-	
-	} else { //TODO: will this be called at any time!?
-		/* create new object */
-
-		if (pixelFound) {
-		
-			if (GUI.currentPaintObjectIsHighlighter) {
-				var type = "Highlighter";
-			} else {
-				var type = "Paint";
-			}
-
-			ObjectManager.createObject(type, {
-				"hidden": GUI.hiddenObjectsVisible,
-				"width": width,
-				"height": height,
-				"x": minX,
-				"y": minY
-			}, $("#webarena_paintCanvas").get(0).toDataURL());
-		
-		} else {
-			//no image to save
-		}
-		
-	}
-
-	GUI.cancelPaintMode();
+	GUI.closePaintMode();
 	
 }

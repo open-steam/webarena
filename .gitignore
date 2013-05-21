@@ -1,0 +1,16 @@
+stuff/old/
+
+.DS_Store
+.gitignore.swp
+config.local.js
+source/Server/tmp/*
+data/
+node_modules/
+.svn/
+
+.config.rb.swp
+source/err.log
+source/out.log
+
+*.sublime-project
+*.sublime-workspace

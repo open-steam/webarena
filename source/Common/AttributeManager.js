@@ -1,7 +1,9 @@
+"use strict";
+
 /**
 *    Webarena - A webclient for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2010
+*    @author Felix Winkelnkemper, University of Paderborn, 2012,2013
 *
 */
 
@@ -12,27 +14,82 @@
 *   for GUIs to implement an object inspector as well as for channelling data
 *   access to the server.
 *
-*   Note: There is no data stored in the attribute manager. These data, which
-*   is unique for every single object, is saved in the data member of the
-*   respective object
+*   Note: Data is stored in the static attributeData member. This assures that
+*   even when several instances of the same object exist (which is common on
+*   the server side), they all have the same attribute set they operate on.
 */
-var AttributeManager=Object.create(Object);
+var AttributeManager=new function(){
+	
+	//actual attribute data is kept private, so it can only be maniplulated
+	//by setter and getter functions.
+	
+	var attributeData={};
+	
+	//setters and getter for attribute data. For conveiniance, object.set
+	//and object.get can be used instead.
+	
+	//Notice: These functions set and get unfiltered data. It is not checked
+	//if these data are within a specific range, of a certain type or even
+	//exist at all. Changes made this way are not automatically distributed
+	//to the server or other client. Use this.set only when you can be sure 
+	//the data you are storing fits range and type and make sure you persist
+	//your data afterwards. In the general case use setAttribute instead.
+	
+	this.set=function(id,key,value){
+		if (id==undefined || value==undefined){
+			console.log('undefined set',id,key,value);
+			console.trace();
+			return;
+		}
+		
+		if (parseInt(key,10)==key){
+			console.log('numberic key in set',id,key,value);
+			console.trace();
+			return;
+		}
+		
+		if (!attributeData[id]) attributeData[id]=this.proto.standardData||{};
+		attributeData[id][key]=value;
+	}
 
-AttributeManager.proto=false;
-AttributeManager.attributes=false;
+	this.get=function(id,key){
+		if (!attributeData[id]) return undefined;
+		if (!key) return attributeData[id];
+		return attributeData[id][key];
+	}
+	
+	//setAll is used, when an object is loaded and gets its primary data. The
+	//loaded data is accepted as is without any further checks.
+	
+	this.setAll=function(id,data){
+		if (id==undefined){
+			console.log('undefined setAll',id,data);
+			console.trace();
+			return;
+		}
+		attributeData[id]=data;
+	}
+	
+	this.toString=function(){
+		return 'AttributeManager for '+this.proto;
+	}
+	
+};
 
+
+/**
+*	init
+*	
+*	called when an object type is registred (see GeneralObject). During this
+*	project, each object type derives an Attributemanager whicht is herein
+*	bound to its prototype and gets an empty attribute array which is then
+*	again filled in the registration procress.
+**/
 AttributeManager.init=function(proto){
-	
-	// The attribute manager is initialized during the registration of object
-	// types so we create the datastructure for the prototype
-	
+
 	this.proto=proto;
 	this.attributes={};
 	
-}
-
-AttributeManager.toString=function(){
-	return 'AttributeManager for '+this.proto;
 }
 
 /**
@@ -43,12 +100,13 @@ AttributeManager.toString=function(){
 *			min - integer
 *			max - integer
 *			standard
-*			setter - function
-*			getter - function
+*			setFunction - function
+*			getFunction - function
+*			checkFunction - function
+* 			changedFunction - function
 *			readonly - true, false
 *			hidden - true, false
 *			category - a block or tab this attribute should be displayed in
-*
 *
 */
 AttributeManager.registerAttribute=function(attribute,data){
@@ -60,28 +118,25 @@ AttributeManager.registerAttribute=function(attribute,data){
 	// fill in old properties, if the attribute has yet been registred.
 	var oldData=this.attributes[attribute] || {};
 	
-	//if (oldData) debug('Attribute '+attribute+' for '+this.proto+' type '+data.type+' has already been specified.');
+	//if (oldData) console.log('Attribute '+attribute+' for '+this.proto+' type '+data.type+' has already been specified.');
 	
 	for (var key in oldData){
 		var oldValue=oldData[key];
-		if (!data[key]) data[key]=oldValue;
+		if (data[key]===undefined) data[key]=oldValue;
 	}
-
 	
-	//debug('Registering attribute '+attribute+' for '+this.proto+' type '+data.type);
-	
-	if (!data.type) data.type='text';
-	data.description=attribute;
-	if (!data.unit) data.unit='';
-	if (!data.min) data.min=-50000;
-	if (!data.max) data.max=50000;
+	if (data.type===undefined) data.type='text';
+	if (data.description==undefined && data.readable==undefined) data.description=attribute;
+	if (data.readable!==undefined) data.description=data.readable;
+	if (data.unit===undefined) data.unit='';
+	if (data.min===undefined) data.min=-50000;
+	if (data.max===undefined) data.max=50000;
 	if (data.standard==undefined) data.standard=0;
 	if (data.category==undefined) data.category='Basic';
 	
-	data.setterInt=data.setter;
-	data.getterInt=data.getter;
 	
-	data.setter=function(object,value){
+	data.setter=function(object,value){	
+		
 		if (value===undefined) value=data.standard;
 		if (data.type=='number' || data.type=='fontsize'){
 			value=parseInt(value,10);
@@ -89,19 +144,20 @@ AttributeManager.registerAttribute=function(attribute,data){
 			if (value<data.min) value=data.min;
 			if (value>data.max) value=data.max;
 		}
-		if (data.setterInt) {
-			data.setterInt(object,value);
+		if (data.setFunction) {
+			data.setFunction(object,value);
 		}
 		else {
-			object.data[attribute]=value;
+			object.set(attribute,value);
 		}
 	}
+	
 
 	data.getter=function(object){
-		if (!data.getterInt) {
-			var result=object.data[attribute];
+		if (!data.getFunction) {
+			var result=object.get(attribute);
 		} else {
-			var result=data.getterInt(object);
+			var result=data.getFunction(object);
 		}
 		if (result===undefined) {
 			result=data.standard;
@@ -123,7 +179,6 @@ AttributeManager.registerAttribute=function(attribute,data){
 		
 		return result;
 	}
-
 	
 	this.attributes[attribute]=data;
 	
@@ -136,32 +191,45 @@ var saveDelays={};
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced){
+AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
+	if (attribute=='position'){
+		this.setAttribute(object,'x',value.x,forced);
+		this.setAttribute(object,'y',value.y,forced);
+		return true;
+	} 	
 	
-	var time=new Date().getTime()-1328721558003;;
-	
-	// Check, if the attribute is registred
-	
-	if (this.attributes[attribute]==undefined){
-		console.log('Attribute '+attribute+' is not registred for '+this.proto);
-		return undefined;
-	}
+	if (object.ObjectManager.isServer && !noevaluation){	
+		
+		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
+		}
+	}	
 	
 	// do nothing, if value has not changed
+	if (object.get(attribute)===value) return false;
 	
-	if (object.data[attribute]===value) return false;
+	// get the object's setter function. If the attribute is not registred,
+	// create a setter function which directly sets the attribute to the
+	// specified value
+	var setter=false;
 	
-	var setter=this.attributes[attribute].setter;
+	if(this.attributes[attribute]){
+		setter=this.attributes[attribute].setter;
+	} else {
+		setter=function(object,value){object.set(attribute,value);};
+	}
 	
 	// check if the attribute is read only
-	
-	if (this.attributes[attribute].readonly) {
+	if (this.attributes[attribute] && this.attributes[attribute].readonly) {
 		console.log('Attribute '+attribute+' is read only for '+this.proto);
+		if(attribute=='id'){
+			console.log('TRIED TO SET ID');
+			console.trace();
+		}
 		return undefined;
 	}
 	
 	// call the setter function
-	
 	setter(object,value);
 	
 	// persist the results
@@ -177,15 +245,16 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 			delete(saveDelays[identifier]);
 		}
 		
-		
-		var data={'roomID':object.data.inRoom, 'objectID':object.id, 'key':attribute, 'value':value};
+
+		//this timer is the delay in which changes on the same object are discarded
+		var theTimer=200;
 		
 		if (forced) {
-			Modules.SocketClient.serverCall('setAttribute',data);
+            object.serverCall('setAttribute', attribute, value, false)
 		} else {
 			saveDelays[identifier]=window.setTimeout(function(){
-				Modules.SocketClient.serverCall('setAttribute',data);
-			},1000);
+                object.serverCall('setAttribute', attribute, value, false)
+			},theTimer);
 		}
 		
 	}
@@ -198,12 +267,11 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 /**
 *	get an attribute of a specified object
 */
-AttributeManager.getAttribute=function(object,attribute){
+AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	
-	// Check, if the attribute is registred
-	
+	//on unregistred attributes directly return their value
 	if (this.attributes[attribute]==undefined){
-		return object.data[attribute];
+		return object.get(attribute);
 	}
 	
 	var getter=this.attributes[attribute].getter;
@@ -213,6 +281,21 @@ AttributeManager.getAttribute=function(object,attribute){
 	return getter(object);
 }
 
+/**
+*	get a full attribute set of an object
+*	with getter functions and evaluations
+*/
+AttributeManager.getAttributeSet=function(object){
+	
+	var result={};
+	
+	for (var key in object.get()){
+		result[key]=AttributeManager.getAttribute(object,key);
+	}
+	
+	return result;
+}
+
 
 AttributeManager.hasAttribute=function(object,attribute) {
 	return (this.attributes[attribute]!=undefined);
@@ -220,6 +303,8 @@ AttributeManager.hasAttribute=function(object,attribute) {
 
 /**
 *	get the attributes (e.g. for GUI)
+*
+*	returns only registred attribute data, not their contents or unregistred attributes
 */
 AttributeManager.getAttributes=function(){
 	return this.attributes;

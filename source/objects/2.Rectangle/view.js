@@ -5,11 +5,11 @@
 *
 */
 	
-Rectangle.draw=function(){
+Rectangle.draw=function(external){
 
 	var rep=this.getRepresentation();
 	
-	GeneralObject.draw.call(this);
+	GeneralObject.draw.call(this, external);
 
 	$(rep).attr("fill", this.getAttribute('fillcolor'));
 
@@ -20,21 +20,10 @@ Rectangle.draw=function(){
 
 }
 
-Rectangle.getRepresentation=function(){
-
-	var rep=document.getElementById(this.getAttribute('id'));
-
-	if (!rep){
-		
-		return this.createRepresentation();
-		
-	}
-	return rep;
-}
 
 Rectangle.createRepresentation = function() {
 
-	rep = GUI.svg.rect(
+	var rep = GUI.svg.rect(
 		10, //x
 		10, //y
 		10, //width

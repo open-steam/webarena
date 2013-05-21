@@ -6,16 +6,30 @@
 */
 
 
-Paint.draw=function(){
+Paint.draw=function(external){
 
 	var rep=this.getRepresentation();
 
-	ImageObject.draw.call(this);
-
-	if (!this.hasContent()) {
-		$(rep).css("visibility", "hidden");
-	} else {
-		$(rep).css("visibility", "visible");
-	}
+	ImageObject.draw.call(this,external);
 	
+/*
+	if (!this.hasContent()) {
+		$(rep).css("display", "none");
+	} else {
+		$(rep).css("display", "");
+	}
+	*/
 }
+
+Paint.createRepresentation = function() {
+
+	var rep=ImageObject.createRepresentation.call(this);
+
+	this.createCanvas();
+	this.updateCanvas(this.getPreviewContentURL());
+	
+	return rep;
+
+}
+
+Paint.updateImage=ImageObject.updateImage;

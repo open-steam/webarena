@@ -35,7 +35,9 @@ IconObject.isResizable=function(){
 	return false;
 }
 
+IconObject.moveByTransform = function(){return true;};
 
+IconObject.alwaysOnTop = true;
 
 IconObject.register('IconObject');
 

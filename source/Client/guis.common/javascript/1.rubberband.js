@@ -1,32 +1,14 @@
+"use strict";
+
 /* rubberband */
 
-GUI.initRubberband = function() {
-
-	if (GUI.isTouchDevice) return;
-
-	$("#content>svg").bind("mousedown", GUI.rubberbandStart);
-	
-}
-
+/**
+ * Called when a user clicks on the rooms background to start the rubberband (called by DOM event)
+ * @param {event} event Mouse/Touch down DOM event
+ */
 GUI.rubberbandStart = function(event) {
 
-	if (event.target.id) {
-		var webarenaObject = ObjectManager.getObject(event.target.id);
-		if (webarenaObject) {
-			return;
-		}
-	} else if ($(event.target).parent()) {
-		if ($(event.target).parent().attr("id")) {
-			var webarenaObject = ObjectManager.getObject($(event.target).parent().attr("id"));
-			if (webarenaObject && webarenaObject.selected) {
-				return;
-			}
-		}
-	}
-
 	if (GUI.shiftKeyDown) return;
-	
-	if ($(event.target).hasClass("webarenaControl")) return;
 	
 	$("#content").find(".webarenaRubberband").remove();
 	
@@ -55,6 +37,9 @@ GUI.rubberbandStart = function(event) {
 	$(GUI.rubberband).attr("stroke", "#CCCCCC");
 	$(GUI.rubberband).attr("style", "stroke-dasharray: 9, 5; stroke-width: 1");
 	$(GUI.rubberband).attr("class", "webarenaRubberband");
+	
+	GUI.rubberbandX = GUI.rubberbandStartX;
+	GUI.rubberbandY = GUI.rubberbandStartY;
 	
 	var move = function(event) {
 		
@@ -86,19 +71,32 @@ GUI.rubberbandStart = function(event) {
 	}
 	
 	var end = function(event) {
-	
-	
-		$.each(ObjectManager.getObjects(), function(index, object) {
+
+		if (GUI.rubberbandWidth || GUI.rubberbandHeight){
+
+			if (GUI.rubberbandWidth < 4) GUI.rubberbandWidth = 4;
+			if (GUI.rubberbandHeight < 4) GUI.rubberbandHeight = 4;
 		
-			if (!object.getAttribute("visible")) return;
+			var count = 0;
 		
-			if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
-				if (object.isGraphical) {
-					object.select(true);
-				}
-			}
+			$.each(ObjectManager.getObjects(), function(index, object) {
 			
-		});
+				if (!object.getAttribute("visible")) return;
+				
+				if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
+					if (object.isGraphical) {
+						object.select(true);
+						count++;
+					}
+				}
+				
+			});
+			
+			if (count == 0) {
+				/* clicked on background */
+				GUI.updateInspector();
+			}
+		}
 	
 		$("#content>svg").unbind("mousemove.webarenaRubberband");
 

@@ -1,6 +1,29 @@
+"use strict";
+
+/**
+ * @namespace holds methods and variables for GUI
+ */
 var GUI={};
 
+/**
+ * language of the client (used by translate function)
+ * @default de
+ */
 GUI.currentLanguage='de';
+
+
+//This is called then forward or backwards-buttons are used in the browser.
+//See ObjectManager.onload for pushState
+window.onpopstate = function(event) {
+ 
+  if (!event.state) return;
+  var room=event.state.room;
+  if (!room) return;
+  if (GUI.isLoggedIn){
+  	ObjectManager.loadRoom(room,true);
+  }
+
+};
 
 
 GUI.translationManager=Object.create(TranslationManager);
@@ -18,53 +41,24 @@ GUI.translate=function(text){
 }
 
 
-
-
-/* ---> needed!? <--- */
-GUI.objectSaved=function(object){
-}
-
-GUI.objectRemoved=function(object){
-}
-
-GUI.objectSelected=function(object){
-}
-
-GUI.objectUnselected=function(object){
-}
-
-
-
-
+/**
+ * variable to check if client is a touch device (to add suitable event handlers)
+ */
 GUI.isTouchDevice = false;
 
 
 
-
+/**
+ * @deprecated still needed?
+ */
 GUI.updateGUI = function(webarenaObject) {
-	
-	var rep = webarenaObject.getRepresentation();
-	
-	if (webarenaObject.getAttribute("hidden")) {
-		/* object is hidden */
-		if (GUI.hiddenObjectsVisible) {
-			GUI.showObject(webarenaObject);
-		} else {
-			GUI.hideObject(webarenaObject);
-		}
-	} else {
-		/* object is not hidden */
-		if (GUI.hiddenObjectsVisible) {
-			GUI.hideObject(webarenaObject);
-		} else {
-			GUI.showObject(webarenaObject);
-		}
-	}
 
 }
 
 
-
+/**
+ * check room size on browser window resize
+ */
 GUI.initResizeHandler = function() {
 
 	$(document).bind("resize", function() {
@@ -74,6 +68,10 @@ GUI.initResizeHandler = function() {
 }
 
 
+/**
+ * set room width and height depending on objects in room
+ * @param {webarenaObject} [webarenaObject] concrete object to check for
+ */
 GUI.adjustContent = function(webarenaObject) {
 	
 	if (webarenaObject != undefined) {
@@ -84,54 +82,108 @@ GUI.adjustContent = function(webarenaObject) {
 
 		var currentRoom = ObjectManager.getCurrentRoom();
 		
-		var maxX = webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth();
-		var maxY = webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight();
-		
+		var maxX = Math.round(webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth())+300;
+		var maxY = Math.round(webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight())+300;
+
 		if (maxX > currentRoom.getAttribute("width")) {
-			currentRoom.setAttribute("width", maxX);
-			$("#content").css("width", maxX);
-			$("#content > svg").css("width", maxX);
+			GUI.setRoomWidth(maxX);
 		}
-		
+
 		if (maxY > currentRoom.getAttribute("height")) {
-			currentRoom.setAttribute("height", maxY);
-			$("#content").css("height", maxY);
-			$("#content > svg").css("height", maxY);
+			GUI.setRoomHeight(maxY);
 		}
+
 		
 	} else {
 		/* set room width/height */
 		var currentRoom = ObjectManager.getCurrentRoom();
-		
 		if (!currentRoom) return;
 		
 		var width = currentRoom.getAttribute("width");
 		var height = currentRoom.getAttribute("height");
 		
-		if (width < $(document).width()) {
-			width = $(document).width();
+		var maxX = 0;
+		var maxY = 0;
+		
+		$.each(ObjectManager.getObjects(), function(key, object) {
+
+			var mx = Math.round(object.getAttribute("x")+object.getAttribute("width"));
+			var my = Math.round(object.getAttribute("y")+object.getAttribute("height"));
+			
+			if (mx > maxX) {
+				maxX = mx;
+			}
+			
+			if (my > maxY) {
+				maxY = my;
+			}
+
+		});
+
+		maxX += 300;
+		maxY += 300;
+		
+		if (maxX < width) {
+			width = maxX;
 		}
 		
-		if (height < $(document).height()) {
-			height = $(document).height();
+		if (maxY < height) {
+ 			height = maxY;
 		}
 		
-		$("#content").css("width", width);
-		$("#content").css("height", height);
+		GUI.setRoomWidth(width);
+		GUI.setRoomHeight(height);
 		
-		
-		$("#content > svg").css("width", width);
-		$("#content > svg").css("height", height);
 	}
 	
 }
 
 
+/**
+ * set width of room / svg area
+ * @param {int} width new width of the room
+ */
+GUI.setRoomWidth = function(width) {
+	
+	var currentRoom = ObjectManager.getCurrentRoom();
+	if (!currentRoom) return;
+	
+	currentRoom.setAttribute("width", width);
+	
+	if (width < $(window).width()) {
+		width = $(window).width();
+	}
+	
+	$("#content").css("width", width);
+	$("#content > svg").css("width", width);
+	
+}
+
+/**
+ * set height of room / svg area
+ * @param {int} height new height of the room
+ */
+GUI.setRoomHeight = function(height) {
+
+	var currentRoom = ObjectManager.getCurrentRoom();
+	if (!currentRoom) return;
+	
+	currentRoom.setAttribute("height", height);
+
+	if (height < $(window).height()) {
+		height = $(window).height();
+	}
+	
+	$("#content").css("height", height);
+	$("#content > svg").css("height", height);
+	
+}
 
 
 
-/* object selection */
-
+/**
+ * deselects all objects in the current room
+ */
 GUI.deselectAllObjects = function() {
 	
 	$.each(ObjectManager.getSelected(), function(index, object) {
@@ -147,9 +199,24 @@ GUI.deselectAllObjects = function() {
 
 /* multi selection */
 
+/**
+ * set to true if the clients shift key is pressed (used for multiple selection)
+ */
 GUI.shiftKeyDown = false;
 
+
+/**
+ * add event handlers for shift key
+ */
 GUI.initShiftKeyHandling = function() {
+
+    $(document).click(function(e) {
+        if (e.shiftKey) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        }
+    });
 
 	$(document).bind("keydown", function(event) {
 		
@@ -173,8 +240,14 @@ GUI.initShiftKeyHandling = function() {
 
 /* move by keyboard */
 
+/**
+ * @deprecated ?
+ */
 GUI.blockKeyEvents = false;
 
+/**
+ * add event handlers for object movement by arrow-keys
+ */
 GUI.initMoveByKeyboard = function() {
 
 	$(document).bind("keydown", function(event) {
@@ -221,7 +294,9 @@ GUI.initMoveByKeyboard = function() {
 
 
 
-
+/**
+ * add event handler for removing selected objects by pressing delete-key
+ */
 GUI.initObjectDeletionByKeyboard = function() {
 	
 	$(document).bind("keydown", function(event) {
@@ -252,41 +327,161 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 
 
+/**
+ * add event handler for copy, cut and paste by ctrl + c, ctrl + x, ctrl + v
+ */
+GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			var ctrlDown = event.ctrlKey||event.metaKey // Mac support
+			
+		
+			if (ctrlDown && event.which == 67) {
+				event.preventDefault();
+				ObjectManager.copyObjects(ObjectManager.getSelected());
+			}
 
-/* mouse handler */
-GUI.initMouseHandler = function() {
-	return; //TODO: build this
-	var mousedown = function(event) {
+			if (ctrlDown && event.which == 88) {
+				event.preventDefault();
+				ObjectManager.cutObjects(ObjectManager.getSelected());
+			}
 		
-		event.preventDefault();
-		
-		var contentPosition = $("#content").offset();
-		
-		var clickedObject = GUI.getObjectAt(event.pageX, event.pageY-contentPosition.top);
-		
-		if (clickedObject) {
-
-			clickedObject.select();
-
-		} else {
-			/* clicked on background */
-			GUI.rubberbandStart(event)
+			if (ctrlDown && event.which == 86) {
+				event.preventDefault();
+				ObjectManager.pasteObjects();
+			}
+			
 		}
 		
+	});
+}
+
+
+/**
+ * add event handler for object selection (based on clicked position and layers)
+ */
+GUI.initMouseHandler = function() {
+
+
+	if (GUI.isTouchDevice) {
+		
+		var touchHandler = function(event) {
+			
+			jPopoverManager.hideAll();
+			
+			var contentPosition = $("#content").offset();
+
+			var x = event.pageX-contentPosition.left;
+			var y = event.pageY-contentPosition.top;
+			
+			if (event.touches.length > 1) {
+				var x = event.touches[event.touches.length-1].pageX-contentPosition.left;
+				var y = event.touches[event.touches.length-1].pageY-contentPosition.top;
+			}
+			
+			/* find objects at this position */
+			var clickedObject = GUI.getObjectAt(x, y);
+
+			if (clickedObject && event.target != $("#content>svg").get(0)) {
+				event.preventDefault();
+				event.stopPropagation();
+				clickedObject.click(event);
+			} else {
+				GUI.deselectAllObjects();
+				GUI.updateInspector();
+			}
+			
+		}
+		
+		$("#content>svg").get(0).addEventListener("touchstart", touchHandler, false);
+		
+	} else {
+		
+		var mousedown = function(event) {
+			jPopoverManager.hideAll();
+
+			var contentPosition = $("#content").offset();
+			
+			var temp=event.target;
+			
+			while (temp && !temp.dataObject) {
+				temp=$(temp).parent()[0];
+			}
+			
+			var clickedObject=(temp)?temp.dataObject:false;
+			
+			//TODO check if this can be done similarly for touch devices
+		
+			if (clickedObject) {
+				// Objects with restricted moving areas should get the "native" events
+				// Only if clicked on the moving area, e.g. actionbar the default event handling
+				// should be prevented
+                if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+				clickedObject.click(event);
+			} else {
+				/* clicked on background */
+                event.preventDefault();
+                event.stopPropagation();
+				GUI.rubberbandStart(event);
+			}
+
+		}
+		
+		var mousemove = function(event) {
+			
+			var x=event.clientX;
+			var y=event.clientY;
+			
+			var images=$('image');
+			
+			$.each(images, function(index, image) {
+				
+				var parent=$(image).parent();
+				
+				if (!image.hasPixelAtMousePosition) {
+					//console.log('Missing hasPixelAtMousePosition for ',parent);
+					return;
+				}
+				
+				if(image.hasPixelAtMousePosition(x,y)){
+					parent.attr('pointer-events','visiblePainted');
+				} else {
+					parent.attr('pointer-events','none');
+				}
+				
+			});
+
+		}		
+		
+		$("#content>svg").bind("mousedown", mousedown);
+		$("#content>svg").bind("mousemove", mousemove);
+		
 	}
-	
-	$("#content>svg").bind("mousedown", mousedown);
-	
 	
 }
 
 
-/* get the topmost object at point x,y */
+/**
+ * get the topmost object at point x,y which is visible
+ * @param {int} x x position
+ * @param {int} y y position
+ */
 GUI.getObjectAt = function(x,y) {
 	
 	var clickedObject = false;
 	
 	$.each(ObjectManager.getObjectsByLayer(), function(key, object) {
+
+		var rep = object.getRepresentation();
+
+		if (!object.getAttribute("visible") && !$(rep).hasClass("webarena_ghost")) return;
 
 		if (object.hasPixelAt(x,y)) {
 			clickedObject = object;
@@ -304,9 +499,14 @@ GUI.getObjectAt = function(x,y) {
 
 
 
-
+/**
+ * list of object mime types which can be represented by a preview image
+ */
 GUI.previewableMimeTypes = undefined;
 
+/**
+ * load list of mime types for GUI.previewableMimeTypes
+ */
 GUI.loadListOfPreviewableMimeTypes=function() {
 	/* get list of inline displayable mime types */
 			
@@ -316,6 +516,10 @@ GUI.loadListOfPreviewableMimeTypes=function() {
 	
 }
 
+/**
+ * check if a preview image can be generated for an object with the given mime type
+ * @param {String} mimeType mime type to check for
+ */
 GUI.mimeTypeIsPreviewable=function(mimeType) {
 	
 	if (GUI.previewableMimeTypes == undefined) {
@@ -331,7 +535,158 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
 	
 }
 
+/**
+ * GUI specific display of general messages (and complex control dialogs)
+ * @param {String} heading A title for the dialog
+ * @param {String|DOMObject} content A message or DOM object that will be used as the body of the dialog
+ * @param {Object} [buttons] The Buttons of the dialog (e.g. close, save, ...)
+ * @param {int} [dialogWidth=auto] The width of the dialog
+ * @param {bool} [passThrough] Additional options for the dialog
+ * @returns {jQueryDialogObject} The created jQuery dialog object
+ *
+ * Form of buttons param:
+ *
+ * {
+ * 		"title of this button" : function() {
+ * 			//button callback
+ * 		},
+ * 		...
+ * }
+ *
+ */
+GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
+
+    GUI.blockKeyEvents = true;
+
+    if (buttons == undefined) {
+
+        var buttons = {};
+
+        buttons[GUI.translate("close")] = function() {
+            //nothing
+        }
+
+    }
+
+    var dialogContent = document.createElement("div");
+    $(dialogContent).attr("title", heading);
+    $(dialogContent).append(content);
+
+    var buttons2 = {};
+
+    $.each(buttons, function(title, callback) {
+
+        buttons2[title] = function() {
+            callback(dialogContent);
+            $(this).dialog("close");
+        }
+
+    });
+
+    if (dialogWidth == undefined) {
+        dialogWidth = "auto";
+    }
+
+    var dialogOptions = {
+        modal: true,
+        resizable: false,
+        buttons: buttons2,
+        zIndex: 100000,
+        width : dialogWidth,
+        close: function() {
+            $(this).remove();
+            GUI.blockKeyEvents = false;
+        }
+    }
+
+    if(typeof passThrough === "object"){
+        $.extend(dialogOptions, passThrough)
+    }
 
 
+    return $(dialogContent).dialog(dialogOptions);
 
 
+};
+
+/**
+ * GUI specific display of errors
+ * @param {String} heading A title for the upload dialog
+ * @param {String} message A message including the errors message
+ * @param {webarenaObject} [webarenaObject] An optional webarena object the error is related to
+ * @param {bool} fatal True if the error is fatal and the webpage has to be reloaded after displaying the error
+ */
+GUI.error = function(heading, message, webarenaObject, fatal) {
+
+    var translate = function(text) {
+        if (!webarenaObject) {
+            return GUI.translate(text);
+        } else {
+            return webarenaObject.translate(GUI.currentLanguage, text);
+        }
+    }
+
+    var errorButtons = {};
+
+    if (fatal) {
+        errorButtons[GUI.translate("Reload")] = function() {
+            window.location.reload();
+        }
+    } else {
+        errorButtons[GUI.translate("Close Dialog")] = function() {
+            $(this).dialog("close");
+        }
+    }
+
+    var heading = translate(heading);
+    var message = '<p>'+translate(message)+'</p>';
+
+    GUI.dialog(heading, message, errorButtons);
+
+}
+
+/**
+ * called when the socket is disconnected
+ */
+GUI.disconnected = function() {
+	
+	GUI.showDisconnected();
+	GUI.isLoggedIn = false;
+	
+}
+
+
+/**
+ * called when the socket is connected
+ */
+GUI.connected = function() {
+
+	if (GUI.relogin === true) {
+		GUI.relogin = false;
+		GUI.login();
+	}
+	
+}
+
+/**
+ * display a error message on disconnect
+ */
+GUI.showDisconnected = function() {
+	
+	if ($("#disconnected_message").length == 0)
+	$("body").append('<div id="disconnected_message"><div>Die Verbindung wurde getrennt.</div></div>');
+
+	GUI.isLoggedIn = false;
+	GUI.relogin = true;
+	
+}
+
+
+/**
+ * timer to prevent objects "flying in" when getting a bunch of new objects (room load)
+ */
+GUI.startNoAnimationTimer = function() {
+	GUI.noAnimation = window.setTimeout(function() {
+		GUI.noAnimation = undefined;
+	}, 2000);
+}

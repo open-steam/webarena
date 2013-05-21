@@ -1,20 +1,37 @@
-/* Links */
+"use strict";
 
+/**
+ * Functions for displaying links between objects
+ */
+
+/**
+ * The object for which the links are shown
+ */
 GUI.currentLinkObject = undefined;
 
+/**
+ * update all links for the current object
+ */
 GUI.updateLinks = function() {
 	GUI.hideLinks(GUI.currentLinkObject);
 	GUI.showLinks(GUI.currentLinkObject);
 }
 
+/**
+ * show links for a given object
+ * @param {webarenaObject} object The webarena objects the links will be displayed for
+ */
 GUI.showLinks = function(object) {
 
 	if (object == undefined) return;
 
+	/* set current link object */
 	GUI.currentLinkObject = object;
 
+	/* check if more than one object is selected */
 	if (ObjectManager.getSelected().length > 1) {
 	
+		/* hide links for all selected objects */
 		$.each(ObjectManager.getSelected(), function(index, obj) {
 			GUI.hideLinks(obj);
 		});
@@ -22,7 +39,9 @@ GUI.showLinks = function(object) {
 		return;
 	}
 
-
+	/**
+	 * get all objects linked with this object
+	 */
 	$.each(object.getLinkedObjects(), function(index, target) {
 	
 		if (!target.object) return;
@@ -32,15 +51,50 @@ GUI.showLinks = function(object) {
 
 		var targetX = target.object.getViewBoundingBoxX()+(target.object.getViewBoundingBoxWidth()/2);
 		var targetY = target.object.getViewBoundingBoxY()+(target.object.getViewBoundingBoxHeight()/2);
-	
+
+		/* draw link line */
 		var line = GUI.svg.line(objectX, objectY, targetX, targetY, {
-			strokeWidth: 1,
+			strokeWidth: 6,
 			stroke: "#CCCCCC"
 		});
-		
-		$(line).attr("layer", -100);
-		$(line).addClass("webarenaLink_"+object.data.id);
+
+
+
+		$(line).addClass("webarenaLink_"+object.id);
+
 		$(line).css("opacity", 0);
+
+        $(line).bind("mousedown",function(event){
+            event.preventDefault();
+            event.stopPropagation();
+        })
+
+        $(line).bind("mouseup", function(event){
+            var x = (parseFloat($(this).attr("x1")) + parseFloat($(this).attr("x2")))/2
+            var y = (parseFloat($(this).attr("y1")) + parseFloat($(this).attr("y2")))/2
+
+            GUI.showActionsheet(x,y, {
+                "actions" : [
+                    {
+                        "actionName" : "Entfernen",
+                        "actionFunction" : function(){
+                            object.removeLinkedObjectById(target.object.id);
+                            target.object.removeLinkedObjectById(object.id);
+                            object.deselect();
+                        }
+                    }
+                ]
+            }, false)
+        });
+
+        $(line).hover(
+            function(event){
+                $(this).attr("stroke-width", 10)
+            },
+            function(event){
+                $(this).attr("stroke-width", 6)
+            }
+        );
 		
 		
 		
@@ -48,13 +102,11 @@ GUI.showLinks = function(object) {
 
 		var rep = target.object.getRepresentation();
 		
-		if (target.object.data.visible == false) {
+		if (target.object.get('visible') == false) {
 			$(rep).css("opacity", 0.4);
 			$(rep).css("visibility", "visible");
 			$(rep).addClass("webarena_ghost");
 		}
-		
-		
 		
 		
 		window.setTimeout(function() {
@@ -62,14 +114,20 @@ GUI.showLinks = function(object) {
 			$(line).css("opacity", 1);
 
 		}, 1);
+
+        $("svg").prepend($(line));
 		
 	});
 	
 }
 
+/**
+ * Hide all shown links
+ * @param {webarenaObject} object
+ */
 GUI.hideLinks = function(object) {
 	
-	$(".webarenaLink_"+object.data.id).remove();
+	$(".webarenaLink_"+object.id).remove();
 
 	$.each(ObjectManager.getObjects(), function(index, object) {
 		

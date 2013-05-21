@@ -1,3 +1,4 @@
+"use strict";
 var SocketClient={};
 
 SocketClient.init=function(){
@@ -8,6 +9,12 @@ SocketClient.init=function(){
 		//console.log(data);
 		if (data.type=='call') Modules.Dispatcher.call(data);
 		if (data.type=='response') Modules.Dispatcher.response(data);
+	});
+	socket.on('disconnect', function() {
+		GUI.disconnected();
+	});
+	socket.on('connect', function () {
+		GUI.connected();
 	});
 }
 
