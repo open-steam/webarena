@@ -690,3 +690,10 @@ GUI.startNoAnimationTimer = function() {
 		GUI.noAnimation = undefined;
 	}, 2000);
 }
+
+/**
+ * ask user to confirm the question in the message
+ */
+GUI.confirm = function(message) {
+	return confirm(message);
+}

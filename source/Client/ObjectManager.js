@@ -612,30 +612,41 @@ ObjectManager.cutObjects=function(objects) {
 ObjectManager.pasteObjects=function() {
 
 	if (ObjectManager.clipBoard.objects != undefined && ObjectManager.clipBoard.objects.length > 0) {
-		var requestData={};
-		
-		requestData.fromRoom=ObjectManager.clipBoard.room;
-		requestData.toRoom=this.getRoomID();
-	    requestData.objects=ObjectManager.clipBoard.objects;
-	    requestData.cut=ObjectManager.clipBoard.cut;
 
-		// select new objects after duplication
-	    var newIDs=[];
-	    var selectNewObjects = function() {
-			for (var key in newIDs) {
-				var newObject = ObjectManager.getObject(newIDs[key]);
-				newObject.select(true);
+		var paste = false;
+		if (ObjectManager.clipBoard.objects.length <= 5) {
+			paste = true;
+		} else {
+			paste = GUI.confirm(GUI.translate('You are pasting') + ' ' + ObjectManager.clipBoard.objects.length + ' ' + GUI.translate('objects') + '.\n' 
+					+ GUI.translate('Do you want to continue?'));
+		}
+
+		if (paste) {
+			var requestData={};
+			
+			requestData.fromRoom=ObjectManager.clipBoard.room;
+			requestData.toRoom=this.getRoomID();
+		    requestData.objects=ObjectManager.clipBoard.objects;
+		    requestData.cut=ObjectManager.clipBoard.cut;
+
+			// select new objects after duplication
+		    var newIDs=[];
+		    var selectNewObjects = function() {
+				for (var key in newIDs) {
+					var newObject = ObjectManager.getObject(newIDs[key]);
+					newObject.select(true);
+				}
+			};
+
+			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList){
+				newIDs = idList;
+				GUI.deselectAllObjects();
+				setTimeout(selectNewObjects, 200);
+			});
+
+			if (ObjectManager.clipBoard.cut) {
+				ObjectManager.clipBoard={};
 			}
-		};
-
-		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList){
-			newIDs = idList;
-			GUI.deselectAllObjects();
-			setTimeout(selectNewObjects, 200);
-		});
-
-		if (ObjectManager.clipBoard.cut) {
-			ObjectManager.clipBoard={};
 		}
 	}
 }
@@ -643,32 +654,42 @@ ObjectManager.pasteObjects=function() {
 ObjectManager.duplicateObjects=function(objects) {
 	if (objects != undefined && objects.length > 0) {
 
-		var array = new Array();
+		var duplicate = false;
+		if (objects.length <= 5) {
+			duplicate = true;
+		} else {
+			duplicate = GUI.confirm(GUI.translate('You are duplicating') + ' ' + objects.length + ' ' + GUI.translate('objects') + '.\n' 
+						+ GUI.translate('Do you want to continue?'));
+		}
 
-		for (var key in objects) {
-	        var object = objects[key];
-	        array.push(object.getId());
-	    }
-	    
-	    var requestData={};
-		requestData.fromRoom=this.getRoomID();
-		requestData.toRoom=this.getRoomID();
-	    requestData.objects=array;
-	    requestData.cut=false;
+		if (duplicate) {
+			var array = new Array();
 
-	    // select new objects after duplication
-	    var newIDs=[];
-	    var selectNewObjects = function() {
-			for (var key in newIDs) {
-				var newObject = ObjectManager.getObject(newIDs[key]);
-				newObject.select(true);
-			}
-		};
+			for (var key in objects) {
+		        var object = objects[key];
+		        array.push(object.getId());
+		    }
+		    
+		    var requestData={};
+			requestData.fromRoom=this.getRoomID();
+			requestData.toRoom=this.getRoomID();
+		    requestData.objects=array;
+		    requestData.cut=false;
 
-		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
-			newIDs = idList;
-			GUI.deselectAllObjects();
-			setTimeout(selectNewObjects, 200);
-		});
+		    // select new objects after duplication
+		    var newIDs=[];
+		    var selectNewObjects = function() {
+				for (var key in newIDs) {
+					var newObject = ObjectManager.getObject(newIDs[key]);
+					newObject.select(true);
+				}
+			};
+
+			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
+				newIDs = idList;
+				GUI.deselectAllObjects();
+				setTimeout(selectNewObjects, 200);
+			});
+		}
 	}
 }

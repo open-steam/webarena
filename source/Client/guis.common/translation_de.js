@@ -41,6 +41,10 @@ GUI.setTranslations('de',{
 	'this file is not previewable' : 'Diese Datei kann nicht als Vorschau angezeigt werden.',
 	'Files' : 'Dateien',
 	'This room has no parent.':'Für diesen Raum gibt es keinen übergeordneten Raum.',
-	'Paste' : 'Einfügen'
+	'Paste' : 'Einfügen',
+	'You are duplicating' : 'Sie duplizieren',
+	'You are pasting' : 'Sie fügen ein:',
+	'objects' : 'Objekte',
+	'Do you want to continue?' : 'Wollen Sie fortsetzen?'
 }
 );
