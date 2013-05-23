@@ -6,12 +6,14 @@
  * @param {bool} multiLine True if multiple lines should be edited
  * @param {int} width Width of the dialog
  * @param {int} [height] Height of the dialog
+ * @param {bool} [passThrough] Additional options for the dialog
  */
-GUI.editText = function(webarenaObject, multiLine, width, height) {
+GUI.editText = function(webarenaObject, multiLine, width, height, passThrough) {
 	
 	var style = 'font-family: '+webarenaObject.getAttribute("font-family")+'; ';
 	style += 'color: '+webarenaObject.getAttribute("font-color")+'; ';
 	style += 'font-size: '+webarenaObject.getAttribute("font-size")+'px; ';
+	style += 'resize:none; ';
 	style += 'width: 100%; ';
 	
 	if (height) {
@@ -49,6 +51,6 @@ GUI.editText = function(webarenaObject, multiLine, width, height) {
 		
 	};
 	
-	GUI.dialog(GUI.translate("Edit text"), dom, buttons, width);
+	GUI.dialog(GUI.translate("Edit text"), dom, buttons, width, passThrough);
 	
 }

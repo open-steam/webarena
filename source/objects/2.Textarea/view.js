@@ -100,8 +100,14 @@ Textarea.createRepresentation = function() {
 
 Textarea.editText = function() {
 	
-	GUI.editText(this, true, this.getViewWidth(), this.getViewHeight());
-	
+	var passThrough = { 
+		"resizable" : true,  
+		resizeStart : function(event,ui) { 
+			$('textarea[name=textedit]').css('height', '100%'); 
+		} 
+	};
+	GUI.editText(this, true, this.getViewWidth(), this.getViewHeight(), passThrough);
+
 }
 
 
