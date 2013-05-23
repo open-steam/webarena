@@ -25,7 +25,12 @@ GUI.editText = function(webarenaObject, multiLine, width, height, passThrough) {
 	if (multiLine) {
 		var dom = $('<textarea name="textedit" style="'+style+'">'+webarenaObject.getContentAsString()+'</textarea>');
 	} else {
-		var dom = $('<input type="text" name="textedit" value="'+webarenaObject.getContentAsString()+'" style="'+style+'" />');
+		var content = webarenaObject.getContentAsString();
+		var placeholder = webarenaObject.translate(webarenaObject.currentLanguage, 'No text yet!');
+		if (content == placeholder) content = "";
+		else placeholder = "";
+
+		var dom = $('<input type="text" name="textedit" value="'+content+'" placeholder="'+placeholder+'" style="'+style+'" />');
 		dom.bind("keyup", function(event) {
 			if (event.keyCode == 13) {
 				dom.parent().parent().find(".ui-button-text").click();
