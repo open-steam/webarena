@@ -483,16 +483,24 @@ WebServer.init = function (theModules) {
                                         contentType = 'text/plain';
                                     }
 
+                                    var shouldSendETag = true;
 
-                                    res.writeHead(200, {
+                                    var ETagExclude = ["html"];
+                                    _(ETagExclude).each(function(toExcludeS){
+                                        if(url.length >= toExcludeS.length && url.substr(url.length - toExcludeS.length) == toExcludeS) shouldSendETag = false;
+                                    })
+
+                                    var head = {
                                         'Content-Type': contentType,
-                                        'ETag': etag,
                                         'Content-Length': data.length,
                                         'Content-Disposition': 'inline',
                                         'Last-Modified': stat.mtime
-                                    });
+                                    }
+                                    if(shouldSendETag) head['ETag'] = etag;
+                                    res.writeHead(200, head);
 
-                                    if (url.search(".html") != -1) {
+
+                                    if (url.search(".html") !== -1) {
                                         data = data.toString('utf8');
                                         var position1 = data.search('<serverscript');
                                         if (position1 != -1) {
@@ -505,20 +513,20 @@ WebServer.init = function (theModules) {
                                             var position3 = src.search('"');
                                             src = src.substr(0, position3);
 
+
                                             var pre = data.substr(0, position1);
                                             var post = data.substr(position1 + position2 + position3 + 2);
 
                                             var theScript = require('./scripts/' + src);
 
                                             theScript.run(url);
-
                                             var result = theScript.export;
 
                                             data = pre + result + post;
 
                                         }
                                     }
-                                    ;
+
 
                                     res.end(data);
                                 }
