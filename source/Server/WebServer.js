@@ -482,11 +482,13 @@ WebServer.init = function (theModules) {
 
                                     var head = {
                                         'Content-Type': contentType,
-                                        'Content-Length': data.length,
                                         'Content-Disposition': 'inline',
                                         'Last-Modified': stat.mtime
                                     }
-                                    if(shouldSendETag) head['ETag'] = etag;
+                                    if(shouldSendETag){
+                                        head['ETag'] = etag;
+                                        head['Content-Length'] =  data.length
+                                    }
                                     res.writeHead(200, head);
 
 
