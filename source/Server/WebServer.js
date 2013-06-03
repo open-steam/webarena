@@ -28,9 +28,13 @@ WebServer.init = function (theModules) {
 
     WebServer.server = app;
 
+
+
     app.listen(global.config.port);  // start server (port set in config)
 
     function handler(req, res) {
+
+        console.log("start request " + new Date() + req.url)
 
         var url = req.url.replace('%20', ' ');
         var agent = req.headers['user-agent'];
@@ -239,16 +243,25 @@ WebServer.init = function (theModules) {
 
                 var mimeType = object.getAttribute('mimeType') || 'text/plain';
 
-                var data = object.getContent();
                 res.writeHead(200, {
                     'Content-Type': mimeType,
                     'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'
-
                 });
-
-                res.end(new Buffer(data));
+                if(Modules.Connector.getContentStream !== undefined){
+                    console.log("stream")
+                    var objStream = Modules.Connector.getContentStream(roomID, objectID, context);
+                    objStream.pipe(res);
+                    objStream.on("end", function(){
+                        res.end();
+                    })
+                } else {
+                    console.log(new Date()+"")
+                    var data = object.getContent();
+                    res.end(new Buffer(data));
+                }
 
             } catch (err) {
+
                 res.writeHead(500, {"Content-Type": "text/plain"});
                 res.write("500 Internal Server Error");
                 res.end();
