@@ -106,7 +106,7 @@ SharePoint.draw = function(){
     } else {
         this.drawIcon();
     }
-
+    this.adjustControls();
 }
 
 SharePoint.drawIFrame = function(){
