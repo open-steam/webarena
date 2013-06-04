@@ -377,7 +377,7 @@ GUI.initMouseHandler = function() {
 			var x = event.pageX-contentPosition.left;
 			var y = event.pageY-contentPosition.top;
 			
-			if (event.touches.length > 1) {
+			if (event.touches.length >= 1) {
 				var x = event.touches[event.touches.length-1].pageX-contentPosition.left;
 				var y = event.touches[event.touches.length-1].pageY-contentPosition.top;
 			}
