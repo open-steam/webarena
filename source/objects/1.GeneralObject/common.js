@@ -604,7 +604,7 @@ GeneralObject.setPosition=function(x,y){
 *	update the object's width and height
 */
 GeneralObject.setDimensions=function(width,height){
-	if (!height) height=width;
+	if (height===undefined) height=width;
 	this.setAttribute('width',width);
 	this.setAttribute('height',height);
 }
