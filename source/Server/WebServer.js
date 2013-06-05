@@ -33,9 +33,6 @@ WebServer.init = function (theModules) {
     app.listen(global.config.port);  // start server (port set in config)
 
     function handler(req, res) {
-
-        console.log("start request " + new Date() + req.url)
-
         var url = req.url.replace('%20', ' ');
         var agent = req.headers['user-agent'];
 
