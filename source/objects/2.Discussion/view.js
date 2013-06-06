@@ -63,7 +63,9 @@ Discussion.drawIcon = function () {
     $(rep).attr("layer", this.getAttribute('layer'));
 }
 
-Discussion.draw = function () {
+Discussion.draw = function (external) {
+
+    //GeneralObject.draw.call(this,external);
 
     var embedded = this.getAttribute("show_embedded");
     if (embedded) {
@@ -71,6 +73,7 @@ Discussion.draw = function () {
     } else {
         this.drawIcon();
     }
+    this.adjustControls();
 }
 
 Discussion.bindAdminControlls = function () {

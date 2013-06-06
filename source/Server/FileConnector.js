@@ -221,43 +221,54 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after,context,createI
 *	if an "after" function is specified, it is called after saving
 *
 */
-fileConnector.saveContent=function(roomID,objectID,content,after,context){
+fileConnector.saveContent=function(roomID,objectID,content,after,context, inputIsStream){
 	this.Modules.Log.debug("Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
+	var that = this;
+
 	var fs = require('fs');
-	
+    var filebase=this.Modules.Config.filebase;
+    var foldername=filebase+'/'+roomID;
+    try {fs.mkdirSync(foldername)} catch(e){};
+    var filename=filebase+'/'+roomID+'/'+objectID+'.content';
+
 	if (!context) this.Modules.Log.error("Missing context");
+    if(!!inputIsStream){
+        var wr = fs.createWriteStream(filename);
+        wr.on("error", function(err) {
+            that.Modules.Log.error("Error writing file: " + err);
+        });
+        content.on("end", function(){
+            console.log("END");
+            if (after) after(objectID);
+        })
+        content.pipe(wr);
+    } else {
+        if (({}).toString.call(content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
+            /* create byte array */
 
-	if (({}).toString.call(content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
-		/* create byte array */
-		
-		var byteArray = [];
-		var contentBuffer = new Buffer(content);
-		
-		for (var j = 0; j < contentBuffer.length; j++) {
-			
-			byteArray.push(contentBuffer.readUInt8(j));
-			
-		}
-		
-		content = byteArray;
-		
-	}
+            var byteArray = [];
+            var contentBuffer = new Buffer(content);
 
-	var filebase=this.Modules.Config.filebase;
-	
-	var foldername=filebase+'/'+roomID;
-	
-	try {fs.mkdirSync(foldername)} catch(e){};
-	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
-	
-	fs.writeFile(filename, new Buffer(content), function (err) {
-		  if (err) {
-		  		this.Modules.Log.error("Could not write content to file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-		  }
-		  if (after) after(objectID);
-	});
+            for (var j = 0; j < contentBuffer.length; j++) {
+
+                byteArray.push(contentBuffer.readUInt8(j));
+
+            }
+
+            content = byteArray;
+
+        }
+
+        fs.writeFile(filename, new Buffer(content), function (err) {
+            if (err) {
+                this.Modules.Log.error("Could not write content to file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+            }
+            if (after) after(objectID);
+        });
+    }
+
+
+
 	
 }
 
@@ -269,25 +280,33 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context){
 *
 */
 fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, callback,context) {
-	
+	var that = this
 	this.Modules.Log.debug("Copy content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', source: '"+sourceFilename+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var fs = require('fs');
 	
-	var content = fs.readFileSync(sourceFilename);
+	//var content = fs.readFileSync(sourceFilename);
 	
-	var byteArray = [];
-	var contentBuffer = new Buffer(content);
-	
+	//var byteArray = [];
+	//var contentBuffer = new Buffer(content);
+
+    /*
 	for (var j = 0; j < contentBuffer.length; j++) {
 		
 		byteArray.push(contentBuffer.readUInt8(j));
 		
-	}
+	}*/
 
-	this.saveContent(roomID,objectID,byteArray,callback,context);
+    console.log(sourceFilename);
+    var rds = fs.createReadStream(sourceFilename);
+    rds.on("error", function(err) {
+        that.Modules.Log.error("Error reading file");
+    });
+
+
+	this.saveContent(roomID,objectID,rds,callback,context, true);
 
 }
 
@@ -338,6 +357,21 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 		}
 	}
 	
+}
+
+fileConnector.getContentStream = function(roomID,objectID,context){
+    this.Modules.Log.debug("Get content stream (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+
+    var fs = require('fs');
+    var filebase=this.Modules.Config.filebase;
+    var filename=filebase+'/'+roomID+'/'+objectID+'.content';
+
+    var rds = fs.createReadStream(filename);
+    rds.on("error", function(err) {
+        this.Modules.Log.error("Error reading file: " + filename);
+    });
+
+    return rds;
 }
 
 

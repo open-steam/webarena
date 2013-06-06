@@ -90,14 +90,13 @@ SharePoint.createRepresentationIcon = function(){
 }
 
 SharePoint.renderFilename = function (rep, filename){
-    var splitTextVal = splitSubstr(filename, 14);
-    var cTexts = GUI.svg.createText();
 
-    for(var i = 0, len = splitTextVal.length; i< len ; i++){
-        cTexts.span(splitTextVal[i], {'y' : 78 + i * 14, 'x': 0});
-    }
-    var text = GUI.svg.text(rep, 0, 75, cTexts);
-    $(text).attr("font-size", 12);
+    File.renderFilename.call(this);
+
+}
+
+SharePoint.getFilename = function(){
+    return this.getAttribute("name");
 }
 
 SharePoint.draw = function(){
@@ -107,7 +106,7 @@ SharePoint.draw = function(){
     } else {
         this.drawIcon();
     }
-
+    this.adjustControls();
 }
 
 SharePoint.drawIFrame = function(){

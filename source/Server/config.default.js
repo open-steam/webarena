@@ -20,6 +20,9 @@ module.exports={
         username: "",
         password: ""
 	},
+    sharepoint : {
+        basepath : "https://projects.uni-paderborn.de/websites/studiolo/"
+    },
 	bidServer: 'www.bid-owl.de.localhost',
 	bidPort: 80,
 	logLevels : {
