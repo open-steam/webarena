@@ -430,6 +430,7 @@ GUI.initMouseHandler = function() {
                 event.preventDefault();
                 event.stopPropagation();
 				GUI.rubberbandStart(event);
+				GUI.updateInspector(true);
 			}
 
 		}
