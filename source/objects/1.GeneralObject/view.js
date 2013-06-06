@@ -308,7 +308,7 @@ GeneralObject.select = function(multiple, groupSelect) {
 	}
 	
 	GUI.updateInspectorDelay=window.setTimeout(function(){
-		GUI.updateInspector();
+		GUI.updateInspector(true);
 	},100);
 	
 	if (!groupSelect) GUI.showLinks(this);
@@ -1342,7 +1342,7 @@ GeneralObject.resizeHandler = function() {
  * Called after object selection
  */
 GeneralObject.selectHandler = function() {
-	GUI.updateInspector();
+	GUI.updateInspector(true);
 	GUI.showLinks(this);
 }
 
