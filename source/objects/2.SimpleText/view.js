@@ -24,6 +24,9 @@ SimpleText.draw=function(external){
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
 
+    var rotation = this.getAttribute("rotation") || 0;
+    $(rep).find("text").attr("transform", "rotate(" + rotation + " 0 0)");
+
 	if (!$(rep).hasClass("webarena_ghost")) {
 		if (this.getAttribute("visible") || this.selected) {
 			$(rep).css("visibility", "visible");

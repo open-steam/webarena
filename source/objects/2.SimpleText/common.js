@@ -23,12 +23,15 @@ SimpleText.register=function(type){
 	this.attributeManager.registerAttribute('width',{hidden:true});
 	this.attributeManager.registerAttribute('height',{hidden:true});
 	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
+
+    this.registerAttribute('rotation', {type:'number', category: 'Dimensions'});
 	
 	this.registerAction('Edit',function(){
 		$.each(ObjectManager.getSelected(), function(key, object) {
 			object.execute();
 		});
 	}, true);
+
 	
 }
 
