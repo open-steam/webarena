@@ -99,3 +99,24 @@ SimpleText.getViewBoundingBoxHeight = function() {
 	var rep = this.getRepresentation();
 	return this.getRepresentation().getBBox().height; //<--TODO: this value is too high
 }
+
+/**
+ * Called when the colors of the appearence of an object are changed
+ * @param {String} attribute attribute that was changed
+ * @param {String} value new value of the attribute
+ */
+SimpleText.checkTransparency = function(attribute, value) {
+	if (attribute === 'font-color') {
+		var fontcolor = value;
+	} else {
+		var fontcolor = this.getAttribute('font-color');
+	}
+	if (attribute === 'linecolor') {
+		var linecolor = value;
+	} else {
+		var linecolor = this.getAttribute('linecolor');
+	}
+	if (fontcolor === 'transparent' && linecolor === 'transparent') {
+		return false;
+	} else return true;
+}

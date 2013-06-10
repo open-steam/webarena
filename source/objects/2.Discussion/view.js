@@ -357,3 +357,12 @@ Discussion.representationCreated = function () {
         }
     });
 }
+
+/**
+ * Called when the colors of the appearence of an object are changed
+ * @param {String} attribute attribute that was changed
+ * @param {String} value new value of the attribute
+ */
+Discussion.checkTransparency = function(attribute, value) {
+    return true;
+}

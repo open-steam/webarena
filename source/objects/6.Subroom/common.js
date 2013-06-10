@@ -16,8 +16,9 @@ Subroom.register=function(type){
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type);
 	
+	this.registerAttribute('fillcolor',{hidden: true});
+
 	this.unregisterAction('Duplicate');
-	
 	
 	this.registerAction('Follow',function(){
 		

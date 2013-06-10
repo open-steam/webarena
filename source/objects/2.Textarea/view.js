@@ -117,3 +117,28 @@ Textarea.adjustControls = function() {
 	GeneralObject.adjustControls.call(this);
 }
 
+/**
+ * Called when the colors of the appearence of an object are changed
+ * @param {String} attribute attribute that was changed
+ * @param {String} value new value of the attribute
+ */
+Textarea.checkTransparency = function(attribute, value) {
+	if (attribute === 'fillcolor') {
+		var fillcolor = value;
+	} else {
+		var fillcolor = this.getAttribute('fillcolor');
+	}
+	if (attribute === 'font-color') {
+		var fontcolor = value;
+	} else {
+		var fontcolor = this.getAttribute('font-color');
+	}
+	if (attribute === 'linecolor') {
+		var linecolor = value;
+	} else {
+		var linecolor = this.getAttribute('linecolor');
+	}
+	if ((fillcolor === 'transparent' && linecolor === 'transparent' && fontcolor === 'transparent') || (fillcolor === 'transparent' && linecolor === 'transparent' && this.getContentAsString().trim() === '')) {
+		return false;
+	} else return true;
+}

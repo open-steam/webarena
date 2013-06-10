@@ -1383,6 +1383,28 @@ GeneralObject.selectedClickHandler = function(event) {
 }
 
 /**
+ * Called when the colors of the appearence of an object are changed
+ * @param {String} attribute attribute that was changed
+ * @param {String} value new value of the attribute
+ */
+GeneralObject.checkTransparency = function(attribute, value) {
+	if (attribute === 'fillcolor') {
+		var fillcolor = value;
+	} else {
+		var fillcolor = this.getAttribute('fillcolor');
+	}
+	if (attribute === 'linecolor') {
+		var linecolor = value;
+	} else {
+		var linecolor = this.getAttribute('linecolor');
+	}
+
+	if (fillcolor === 'transparent' && linecolor === 'transparent') {
+		return false;
+	} else return true;
+}
+
+/**
  * @deprecated No reference found. Remove?
  */
 GeneralObject.setDisplayGhost = function(s) {

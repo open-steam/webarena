@@ -166,8 +166,20 @@ GeneralObject.register=function(type){
 	}
 
 	
-	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance'});
-	this.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance'});
+	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance',checkFunction: function(object,value) {
+
+		if (object.checkTransparency('fillcolor', value)) {
+			return true;
+		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
+
+	}});
+	this.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance',checkFunction: function(object,value) {
+
+		if (object.checkTransparency('linecolor', value)) {
+			return true;
+		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
+
+	}});
 	this.registerAttribute('linesize',{type:'number',min:1,standard:1,max:30,category:'Appearance'});
 
 	this.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {

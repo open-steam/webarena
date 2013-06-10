@@ -32,6 +32,7 @@ GeneralObject.setTranslations('de',{
 	'mimeType' : 'Dateityp',
 	'preview' : 'Vorschau',
 	'Copy' : 'Kopieren',
-	'Cut' : 'Ausschneiden'
+	'Cut' : 'Ausschneiden',
+	'Completely transparent objects are not allowed.':'Komplett transparente Objekte sind nicht erlaubt.'
 }
 );

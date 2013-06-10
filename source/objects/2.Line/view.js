@@ -179,3 +179,19 @@ Line.setViewHeight = function(value) {
 	
 	GUI.adjustContent(this);
 }
+
+/**
+ * Called when the colors of the appearence of an object are changed
+ * @param {String} attribute attribute that was changed
+ * @param {String} value new value of the attribute
+ */
+Line.checkTransparency = function(attribute, value) {
+	if (attribute === 'linecolor') {
+		var linecolor = value;
+	} else {
+		var linecolor = this.getAttribute('linecolor');
+	}
+	if (linecolor === 'transparent') {
+		return false;
+	} else return true;
+}
