@@ -300,18 +300,19 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	this.addSelectedIndicator();
 	
-	//this.selectHandler();
-	
+	if(!multiple) this.selectHandler();
+
 	if (GUI.updateInspectorDelay){
 		window.clearTimeout(GUI.updateInspectorDelay);
 		GUI.updateInspectorDelay=false;
 	}
-	
+
 	GUI.updateInspectorDelay=window.setTimeout(function(){
 		GUI.updateInspector(true);
 	},100);
+
 	
-	if (!groupSelect) GUI.showLinks(this);
+	if (!groupSelect && !multiple) GUI.showLinks(this);
 	
 	this.draw();
 	
