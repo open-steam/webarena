@@ -85,7 +85,7 @@ Textarea.createRepresentation = function() {
 	rep.dataObject=this;
 	
 	var body = document.createElement("body");
-	$(body).html('<div><div>TEXT</div></div>');
+	$(body).html('<div class="overfloating-y"><div>TEXT</div></div>');
 
 	$(rep).append(body);
 

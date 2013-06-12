@@ -564,3 +564,7 @@ input {
 #bug>div span {
 	font-size: 11px;
 }
+
+.overfloating-y{
+    overflow-y: auto;
+}
