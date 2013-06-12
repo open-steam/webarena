@@ -184,7 +184,7 @@ Discussion.createRepresentationEmbedded = function () {
 
     that.title = this.getAttribute("discussionTitle") || "TITLE";
 
-    $(body).find("input").keyup(function (event) {
+    $(body).on("keyup", "input", function (event) {
         if (event.keyCode == 13 && $(this).val() != "") { // enter
             var value = $(this).val();
 
@@ -201,8 +201,8 @@ Discussion.createRepresentationEmbedded = function () {
             $(this).val('');
 
             that.setContent(JSON.stringify(that.oldContent));
-            $(body).find(".discussion-text").animate(
-                { scrollTop: $(body).find(".discussion-text").prop("scrollHeight")}, 3000
+            $(body).find(".discussion-content").animate(
+                { scrollTop: $(body).find(".discussion-content").prop("scrollHeight")}, 1500
             );
         }
     });
