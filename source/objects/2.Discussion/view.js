@@ -169,17 +169,15 @@ Discussion.createRepresentationEmbedded = function () {
 
     // content
     var body = document.createElement("body");
+
+    var compiled = _.template($( "script#discussion-container-template" ).html());
+    var templateData = {
+        heading : heading
+    }
+
+
     $(body).append(
-        $('<div class="discussion">' +
-            '<div class="embedded-toolbar moveArea">' +
-            '<span class="minimize-button"></span>' +
-            '</div>' +
-            '<div class="discussion-content">' +
-            '<div class="discussion-heading">' + heading +
-            '</div><div class="discussion-text"></div>' +
-            '</div>'+
-            '<input class="discussion-input" placeholder=Texteingabe>' +
-            '</div>')
+        compiled(templateData)
     );
 
     that.oldContent = new Array();
@@ -277,17 +275,17 @@ Discussion.renderMessage = function (message) {
 
     var additionalClasses = (message.author === GUI.username) ? "discussion-statement-deletable" : "";
 
-    return "" +
-        "<div class='discussion-statement " + additionalClasses + "' data-message-id='" + message.timestamp + "'>" +
-        "<div class='discussion-statement-heading'>" +
-        "<span class='message-author'>" + message.author + "</span>" +
-        "<span class='message-timestamp'>(" + this.formatTimestamp(message.timestamp) + ")</span>" +
-        "</div> " +
-        "<p class='discussion-statement-text'> " + text + "</p>" +
-
-        "<div class='statement-delete'>löschen</div>" +
-        "<div class='statement-edit'>bearbeiten</div>" +
-        "</div>";
+    var compiled = _.template($( "script#discussion-message-template" ).html());
+    var templateData = {
+        additionalClasses : additionalClasses,
+        message : {
+            timestamp : message.timestamp,
+            formattedTimestamp : this.formatTimestamp(message.timestamp),
+            text : message.text,
+            author: message.author
+        }
+    }
+    return compiled(templateData);
 }
 
 /* view setter */

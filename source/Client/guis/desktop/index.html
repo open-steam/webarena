@@ -229,5 +229,33 @@
 	
 	<div id="progressBar"><div class="progressBar_container"></div></div>
 
+    <!-- BEGIN: Underscore Template Definition. -->
+    <script type="text/template" id="discussion-message-template">
+
+        <div class='discussion-statement <%- additionalClasses %>' data-message-id='<%- message.timestamp %>'>
+        <div class='discussion-statement-heading'>
+            <span class='message-author'> <%- message.author %> </span>
+            <span class='message-timestamp'>( <%- message.formattedTimestamp %> )</span>
+            </div>
+        <p class='discussion-statement-text'> <%- message.text %> </p>
+
+        <div class='statement-delete'>löschen</div>
+        <div class='statement-edit'>bearbeiten</div>
+        </div>
+    </script>
+    <script type="text/template" id="discussion-container-template">
+        <div class="discussion">
+        <div class="embedded-toolbar moveArea">
+            <span class="minimize-button"></span>
+            </div>
+        <div class="discussion-content">
+            <div class="discussion-heading"> <%- heading %>
+                </div><div class="discussion-text"></div>
+           </div>
+        <input class="discussion-input" placeholder=Texteingabe>
+        </div>
+    </script>
+    <!-- END: Underscore Template Definition. -->
+
 </body>
 </html>
