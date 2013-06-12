@@ -30,7 +30,7 @@ GUI.editText = function(webarenaObject, multiLine, width, height, passThrough) {
 		if (content == placeholder) content = "";
 		else placeholder = "";
 
-		var dom = $('<input type="text" name="textedit" value="'+content+'" placeholder="'+placeholder+'" style="'+style+'" />');
+		var dom = $('<input type="text" name="textedit" value="'+content.replace(/"/g, "&quot;")+'" placeholder="'+placeholder+'" style="'+style+'" />');
 		dom.bind("keyup", function(event) {
 			if (event.keyCode == 13) {
 				dom.parent().parent().find(".ui-button-text").click();
