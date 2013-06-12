@@ -64,7 +64,7 @@ Textarea.draw=function(external){
 	});
 	
 	this.updateInnerHeight();
-
+    this.adjustControls();
 }
 
 
