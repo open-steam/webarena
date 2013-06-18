@@ -1,6 +1,6 @@
 File.contentUpdated=function(){
 
-	this.updateThumbnail();
+	this.updateIcon();
 	
 }
 

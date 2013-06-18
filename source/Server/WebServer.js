@@ -196,7 +196,7 @@ WebServer.init = function (theModules) {
                             }, files.file.type, true);
 
                         } else {
-                            object.set('inline', false);
+                            object.set('preview', false);
 
                             //send object update to all listeners
                             object.persist();

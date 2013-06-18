@@ -15,7 +15,7 @@ Exit.register=function(type){
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
 	
-	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality'});
+	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality',changedFunction: function(object) { object.updateIcon(); }});
 	
 	var self=this;
 	

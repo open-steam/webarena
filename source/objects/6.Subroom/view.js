@@ -5,10 +5,10 @@
 *
 */
 
-Subroom.getFileIcon=function() {
-	return "../../guis.common/images/fileicons/webarenaLink.png";
+Subroom.getStatusIcon = function() {
+	return this.getIconPath() + "/link";
 }
 
-Subroom.getUploadIcon = function() {
-	return "../../guis.common/images/fileicons/webarenaLink.png";
+Subroom.getIconText = function() {
+    return this.getAttribute("name");
 }

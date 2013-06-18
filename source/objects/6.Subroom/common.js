@@ -7,16 +7,14 @@
 
 var Modules=require('../../server.js');
 
-var Subroom=Object.create(Modules.ObjectManager.getPrototype('BidExit'));
+var Subroom=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
 Subroom.register=function(type){
 	
 	// Registering the object
 	
-	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
-	GeneralObject.register.call(this,type);
-	
-	this.registerAttribute('fillcolor',{hidden: true});
+	IconObject=Modules.ObjectManager.getPrototype('IconObject');
+	IconObject.register.call(this,type);
 
 	this.unregisterAction('Duplicate');
 	
@@ -41,21 +39,18 @@ Subroom.execute=function(){
 	var destination=this.getAttribute('destination');
 	
 	if (!destination) {
-		return;
+		var random=new Date().getTime()-1296055327011;
+		
+		this.setAttribute('destination',random);
+		destination = random;
 	}
 	
 	ObjectManager.loadRoom(destination);
 	
 }
 
-Subroom.upload=function(){
-	
-	var random=new Date().getTime()-1296055327011;
-	
-	this.setAttribute('destination',random);
-}
-
 Subroom.register('Subroom');
+Subroom.isCreatable=true;
 
 Subroom.category='Rooms';
 

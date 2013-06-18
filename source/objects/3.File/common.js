@@ -7,15 +7,21 @@
 
 var Modules=require('../../server.js');
 
-var File=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
+var File=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
 File.register=function(type){
 	
 	// Registering the object
 	
-	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
-	GeneralObject.register.call(this,type);
+	IconObject=Modules.ObjectManager.getPrototype('IconObject');
+	IconObject.register.call(this,type);
 	
+	this.registerAttribute('bigIcon',{type:'boolean',standard:true,changedFunction: function(object) { 
+		object.updateIcon(); 
+	}, checkFunction: function(object, value) {
+		if (object.getAttribute("preview")) return "icon size not changeable when preview is shown";
+	}});
+
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
 
 	this.registerAttribute('fillcolor',{hidden: true});
@@ -25,7 +31,7 @@ File.register=function(type){
 
 	this.registerAttribute('preview',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
 		if (local) {
-			object.updateThumbnail();
+			object.updateIcon();
 			GUI.deselectAllObjects();
 			object.select(true);
 		}
@@ -41,6 +47,38 @@ File.register=function(type){
 		
 	}});
 	
+	this.registerAction('to front',function(){
+	
+		/* set a very high layer for all selected objects (keeping their order) */
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected){
+			var obj = selected[i];
+			
+			obj.setAttribute("layer", obj.getAttribute("layer")+999999);
+			
+		}
+		
+		ObjectManager.renumberLayers();
+		
+	}, false);
+	
+	this.registerAction('to back',function(){
+		
+		/* set a very high layer for all selected objects (keeping their order) */
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected){
+			var obj = selected[i];
+			
+			obj.setAttribute("layer", obj.getAttribute("layer")-999999);
+			
+		}
+		
+		ObjectManager.renumberLayers();
+		
+	}, false);
+
 	this.registerAction(this.translate(this.currentLanguage, "Upload file"),function(){
 		
 		var selected = ObjectManager.getSelected();
@@ -55,7 +93,6 @@ File.register=function(type){
 	},true, function() {
 		return (ObjectManager.getSelected()[0].hasContent() === false);
 	});
-	
 	
 	this.registerAction(this.translate(this.currentLanguage, "Change content"),function(){
 		
