@@ -43,6 +43,8 @@ GeneralObject.serverCall = function(){
         args.pop();
 	}
 
+	console.log("Servercall: " + args)
+
 	//check if all needed arguments are present
 	//and of right type
 	var remoteFnName = args.shift();
