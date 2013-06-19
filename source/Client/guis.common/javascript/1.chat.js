@@ -120,7 +120,10 @@ GUI.chat.addMessage = function(username, text, userColor, read) {
 	text = replaceEmoticon('<3', 'heart.png', text);
 	text = replaceEmoticon('(ghost)', 'ghost.png', text);
 	
-	$("#chat_messages").append('<div class="chat_message_'+type+'"><span style="color: '+userColor+'">'+username+'</span>'+text+'</div>');
+	var date = new Date();
+	var timestamp = (date.getHours()<10 ? '0' : '') + date.getHours() + ':' +(date.getMinutes()<10 ? '0' : '') + date.getMinutes() + ':' +(date.getSeconds()<10 ? '0' : '') + date.getSeconds();
+
+	$("#chat_messages").append('<div class="chat_message_'+type+'"><span style="color: '+userColor+'">'+username+' ('+timestamp+')</span>'+text+'</div>');
 	
 
 	$("#chat_messages").scrollTop(200000); //scroll down
