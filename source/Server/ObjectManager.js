@@ -16,6 +16,7 @@ var runtimeData={};
 var prototypes={};
 
 ObjectManager.isServer=true;
+ObjectManager.transactionHistory = {"orderedIds" : []};
 
 var enter=String.fromCharCode(10);
 
@@ -283,6 +284,7 @@ function addToClientCode(filename){
 *	initializes the ObjectManager
 **/
 ObjectManager.init=function(theModules){
+	var that = this;
 	Modules=theModules;
 	
 	//go through all objects, build its client code (the code for the client side)
@@ -390,6 +392,21 @@ ObjectManager.init=function(theModules){
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
 			}
 		});
+	});
+
+	Modules.Dispatcher.registerCall('undo',function(socket, data){
+		var context  = Modules.UserManager.getConnectionBySocket(socket);
+        
+        var historyId = that.transactionHistory.orderedIds.pop();
+        var changeSet = that.transactionHistory[historyId];
+
+        changeSet.forEach(function(e){
+        	var object=ObjectManager.getObject(e.roomID,e.objectID,context);
+        	object.setAttribute(e.attribute, e.old);
+        });
+
+        
+		
 	});
 	
 	//createObject
@@ -548,6 +565,14 @@ ObjectManager.init=function(theModules){
         var serverFunction         = data.fn.name;
         var serverFunctionParams  = data.fn.params;
 
+        console.log(serverFunctionParams)
+
+        var probableTransactionInfo = serverFunctionParams[serverFunctionParams.length - 1];
+		if ( probableTransactionInfo && probableTransactionInfo.transactionId){
+			console.log(probableTransactionInfo);
+			serverFunctionParams.pop();
+		}
+
         var responseCallback = function(res){
             Modules.Dispatcher.respond(socket,responseID,res);
         };
@@ -558,17 +583,21 @@ ObjectManager.init=function(theModules){
 
         var fn = object[serverFunction];
 
-        if (!fn.public) return false;
-
+        if (!fn.public){
+        	console.log("Tried to access non-public method. Request will be aborted.");
+        	return false;
+		}
         var callbackStack = [];
 
+        // Build async. structure. Check rights async and only execute function if all
+        // rights are granted.
+        // TODO: hard to understand - perhaps switch to promises.
         var getNext = function(lastRes){
             //Abort because a test failed - no permission
             if(lastRes === false) return false
             var next = callbackStack.shift()
             next();
         }
-
 
         //check needed rights
         if(fn.neededRights && fn.neededRights.write) callbackStack.push(function(){
@@ -581,9 +610,38 @@ ObjectManager.init=function(theModules){
             Modules.Connector.mayDelete(roomID, objectID, context, getNext)
         })
 
+
         callbackStack.push(function(){
-            fn.apply(object, serverFunctionParams)
-        })
+        	if(serverFunction === "setAttribute"){
+        		var oldValue = object.getAttribute(serverFunctionParams[0]);
+        		var historyEntry = {
+        			'objectID' : objectID,
+        			'roomID' : roomID,
+        			'attribute': serverFunctionParams[0],
+        			'old' : oldValue,
+        			'new' : serverFunctionParams[1]
+        		}
+        		if(!that.transactionHistory[probableTransactionInfo.transactionId]){
+        			that.transactionHistory[probableTransactionInfo.transactionId] = new Array();
+        			that.transactionHistory.orderedIds.push(probableTransactionInfo.transactionId);
+        		} 
+
+        		that.transactionHistory[probableTransactionInfo.transactionId].push(historyEntry);
+
+				while(that.transactionHistory.orderedIds.length > 10){
+					var toRemoveId = that.transactionHistory.orderedIds.shift();
+					delete that.transactionHistory[toRemoveId];
+				}
+        	}
+        	
+        	getNext();
+        });
+
+        callbackStack.push(function(){
+            fn.apply(object, serverFunctionParams);
+            
+        });
+
 
         //Call first method from callbackstack
         callbackStack.shift().call()

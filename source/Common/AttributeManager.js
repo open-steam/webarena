@@ -24,6 +24,11 @@ var AttributeManager=new function(){
 	//by setter and getter functions.
 	
 	var attributeData={};
+
+	this.transactionId = false;
+	//var transactionTimer = false; 
+	this.transactionTimeout = 200;
+	this.transactionHistory = {};
 	
 	//setters and getter for attribute data. For conveiniance, object.set
 	//and object.get can be used instead.
@@ -244,16 +249,25 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 			window.clearTimeout(saveDelays[identifier]);
 			delete(saveDelays[identifier]);
 		}
+
+		if (window.transactionTimer){
+			window.clearTimeout(window.transactionTimer);
+		}
+		window.transactionTimer = window.setTimeout(function(){
+			//calculate new transactionId
+            //TODO: isn't safe - concurrent users may result in same timestamp
+			this.transactionId = new Date().getTime();
+		}, this.transactionTimeout);
 		
 
 		//this timer is the delay in which changes on the same object are discarded
 		var theTimer=200;
 		
 		if (forced) {
-            object.serverCall('setAttribute', attribute, value, false)
+            object.serverCall('setAttribute', attribute, value, false, {'transactionId': this.transactionId})
 		} else {
 			saveDelays[identifier]=window.setTimeout(function(){
-                object.serverCall('setAttribute', attribute, value, false)
+                object.serverCall('setAttribute', attribute, value, false, {'transactionId': this.transactionId})
 			},theTimer);
 		}
 		
