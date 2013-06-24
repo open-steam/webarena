@@ -404,6 +404,13 @@ ObjectManager.init=function(theModules){
         var i = that.transactionHistory.orderedIds.length;
         var found = false;
         var changedByOthers = [];
+
+        //Go back in history until found change made by the user.
+        //While going back
+        //	collect ids of all modified objects
+        //	when found change by user:
+        //		check if the change includes includes objects
+        //		that were also modified by other users
         while(i-- && !found){
         	var hid = that.transactionHistory.orderedIds[i];
         	var changeSet = that.transactionHistory[hid].changeSet;
@@ -425,6 +432,8 @@ ObjectManager.init=function(theModules){
 		        	that.transactionHistory.orderedIds.splice(i, 1);
         		} else {
         			//TODO: return message that already changed
+        			Modules.SocketServer.sendToSocket(socket,'infotext', 'No rights to execute undo - object modified by other user inbetween.');
+
         		}
         		found = true;
 
@@ -434,7 +443,6 @@ ObjectManager.init=function(theModules){
         				function(changeEntry){return changeEntry.objectID}
         			), 
         			changedByOthers);
-        		console.log("Changed others: " + changedByOthers);
         	}
         }		
 	});

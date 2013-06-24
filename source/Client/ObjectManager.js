@@ -328,6 +328,10 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
 
 ObjectManager.init=function(){
 	
+	Modules.Dispatcher.registerCall('infotext', function(text){
+		GUI.error("warning", text, false, false);
+	});
+
     Modules.Dispatcher.registerCall('welcome',function(data){
 
     });
