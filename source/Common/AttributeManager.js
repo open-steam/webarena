@@ -255,6 +255,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 			window.clearTimeout(window.transactionTimer);
 		}
 
+		
 		if(! this.transactionId){
 			console.log("INIIIIT")
 			that.transactionId = new Date().getTime();
@@ -272,10 +273,16 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		var theTimer=200;
 		
 		if (forced) {
-            object.serverCall('setAttribute', attribute, value, false, {'transactionId': that.transactionId})
+            object.serverCall('setAttribute', attribute, value, false, {
+            	'transactionId': that.transactionId,
+            	'userId' : GUI.userid
+            })
 		} else {
 			saveDelays[identifier]=window.setTimeout(function(){
-                object.serverCall('setAttribute', attribute, value, false, {'transactionId': that.transactionId})
+                object.serverCall('setAttribute', attribute, value, false, {
+                	'transactionId': that.transactionId,
+                	'userId' : GUI.userid
+            	})
 			},theTimer);
 		}
 		

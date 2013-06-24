@@ -9,6 +9,7 @@
 "use strict";
 
 var fs=require('fs');
+var _ = require('underscore');
 
 var Modules=false;
 var ObjectManager={};
@@ -396,20 +397,46 @@ ObjectManager.init=function(theModules){
 
 	Modules.Dispatcher.registerCall('undo',function(socket, data){
         console.log("START UNDO");
+        console.log(data);
+        var userID = data.userID;
 		var context  = Modules.UserManager.getConnectionBySocket(socket);
-        
-        var historyId = that.transactionHistory.orderedIds.pop();
-        var changeSet = that.transactionHistory[historyId];
-        delete that.transactionHistory[historyId];
 
-        changeSet.forEach(function(e){
-            console.log(e);
-        	var object=ObjectManager.getObject(e.roomID,e.objectID,context);
-        	object.setAttribute(e.attribute, e.old);
-        });
+        var i = that.transactionHistory.orderedIds.length;
+        var found = false;
+        var changedByOthers = [];
+        while(i-- && !found){
+        	var hid = that.transactionHistory.orderedIds[i];
+        	var changeSet = that.transactionHistory[hid].changeSet;
+        	var changeUserID = that.transactionHistory[hid].userID;
 
-        
-		
+        	if(userID === changeUserID){
+        		var isChangedByOthers = _(changeSet).some(function(e){
+        			return _(changedByOthers).contains(e.objectID)
+        		})
+
+        		if(! isChangedByOthers){
+        			changeSet.forEach(function(e){
+		            	console.log(e);
+		        		var object=ObjectManager.getObject(e.roomID,e.objectID,context);
+		        		object.setAttribute(e.attribute, e.old);
+		        	});
+
+		        	delete that.transactionHistory[hid];
+		        	that.transactionHistory.orderedIds.splice(i, 1);
+        		} else {
+        			//TODO: return message that already changed
+        		}
+        		found = true;
+
+        	} else {
+        		changedByOthers = _.union(
+        			_.map(changeSet, 
+        				function(changeEntry){return changeEntry.objectID}
+        			), 
+        			changedByOthers);
+        		console.log("Changed others: " + changedByOthers);
+        	}
+        }		
 	});
 	
 	//createObject
@@ -572,7 +599,6 @@ ObjectManager.init=function(theModules){
 
         var probableTransactionInfo = serverFunctionParams[serverFunctionParams.length - 1];
 		if ( probableTransactionInfo && probableTransactionInfo.transactionId){
-			console.log(probableTransactionInfo);
 			serverFunctionParams.pop();
 		}
 
@@ -625,11 +651,14 @@ ObjectManager.init=function(theModules){
         			'new' : serverFunctionParams[1]
         		}
         		if(!that.transactionHistory[probableTransactionInfo.transactionId]){
-        			that.transactionHistory[probableTransactionInfo.transactionId] = new Array();
+        			that.transactionHistory[probableTransactionInfo.transactionId] = {
+        				'changeSet' : [],
+        				'userID' : probableTransactionInfo.userId
+        			};
         			that.transactionHistory.orderedIds.push(probableTransactionInfo.transactionId);
         		} 
 
-        		that.transactionHistory[probableTransactionInfo.transactionId].push(historyEntry);
+        		that.transactionHistory[probableTransactionInfo.transactionId].changeSet.push(historyEntry);
 
 				while(that.transactionHistory.orderedIds.length > 10){
 					var toRemoveId = that.transactionHistory.orderedIds.shift();

@@ -301,7 +301,7 @@ GUI.initUndoByKeyboard = function(){
             console.log("UNDO");
             event.preventDefault();
 
-            Modules.Dispatcher.query("undo");
+            Modules.Dispatcher.query("undo", {"userID" : GUI.userid});
         }
     });
 }
