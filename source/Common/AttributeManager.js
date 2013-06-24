@@ -27,8 +27,8 @@ var AttributeManager=new function(){
 
 	this.transactionId = false;
 	//var transactionTimer = false; 
-	this.transactionTimeout = 200;
-	this.transactionHistory = {};
+	this.transactionTimeout = 500;
+	//this.transactionHistory = {};
 	
 	//setters and getter for attribute data. For conveiniance, object.set
 	//and object.get can be used instead.
@@ -202,6 +202,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		this.setAttribute(object,'y',value.y,forced);
 		return true;
 	} 	
+	var that = this;
 	
 	if (object.ObjectManager.isServer && !noevaluation){	
 		
@@ -253,21 +254,28 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		if (window.transactionTimer){
 			window.clearTimeout(window.transactionTimer);
 		}
-		window.transactionTimer = window.setTimeout(function(){
-			//calculate new transactionId
-            //TODO: isn't safe - concurrent users may result in same timestamp
-			this.transactionId = new Date().getTime();
-		}, this.transactionTimeout);
+
+		if(! this.transactionId){
+			console.log("INIIIIT")
+			that.transactionId = new Date().getTime();
+		} else {
+			window.transactionTimer = window.setTimeout(function(){
+				//calculate new transactionId
+		        //TODO: isn't safe - concurrent users may result in same timestamp
+				that.transactionId = new Date().getTime();
+			}, this.transactionTimeout);
+		}
 		
+
 
 		//this timer is the delay in which changes on the same object are discarded
 		var theTimer=200;
 		
 		if (forced) {
-            object.serverCall('setAttribute', attribute, value, false, {'transactionId': this.transactionId})
+            object.serverCall('setAttribute', attribute, value, false, {'transactionId': that.transactionId})
 		} else {
 			saveDelays[identifier]=window.setTimeout(function(){
-                object.serverCall('setAttribute', attribute, value, false, {'transactionId': this.transactionId})
+                object.serverCall('setAttribute', attribute, value, false, {'transactionId': that.transactionId})
 			},theTimer);
 		}
 		

@@ -395,12 +395,15 @@ ObjectManager.init=function(theModules){
 	});
 
 	Modules.Dispatcher.registerCall('undo',function(socket, data){
+        console.log("START UNDO");
 		var context  = Modules.UserManager.getConnectionBySocket(socket);
         
         var historyId = that.transactionHistory.orderedIds.pop();
         var changeSet = that.transactionHistory[historyId];
+        delete that.transactionHistory[historyId];
 
         changeSet.forEach(function(e){
+            console.log(e);
         	var object=ObjectManager.getObject(e.roomID,e.objectID,context);
         	object.setAttribute(e.attribute, e.old);
         });
