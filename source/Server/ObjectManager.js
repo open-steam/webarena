@@ -431,7 +431,6 @@ ObjectManager.init=function(theModules){
 		        	delete that.transactionHistory[hid];
 		        	that.transactionHistory.orderedIds.splice(i, 1);
         		} else {
-        			//TODO: return message that already changed
         			Modules.SocketServer.sendToSocket(socket,'infotext', 'No rights to execute undo - object modified by other user inbetween.');
 
         		}
