@@ -73,7 +73,6 @@ ObjectManager.remove=function(obj){
 	Modules.Connector.remove(obj.inRoom,obj.id,obj.context);
 	
 	//Inform clients about remove.
-
 	obj.updateClients('objectDelete');
 	
 }
@@ -396,8 +395,6 @@ ObjectManager.init=function(theModules){
 	});
 
 	Modules.Dispatcher.registerCall('undo',function(socket, data){
-        console.log("START UNDO");
-        console.log(data);
         var userID = data.userID;
 		var context  = Modules.UserManager.getConnectionBySocket(socket);
 
