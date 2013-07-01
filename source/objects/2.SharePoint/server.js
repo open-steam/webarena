@@ -9,68 +9,76 @@ var _ = require('underscore');
 
 module.exports=theObject;
 
-theObject.getAuth = function(){
-    return {username : Modules.config.sharepoint.username, password: Modules.config.sharepoint.password};
+var getMediaUrl = function(extension, elem){
+    var mediaUrl;
+    if(extension === "docx" || extension === "doc"){
+        mediaUrl = Modules.config.sharepoint.basepath + "_layouts/WordViewer.aspx?id=" + elem.Pfad + "/" + elem.Name
+    } else if(extension === "pptx" || extension === "ppt"){
+        mediaUrl = Modules.config.sharepoint.basepath + "_layouts/PowerPoint.aspx?PowerPointView=ReadingView&PresentationId=" + elem.Pfad + "/" + elem.Name
+    } else if(extension === "xlsx" || extension === "xls"){
+        mediaUrl = Modules.config.sharepoint.basepath + "_layouts/xlviewer.aspx?id=" + elem.Pfad + "/" + elem.Name
+    }else{
+        mediaUrl = elem.__metadata.media_src;
+    }
+    return mediaUrl;
 }
 
 theObject.buildTreeObject = function(data){
     var result = {data : "root"};
-    var splitPath;
-    var tmp;
 
     function insertRec(elem, pathSpliced, arrPointer){
+        var insertPointer = arrPointer;
 
-        if(pathSpliced.length === 0){
-            if(!arrPointer.children) arrPointer.children = new Array();
-            var mediaUrl;
-            var extension = elem.__metadata.media_src.split('.').pop();
-            if(extension === "docx" || extension === "doc"){
-                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/WordViewer.aspx?id=" + elem.Pfad + "/" + elem.Name
-            } else if(extension === "pptx" || extension === "ppt"){
-                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/PowerPoint.aspx?PowerPointView=ReadingView&PresentationId=" + elem.Pfad + "/" + elem.Name
-            } else if(extension === "xlsx" || extension === "xls"){
-                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/xlviewer.aspx?id=" + elem.Pfad + "/" + elem.Name
-            }else{
-                mediaUrl = elem.__metadata.media_src;
-            }
-
-            arrPointer.children.push({
-                data : {
-                    title: elem.Name,
-                    icon : "../../guis.common/images/sharepoint/file.png"
-                }, metadata: {
-                    media_src : mediaUrl,
-                    filename : elem.Name
-                }
-            })
-        } else {
-            var firstSubdir = pathSpliced.shift();
-            var found = false;
-            if(arrPointer.children){
-                for(var i = 0; i< arrPointer.children.length; i++){
-                    if(arrPointer.children[i].data == firstSubdir){
-                        found = true;
+        while(pathSpliced.length !== 0){
+            var subdir = pathSpliced.shift();
+            var subdirExists = false;
+            var subdirIndex = -1;
+            if(insertPointer.children){
+                for(var i = 0; i< insertPointer.children.length; i++){
+                    if(insertPointer.children[i].data == subdir){
+                        subdirExists = true;
+                        subdirIndex = i;
                         break;
                     }
                 }
+                if(subdirExists){
+                    insertPointer = insertPointer.children[subdirIndex];
+                } else {
+                    insertPointer.children.push({
+                        data: subdir
+                    })
+                    insertPointer = insertPointer.children[insertPointer.children.length - 1];
+                }
             } else {
-                arrPointer.children = new Array();
+                insertPointer.children = [];
+                insertPointer.children.push({
+                    data: subdir
+                })
+                insertPointer = insertPointer.children[0];
             }
-
-            if(found){
-                arrPointer = arrPointer.children[i];
-            } else {
-                arrPointer.children.push({
-                    data : firstSubdir
-                });
-                arrPointer = arrPointer.children[arrPointer.children.length -1];
-            }
-
-            insertRec(elem, pathSpliced, arrPointer);
         }
+
+        console.log("***********");
+        console.log(arrPointer);
+
+        if(!insertPointer.children) insertPointer.children = [];
+        var extension = elem.__metadata.media_src.split('.').pop();
+        var mediaUrl = getMediaUrl(extension, elem);
+
+        insertPointer.children.push({
+            data : {
+                title: elem.Name,
+                icon : "../../guis.common/images/sharepoint/file.png"
+            }, metadata: {
+                media_src : mediaUrl,
+                filename : elem.Name
+            }
+        })
     }
 
-    _.each(data, function(elem, index){
+
+
+    _.each(data, function(elem){
         if(elem.Inhaltstyp ==="Dokument") insertRec(elem, elem.Pfad.split("/").splice(1), result);
     });
 
@@ -91,7 +99,7 @@ theObject.browse=function(argsIn, callback){
     var client = new SP.RestService(args['location']),
         documents = client.list(args['folder']);
 
-    var that = this
+    var that = this;
 
     client.username =  this.context.user.username;
     client.password2 = this.context.user.password;

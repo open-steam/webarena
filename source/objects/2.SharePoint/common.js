@@ -39,6 +39,7 @@ SharePoint.execute=function(){
                     var selectedFilename = jstree_selected_item.data('filename');
                     that.setAttribute("sharepoint_src", selectedUrl);
                     that.setAttribute("name", selectedFilename);
+                    that.setAttribute("bigIcon", true);
 
                     that.renderFilename(rep, selectedFilename );
                     that.updateIcon();
