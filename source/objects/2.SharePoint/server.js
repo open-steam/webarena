@@ -26,11 +26,12 @@ var getMediaUrl = function(extension, elem){
 theObject.buildTreeObject = function(data){
     var result = {data : "root"};
 
-    function insertRec(elem, pathSpliced, arrPointer){
+
+    function insertRec(elem, splitPathArray, arrPointer){
         var insertPointer = arrPointer;
 
-        while(pathSpliced.length !== 0){
-            var subdir = pathSpliced.shift();
+        while(splitPathArray.length !== 0){
+            var subdir = splitPathArray.shift();
             var subdirExists = false;
             var subdirIndex = -1;
             if(insertPointer.children){
@@ -58,9 +59,6 @@ theObject.buildTreeObject = function(data){
             }
         }
 
-        console.log("***********");
-        console.log(arrPointer);
-
         if(!insertPointer.children) insertPointer.children = [];
         var extension = elem.__metadata.media_src.split('.').pop();
         var mediaUrl = getMediaUrl(extension, elem);
@@ -83,7 +81,7 @@ theObject.buildTreeObject = function(data){
     });
 
     if(result.children === undefined ){
-        return new Array();
+        return [];
     } else {
         return new Array(result.children[0]);
     }
