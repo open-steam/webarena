@@ -388,6 +388,8 @@ WebServer.init = function (theModules) {
                     })
 
                     var combinedJS = "";
+
+                    //Go on if all files are loaded
                     Q.allSettled(promises).then(function(results){
                         results.forEach(function(result){
                             combinedJS += result.value + "\n";
