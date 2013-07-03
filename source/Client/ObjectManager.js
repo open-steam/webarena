@@ -216,10 +216,13 @@ ObjectManager.contentUpdate=function(data){
 }
 
 ObjectManager.remove=function(object){
+    console.log("REMOVE");
     Modules.SocketClient.serverCall('deleteObject',{
         'roomID':object.getRoomID(),
-        'objectID':object.getID()
-        });
+        'objectID':object.getID(),
+        'transactionId' : new Date().getTime(),
+        'userId' : GUI.userid
+    });
 }
 
 ObjectManager.removeLocally=function(data){

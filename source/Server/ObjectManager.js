@@ -370,24 +370,56 @@ ObjectManager.init=function(theModules){
 
 	//deleteObject
 	Modules.Dispatcher.registerCall('deleteObject',function(socket,data,responseID){
-		
+
 		var context=Modules.UserManager.getConnectionBySocket(socket);
 
 		var roomID=data.roomID
 		var objectID=data.objectID;
 
 		Modules.Connector.mayDelete(roomID, objectID, context, function(mayDelete) {
-		
+
 			if (mayDelete) {
-				
+
 				var object=ObjectManager.getObject(roomID,objectID,context);
 				if (!object){
 					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 					return;
 				}
 
-				object.remove();
-				
+                var historyEntry = {
+                    'oldRoomID' : roomID,
+                    'oldObjectId' : objectID,
+                    'roomID' : 'trash',
+                    'action' : 'delete'
+                }
+
+
+                var toRoom = "trash";
+                Modules.Connector.duplicateObject(roomID,objectID,function(newId,oldId) {
+                    object.remove();
+                    console.log("New id: " + newId);
+                    console.log("Old id: " + oldId);
+                    historyEntry["objectID"] = newId;
+
+                    console.log(data);
+                    var transactionId = data.transactionId;
+
+//
+                    if(!that.transactionHistory[transactionId]){
+                        that.transactionHistory[transactionId] = {
+                            'changeSet' : [],
+                            'userID' : data.userId
+                        };
+                        that.transactionHistory.orderedIds.push(transactionId);
+                    }
+
+                    that.transactionHistory[transactionId].changeSet.push(historyEntry);
+
+                    while(that.transactionHistory.orderedIds.length > 10){
+                        var toRemoveId = that.transactionHistory.orderedIds.shift();
+                        delete that.transactionHistory[toRemoveId];
+                    }
+                }, context,toRoom);
 			} else {
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
 			}
@@ -420,9 +452,16 @@ ObjectManager.init=function(theModules){
 
         		if(! isChangedByOthers){
         			changeSet.forEach(function(e){
-		            	console.log(e);
 		        		var object=ObjectManager.getObject(e.roomID,e.objectID,context);
-		        		object.setAttribute(e.attribute, e.old);
+
+
+                        if(e.action === 'delete'){
+                            console.log("Undo deletion");
+                            Modules.Connector.duplicateObject(e.roomID, e.objectID, function(){}, context, e.oldRoomID);
+                        } else if(e.action === 'setAttribute'){
+                            console.log("Undo set attribute.");
+                            object.setAttribute(e.attribute, e.old);
+                        }
 		        	});
 
 		        	delete that.transactionHistory[hid];
@@ -435,12 +474,12 @@ ObjectManager.init=function(theModules){
 
         	} else {
         		changedByOthers = _.union(
-        			_.map(changeSet, 
+        			_.map(changeSet,
         				function(changeEntry){return changeEntry.objectID}
-        			), 
+        			),
         			changedByOthers);
         	}
-        }		
+        }
 	});
 	
 	//createObject
@@ -472,115 +511,7 @@ ObjectManager.init=function(theModules){
 	});
 	
 	// duplicateObjects
-	Modules.Dispatcher.registerCall('duplicateObjects',function(socket,data,responseID){
-		
-		var context=Modules.UserManager.getConnectionBySocket(socket);
-
-		var cut=data.cut;
-		var fromRoom=data.fromRoom;
-		var toRoom=data.toRoom;
-		var objects=data.objects;
-
-		// collect unique objects to duplicate (each linked object only once)
-		var objectList = {};
-		var objectCount = 0;
-		for (var key in objects) {
-			var object=ObjectManager.getObject(fromRoom,objects[key],context);
-			if (!object){
-				continue;
-			}
-			if (!(objects[key] in objectList)) {
-				objectList[objects[key]] = object;
-				objectCount++;
-				var linkedObjects = object.getObjectsToDuplicate();
-				for (var linkedKey in linkedObjects) {
-					if (!(linkedObjects[linkedKey] in objectList)) {
-						objectList[linkedObjects[linkedKey]] = ObjectManager.getObject(fromRoom,linkedObjects[linkedKey],context);
-						objectCount++;
-					}
-				}
-			}
-		}
-
-		var counter = 0;
-		var idTranslationList = {}; //list of object ids and their duplicated new ids
-		var newObjects = []; //list of new (duplicated) objects
-		var idList = [];
-
-		// this function will be called by the last duplicate-callback 
-		var updateObjects = function() {
-			counter++;
-			if (counter == objectCount) {
-				// all objects are duplicated 
-				for (var i in newObjects) {
-					var object = newObjects[i];
-
-					object.updateLinkIds(idTranslationList); //update links
-
-					object.setAttribute("x", object.getAttribute("x")+30);
-					object.setAttribute("y", object.getAttribute("y")+30);
-
-					// add group id if source object was grouped 
-					if (object.getAttribute("group") && object.getAttribute("group") > 0) {
-						object.setAttribute("group", object.getAttribute("group")+1);
-					}
-
-					object.updateClients();
-					
-					if (object.hasContent()) {
-						object.updateClient(socket,'contentUpdate',object.hasContent(socket));
-					}
-					
-					idList.push(object.id);
-					
-				}
-
-				if (socket && responseID) {
-					Modules.Dispatcher.respond(socket,responseID,idList);
-				}
-			}
-		}
-
-		for (var key in objectList) {
-			var object=objectList[key];
-
-			Modules.Connector.mayRead(fromRoom, object.id, context, function(mayRead) {
-			
-				if (mayRead) {
-					
-					Modules.Connector.mayInsert(toRoom, context, function(mayInsert) {
-
-						if (mayInsert) {
-
-							Modules.Connector.duplicateObject(fromRoom,object.id,function(newId,oldId) {
-								var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
-
-								// remove old object if the action was cut
-								if (cut) {
-									var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
-									oldObject.remove();
-								}
-
-								newObjects.push(obj);
-								idTranslationList[oldId] = newId;
-
-								updateObjects(); //try to update objects
-
-							},context,toRoom);
-						
-						} else {
-							Modules.SocketServer.sendToSocket(socket,'error','No rights to insert in room '+toRoom);
-						}
-
-					});
-					
-				} else {
-					Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+object.id);
-				}
-				
-			});
-		}
-	});
+	Modules.Dispatcher.registerCall('duplicateObjects', _.bind(that.duplicate, that));
 
 	//TODO: find a better place for this...
 	Modules.Dispatcher.registerCall('getPreviewableMimeTypes',function(socket,data,responseID){
@@ -598,8 +529,6 @@ ObjectManager.init=function(theModules){
 
         var serverFunction         = data.fn.name;
         var serverFunctionParams  = data.fn.params;
-
-        console.log(serverFunctionParams)
 
         var probableTransactionInfo = serverFunctionParams[serverFunctionParams.length - 1];
 		if ( probableTransactionInfo && probableTransactionInfo.transactionId){
@@ -648,12 +577,15 @@ ObjectManager.init=function(theModules){
         	if(serverFunction === "setAttribute"){
         		var oldValue = object.getAttribute(serverFunctionParams[0]);
         		var historyEntry = {
+                    'action' : "setAttribute",
         			'objectID' : objectID,
         			'roomID' : roomID,
         			'attribute': serverFunctionParams[0],
         			'old' : oldValue,
         			'new' : serverFunctionParams[1]
         		}
+
+
         		if(!that.transactionHistory[probableTransactionInfo.transactionId]){
         			that.transactionHistory[probableTransactionInfo.transactionId] = {
         				'changeSet' : [],
@@ -668,6 +600,8 @@ ObjectManager.init=function(theModules){
 					var toRemoveId = that.transactionHistory.orderedIds.shift();
 					delete that.transactionHistory[toRemoveId];
 				}
+
+                console.log(that.transactionHistory)
         	}
         	
         	getNext();
@@ -743,36 +677,36 @@ ObjectManager.init=function(theModules){
 		   ssl:     Modules.config.bugreport.server.ssl,
 		   port: 	Modules.config.bugreport.server.port,
 		});
-		
-		
+
+
 		var date = new Date();
-		
+
 		var text = "Datum: "+date.getDate()+"."+(date.getMonth() + 1)+"."+date.getFullYear()+", "+date.getHours()+":"+date.getMinutes()+" Uhr"+"\n";
 		text += "UserAgent: "+data.userAgent+"\n";
 		text += "Benutzer: "+data.user+"\n\n";
-		
+
 		text += "Was wollten Sie tun?\n----------------------------------\n";
 		text += data.task+"\n\n\n";
-		
+
 		text += "Welches Problem ist aufgetreten?\n----------------------------------\n";
 		text += data.problem+"\n\n\n";
-		
+
 		text += "Objekte im Raum:\n----------------------------------\n";
 		text += data.objects
-		
+
 		if (Modules.config.bugreport.recipients !== undefined) {
-			
+
 			var counter = 0;
-			
+
 			for (var i in Modules.config.bugreport.recipients) {
 				var emailAddress = Modules.config.bugreport.recipients[i];
-				
+
 				server.send({
-				   text:    text, 
-				   from:    Modules.config.bugreport.server.from, 
+				   text:    text,
+				   from:    Modules.config.bugreport.server.from,
 				   to:      emailAddress,
 				   subject: Modules.config.bugreport.server.subject
-				}, function(err, message) { 
+				}, function(err, message) {
 
 					if (counter == 0) {
 
@@ -781,15 +715,15 @@ ObjectManager.init=function(theModules){
 						} else {
 							Modules.Dispatcher.respond(socket,responseID,false); //error sending mail
 						}
-						
+
 					}
-					
+
 					counter++;
 
 				});
-				
+
 			}
-			
+
 		} else {
 			console.log("no recipients for bug report");
 		}
@@ -860,5 +794,115 @@ ObjectManager.sendChatMessages=function(roomID,socket) {
 	
 }
 */
+
+ObjectManager.duplicate = function(socket,data,responseID){
+
+    var context=Modules.UserManager.getConnectionBySocket(socket);
+
+    var cut=data.cut;
+    var fromRoom=data.fromRoom;
+    var toRoom=data.toRoom;
+    var objects=data.objects;
+
+    // collect unique objects to duplicate (each linked object only once)
+    var objectList = {};
+    var objectCount = 0;
+    for (var key in objects) {
+        var object=ObjectManager.getObject(fromRoom,objects[key],context);
+        if (!object){
+            continue;
+        }
+        if (!(objects[key] in objectList)) {
+            objectList[objects[key]] = object;
+            objectCount++;
+            var linkedObjects = object.getObjectsToDuplicate();
+            for (var linkedKey in linkedObjects) {
+                if (!(linkedObjects[linkedKey] in objectList)) {
+                    objectList[linkedObjects[linkedKey]] = ObjectManager.getObject(fromRoom,linkedObjects[linkedKey],context);
+                    objectCount++;
+                }
+            }
+        }
+    }
+
+    var counter = 0;
+    var idTranslationList = {}; //list of object ids and their duplicated new ids
+    var newObjects = []; //list of new (duplicated) objects
+    var idList = [];
+
+    // this function will be called by the last duplicate-callback
+    var updateObjects = function() {
+        counter++;
+        if (counter == objectCount) {
+            // all objects are duplicated
+            for (var i in newObjects) {
+                var object = newObjects[i];
+
+                object.updateLinkIds(idTranslationList); //update links
+
+                object.setAttribute("x", object.getAttribute("x")+30);
+                object.setAttribute("y", object.getAttribute("y")+30);
+
+                // add group id if source object was grouped
+                if (object.getAttribute("group") && object.getAttribute("group") > 0) {
+                    object.setAttribute("group", object.getAttribute("group")+1);
+                }
+
+                object.updateClients();
+
+                if (object.hasContent()) {
+                    object.updateClient(socket,'contentUpdate',object.hasContent(socket));
+                }
+
+                idList.push(object.id);
+
+            }
+
+            if (socket && responseID) {
+                Modules.Dispatcher.respond(socket,responseID,idList);
+            }
+        }
+    }
+
+    for (var key in objectList) {
+        var object=objectList[key];
+
+        Modules.Connector.mayRead(fromRoom, object.id, context, function(mayRead) {
+
+            if (mayRead) {
+
+                Modules.Connector.mayInsert(toRoom, context, function(mayInsert) {
+
+                    if (mayInsert) {
+
+                        Modules.Connector.duplicateObject(fromRoom,object.id,function(newId,oldId) {
+                            var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+
+                            // remove old object if the action was cut
+                            if (cut) {
+                                var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
+                                oldObject.remove();
+                            }
+
+                            newObjects.push(obj);
+                            idTranslationList[oldId] = newId;
+
+                            updateObjects(); //try to update objects
+
+                        },context,toRoom);
+
+                    } else {
+                        Modules.SocketServer.sendToSocket(socket,'error','No rights to insert in room '+toRoom);
+                    }
+
+                });
+
+            } else {
+                Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+object.id);
+            }
+
+        });
+    }
+}
 
 module.exports=ObjectManager;
