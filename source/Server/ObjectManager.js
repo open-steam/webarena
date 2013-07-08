@@ -457,7 +457,10 @@ ObjectManager.init=function(theModules){
 
                         if(e.action === 'delete'){
                             console.log("Undo deletion");
-                            Modules.Connector.duplicateObject(e.roomID, e.objectID, function(){}, context, e.oldRoomID);
+                            Modules.Connector.duplicateObject(e.roomID, e.objectID, function(newId){
+                                var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
+                                o2.updateClients("objectUpdate");
+                            }, context, e.oldRoomID);
                         } else if(e.action === 'setAttribute'){
                             console.log("Undo set attribute.");
                             object.setAttribute(e.attribute, e.old);
