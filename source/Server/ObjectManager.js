@@ -413,7 +413,7 @@ ObjectManager.init=function(theModules){
 				Modules.ObjectManager.createObject(roomID,type,attributes,content,socket,responseID);
 				
 			} else {
-				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
+				Modules.SocketServer.sendToSocket(socket,'error','No rights to insert in room '+roomID);
 			}
 			
 		});
@@ -465,9 +465,11 @@ ObjectManager.init=function(theModules){
 					var object = newObjects[i];
 
 					object.updateLinkIds(idTranslationList); //update links
-
-					object.setAttribute("x", object.getAttribute("x")+30);
-					object.setAttribute("y", object.getAttribute("y")+30);
+					
+					if (fromRoom === toRoom) {
+						object.setAttribute("x", object.getAttribute("x")+30);
+						object.setAttribute("y", object.getAttribute("y")+30);
+					}
 
 					// add group id if source object was grouped 
 					if (object.getAttribute("group") && object.getAttribute("group") > 0) {

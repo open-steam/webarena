@@ -25,6 +25,10 @@ module.exports={
     },
 	bidServer: 'www.bid-owl.de.localhost',
 	bidPort: 80,
+	elab: {
+		filebase : '', // folder where the user management data is saved
+		encryptionKey : '' // used as salt to create a hash of the user password (needs to be the same as on the user management platform)
+	},
 	logLevels : {
 		"warn" : true,
 		"debug" : false,
