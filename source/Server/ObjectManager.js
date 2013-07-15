@@ -17,7 +17,7 @@ var runtimeData={};
 var prototypes={};
 
 ObjectManager.isServer=true;
-ObjectManager.transactionHistory = {"orderedIds" : []};
+ObjectManager.history = require("./HistoryTracker.js").HistoryTracker(100);
 
 var enter=String.fromCharCode(10);
 
@@ -404,21 +404,7 @@ ObjectManager.init=function(theModules){
                     console.log(data);
                     var transactionId = data.transactionId;
 
-//
-                    if(!that.transactionHistory[transactionId]){
-                        that.transactionHistory[transactionId] = {
-                            'changeSet' : [],
-                            'userID' : data.userId
-                        };
-                        that.transactionHistory.orderedIds.push(transactionId);
-                    }
-
-                    that.transactionHistory[transactionId].changeSet.push(historyEntry);
-
-                    while(that.transactionHistory.orderedIds.length > 10){
-                        var toRemoveId = that.transactionHistory.orderedIds.shift();
-                        delete that.transactionHistory[toRemoveId];
-                    }
+                    that.history.add(transactionId, data.userId, historyEntry);
                 }, context,toRoom);
 			} else {
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
@@ -430,58 +416,34 @@ ObjectManager.init=function(theModules){
         var userID = data.userID;
 		var context  = Modules.UserManager.getConnectionBySocket(socket);
 
-        var i = that.transactionHistory.orderedIds.length;
-        var found = false;
-        var changedByOthers = [];
 
-        //Go back in history until found change made by the user.
-        //While going back
-        //	collect ids of all modified objects
-        //	when found change by user:
-        //		check if the change includes includes objects
-        //		that were also modified by other users
-        while(i-- && !found){
-        	var hid = that.transactionHistory.orderedIds[i];
-        	var changeSet = that.transactionHistory[hid].changeSet;
-        	var changeUserID = that.transactionHistory[hid].userID;
+        var lastChange = that.history.getLastChangeForUser(userID);
 
-        	if(userID === changeUserID){
-        		var isChangedByOthers = _(changeSet).some(function(e){
-        			return _(changedByOthers).contains(e.objectID)
-        		})
+        if(lastChange){
+            if(!lastChange.blocked){
+                var changeSet = lastChange.changeSet;
+                changeSet.forEach(function(e){
+                    var object=ObjectManager.getObject(e.roomID,e.objectID,context);
 
-        		if(! isChangedByOthers){
-        			changeSet.forEach(function(e){
-		        		var object=ObjectManager.getObject(e.roomID,e.objectID,context);
+                    if(e.action === 'delete'){
+                        console.log("Undo deletion");
+                        Modules.Connector.duplicateObject(e.roomID, e.objectID, function(newId){
+                            var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
+                            o2.updateClients("objectUpdate");
+                        }, context, e.oldRoomID);
+                    } else if(e.action === 'setAttribute'){
+                        console.log("Undo set attribute.");
+                        object.setAttribute(e.attribute, e.old);
+                    }
+                });
+                that.history.removeHistoryEntry(lastChange.transactionId);
 
+            } else {
+                Modules.SocketServer.sendToSocket(socket,'infotext', 'No rights to execute undo - object modified by other user inbetween.');
+            }
+        } else {
+            Modules.SocketServer.sendToSocket(socket,'infotext', 'Nothing to undo...');
 
-                        if(e.action === 'delete'){
-                            console.log("Undo deletion");
-                            Modules.Connector.duplicateObject(e.roomID, e.objectID, function(newId){
-                                var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
-                                o2.updateClients("objectUpdate");
-                            }, context, e.oldRoomID);
-                        } else if(e.action === 'setAttribute'){
-                            console.log("Undo set attribute.");
-                            object.setAttribute(e.attribute, e.old);
-                        }
-		        	});
-
-		        	delete that.transactionHistory[hid];
-		        	that.transactionHistory.orderedIds.splice(i, 1);
-        		} else {
-        			Modules.SocketServer.sendToSocket(socket,'infotext', 'No rights to execute undo - object modified by other user inbetween.');
-
-        		}
-        		found = true;
-
-        	} else {
-        		changedByOthers = _.union(
-        			_.map(changeSet,
-        				function(changeEntry){return changeEntry.objectID}
-        			),
-        			changedByOthers);
-        	}
         }
 	});
 	
@@ -588,23 +550,7 @@ ObjectManager.init=function(theModules){
         			'new' : serverFunctionParams[1]
         		}
 
-
-        		if(!that.transactionHistory[probableTransactionInfo.transactionId]){
-        			that.transactionHistory[probableTransactionInfo.transactionId] = {
-        				'changeSet' : [],
-        				'userID' : probableTransactionInfo.userId
-        			};
-        			that.transactionHistory.orderedIds.push(probableTransactionInfo.transactionId);
-        		} 
-
-        		that.transactionHistory[probableTransactionInfo.transactionId].changeSet.push(historyEntry);
-
-				while(that.transactionHistory.orderedIds.length > 10){
-					var toRemoveId = that.transactionHistory.orderedIds.shift();
-					delete that.transactionHistory[toRemoveId];
-				}
-
-                console.log(that.transactionHistory)
+                that.history.add(probableTransactionInfo.transactionId, probableTransactionInfo.userId, historyEntry);
         	}
         	
         	getNext();
