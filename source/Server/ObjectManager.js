@@ -434,6 +434,8 @@ ObjectManager.init=function(theModules){
                     } else if(e.action === 'setAttribute'){
                         console.log("Undo set attribute.");
                         object.setAttribute(e.attribute, e.old);
+                    } else if(e.action === 'duplicate'){
+                        object.remove();
                     }
                 });
                 that.history.removeHistoryEntry(lastChange.transactionId);
@@ -745,6 +747,7 @@ ObjectManager.sendChatMessages=function(roomID,socket) {
 */
 
 ObjectManager.duplicate = function(socket,data,responseID){
+    var that = this;
 
     var context=Modules.UserManager.getConnectionBySocket(socket);
 
@@ -752,6 +755,8 @@ ObjectManager.duplicate = function(socket,data,responseID){
     var fromRoom=data.fromRoom;
     var toRoom=data.toRoom;
     var objects=data.objects;
+
+    var transactionId = new Date().getTime();
 
     // collect unique objects to duplicate (each linked object only once)
     var objectList = {};
@@ -835,6 +840,15 @@ ObjectManager.duplicate = function(socket,data,responseID){
 
                             newObjects.push(obj);
                             idTranslationList[oldId] = newId;
+
+
+                            var historyEntry = {
+                                "action" : "duplicate",
+                                "objectID" : newId,
+                                "roomID" : toRoom
+                            }
+                            that.history.add(transactionId, context.user.username, historyEntry);
+
 
                             updateObjects(); //try to update objects
 
