@@ -216,10 +216,13 @@ ObjectManager.contentUpdate=function(data){
 }
 
 ObjectManager.remove=function(object){
+    console.log("REMOVE");
     Modules.SocketClient.serverCall('deleteObject',{
         'roomID':object.getRoomID(),
-        'objectID':object.getID()
-        });
+        'objectID':object.getID(),
+        'transactionId' : new Date().getTime(),
+        'userId' : GUI.userid
+    });
 }
 
 ObjectManager.removeLocally=function(data){
@@ -328,6 +331,10 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
 
 ObjectManager.init=function(){
 	
+	Modules.Dispatcher.registerCall('infotext', function(text){
+		GUI.error("warning", text, false, false);
+	});
+
     Modules.Dispatcher.registerCall('welcome',function(data){
 
     });

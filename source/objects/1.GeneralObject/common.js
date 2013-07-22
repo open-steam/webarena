@@ -475,7 +475,7 @@ GeneralObject.registerAttribute=function(attribute,setter,type,min,max){
 	return this.attributeManager.registerAttribute(attribute, setter,type, min, max);
 }
 
-GeneralObject.setAttribute=function(attribute,value,forced){
+GeneralObject.setAttribute=function(attribute,value,forced, transactionId){
 	
 	
 	if (this.mayChangeAttributes()){

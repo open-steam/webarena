@@ -238,7 +238,6 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
             that.Modules.Log.error("Error writing file: " + err);
         });
         content.on("end", function(){
-            console.log("END");
             if (after) after(objectID);
         })
         content.pipe(wr);
@@ -286,20 +285,7 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, cal
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var fs = require('fs');
-	
-	//var content = fs.readFileSync(sourceFilename);
-	
-	//var byteArray = [];
-	//var contentBuffer = new Buffer(content);
 
-    /*
-	for (var j = 0; j < contentBuffer.length; j++) {
-		
-		byteArray.push(contentBuffer.readUInt8(j));
-		
-	}*/
-
-    console.log(sourceFilename);
     var rds = fs.createReadStream(sourceFilename);
     rds.on("error", function(err) {
         that.Modules.Log.error("Error reading file");

@@ -69,7 +69,7 @@ GUI.loadGUI = function(step) {
 		
 		/* key handling */
 		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
-	
+	    if (!GUI.loaded) GUI.initUndoByKeyboard();
 		
 		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
 

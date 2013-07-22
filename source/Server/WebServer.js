@@ -13,6 +13,7 @@ var WebServer = {};
 var _ = require('underscore');
 var mime = require('mime');
 mime.default_type = 'text/plain';
+var Q = require('Q');
 
 /*
  *	init
@@ -177,7 +178,6 @@ WebServer.init = function (theModules) {
                         if (Modules.Connector.isInlineDisplayable(files.file.type)) {
 
                             object.set('preview', true);
-
                             object.persist();
 
                             /* get dimensions */
@@ -359,64 +359,50 @@ WebServer.init = function (theModules) {
         else if (url == '/defaultJavascripts') {
 
             //combine all javascript files in guis.common/javascript
-            var files = fs.readdirSync('Client/guis.common/javascript');
-            files.sort(function (a, b) {
-                return parseInt(a) - parseInt(b);
-            });
-            var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
+            Q.nfcall(fs.readdir, 'Client/guis.common/javascript').then(function(files){
+                files.sort(function (a, b) {
+                    return parseInt(a) - parseInt(b);
+                });
+                var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
 
-            files = _.filter(files, function (fname) {
-                return fileReg.test(fname);
+                files = _.filter(files, function (fname) {
+                    return fileReg.test(fname);
+                })
+
+                var etag = "";
+
+
+                files.forEach(function (file) {
+                    var stats = fs.statSync('Client/guis.common/javascript/' + file);
+                    etag += stats.size + '-' + Date.parse(stats.mtime);
+                })
+
+                if (req.headers['if-none-match'] === etag) {
+                    res.statusCode = 304;
+                    res.end();
+                } else {
+                    var readFileQ = Q.denodeify(fs.readFile);
+
+                    var promises = files.map(function(filename){
+                        return readFileQ('Client/guis.common/javascript/' + filename)
+                    })
+
+                    var combinedJS = "";
+
+                    //Go on if all files are loaded
+                    Q.allSettled(promises).then(function(results){
+                        results.forEach(function(result){
+                            combinedJS += result.value + "\n";
+                        })
+
+                        var mimeType = 'application/javascript';
+                        res.writeHead(200, {'Content-Type': mimeType,'ETag': etag});
+                        res.end(combinedJS);
+                    })
+                }
             })
 
-            var etag = "";
-            _.each(files, function (file) {
-                var stats = fs.statSync('Client/guis.common/javascript/' + file);
-                etag += stats.size + '-' + Date.parse(stats.mtime);
-            })
 
-            if (req.headers['if-none-match'] === etag) {
-                res.statusCode = 304;
-                res.end();
-            } else {
-                var combinedJavascript = "";
-
-                //Asynchron file loading!
-                //In order to get right order, second file is loaded in the callback of first file
-                //and so on.
-                var processFiles = function () {
-
-                    // check for termination - we worked through all files
-                    // then we want to send the result.
-                    if (files.length === 0) sendResult()
-                    // take first element - call recursion with remaining files,
-                    // after first file was loaded.
-                    else {
-                        var filename = files.shift();
-
-                        fs.readFile('Client/guis.common/javascript/' + filename, function (err, data) {
-                            if (!err) {
-                                combinedJavascript += "/******************************/\n";
-                                combinedJavascript += "/* " + filename + "\n";
-                                combinedJavascript += "/******************************/\n";
-                                combinedJavascript += data + "\n";
-                            } else {
-                                console.log("Error combining JavaScript files.");
-                            }
-
-                            processFiles()
-                        });
-                    }
-                }
-
-                var sendResult = function () {
-                    var mimeType = 'application/javascript';
-                    res.writeHead(200, {'Content-Type': mimeType,'ETag': etag});
-                    res.end(combinedJavascript);
-                }
-
-                processFiles();
-            }
         }
 
         // objects
