@@ -1,13 +1,14 @@
 {
-    "name": "webarena",
-    "version": "1.0.0",
-    "dependencies": {
-        "socket.io": ">=0.9.14",
-        "formidable": "*",
-        "imagemagick": "0.1.2",
-        "underscore": "*",
-        "sharepoint" : "*",
-        "node-uuid" : "*",
-	"mime" : "*"
-    }
+  "name": "webarena",
+  "version": "1.0.0",
+  "dependencies": {
+    "socket.io": ">=0.9.14",
+    "formidable": "*",
+    "imagemagick": "0.1.2",
+    "underscore": "*",
+    "sharepoint": "*",
+    "node-uuid": "*",
+    "mime": "*",
+    "q": "~0.9.6"
+  }
 }
