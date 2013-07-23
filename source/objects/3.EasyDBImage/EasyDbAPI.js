@@ -1,42 +1,16 @@
 var http = require('https');
 var _ = require('underscore');
-var Log = require('../../Common/Log.js');
-var Modules=require('../../server.js');
+// var Log = require('../../Common/Log.js');
+var config=require('../../Server/config.local.js');
 
 var EasyDbAPI = {};
 
-EasyDbAPI.apiUrl = Modules.config.easydb.apiUrl; //"easydb.uni-paderborn.de";
-EasyDbAPI.apiPath = Modules.config.easydb.apiPath; //"/easy/fs.php?";
-
-//Not used yet
-//TODO: should be used to check if apicall method exists
-EasyDbAPI.methods = {
-    object_search : ['table_name',
-        'search',
-        'search_mask',
-        'search_request',
-        'sql',
-        'sql_where'
-    ],
-    object_retrieve_bulk : [
-        'table_name',
-        'ids',
-        'image_size',
-        'download_size',
-        'download_with_iptc'
-    ],
-    object_html : [
-        'table_name',
-        'ids'
-    ],
-    object_retrieve_structure : [
-        'table_name'
-    ]
-};
+EasyDbAPI.apiUrl = config.easydb.apiUrl; //"easydb.uni-paderborn.de";
+EasyDbAPI.apiPath = config.easydb.apiPath; //"/easy/fs.php?";
 
 //private
 EasyDbAPI.getAuth = function(){
-    return {username : Modules.config.easydb.username, password: Modules.config.easydb.password};
+    return {username : config.easydb.username, password: config.easydb.password};
 }
 
 EasyDbAPI.retrieveImageUrlForSize = function(imageId, size, callback){
@@ -127,7 +101,7 @@ EasyDbAPI.retrieveDetailedImageInformation = function(data, imageSize, callback)
  * @param callback
  */
 EasyDbAPI.apicall = function(args, callback){
-    Log.debug("EasyDbAPI","apicall", "");
+    // Log.debug("EasyDbAPI","apicall", "test");
     //todo: check if args are valid - use easydbapi.methods
     var that = this;
     var authData = that.getAuth();
@@ -137,7 +111,9 @@ EasyDbAPI.apicall = function(args, callback){
         callPath += index + "=" + encodeURIComponent(args[index]) + "&";
     }
 
-    Log.debug("EasyDbAPI","call path", callPath);
+    // Log.debug("EasyDbAPI","call path", callPath);
+    //console.log("callpath: ")
+    //console.log(callPath);
 
     var options = {
         host: this.apiUrl,
@@ -147,7 +123,10 @@ EasyDbAPI.apicall = function(args, callback){
         auth: authData.username + ":" + authData.password
     };
 
+    //console.log(options);
+
     http.get(options, function(res){
+        //console.log("response")
         //otherwise stream will be returned
         res.setEncoding();
         var data = ""
@@ -155,10 +134,14 @@ EasyDbAPI.apicall = function(args, callback){
             data += d;
         });
         res.on('end', function(){
+            //console.log("I got that data: ");
+            //console.log(data);
             callback(data);
-
         });
-    }).on('error', function(e) {Log.error(e);})
+    }).on('error', function(e) {
+        //console.log("Error :(...");
+        //console.log(e);
+    })
 }
 
 EasyDbAPI.buildSQL = function(sargs){
@@ -180,10 +163,14 @@ EasyDbAPI.buildSQL = function(sargs){
 
     var intSQL = function(mod, innerQuery){
         var sql = ""+
-        "SELECT " + (!innerQuery    ? "count(*) as cnt" : "b1.*, so1.name as standort , ho1.name as dargestellterort, p1.name AS kuenstler_name, ctna.cnt") + " FROM " + (innerQuery ? "(": "") +"Bilder b" + mod +" " +(innerQuery ? ", (" +innerQuery + ") as ctna) " : "")+
+        "SELECT " + 
+            (!innerQuery    ? "count(*) as cnt" : "b1.*, so1.name as standort , ho1.name as dargestellterort, p1.name AS kuenstler_name, ctna.cnt") + " FROM \"Bilder\" b" + mod +" " +
              "LEFT JOIN person p"+mod+"    ON p"+mod+".id=b" + mod +".kuenstler_id "    +
              "LEFT JOIN ort so"+mod+"      ON so"+mod+".id=b"+mod+".standort_id "       +
              "LEFT JOIN ort ho"+mod+"      ON ho"+mod+".id=b"+mod+".herstellungsort_id " +
+
+             (innerQuery ? ", (" +innerQuery + ") as ctna " : "") +
+
 
         "WHERE  "+
             ((sp.title ?            _.reduce(sp.title.split(" "),
@@ -221,7 +208,11 @@ EasyDbAPI.search = function(searchArgs){
 
     var sql = this.buildSQL(searchArgs);
 
-    Log.debug("EasyDbAPI","search", "Start search: ");
+    //console.log("Start search:");
+    //console.log(searchArgs);
+    //console.log("SQL:");
+    //console.log(sql);
+    // Log.debug("EasyDbAPI","search", "Start search: ");
     var that = this;
 
     var argumentsItems = {
@@ -230,18 +221,23 @@ EasyDbAPI.search = function(searchArgs){
         output : "json"
     };
 
+
     function executeGetItems(callback){
         that.apicall(argumentsItems, function(data){
             if(data == "LoginHTTPBasic requires correct username/password."){
+                //console.log("Login failed.");
                 callback({});
             } else {
                 var searchResults = JSON.parse(data);
+                //console.log(searchResults);
 
                 if(searchResults['response']['data']){
+                    //console.log("Yippie, some results.");
                     that.retrieveDetailedImageInformation(searchResults['response']['data'], "150px", function(resultUrls){
                         callback(resultUrls);
                     });
                 } else {
+                    //console.log("Got no results");
                     callback({});
                 }
             }
