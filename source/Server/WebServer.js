@@ -13,7 +13,7 @@ var WebServer = {};
 var _ = require('underscore');
 var mime = require('mime');
 mime.default_type = 'text/plain';
-var Q = require('Q');
+var Q = require('q');
 
 /*
  *	init
