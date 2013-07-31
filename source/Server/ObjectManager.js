@@ -394,18 +394,21 @@ ObjectManager.init=function(theModules){
                 }
 
 
-                var toRoom = "trash";
-                Modules.Connector.duplicateObject(roomID,objectID,function(newId,oldId) {
-                    object.remove();
-                    console.log("New id: " + newId);
-                    console.log("Old id: " + oldId);
-                    historyEntry["objectID"] = newId;
+                Modules.Connector.getTrashRoom(context, function(toRoom){
+                    Modules.Connector.duplicateObject(roomID,objectID,function(newId,oldId) {
+                        object.remove();
+                        console.log("New id: " + newId);
+                        console.log("Old id: " + oldId);
+                        historyEntry["objectID"] = newId;
 
-                    console.log(data);
-                    var transactionId = data.transactionId;
+                        console.log(data);
+                        var transactionId = data.transactionId;
 
-                    that.history.add(transactionId, data.userId, historyEntry);
-                }, context,toRoom);
+                        that.history.add(transactionId, data.userId, historyEntry);
+                    }, context,toRoom.id);
+
+                });
+
 			} else {
 				Modules.SocketServer.sendToSocket(socket,'error','No rights to get attribute '+objectID);
 			}
@@ -430,6 +433,7 @@ ObjectManager.init=function(theModules){
                         Modules.Connector.duplicateObject(e.roomID, e.objectID, function(newId){
                             var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
                             o2.updateClients("objectUpdate");
+                            object.remove();
                         }, context, e.oldRoomID);
                     } else if(e.action === 'setAttribute'){
                         console.log("Undo set attribute.");

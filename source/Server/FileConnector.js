@@ -57,6 +57,17 @@ fileConnector.login=function(username,password,externalSession,rp,context){
 	
 }
 
+/**
+ *
+ * @param context
+ * @param callback
+ * @returns {*}
+ */
+fileConnector.getTrashRoom = function(context, callback){
+    return this.getRoomData("trash", context, callback);
+}
+
+
 
 fileConnector.isLoggedIn=function(context) {
 	return true;
@@ -145,11 +156,16 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 
 /**
-*	getRoomData
-*
-*	returns the attribute set of the current room
-*
-*/
+ *	getRoomData
+ *
+ *	Get room data or create room, if doesn't exist yet.
+ *
+ * @param roomID
+ * @param context
+ * @param callback
+ * @param oldRoomId - id of the parent room
+ * @returns {*}
+ */
 fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 	this.Modules.Log.debug("Get data for room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
