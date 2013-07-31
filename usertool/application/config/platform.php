@@ -5,7 +5,7 @@ $config['webarenaHost'] = "localhost";
 $config['webarenaPort'] = "8080";
 $config['dataFolder'] = "C:\\Users\\Dermtd\\Desktop\\benutzerverwaltung";
 
-$config['userFolder'] = $config['dataFolder'] . "\\users";
-$config['courseFolder'] = $config['dataFolder'] . "\\courses";
+$config['userFolder'] = $config['dataFolder'] . "/users";
+$config['courseFolder'] = $config['dataFolder'] . "/courses";
 
 ?>

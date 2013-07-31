@@ -67,14 +67,14 @@ class Course extends CI_Model {
     function loadCourseData($id) {
         log_message("debug", "course loadCourseData: id = ".$id);
         
-        $filename = $this->config->item('courseFolder') . "\\" . $id;
+        $filename = $this->config->item('courseFolder') . "/" . $id;
         if (!file_exists($filename)) {
             return false;
         } else {
             // get general information of the course
-            $courseData = fopen($filename . "\\info.txt", "r");
+            $courseData = fopen($filename . "/info.txt", "r");
             if (flock($courseData, LOCK_SH)) { // do a shared lock
-                $course = json_decode(file_get_contents($filename . "\\info.txt"), true);
+                $course = json_decode(file_get_contents($filename . "/info.txt"), true);
                 flock($courseData, LOCK_UN); // release the lock
             } else {
                 log_message("error", "course loadCourseData: filename = ".$filename);
@@ -96,9 +96,9 @@ class Course extends CI_Model {
         log_message("debug", "course loadMemberData: id = ".$this->id." loadUserData = ".$loadUserData);
         
         require_once(APPPATH . 'models/User.php');
-        $filename = $this->config->item('courseFolder') . "\\" . $this->id;
+        $filename = $this->config->item('courseFolder') . "/" . $this->id;
         $this->members = array();
-        $members = scandir($filename . "\\verified");
+        $members = scandir($filename . "/verified");
 
         foreach ($members as $member) {
             if ($member != "." && $member != "..") {
@@ -114,7 +114,7 @@ class Course extends CI_Model {
         }
 
         $this->applied = array();
-        $applied = scandir($filename . "\\applied");
+        $applied = scandir($filename . "/applied");
         foreach ($applied as $member) {
             if ($member != "." && $member != "..") {
                 if ($loadUserData) {
@@ -131,7 +131,7 @@ class Course extends CI_Model {
     function checkUserAccess($member = "") {
         log_message("debug", "course checkUserAccess: id = ".$this->id." member = ".$member);
         
-        $userAccessFile = $this->config->item('courseFolder') . "\\" . $this->id . "\\verified" . "\\" . $member . ".txt";
+        $userAccessFile = $this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $member . ".txt";
         $userAccess = fopen($userAccessFile, "r");
         if (flock($userAccess, LOCK_SH)) { // do a shared lock
             $access = file_get_contents($userAccessFile);
@@ -150,10 +150,10 @@ class Course extends CI_Model {
     function verifyUser($username = "") {
         log_message("debug", "course verifyUser: id = ".$this->id." username = ".$username);
         
-        $userAppliedFile = $this->config->item('courseFolder') . "\\" . $this->id . "\\applied" . "\\" . $username . ".txt";
+        $userAppliedFile = $this->config->item('courseFolder') . "/" . $this->id . "/applied/" . $username . ".txt";
         if (file_exists($userAppliedFile)) {
             unlink($userAppliedFile);
-            $userVerifiedFile = $this->config->item('courseFolder') . "\\" . $this->id . "\\verified" . "\\" . $username . ".txt";
+            $userVerifiedFile = $this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $username . ".txt";
             $userAccess = fopen($userVerifiedFile, "w+");
             if (flock($userAccess, LOCK_EX)) { // do an exclusive lock
                 fwrite($userAccess, "write");
@@ -172,7 +172,7 @@ class Course extends CI_Model {
     function changeWriteAccessUser($username = "", $writeAccess = false) {
         log_message("debug", "course changeWriteAccessUser: id = ".$this->id." username = ".$username." writeAccess = ".$writeAccess);
         
-        $userAccessFile = $this->config->item('courseFolder') . "\\" . $this->id . "\\verified" . "\\" . $username . ".txt";
+        $userAccessFile = $this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $username . ".txt";
         $userAccess = fopen($userAccessFile, "w+");
         if (flock($userAccess, LOCK_EX)) { // do an exclusive lock
             if ($writeAccess) {
@@ -192,9 +192,9 @@ class Course extends CI_Model {
     function checkMemberStatus($member = "") {
         log_message("debug", "course checkMemberStatus: id = ".$this->id." member = ".$member);
         
-        $filename = $this->config->item('courseFolder') . "\\" . $this->id;
+        $filename = $this->config->item('courseFolder') . "/" . $this->id;
 
-        $members = scandir($filename . "\\verified");
+        $members = scandir($filename . "/verified");
         if (in_array($member . ".txt", $members)) {
             if ($this->checkUserAccess($member)) {
                 $this->memberStatus = "write";
@@ -204,7 +204,7 @@ class Course extends CI_Model {
                 return;
             }
         } else {
-            $applied = scandir($filename . "\\applied");
+            $applied = scandir($filename . "/applied");
             if (in_array($member . ".txt", $applied)) {
                 $this->memberStatus = "applied";
                 return;
@@ -228,11 +228,11 @@ class Course extends CI_Model {
     function apply($username = "") {
         log_message("debug", "course apply: id = ".$this->id." username = ".$username);
         
-        if (file_exists($this->config->item('courseFolder') . "\\" . $this->id . "\\verified" . "\\" . $username . ".txt") || file_exists($this->config->item('courseFolder') . "\\" . $this->id . "\\applied" . "\\" . $username . ".txt")) {
+        if (file_exists($this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $username . ".txt") || file_exists($this->config->item('courseFolder') . "/" . $this->id . "/applied/" . $username . ".txt")) {
             return false;
         } else {
             // add currently logged in user to the course
-            $userData = fopen($this->config->item('courseFolder') . "\\" . $this->id . "\\applied\\" . $username . ".txt", "w+");
+            $userData = fopen($this->config->item('courseFolder') . "/" . $this->id . "/applied/" . $username . ".txt", "w+");
             if (flock($userData, LOCK_EX)) { // do an exclusive lock
                 fwrite($userData, "applied");
                 flock($userData, LOCK_UN); // release the lock
@@ -258,7 +258,7 @@ class Course extends CI_Model {
         
         $this->load->library('session');
 
-        $filename = $this->config->item('courseFolder') . "\\" . $this->id;
+        $filename = $this->config->item('courseFolder') . "/" . $this->id;
         if (file_exists($filename)) {
             return false;
         } else {
@@ -271,11 +271,11 @@ class Course extends CI_Model {
 
             // create folders
             mkdir($filename);
-            mkdir($filename . "\\applied");
-            mkdir($filename . "\\verified");
+            mkdir($filename . "/applied");
+            mkdir($filename . "/verified");
 
             // add currently logged in user to the course
-            $adminData = fopen($filename . "\\verified\\" . $this->session->userdata('username') . ".txt", "w+");
+            $adminData = fopen($filename . "/verified/" . $this->session->userdata('username') . ".txt", "w+");
             if (flock($adminData, LOCK_EX)) { // do an exclusive lock
                 fwrite($adminData, "write");
                 flock($adminData, LOCK_UN); // release the lock
@@ -294,7 +294,7 @@ class Course extends CI_Model {
             $this->user->saveUserData();
 
             // save general information of the course
-            $filename = $filename . "\\info.txt";
+            $filename = $filename . "/info.txt";
             $courseData = fopen($filename, "w+");
             if (flock($courseData, LOCK_EX)) { // do an exclusive lock
                 fwrite($courseData, json_encode($course));
@@ -313,7 +313,7 @@ class Course extends CI_Model {
         
         $this->load->library('session');
 
-        $filename = $this->config->item('courseFolder') . "\\" . $this->id;
+        $filename = $this->config->item('courseFolder') . "/" . $this->id;
 
         $course = array();
         $course["id"] = $this->id;
@@ -323,7 +323,7 @@ class Course extends CI_Model {
         $course["frozen"] = $this->frozen;
 
         // save general information of the course
-        $filename = $filename . "\\info.txt";
+        $filename = $filename . "/info.txt";
         $courseData = fopen($filename, "w+");
         if (flock($courseData, LOCK_EX)) { // do an exclusive lock
             fwrite($courseData, json_encode($course));
@@ -365,8 +365,8 @@ class Course extends CI_Model {
     function deleteUser($username) {
         log_message("debug", "course deleteUser: id = ".$this->id." username = ".$username);
         
-        $userAppliedFile = $this->config->item('courseFolder') . "\\" . $this->id . "\\applied" . "\\" . $username . ".txt";
-        $userVerifiedFile = $this->config->item('courseFolder') . "\\" . $this->id . "\\verified" . "\\" . $username . ".txt";
+        $userAppliedFile = $this->config->item('courseFolder') . "/" . $this->id . "/applied/" . $username . ".txt";
+        $userVerifiedFile = $this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $username . ".txt";
         if (file_exists($userAppliedFile)) {
             unlink($userAppliedFile);
         } else if (file_exists($userVerifiedFile)) {

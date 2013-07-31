@@ -111,7 +111,7 @@ class User extends CI_Model {
     function loadUserData($username = "") {
         log_message("debug", "user loadUserData: username = ".$username);
         
-        $filename = $this->config->item('userFolder') . "\\" . $username . ".user.txt";
+        $filename = $this->config->item('userFolder') . "/" . $username . ".user.txt";
         if (file_exists($filename)) {
             $userFile = fopen($filename, "r");
             if (flock($userFile, LOCK_SH)) { // do a shared lock
@@ -182,7 +182,7 @@ class User extends CI_Model {
     function saveUserData() {
         log_message("debug", "user saveUserData: username = ".$this->username);
         
-        $filename = $this->config->item('userFolder') . "\\" . $this->username . ".user.txt";
+        $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
 
         $user = array();
         $user["username"] = $this->username;
@@ -215,7 +215,7 @@ class User extends CI_Model {
             mkdir($this->config->item('courseFolder'));
         }
         
-        $filename = $this->config->item('userFolder') . "\\" . $this->username . ".user.txt";
+        $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
         if (file_exists($filename)) {
             return false;
         } else {
