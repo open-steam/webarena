@@ -166,6 +166,11 @@ function BidConnection(protocol, host, port, username, password) {
 				check(res.statusCode)
 			});
 			
+			res.on('data', function (chunk) {
+				//console.log(chunk);
+ 			});
+
+			
 		});
 		req.end();
 		
