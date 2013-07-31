@@ -122,6 +122,10 @@ function BidConnection(host, port, username, password) {
 		if (contentName && content) {
 			req.write(post_data);
 		}
+		
+		req.on('error', function(err) {
+        	require('../Common/Log.js').error('BidAPI request failed '+err.message);
+    	});
 
 		req.end();
 		
@@ -166,6 +170,11 @@ function BidConnection(host, port, username, password) {
 			});
 			
 		});
+		
+		req.on('error', function(err) {
+        	require('../Common/Log.js').error('BidAPI checkLogin failed '+err.message);
+    	});
+		
 		req.end();
 		
 	}
