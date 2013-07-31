@@ -15,8 +15,9 @@
  * @param {String} username The username
  * @param {String} password The password
  */
-function BidConnection(host, port, username, password) {
+function BidConnection(protocol, host, port, username, password) {
 	
+	this.protocol = protocol;
 	this.host = host;
 	this.port = port;
 	this.username = username;
@@ -78,7 +79,7 @@ function BidConnection(host, port, username, password) {
 		}
 
 		
-		var http = require('http');
+		var http = require(this.protocol);
 		
 		var response = [];
 		
@@ -161,7 +162,7 @@ function BidConnection(host, port, username, password) {
 		  method: 'POST'
 		};
 		
-		var http = require('http');
+		var http = require(this.protocol);
 		
 		var req = http.request(options, function(res) {
 			
