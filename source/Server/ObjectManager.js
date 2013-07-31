@@ -397,11 +397,8 @@ ObjectManager.init=function(theModules){
                 Modules.Connector.getTrashRoom(context, function(toRoom){
                     Modules.Connector.duplicateObject(roomID,objectID,function(newId,oldId) {
                         object.remove();
-                        console.log("New id: " + newId);
-                        console.log("Old id: " + oldId);
                         historyEntry["objectID"] = newId;
 
-                        console.log(data);
                         var transactionId = data.transactionId;
 
                         that.history.add(transactionId, data.userId, historyEntry);
@@ -429,14 +426,12 @@ ObjectManager.init=function(theModules){
                     var object=ObjectManager.getObject(e.roomID,e.objectID,context);
 
                     if(e.action === 'delete'){
-                        console.log("Undo deletion");
                         Modules.Connector.duplicateObject(e.roomID, e.objectID, function(newId){
                             var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
                             o2.updateClients("objectUpdate");
                             object.remove();
                         }, context, e.oldRoomID);
                     } else if(e.action === 'setAttribute'){
-                        console.log("Undo set attribute.");
                         object.setAttribute(e.attribute, e.old);
                     } else if(e.action === 'duplicate'){
                         object.remove();
