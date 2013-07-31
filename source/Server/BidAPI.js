@@ -171,7 +171,7 @@ function BidConnection(protocol, host, port, username, password) {
 		  method: 'POST'
 		};
 		
-		consloe.log(options);
+		console.log(options);
 		
 		var http = require(this.protocol);
 		
