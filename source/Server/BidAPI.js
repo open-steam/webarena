@@ -17,8 +17,6 @@
  */
 function BidConnection(protocol, host, port, username, password) {
 	
-	console.log('Created BidConnection',protocol,host,port,username,password);
-	
 	this.protocol = protocol;
 	this.host = host;
 	this.port = port;
@@ -41,9 +39,6 @@ function BidConnection(protocol, host, port, username, password) {
 	 */
 	this.request = function(command, functionName, parameters, callback, returnRaw, contentName, content) {
 		
-		
-		console.log('BidAPI request ',command,functionName,parameters);
-
 		self.requestCounter = self.requestCounter+1;
 
 		var reqC = parseInt(self.requestCounter);
@@ -90,8 +85,6 @@ function BidConnection(protocol, host, port, username, password) {
 		
 		var req = http.request(options, function(res) {
 			
-			console.log('http request ',options,res);
-
 			if (returnRaw == undefined || returnRaw == false) {
 				res.setEncoding('utf8');
 			} else {
@@ -153,8 +146,6 @@ function BidConnection(protocol, host, port, username, password) {
 	 */
 	this.checkLogin = function(callback) {
 		
-		console.log('checkLogin');
-		
 		function check(status) {
 			if (status == 401) {
 				callback(false);
@@ -171,21 +162,16 @@ function BidConnection(protocol, host, port, username, password) {
 		  method: 'POST'
 		};
 		
-		console.log(this.protocol);
-		console.log(options);
-		
 		var http = require(this.protocol);
 		
 		var req = http.request(options, function(res) {
-			
-			console.log('Request sent');
 			
 			res.on('end', function() {
 				check(res.statusCode)
 			});
 			
 			res.on('data', function (chunk) {
-				console.log(chunk);
+				//console.log(chunk);
 			});
 			
 		});
