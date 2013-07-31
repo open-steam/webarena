@@ -54,7 +54,6 @@ bidConnector.isLoggedIn=function(context) {
 
 
 bidConnector.addExternalSession=function(data) {
-	console.log(data);
 	this.externalSessions[data.id] = data;
 }
 

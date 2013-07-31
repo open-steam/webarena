@@ -178,8 +178,14 @@ function BidConnection(protocol, host, port, username, password) {
 		
 		var req = http.request(options, function(res) {
 			
+			console.log('Request sent');
+			
 			res.on('end', function() {
 				check(res.statusCode)
+			});
+			
+			res.on('data', function (chunk) {
+				console.log(chunk);
 			});
 			
 		});
