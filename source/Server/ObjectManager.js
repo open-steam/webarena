@@ -422,6 +422,7 @@ ObjectManager.init=function(theModules){
         if(lastChange){
             if(!lastChange.blocked){
                 var changeSet = lastChange.changeSet;
+                var undoMessage = ""
                 changeSet.forEach(function(e){
                     var object=ObjectManager.getObject(e.roomID,e.objectID,context);
 
@@ -431,12 +432,19 @@ ObjectManager.init=function(theModules){
                             o2.updateClients("objectUpdate");
                             object.remove();
                         }, context, e.oldRoomID);
+                        undoMessage = 'Undo: deletion';
+
                     } else if(e.action === 'setAttribute'){
                         object.setAttribute(e.attribute, e.old);
+                        undoMessage = 'Undo: attribute change';
+
                     } else if(e.action === 'duplicate'){
                         object.remove();
+                        undoMessage = 'Undo: duplication';
+
                     }
                 });
+				Modules.SocketServer.sendToSocket(socket,'infotext', undoMessage);
                 that.history.removeHistoryEntry(lastChange.transactionId);
 
             } else {
