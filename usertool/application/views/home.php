@@ -78,7 +78,7 @@
                         <tr>
                             <td colspan="2">
                                 <center>
-                                    <button type="submit" class="btn btn-primary">Password ändern</button>
+                                    <button type="submit" class="btn btn-primary">Passwort ändern</button>
                                     <br><br>
                                     <b id="passwordFeedback"></b>
                                 </center>
