@@ -2,7 +2,7 @@
 
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Webarena extends CI_Controller {
+class Webarena extends MY_Controller {
 
     public function index($room) {
         $this->load->library('session');

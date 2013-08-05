@@ -8,14 +8,14 @@
                 <div class="span10">
                     <form class="form-horizontal" id="loginForm">
                         <div class="control-group">
-                            <label class="control-label" for="inputUsername">Benutzername</label>
+                            <label class="control-label" for="inputUsername">Benutzername:</label>
                             <div class="controls">
                                 <input type="text" id="inputUsername" name="username" placeholder="Benutzername" required>
                                 <label class="error" for="inputUsername" id="username_error" style="display:inline; color:red;"></label>
                             </div>
                         </div>
                         <div class="control-group">
-                            <label class="control-label" for="inputPassword">Password</label>
+                            <label class="control-label" for="inputPassword">Passwort:</label>
                             <div class="controls">
                                 <input type="password" id="inputPassword" name="password" placeholder="Passwort" required>
                                 <label class="error" for="inputPassword" id="password_error" style="display:inline; color:red;"></label>

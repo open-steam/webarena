@@ -19,6 +19,13 @@ class Registration extends CI_Controller {
                 echo(json_encode($response));
                 return;
             }
+            
+            if ($this->input->post('password') != $this->input->post('passwordRE')) {
+                $response["status"] = "error";
+                $response["error"] = "passwordRE";
+                echo(json_encode($response));
+                return;
+            }
 
             $this->load->library('encrypt');
             $password = $this->encrypt->sha1($this->config->item('encryption_key').$this->input->post('password'));
@@ -32,7 +39,7 @@ class Registration extends CI_Controller {
             $this->user->setCourses(array());
             $this->user->setRoom($this->user->getUsername());
 
-            if ($this->user->createUser()) {
+            if (($result = $this->user->createUser()) === "success") {
                 $this->session->set_userdata('username', $this->input->post('username'));
                 $this->session->set_userdata('password', $password);
                 $this->session->set_userdata('logged_in', TRUE);
@@ -45,7 +52,7 @@ class Registration extends CI_Controller {
             } else {
                 // user already exists
                 $response["status"] = "error";
-                $response["error"] = "username";
+                $response["error"] = $result;
             }
             echo(json_encode($response));
         } else {

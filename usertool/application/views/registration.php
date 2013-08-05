@@ -22,6 +22,13 @@
                             </div>
                         </div>
                         <div class="control-group">
+                            <label class="control-label" for="inputPasswordRE">Passwort wiederholen:</label>
+                            <div class="controls">
+                                <input type="password" id="inputPasswordRE" name="password" placeholder="Passwort" required>
+                                <label class="error" for="inputPasswordRE" id="passwordRE_error" style="display:inline; color:red;"></label>
+                            </div>
+                        </div>
+                        <div class="control-group">
                             <label class="control-label" for="inputFirstName">Vorname:</label>
                             <div class="controls">
                                 <input type="text" id="inputFirstName" name="firstName" placeholder="Vorname" required>

@@ -72,7 +72,7 @@
                         <tr>
                             <td style="width:50%;">Neues Passwort:</td>
                             <td>
-                                <input type="password" id="passwordNew" name="passwordNew" placeholder="Neues Password" value="" required>
+                                <input type="password" id="passwordNew" name="passwordNew" placeholder="Neues Passwort" value="" required>
                             </td>
                         </tr>
                         <tr>

@@ -93,7 +93,7 @@
             if ($course->getMemberStatus() != "Schwebend") {
                 ?>
                 <br><br>
-                <button class="btn btn-primary" onclick="window.location = '<?php echo $this->config->base_url() . "webarena/" . $course->getId(); ?>';">WebArena</button>
+                <button class="btn btn-primary" onclick="window.location = '<?php echo $this->config->base_url() . "webarena/" . $course->getId(); ?>';">Raum anzeigen</button>
                 <?php
             }
             ?>
@@ -122,13 +122,13 @@
                     <table id="memberTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
                         <thead>
                             <tr>
-                                <th style="width:30%;">Benutzername</th>
-                                <th style="width:30%;">Vorname</th>
-                                <th style="width:30%;">Nachname</th>
+                                <th style="width:28%;">Benutzername</th>
+                                <th style="width:28%;">Vorname</th>
+                                <th style="width:28%;">Nachname</th>
                                 <?php
                                 if (!($course->isFrozen())) {
                                     ?>
-                                    <th style="width:10%;">Schreibrechte</th>
+                                    <th>Schreibrechte</th>
                                     <th style="width:16px;"></th>
                                     <?php
                                 }
@@ -151,7 +151,7 @@
                                             <td>
                                                 <input type="hidden" class="username" value="<?php echo $member->getUsername(); ?>">
                                                 <input type="checkbox" style="" class="writeAccessCheckbox" value="" <?php if ($member->getWriteAccess()) echo "checked=\"checked\""; ?>>
-                                                <img style="height:16px; width:16px;" id="<?php echo $member->getUsername(); ?>" src="">
+                                                <img id="<?php echo $member->getUsername(); ?>" src="">
                                             </td>
                                             <td>
                                                 <input type="hidden" class="username" value="<?php echo $member->getUsername(); ?>">

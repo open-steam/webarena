@@ -19,7 +19,7 @@
                         <span class="icon-bar"></span>
                         <span class="icon-bar"></span>
                     </a>
-                    <a class="brand" href="<?php echo $this->config->base_url(); ?>">eLab webArena Nutzerverwaltung</a>
+                    <a class="brand" href="<?php echo $this->config->base_url(); ?>">eLab WebArena Nutzerverwaltung</a>
                     <div class="nav-collapse">
                         <ul class="nav">
                             <?php if ($logged_in) { ?>

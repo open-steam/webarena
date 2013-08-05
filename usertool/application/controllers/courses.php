@@ -2,7 +2,7 @@
 
 if (!defined('BASEPATH')) exit('No direct script access allowed');
 
-class Courses extends CI_Controller {
+class Courses extends MY_Controller {
 
     public function index() {
         $this->load->library('session');
@@ -47,7 +47,6 @@ class Courses extends CI_Controller {
 
         if($this->input->is_ajax_request() == TRUE) {
             $response = array();
-            // TODO: evaluate input
             $this->load->model('course');
             $this->load->library('uuid'); 
             $this->course->setId($this->uuid->v4());

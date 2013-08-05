@@ -18,10 +18,10 @@
                 <table id="verifiedTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:30%;">Kursname</th>
-                            <th style="width:30%;">Beschreibung</th>
-                            <th style="width:30%;">Rechte</th>
-                            <th></th>
+                            <th style="width:27%;">Kursname</th>
+                            <th style="width:27%;">Beschreibung</th>
+                            <th style="width:27%;">Rechte</th>
+                            <th style="width:19%;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,7 +35,7 @@
                                 <td><?php echo ($course->getMemberStatus() === "read") ? "Leserechte" : "Schreibrechte"; ?></td>
                                 <td>
                         <center>
-                            <button class="btn btn-primary" onclick="window.location = '<?php echo $this->config->base_url() . "webarena/" . $course->getId(); ?>';">WebArena</button>
+                            <button class="btn btn-primary" onclick="window.location = '<?php echo $this->config->base_url() . "webarena/" . $course->getId(); ?>';">Raum anzeigen</button>
                         </center>
                         </td>
                         </tr>
@@ -102,10 +102,10 @@
                 <table id="verifiedTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:30%;">Kursname</th>
-                            <th style="width:30%;">Beschreibung</th>
-                            <th style="width:30%;">Rechte</th>
-                            <th></th>
+                            <th style="width:27%;">Kursname</th>
+                            <th style="width:27%;">Beschreibung</th>
+                            <th style="width:27%;">Rechte</th>
+                            <th style="width:19%;"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -119,7 +119,7 @@
                                 <td><?php echo ($course->getMemberStatus() === "read") ? "Leserechte" : "Schreibrechte"; ?></td>
                                 <td>
                         <center>
-                            <button class="btn btn-primary" onclick="window.location = '<?php echo $this->config->base_url() . "webarena/" . $course->getId(); ?>';">WebArena</button>
+                            <button class="btn btn-primary" onclick="window.location = '<?php echo $this->config->base_url() . "webarena/" . $course->getId(); ?>';">Raum anzeigen</button>
                         </center>
                         </td>
                         </tr>

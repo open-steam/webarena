@@ -209,17 +209,23 @@ class User extends CI_Model {
         log_message("debug", "user createUser: username = ".$this->username);
         
         if (!file_exists($this->config->item('userFolder'))) {
-            mkdir($this->config->item('userFolder'));
+             if (!@mkdir($this->config->item('userFolder'))) {
+                log_message("error", "user crateUser: cannot create folders");
+                return "writing";
+             }
         }
         if (!file_exists($this->config->item('courseFolder'))) {
-            mkdir($this->config->item('courseFolder'));
-        }
+            if (!@mkdir($this->config->item('courseFolder'))) {
+                log_message("error", "user crateUser: cannot create folders");
+                return "writing";
+            }
+        }   
         
         $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
         if (file_exists($filename)) {
-            return false;
+            return "username";
         } else {
-            if ($this->username != "" && $this->password != "" && $this->firstName != "" && $this->lastName != "") {
+            if (trim($this->username) != "" && trim($this->password) != "" && trim($this->firstName) != "" && trim($this->lastName) != "") {
                 $user = array();
                 $user["username"] = $this->username;
                 $user["password"] = $this->password;
@@ -234,13 +240,13 @@ class User extends CI_Model {
                     fwrite($userData, json_encode($user));
                     flock($userData, LOCK_UN); // release the lock
                 } else {
-                    log_message("error", "user saveUserData: filename = ".$filename);
-                    return false;
+                    log_message("error", "user createUser: filename = ".$filename);
+                    return "writing";
                 }
                 fclose($userData);
-                return true;
+                return "success";
             } else {
-                return false;
+                return "error";
             }
         }
     }
