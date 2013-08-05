@@ -14,6 +14,7 @@ module.exports = [
 	// "/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js",
 	"/guis.common/libraries/jquery/plugins/jquery.svganim.min.js",
 	"/guis.common/libraries/jquery/plugins/jquery.color.js",
+	"/guis.common/libraries/jquery/plugins/jquery.toastmessage.js",
 	"/config.default.js",
 	"/config.local.js",
 	"/Helper.js",

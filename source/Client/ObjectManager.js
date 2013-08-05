@@ -330,9 +330,15 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
 }
 
 ObjectManager.init=function(){
+
 	
 	Modules.Dispatcher.registerCall('infotext', function(text){
-		GUI.error("warning", text, false, false);
+		//GUI.error("warning", text, false, false);
+		$().toastmessage('showToast', {
+			'text': text,
+			'sticky': false,
+			'position' : 'top-left'
+		});
 	});
 
     Modules.Dispatcher.registerCall('welcome',function(data){

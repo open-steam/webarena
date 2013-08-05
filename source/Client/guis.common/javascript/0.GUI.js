@@ -298,7 +298,6 @@ GUI.initUndoByKeyboard = function(){
     $(document).bind("keydown", function(event) {
         var ctrlDown = event.ctrlKey||event.metaKey
         if(ctrlDown && event.which == 90){
-            console.log("UNDO");
             event.preventDefault();
 
             Modules.Dispatcher.query("undo", {"userID" : GUI.userid});
