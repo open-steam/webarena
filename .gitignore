@@ -3,6 +3,7 @@ stuff/old/
 .DS_Store
 .gitignore.swp
 config.local.js
+noDefaultRoom.html
 source/Server/tmp/*
 data/
 node_modules/
