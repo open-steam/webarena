@@ -696,6 +696,7 @@ koalaConnector.createObject=function(roomID,type,data,callback,context){
 *	to direcly work on the new object, specify an after function
 *
 *	after(objectID)
+*   TODO: die Methode muss angepasst werden @see fileconnector
 *
 */
 koalaConnector.duplicateObject=function(roomID,objectID,callback,context){
