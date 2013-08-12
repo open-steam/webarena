@@ -9,7 +9,8 @@
     "sharepoint": "*",
     "node-uuid": "*",
     "mime": "*",
-    "q": "~0.9.6"
+    "q": "~0.9.6",
+    "underscore.string": "~2.3.3"
   },
   "devDependencies": {
     "superagent": "~0.15.4",
