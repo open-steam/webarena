@@ -442,6 +442,8 @@ ObjectManager.init=function(theModules){
                         object.remove();
                         undoMessage = 'Undo: duplication';
 
+                    } else if(e.action === 'setContent'){
+                        undoMessage = "Undo of the action isn't supported";
                     }
                 });
 				Modules.SocketServer.sendToSocket(socket,'infotext', undoMessage);
@@ -560,7 +562,16 @@ ObjectManager.init=function(theModules){
         		}
 
                 that.history.add(probableTransactionInfo.transactionId, probableTransactionInfo.userId, historyEntry);
-        	}
+        	} else if(serverFunction === "setContent"){
+                var historyEntry = {
+                    'objectID' : roomID,
+                    'roomID' : roomID,
+                    'action' : 'setContent'
+                }
+                Modules.ObjectManager.history.add(
+                    new Date().toDateString(), context.user.username, historyEntry
+                )
+            }
         	
         	getNext();
         });

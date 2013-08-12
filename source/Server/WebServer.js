@@ -153,6 +153,14 @@ WebServer.init = function (theModules) {
                 var objectID = ids[1];
 
                 var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+                var historyEntry = {
+                    'objectID' : roomID,
+                    'roomID' : roomID,
+                    'action' : 'setContent'
+                }
+                Modules.ObjectManager.history.add(
+                    new Date().toDateString(), context.user.username, historyEntry
+                )
 
                 if (!object) {
                     res.writeHead(404);
