@@ -624,19 +624,19 @@ input {
 }
 
 .toast-item-image-notice {
-    background:url(../images/notice.png);
+    background:url(../../guis.common/images/toast/notice.png);
 }
 
 .toast-item-image-success {
-    background:url(../images/success.png);
+    background:url(../../guis.common/images/toast/success.png);
 }
 
 .toast-item-image-warning {
-    background:url(../images/warning.png);
+    background:url(../../guis.common/images/toast/warning.png);
 }
 
 .toast-item-image-error {
-    background:url(../images/error.png);
+    background:url(../../guis.common/images/toast/error.png);
 }
 
 
