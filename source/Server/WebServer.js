@@ -148,6 +148,7 @@ WebServer.init = function (theModules) {
 
     app.post("/setContent/*", function(req, res){
         var url = req.url.replace('%20', ' ');
+        var context = req.context;
 
         try {
 
@@ -232,6 +233,7 @@ WebServer.init = function (theModules) {
 
     app.get("/getContent/*", function(req, res){
         var url = req.url.replace('%20', ' ');
+        var context = req.context;
         try {
 
             var ids = url.substr(12).split('/');
