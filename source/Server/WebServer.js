@@ -253,14 +253,12 @@ WebServer.init = function (theModules) {
                     'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'
                 });
                 if(Modules.Connector.getContentStream !== undefined){
-                    console.log("stream")
                     var objStream = Modules.Connector.getContentStream(roomID, objectID, context);
                     objStream.pipe(res);
                     objStream.on("end", function(){
                         res.end();
                     })
                 } else {
-                    console.log(new Date()+"")
                     var data = object.getContent();
                     res.end(new Buffer(data));
                 }
@@ -371,8 +369,6 @@ WebServer.init = function (theModules) {
                 var jsDeps = require("../Client/javascriptDependencies.js")
                 var readFileQ = Q.denodeify(fs.readFile);
 
-                console.log(jsDeps);
-
                 var promises = jsDeps.map(function(filename){
                     return readFileQ("Client/" + filename);
                 })
@@ -381,7 +377,6 @@ WebServer.init = function (theModules) {
 
                 //Go on if all files are loaded
                 Q.allSettled(promises).then(function(results){
-                    console.log("COMBINED");
                     results.forEach(function(result){
                         combinedJS += result.value + "\n";
                     })
