@@ -333,9 +333,10 @@ ObjectManager.init=function(){
 
 	
 	Modules.Dispatcher.registerCall('infotext', function(text){
+        var translatedText = GUI.translate(text);
 		//GUI.error("warning", text, false, false);
 		$().toastmessage('showToast', {
-			'text': text,
+			'text': translatedText,
 			'sticky': false,
 			'position' : 'top-left'
 		});

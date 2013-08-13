@@ -432,15 +432,15 @@ ObjectManager.init=function(theModules){
                             o2.updateClients("objectUpdate");
                             object.remove();
                         }, context, e.oldRoomID);
-                        undoMessage = 'Undo: deletion';
+                        undoMessage = 'info.undo.delete';
 
                     } else if(e.action === 'setAttribute'){
                         object.setAttribute(e.attribute, e.old);
-                        undoMessage = 'Undo: attribute change';
+                        undoMessage = 'info.undo.attribute';
 
                     } else if(e.action === 'duplicate'){
                         object.remove();
-                        undoMessage = 'Undo: duplication';
+                        undoMessage = 'info.undo.duplication';
 
                     } else if(e.action === 'setContent'){
                         undoMessage = "Undo of the action isn't supported";
@@ -450,10 +450,10 @@ ObjectManager.init=function(theModules){
                 that.history.removeHistoryEntry(lastChange.transactionId);
 
             } else {
-                Modules.SocketServer.sendToSocket(socket,'infotext', 'No rights to execute undo - object modified by other user inbetween.');
+                Modules.SocketServer.sendToSocket(socket,'infotext', 'info.undo.blocked');
             }
         } else {
-            Modules.SocketServer.sendToSocket(socket,'infotext', 'Nothing to undo...');
+            Modules.SocketServer.sendToSocket(socket,'infotext', 'info.undo.nothing');
 
         }
 	});
