@@ -10,7 +10,8 @@
     "node-uuid": "*",
     "mime": "*",
     "q": "~0.9.6",
-    "underscore.string": "~2.3.3"
+    "underscore.string": "~2.3.3",
+    "express": "~3.3.5"
   },
   "devDependencies": {
     "superagent": "~0.15.4",
