@@ -132,15 +132,20 @@ WebServer.init = function (theModules) {
             });
     });
 
-    app.post("/setContent/*", function(req, res){
-        var url = req.url.replace('%20', ' ');
+    app.post("/setContent/:roomID/:objectID", function(req, res){
         var context = req.context;
 
-        var ids = url.substr(12).split('/');
-        var roomID = ids[0];
-        var objectID = ids[1];
+
+        var roomID = req.params.roomID;
+        var objectID = req.params.objectID;
 
         var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+        if (!object) {
+            res.writeHead(404);
+            Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+            return res.end('Object not found');
+        }
+
         var historyEntry = {
             'objectID' : roomID,
             'roomID' : roomID,
@@ -149,12 +154,6 @@ WebServer.init = function (theModules) {
         Modules.ObjectManager.history.add(
             new Date().toDateString(), context.user.username, historyEntry
         )
-
-        if (!object) {
-            res.writeHead(404);
-            Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
-            return res.end('Object not found');
-        }
 
 
         var formidable = require('formidable');
