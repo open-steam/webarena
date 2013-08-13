@@ -34,7 +34,10 @@ WebServer.init = function (theModules) {
     WebServer.server = httpServer;
     httpServer.listen(global.config.port);  // start server (port set in config)
 
+    //TODO - only show if needed
+    //app.use(express.logger());
 
+    //Handling of IE
     app.use(function(req, res, next){
         var agent = req.headers['user-agent'];
 
@@ -44,9 +47,12 @@ WebServer.init = function (theModules) {
             res.end(data);
 
         }
-        next();
+        else {
+            next();
+        }
     });
 
+    //Handling for user context
     app.use(function(req, res, next){
         var url = req.url.replace('%20', ' ');
 
@@ -399,97 +405,94 @@ WebServer.init = function (theModules) {
         var url = req.url.replace('%20', ' ');
 
 
-            var urlParts = url.split('/');
+        var urlParts = url.split('/');
 
-            var filebase = __dirname + '/../Client';
-            var filePath = filebase + url;
+        var filebase = __dirname + '/../Client';
+        var filePath = filebase + url;
 
-            if (urlParts.length > 2) {
-                switch (urlParts[1]) {
-                    case 'Common':
-                        filebase = __dirname + '/..';
-                        filePath = filebase + url;
-                        break;
+        if (urlParts.length > 2) {
+            switch (urlParts[1]) {
+                case 'Common':
+                    filebase = __dirname + '/..';
+                    filePath = filebase + url;
+                    break;
+            }
+        }
+
+        var pFileData = Q.nfcall(fs.readFile, filePath);
+        var pFileStats = Q.nfcall(fs.stat, filePath);
+
+        //When both are loaded (content & stats) - go on
+        Q.spread([pFileData, pFileStats], function(data, stat){
+            var etag = stat.size + '-' + Date.parse(stat.mtime);
+
+
+            if (req.headers['if-none-match'] === etag) {
+                res.statusCode = 304;
+                res.end();
+            } else {
+                var contentType = false;
+
+                contentType = mime.lookup(url)
+
+                var shouldSendETag = true;
+
+                var ETagExclude = ["html"];
+                _(ETagExclude).each(function(toExcludeS){
+                    if(url.length >= toExcludeS.length && url.substr(url.length - toExcludeS.length) == toExcludeS) shouldSendETag = false;
+                })
+
+                var head = {
+                    'Content-Type': contentType,
+                    'Content-Disposition': 'inline',
+                    'Last-Modified': stat.mtime
                 }
+                if(shouldSendETag){
+                    head['ETag'] = etag;
+                    head['Content-Length'] =  data.length
+                }
+                res.writeHead(200, head);
+
+
+                if (url.search(".html") !== -1) {
+                    data = data.toString('utf8');
+                    var position1 = data.search('<serverscript');
+                    if (position1 != -1) {
+                        var src = data;
+                        src = src.substr(position1);
+
+                        var position2 = src.search('"') + 1;
+                        src = src.substr(position2);
+
+                        var position3 = src.search('"');
+                        src = src.substr(0, position3);
+
+
+                        var pre = data.substr(0, position1);
+                        var post = data.substr(position1 + position2 + position3 + 2);
+
+                        var theScript = require('./scripts/' + src);
+
+                        theScript.run(url);
+                        var result = theScript.export;
+
+                        data = pre + result + post;
+
+                    }
+                }
+
+                res.end(data);
             }
 
-            fs.readFile(filePath,
-                function (err, data) {
-                    if (err) {
-                        res.writeHead(404);
-                        Modules.Log.warn('Error loading ' + url);
-                        return res.end('Error loading ' + url);
-                    }
-
-                    fs.stat(filePath, function (err, stat) {
-                        if (err) {
-                            res.statusCode = 500;
-                            res.end()
-                        } else {
-                            var etag = stat.size + '-' + Date.parse(stat.mtime);
+        }).catch(function(error){
+            res.writeHead(404);
+            Modules.Log.warn('Error loading ' + url);
+            return res.end('Error loading ' + url);
+        }).done();
 
 
-                            if (req.headers['if-none-match'] === etag) {
-                                res.statusCode = 304;
-                                res.end();
-                            } else {
-                                var contentType = false;
 
-                                contentType = mime.lookup(url)
-
-                                var shouldSendETag = true;
-
-                                var ETagExclude = ["html"];
-                                _(ETagExclude).each(function(toExcludeS){
-                                    if(url.length >= toExcludeS.length && url.substr(url.length - toExcludeS.length) == toExcludeS) shouldSendETag = false;
-                                })
-
-                                var head = {
-                                    'Content-Type': contentType,
-                                    'Content-Disposition': 'inline',
-                                    'Last-Modified': stat.mtime
-                                }
-                                if(shouldSendETag){
-                                    head['ETag'] = etag;
-                                    head['Content-Length'] =  data.length
-                                }
-                                res.writeHead(200, head);
-
-
-                                if (url.search(".html") !== -1) {
-                                    data = data.toString('utf8');
-                                    var position1 = data.search('<serverscript');
-                                    if (position1 != -1) {
-                                        var src = data;
-                                        src = src.substr(position1);
-
-                                        var position2 = src.search('"') + 1;
-                                        src = src.substr(position2);
-
-                                        var position3 = src.search('"');
-                                        src = src.substr(0, position3);
-
-
-                                        var pre = data.substr(0, position1);
-                                        var post = data.substr(position1 + position2 + position3 + 2);
-
-                                        var theScript = require('./scripts/' + src);
-
-                                        theScript.run(url);
-                                        var result = theScript.export;
-
-                                        data = pre + result + post;
-
-                                    }
-                                }
-
-                                res.end(data);
-                            }
-                        }
-                    })
-
-                });
-    })
+        })
 
     //Log error
     app.use(function(err, req, res, next){
