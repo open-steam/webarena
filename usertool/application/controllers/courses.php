@@ -9,7 +9,7 @@ class Courses extends MY_Controller {
         
         $this->load->model('user');
         $this->user->loadUserData($this->session->userdata('username'));
-        $this->user->loadCourseData(true);
+        $this->user->loadCourseData(true, $this->session->userdata('is_admin'));
         
         $data = array(
             "navbar" => array("", "active"),

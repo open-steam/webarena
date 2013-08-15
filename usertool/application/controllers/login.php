@@ -60,7 +60,7 @@ class Login extends CI_Controller {
         if($this->input->is_ajax_request() == TRUE) {
             $response = array();
             
-            if ($this->input->post('passwordOld') === $this->input->post('passwordOld2')) {
+            if ($this->input->post('passwordNew') === $this->input->post('passwordNew2')) {
                 $this->load->model('user');
                 if ($this->user->loadUserData($this->session->userdata('username'))) {
                     $oldPassword = $this->encrypt->sha1($this->config->item('encryption_key').$this->input->post('passwordOld'));
@@ -86,9 +86,9 @@ class Login extends CI_Controller {
                     $response["error"] = "loading";
                 }
             } else {
-                // passwordOld != passwordOld2
+                // passwordNew != passwordNew2
                 $response["status"] = "error";
-                $response["error"] = "oldPassword";
+                $response["error"] = "newPassword";
             }
             echo(json_encode($response));
         }

@@ -136,7 +136,7 @@ class User extends CI_Model {
             return false;
     }
     
-    function loadCourseData($frozen = false) {
+    function loadCourseData($frozen = false, $admin = false) {
         log_message("debug", "user loadCourseData: username = ".$this->username);
         
         require_once(APPPATH . 'models/Course.php');
@@ -144,6 +144,9 @@ class User extends CI_Model {
         foreach ($this->courses as $courseID) {
             $course = new Course();
             $course->loadCourseData($courseID);
+            if ($admin) {
+                $course->loadMemberData(true);
+            }
             $course->checkMemberStatus($this->username);
 
             if ($course->getMemberStatus() !== "error") {
