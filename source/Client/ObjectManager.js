@@ -283,8 +283,6 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav){
 		    if (!byBrowserNav){
 				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
 		    }
-		    
-		    GUI.chat.clear();
 		
 		}
 		
