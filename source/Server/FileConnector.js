@@ -188,11 +188,15 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 		
 		return self.getRoomData(roomID,context,callback,oldRoomId);
 		
+	} else {
+    	if (callback === undefined) {
+			/* sync */
+			return obj;
+		} else {
+			/* async */
+			callback(obj);
+		}
 	}
-	
-    else callback(obj);
-
-	
 }
 
 /**

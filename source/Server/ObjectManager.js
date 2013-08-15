@@ -764,6 +764,22 @@ ObjectManager.sendChatMessages=function(roomID,socket) {
 }
 */
 
+ObjectManager.countSubrooms = function(roomID,context) {
+	var counter = 1;
+
+	if (roomID === undefined) return counter;
+
+	var inventory = Modules.Connector.getInventory(roomID, context);
+	for (var inventoryKey in inventory) {
+		var inventoryObject = inventory[inventoryKey];
+	    if (inventoryObject.type === "Subroom") {
+	    	counter += ObjectManager.countSubrooms(inventoryObject.attributes.destination,context);
+	    }
+	 }
+
+	 return counter;
+}
+
 ObjectManager.duplicate = function(socket,data,responseID){
     var that = this;
 
@@ -776,9 +792,10 @@ ObjectManager.duplicate = function(socket,data,responseID){
 
     var transactionId = new Date().getTime();
 
-    // collect unique objects to duplicate (each linked object only once)
+    // collect unique objects to duplicate (each linked object only once); count number of subrooms contained (recursively) in the marked objects
     var objectList = {};
     var objectCount = 0;
+    var roomCount = 1;
     for (var key in objects) {
         var object=ObjectManager.getObject(fromRoom,objects[key],context);
         if (!object){
@@ -786,6 +803,200 @@ ObjectManager.duplicate = function(socket,data,responseID){
         }
         if (!(objects[key] in objectList)) {
             objectList[objects[key]] = object;
+            objectCount++;
+
+            if (object.getType() === "Subroom") {
+            	roomCount += ObjectManager.countSubrooms(object.getAttribute("destination"),context);
+            }
+
+            var linkedObjects = object.getObjectsToDuplicate();
+            for (var linkedKey in linkedObjects) {
+                if (!(linkedObjects[linkedKey] in objectList)) {
+                	var newObject = ObjectManager.getObject(fromRoom,linkedObjects[linkedKey],context);
+                    objectList[linkedObjects[linkedKey]] = newObject;
+                    objectCount++;
+
+                    if (newObject.getType() === "Subroom") {
+                    	roomCount += ObjectManager.countSubrooms(newObject.getAttribute("destination"),context);
+                    }
+                }
+            }
+        }
+    }
+
+    var counter = 0;
+    var roomCounter = 0;
+    var idTranslationList = {}; //list of object ids and their duplicated new ids
+    var newObjects = []; //list of new (duplicated) objects
+    var idList = [];
+    var roomTranslationList = {}; // list of old room ids and their duplicated new ids
+
+    // this function will be called after all rooms were copied and updateObjects runs the last time; it updates subroom and exit links to their new copied ids
+    var updateRoomLinks = function() {
+    	roomCounter++;
+
+    	if (roomCounter == roomCount) {
+    	// all rooms copied (and all objects contained in them)
+	    	for (var key in roomTranslationList) {
+	        	var inventory = Modules.Connector.getInventory(roomTranslationList[key], context);
+
+	        	for (var inventoryKey in inventory) {
+	        		var inventoryObject = inventory[inventoryKey];
+	        		if (inventoryObject.type === "Subroom" || inventoryObject.type === "Exit") {
+	                	if (roomTranslationList[inventoryObject.attributes.destination] !== undefined) {
+	                		inventoryObject.attributes.destination = roomTranslationList[inventoryObject.attributes.destination];
+	                		Modules.Connector.saveObjectData(inventoryObject.inRoom, inventoryObject.id, inventoryObject.attributes, undefined, context, false);
+	                	}
+	                }
+	        	}
+	        }
+	    }
+    }
+
+    // this function will be called by the last duplicate-callback
+    var updateObjects = function() {
+        counter++;
+        if (counter == objectCount) {
+            // all objects are duplicated
+            for (var i in newObjects) {
+                var object = newObjects[i];
+
+                object.updateLinkIds(idTranslationList); //update links
+
+                // update exits and subrooms if the corresponding rooms were copied
+                if (object.getType() === "Subroom" || object.getType() === "Exit") {
+                	if (roomTranslationList[object.getAttribute("destination")] !== undefined) {
+                		object.setAttribute("destination", roomTranslationList[object.getAttribute("destination")]);
+                	}
+                }
+
+                if (fromRoom === toRoom) { 
+                	object.setAttribute("x", object.getAttribute("x")+30);
+                	object.setAttribute("y", object.getAttribute("y")+30);
+                }
+
+                // add group id if source object was grouped
+                if (object.getAttribute("group") && object.getAttribute("group") > 0) {
+                    object.setAttribute("group", object.getAttribute("group")+1);
+                }
+
+                object.updateClients();
+
+                if (object.hasContent()) {
+                    object.updateClient(socket,'contentUpdate',object.hasContent(socket));
+                }
+
+                idList.push(object.id);
+
+            }
+
+            updateRoomLinks();
+
+            if (socket && responseID) {
+                Modules.Dispatcher.respond(socket,responseID,idList);
+            }
+        }
+    }
+
+    for (var key in objectList) {
+        var object=objectList[key];
+
+		if (object.getType() === "Subroom") {
+			var roomData = {};
+			roomData.fromRoom = object.getAttribute("destination");
+			roomData.toRoom = toRoom;
+
+			_.extend(roomTranslationList, ObjectManager.duplicateRoom(socket,roomData,responseID,updateRoomLinks,transactionId));
+		}
+
+        Modules.Connector.mayRead(fromRoom, object.id, context, function(mayRead) {
+
+            if (mayRead) {
+
+                Modules.Connector.mayInsert(toRoom, context, function(mayInsert) {
+
+                    if (mayInsert) {
+
+                        Modules.Connector.duplicateObject(fromRoom,object.id,function(newId,oldId) {
+                            var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+
+                            // remove old object if the action was cut
+                            if (cut) {
+                                var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
+                                oldObject.remove();
+                            }
+
+                            newObjects.push(obj);
+                            idTranslationList[oldId] = newId;
+
+
+                            var historyEntry = {
+                                "action" : "duplicate",
+                                "objectID" : newId,
+                                "roomID" : toRoom
+                            }
+                            that.history.add(transactionId, context.user.username, historyEntry);
+
+                            updateObjects(); //try to update objects
+
+                        },context,toRoom);
+
+                    } else {
+                        Modules.SocketServer.sendToSocket(socket,'error','No rights to insert in room '+toRoom);
+                    }
+
+                });
+
+            } else {
+                Modules.SocketServer.sendToSocket(socket,'error','No rights to read '+object.id);
+            }
+
+        });
+    }
+}
+
+ObjectManager.duplicateRoom = function(socket,data,responseID,updateRoomLinks,transactionId) {
+    var that = this;
+
+    var context=Modules.UserManager.getConnectionBySocket(socket);
+
+    var cut=data.cut;
+    var fromRoom=data.fromRoom; // room id of the room that is to be duplicated
+    var toRoom=data.toRoom; // room id of the parent room where the duplicated room is inserted
+
+    var roomTranslationList = {}; // list of old room ids and their duplicated new ids
+
+    if (fromRoom !== undefined) { 
+		var objects=Modules.Connector.getInventory(fromRoom, context);
+	} else {
+		// room corresponding to the link not initialized yet
+		var objects = [];
+	}
+
+    // create a new subroom in toRoom
+    var uuid = require('node-uuid');
+    Modules.Connector.mayInsert(toRoom, context, function(mayInsert) {
+    	if (mayInsert) {
+        	var newRoom = Modules.Connector.getRoomData(uuid.v4(),context,undefined,toRoom);
+        	toRoom = newRoom.id;
+        	roomTranslationList[fromRoom] = newRoom.id;
+        } else {
+        	Modules.SocketServer.sendToSocket(socket,'error','No rights to insert in room '+toRoom);
+        }
+    });
+
+    // var transactionId = new Date().getTime(); ?
+
+    // collect unique objects to duplicate (each linked object only once)
+    var objectList = {};
+    var objectCount = 0;
+    for (var key in objects) {
+        var object=ObjectManager.getObject(fromRoom,objects[key].id,context);
+        if (!object){
+            continue;
+        }
+        if (!(objects[key].id in objectList)) {
+            objectList[objects[key].id] = object;
             objectCount++;
             var linkedObjects = object.getObjectsToDuplicate();
             for (var linkedKey in linkedObjects) {
@@ -812,8 +1023,10 @@ ObjectManager.duplicate = function(socket,data,responseID){
 
                 object.updateLinkIds(idTranslationList); //update links
 
-                object.setAttribute("x", object.getAttribute("x")+30);
-                object.setAttribute("y", object.getAttribute("y")+30);
+                if (fromRoom === toRoom) { 
+                	object.setAttribute("x", object.getAttribute("x")+30);
+                	object.setAttribute("y", object.getAttribute("y")+30);
+                }
 
                 // add group id if source object was grouped
                 if (object.getAttribute("group") && object.getAttribute("group") > 0) {
@@ -827,17 +1040,22 @@ ObjectManager.duplicate = function(socket,data,responseID){
                 }
 
                 idList.push(object.id);
-
             }
 
-            if (socket && responseID) {
-                Modules.Dispatcher.respond(socket,responseID,idList);
-            }
+            updateRoomLinks();
         }
     }
 
     for (var key in objectList) {
         var object=objectList[key];
+
+		if (object.getType() === "Subroom") {
+			var roomData = {};
+			roomData.fromRoom = object.getAttribute("destination");
+			roomData.toRoom = toRoom;
+
+			_.extend(roomTranslationList, ObjectManager.duplicateRoom(socket,roomData,responseID,updateRoomLinks,transactionId));
+		}
 
         Modules.Connector.mayRead(fromRoom, object.id, context, function(mayRead) {
 
@@ -884,6 +1102,13 @@ ObjectManager.duplicate = function(socket,data,responseID){
 
         });
     }
+
+    if (Object.keys(objectList).length === 0) {
+    	updateRoomLinks();
+    }
+
+    // return list of old room ids => new room ids
+    return roomTranslationList;
 }
 
 module.exports=ObjectManager;
