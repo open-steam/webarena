@@ -16,6 +16,8 @@ mime.default_type = 'text/plain';
 var Q = require('q');
 var http = require('http');
 
+var mySecret = "agpeughpu1208415uiag";
+
 /*
  *	init
  *
@@ -29,15 +31,20 @@ WebServer.init = function (theModules) {
     var app = express(),
         fs = require('fs');
 
-    var httpServer = http.createServer(app)
+    var httpServer = http.createServer(app);
 
     WebServer.server = httpServer;
     httpServer.listen(global.config.port);  // start server (port set in config)
 
     //TODO - only show if needed
     //app.use(express.logger());
+    app
+        .use(express.bodyParser())
+        .use(express.cookieParser(mySecret))
+        .use(express.session())
 
     //Handling of IE
+    //Requests from IE will not be served - simply return message that the browser isn't supported
     app.use(function(req, res, next){
         var agent = req.headers['user-agent'];
 
@@ -45,7 +52,6 @@ WebServer.init = function (theModules) {
             res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
             var data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
             res.end(data);
-
         }
         else {
             next();
@@ -55,25 +61,24 @@ WebServer.init = function (theModules) {
     //Handling for user context
     app.use(function(req, res, next){
         var url = req.url.replace('%20', ' ');
+        var userHash = false;
+        var context = false;
 
         /* get userHash */
         var userHashIndex = url.indexOf("/___");
         if (userHashIndex > -1) {
             /* userHash found */
-
-            var userHash = url.slice(userHashIndex + 1);
+            userHash = url.slice(userHashIndex + 1);
             url = url.slice(0, userHashIndex);
-
-            var context = Modules.UserManager.getConnectionByUserHash(userHash);
-
-        } else {
-            var userHash = false;
-            var context = false;
+            context = Modules.UserManager.getConnectionByUserHash(userHash);
         }
         req.userHash = userHash;
         req.context = context;
         next();
     });
+
+
+
 
     app.get("/", function(req,res){
         res.redirect(Modules.config.homepage)
@@ -347,27 +352,33 @@ WebServer.init = function (theModules) {
     app.get("/defaultJavascripts", function(req, res){
         //combine all javascript files in guis.common/javascript
         Q.nfcall(fs.readdir, 'Client/guis.common/javascript').then(function(files){
+            //Sort files numeric
+            //Numbers are used to provide right load ordering
             files.sort(function (a, b) {
                 return parseInt(a) - parseInt(b);
             });
-            var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
 
+            //Only include javascript files
+            var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
             files = _.filter(files, function (fname) {
                 return fileReg.test(fname);
             })
 
             var etag = "";
 
-
+            //look: can we still use the cached version?
             files.forEach(function (file) {
                 var stats = fs.statSync('Client/guis.common/javascript/' + file);
                 etag += stats.size + '-' + Date.parse(stats.mtime);
             })
 
+            //nothing changed - use the old version
             if (req.headers['if-none-match'] === etag) {
                 res.statusCode = 304;
                 res.end();
-            } else {
+            }
+            //create a new version
+            else {
                 var readFileQ = Q.denodeify(fs.readFile);
 
                 var promises = files.map(function(filename){
@@ -507,5 +518,6 @@ WebServer.init = function (theModules) {
     })
 
 };
+
 
 module.exports = WebServer;
