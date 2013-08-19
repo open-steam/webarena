@@ -135,7 +135,7 @@ WebServer.init = function (theModules) {
             });
     });
 
-    app.post("/setContent/:roomID/:objectID", function(req, res){
+    app.post("/setContent/:roomID/:objectID/*", function(req, res){
         var context = req.context;
 
 
@@ -242,12 +242,11 @@ WebServer.init = function (theModules) {
             var data = object.getContent();
             res.end(new Buffer(data));
         }
-
-
     });
 
 
     app.get("/getPreviewContent/*", function(req, res){
+        var context = req.context;
         var url = req.url.replace('%20', ' ');
 
         var ids = url.substr(19).split('/');
