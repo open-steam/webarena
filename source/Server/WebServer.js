@@ -16,8 +16,6 @@ mime.default_type = 'text/plain';
 var Q = require('q');
 var http = require('http');
 
-var mySecret = "agpeughpu1208415uiag";
-
 /*
  *	init
  *
@@ -38,10 +36,10 @@ WebServer.init = function (theModules) {
 
     //TODO - only show if needed
     //app.use(express.logger());
-    app
-        .use(express.bodyParser())
-        .use(express.cookieParser(mySecret))
-        .use(express.session())
+//    app
+//        .use(express.bodyParser())
+//        .use(express.cookieParser())
+//        .use(express.session())
 
     //Handling of IE
     //Requests from IE will not be served - simply return message that the browser isn't supported
