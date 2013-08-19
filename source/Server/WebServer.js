@@ -318,33 +318,33 @@ WebServer.init = function (theModules) {
         });
     });
 
-    app.get("/javascriptDependencies", function(req, res){
-        if(process.env.NODE_ENV === "production"){
-            //TODO: cache combined file - don't recalculate each time
-        } else {
-
-            var jsDeps = require("../Client/javascriptDependencies.js")
-            var readFileQ = Q.denodeify(fs.readFile);
-
-            var promises = jsDeps.map(function(filename){
-                return readFileQ("Client/" + filename);
-            })
-
-            var combinedJS = "";
-
-            //Go on if all files are loaded
-            Q.allSettled(promises).then(function(results){
-                results.forEach(function(result){
-                    combinedJS += result.value + "\n";
-                })
-
-                var mimeType = 'text/javascript';
-                res.writeHead(200, {'Content-Type': mimeType});
-
-                res.end(combinedJS);
-            })
-        }
-    });
+//    app.get("/javascriptDependencies", function(req, res){
+//        if(process.env.NODE_ENV === "production"){
+//            //TODO: cache combined file - don't recalculate each time
+//        } else {
+//
+//            var jsDeps = require("../Client/javascriptDependencies.js")
+//            var readFileQ = Q.denodeify(fs.readFile);
+//
+//            var promises = jsDeps.map(function(filename){
+//                return readFileQ("Client/" + filename);
+//            })
+//
+//            var combinedJS = "";
+//
+//            //Go on if all files are loaded
+//            Q.allSettled(promises).then(function(results){
+//                results.forEach(function(result){
+//                    combinedJS += result.value + "\n";
+//                })
+//
+//                var mimeType = 'text/javascript';
+//                res.writeHead(200, {'Content-Type': mimeType});
+//
+//                res.end(combinedJS);
+//            })
+//        }
+//    });
 
     app.get("/defaultJavascripts", function(req, res){
         //combine all javascript files in guis.common/javascript
