@@ -139,7 +139,9 @@ class User extends CI_Model {
     function loadCourseData($frozen = false, $admin = false) {
         log_message("debug", "user loadCourseData: username = ".$this->username);
         
-        require_once(APPPATH . 'models/Course.php');
+        if (!class_exists('Course')) {
+            require_once(APPPATH . 'models/Course.php');
+        }
         
         foreach ($this->courses as $courseID) {
             $course = new Course();
@@ -168,7 +170,9 @@ class User extends CI_Model {
     function loadAllCourseData() {
         log_message("debug", "user loadAllCourseData: username = ".$this->username);
         
-        require_once(APPPATH . 'models/Course.php');
+        if (!class_exists('Course')) {
+            require_once(APPPATH . 'models/Course.php');
+        }
         
         $courses = scandir($this->config->item('courseFolder'));
         foreach ($courses as $courseID) {

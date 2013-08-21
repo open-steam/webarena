@@ -36,7 +36,7 @@
                                 <?php
                                 if ($is_admin && !($course->isFrozen())) {
                                     ?>
-                                    <input type="text" id="inputCourseName" name="courseName" placeholder="Kursname" value="<?php echo $course->getName(); ?>" required>
+                                    <input type="text" id="inputCourseName" name="courseName" placeholder="Kursname" value="<?php echo htmlspecialchars($course->getName()); ?>" required>
                                     <img class="feedbackIcon" src="" />
                                     <?php
                                 } else {
@@ -51,7 +51,7 @@
                                 <?php
                                 if ($is_admin && !($course->isFrozen())) {
                                     ?>
-                                    <textarea id="inputDescription" name="description" placeholder="Beschreibung"><?php echo $course->getDescription(); ?></textarea>
+                                    <textarea id="inputDescription" name="description" placeholder="Beschreibung"><?php echo htmlspecialchars($course->getDescription()); ?></textarea>
                                     <img class="feedbackIcon" src="" />
                                     <?php
                                 } else {

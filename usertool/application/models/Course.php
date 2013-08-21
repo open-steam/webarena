@@ -95,7 +95,10 @@ class Course extends CI_Model {
     function loadMemberData($loadUserData = false) {
         log_message("debug", "course loadMemberData: id = ".$this->id." loadUserData = ".$loadUserData);
         
-        require_once(APPPATH . 'models/User.php');
+        if (!class_exists('User')) {
+            require_once(APPPATH . 'models/User.php');
+        }
+        
         $filename = $this->config->item('courseFolder') . "/" . $this->id;
         $this->members = array();
         $members = scandir($filename . "/verified");
