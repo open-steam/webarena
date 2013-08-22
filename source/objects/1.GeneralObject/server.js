@@ -23,15 +23,18 @@ var _ = require('underscore');
 module.exports=theObject;
 
 
+// ****************************************************************
+// * MAKE REACTIVE ************************************************
+// ****************************************************************
+
 theObject.makeReactive=function(){
 	this.isReactiveFlag=true;
 	
 	var theObject=this;
 	
-	theObject.onObjectMove=function(changeData){
+	this.onObjectMove=function(changeData){
 		
-		console.log('calling evaluate on'+this);
-		console.trace();
+		console.log('calling onObjectMove on reactiveObject '+this);
 	
 		//complete data
 		
@@ -136,12 +139,14 @@ theObject.makeReactive=function(){
 	
 	
 	/**
-	*	ReActiveObjects evaluate other objects in respect to themselves.
+	*	ReactiveObjects evaluate other objects in respect to themselves.
 	*
 	*	object the object that shall be evaluated
 	*	changeData old and new values of positioning (e.g. changeData.old.x) 
 	**/
 	theObject.evaluateObject=function(object,changeData){
+		
+		console.log('calling evaluateObject on '+this);
 		
 		//complete data
 		
@@ -168,54 +173,55 @@ theObject.makeReactive=function(){
 		if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
 	}
 	
-	
-	theObject.onMoveWithin=function(object,data){
+	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
 		
 	};
 	
-	theObject.onMoveOutside=function(object,data){
+	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
 		
 	};
 	
-	theObject.onLeave=function(object,data){
+	if (!theObject.onLeave) theObject.onLeave=function(object,data){
 		
 	};
 	
-	theObject.onEnter=function(object,data){
+	if (!theObject.onEnter) theObject.onEnter=function(object,data){
 		
 	};
-	
-	theObject.getGreenPositions=function(object){
-		
-		var result=false;
-		
-		return result;
-		
-	}
-	
-	theObject.getRedPositions=function(object){
-		
-		var result=false;
-		
-		return result;
-		
-	}
 
 }
+
+theObject.makeReacting=theObject.makeReactive;
+
+// ****************************************************************
+// * MAKE STRUCTURING *********************************************
+// ****************************************************************
 
 theObject.makeStructuring=function(){
 	this.isStructuringFlag=true;
 	this.makeReactive();
 	this.isActiveFlag=false;
 	
-	this.onObjectMove=function(){
+	if (!this.onObjectMove) this.onObjectMove=function(changeData){
+		
+		//when a structuring object is moved, every active object may be in need of repositioning
+		
+		console.log('obObjectMove on structuring object '+this);
+		
+		this.getRoom().placeActiveObjects();
 	}
-	this.onNewObject=function(){
+	
+	//returns limits for an area, where this object wants
+	//the object activeObject to be in.
+	//returns false, when there it does not care about activeObject
+	if (!this.getPositioningLimitsFor) this.getPositioningLimitsFor=function(activeObject){
+		
+		var result=false;
+		
+		return result;
+		
 	}
-	this.placeObjects=function(){
-	}
-	this.placeObject=function(){
-	}
+
 }
 
 
