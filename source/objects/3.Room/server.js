@@ -40,8 +40,6 @@ theObject.placeActiveObjects=function(){
 	
 	var objects=this.getInventory();
 	
-	console.log('placeActiveObjects');
-	
 	for (var key in objects){
 		var active=objects[key];
 		if (active.isActive()){

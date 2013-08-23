@@ -14,7 +14,12 @@ module.exports=theObject;
 theObject.onLeave=function(object,oldData,newData){
 	
 	if (this.checkData()){
-		console.log(this.getData());
+		var data=this.getData();
+		
+		if (object.getAttribute(data.attribute)===data.value){
+			object.setAttribute(data.attribute,'');
+			console.log('Attribute '+data.attribute+' has been unset');
+		}
 	}
 
 };
@@ -22,7 +27,13 @@ theObject.onLeave=function(object,oldData,newData){
 theObject.onEnter=function(object,oldData,newData){
 	
 	if (this.checkData()){
-		console.log(this.getData());
+		var data=this.getData();
+		
+		if (object.getAttribute(data.attribute)!==data.value){
+			object.setAttribute(data.attribute,data.value);
+			console.log('Attribute '+data.attribute+' has been set to '+data.value);
+		}
+		
 	}
 };
 

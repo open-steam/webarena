@@ -202,7 +202,7 @@ theObject.makeStructuring=function(){
 	this.makeReactive();
 	this.isActiveFlag=false;
 	
-	if (!this.onObjectMove) this.onObjectMove=function(changeData){
+	this.onObjectMove=function(changeData){
 		
 		//when a structuring object is moved, every active object may be in need of repositioning
 		
