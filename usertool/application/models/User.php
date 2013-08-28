@@ -257,5 +257,32 @@ class User extends CI_Model {
             }
         }
     }
+    
+    function deleteUser() {
+        // delete course files
+        foreach ($this->courses as $course) {
+            $appliedFile = $this->config->item('courseFolder') . "/" . $course . "/verified/" . $this->username . ".txt";
+            $verifiedFile = $this->config->item('courseFolder') . "/" . $course . "/verified/" . $this->username . ".txt";
+            
+            if (file_exists($appliedFile)) {
+                if (!unlink($appliedFile)) {
+                    return false;
+                }
+            }
+            if (file_exists($verifiedFile)) {
+                if (!unlink($verifiedFile)) {
+                    return false;
+                }
+            }
+        }
+        
+        // delete user file
+        $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
+        if (unlink($filename)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 ?>

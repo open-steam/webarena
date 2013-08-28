@@ -95,7 +95,7 @@ $('#userTable input').on('keyup', function(event) {
     }
 });
 $('#passwordForm').submit(function() {
-    $('#passwordFeedback').html('');
+    $('#passwordFeedback').html('&nbsp;');
     
     var data = {};
     data.passwordOld = document.getElementById('passwordOld').value;
@@ -124,4 +124,25 @@ $('#passwordForm').submit(function() {
             }
         }
     });
+});
+
+$('#deleteButton').click(function() {
+    var data = {};
+    
+    var response = confirm('Ihren Account wirklich löschen?');
+    if (response) {
+        $.ajax({
+            url: baseURL + 'logout/delete',
+            type: 'POST',
+            data: data,
+            success: function(json) {
+                var decodedJSON = $.parseJSON(json);
+                if (decodedJSON["status"] === "success") {
+                    window.location.reload();
+                } else {
+                    alert('Es ist etwas schief gelaufen...');
+                }
+            }
+        });
+    }
 });

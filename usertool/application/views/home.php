@@ -4,11 +4,14 @@
     <div class="row">
         <div class="span3"></div>
         <div class="span7">
-            <form autocomplete="off">
+            <form autocomplete="off" onsubmit="return false;">
                 <table class="table table-striped table-bordered" id="userTable" style="width:100%;">
                     <thead>
                         <tr>
-                            <th colspan="2">Mein Profil</th>
+                            <th colspan="2">
+                                Mein Profil
+                                <button id="deleteButton" class="btn btn-primary" style="float:right;" type="button">Account löschen</button>
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
@@ -35,7 +38,7 @@
                         <tr>
                             <td>Email:</td>
                             <td>
-                                <input type="email" id="inputEmail" name="email" placeholder="Email" value="<?php echo htmlspecialchars($user->getEmail()); ?>" required>
+                                <input type="email" id="inputEmail" name="email" placeholder="Email" value="<?php echo htmlspecialchars($user->getEmail()); ?>">
                                 <img class="feedbackIcon" src="" />
                             </td>
                         </tr>
@@ -80,7 +83,7 @@
                                 <center>
                                     <button type="submit" class="btn btn-primary">Passwort ändern</button>
                                     <br><br>
-                                    <b id="passwordFeedback"></b>
+                                    <b id="passwordFeedback">&nbsp;</b>
                                 </center>
                             </td>
                         </tr>
