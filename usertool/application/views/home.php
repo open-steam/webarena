@@ -64,15 +64,15 @@
                             </td>
                         </tr>
                         <tr>
-                            <td style="width:50%;">Altes Passwort wiederholen:</td>
-                            <td>
-                                <input type="password" id="passwordOld2" name="passwordOld2" placeholder="Altes Passwort" value="" required>
-                            </td>
-                        </tr>
-                        <tr>
                             <td style="width:50%;">Neues Passwort:</td>
                             <td>
                                 <input type="password" id="passwordNew" name="passwordNew" placeholder="Neues Passwort" value="" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="width:50%;">Neues Passwort wiederholen:</td>
+                            <td>
+                                <input type="password" id="passwordNew2" name="passwordNew2" placeholder="Neues Passwort" value="" required>
                             </td>
                         </tr>
                         <tr>

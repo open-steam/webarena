@@ -318,16 +318,20 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 				event.preventDefault();
 
-				/* delete selected objects */
-				$.each(ObjectManager.getSelected(), function(key, object) {
+				var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
 
-					if ($(object.getRepresentation()).data("jActionsheet")) {
-						$(object.getRepresentation()).data("jActionsheet").remove();
-					}
+				if (result) {
+					/* delete selected objects */
+					$.each(ObjectManager.getSelected(), function(key, object) {
 
-					object.deleteIt();
+						if ($(object.getRepresentation()).data("jActionsheet")) {
+							$(object.getRepresentation()).data("jActionsheet").remove();
+						}
 
-				});
+						object.deleteIt();
+
+					});
+				}
 			}
 			
 		}

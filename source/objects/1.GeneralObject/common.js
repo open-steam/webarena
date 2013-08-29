@@ -28,6 +28,39 @@ GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
 
 
+GeneralObject.makeActive=function(activeFunction){
+	if (!activeFunction || activeFunction===true){
+		this.isActive=function(){
+			return false;
+		}
+	} else {
+		this.isActive=function(){
+			return activeFunction();
+		}
+	}
+}
+
+GeneralObject.makeReactive=function(){
+	this.isReactiveFlag=true;
+}
+
+GeneralObject.makeStructuring=function(){
+	this.isStructuringFlag=true;
+}
+
+GeneralObject.isActive=function(){
+	return false;
+}
+
+GeneralObject.isReactive=function(){
+	return this.isReactiveFlag||false;
+}
+
+GeneralObject.isStructuring=function(){
+	return this.isStructuringFlag||false;
+}
+
+
 /**
  * Checks if an objects is moved by transform
  * @returns {bool} True if moved by transform

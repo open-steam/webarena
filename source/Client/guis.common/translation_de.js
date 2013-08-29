@@ -50,6 +50,7 @@ GUI.setTranslations('de',{
 	'You are duplicating' : 'Sie duplizieren',
 	'You are pasting' : 'Sie fügen ein:',
 	'objects' : 'Objekte',
-	'Do you want to continue?' : 'Wollen Sie fortsetzen?'
+	'Do you want to continue?' : 'Wollen Sie fortsetzen?',
+	'Do you really want to delete the marked objects?' : 'Ausgewählte Objekte wirklich löschen?'
 }
 );

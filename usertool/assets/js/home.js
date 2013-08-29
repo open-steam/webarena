@@ -99,8 +99,8 @@ $('#passwordForm').submit(function() {
     
     var data = {};
     data.passwordOld = document.getElementById('passwordOld').value;
-    data.passwordOld2 = document.getElementById('passwordOld2').value;
     data.passwordNew = document.getElementById('passwordNew').value;
+    data.passwordNew2 = document.getElementById('passwordNew2').value;
     $.ajax({
         url: baseURL + 'login/password',
         type: 'POST',
@@ -118,8 +118,8 @@ $('#passwordForm').submit(function() {
                     setTimeout(function() { $('#passwordFeedback').html('Neues Passwort konnte nicht gespeichert werden.'); }, 200);
                 } else if (decodedJSON["error"] === "invalid") {
                     setTimeout(function() { $('#passwordFeedback').html('Altes Passwort ist nicht korrekt.'); }, 200);
-                } else if (decodedJSON["error"] === "oldPassword") {
-                    setTimeout(function() { $('#passwordFeedback').html('Altes Passwort stimmt nicht überein.'); }, 200);
+                } else if (decodedJSON["error"] === "newPassword") {
+                    setTimeout(function() { $('#passwordFeedback').html('Neues Passwort stimmt nicht überein.'); }, 200);
                 }
             }
         }

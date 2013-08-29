@@ -135,6 +135,63 @@
         </div>
         <div class = "span1"></div>
     </div>
+    <?php
+    $hasApplied = false;
+    foreach ($user->getCoursesMember() as $course) {
+        if (count($course->getApplied()) > 0) {
+            $hasApplied = true;
+            break;
+        }
+    }
+    if ($is_admin && $hasApplied) {
+        ?>
+        <hr>
+        <b>Schwebende Anmeldungen in verwalteten Kursen</b>
+        <input type="hidden" id="baseURL" value="<?php echo $this->config->base_url(); ?>">
+        <table id="appliedAdminTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
+            <thead>
+                <tr>
+                    <th style="width:50%;">Kurs</th>
+                    <th style="width:50%;">Benutzer</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <?php
+                foreach ($user->getCoursesMember() as $course) {
+                    if (count($course->getApplied()) > 0) {
+                        foreach ($course->getApplied() as $applied) {
+                            ?>
+                            <tr>
+                                <td><a href="<?php echo $this->config->base_url() . "courses/" . $course->getId(); ?>"><?php echo $course->getName(); ?></a></td>
+                                <td><?php echo $applied->getUsername() . " (" . $applied->getFullName() . ")"; ?></td>
+                                <td>
+                                    <form action="" method="post" style="margin: 0 0 0 0;">
+                                        <input type="hidden" class="username" value="<?php echo $applied->getUsername(); ?>">
+                                        <input type="hidden" class="courseID" value="<?php echo $course->getId(); ?>">
+                                        <input type="button" class="btn btn-primary verifyButton" value="Anmeldung bestätigen"/>
+                                    </form>
+                                </td>
+                                <td>
+                                    <form action="" method="post" style="margin: 0 0 0 0;">
+                                        <input type="hidden" class="username" value="<?php echo $applied->getUsername(); ?>">
+                                        <input type="hidden" class="courseID" value="<?php echo $course->getId(); ?>">
+                                        <input type="hidden" class="courseName" value="<?php echo $course->getName(); ?>">
+                                        <input type="button" class="btn btn-primary deleteUserButton" value="Anmeldung ablehnen"/>
+                                    </form>
+                                </td>
+                            </tr>
+                            <?php
+                        }
+                    }
+                }
+                ?>
+            </tbody>
+        </table>
+        <?php
+    }
+    ?>
     <hr>
 </div>
 

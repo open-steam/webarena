@@ -15,19 +15,12 @@ Subroom.register=function(type){
 	
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
-
-	this.unregisterAction('Duplicate');
+	
+	var self=this;
 	
 	this.registerAction('Follow',function(){
 		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var object = selected[i];
-			
-			object.execute();
-			
-		}
+		self.execute();
 		
 	},true);
 	
@@ -38,6 +31,7 @@ Subroom.execute=function(){
 	
 	var destination=this.getAttribute('destination');
 	
+	//TODO this must be done serverside in the connector
 	if (!destination) {
 		var random=new Date().getTime()-1296055327011;
 		
