@@ -16,7 +16,7 @@ class Login extends CI_Controller {
                 if ($this->user->loadUserData($this->input->post('username'))) {
                     $password = $this->encrypt->sha1($this->config->item('encryption_key').$this->input->post('password'));
                     if ($this->user->login($password)) {
-                        $this->session->set_userdata('username', $this->input->post('username'));
+                        $this->session->set_userdata('username', $this->user->getUsername());
                         $this->session->set_userdata('logged_in', TRUE);
                         $this->session->set_userdata('password', $password);
                         if (in_array($this->input->post('username'), $this->config->item('admins'))) {

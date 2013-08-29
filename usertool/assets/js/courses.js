@@ -3,10 +3,12 @@ var baseURL = document.getElementById('baseURL').value;
 $(document).ready(function() {
     $("#appliedTable").tablesorter();
     $("#appliedAdminTable").tablesorter({
+        sortList: [[0,0]],
         headers: {2: {sorter: false},
                   3: {sorter:false}}
     });
     $("#verifiedTable").tablesorter({
+        sortList: [[0,0]],
         headers: {3: {sorter: false}}
     });
 });

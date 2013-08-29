@@ -16,6 +16,7 @@ File.register=function(type){
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
 	
+	this.makeActive();
 	this.registerAttribute('bigIcon',{type:'boolean',standard:true,changedFunction: function(object) { 
 		object.updateIcon(); 
 	}, checkFunction: function(object, value) {

@@ -95,7 +95,10 @@ class Course extends CI_Model {
     function loadMemberData($loadUserData = false) {
         log_message("debug", "course loadMemberData: id = ".$this->id." loadUserData = ".$loadUserData);
         
-        require_once(APPPATH . 'models/User.php');
+        if (!class_exists('User')) {
+            require_once(APPPATH . 'models/User.php');
+        }
+        
         $filename = $this->config->item('courseFolder') . "/" . $this->id;
         $this->members = array();
         $members = scandir($filename . "/verified");
@@ -104,9 +107,10 @@ class Course extends CI_Model {
             if ($member != "." && $member != "..") {
                 if ($loadUserData) {
                     $user = new User();
-                    $user->loadUserData(basename($member, ".txt"));
-                    $user->setWriteAccess($this->checkUserAccess(basename($member, ".txt")));
-                    array_push($this->members, $user);
+                    if ($user->loadUserData(basename($member, ".txt"))) {
+                        $user->setWriteAccess($this->checkUserAccess(basename($member, ".txt")));
+                        array_push($this->members, $user);
+                    }
                 } else {
                     array_push($this->members, basename($member, ".txt"));
                 }
@@ -119,8 +123,9 @@ class Course extends CI_Model {
             if ($member != "." && $member != "..") {
                 if ($loadUserData) {
                     $user = new User();
-                    $user->loadUserData(basename($member, ".txt"));
-                    array_push($this->applied, $user);
+                    if ($user->loadUserData(basename($member, ".txt"))) {
+                        array_push($this->applied, $user);
+                    }
                 } else {
                     array_push($this->applied, basename($member, ".txt"));
                 }

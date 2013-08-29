@@ -8,6 +8,7 @@
             <li><a href="<?php echo $this->config->site_url("courses/create"); ?>">Kurs erstellen</a></li>
         <?php } ?>
     </ul>
+    <input type="hidden" id="baseURL" value="<?php echo $this->config->base_url(); ?>">
     <div class="row">
         <div class="span1"></div>
         <div class="span10">
@@ -147,7 +148,6 @@
         ?>
         <hr>
         <b>Schwebende Anmeldungen in verwalteten Kursen</b>
-        <input type="hidden" id="baseURL" value="<?php echo $this->config->base_url(); ?>">
         <table id="appliedAdminTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
             <thead>
                 <tr>

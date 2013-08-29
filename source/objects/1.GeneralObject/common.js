@@ -31,7 +31,7 @@ GeneralObject.ObjectManager=Modules.ObjectManager;
 GeneralObject.makeActive=function(activeFunction){
 	if (!activeFunction || activeFunction===true){
 		this.isActive=function(){
-			return false;
+			return true;
 		}
 	} else {
 		this.isActive=function(){
@@ -43,6 +43,8 @@ GeneralObject.makeActive=function(activeFunction){
 GeneralObject.makeReactive=function(){
 	this.isReactiveFlag=true;
 }
+
+GeneralObject.makeReacting=GeneralObject.makeReactive;
 
 GeneralObject.makeStructuring=function(){
 	this.isStructuringFlag=true;
