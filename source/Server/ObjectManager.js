@@ -423,8 +423,10 @@ ObjectManager.init=function(theModules){
             if(!lastChange.blocked){
                 var changeSet = lastChange.changeSet;
                 var undoMessage = ""
+                try{
                 changeSet.forEach(function(e){
                     var object=ObjectManager.getObject(e.roomID,e.objectID,context);
+
 
                     if(e.action === 'delete'){
                         Modules.Connector.duplicateObject(e.roomID, e.objectID, function(newId){
@@ -446,7 +448,11 @@ ObjectManager.init=function(theModules){
                         undoMessage = "Undo of the action isn't supported";
                     }
                 });
-				Modules.SocketServer.sendToSocket(socket,'infotext', undoMessage);
+                    Modules.SocketServer.sendToSocket(socket,'infotext', undoMessage);
+                } catch (e) {
+                    Modules.SocketServer.sendToSocket(socket,'infotext', "info.error");
+                }
+
                 that.history.removeHistoryEntry(lastChange.transactionId);
 
             } else {
