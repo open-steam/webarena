@@ -257,7 +257,6 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 
 		
 		if(! this.transactionId){
-			console.log("INIIIIT")
 			that.transactionId = new Date().getTime();
 		} else {
 			window.transactionTimer = window.setTimeout(function(){
