@@ -216,11 +216,21 @@ ObjectManager.contentUpdate=function(data){
 }
 
 ObjectManager.remove=function(object){
-    console.log("REMOVE");
+    var that = this;
+    if(! this.transactionId){
+        that.transactionId = new Date().getTime();
+    } else {
+        window.transactionTimer = window.setTimeout(function(){
+            //calculate new transactionId
+            //TODO: isn't safe - concurrent users may result in same timestamp
+            that.transactionId = new Date().getTime();
+        }, this.transactionTimeout);
+    }
+
     Modules.SocketClient.serverCall('deleteObject',{
         'roomID':object.getRoomID(),
         'objectID':object.getID(),
-        'transactionId' : new Date().getTime(),
+        'transactionId': that.transactionId,
         'userId' : GUI.userid
     });
 }
@@ -328,7 +338,8 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
 }
 
 ObjectManager.init=function(){
-
+    this.transactionId = false;
+    this.transactionTimeout = 500;
 	
 	Modules.Dispatcher.registerCall('infotext', function(text){
         var translatedText = GUI.translate(text);
