@@ -60,9 +60,9 @@ SimpleText.draw=function(external){
 
 
 
-SimpleText.createRepresentation = function() {
+SimpleText.createRepresentation = function(parnet) {
 	
-	var rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
 	GUI.svg.text(rep, 0, 0, "Text");
 

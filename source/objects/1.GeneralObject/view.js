@@ -12,9 +12,8 @@
  * @param {bool} external True if triggered externally (and not by the object itself)
  */
 GeneralObject.draw=function(external){
-	
+
 	if (!this.isGraphical) return;
-	
 	
 	var rep=this.getRepresentation();
 
@@ -141,8 +140,8 @@ GeneralObject.getRepresentation=function(){
 	var rep=document.getElementById(this.getAttribute('id'));
 
 	if (!rep){
-
-		var rep = this.createRepresentation();
+		var parent = $('#room_'+ObjectManager.getIndexOfObject(this.getAttribute("inRoom")));
+		var rep = this.createRepresentation(parent);
 		this.representationCreated();
 		
 	}
@@ -169,7 +168,7 @@ GeneralObject.createRepresentation = function() {
 
 	if (!this.isGraphical) return;
 
-	var rep = GUI.svg.rect(
+	var rep = GUI.svg.rect(parent,
 		10, //x
 		10, //y
 		10, //width
@@ -355,55 +354,60 @@ GeneralObject.adjustControls = function() {
 	var self = this;
 	
 	var rep = this.getRepresentation();
+
+	var couplingAdd = 0;
+	if (ObjectManager.getIndexOfObject(this.id) != 'left') {
+		couplingAdd = parseInt($('#room_right').attr('x'));
+	}
 	
 	if (this.controls) {
 	$.each(this.controls, function(index, control) {
 		
 		/* Position: right, vertically centered */
 		if (control.type == "x") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth();
+			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()+couplingAdd;
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
 		}
 		
 		/* Position: left, vertically centered */
 		if (control.type == "x2") {
-			var x = self.getViewBoundingBoxX();
+			var x = self.getViewBoundingBoxX()+couplingAdd;
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
 		}
 
 		/* Position: bottom, horizontally centered */
 		if (control.type == "y") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
+			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2+couplingAdd;
 			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight();
 		}
 		
 		/* Position: top, horizontally centered */
 		if (control.type == "y2") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
+			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2+couplingAdd;
 			var y = self.getViewBoundingBoxY();
 		}
 		
 		/* Position: left, top */
 		if (control.type == "xy1") {
-			var x = self.getViewX();
+			var x = self.getViewX()+couplingAdd;
 			var y = self.getViewY();
 		}
 		
 		/* Position: right, top */
 		if (control.type == "xy2") {
-			var x = self.getViewX()+self.getViewWidth();
+			var x = self.getViewX()+self.getViewWidth()+couplingAdd;
 			var y = self.getViewY();
 		}
 		
 		/* Position: right, bottom */
 		if (control.type == "xy3") {
-			var x = self.getViewX()+self.getViewWidth();
+			var x = self.getViewX()+self.getViewWidth()+couplingAdd;
 			var y = self.getViewY()+self.getViewHeight();
 		}
 		
 		/* Position: left, bottom */
 		if (control.type == "xy4") {
-			var x = self.getViewX();
+			var x = self.getViewX()+couplingAdd;
 			var y = self.getViewY()+self.getViewHeight();
 		}
 
@@ -837,8 +841,12 @@ GeneralObject.addControl = function(type, resizeFunction) {
  * (used by GeneralObject.moveRelative)
  */
 GeneralObject.saveMoveStartPosition = function() {
-	
-	this.moveObjectStartX = this.getViewX();
+	// TODO: schon vorher beim nicht bewegen; sonst wandert nach links
+	if (GUI.couplingModeActive && ObjectManager.getIndexOfObject(this.id) === 'right') {
+		this.moveObjectStartX = this.getViewX() + parseInt($('#couplingBar').attr('x1'));
+	} else {
+		this.moveObjectStartX = this.getViewX();
+	}
 	this.moveObjectStartY = this.getViewY();
 	
 }
@@ -856,6 +864,14 @@ GeneralObject.moveStart = function(event) {
 		var self = ObjectManager.getObject(this.id);
 	}
 
+	// move object from child to main canvas
+	//var rep = self.getRepresentation();
+	//$(rep).appendTo('#canvas');
+	// TODO
+	//if (ObjectManager.getIndexOfObject(this.id) === "right") {
+	//	$(rep).attr('x', parseInt($(rep).attr('x'))+parseInt($('#room_right').attr('x')));
+	//	console.log('test');
+	//}
 
 	if (!self.selected) self.select();
 	
@@ -876,10 +892,16 @@ GeneralObject.moveStart = function(event) {
 		self.moveStartMouseX = event.targetTouches[0].pageX;
 		self.moveStartMouseY = event.targetTouches[0].pageY;
 	}
-	
+
 	/* save start position for all selected objects */
 	$.each(ObjectManager.getSelected(), function(index, object) {
 		object.saveMoveStartPosition();
+
+		// append to main canvas
+		var rep = object.getRepresentation();
+		$(rep).appendTo('#canvas');
+
+		// TODO
 	});
 
 	self.moving = true;
@@ -888,7 +910,6 @@ GeneralObject.moveStart = function(event) {
 	self.hideControls();
 	
 	var move = function(event) {
-
 		if (GUI.isTouchDevice && event.touches.length > 1) return;
 
 		if (!self.moving) return;
@@ -916,6 +937,33 @@ GeneralObject.moveStart = function(event) {
 	};
 	
 	var end = function(event) {
+		// TODO
+		var rep = self.getRepresentation();
+		if (GUI.couplingModeActive) {
+			// coupling mode is switched on, determine if elements were moved between rooms
+			if ($('#couplingBar').attr('x1') < event.clientX) {
+				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
+					// moved from the left room the the right
+					$(rep).attr('x', $(rep).attr('x') - $('#room_right').attr('x'));
+					GUI.startNoAnimationTimer();
+					ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('left'), ObjectManager.getRoomID('right'), true);
+				} else {
+					$(rep).appendTo('#room_right');
+				}
+			} else {
+				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'right') {
+					// moved from the right room to the left
+					//$(rep).attr('x', event.clientX); // TODO x koordinate des objects
+					GUI.startNoAnimationTimer();
+					ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('right'), ObjectManager.getRoomID('left'), true);
+				} else {
+					$(rep).appendTo('#room_left');
+				}
+			}
+		} else {
+			// if coupling mode is switched off - drop elements on default canvas
+			$(rep).appendTo('#room_left');
+		}
 
 		event.preventDefault();
 		event.stopPropagation();
@@ -992,12 +1040,12 @@ GeneralObject.makeMovable = function() {
  * @param {int} dy Moved x distance
  */
 GeneralObject.moveRelative = function(dx, dy) {
-
+	// TODO
 	if (this.getAttribute("locked")) return;
-
+//console.log(this.moveObjectStartX+dx);
 	this.setViewX(this.moveObjectStartX+dx);
 	this.setViewY(this.moveObjectStartY+dy);
-	
+
 	this.adjustControls();
 	this.moveHandler();
 	
@@ -1328,7 +1376,12 @@ GeneralObject.clickRevertHandler = function(event) {
  * Called after an object movement
  */
 GeneralObject.moveHandler = function() {
-	this.setPosition(this.getViewX(), this.getViewY());	
+	//TODO: server call hier, übersetzen couplingbar
+	if ($('#couplingBar').length > 0 && $('#couplingBar').attr('x1') < this.getViewX()) {
+		this.setPosition(this.getViewX()-$('#couplingBar').attr('x1'), this.getViewY());	
+	} else {
+		this.setPosition(this.getViewX(), this.getViewY());	
+	}
 }
 
 /**

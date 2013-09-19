@@ -7,7 +7,7 @@
  * Refresh the SVG
  */
 GUI.refreshSVG = function() {
-	$("#content").hide().show();
+	$("#room_left").hide().show();
 	GUI.updateLayers();
 }
 
@@ -16,20 +16,28 @@ GUI.refreshSVG = function() {
  */
 GUI.initSVG = function() {
 	
+	// initialize svg canvas
 	$("#content").svg();
-	
-	GUI.svg = $("#content").svg('get');
-	GUI.svgDefs = GUI.svg.defs();
+	var canvas = $("#content svg");
+	$(canvas).attr('id', 'canvas');
+
+	var contentSVG = $("#content").svg('get');
+	GUI.svg = contentSVG;
+	GUI.svgDefs = contentSVG.defs();
+
+	// initialize two nested svgs for concurrent view of two rooms
+	var room_left = contentSVG.svg();
+	$(room_left).attr('id', 'room_left');
+	var room_right = contentSVG.svg();
+	$(room_right).attr('id', 'room_right');
 
 	$("#content").droppable({
 		accept: ".toolbar_draggable",
 		drop: function( event, ui ) {
 			$(ui.helper).hide();
 			ui.helper[0].callback(ui.offset.left, ui.offset.top);
-			
 		}
 	});
-
 }
 
 /**
@@ -40,7 +48,7 @@ GUI.updateLayers = function() {
 	/* check if layers must be updated */
 	var oldOrder = "";
 	
-	$("#content>svg").children().each(function(i, el) {
+	$("#room_left>svg").children().each(function(i, el) {
 	
 		var id = $(el).attr("id");
 		
@@ -70,7 +78,7 @@ GUI.updateLayers = function() {
 		
 		var rep = obj.getRepresentation();
 		
-		$(rep).prependTo("#content>svg");
+		$(rep).prependTo("#room_left>svg");
 		
 	}
 	

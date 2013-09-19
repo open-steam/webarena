@@ -180,6 +180,46 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 }
 
 /**
+*	getRoomHierarchy
+*
+*	returns the room hierarchy starting by given roomID as root
+*
+*/
+fileConnector.getRoomHierarchy=function(roomID,context){
+	var result = {
+		'rooms' : {},
+		'relation' : {},
+		'roots' : []
+	};
+
+	var fs = require('fs');
+	var files = fs.readdirSync(this.Modules.Config.filebase);
+
+    files = (files) ? files : [];
+
+    var self=this;
+
+	files.forEach(function(value,index) {
+		var obj=self.getObjectDataByFile(value,value);
+			
+		if (obj) {
+			result.rooms[value] = obj.attributes.name;
+			if (obj.attributes.parent !== undefined) {
+				if (result.relation[obj.attributes.parent] === undefined) {
+					result.relation[obj.attributes.parent] = new Array(value);
+				} else {
+					result.relation[obj.attributes.parent].push(value);
+				}
+			} else {
+				result.roots.push(value);
+			}
+		}
+	});
+
+	return result;
+}
+
+/**
 *	save the object (by given data)
 *
 *	if an "after" function is specified, it is called after saving

@@ -10,9 +10,10 @@ var Modules=false;
 var ObjectManager={};
 
 ObjectManager.isServer=false;
-ObjectManager.objects={};
-ObjectManager.currentRoomID=undefined;
-ObjectManager.currentRoom=false;
+ObjectManager.objects={'left':{},'right':{}};
+ObjectManager.objectsRight={'left':{},'right':{}};
+ObjectManager.currentRoomID={'left':false,'right':false};
+ObjectManager.currentRoom={'left':false,'right':false};
 ObjectManager.clientID = new Date().getTime()-1296055327011;
 ObjectManager.prototypes={};
 ObjectManager.user={};
@@ -34,14 +35,35 @@ ObjectManager.getPrototype=function(objType){
     return;
 }
 
-ObjectManager.getObject=function(objectID){
-	
-	//room?
-	if (objectID==this.currentRoomID){
-		return this.currentRoom;
+ObjectManager.getIndexOfObject=function(objectID) {
+	// room?
+	for (var index in this.currentRoomID) {
+		if (this.currentRoomID[index] === objectID) {
+			return index;
+		}
 	}
-	
-    return ObjectManager.objects[objectID];
+
+	for (var index in this.currentRoomID) {
+    	if (ObjectManager.objects[index][objectID] != undefined) {
+    		return index;
+    	}
+    }
+    return false;
+}
+
+ObjectManager.getObject=function(objectID){
+	//room?
+	for (var index in this.currentRoomID) {
+    	if (objectID==this.currentRoomID[index]) {
+    		return this.currentRoom[index];
+    	}
+    }
+
+    for (var index in this.currentRoomID) {
+    	if (ObjectManager.objects[index][objectID] != undefined) {
+    		return ObjectManager.objects[index][objectID];
+    	}
+    }
 }
 
 ObjectManager.buildObject=function(type, attributes){
@@ -59,14 +81,17 @@ ObjectManager.buildObject=function(type, attributes){
     object.type=proto.type;
     object.set('type',proto.type);
 
-    if (object.get('id') != this.currentRoomID) {
-        this.objects[object.id]=object;
-    } else {
-
-        this.currentRoom=object;
-        
-        this.currentRoom.isGraphical=false; // the current room cannot be positioned
-		
+    var isRoom = false;
+    for (var currentRoomIndex in this.currentRoomID) {
+    	if (object.get('id') == this.currentRoomID[currentRoomIndex]) {
+    		isRoom = true;
+    		this.currentRoom[currentRoomIndex]=object;
+        	this.currentRoom[currentRoomIndex].isGraphical=false; // the current room cannot be positioned
+    	}
+    }
+    if (!isRoom) {
+    	var index = ObjectManager.getIndexOfObject(attributes.inRoom);
+    	this.objects[index][object.id]=object;
     }
 
 	//Determine this room's contexts
@@ -85,17 +110,18 @@ ObjectManager.buildObject=function(type, attributes){
 /**
  * getObjects - get an array of all objects including the room
  */
-ObjectManager.getObjects=function(){
-    return this.objects;
+ObjectManager.getObjects=function(index){
+	if (!index) index = 'left';
+    return this.objects[index];
 }
 ObjectManager.getInventory=ObjectManager.getObjects;
 
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (highest layer first)
  */
-ObjectManager.getObjectsByLayer=function() {
+ObjectManager.getObjectsByLayer=function(index) {
 	
-    var objects = this.getObjects();
+    var objects = this.getObjects(index);
 	
     var objectsArray = [];
 	
@@ -130,9 +156,9 @@ ObjectManager.getObjectsByLayer=function() {
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (lowest layer first)
  */
-ObjectManager.getObjectsByLayerInverted=function() {
+ObjectManager.getObjectsByLayerInverted=function(index) {
 	
-    var objects = ObjectManager.getObjectsByLayer();
+    var objects = ObjectManager.getObjectsByLayer(index);
 	objects.reverse();
 	
     return objects;
@@ -150,7 +176,7 @@ ObjectManager.hasObject=function(obj){
 ObjectManager.objectUpdate=function(data){
 	
     var object=ObjectManager.getObject(data.id);
-	
+
     if (object){
 		
         if (object.moving) return;
@@ -180,11 +206,12 @@ ObjectManager.objectUpdate=function(data){
         }
 		
     } else {
-    	
         object = ObjectManager.buildObject(data.type,data);
     }
 	
-    object.refreshDelayed();
+	//ORIGINAL:
+    //object.refreshDelayed();
+    object.refresh();
 	
 }
 
@@ -226,13 +253,11 @@ ObjectManager.removeLocally=function(data){
     var object=ObjectManager.getObject(data.id);
 	
     //remove representation
-	
     if (object.removeRepresentation){
         object.removeRepresentation();
     }
 	
-    //remove from local structure
-    delete(ObjectManager.objects[data.id]);
+    delete(ObjectManager.objects[ObjectManager.getIndexOfObject(data.id)][data.id]);
 }
 
 ObjectManager.login=function(username, password, externalSession){
@@ -259,25 +284,26 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
-ObjectManager.loadRoom=function(roomid,byBrowserNav){
+ObjectManager.loadRoom=function(roomid,byBrowserNav,index){
 	
 	var self = this;
+
+	if (!index) var index = 'left';
 	
-	Modules.Dispatcher.query('enter',roomid,function(error){
+	Modules.Dispatcher.query('enter',{'roomID':roomid,'index':index},function(error){
 
 		if (error !== true) {
 
-			var objects = self.getObjects();
-
+			var objects = self.getObjects(index);
 		    for (var i in objects) {
 		        var obj = objects[i];
 		        ObjectManager.removeLocally(obj);
 		    }
 
 		    if(!roomid) roomid='public';
-		    self.currentRoomID=roomid;
+		    self.currentRoomID[index]=roomid;
 		   
-		    if (!byBrowserNav){
+		    if (!byBrowserNav && index === 'left'){
 				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
 		    }
 		    
@@ -289,10 +315,34 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav){
 
 }
 
-ObjectManager.createObject=function(type,attributes,content,callback) {
+ObjectManager.leaveRoom=function(roomid,index) {
+	var self = this;
+
+	if (!index) var index = 'right';
+	
+	Modules.Dispatcher.query('leave',{'roomID':roomid,'index':index,'user':self.getUser()},function(error){
+
+		if (error !== true) {
+
+		    var objects = self.getObjects(index);
+		    for (var i in objects) {
+		        var obj = objects[i];
+		        ObjectManager.removeLocally(obj);
+		    }
+
+		    self.currentRoomID[index] = false;
+		    self.currentRoom[index] = false;
+		
+		}
+		
+    });
+}
+
+ObjectManager.createObject=function(type,attributes,content,callback,index) {
+	if (!index) var index = 'left';
 	
     var data={
-        'roomID':this.currentRoomID,
+        'roomID':this.currentRoomID[index],
         'type':type,
         'attributes':attributes,
         'content':content
@@ -421,27 +471,30 @@ ObjectManager.init=function(){
 	
 }
 
-ObjectManager.getRoomID=function(){
-    return this.currentRoomID;
+ObjectManager.getRoomID=function(index){
+	if (!index) var index = 'left';
+    return this.currentRoomID[index];
 }
 
-ObjectManager.getCurrentRoom=function(){
-	return this.currentRoom;
+ObjectManager.getCurrentRoom=function(index){
+	if (!index) var index = 'left';
+	return this.currentRoom[index];
 }
 
 
 ObjectManager.getSelected=function(){
-		
-    var result=[];
+	var result=[];
 	
-    for (var i in this.objects) {
-        var obj = this.objects[i];
-		
-        if (obj.isSelected()) {
-            result.push(obj);
-        }
-		
-    }
+	for (var index in this.objects) {
+	    for (var i in this.objects[index]) {
+	        var obj = this.objects[index][i];
+			
+	        if (obj.isSelected()) {
+	            result.push(obj);
+	        }
+			
+	    }
+	}
     return result;
 }
 
@@ -691,5 +744,29 @@ ObjectManager.duplicateObjects=function(objects) {
 				setTimeout(selectNewObjects, 200);
 			});
 		}
+	}
+}
+
+ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
+	var objects = ObjectManager.getSelected();
+	
+	if (objects != undefined && objects.length > 0) {
+
+		var array = new Array();
+
+		for (var key in objects) {
+		    var object = objects[key];
+			array.push(object.getId());
+		}
+		    
+		var requestData={};
+		requestData.fromRoom=fromRoom;
+		requestData.toRoom=toRoom;
+		requestData.objects=array;
+		requestData.cut=cut;
+
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
+			GUI.deselectAllObjects();
+		});
 	}
 }

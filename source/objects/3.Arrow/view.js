@@ -29,9 +29,9 @@ Arrow.draw=function(external){
 }
 
 
-Arrow.createRepresentation = function() {
+Arrow.createRepresentation = function(parent) {
 
-	var rep = Line.createRepresentation.call(this);
+	var rep = Line.createRepresentation.call(this,parent);
 
  	return rep;
 	

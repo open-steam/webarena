@@ -20,9 +20,9 @@ ActiveObject.draw=function(external){
 
 }
 
-ActiveObject.createRepresentation = function() {
+ActiveObject.createRepresentation = function(parent) {
 
-	var rep = GUI.svg.rect(
+	var rep = GUI.svg.rect(parent,
 		10, //x
 		10, //y
 		10, //width

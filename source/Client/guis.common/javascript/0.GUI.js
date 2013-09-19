@@ -154,9 +154,13 @@ GUI.setRoomWidth = function(width) {
 		width = $(window).width();
 	}
 	
-	$("#content").css("width", width);
-	$("#content > svg").css("width", width);
-	
+	if (GUI.couplingModeActive) {
+		$("#content").css("width", $(window).width());
+		$("#content > svg").css("width", $(window).width());
+	} else {
+		$("#content").css("width", width );
+		$("#content > svg").css("width", width );
+	}
 }
 
 /**
@@ -174,8 +178,13 @@ GUI.setRoomHeight = function(height) {
 		height = $(window).height();
 	}
 	
-	$("#content").css("height", height);
-	$("#content > svg").css("height", height);
+	if (GUI.couplingModeActive) {
+		$("#content").css("height", $(window).height()-40);
+		$("#content > svg").css("height", $(window).height()-36);
+	} else {
+		$("#content").css("height", height);
+		$("#content > svg").css("height", height);
+	}
 	
 }
 
@@ -365,7 +374,6 @@ GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
  */
 GUI.initMouseHandler = function() {
 
-
 	if (GUI.isTouchDevice) {
 		
 		var touchHandler = function(event) {
@@ -414,7 +422,7 @@ GUI.initMouseHandler = function() {
 			var clickedObject=(temp)?temp.dataObject:false;
 			
 			//TODO check if this can be done similarly for touch devices
-		
+
 			if (clickedObject) {
 				// Objects with restricted moving areas should get the "native" events
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
@@ -475,7 +483,7 @@ GUI.initMouseHandler = function() {
  * @param {int} y y position
  */
 GUI.getObjectAt = function(x,y) {
-	
+
 	var clickedObject = false;
 	
 	$.each(ObjectManager.getObjectsByLayer(), function(key, object) {
@@ -490,7 +498,7 @@ GUI.getObjectAt = function(x,y) {
 		}
 
 	});
-	
+
 	return clickedObject;
 	
 }

@@ -68,7 +68,9 @@ GUI.userMarker = {
 			$(GUI.userMarker.markers[data.objectId]["markers"][data.identifier]).remove();
 		}
 		
-		var infoBox = GUI.svg.group("selection_"+data.objectId+"_"+data.identifier);
+		var parent = $('#room_'+ObjectManager.getIndexOfObject(data.objectId));
+
+		var infoBox = GUI.svg.group(parent, "selection_"+data.objectId+"_"+data.identifier);
 
 		$(infoBox).attr("transform", "translate(200,100)");
 

@@ -95,6 +95,42 @@ WebServer.init = function (theModules) {
             return;
         }
 
+        // room hierarchy for coupling navigation (returns child notes of given room in jstree json structure)
+        if (url.substr(0, 17) == "/getRoomHierarchy") {
+
+            var roomId = url.substr(21);
+
+            var hierarchy = Modules.Connector.getRoomHierarchy(roomId);
+
+            var result = [];
+
+            if (roomId === "") {
+                for (var key in hierarchy.roots) {
+                    var node = {};
+                    node.data = hierarchy.rooms[hierarchy.roots[key]];
+                    node.attr = { "id" : hierarchy.roots[key] };
+                    if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
+                        node.state = "closed";
+                    }
+                    result.push(node);
+                }
+            } else {
+                for (var key in hierarchy.relation[roomId]) {
+                    var node = {};
+                    node.data = hierarchy.rooms[hierarchy.relation[roomId][key]];
+                    node.attr = { "id" : hierarchy.relation[roomId][key]};
+                    if (hierarchy.relation[key] != undefined) {
+                        node.state = "closed";
+                    }
+                    result.push(node);
+                }
+            }
+
+            res.writeHead(200, {'Content-Type': "application/json"});
+            res.end(JSON.stringify(result));
+            return;
+        }
+
 
         // Object Icons
         if (url.substr(0, 12) == '/objectIcons') {

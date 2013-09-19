@@ -36,8 +36,7 @@ ObjectManager.registerType=function(type,constr){
 *	sends a rooms content to a client (given by its socket)
 *
 */
-ObjectManager.sendRoom=function(socket,roomID){
-	
+ObjectManager.sendRoom=function(socket,roomID,index){
 	var context=Modules.UserManager.getConnectionBySocket(socket);
 	
 	Modules.ObjectManager.getRoom(roomID,context,function(room) { //the room object
@@ -47,7 +46,8 @@ ObjectManager.sendRoom=function(socket,roomID){
 		Modules.ObjectManager.getInventory(roomID,context,function(objects) {
 			for (var i in objects){
 				var object=objects[i];
-				object.updateClient(socket);	//the object data
+				object.context.room = object.context.rooms[index];
+				object.updateClient(socket,'objectUpdate');	//the object data
 				if (object.hasContent()) {		//and its content if there is some
 					object.updateClient(socket,'contentUpdate',object.hasContent(socket));
 				}
@@ -120,7 +120,6 @@ function buildObjectFromObjectData(objectData,roomID,type){
 	obj.init(objectData.id);
 	
 	//set the object's attributes and rights
-
 	obj.setAll(objectData.attributes);
 	obj.rights=objectData.rights;
 	obj.id=objectData.id;
@@ -466,8 +465,10 @@ ObjectManager.init=function(theModules){
 
 					object.updateLinkIds(idTranslationList); //update links
 
-					object.setAttribute("x", object.getAttribute("x")+30);
-					object.setAttribute("y", object.getAttribute("y")+30);
+					if (fromRoom === toRoom) {
+						object.setAttribute("x", object.getAttribute("x")+30);
+						object.setAttribute("y", object.getAttribute("y")+30);
+					}
 
 					// add group id if source object was grouped 
 					if (object.getAttribute("group") && object.getAttribute("group") > 0) {

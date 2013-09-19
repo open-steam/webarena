@@ -6,9 +6,9 @@
 */
 
 
-ImageObject.createRepresentation=function() {
+ImageObject.createRepresentation=function(parent) {
 
-	var rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 
 	var rect = GUI.svg.rect(rep, 0,0,10,10);
 	$(rect).attr("fill", "transparent");

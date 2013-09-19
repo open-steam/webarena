@@ -13,6 +13,9 @@ GUI.rubberbandStart = function(event) {
 	$("#content").find(".webarenaRubberband").remove();
 	
 	if (GUI.paintModeActive) return;
+
+	// TODO
+	if (GUI.couplingModeActive) return;
 	
 	/* deselect all objects */
 	GUI.deselectAllObjects();

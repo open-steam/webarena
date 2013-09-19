@@ -1,9 +1,9 @@
-SharePoint.createRepresentation = function(){
+SharePoint.createRepresentation = function(parent){
     var rep;
     if(this.getAttribute("show_iframe")){
-        rep = this.createRepresentationIFrame();
+        rep = this.createRepresentationIFrame(parent);
     } else {
-        rep = this.createRepresentationIcon()
+        rep = this.createRepresentationIcon(parent)
     }
 
     $(rep).attr("id", this.getAttribute('id'));
@@ -39,10 +39,10 @@ SharePoint.openWindow = function(){
     window.open(this.getAttribute("sharepoint_src"));
 }
 
-SharePoint.createRepresentationIFrame = function(){
+SharePoint.createRepresentationIFrame = function(parent){
 
     var that = this;
-    var rep = GUI.svg.other(rep, "foreignObject");
+    var rep = GUI.svg.other(parent, "foreignObject");
     var body = document.createElement("body");
 
     $(body).append(
@@ -68,8 +68,8 @@ SharePoint.createRepresentationIFrame = function(){
 
 }
 
-SharePoint.createRepresentationIcon = function(){
-    var rep = GUI.svg.group(this.getAttribute('id'));
+SharePoint.createRepresentationIcon = function(parent){
+    var rep = GUI.svg.group(parent,this.getAttribute('id'));
     var textVal;
 
     GUI.svg.image(rep, 0, 0, 64, 64, this.getFileIcon());
