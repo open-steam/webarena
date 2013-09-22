@@ -119,7 +119,7 @@ WebServer.init = function (theModules) {
                     var node = {};
                     node.data = hierarchy.rooms[hierarchy.relation[roomId][key]];
                     node.attr = { "id" : hierarchy.relation[roomId][key]};
-                    if (hierarchy.relation[key] != undefined) {
+                    if (hierarchy.relation[hierarchy.relation[roomId][key]] != undefined) {
                         node.state = "closed";
                     }
                     result.push(node);

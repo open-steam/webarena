@@ -169,7 +169,7 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 	
 	//oldrooom is sent down to the connector, which may use it for parent creation
 	if (connection.rooms[index]) {
-		var oldRoomId=connection.rooms[index]; 
+		var oldRoomId=connection.rooms[index].id;
 	}
 	
 	if (!connection) {

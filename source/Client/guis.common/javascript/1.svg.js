@@ -26,9 +26,13 @@ GUI.initSVG = function() {
 	GUI.svgDefs = contentSVG.defs();
 
 	// initialize two nested svgs for concurrent view of two rooms
-	var room_left = contentSVG.svg();
+	var room_left_wrapper = contentSVG.svg();
+	$(room_left_wrapper).attr('id', 'room_left_wrapper');
+	var room_left = contentSVG.group(room_left_wrapper);
 	$(room_left).attr('id', 'room_left');
-	var room_right = contentSVG.svg();
+	var room_right_wrapper = contentSVG.svg();
+	$(room_right_wrapper).attr('id', 'room_right_wrapper');
+	var room_right = contentSVG.group(room_right_wrapper);
 	$(room_right).attr('id', 'room_right');
 
 	$("#content").droppable({

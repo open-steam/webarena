@@ -357,7 +357,7 @@ GeneralObject.adjustControls = function() {
 
 	var couplingAdd = 0;
 	if (ObjectManager.getIndexOfObject(this.id) != 'left') {
-		couplingAdd = parseInt($('#room_right').attr('x'));
+		couplingAdd = parseInt($('#room_right_wrapper').attr('x'));
 	}
 	
 	if (this.controls) {
@@ -841,7 +841,6 @@ GeneralObject.addControl = function(type, resizeFunction) {
  * (used by GeneralObject.moveRelative)
  */
 GeneralObject.saveMoveStartPosition = function() {
-	// TODO: schon vorher beim nicht bewegen; sonst wandert nach links
 	if (GUI.couplingModeActive && ObjectManager.getIndexOfObject(this.id) === 'right') {
 		this.moveObjectStartX = this.getViewX() + parseInt($('#couplingBar').attr('x1'));
 	} else {
@@ -863,15 +862,6 @@ GeneralObject.moveStart = function(event) {
 	} else {
 		var self = ObjectManager.getObject(this.id);
 	}
-
-	// move object from child to main canvas
-	//var rep = self.getRepresentation();
-	//$(rep).appendTo('#canvas');
-	// TODO
-	//if (ObjectManager.getIndexOfObject(this.id) === "right") {
-	//	$(rep).attr('x', parseInt($(rep).attr('x'))+parseInt($('#room_right').attr('x')));
-	//	console.log('test');
-	//}
 
 	if (!self.selected) self.select();
 	
@@ -901,7 +891,14 @@ GeneralObject.moveStart = function(event) {
 		var rep = object.getRepresentation();
 		$(rep).appendTo('#canvas');
 
-		// TODO
+		// if object is in the right room adjust x coordinate on main canvas
+		if (ObjectManager.getIndexOfObject(object.getId()) != 'left') {
+			if (object.moveByTransform()) {
+				$(rep).attr("transform", "translate("+(parseInt($('#room_right_wrapper').attr('x'))+object.getViewX())+","+object.getViewY()+")");	
+			} else {
+				$(rep).attr('x', parseInt($(rep).attr('x')) + parseInt($('#room_right_wrapper').attr('x')));
+			}
+		}
 	});
 
 	self.moving = true;
@@ -937,23 +934,27 @@ GeneralObject.moveStart = function(event) {
 	};
 	
 	var end = function(event) {
-		// TODO
 		var rep = self.getRepresentation();
 		if (GUI.couplingModeActive) {
 			// coupling mode is switched on, determine if elements were moved between rooms
 			if ($('#couplingBar').attr('x1') < event.clientX) {
 				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
 					// moved from the left room the the right
-					$(rep).attr('x', $(rep).attr('x') - $('#room_right').attr('x'));
+					$(rep).attr('x', $(rep).attr('x') - $('#room_right_wrapper').attr('x'));
 					GUI.startNoAnimationTimer();
 					ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('left'), ObjectManager.getRoomID('right'), true);
 				} else {
+					if (self.moveByTransform()) {
+						$(rep).attr("transform", "translate("+self.getViewX()+","+self.getViewY()+")");	
+					} else {
+						$(rep).attr('x', parseInt($(rep).attr('x')) - parseInt($('#room_right_wrapper').attr('x')));
+					}
+
 					$(rep).appendTo('#room_right');
 				}
 			} else {
 				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'right') {
 					// moved from the right room to the left
-					//$(rep).attr('x', event.clientX); // TODO x koordinate des objects
 					GUI.startNoAnimationTimer();
 					ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('right'), ObjectManager.getRoomID('left'), true);
 				} else {

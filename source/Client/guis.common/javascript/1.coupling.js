@@ -34,10 +34,10 @@ GUI.enterCouplingMode= function() {
 	$(navigationButton).html(GUI.translate("Navigation"));
 	$(navigationButton).bind("click", function(event) {
 		if (GUI.couplingNavigationActive) {
-			$('#couplingNavigation').dialog("close");
+			$('#couplingNavigation').hide('blind');
 			GUI.couplingNavigationActive = false;
 		} else {
-			$('#couplingNavigation').dialog("open");
+			$('#couplingNavigation').show('blind');
 			GUI.couplingNavigationActive = true;
 		}
 	});
@@ -71,18 +71,60 @@ GUI.enterCouplingMode= function() {
 	}, function() {
 		$(this).css('cursor','n-pointer');
 	});
+	$(verticalBar).bind('mousedown', function(event) {
+	    $(verticalBar).bind('mousemove', function(event) {
+	       	$(verticalBar).attr('x1', event.pageX);
+	       	$(verticalBar).attr('x2', event.pageX);
+
+	       	$('#room_right_wrapper').attr('x', event.pageX);
+			$('#room_right_wrapper').attr('width', $(window).width() - event.pageX);
+			$('#couplingGreyRectangle').attr('width', $(window).width() - event.pageX);
+			$('#room_left_wrapper').attr('width', $(window).width() - event.pageX);
+
+			$(navigationButton).offset({
+				left : (event.pageX - ($(navigationButton).width() / 2) - 10)
+			})	
+			$('#couplingNavigation').dialog({
+				position: [event.pageX - 100, 30],
+			});
+	    });
+
+	    $(verticalBar).bind('mouseup',function(){
+	        $(verticalBar).unbind('mousemove')
+	    });
+	});
 
 	// window resize handling
+	var couplingWindowWidth = $(window).width();
+	var couplingWindowHeight = $(window).height();
 	$(window).resize(function() {
-		$('#couplingBar').attr('x1', $(window).width() / 2);
-		$('#couplingBar').attr('x2', $(window).width() / 2);
-		$('#couplingBar').attr('y2', $(window).height());
+		if (GUI.couplingModeActive) {
+			$('#couplingBar').attr('y2', $(window).height());
 
-		//$('#room_left').attr('viewBox', '0 0 ' + ($(window).width() / 2) + ' ' + ($(window).height() + 33));
-		//$('#room_right').attr('viewBox', '0 0 ' + ($(window).width() / 2) + ' ' + ($(window).height() + 33));
-		$('#room_right').attr('x', ($(window).width() / 2));
-		$('#room_right').attr('width', ($(window).width() / 2));
-		$('#room_left').attr('width', ($(window).width() / 2));
+			$('#couplingGreyRectangle').attr('height', $(window).height());
+			//$('#couplingGreyRectangle').attr('width', ($(window).width() / 2));
+
+			//$('#room_right_wrapper').attr('x', ($(window).width() / 2));
+			//$('#room_right_wrapper').attr('width', ($(window).width() / 2));
+			//$('#room_left_wrapper').attr('width', ($(window).width() / 2));
+
+			$('#leftCouplingControl').attr('y', $(window).height()-120);
+			$('#rightCouplingControl').attr('y', $(window).height()-120);
+			//$('#rightCouplingControl').attr('x', $(window).width()-88);
+
+			if ($(window).width > couplingWindowWidth) {
+				$("#canvas").css("width", $(window).width());
+				$("#content").css("width", $(window).width());
+			}
+
+			if ($(window).height > couplingWindowHeight) {
+				$("#canvas").css("height", $(window).height());
+				$("#content").css("height", $(window).height());
+			}
+		}
+
+		couplingWindowWidth = $(window).width();
+		couplingWindowHeight = $(window).height();
 	});
 
 	// initialize navigation
@@ -122,7 +164,7 @@ GUI.enterCouplingMode= function() {
 		if (ObjectManager.getRoomID('left') != roomId && ObjectManager.getRoomID('right') != roomId) {
         	ObjectManager.loadRoom(selectedObj.attr("id"), true, 'right');
         	$('#couplingGreyRectangle').remove();
-        	GUI.addRightCouplingControl();
+        	GUI.addZoomPanControl('right', $(window).width()-88, $('#couplingBar').attr('y2')-120);
         } else {
         	alert('error');
         }
@@ -130,58 +172,7 @@ GUI.enterCouplingMode= function() {
 	$('#couplingNavigation').append(navigationDiv);
 
 	// initialize left zoom and pan control
-	var leftControl = GUI.svg.group($('#canvas'), { x: 0, y: $('#couplingBar').attr('y2')-120, width: 100, height: 100 });
-	$(leftControl).attr('id', 'leftCouplingControl');
-	GUI.svg.rect(leftControl, 0, $('#couplingBar').attr('y2')-120, 100, 100, 0, 0, { strokeWidth: 1, stroke: 'black', fill: 'white' });
-	GUI.svg.circle(leftControl, 50, $('#couplingBar').attr('y2')-70, 20, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
-	var zoomMinus = GUI.svg.circle(leftControl, 50, $('#couplingBar').attr('y2')-61, 8, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
-	$(zoomMinus).addClass('couplingButton');
-	$(zoomMinus).click(function() { GUI.zoom('left', 0.8); });
-	var zoomPlus = GUI.svg.circle(leftControl, 50, $('#couplingBar').attr('y2')-79, 8, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
-	$(zoomPlus).addClass('couplingButton');
-	$(zoomPlus).click(function() { GUI.zoom('left', 1.25); });
-	var plusMinus = GUI.svg.rect(leftControl, 46, $('#couplingBar').attr('y2')-62, 8, 3);
-	$(plusMinus).addClass('couplingPlusMinus');
-	var plusMinus = GUI.svg.rect(leftControl, 46, $('#couplingBar').attr('y2')-81, 8, 3);
-	$(plusMinus).addClass('couplingPlusMinus');
-	var plusMinus = GUI.svg.rect(leftControl, 48.5, $('#couplingBar').attr('y2')-84, 3, 9);
-	$(plusMinus).addClass('couplingPlusMinus');
-	var path = GUI.svg.createPath();
-	var panRight = GUI.svg.path(leftControl, 
-		path.move(75, $('#couplingBar').attr('y2')-80)
-			.line(90, $('#couplingBar').attr('y2')-70)
-			.line(75, $('#couplingBar').attr('y2')-60)
-			.close() 
-	);
-	$(panRight).addClass('couplingButton');
-	$(panRight).click(function() { GUI.pan('left',-50,0); });
-	var path = GUI.svg.createPath();
-	var panLeft = GUI.svg.path(leftControl, 
-		path.move(25, $('#couplingBar').attr('y2')-80)
-			.line(10, $('#couplingBar').attr('y2')-70)
-			.line(25, $('#couplingBar').attr('y2')-60)
-			.close()
-	);
-	$(panLeft).addClass('couplingButton');
-	$(panLeft).click(function() { GUI.pan('left',50,0); });
-	var path = GUI.svg.createPath();
-	var panTop = GUI.svg.path(leftControl, 
-		path.move(40, $('#couplingBar').attr('y2')-95)
-			.line(50, $('#couplingBar').attr('y2')-110)
-			.line(60, $('#couplingBar').attr('y2')-95)
-			.close()
-	);
-	$(panTop).addClass('couplingButton');
-	$(panTop).click(function() { GUI.pan('left',0,50); });
-	var path = GUI.svg.createPath();
-	var panBottom = GUI.svg.path(leftControl, 
-		path.move(40, $('#couplingBar').attr('y2')-45)
-			.line(50, $('#couplingBar').attr('y2')-30)
-			.line(60, $('#couplingBar').attr('y2')-45)
-			.close()
-	);
-	$(panBottom).addClass('couplingButton');
-	$(panBottom).click(function() { GUI.pan('left',0,-50); });
+	GUI.addZoomPanControl('left', 4, $('#couplingBar').attr('y2')-120);
 	
 	// initialize grey rectangle in right work area
 	var greyRectangle = GUI.svg.rect($('#room_right'),
@@ -196,9 +187,9 @@ GUI.enterCouplingMode= function() {
 	// resize left and right room
 	//$('#room_left').attr('viewBox', '0 0 ' + ($(window).width() / 2) + ' ' + ($(window).height() + 33));
 	//$('#room_right').attr('viewBox', '0 0 ' + ($(window).width() / 2) + ' ' + ($(window).height() + 33));
-	$('#room_right').attr("x", ($(window).width() / 2));
-	$('#room_right').attr("width", ($(window).width() / 2));
-	$('#room_left').attr("width", ($(window).width() / 2));
+	$('#room_right_wrapper').attr("x", ($(window).width() / 2));
+	$('#room_right_wrapper').attr("width", ($(window).width() / 2));
+	$('#room_left_wrapper').attr("width", ($(window).width() / 2));
 
 	// TODO
 	//$("#header").attr("width", $(window).width());
@@ -239,68 +230,72 @@ GUI.closeCouplingMode = function() {
   	$('#room_left').attr("transform", newMatrix);
   	$('#room_right').attr("transform", newMatrix);
 
-	$('#room_right').attr('x', '');
-	$('#room_left').attr('width', '');
+  	// jquery functions only set this to 0 and do not delete it
+  	document.getElementById('room_left_wrapper').removeAttribute('width');
+  	document.getElementById('room_right_wrapper').removeAttribute('x');
+  	document.getElementById('room_right_wrapper').removeAttribute('width');
 
 	ObjectManager.leaveRoom('', 'right');
 
 	GUI.adjustContent();
 }
 
-GUI.addRightCouplingControl = function() {
-	if ($("#rightCouplingControl").length == 0) {
-		var rightControl = GUI.svg.group($('#canvas'), { x: $(window).width()-100, y: $('#couplingBar').attr('y2')-120, width: 100, height: 100 });
-		$(rightControl).attr('id', 'rightCouplingControl');
-		GUI.svg.rect(rightControl, $(window).width()-100, $('#couplingBar').attr('y2')-120, 100, 100, 0, 0, { strokeWidth: 1, stroke: 'black', fill: 'white' });
-		GUI.svg.circle(rightControl, $(window).width()-50, $('#couplingBar').attr('y2')-70, 20, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
-		var zoomMinus = GUI.svg.circle(rightControl, $(window).width()-50, $('#couplingBar').attr('y2')-61, 8, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
+GUI.addZoomPanControl = function(index, x, y) {
+	if ($("#"+index+"CouplingControl").length == 0) {
+		var control = GUI.svg.svg($('#canvas'));
+		$(control).attr('id', index+'CouplingControl');
+		$(control).attr('x', x);
+		$(control).attr('y', y);
+		GUI.svg.rect(control, 0, 0, 100, 100, 0, 0, { strokeWidth: 1, stroke: 'black', fill: 'white' });
+		GUI.svg.circle(control, 50, 50, 20, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
+		var zoomMinus = GUI.svg.circle(control, 50, 59, 8, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
 		$(zoomMinus).addClass('couplingButton');
-		$(zoomMinus).click(function() { GUI.zoom('right', 0.8); });
-		var zoomPlus = GUI.svg.circle(rightControl, $(window).width()-50, $('#couplingBar').attr('y2')-79, 8, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
+		$(zoomMinus).click(function() { GUI.zoom(index, 0.8); });
+		var zoomPlus = GUI.svg.circle(control, 50, 41, 8, { fill: '#fff', stroke: '#000', strokeWidth: 1.5 });
 		$(zoomPlus).addClass('couplingButton');
-		$(zoomPlus).click(function() { GUI.zoom('right', 1.25); });
-		var plusMinus = GUI.svg.rect(rightControl, $(window).width()-54, $('#couplingBar').attr('y2')-62, 8, 3);
+		$(zoomPlus).click(function() { GUI.zoom(index, 1.25); });
+		var plusMinus = GUI.svg.rect(control, 46, 58, 8, 3);
 		$(plusMinus).addClass('couplingPlusMinus');
-		var plusMinus = GUI.svg.rect(rightControl, $(window).width()-54, $('#couplingBar').attr('y2')-81, 8, 3);
+		var plusMinus = GUI.svg.rect(control, 46, 39, 8, 3);
 		$(plusMinus).addClass('couplingPlusMinus');
-		var plusMinus = GUI.svg.rect(rightControl, $(window).width()-51.5, $('#couplingBar').attr('y2')-84, 3, 9);
+		var plusMinus = GUI.svg.rect(control, 48.5, 36, 3, 9);
 		$(plusMinus).addClass('couplingPlusMinus');
 		var path = GUI.svg.createPath();
-		var panRight = GUI.svg.path(rightControl, 
-			path.move($(window).width()-25, $('#couplingBar').attr('y2')-80)
-				.line($(window).width()-10, $('#couplingBar').attr('y2')-70)
-				.line($(window).width()-25, $('#couplingBar').attr('y2')-60)
+		var panRight = GUI.svg.path(control, 
+			path.move(75, 40)
+				.line(90, 50)
+				.line(75, 60)
 				.close() 
 		);
 		$(panRight).addClass('couplingButton');
-		$(panRight).click(function() { GUI.pan('right',-50,0); });
+		$(panRight).click(function() { GUI.pan(index,-50,0); });
 		var path = GUI.svg.createPath();
-		var panLeft = GUI.svg.path(rightControl, 
-			path.move($(window).width()-75, $('#couplingBar').attr('y2')-80)
-				.line($(window).width()-90, $('#couplingBar').attr('y2')-70)
-				.line($(window).width()-75, $('#couplingBar').attr('y2')-60)
+		var panLeft = GUI.svg.path(control, 
+			path.move(25, 40)
+				.line(10, 50)
+				.line(25, 60)
 				.close()
 		);
 		$(panLeft).addClass('couplingButton');
-		$(panLeft).click(function() { GUI.pan('right',50,0); });
+		$(panLeft).click(function() { GUI.pan(index,50,0); });
 		var path = GUI.svg.createPath();
-		var panTop = GUI.svg.path(rightControl, 
-			path.move($(window).width()-60, $('#couplingBar').attr('y2')-95)
-				.line($(window).width()-50, $('#couplingBar').attr('y2')-110)
-				.line($(window).width()-40, $('#couplingBar').attr('y2')-95)
+		var panTop = GUI.svg.path(control, 
+			path.move(40, 25)
+				.line(50, 10)
+				.line(60, 25)
 				.close()
 		);
 		$(panTop).addClass('couplingButton');
-		$(panTop).click(function() { GUI.pan('right',0,50); });
+		$(panTop).click(function() { GUI.pan(index,0,50); });
 		var path = GUI.svg.createPath();
-		var panBottom = GUI.svg.path(rightControl, 
-			path.move($(window).width()-60, $('#couplingBar').attr('y2')-45)
-				.line($(window).width()-50, $('#couplingBar').attr('y2')-30)
-				.line($(window).width()-40, $('#couplingBar').attr('y2')-45)
+		var panBottom = GUI.svg.path(control, 
+			path.move(40, 75)
+				.line(50, 90)
+				.line(60, 75)
 				.close()
 		);
 		$(panBottom).addClass('couplingButton');
-		$(panBottom).click(function() { GUI.pan('right',0,-50); });
+		$(panBottom).click(function() { GUI.pan(index,0,-50); });
 	}
 }
 

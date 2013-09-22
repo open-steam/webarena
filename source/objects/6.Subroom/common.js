@@ -45,7 +45,7 @@ Subroom.execute=function(){
 		destination = random;
 	}
 	
-	ObjectManager.loadRoom(destination);
+	ObjectManager.loadRoom(destination,false,ObjectManager.getIndexOfObject(this.getAttribute('id')));
 	
 }
 

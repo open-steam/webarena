@@ -40,7 +40,7 @@ Exit.execute=function(){
 	
 	if (!destination) return;
 	
-	ObjectManager.loadRoom(destination);
+	ObjectManager.loadRoom(destination,false,ObjectManager.getIndexOfObject(this.getAttribute('id')));
 	
 	//window.location.href = "/room/"+destination;
 	

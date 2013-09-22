@@ -203,15 +203,15 @@ fileConnector.getRoomHierarchy=function(roomID,context){
 		var obj=self.getObjectDataByFile(value,value);
 			
 		if (obj) {
-			result.rooms[value] = obj.attributes.name;
+			result.rooms[value] = ''+obj.attributes.name;
 			if (obj.attributes.parent !== undefined) {
 				if (result.relation[obj.attributes.parent] === undefined) {
-					result.relation[obj.attributes.parent] = new Array(value);
+					result.relation[obj.attributes.parent] = new Array(''+value);
 				} else {
-					result.relation[obj.attributes.parent].push(value);
+					result.relation[obj.attributes.parent].push(''+value);
 				}
 			} else {
-				result.roots.push(value);
+				result.roots.push(''+value);
 			}
 		}
 	});
