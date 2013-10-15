@@ -11,8 +11,7 @@ class Registration extends CI_Controller {
         if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             
-            // check username for invalid characters
-            $namePattern = "/^[-\' \p{L}]+$/u";
+            $namePattern = "/^[a-z\d]+$/i";
             if (!preg_match($namePattern, $this->input->post('username'))) {
                 $response["status"] = "error";
                 $response["error"] = "characters";

@@ -1,3 +1,5 @@
     $(document).ready(function() {
-        $("#coursesTable").tablesorter();
+        $("#coursesTable").tablesorter({
+            sortList: [[0,0]],
+        });
     });

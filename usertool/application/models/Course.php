@@ -107,9 +107,10 @@ class Course extends CI_Model {
             if ($member != "." && $member != "..") {
                 if ($loadUserData) {
                     $user = new User();
-                    $user->loadUserData(basename($member, ".txt"));
-                    $user->setWriteAccess($this->checkUserAccess(basename($member, ".txt")));
-                    array_push($this->members, $user);
+                    if ($user->loadUserData(basename($member, ".txt"))) {
+                        $user->setWriteAccess($this->checkUserAccess(basename($member, ".txt")));
+                        array_push($this->members, $user);
+                    }
                 } else {
                     array_push($this->members, basename($member, ".txt"));
                 }
@@ -122,8 +123,9 @@ class Course extends CI_Model {
             if ($member != "." && $member != "..") {
                 if ($loadUserData) {
                     $user = new User();
-                    $user->loadUserData(basename($member, ".txt"));
-                    array_push($this->applied, $user);
+                    if ($user->loadUserData(basename($member, ".txt"))) {
+                        array_push($this->applied, $user);
+                    }
                 } else {
                     array_push($this->applied, basename($member, ".txt"));
                 }
