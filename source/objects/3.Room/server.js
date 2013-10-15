@@ -46,7 +46,8 @@ theObject.placeActiveObjects=function(){
 			for (var key2 in objects){
 				var structuring=objects[key2];
 				if (structuring.isStructuring()){
-					console.log(active+' structured by '+structuring);
+					var data=structuring.getPositioningDataFor(active);
+					console.log(active+' structured by '+structuring+' '+data);
 				}
 			}
 		}

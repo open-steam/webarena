@@ -211,12 +211,15 @@ theObject.makeStructuring=function(){
 		this.getRoom().placeActiveObjects();
 	}
 	
-	//returns limits for an area, where this object wants
-	//the object activeObject to be in.
-	//returns false, when there it does not care about activeObject
-	if (!this.getPositioningLimitsFor) this.getPositioningLimitsFor=function(activeObject){
+	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
 		
-		var result=false;
+		var result={reference:'ignore'};
+		
+		//reference: must, mustnot, ignore
+		//minX
+		//maxX
+		//minY
+		//maxY
 		
 		return result;
 		

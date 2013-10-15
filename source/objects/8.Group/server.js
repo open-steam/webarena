@@ -66,5 +66,16 @@ theObject.checkData=function(){
 	return true;
 }
 
-//theObject.getPositioningLimitsFor=function(activeObject){
+this.getPositioningDataFor=function(activeObject){
+		
+		var result={reference:'ignore'};
+		
+		//reference: must, mustnot, ignore
+		//minX
+		//maxX
+		//minY
+		//maxY
+		
+		return result;
+}
 	
