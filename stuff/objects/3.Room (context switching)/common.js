@@ -24,9 +24,32 @@ Room.register=function(type){
 	this.registerAttribute('group',{hidden:true});
 
 	this.registerAttribute('chatMessages',{hidden: true, readonly:true, standard: []});
+
+    if (!Modules.Config.noContexts){
+    
+	    if (!ObjectManager.isServer){
+	    
+	    	this.registerAttribute('current_context',{type:'selection',options:['general','different','alternative'],standard:'general',readable:'current context',category:'Context'});
+	    
+	    } else {
+	    	this.registerAttribute('current_context',{standard:'general',setFunction:function(object,value){
+	    			var context=value;				
+					object.set('current_context',context);
+					var inventory=object.getInventory();
+					for (var i in inventory){
+						var object=inventory[i];
+						object.onSwitchContext(value);
+					}
+	    	}});
+	
+	    }
+    }
     
 	//Hide unnecessary attributes (at least for now)
     
+    this.registerAttribute('only_in_contexts',{hidden:true});
+    this.registerAttribute('position_on_all_contexts',{hidden:true});
+    this.registerAttribute('appearance_on_all_contexts',{hidden:true});
     this.registerAttribute('locked',{hidden:true});
 	this.registerAttribute('visible',{hidden:true});
     this.registerAttribute('x',{hidden:true});
@@ -38,6 +61,10 @@ Room.register=function(type){
 Room.execute=function(){
 	var destination=this.getAttribute('id');	
 	ObjectManager.loadRoom(destination);
+}
+
+Room.getContext=function(){
+	return this.getAttribute('current_context')||'general';
 }
 
 Room.register('Room');

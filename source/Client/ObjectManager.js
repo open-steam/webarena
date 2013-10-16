@@ -69,15 +69,6 @@ ObjectManager.buildObject=function(type, attributes){
 		
     }
 
-	//Determine this room's contexts
-
-	if (!Config.noContexts){
-		var room=object.getRoom();
-		if (room){
-			room.updateContexts();
-		}
-	}
-
     return object;
 
 }
@@ -198,10 +189,6 @@ ObjectManager.attributeChanged=function(object,key,newValue,local){
 	
     if (this.informGUI) this.informGUI(object,key,newValue,local)
     else console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
-    
-    //updating room contexts on every attribut change, as contexts can be derived from various
-    //attributes. These evaluation is done by the objects themselves.
-    if (!Config.noContexts) object.getRoom().updateContexts();
 	
 }
 

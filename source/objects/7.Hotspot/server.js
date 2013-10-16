@@ -12,26 +12,11 @@ var Modules=require('../../server.js');
 module.exports=theObject;
 
 theObject.onLeave=function(object,oldData,newData){
-	return;
-	if (!object.isActor) {
-		return;
-	}
-	var objects=(this.getLinkedObjects());
-	for (var i in objects){
-		var obj=objects[i].object;
-		obj.hide();
-	}
+	this.fireEvent('leave',object);
 };
 
 theObject.onEnter=function(object,oldData,newData){
-	if (!object.isActor) {
-		return;
-	}
-	var objects=(this.getLinkedObjects());
-	for (var i in objects){
-		var obj=objects[i].object;
-		obj.unhide();
-	}
+	this.fireEvent('enter',object);
 };
 
 theObject.onMoveWithin=function(object,oldData,newData){

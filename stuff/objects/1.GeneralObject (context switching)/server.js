@@ -439,9 +439,39 @@ theObject.getBoundingBox=function(){
 	
 }
 
+theObject.onSwitchContext=function(context){
+	
+	if (Modules.Config.noContext) return;
+	
+	//using set instead of setObject to avoid evaluation of these changes.
+	
+	if (!this.getAttribute('position_on_all_contexts')){
+		this.set('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
+		this.set('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
+	}
+	
+	if (!this.getAttribute('appearance_on_all_contexts')){
+		this.set('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
+		this.set('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
+	}
+	
+	this.persist();
+	
+	var contexts=this.whichContexts();
+	if (contexts!==true){
+		var visible=false;
+		for (var i in contexts){
+			var comp=contexts[i];
+			if (comp==context) visible=true;
+		}
+		this.setAttribute('visible',visible);
+	}
+	
+}
+
 theObject.fireEvent=function(name,data){
 	
-	console.log(this+' fireing '+name+' ('+data+')');
-	console.log('###Note: Event fireing not implemented yet (GeneralObject)');
+	console.log(this+' fireing event '+name+'. data:'+data);
+	console.log('###NOTE: Event fireing not yet implemented (GeneralObject)');
 	
 }

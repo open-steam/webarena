@@ -6,21 +6,21 @@
 */
 
 var Modules=require('../../server.js')
-var ActivatorHotspot=Object.create(Modules.ObjectManager.getPrototype('Rectangle'));
+var Hotspot=Object.create(Modules.ObjectManager.getPrototype('Rectangle'));
 
-ActivatorHotspot.register=function(type){
+Hotspot.register=function(type){
 	
 	// Registering the object
 	Modules.ObjectManager.getPrototype('Rectangle').register.call(this,type);
-	this.makeReacting();
+	this.makeSensitive();
 	
 	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});
 	this.registerAttribute('value',{type:'text',standard:'',category:'Selection'});
 
 }
 
-ActivatorHotspot.isCreatable=true; 
-ActivatorHotspot.category = 'Active';
+Hotspot.isCreatable=true; 
+Hotspot.category = 'Active';
 
 
-module.exports=ActivatorHotspot;
+module.exports=Hotspot;
