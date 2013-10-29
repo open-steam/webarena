@@ -1,5 +1,6 @@
 Exit.setTranslations('de',{
 	'Exit':'Verknüpfung',
-	'destination':'Ziel'
+	'destination':'Ziel',
+	'destinationObject':'Zielobjekt'
 }
 );

@@ -26,6 +26,7 @@ GeneralObject.isGraphical=true;
 GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
+GeneralObject.alwaysOnTop = function() {return false;};
 
 GeneralObject.makeSensitive=function(){
 	this.isSensitiveFlag=true;

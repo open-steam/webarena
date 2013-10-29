@@ -97,11 +97,11 @@ ObjectManager.getObjectsByLayer=function() {
 
     objectsArray.sort(function(a,b) {
 		
-		if (a.alwaysOnTop === true) {
+		if (a.alwaysOnTop() === true) {
 			return 1;
 		}
 		
-		if (b.alwaysOnTop === true) {
+		if (b.alwaysOnTop() === true) {
 			return -1;
 		}
 		
@@ -259,7 +259,7 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
-ObjectManager.loadRoom=function(roomid,byBrowserNav){
+ObjectManager.loadRoom=function(roomid,byBrowserNav,callback){
 	
 	var self = this;
 	
@@ -280,6 +280,8 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav){
 		    if (!byBrowserNav){
 				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
 		    }
+
+		    if (callback) setTimeout(callback, 1200);
 		
 		}
 		
@@ -641,10 +643,34 @@ ObjectManager.pasteObjects=function() {
 
 			// select new objects after duplication
 		    var newIDs=[];
+		    var minX = Number.MAX_VALUE;
+		    var minY = Number.MAX_VALUE;
 		    var selectNewObjects = function() {
 				for (var key in newIDs) {
 					var newObject = ObjectManager.getObject(newIDs[key]);
 					newObject.select(true);
+
+					// determine left most and top most coordinates of pasted objects in case of scrolling
+					if (newObject.getAttribute('x') < minX) {
+						minX = newObject.getAttribute('x');
+					}
+					if (newObject.getAttribute('y') < minY) {
+						minY = newObject.getAttribute('y');
+					}
+				}
+
+				// if objects were moved between rooms scroll to position of pasted objects
+				if (requestData.fromRoom != requestData.toRoom) {
+					if (minX - 30 < 0) minX = 30;
+					if (minY - 30 < 0) minY = 30;
+					
+					$(document).scrollTo(
+						{ 
+							top: minY - 30, 
+							left: minX - 30
+						},
+						1000
+					);
 				}
 			};
 
