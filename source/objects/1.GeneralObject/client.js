@@ -134,9 +134,8 @@ GeneralObject.hasContent=function(){
 }
 
 GeneralObject.contentUpdated=function(){
-
 	this.fetchContent(false, true);
-	
+
 	this.draw();
 }
 

@@ -53,11 +53,11 @@ GUI.showLinks = function(object) {
 		var targetY = target.object.getViewBoundingBoxY()+(target.object.getViewBoundingBoxHeight()/2);
 
 		/* draw link line */
-		var line = GUI.svg.line(objectX, objectY, targetX, targetY, {
+		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId()));
+		var line = GUI.svg.line(parent, objectX, objectY, targetX, targetY, {
 			strokeWidth: 6,
 			stroke: "#CCCCCC"
 		});
-
 
 
 		$(line).addClass("webarenaLink_"+object.id);
@@ -115,7 +115,7 @@ GUI.showLinks = function(object) {
 
 		}, 1);
 
-        $("svg").prepend($(line));
+        //$("svg").prepend($(line));
 		
 	});
 	

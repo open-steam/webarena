@@ -24,6 +24,9 @@ GUI.enterCouplingMode= function() {
 
 	GUI.sidebar.saveStateAndHide();
 
+	window.scrollTo(0, 0);
+	$('body').css('overflow', 'hidden');
+
 	$("#header > div.header_left").children().hide();
 	$("#header > div.header_right").children().hide();
 	
@@ -79,7 +82,7 @@ GUI.enterCouplingMode= function() {
 	       	$('#room_right_wrapper').attr('x', event.pageX);
 			$('#room_right_wrapper').attr('width', $(window).width() - event.pageX);
 			$('#couplingGreyRectangle').attr('width', $(window).width() - event.pageX);
-			$('#room_left_wrapper').attr('width', $(window).width() - event.pageX);
+			$('#room_left_wrapper').attr('width', event.pageX);
 
 			$(navigationButton).offset({
 				left : (event.pageX - ($(navigationButton).width() / 2) - 10)
@@ -95,36 +98,25 @@ GUI.enterCouplingMode= function() {
 	});
 
 	// window resize handling
-	var couplingWindowWidth = $(window).width();
-	var couplingWindowHeight = $(window).height();
 	$(window).resize(function() {
 		if (GUI.couplingModeActive) {
 			$('#couplingBar').attr('y2', $(window).height());
 
 			$('#couplingGreyRectangle').attr('height', $(window).height());
-			//$('#couplingGreyRectangle').attr('width', ($(window).width() / 2));
+			$('#couplingGreyRectangle').attr('width', $(window).width() - $('#couplingBar').attr('x1'));
 
-			//$('#room_right_wrapper').attr('x', ($(window).width() / 2));
-			//$('#room_right_wrapper').attr('width', ($(window).width() / 2));
-			//$('#room_left_wrapper').attr('width', ($(window).width() / 2));
+			$('#room_right_wrapper').attr('height', $(window).height());
+			$('#room_right_wrapper').attr('width', $(window).width() - $('#couplingBar').attr('x1'));
 
-			$('#leftCouplingControl').attr('y', $(window).height()-120);
-			$('#rightCouplingControl').attr('y', $(window).height()-120);
-			//$('#rightCouplingControl').attr('x', $(window).width()-88);
+			$('#leftCouplingControl').attr('y', $(window).height()-138);
+			$('#rightCouplingControl').attr('y', $(window).height()-138);
 
-			if ($(window).width > couplingWindowWidth) {
-				$("#canvas").css("width", $(window).width());
-				$("#content").css("width", $(window).width());
-			}
-
-			if ($(window).height > couplingWindowHeight) {
-				$("#canvas").css("height", $(window).height());
-				$("#content").css("height", $(window).height());
-			}
+			$("#canvas").css("width", $(window).width());
+			$("#content").css("width", $(window).width());
+			
+			$("#canvas").css("height", $(window).height());
+			$("#content").css("height", $(window).height());
 		}
-
-		couplingWindowWidth = $(window).width();
-		couplingWindowHeight = $(window).height();
 	});
 
 	// initialize navigation
@@ -164,15 +156,15 @@ GUI.enterCouplingMode= function() {
 		if (ObjectManager.getRoomID('left') != roomId && ObjectManager.getRoomID('right') != roomId) {
         	ObjectManager.loadRoom(selectedObj.attr("id"), true, 'right');
         	$('#couplingGreyRectangle').remove();
-        	GUI.addZoomPanControl('right', $(window).width()-88, $('#couplingBar').attr('y2')-120);
+        	GUI.addZoomPanControl('right', $(window).width()-105, $('#couplingBar').attr('y2')-138);
         } else {
-        	alert('error');
+        	alert('Room already displayed.');
         }
 	});
 	$('#couplingNavigation').append(navigationDiv);
 
 	// initialize left zoom and pan control
-	GUI.addZoomPanControl('left', 4, $('#couplingBar').attr('y2')-120);
+	GUI.addZoomPanControl('left', 4, $('#couplingBar').attr('y2')-138);
 	
 	// initialize grey rectangle in right work area
 	var greyRectangle = GUI.svg.rect($('#room_right'),
@@ -185,14 +177,10 @@ GUI.enterCouplingMode= function() {
 	$(greyRectangle).attr("id", "couplingGreyRectangle");
 
 	// resize left and right room
-	//$('#room_left').attr('viewBox', '0 0 ' + ($(window).width() / 2) + ' ' + ($(window).height() + 33));
-	//$('#room_right').attr('viewBox', '0 0 ' + ($(window).width() / 2) + ' ' + ($(window).height() + 33));
 	$('#room_right_wrapper').attr("x", ($(window).width() / 2));
 	$('#room_right_wrapper').attr("width", ($(window).width() / 2));
 	$('#room_left_wrapper').attr("width", ($(window).width() / 2));
 
-	// TODO
-	//$("#header").attr("width", $(window).width());
 	$("#canvas").css("width", $(window).width());
 	$("#canvas").css("height", $(window).height());
 	$("#content").css("width", $(window).width());
@@ -211,9 +199,11 @@ GUI.closeCouplingMode = function() {
 	$('#couplingBar').remove();
 
 	GUI.sidebar.restoreFromSavedState();
+
+	$('body').removeAttr('style');
 	
 	$("#header").find(".jCoupling_navi").remove();
-	
+
 	$("#header > div.header_left").children().show();
 	$("#header > div.header_right").children().show();
 
@@ -230,14 +220,16 @@ GUI.closeCouplingMode = function() {
   	$('#room_left').attr("transform", newMatrix);
   	$('#room_right').attr("transform", newMatrix);
 
-  	// jquery functions only set this to 0 and do not delete it
-  	document.getElementById('room_left_wrapper').removeAttribute('width');
-  	document.getElementById('room_right_wrapper').removeAttribute('x');
-  	document.getElementById('room_right_wrapper').removeAttribute('width');
+  	//document.getElementById('room_left_wrapper').removeAttribute('width');
+  	$('#room_left_wrapper').attr("width", "100%"); // else chrome displays an empty workarea
+  	//document.getElementById('room_right_wrapper').removeAttribute('x');
+  	//document.getElementById('room_right_wrapper').removeAttribute('width');
 
 	ObjectManager.leaveRoom('', 'right');
 
 	GUI.adjustContent();
+
+	$('#room_right').html("");
 }
 
 GUI.addZoomPanControl = function(index, x, y) {
@@ -315,9 +307,31 @@ GUI.zoom = function(index, factor) {
 }
 
 GUI.pan = function(index, dx, dy) {
+	if (GUI.couplingTransformMatrix[index][4] + dx > 0 || GUI.couplingTransformMatrix[index][5] + dy > 0) return;
+
   	GUI.couplingTransformMatrix[index][4] += dx;
   	GUI.couplingTransformMatrix[index][5] += dy;
             
   	var newMatrix = "matrix(" +  GUI.couplingTransformMatrix[index].join(' ') + ")";
   	$('#room_'+index).attr("transform", newMatrix);
+}
+
+GUI.getPanX = function(index) {
+	return GUI.couplingTransformMatrix[index][4];
+}
+
+GUI.getPanY = function(index) {
+	return GUI.couplingTransformMatrix[index][5];
+}
+
+GUI.defaultZoomPanState = function(index) {
+	var defaultMatrix = [1,0,0,1,0,0];
+	if (GUI.couplingTransformMatrix[index].join(',') !== defaultMatrix.join(',') && (GUI.couplingTransformMatrix[index][0] != 1 || GUI.couplingTransformMatrix[index][3] != 1)) {
+		GUI.couplingTransformMatrix[index] = defaultMatrix;
+
+		var newMatrix = "matrix(" +  GUI.couplingTransformMatrix[index].join(' ') + ")";
+	  	$('#room_'+index).attr("transform", newMatrix);
+
+	  	return true;
+	} else return false;
 }

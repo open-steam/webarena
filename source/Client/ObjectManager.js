@@ -205,13 +205,12 @@ ObjectManager.objectUpdate=function(data){
             }
         }
 		
+		object.refreshDelayed();
     } else {
         object = ObjectManager.buildObject(data.type,data);
+
+        object.refresh();
     }
-	
-	//ORIGINAL:
-    //object.refreshDelayed();
-    object.refresh();
 	
 }
 
@@ -286,32 +285,40 @@ ObjectManager.goHome=function(){
 
 ObjectManager.loadRoom=function(roomid,byBrowserNav,index){
 	
-	var self = this;
+	if (ObjectManager.getRoomID('left') != roomid && ObjectManager.getRoomID('right') != roomid) {
+		var self = this;
 
-	if (!index) var index = 'left';
-	
-	Modules.Dispatcher.query('enter',{'roomID':roomid,'index':index},function(error){
-
-		if (error !== true) {
-
-			var objects = self.getObjects(index);
-		    for (var i in objects) {
-		        var obj = objects[i];
-		        ObjectManager.removeLocally(obj);
-		    }
-
-		    if(!roomid) roomid='public';
-		    self.currentRoomID[index]=roomid;
-		   
-		    if (!byBrowserNav && index === 'left'){
-				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
-		    }
-		    
-		    GUI.chat.clear();
+		if (!index) var index = 'left';
 		
-		}
-		
-    });
+		Modules.Dispatcher.query('enter',{'roomID':roomid,'index':index},function(error){
+
+			if (error !== true) {
+
+				var objects = self.getObjects(index);
+			    for (var i in objects) {
+			        var obj = objects[i];
+			        ObjectManager.removeLocally(obj);
+			    }
+
+			    if(!roomid) roomid='public';
+			    self.currentRoomID[index]=roomid;
+			   
+			    if (!byBrowserNav && index === 'left'){
+					history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
+			    }
+			    
+			    GUI.chat.clear();
+			
+			}
+			
+	    });
+
+	    if (GUI.couplingModeActive) {
+	    	GUI.defaultZoomPanState(index);
+	    }
+	} else {
+		alert("Room already displayed.");
+	}
 
 }
 
@@ -754,9 +761,25 @@ ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
 
 		var array = new Array();
 
+		var positions = {};
+
+		var panX = 0;
+		var panY = 0;
+		if (ObjectManager.getRoomID('right') === toRoom) {
+			panX = GUI.getPanX('right');
+			panY = GUI.getPanY('right');
+		} else {
+			panX = GUI.getPanX('left');
+			panY = GUI.getPanY('left');
+		}
+
 		for (var key in objects) {
 		    var object = objects[key];
 			array.push(object.getId());
+
+			positions[object.getId()] = {};
+			positions[object.getId()]['x'] = object.getViewX() - panX;
+			positions[object.getId()]['y'] = object.getViewY() - panY;
 		}
 		    
 		var requestData={};
@@ -764,6 +787,7 @@ ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
 		requestData.toRoom=toRoom;
 		requestData.objects=array;
 		requestData.cut=cut;
+		requestData.attributes=positions;
 
 		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
 			GUI.deselectAllObjects();

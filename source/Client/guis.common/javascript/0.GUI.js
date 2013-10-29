@@ -153,14 +153,9 @@ GUI.setRoomWidth = function(width) {
 	if (width < $(window).width()) {
 		width = $(window).width();
 	}
-	
-	if (GUI.couplingModeActive) {
-		$("#content").css("width", $(window).width());
-		$("#content > svg").css("width", $(window).width());
-	} else {
-		$("#content").css("width", width );
-		$("#content > svg").css("width", width );
-	}
+
+	$("#content").css("width", width );
+	$("#content > svg").css("width", width );
 }
 
 /**
@@ -178,14 +173,8 @@ GUI.setRoomHeight = function(height) {
 		height = $(window).height();
 	}
 	
-	if (GUI.couplingModeActive) {
-		$("#content").css("height", $(window).height()-40);
-		$("#content > svg").css("height", $(window).height()-36);
-	} else {
-		$("#content").css("height", height);
-		$("#content > svg").css("height", height);
-	}
-	
+	$("#content").css("height", height);
+	$("#content > svg").css("height", height);
 }
 
 
@@ -422,6 +411,18 @@ GUI.initMouseHandler = function() {
 			var clickedObject=(temp)?temp.dataObject:false;
 			
 			//TODO check if this can be done similarly for touch devices
+
+			if (GUI.couplingModeActive) {
+				if (event.pageX > $('#couplingBar').attr('x1') && $('#couplingBar:hover').length == 0) {
+					if ($('#rightCouplingControl:hover').length == 0) {
+						if (GUI.defaultZoomPanState('right')) return;
+					}
+				} else {
+					if ($('#leftCouplingControl:hover').length == 0) {
+						if (GUI.defaultZoomPanState('left')) return;
+					}
+				}
+			}
 
 			if (clickedObject) {
 				// Objects with restricted moving areas should get the "native" events

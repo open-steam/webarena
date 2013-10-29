@@ -428,6 +428,7 @@ ObjectManager.init=function(theModules){
 		var fromRoom=data.fromRoom;
 		var toRoom=data.toRoom;
 		var objects=data.objects;
+		var attributes=data.attributes;
 
 		// collect unique objects to duplicate (each linked object only once)
 		var objectList = {};
@@ -452,6 +453,7 @@ ObjectManager.init=function(theModules){
 
 		var counter = 0;
 		var idTranslationList = {}; //list of object ids and their duplicated new ids
+		var reverseIdTranslationList = {};
 		var newObjects = []; //list of new (duplicated) objects
 		var idList = [];
 
@@ -473,6 +475,13 @@ ObjectManager.init=function(theModules){
 					// add group id if source object was grouped 
 					if (object.getAttribute("group") && object.getAttribute("group") > 0) {
 						object.setAttribute("group", object.getAttribute("group")+1);
+					}
+
+					// set attributes sent by frontend (e.g. new position when moving objects in concurrent view)
+					if (attributes[reverseIdTranslationList[object.id]] != undefined) {
+						for (var key in attributes[reverseIdTranslationList[object.id]]) {
+							object.setAttribute(key, attributes[reverseIdTranslationList[object.id]][key]);
+						}
 					}
 
 					object.updateClients();
@@ -513,6 +522,7 @@ ObjectManager.init=function(theModules){
 
 								newObjects.push(obj);
 								idTranslationList[oldId] = newId;
+								reverseIdTranslationList[newId] = oldId;
 
 								updateObjects(); //try to update objects
 

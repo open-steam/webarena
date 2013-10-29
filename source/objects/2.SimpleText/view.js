@@ -38,7 +38,6 @@ SimpleText.draw=function(external){
 	var that=this;
 	
 	this.getContentAsString(function(data){
-		
 		if(data!=that.oldContent){
 			if ((!data && !that.oldContent) || data == "") {
 				$(rep).find("text").get(0).textContent='';
@@ -60,7 +59,7 @@ SimpleText.draw=function(external){
 
 
 
-SimpleText.createRepresentation = function(parnet) {
+SimpleText.createRepresentation = function(parent) {
 	
 	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
