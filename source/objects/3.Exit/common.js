@@ -18,24 +18,17 @@ Exit.register=function(type){
 	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality',changedFunction: function(object) { object.updateIcon(); }});
 	this.registerAttribute('destinationObject',{type:'text',standard:'',category:'Functionality'});
 
-	var self=this;
+	this.registerAction('Follow',function(object){
+		object.execute();
+	},true);
 	
-	this.registerAction('Follow',function(){
-		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var object = selected[i];
-			
-			object.execute();
-			
-		}
-		
+	this.registerAction('Open in new window',function(object){	
+		object.execute(true);
 	},true);
 
 }
 
-Exit.execute=function(){
+Exit.execute=function(openInNewWindow){
 	
 	var destination=this.getAttribute('destination');
 	
@@ -61,10 +54,14 @@ Exit.execute=function(){
 		}
 	}
 	
-	ObjectManager.loadRoom(destination,false,callback);
+	console.log(openInNewWindow);
+	
+	if (openInNewWindow)
+	{ console.log("follow"); window.open(destination); }
+	else
+	{ console.log("new window"); ObjectManager.loadRoom(destination,false,callback); }
 	
 	//window.location.href = "/room/"+destination;
-	
 }
 
 Exit.register('Exit');
