@@ -69,15 +69,6 @@ ObjectManager.buildObject=function(type, attributes){
 		
     }
 
-	//Determine this room's contexts
-
-	if (!Config.noContexts){
-		var room=object.getRoom();
-		if (room){
-			room.updateContexts();
-		}
-	}
-
     return object;
 
 }
@@ -106,11 +97,11 @@ ObjectManager.getObjectsByLayer=function() {
 
     objectsArray.sort(function(a,b) {
 		
-		if (a.alwaysOnTop === true) {
+		if (a.alwaysOnTop() === true) {
 			return 1;
 		}
 		
-		if (b.alwaysOnTop === true) {
+		if (b.alwaysOnTop() === true) {
 			return -1;
 		}
 		
@@ -198,10 +189,6 @@ ObjectManager.attributeChanged=function(object,key,newValue,local){
 	
     if (this.informGUI) this.informGUI(object,key,newValue,local)
     else console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
-    
-    //updating room contexts on every attribut change, as contexts can be derived from various
-    //attributes. These evaluation is done by the objects themselves.
-    if (!Config.noContexts) object.getRoom().updateContexts();
 	
 }
 
@@ -216,10 +203,23 @@ ObjectManager.contentUpdate=function(data){
 }
 
 ObjectManager.remove=function(object){
+    var that = this;
+    if(! this.transactionId){
+        that.transactionId = new Date().getTime();
+    } else {
+        window.transactionTimer = window.setTimeout(function(){
+            //calculate new transactionId
+            //TODO: isn't safe - concurrent users may result in same timestamp
+            that.transactionId = new Date().getTime();
+        }, this.transactionTimeout);
+    }
+
     Modules.SocketClient.serverCall('deleteObject',{
         'roomID':object.getRoomID(),
-        'objectID':object.getID()
-        });
+        'objectID':object.getID(),
+        'transactionId': that.transactionId,
+        'userId' : GUI.userid
+    });
 }
 
 ObjectManager.removeLocally=function(data){
@@ -259,7 +259,7 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
-ObjectManager.loadRoom=function(roomid,byBrowserNav){
+ObjectManager.loadRoom=function(roomid,byBrowserNav,callback){
 	
 	var self = this;
 	
@@ -280,8 +280,8 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav){
 		    if (!byBrowserNav){
 				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
 		    }
-		    
-		    GUI.chat.clear();
+
+		    if (callback) setTimeout(callback, 1200);
 		
 		}
 		
@@ -327,7 +327,19 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
 }
 
 ObjectManager.init=function(){
+    this.transactionId = false;
+    this.transactionTimeout = 500;
 	
+	Modules.Dispatcher.registerCall('infotext', function(text){
+        var translatedText = GUI.translate(text);
+		//GUI.error("warning", text, false, false);
+		$().toastmessage('showToast', {
+			'text': translatedText,
+			'sticky': false,
+			'position' : 'top-left'
+		});
+	});
+
     Modules.Dispatcher.registerCall('welcome',function(data){
 
     });
@@ -612,30 +624,65 @@ ObjectManager.cutObjects=function(objects) {
 ObjectManager.pasteObjects=function() {
 
 	if (ObjectManager.clipBoard.objects != undefined && ObjectManager.clipBoard.objects.length > 0) {
-		var requestData={};
-		
-		requestData.fromRoom=ObjectManager.clipBoard.room;
-		requestData.toRoom=this.getRoomID();
-	    requestData.objects=ObjectManager.clipBoard.objects;
-	    requestData.cut=ObjectManager.clipBoard.cut;
 
-		// select new objects after duplication
-	    var newIDs=[];
-	    var selectNewObjects = function() {
-			for (var key in newIDs) {
-				var newObject = ObjectManager.getObject(newIDs[key]);
-				newObject.select(true);
+		var paste = false;
+		if (ObjectManager.clipBoard.objects.length <= 5) {
+			paste = true;
+		} else {
+			paste = GUI.confirm(GUI.translate('You are pasting') + ' ' + ObjectManager.clipBoard.objects.length + ' ' + GUI.translate('objects') + '.\n' 
+					+ GUI.translate('Do you want to continue?'));
+		}
+
+		if (paste) {
+			var requestData={};
+			
+			requestData.fromRoom=ObjectManager.clipBoard.room;
+			requestData.toRoom=this.getRoomID();
+		    requestData.objects=ObjectManager.clipBoard.objects;
+		    requestData.cut=ObjectManager.clipBoard.cut;
+
+			// select new objects after duplication
+		    var newIDs=[];
+		    var minX = Number.MAX_VALUE;
+		    var minY = Number.MAX_VALUE;
+		    var selectNewObjects = function() {
+				for (var key in newIDs) {
+					var newObject = ObjectManager.getObject(newIDs[key]);
+					newObject.select(true);
+
+					// determine left most and top most coordinates of pasted objects in case of scrolling
+					if (newObject.getAttribute('x') < minX) {
+						minX = newObject.getAttribute('x');
+					}
+					if (newObject.getAttribute('y') < minY) {
+						minY = newObject.getAttribute('y');
+					}
+				}
+
+				// if objects were moved between rooms scroll to position of pasted objects
+				if (requestData.fromRoom != requestData.toRoom) {
+					if (minX - 30 < 0) minX = 30;
+					if (minY - 30 < 0) minY = 30;
+					
+					$(document).scrollTo(
+						{ 
+							top: minY - 30, 
+							left: minX - 30
+						},
+						1000
+					);
+				}
+			};
+
+			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList){
+				newIDs = idList;
+				GUI.deselectAllObjects();
+				setTimeout(selectNewObjects, 200);
+			});
+
+			if (ObjectManager.clipBoard.cut) {
+				ObjectManager.clipBoard={};
 			}
-		};
-
-		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList){
-			newIDs = idList;
-			GUI.deselectAllObjects();
-			setTimeout(selectNewObjects, 200);
-		});
-
-		if (ObjectManager.clipBoard.cut) {
-			ObjectManager.clipBoard={};
 		}
 	}
 }
@@ -643,32 +690,42 @@ ObjectManager.pasteObjects=function() {
 ObjectManager.duplicateObjects=function(objects) {
 	if (objects != undefined && objects.length > 0) {
 
-		var array = new Array();
+		var duplicate = false;
+		if (objects.length <= 5) {
+			duplicate = true;
+		} else {
+			duplicate = GUI.confirm(GUI.translate('You are duplicating') + ' ' + objects.length + ' ' + GUI.translate('objects') + '.\n' 
+						+ GUI.translate('Do you want to continue?'));
+		}
 
-		for (var key in objects) {
-	        var object = objects[key];
-	        array.push(object.getId());
-	    }
-	    
-	    var requestData={};
-		requestData.fromRoom=this.getRoomID();
-		requestData.toRoom=this.getRoomID();
-	    requestData.objects=array;
-	    requestData.cut=false;
+		if (duplicate) {
+			var array = new Array();
 
-	    // select new objects after duplication
-	    var newIDs=[];
-	    var selectNewObjects = function() {
-			for (var key in newIDs) {
-				var newObject = ObjectManager.getObject(newIDs[key]);
-				newObject.select(true);
-			}
-		};
+			for (var key in objects) {
+		        var object = objects[key];
+		        array.push(object.getId());
+		    }
+		    
+		    var requestData={};
+			requestData.fromRoom=this.getRoomID();
+			requestData.toRoom=this.getRoomID();
+		    requestData.objects=array;
+		    requestData.cut=false;
 
-		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
-			newIDs = idList;
-			GUI.deselectAllObjects();
-			setTimeout(selectNewObjects, 200);
-		});
+		    // select new objects after duplication
+		    var newIDs=[];
+		    var selectNewObjects = function() {
+				for (var key in newIDs) {
+					var newObject = ObjectManager.getObject(newIDs[key]);
+					newObject.select(true);
+				}
+			};
+
+			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
+				newIDs = idList;
+				GUI.deselectAllObjects();
+				setTimeout(selectNewObjects, 200);
+			});
+		}
 	}
 }

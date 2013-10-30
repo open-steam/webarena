@@ -272,6 +272,12 @@ GUI.initToolbar = function() {
 
 	$(pasteButton).attr("id", "paste_button");
 	$(pasteButton).addClass("sidebar_button");
+
+	$(pasteButton).css("padding-left", "20px");
+	$(pasteButton).css("padding-right", "20px");
+	$(pasteButton).css("margin-right", "20px");
+	$(pasteButton).css("border-left", "1px solid #636363");
+	$(pasteButton).css("border-right", "1px solid #636363");
 	
 	$(pasteButton).attr("title", GUI.translate("Paste"));
 

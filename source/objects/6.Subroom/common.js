@@ -7,28 +7,20 @@
 
 var Modules=require('../../server.js');
 
-var Subroom=Object.create(Modules.ObjectManager.getPrototype('BidExit'));
+var Subroom=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
 Subroom.register=function(type){
 	
 	// Registering the object
 	
-	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
-	GeneralObject.register.call(this,type);
+	IconObject=Modules.ObjectManager.getPrototype('IconObject');
+	IconObject.register.call(this,type);
 	
-	this.unregisterAction('Duplicate');
-	
+	var self=this;
 	
 	this.registerAction('Follow',function(){
 		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var object = selected[i];
-			
-			object.execute();
-			
-		}
+		self.execute();
 		
 	},true);
 	
@@ -39,22 +31,20 @@ Subroom.execute=function(){
 	
 	var destination=this.getAttribute('destination');
 	
+	//TODO this must be done serverside in the connector
 	if (!destination) {
-		return;
+		var random=new Date().getTime()-1296055327011;
+		
+		this.setAttribute('destination',random);
+		destination = random;
 	}
 	
 	ObjectManager.loadRoom(destination);
 	
 }
 
-Subroom.upload=function(){
-	
-	var random=new Date().getTime()-1296055327011;
-	
-	this.setAttribute('destination',random);
-}
-
 Subroom.register('Subroom');
+Subroom.isCreatable=true;
 
 Subroom.category='Rooms';
 

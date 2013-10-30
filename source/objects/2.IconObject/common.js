@@ -19,12 +19,13 @@ IconObject.register=function(type){
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type); //super call
 	
-	this.attributeManager.registerAttribute('layer',{readonly:true, hidden: true});
+	this.attributeManager.registerAttribute('layer',{hidden: true});
+	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { object.updateIcon(); }});
 	this.registerAttribute('width',{hidden:true});
 	this.registerAttribute('height',{hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});
-	this.registerAttribute('linecolor',{hidden:true});
-	this.registerAttribute('linesize',{hidden:true});
+	//this.registerAttribute('linecolor',{hidden:true});
+	//this.registerAttribute('linesize',{hidden:true});
 	this.unregisterAction('to back');
 	this.unregisterAction('to front');
 	
@@ -37,7 +38,7 @@ IconObject.isResizable=function(){
 
 IconObject.moveByTransform = function(){return true;};
 
-IconObject.alwaysOnTop = true;
+IconObject.alwaysOnTop = function() {return true;};
 
 IconObject.register('IconObject');
 

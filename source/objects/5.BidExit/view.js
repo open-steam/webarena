@@ -5,10 +5,10 @@
 *
 */
 
-BidExit.getFileIcon=function() {
-	return "../../guis.common/images/fileicons/webarenaLink.png";
-}
-
-BidExit.getUploadIcon = function() {
-	return "../../guis.common/images/fileicons/selectWebarena.png";
+BidExit.getStatusIcon = function() {
+	if (!this.getAttribute("destination")) {
+		return this.getIconPath() + "/select";
+	} else {
+		return this.getIconPath() + "/link";
+	}
 }

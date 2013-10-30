@@ -53,8 +53,9 @@ Textarea.draw=function(external){
 	this.getContentAsString(function(text){
 
 		if(text!=that.oldContent){
-			text = text.replace(/\n/g,"<br />")
-			text = text.replace(/\s\s/g,"&nbsp; ")
+
+            text = htmlEncode(text);
+
 			$(rep).find("body>div>div").html(text);
 		}
 		
@@ -63,7 +64,7 @@ Textarea.draw=function(external){
 	});
 	
 	this.updateInnerHeight();
-
+    this.adjustControls();
 }
 
 
@@ -84,7 +85,7 @@ Textarea.createRepresentation = function() {
 	rep.dataObject=this;
 	
 	var body = document.createElement("body");
-	$(body).html('<div><div>TEXT</div></div>');
+	$(body).html('<div class="overfloating-y"><div>TEXT</div></div>');
 
 	$(rep).append(body);
 
@@ -100,8 +101,14 @@ Textarea.createRepresentation = function() {
 
 Textarea.editText = function() {
 	
-	GUI.editText(this, true, this.getViewWidth(), this.getViewHeight());
-	
+	var passThrough = { 
+		"resizable" : true,  
+		resizeStart : function(event,ui) { 
+			$('textarea[name=textedit]').css('height', '100%'); 
+		} 
+	};
+	GUI.editText(this, true, this.getViewWidth(), this.getViewHeight(), passThrough);
+
 }
 
 
@@ -110,3 +117,28 @@ Textarea.adjustControls = function() {
 	GeneralObject.adjustControls.call(this);
 }
 
+/**
+ * Called when the colors of the appearence of an object are changed
+ * @param {String} attribute attribute that was changed
+ * @param {String} value new value of the attribute
+ */
+Textarea.checkTransparency = function(attribute, value) {
+	if (attribute === 'fillcolor') {
+		var fillcolor = value;
+	} else {
+		var fillcolor = this.getAttribute('fillcolor');
+	}
+	if (attribute === 'font-color') {
+		var fontcolor = value;
+	} else {
+		var fontcolor = this.getAttribute('font-color');
+	}
+	if (attribute === 'linecolor') {
+		var linecolor = value;
+	} else {
+		var linecolor = this.getAttribute('linecolor');
+	}
+	if ((fillcolor === 'transparent' && linecolor === 'transparent' && fontcolor === 'transparent') || (fillcolor === 'transparent' && linecolor === 'transparent' && this.getContentAsString().trim() === '')) {
+		return false;
+	} else return true;
+}

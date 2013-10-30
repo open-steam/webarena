@@ -24,6 +24,9 @@ SimpleText.draw=function(external){
 	
 	$(rep).attr("layer", this.getAttribute('layer'));
 
+    var rotation = this.getAttribute("rotation") || 0;
+    $(rep).find("text").attr("transform", "rotate(" + rotation + " 0 0)");
+
 	if (!$(rep).hasClass("webarena_ghost")) {
 		if (this.getAttribute("visible") || this.selected) {
 			$(rep).css("visibility", "visible");
@@ -95,4 +98,25 @@ SimpleText.getViewBoundingBoxY = function() {
 SimpleText.getViewBoundingBoxHeight = function() {
 	var rep = this.getRepresentation();
 	return this.getRepresentation().getBBox().height; //<--TODO: this value is too high
+}
+
+/**
+ * Called when the colors of the appearence of an object are changed
+ * @param {String} attribute attribute that was changed
+ * @param {String} value new value of the attribute
+ */
+SimpleText.checkTransparency = function(attribute, value) {
+	if (attribute === 'font-color') {
+		var fontcolor = value;
+	} else {
+		var fontcolor = this.getAttribute('font-color');
+	}
+	if (attribute === 'linecolor') {
+		var linecolor = value;
+	} else {
+		var linecolor = this.getAttribute('linecolor');
+	}
+	if (fontcolor === 'transparent' && linecolor === 'transparent') {
+		return false;
+	} else return true;
 }

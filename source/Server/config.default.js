@@ -20,8 +20,15 @@ module.exports={
         username: "",
         password: ""
 	},
+    sharepoint : {
+        basepath : "https://projects.uni-paderborn.de/websites/studiolo/"
+    },
 	bidServer: 'www.bid-owl.de.localhost',
 	bidPort: 80,
+	elab: {
+		filebase : '', // folder where the user management data is saved
+		encryptionKey : '' // used as salt to create a hash of the user password (needs to be the same as on the user management platform)
+	},
 	logLevels : {
 		"warn" : true,
 		"debug" : false,
@@ -30,6 +37,5 @@ module.exports={
 	developerInfo: false,
 	objectWhitelist: [],	//an empty whitelist whitelists everything
 	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
-	noContexts: false,
     showDebugLineNumbers: false
 };

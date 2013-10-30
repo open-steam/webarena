@@ -86,9 +86,9 @@ GUI.uploadFile=function(object,message){
 /**
  * GUI specific inspector update
  */
-GUI.updateInspector = function() {
+GUI.updateInspector = function(selectionChanged) {
 
-    if ($("#inspector").data("jDesktopInspector").hasFocus) {
+    if (!selectionChanged && $("#inspector").data("jDesktopInspector").hasFocus) {
         return; // do not update inspector content when the inspector has focus
     }
 

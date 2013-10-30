@@ -5,18 +5,25 @@
 *
 */
 
-console.log('##########################################');
-console.log('#    W E B A R E N A   S E R V E R       #');
-console.log('#                                        #');
-console.log('#    (c) 2012-13 Contextual Informatics, #');
-console.log('#                Universität Paderborn   #');
-console.log('#                                        #');
-console.log('#    Main contributors:                  #');
-console.log('#                                        #');
-console.log('#        Felix Winkelnkemper             #');
-console.log('#        Tobias Kempkensteffen           #');
-console.log('#                                        #');
-console.log('##########################################');
+var printLogo = function(){
+   var logo = ['##########################################',
+	'#    W E B A R E N A   S E R V E R       #',
+	'#                                        #',
+	'#    (c) 2012-13 Contextual Informatics, #',
+	'#                Universität Paderborn   #',
+	'#                                        #',
+	'#    Main contributors:                  #',
+	'#                                        #',
+	'#        Felix Winkelnkemper             #',
+	'#        Tobias Kempkensteffen           #',
+	'#        Viktor Koop                     #',
+	'#                                        #',
+	'##########################################'];
+
+	logo.forEach(function(l){
+		console.log(l);
+	});
+}();
 
 "use strict";
 

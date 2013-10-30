@@ -12,7 +12,9 @@ Highlighter.draw=function(external){
 
 	Paint.draw.call(this, external);
 
-	$(rep).css("opacity", Highlighter.normalOpacity);
+	if (this.hasContent()) {
+		$(rep).css("opacity", Highlighter.normalOpacity);
+	}
 	$(rep).attr("normalOpacity", Highlighter.normalOpacity);
 	
 }

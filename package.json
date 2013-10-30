@@ -1,12 +1,21 @@
 {
-    "name": "webarena",
-    "version": "1.0.0",
-    "dependencies": {
-        "socket.io": "*",
-        "formidable": "*",
-        "imagemagick": "0.1.2",
-        "underscore": "*",
-        "sharepoint" : "*",
-        "node-uuid" : "*"
-    }
+  "name": "webarena",
+  "version": "1.0.0",
+  "dependencies": {
+    "socket.io": ">=0.9.14",
+    "formidable": "*",
+    "imagemagick": "0.1.2",
+    "underscore": "*",
+    "sharepoint": "*",
+    "node-uuid": "*",
+    "mime": "*",
+    "q": "~0.9.6",
+    "underscore.string": "~2.3.3"
+  },
+  "devDependencies": {
+    "superagent": "~0.15.4",
+    "expect.js": "~0.2.0",
+    "mocha": "~1.12.0",
+    "chai": "~1.7.2"
+  }
 }

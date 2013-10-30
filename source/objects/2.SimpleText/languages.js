@@ -3,6 +3,7 @@ SimpleText.setTranslations('de',{
 	'font-family':'Schriftart',
 	'font-size':'Schriftgröße',
 	'font-color':'Schriftfarbe',
-	'No text yet!':'Noch kein Text vorhanden'
+	'No text yet!':'Noch kein Text vorhanden',
+    'rotation' : "Rotation"
 }
 );

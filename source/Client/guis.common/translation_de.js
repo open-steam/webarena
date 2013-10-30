@@ -1,6 +1,11 @@
 "use strict";
 
 GUI.setTranslations('de',{
+    'info.undo.attribute' : 'Eine Attributänderung wurde rückgängig gemacht.',
+    'info.undo.duplication' : 'Duplizierung wurde rückgängig gemacht.',
+    'info.undo.delete' : 'Gelöschtes Objekt wiederhergestellt.',
+    'info.undo.nothing' : 'Es können keine weiteren Änderungen rückgängig gemacht werden.',
+    'info.undo.blocked' : 'Die letzte Aktion kann nicht rückgängig gemacht werden. Ein anderer Nutzer hat das Objekt verändert.',
 	'ping':'pong',
 	'Basic':'Basis',
 	'Dimensions':'Dimensionen',
@@ -41,6 +46,11 @@ GUI.setTranslations('de',{
 	'this file is not previewable' : 'Diese Datei kann nicht als Vorschau angezeigt werden.',
 	'Files' : 'Dateien',
 	'This room has no parent.':'Für diesen Raum gibt es keinen übergeordneten Raum.',
-	'Paste' : 'Einfügen'
+	'Paste' : 'Einfügen',
+	'You are duplicating' : 'Sie duplizieren',
+	'You are pasting' : 'Sie fügen ein:',
+	'objects' : 'Objekte',
+	'Do you want to continue?' : 'Wollen Sie fortsetzen?',
+	'Do you really want to delete the marked objects?' : 'Ausgewählte Objekte wirklich löschen?'
 }
 );

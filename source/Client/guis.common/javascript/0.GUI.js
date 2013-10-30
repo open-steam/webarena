@@ -292,7 +292,18 @@ GUI.initMoveByKeyboard = function() {
 	
 }
 
+GUI.initUndoByKeyboard = function(){
 
+
+    $(document).bind("keydown", function(event) {
+        var ctrlDown = event.ctrlKey||event.metaKey
+        if(ctrlDown && event.which == 90){
+            event.preventDefault();
+
+            Modules.Dispatcher.query("undo", {"userID" : GUI.userid});
+        }
+    });
+}
 
 /**
  * add event handler for removing selected objects by pressing delete-key
@@ -307,16 +318,20 @@ GUI.initObjectDeletionByKeyboard = function() {
 
 				event.preventDefault();
 
-				/* delete selected objects */
-				$.each(ObjectManager.getSelected(), function(key, object) {
+				var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
 
-					if ($(object.getRepresentation()).data("jActionsheet")) {
-						$(object.getRepresentation()).data("jActionsheet").remove();
-					}
+				if (result) {
+					/* delete selected objects */
+					$.each(ObjectManager.getSelected(), function(key, object) {
 
-					object.deleteIt();
+						if ($(object.getRepresentation()).data("jActionsheet")) {
+							$(object.getRepresentation()).data("jActionsheet").remove();
+						}
 
-				});
+						object.deleteIt();
+
+					});
+				}
 			}
 			
 		}
@@ -377,7 +392,7 @@ GUI.initMouseHandler = function() {
 			var x = event.pageX-contentPosition.left;
 			var y = event.pageY-contentPosition.top;
 			
-			if (event.touches.length > 1) {
+			if (event.touches.length >= 1) {
 				var x = event.touches[event.touches.length-1].pageX-contentPosition.left;
 				var y = event.touches[event.touches.length-1].pageY-contentPosition.top;
 			}
@@ -430,6 +445,7 @@ GUI.initMouseHandler = function() {
                 event.preventDefault();
                 event.stopPropagation();
 				GUI.rubberbandStart(event);
+				GUI.updateInspector(true);
 			}
 
 		}
@@ -689,4 +705,11 @@ GUI.startNoAnimationTimer = function() {
 	GUI.noAnimation = window.setTimeout(function() {
 		GUI.noAnimation = undefined;
 	}, 2000);
+}
+
+/**
+ * ask user to confirm the question in the message
+ */
+GUI.confirm = function(message) {
+	return confirm(message);
 }
