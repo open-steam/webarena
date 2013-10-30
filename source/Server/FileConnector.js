@@ -778,7 +778,10 @@ fileConnector.getInlinePreviewProviders=function() {
 		"image/jpeg" : "image",
 		"image/jpg" : "image",
 		"image/png" : "image",
-		"image/gif" : "image"
+		"image/gif" : "image",
+		"image/bmp" : "image",
+		"image/x-bmp" : "image",
+		"image/x-ms-bmp" : "image"
 	}
 }
 
