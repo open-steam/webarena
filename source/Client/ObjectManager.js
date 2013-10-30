@@ -204,12 +204,22 @@ ObjectManager.objectUpdate=function(data){
                 this.attributeChanged(object,key,newValue);
             }
         }
-		
-		object.refreshDelayed();
+
+        object.refreshDelayed();
     } else {
         object = ObjectManager.buildObject(data.type,data);
 
-        object.refresh();
+        if (GUI.couplingModeActive) {
+        	// to enable smooth dragging of objects between rooms display new objects immediately 
+        	// exceptions: SimpleText and Textarea need to load their content first else they are invisible or empty
+        	if (data.type !== "SimpleText" && data.type !== "Textarea") {
+        		object.refresh();
+        	} else {
+        		object.refreshDelayed();
+        	}
+        } else {
+        	object.refreshDelayed();
+        }
     }
 	
 }
