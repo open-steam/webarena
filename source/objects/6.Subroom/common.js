@@ -24,10 +24,15 @@ Subroom.register=function(type){
 		
 	},true);
 	
+	this.registerAction('Open in new window',function(){
+		
+		self.execute(true);
+		
+	},true);
 	
 }
 
-Subroom.execute=function(){
+Subroom.execute=function(openInNewWindow){
 	
 	var destination=this.getAttribute('destination');
 	
@@ -39,8 +44,8 @@ Subroom.execute=function(){
 		destination = random;
 	}
 	
-	ObjectManager.loadRoom(destination);
-	
+	if (openInNewWindow) { window.open(destination); }
+	else { ObjectManager.loadRoom(destination); }
 }
 
 Subroom.register('Subroom');
