@@ -553,6 +553,10 @@ input {
 	height: 100px;
 }
 
+#bug input[type=email] {
+	width: 100%;
+}
+
 .bug_success {
 	color: #4AA03F;
 }

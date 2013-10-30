@@ -652,23 +652,23 @@ ObjectManager.init=function(theModules){
 		   ssl:     Modules.config.bugreport.server.ssl,
 		   port: 	Modules.config.bugreport.server.port,
 		});
-
-
+		
 		var date = new Date();
 
 		var text = "Datum: "+date.getDate()+"."+(date.getMonth() + 1)+"."+date.getFullYear()+", "+date.getHours()+":"+date.getMinutes()+" Uhr"+"\n";
 		text += "UserAgent: "+data.userAgent+"\n";
-		text += "Benutzer: "+data.user+"\n\n";
-
+		text += "Benutzer: "+data.user+"\n";
+		text += "eMail: "+data.email+"\n\n";
+		
 		text += "Was wollten Sie tun?\n----------------------------------\n";
 		text += data.task+"\n\n\n";
 
 		text += "Welches Problem ist aufgetreten?\n----------------------------------\n";
 		text += data.problem+"\n\n\n";
-
+		
 		text += "Objekte im Raum:\n----------------------------------\n";
-		text += data.objects
-
+		text += data.objects;
+		
 		if (Modules.config.bugreport.recipients !== undefined) {
 
 			var counter = 0;
