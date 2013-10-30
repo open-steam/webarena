@@ -18,15 +18,15 @@ Subroom.register=function(type){
 	
 	var self=this;
 	
-	this.registerAction('Follow',function(){
+	this.registerAction('Follow',function(object){
 		
-		self.execute();
+		object.execute();
 		
 	},true);
 	
-	this.registerAction('Open in new window',function(){
+	this.registerAction('Open in new window',function(object){
 		
-		self.execute(true);
+		object.execute(true);
 		
 	},true);
 	
