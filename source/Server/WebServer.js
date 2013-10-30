@@ -350,11 +350,16 @@ WebServer.init = function (theModules) {
             req.on('end', function () {
                 var post = qs.parse(data);
 
+                var home = post.home;
+                if (!home) {
+                    home = "";
+                }
                 if (Modules.Connector.addExternalSession !== undefined) {
                     Modules.Connector.addExternalSession({
                         "id": post.id,
                         "username": post.username,
-                        "password": post.password
+                        "password": post.password,
+                        "home": home
                     });
                 }
 

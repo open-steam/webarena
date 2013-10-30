@@ -17,7 +17,8 @@ class Webarena extends MY_Controller {
                 $data = http_build_query(array(
                     "id" => $this->session->userdata('session_id'),
                     "username" => $this->session->userdata('username'),
-                    "password" => $this->session->userdata('password')
+                    "password" => $this->session->userdata('password'),
+		    "home" => $room
                 ));
 
                 // send the request headers:
