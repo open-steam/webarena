@@ -15,3 +15,6 @@ source/out.log
 
 *.sublime-project
 *.sublime-workspace
+
+/nbproject/private/
+/nbproject/*
