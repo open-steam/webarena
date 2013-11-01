@@ -1,3 +1,6 @@
+"use strict";
+
+
 var util = require("util");
 var net = require('net');
 var _ = require("underscore");
