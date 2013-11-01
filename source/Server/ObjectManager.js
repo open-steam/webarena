@@ -10,6 +10,7 @@
 
 var fs=require('fs');
 var _ = require('underscore');
+var tokenChecker = require("./TokenChecker.js");
 
 var Modules=false;
 var ObjectManager={};
@@ -256,6 +257,8 @@ ObjectManager.createObject=function(roomID,type, attributes, content,socket,resp
 			object.setContent(content);
 		}
 
+		Modules.EventBus.emit("room::" + roomID + "::action::createObject" , {objectID: id});
+
 		if (socket && responseID) {
 			Modules.Dispatcher.respond(socket,responseID,object.id);
 		}
@@ -385,6 +388,8 @@ ObjectManager.init=function(theModules){
 					Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 					return;
 				}
+
+				Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete" , data);
 
                 var historyEntry = {
                     'oldRoomID' : roomID,
@@ -516,6 +521,8 @@ ObjectManager.init=function(theModules){
 		if ( probableTransactionInfo && probableTransactionInfo.transactionId){
 			serverFunctionParams.pop();
 		}
+
+			Modules.EventBus.emit("room::" + roomID + "::" + objectID, data);
 
         var responseCallback = function(res){
             Modules.Dispatcher.respond(socket,responseID,res);

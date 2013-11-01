@@ -64,7 +64,10 @@ var  Modules={
 	SocketServer:require('./Server/SocketServer.js'),
 	UserManager:require('./Server/UserManager.js'),
 	Helper:require('./Server/Helper.js'),
-	
+
+	EventBus :  require("./Server/Eventbus.js"),
+	TokenChecker: require("./Server/TokenChecker"),
+	TcpEventServer : require("./Server/TCPSocketServer.js").create(),
 	// These object exist for every object type or every single object. They shall not be
 	// modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
 	
