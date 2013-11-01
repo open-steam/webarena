@@ -493,8 +493,9 @@ fileConnector.duplicateObject=function(roomID,objectID,callback,context,toRoom){
 		var read = fs.createReadStream(source);
 		var write = fs.createWriteStream(dest);
 
-		read.on("end", callback); 
-		sys.pump(read, write);
+		read.on("end", callback);
+		read.pipe(write);
+
 		
 	}
 	
