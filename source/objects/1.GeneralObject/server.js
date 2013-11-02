@@ -443,5 +443,7 @@ theObject.fireEvent=function(name,data){
 	
 	console.log(this+' fireing '+name+' ('+data+')');
 	console.log('###Note: Event fireing not implemented yet (GeneralObject)');
+
+	Modules.EventBus.emit(name, data);
 	
 }
