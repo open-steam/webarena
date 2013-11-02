@@ -11,6 +11,8 @@
 var fileConnector={};
 var fs = require('fs');
 
+var Q = require('q');
+
 fileConnector.init=function(theModules){
 	this.Modules=theModules;
 }
@@ -65,6 +67,29 @@ fileConnector.login=function(username,password,externalSession,rp,context){
  */
 fileConnector.getTrashRoom = function(context, callback){
     return this.getRoomData("trash", context, callback);
+}
+
+
+fileConnector.listRooms = function(callback){
+	var availableRooms = [];
+
+	var filebase = this.Modules.Config.filebase;
+	fs.readdir(filebase, function(err, files){
+		if(err){
+			//TODO
+		}
+
+		var statPromises = files.map(function(file){return Q.nfcall(fs.stat, file)});
+		Q.allSettled(statPromises).then(function(stats){
+			var directories = stats.filter(function(stat){
+				return stat.isDirectory();
+			});
+
+			callback(directories);
+		});
+
+	});
+
 }
 
 
