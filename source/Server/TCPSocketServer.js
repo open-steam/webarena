@@ -31,6 +31,11 @@ TCPSocketServer.init = function (modules) {
 				return;
 			}
 
+			if (!parsedRequest.requestType){
+				emitAsJson(connection, {"error": "missing argument: requestType."});
+				console.log("asdf asdf");
+				return;
+			}
 			if (parsedRequest.requestType && parsedRequest.requestType === "serverCall"){
 
 			}
@@ -44,12 +49,15 @@ TCPSocketServer.init = function (modules) {
 					theModules.EventBus.on(eventParam, function (eventData) {
 
 						var eventEnvelope = {
-							eventNamespace: eventParam,
+							eventName: this.event,
 							eventData: eventData
 						};
+
+
 						emitAsJson(connection, eventEnvelope);
 					})
-				})
+				});
+				emitAsJson(connection, {"status": "ok"});
 			}
 		});
 
