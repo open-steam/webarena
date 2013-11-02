@@ -33,7 +33,6 @@ TCPSocketServer.init = function (modules) {
 
 			if (!parsedRequest.requestType){
 				emitAsJson(connection, {"error": "missing argument: requestType."});
-				console.log("asdf asdf");
 				return;
 			}
 			if (parsedRequest.requestType && parsedRequest.requestType === "serverCall"){

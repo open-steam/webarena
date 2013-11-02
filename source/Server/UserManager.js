@@ -25,7 +25,7 @@ UserManager.init=function(theModules){
  	Modules=theModules;
 	var Dispatcher=Modules.Dispatcher;
 	Dispatcher.registerCall('login',UserManager.login);
-    Dispatcher.registerCall('enter',UserManager.enterRoom);  
+	Dispatcher.registerCall('enter',UserManager.enterRoom);
 }
 
 /**
