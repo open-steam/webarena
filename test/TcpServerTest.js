@@ -74,4 +74,21 @@ describe('TCP subscribe events', function () {
 
 		client.write(JSON.stringify(subscriptionEvent));
 	});
+
+	it('should except event array', function(done){
+		client.on('data', function(data){
+			var response = JSON.parse(data.toString());
+			expect(response).to.be.an("object");
+			expect(response).to.have.property('status');
+			expect(response.status).to.be.eql("ok");
+			done();
+		});
+
+		var subscriptionEvent = {
+			requestType: "subscribeEvents",
+			eventlist: ["**"]
+		};
+
+		client.write(JSON.stringify(subscriptionEvent));
+	});
 });
