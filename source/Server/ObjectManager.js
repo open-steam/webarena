@@ -509,6 +509,12 @@ ObjectManager.init = function (theModules) {
 
 	});
 
+	Modules.Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
+		Modules.Connector.listRooms(function(rooms){
+			Modules.Dispatcher.respond(socket, responseID, rooms);
+		});
+	});
+
 	Modules.Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
 		var context = Modules.UserManager.getConnectionBySocket(socket);
 		var roomID = data.roomID

@@ -10,6 +10,7 @@
 
 var fileConnector={};
 var fs = require('fs');
+var async = require('async');
 
 var Q = require('q');
 
@@ -79,15 +80,24 @@ fileConnector.listRooms = function(callback){
 			//TODO
 		}
 
-		var statPromises = files.map(function(file){return Q.nfcall(fs.stat, file)});
-		Q.allSettled(statPromises).then(function(stats){
-			var directories = stats.filter(function(stat){
-				return stat.isDirectory();
+		var isRoom = function(file, callback){
+			if(/^\./.exec(file)){
+				callback(false);
+				return;
+			}
+			file = filebase + file;
+			fs.stat(file, function(err, result){
+				if(err){
+					callback(err, null);
+					return;
+				}
+				callback(result.isDirectory());
 			});
+		}
 
+		async.filter(files,isRoom, function( directories){
 			callback(directories);
 		});
-
 	});
 
 }
