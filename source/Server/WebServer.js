@@ -33,13 +33,8 @@ WebServer.init = function (theModules) {
 
 	WebServer.server = httpServer;
 	httpServer.listen(global.config.port);  // start server (port set in config)
+	app.use(express.bodyParser())
 
-//TODO - only show if needed
-//app.use(express.logger());
-//    app
-//        .use(express.bodyParser())
-//        .use(express.cookieParser())
-//        .use(express.session())
 
 	//Handling of IE
 	//Requests from IE will not be served - simply return message that the browser isn't supported
@@ -135,12 +130,11 @@ WebServer.init = function (theModules) {
 
 	app.post("/setContent/:roomID/:objectID/*", function (req, res) {
 		var context = req.context;
-
-
 		var roomID = req.params.roomID;
 		var objectID = req.params.objectID;
 
 		var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+
 		if (!object) {
 			res.writeHead(404);
 			Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
@@ -156,43 +150,23 @@ WebServer.init = function (theModules) {
 				new Date().toDateString(), context.user.username, historyEntry
 		)
 
+		object.copyContentFromFile(req.files.file.path, function () {
 
-		var formidable = require('formidable');
-		var util = require('util');
+			object.set('hasContent', true);
+			object.set('contentAge', new Date().getTime());
+			object.set('mimeType', req.files.file.type);
 
-		var form = new formidable.IncomingForm();
+			/* check if content is inline displayable */
+			if (Modules.Connector.isInlineDisplayable(req.files.file.type)) {
 
-		form.parse(req, function (err, fields, files) {
+				object.set('preview', true);
+				object.persist();
 
-			object.copyContentFromFile(files.file.path, function () {
+				/* get dimensions */
+				Modules.Connector.getInlinePreviewDimensions(roomID, objectID, function (width, height) {
 
-				object.set('hasContent', true);
-				object.set('contentAge', new Date().getTime());
-				object.set('mimeType', files.file.type);
-
-				/* check if content is inline displayable */
-				if (Modules.Connector.isInlineDisplayable(files.file.type)) {
-
-					object.set('preview', true);
-					object.persist();
-
-					/* get dimensions */
-					Modules.Connector.getInlinePreviewDimensions(roomID, objectID, function (width, height) {
-
-						if (width != false)    object.setAttribute("width", width);
-						if (height != false) object.setAttribute("height", height);
-
-						//send object update to all listeners
-						object.persist();
-						object.updateClients('contentUpdate');
-
-						res.writeHead(200);
-						res.end();
-
-					}, files.file.type, true);
-
-				} else {
-					object.set('preview', false);
+					if (width != false)    object.setAttribute("width", width);
+					if (height != false) object.setAttribute("height", height);
 
 					//send object update to all listeners
 					object.persist();
@@ -200,13 +174,22 @@ WebServer.init = function (theModules) {
 
 					res.writeHead(200);
 					res.end();
-				}
 
+				}, req.files.file.type, true);
 
-			});
+			} else {
+				object.set('preview', false);
 
+				//send object update to all listeners
+				object.persist();
+				object.updateClients('contentUpdate');
+
+				res.writeHead(200);
+				res.end();
+			}
 		});
 	});
+
 
 	app.get("/getContent/*", function (req, res) {
 		var url = req.url.replace('%20', ' ');
