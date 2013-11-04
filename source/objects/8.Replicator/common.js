@@ -7,9 +7,7 @@ Replicator.register=function(type){
 	Modules.ObjectManager.getPrototype('Hotspot').register.call(this,type);
 	this.makeSensitive();
 
-	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});
-	this.registerAttribute('value',{type:'text',standard:'',category:'Selection'});
-
+	this.registerAttribute('target',{type:'text',standard:'',category:'Selection'});
 }
 
 Replicator.isCreatable=true;

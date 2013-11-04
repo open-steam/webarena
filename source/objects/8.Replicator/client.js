@@ -1,0 +1,3 @@
+Replicator.justCreated = function () {
+
+}

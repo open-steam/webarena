@@ -10,6 +10,7 @@ Tunnel.register=function(type){
 	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});
 	this.registerAttribute('value',{type:'text',standard:'',category:'Selection'});
 
+	this.registerAttribute('target',{type:'text',standard:'',category:'Selection'});
 }
 
 Tunnel.isCreatable=true;
