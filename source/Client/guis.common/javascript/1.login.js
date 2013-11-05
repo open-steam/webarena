@@ -124,7 +124,7 @@ GUI.login = function() {
 			GUI.password = hashData[2];
 			
 			GUI.externalSession = true;
-			window.location.hash = "";
+			window.location.replace('#');
 		
 		}
 		

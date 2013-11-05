@@ -15,8 +15,9 @@
  * @param {String} username The username
  * @param {String} password The password
  */
-function BidConnection(host, port, username, password) {
+function BidConnection(protocol, host, port, username, password) {
 	
+	this.protocol = protocol;
 	this.host = host;
 	this.port = port;
 	this.username = username;
@@ -37,7 +38,7 @@ function BidConnection(host, port, username, password) {
 	 * @param {String} [content] The POST content
 	 */
 	this.request = function(command, functionName, parameters, callback, returnRaw, contentName, content) {
-
+		
 		self.requestCounter = self.requestCounter+1;
 
 		var reqC = parseInt(self.requestCounter);
@@ -78,12 +79,12 @@ function BidConnection(host, port, username, password) {
 		}
 
 		
-		var http = require('http');
+		var http = require(this.protocol);
 		
 		var response = [];
 		
 		var req = http.request(options, function(res) {
-
+			
 			if (returnRaw == undefined || returnRaw == false) {
 				res.setEncoding('utf8');
 			} else {
@@ -122,6 +123,10 @@ function BidConnection(host, port, username, password) {
 		if (contentName && content) {
 			req.write(post_data);
 		}
+		
+		req.on('error', function(err) {
+        	require('../Common/Log.js').error('BidAPI request failed '+err.message);
+    	});
 
 		req.end();
 		
@@ -157,7 +162,7 @@ function BidConnection(host, port, username, password) {
 		  method: 'POST'
 		};
 		
-		var http = require('http');
+		var http = require(this.protocol);
 		
 		var req = http.request(options, function(res) {
 			
@@ -165,7 +170,16 @@ function BidConnection(host, port, username, password) {
 				check(res.statusCode)
 			});
 			
+			res.on('data', function (chunk) {
+				//console.log(chunk);
+			});
+			
 		});
+		
+		req.on('error', function(err) {
+        	require('../Common/Log.js').error('BidAPI checkLogin failed '+err.message);
+    	});
+		
 		req.end();
 		
 	}

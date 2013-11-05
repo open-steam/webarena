@@ -22,6 +22,211 @@ var _ = require('underscore');
 // Make the object public
 module.exports=theObject;
 
+
+// ****************************************************************
+// * MAKE SENSITIVE ***********************************************
+// ****************************************************************
+
+theObject.makeSensitive=function(){
+	this.isSensitiveFlag=true;
+	
+	var theObject=this;
+	
+	this.onObjectMove=function(changeData){
+	
+		//complete data
+		
+		var oldData={};
+		var newData={};
+		var fields=['x','y','width','height'];
+		
+		for (var i=0;i<4;i++){
+			var field=fields[i];
+			oldData[field]=changeData['old'][field] || this.getAttribute(field);
+			newData[field]=changeData['new'][field] || this.getAttribute(field);
+		}
+		
+		var inventory=this.getRoom().getInventory();
+		
+		for (var i in inventory){
+			
+			var object=inventory[i];
+			
+			if(object.id==this.id) continue;
+			
+			var bbox=object.getBoundingBox();
+			
+			//determine intersections
+		
+			var oldIntersects=this.bBoxEncloses(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+			var newIntersects=this.bBoxEncloses(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+			
+			//handle move
+			
+			if (oldIntersects && newIntersects)  this.onMoveWithin(object,newData);
+			if (!oldIntersects && !newIntersects)  this.onMoveOutside(object,newData);
+			if (oldIntersects && !newIntersects)  this.onLeave(object,newData);
+			if (!oldIntersects && newIntersects)  this.onEnter(object,newData);
+		}
+		
+	}
+	
+	
+	theObject.bBoxEncloses=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
+		
+		if (otherX<thisX-20) {
+			//console.log('too far left');
+			return false;
+		}
+		if (otherY<thisY-20) {
+			//console.log('too far up');
+			return false;
+		}
+		if ((otherX+otherWidth)>(thisX+thisWidth+20)) {
+			//console.log('too far right');
+			return false;
+		}
+		if ((otherY+otherHeight)>(thisY+thisHeight+20)) {
+			//console.log('too far bottom');
+			return false;
+		}
+		
+		//console.log('intersects');
+		return true;	
+		
+	}
+	
+	/**
+	*	encloses
+	*
+	*	determines, if this Active object fully encloses another object.
+	*	In this simple implementation, this is done by bounding box comparison.
+	**/
+	theObject.encloses=function(otherX,otherY,otherWidth,otherHeight){
+		
+		if (typeof otherX == 'object'){
+			var other=otherX.getBoundingBox();
+			otherX=other.x;
+			otherY=other.y;
+			otherWidth=other.width;
+			otherHeight=other.height;
+		}
+		
+		var bbox=this.getBoundingBox();
+		
+		return this.bBoxEncloses(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
+		
+	}
+	/**
+	*	getOverlappingObjcts
+	*
+	*	get an array of all overlapping objects
+	**/
+	theObject.getOverlappingObjects=function(){
+		var result=[];
+		
+		var inventory=this.getRoom().getInventory();
+		
+		for (var i in inventory){
+			 var test=inventory[i];
+			 if (test.id==this.id) continue;
+			 if (this.encloses(test)){
+			 	result.push(test);
+			 }
+		}
+		
+		return result;
+	}
+	
+	
+	/**
+	*	SensitiveObjects evaluate other objects in respect to themselves.
+	*
+	*	object the object that shall be evaluated
+	*	changeData old and new values of positioning (e.g. changeData.old.x) 
+	**/
+	theObject.evaluateObject=function(object,changeData){
+		
+		//complete data
+		
+		var oldData={};
+		var newData={};
+		var fields=['x','y','width','height'];
+		
+		for (var i=0;i<4;i++){
+			var field=fields[i];
+			oldData[field]=changeData['old'][field] || object.getAttribute(field);
+			newData[field]=changeData['new'][field] || object.getAttribute(field);
+		}
+		
+		//determine intersections
+		
+		var oldIntersects=this.encloses(oldData.x,oldData.y,oldData.width,oldData.height);
+		var newIntersects=this.encloses(newData.x,newData.y,newData.width,newData.height);
+		
+		//handle move
+		
+		if (oldIntersects && newIntersects) return this.onMoveWithin(object,newData);
+		if (!oldIntersects && !newIntersects) return this.onMoveOutside(object,newData);
+		if (oldIntersects && !newIntersects) return this.onLeave(object,newData);
+		if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
+	}
+	
+	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
+		
+	};
+	
+	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
+		
+	};
+	
+	if (!theObject.onLeave) theObject.onLeave=function(object,data){
+		
+	};
+	
+	if (!theObject.onEnter) theObject.onEnter=function(object,data){
+		
+	};
+
+}
+
+
+// ****************************************************************
+// * MAKE STRUCTURING *********************************************
+// ****************************************************************
+
+theObject.makeStructuring=function(){
+	this.isStructuringFlag=true;
+	this.makeSensitive();
+	this.isSensitiveFlag=false;
+	
+	this.onObjectMove=function(changeData){
+		
+		//when a structuring object is moved, every active object may be in need of repositioning
+		
+		console.log('obObjectMove on structuring object '+this);
+		
+		this.getRoom().placeActiveObjects();
+	}
+	
+	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
+		
+		var result={reference:'ignore'};
+		
+		//reference: must, mustnot, ignore
+		//minX
+		//maxX
+		//minY
+		//maxY
+		
+		return result;
+		
+	}
+
+}
+
+
+
 /**
 *	getAttributeSet
 *
@@ -232,32 +437,9 @@ theObject.getBoundingBox=function(){
 	
 }
 
-theObject.onSwitchContext=function(context){
+theObject.fireEvent=function(name,data){
 	
-	if (Modules.Config.noContext) return;
-	
-	//using set instead of setObject to avoid evaluation of these changes.
-	
-	if (!this.getAttribute('position_on_all_contexts')){
-		this.set('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
-		this.set('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
-	}
-	
-	if (!this.getAttribute('appearance_on_all_contexts')){
-		this.set('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
-		this.set('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
-	}
-	
-	this.persist();
-	
-	var contexts=this.whichContexts();
-	if (contexts!==true){
-		var visible=false;
-		for (var i in contexts){
-			var comp=contexts[i];
-			if (comp==context) visible=true;
-		}
-		this.setAttribute('visible',visible);
-	}
+	console.log(this+' fireing '+name+' ('+data+')');
+	console.log('###Note: Event fireing not implemented yet (GeneralObject)');
 	
 }

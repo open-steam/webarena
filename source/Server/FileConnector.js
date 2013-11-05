@@ -57,6 +57,17 @@ fileConnector.login=function(username,password,externalSession,rp,context){
 	
 }
 
+/**
+ *
+ * @param context
+ * @param callback
+ * @returns {*}
+ */
+fileConnector.getTrashRoom = function(context, callback){
+    return this.getRoomData("trash", context, callback);
+}
+
+
 
 fileConnector.isLoggedIn=function(context) {
 	return true;
@@ -145,11 +156,16 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 
 /**
-*	getRoomData
-*
-*	returns the attribute set of the current room
-*
-*/
+ *	getRoomData
+ *
+ *	Get room data or create room, if doesn't exist yet.
+ *
+ * @param roomID
+ * @param context
+ * @param callback
+ * @param oldRoomId - id of the parent room
+ * @returns {*}
+ */
 fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 	this.Modules.Log.debug("Get data for room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
@@ -172,11 +188,15 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 		
 		return self.getRoomData(roomID,context,callback,oldRoomId);
 		
+	} else {
+    	if (callback === undefined) {
+			/* sync */
+			return obj;
+		} else {
+			/* async */
+			callback(obj);
+		}
 	}
-	
-    else callback(obj);
-
-	
 }
 
 /**
@@ -278,7 +298,6 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
             that.Modules.Log.error("Error writing file: " + err);
         });
         content.on("end", function(){
-            console.log("END");
             if (after) after(objectID);
         })
         content.pipe(wr);
@@ -326,20 +345,7 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, cal
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var fs = require('fs');
-	
-	//var content = fs.readFileSync(sourceFilename);
-	
-	//var byteArray = [];
-	//var contentBuffer = new Buffer(content);
 
-    /*
-	for (var j = 0; j < contentBuffer.length; j++) {
-		
-		byteArray.push(contentBuffer.readUInt8(j));
-		
-	}*/
-
-    console.log(sourceFilename);
     var rds = fs.createReadStream(sourceFilename);
     rds.on("error", function(err) {
         that.Modules.Log.error("Error reading file");
@@ -812,7 +818,10 @@ fileConnector.getInlinePreviewProviders=function() {
 		"image/jpeg" : "image",
 		"image/jpg" : "image",
 		"image/png" : "image",
-		"image/gif" : "image"
+		"image/gif" : "image",
+		"image/bmp" : "image",
+		"image/x-bmp" : "image",
+		"image/x-ms-bmp" : "image"
 	}
 }
 

@@ -91,7 +91,7 @@ SharePoint.createRepresentationIcon = function(parent){
 
 SharePoint.renderFilename = function (rep, filename){
 
-    File.renderFilename.call(this);
+    IconObject.renderText.call(this, filename);
 
 }
 

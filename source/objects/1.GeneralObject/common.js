@@ -26,6 +26,23 @@ GeneralObject.isGraphical=true;
 GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
+GeneralObject.alwaysOnTop = function() {return false;};
+
+GeneralObject.makeSensitive=function(){
+	this.isSensitiveFlag=true;
+}
+
+GeneralObject.makeStructuring=function(){
+	this.isStructuringFlag=true;
+}
+
+GeneralObject.isSensitive=function(){
+	return this.isSensitiveFlag||false;
+}
+
+GeneralObject.isStructuring=function(){
+	return this.isStructuringFlag||false;
+}
 
 
 /**
@@ -88,82 +105,27 @@ GeneralObject.register=function(type){
 	this.registerAttribute('hasContent',{type:'boolean',hidden:true,standard:false});
 	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {GUI.updateLayers();}});
 	
-	//registring x and y coordinates. on the client side, they are just plain coordinates
-	//while on the server, the position data are also put into context specific attributes
-	//switching the context attribute on the room swichtes positions
+	this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
+	this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
+	this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
+		
+		if (object.resizeProportional()) {
+			object.setAttribute("height", object.getAttribute("height")*(value/object.getAttribute("width")));
+		}
+
+		return true;
+		
+	}});
 	
-	if (!ObjectManager.isServer || Modules.Config.noContexts){	
-		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
-		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
-		this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
-			
-			if (object.resizeProportional()) {
-				object.setAttribute("height", object.getAttribute("height")*(value/object.getAttribute("width")));
-			}
-	
-			return true;
-			
-		}});
+	this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
-		this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
-			
-			if (object.resizeProportional()) {
-				object.setAttribute("width", object.getAttribute("width")*(value/object.getAttribute("height")));
-			}
-	
-			return true;
-			
-		}});
-	} else {
+		if (object.resizeProportional()) {
+			object.setAttribute("width", object.getAttribute("width")*(value/object.getAttribute("height")));
+		}
+
+		return true;
 		
-		this.registerAttribute('position_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
-		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',standard:true,category:'Context'});
-		
-		this.registerAttribute('x',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
-			var room=object.getRoom();
-			if (!room) return;
-			var context=room.getContext();
-			object.setAttribute('x_'+context,value);
-			object.set('x',value);
-		}});
-		
-		this.registerAttribute('y',{type:'number',min:0,category:'Dimensions',setFunction:function(object,value){
-			var room=object.getRoom();
-			if (!room) return;
-			var context=room.getContext();
-			object.setAttribute('y_'+context,value);
-			object.set('y',value);
-		}});
-		
-		this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', setFunction: function(object, value) {
-			
-			var context=object.getRoom().getContext();
-			object.setAttribute('width_'+context,value);
-			object.set('width',value);
-			
-		}});
-		
-		this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', setFunction: function(object, value) {
-			
-			var context=object.getRoom().getContext();
-			object.setAttribute('height_'+context,value);
-			object.set('height',value);
-			
-		}});
-		
-		//for switching see room attribute registration for current_context
-		
-	}
-	
-	//context attribute itself is set on swtichcontext
-	
-	if (!Modules.Config.noContexts){
-		this.registerAttribute('only_in_contexts',{type:'text',readable:'only in these contexts',standard:'all',category:'Context',checkFunction: function(object,value){
-			object.getRoom().updateContexts();
-		}});
-		this.registerAttribute('position_on_all_contexts',{type:'boolean',readable:'same position on all contexts',standard:true,category:'Context'});
-		this.registerAttribute('appearance_on_all_contexts',{type:'boolean',readable:'same appearance on all contexts',standard:true,category:'Context'});
-	}
+	}});
 
 	
 	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance',checkFunction: function(object,value) {
@@ -475,7 +437,7 @@ GeneralObject.registerAttribute=function(attribute,setter,type,min,max){
 	return this.attributeManager.registerAttribute(attribute, setter,type, min, max);
 }
 
-GeneralObject.setAttribute=function(attribute,value,forced){
+GeneralObject.setAttribute=function(attribute,value,forced, transactionId){
 	
 	
 	if (this.mayChangeAttributes()){
@@ -940,19 +902,6 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 		this.setAttribute("link", update(this.get('link')));
 	}
 	
-}
-
-GeneralObject.whichContexts=function(){
-	
-	if (!String.prototype.trim){
-		String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g, '');};
-	}
-	
-	var data=this.getAttribute('only_in_contexts').trim();
-	if (!data) return true;
-	if (data=='all') return true;
-	
-	return data.split(",");
 }
 
 GeneralObject.deleteIt=GeneralObject.remove;

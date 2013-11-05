@@ -12,6 +12,5 @@ var Config={
 	language:'de',
 	presentationMode:false,
 	couplingMode:true,
-	noContexts:false,
 	bidURL:''
 };

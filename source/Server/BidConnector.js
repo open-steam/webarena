@@ -17,9 +17,11 @@ bidConnector.login=function(username,password,externalSession,rp,context){
 		if (self.externalSessions[password] === undefined) rp(false);
 		password = self.externalSessions[password].password; //get real password from external session
 	}
+	
+	var protocol = (global.config.bidServerIsHttps)?'https':'http';
 
 	var BidConnection = require('./BidAPI.js').BidConnection;
-	self.bidConnections[context.socket.id] = new BidConnection(global.config.bidServer, global.config.bidPort, username, password);
+	self.bidConnections[context.socket.id] = new BidConnection(protocol,global.config.bidServer, global.config.bidPort, username, password);
 
 	self.bidConnections[context.socket.id].checkLogin(function(loggedIn) {
 	
@@ -52,7 +54,6 @@ bidConnector.isLoggedIn=function(context) {
 
 
 bidConnector.addExternalSession=function(data) {
-	console.log(data);
 	this.externalSessions[data.id] = data;
 }
 

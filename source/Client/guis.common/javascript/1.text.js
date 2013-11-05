@@ -11,7 +11,7 @@
 GUI.editText = function(webarenaObject, multiLine, width, height, passThrough) {
 	
 	var style = 'font-family: '+webarenaObject.getAttribute("font-family")+'; ';
-	style += 'color: '+webarenaObject.getAttribute("font-color")+'; ';
+	style += 'color: black; '
 	style += 'font-size: '+webarenaObject.getAttribute("font-size")+'px; ';
 	style += 'resize:none; ';
 	style += 'width: 100%; ';

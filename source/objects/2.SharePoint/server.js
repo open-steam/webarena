@@ -3,138 +3,85 @@
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 
-var SP = require('sharepoint');
+var SP = require('./adaptedSharepoint');
 var https = require('https');
 var _ = require('underscore');
 
 module.exports=theObject;
 
-theObject.getAuth = function(){
-    return {username : Modules.config.sharepoint.username, password: Modules.config.sharepoint.password};
-}
-
-SP.RestService.prototype.request = function(options, next) {
-    var req_data = options.data || '',
-        list = options.list,
-        id = options.id,
-        query = options.query,
-        ssl = (this.protocol == 'https:'),
-        path = this.path + this.odatasvc + list +
-            (id ? '(' + id + ')' : '') +
-            (query ? '?' + qs.stringify(query) : '');
-
-    var req_options = {
-        method: options.method,
-        host: this.host,
-        path: path,
-        auth: this.username +":" + this.password2,
-        headers: {
-            'Accept': options.accept || 'application/json',
-            'Content-type': 'application/json',
-            'Cookie': 'FedAuth=' + this.FedAuth + '; rtFa=' + this.rtFa,
-            'Content-length': req_data.length
-        }
-    };
-
-    // Include If-Match header if etag is specified
-    if (options.etag) {
-        req_options.headers['If-Match'] = options.etag;
-    };
-
-    // support for using https
-    var protocol = (ssl ? https : http);
-
-    var req = protocol.get(req_options, function (res) {
-        var res_data = '';
-        res.setEncoding('utf8');
-        res.on('data', function (chunk) {
-            //console.log('CHUNK:', chunk);
-            res_data += chunk;
-        });
-        res.on('end', function () {
-            // if no callback is defined, we're done.
-            if (!next) return;
-
-            // if data of content-type application/json is return, parse into JS:
-            if (res_data && (res.headers['content-type'].indexOf('json') > 0)) {
-                res_data = JSON.parse(res_data).d
-            }
-
-            if (res_data) {
-                next(null, res_data)
-            }
-            else {
-                next()
-            }
-        });
-    })
-
-    req.end(req_data);
+var getMediaUrl = function(extension, elem){
+    var mediaUrl;
+    if(extension === "docx" || extension === "doc"){
+        mediaUrl = Modules.config.sharepoint.basepath + "_layouts/WordViewer.aspx?id=" + elem.Pfad + "/" + elem.Name
+    } else if(extension === "pptx" || extension === "ppt"){
+        mediaUrl = Modules.config.sharepoint.basepath + "_layouts/PowerPoint.aspx?PowerPointView=ReadingView&PresentationId=" + elem.Pfad + "/" + elem.Name
+    } else if(extension === "xlsx" || extension === "xls"){
+        mediaUrl = Modules.config.sharepoint.basepath + "_layouts/xlviewer.aspx?id=" + elem.Pfad + "/" + elem.Name
+    }else{
+        mediaUrl = elem.__metadata.media_src;
+    }
+    return mediaUrl;
 }
 
 theObject.buildTreeObject = function(data){
     var result = {data : "root"};
-    var splitPath;
-    var tmp;
 
-    function insertRec(elem, pathSpliced, arrPointer){
 
-        if(pathSpliced.length === 0){
-            if(!arrPointer.children) arrPointer.children = new Array();
-            var mediaUrl;
-            var extension = elem.__metadata.media_src.split('.').pop();
-            if(extension === "docx" || extension === "doc"){
-                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/WordViewer.aspx?id=" + elem.Pfad + "/" + elem.Name
-            } else if(extension === "pptx" || extension === "ppt"){
-                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/PowerPoint.aspx?PowerPointView=ReadingView&PresentationId=" + elem.Pfad + "/" + elem.Name
-            } else if(extension === "xlsx" || extension === "xls"){
-                mediaUrl = Modules.config.sharepoint.basepath + "_layouts/xlviewer.aspx?id=" + elem.Pfad + "/" + elem.Name
-            }else{
-                mediaUrl = elem.__metadata.media_src;
-            }
+    function insertRec(elem, splitPathArray, arrPointer){
+        var insertPointer = arrPointer;
 
-            arrPointer.children.push({
-                data : {
-                    title: elem.Name,
-                    icon : "../../guis.common/images/sharepoint/file.png"
-                }, metadata: {
-                    media_src : mediaUrl,
-                    filename : elem.Name
-                }
-            })
-        } else {
-            var firstSubdir = pathSpliced.shift();
-            var found = false;
-            if(arrPointer.children){
-                for(var i = 0; i< arrPointer.children.length; i++){
-                    if(arrPointer.children[i].data == firstSubdir){
-                        found = true;
+        while(splitPathArray.length !== 0){
+            var subdir = splitPathArray.shift();
+            var subdirExists = false;
+            var subdirIndex = -1;
+            if(insertPointer.children){
+                for(var i = 0; i< insertPointer.children.length; i++){
+                    if(insertPointer.children[i].data == subdir){
+                        subdirExists = true;
+                        subdirIndex = i;
                         break;
                     }
                 }
+                if(subdirExists){
+                    insertPointer = insertPointer.children[subdirIndex];
+                } else {
+                    insertPointer.children.push({
+                        data: subdir
+                    })
+                    insertPointer = insertPointer.children[insertPointer.children.length - 1];
+                }
             } else {
-                arrPointer.children = new Array();
+                insertPointer.children = [];
+                insertPointer.children.push({
+                    data: subdir
+                })
+                insertPointer = insertPointer.children[0];
             }
-
-            if(found){
-                arrPointer = arrPointer.children[i];
-            } else {
-                arrPointer.children.push({
-                    data : firstSubdir
-                });
-                arrPointer = arrPointer.children[arrPointer.children.length -1];
-            }
-
-            insertRec(elem, pathSpliced, arrPointer);
         }
+
+        if(!insertPointer.children) insertPointer.children = [];
+        var extension = elem.__metadata.media_src.split('.').pop();
+        var mediaUrl = getMediaUrl(extension, elem);
+
+        insertPointer.children.push({
+            data : {
+                title: elem.Name,
+                icon : "../../guis.common/images/sharepoint/file.png"
+            }, metadata: {
+                media_src : mediaUrl,
+                filename : elem.Name
+            }
+        })
     }
 
-    _.each(data, function(elem, index){
+
+
+    _.each(data, function(elem){
         if(elem.Inhaltstyp ==="Dokument") insertRec(elem, elem.Pfad.split("/").splice(1), result);
     });
 
     if(result.children === undefined ){
-        return new Array();
+        return [];
     } else {
         return new Array(result.children[0]);
     }
@@ -150,7 +97,7 @@ theObject.browse=function(argsIn, callback){
     var client = new SP.RestService(args['location']),
         documents = client.list(args['folder']);
 
-    var that = this
+    var that = this;
 
     client.username =  this.context.user.username;
     client.password2 = this.context.user.password;
