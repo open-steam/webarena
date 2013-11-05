@@ -57,9 +57,9 @@ Exit.execute=function(openInNewWindow){
 	}
 
 	if (openInNewWindow)
-	{ console.log("follow"); window.open(destination); }
+	{ console.log("new window"); window.open(destination); }
 	else
-	{ console.log("new window"); ObjectManager.loadRoom(destination,false,ObjectManager.getIndexOfObject(this.getAttribute('id')),callback); }
+	{ console.log("follow"); ObjectManager.loadRoom(destination,false,ObjectManager.getIndexOfObject(this.getAttribute('id')),callback); }
 	
 	//window.location.href = "/room/"+destination;
 }

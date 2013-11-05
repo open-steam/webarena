@@ -293,7 +293,7 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
-ObjectManager.loadRoom=function(roomid,byBrowserNav,index,callback){
+ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 	
 	if (ObjectManager.getRoomID('left') != roomid && ObjectManager.getRoomID('right') != roomid) {
 		var self = this;
@@ -317,15 +317,15 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav,index,callback){
 					history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
 			    }
 			    
+			    if (GUI.couplingModeActive) {
+	    			GUI.defaultZoomPanState(index, true);
+	    		}
+
 			    if (callback) setTimeout(callback, 1200);
 			
 			}
 			
 	    });
-
-	    if (GUI.couplingModeActive) {
-	    	GUI.defaultZoomPanState(index);
-	    }
 	} else {
 		alert("Room already displayed.");
 	}
@@ -778,8 +778,8 @@ ObjectManager.duplicateObjects=function(objects) {
 		    }
 		    
 		    var requestData={};
-			requestData.fromRoom=this.getRoomID();
-			requestData.toRoom=this.getRoomID();
+			requestData.fromRoom=objects[0].getCurrentRoom();
+			requestData.toRoom=objects[0].getCurrentRoom();
 		    requestData.objects=array;
 		    requestData.cut=false;
 		    requestData.attributes={};

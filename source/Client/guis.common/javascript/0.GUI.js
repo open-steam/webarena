@@ -430,11 +430,11 @@ GUI.initMouseHandler = function() {
 			if (GUI.couplingModeActive) {
 				if (event.pageX > $('#couplingBar').attr('x1') && $('#couplingBar:hover').length == 0) {
 					if ($('#rightCouplingControl:hover').length == 0) {
-						if (GUI.defaultZoomPanState('right')) return;
+						if (GUI.defaultZoomPanState('right', false, event)) return;
 					}
 				} else {
 					if ($('#leftCouplingControl:hover').length == 0) {
-						if (GUI.defaultZoomPanState('left')) return;
+						if (GUI.defaultZoomPanState('left', false, event)) return;
 					}
 				}
 			}

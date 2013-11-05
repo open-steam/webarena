@@ -180,9 +180,11 @@ GUI.enterCouplingMode = function() {
 		// mouse wheel scrolling
 		$(document).bind("mousewheel", function(event, delta, deltaX, deltaY) {
 			if (event.pageX < parseInt($('#room_right_wrapper').attr("x"))) {
+				GUI.deselectAllObjects();
 				GUI.pan('left', deltaX * 25, deltaY * 25);
 			} else {
 				if (ObjectManager.getRoomID('right')) {
+					GUI.deselectAllObjects();
 					GUI.pan('right', deltaX * 25, deltaY * 25);
 				}
 			}
@@ -339,10 +341,27 @@ GUI.getPanY = function(index) {
 	return GUI.couplingTransformMatrix[index][5];
 }
 
-GUI.defaultZoomPanState = function(index) {
+GUI.defaultZoomPanState = function(index, roomChange, event) {
 	var defaultMatrix = [1,0,0,1,0,0];
-	if (GUI.couplingTransformMatrix[index].join(',') !== defaultMatrix.join(',') && (GUI.couplingTransformMatrix[index][0] != 1 || GUI.couplingTransformMatrix[index][3] != 1)) {
+	if (roomChange) {
 		GUI.couplingTransformMatrix[index] = defaultMatrix;
+
+		var newMatrix = "matrix(" +  GUI.couplingTransformMatrix[index].join(' ') + ")";
+	  	$('#room_'+index).attr("transform", newMatrix);
+
+	  	return true;
+	} else if (GUI.couplingTransformMatrix[index].join(',') !== defaultMatrix.join(',') && (GUI.couplingTransformMatrix[index][0] != 1 || GUI.couplingTransformMatrix[index][3] != 1)) {
+		GUI.couplingTransformMatrix[index][4] = parseInt(GUI.couplingTransformMatrix[index][4] / GUI.couplingTransformMatrix[index][0]);
+		if (GUI.couplingTransformMatrix[index][4] > 0) {
+			GUI.couplingTransformMatrix[index][4] = 0;
+		}
+		GUI.couplingTransformMatrix[index][5] = parseInt(GUI.couplingTransformMatrix[index][5] / GUI.couplingTransformMatrix[index][0]);
+		if (GUI.couplingTransformMatrix[index][5] > 0) {
+			GUI.couplingTransformMatrix[index][5] = 0;
+		}
+		GUI.couplingTransformMatrix[index][0] = 1;
+		GUI.couplingTransformMatrix[index][3] = 1;
+
 
 		var newMatrix = "matrix(" +  GUI.couplingTransformMatrix[index].join(' ') + ")";
 	  	$('#room_'+index).attr("transform", newMatrix);
