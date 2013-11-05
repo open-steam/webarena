@@ -803,7 +803,7 @@ ObjectManager.duplicate = function (socket, data, responseID) {
 	var fromRoom = data.fromRoom;
 	var toRoom = data.toRoom;
 	var objects = data.objects;
-	var attributes=data.attributes;
+	var attributes = data.attributes;
 
 	var transactionId = new Date().getTime();
 

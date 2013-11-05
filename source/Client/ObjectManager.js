@@ -730,16 +730,18 @@ ObjectManager.pasteObjects=function() {
 
 				// if objects were moved between rooms scroll to position of pasted objects
 				if (requestData.fromRoom != requestData.toRoom) {
-					if (minX - 30 < 0) minX = 30;
-					if (minY - 30 < 0) minY = 30;
-					
-					$(document).scrollTo(
-						{ 
-							top: minY - 30, 
-							left: minX - 30
-						},
-						1000
-					);
+					if (!GUI.couplingModeActive) {
+						if (minX - 30 < 0) minX = 30;
+						if (minY - 30 < 0) minY = 30;
+						
+						$(document).scrollTo(
+							{ 
+								top: minY - 30, 
+								left: minX - 30
+							},
+							1000
+						);
+					}
 				}
 			};
 
@@ -780,6 +782,7 @@ ObjectManager.duplicateObjects=function(objects) {
 			requestData.toRoom=this.getRoomID();
 		    requestData.objects=array;
 		    requestData.cut=false;
+		    requestData.attributes={};
 
 		    // select new objects after duplication
 		    var newIDs=[];

@@ -40,16 +40,18 @@ Exit.execute=function(openInNewWindow){
 	if (self.getAttribute("destinationObject") !== '') {
 		callback = function() {
 			if (document.getElementById(self.getAttribute("destinationObject"))) {
-				$(document).scrollTo(
-					$('#'+self.getAttribute("destinationObject")), 
-					1000, 
-					{
-						offset: {
-							top: (self.getAttribute("height") / 2) - ($(window).height() / 2), 
-							left: (self.getAttribute("width") / 2) - ($(window).width() / 2)
-						} 
-					}
-				);
+				if (!GUI.couplingModeActive) {
+					$(document).scrollTo(
+						$('#'+self.getAttribute("destinationObject")), 
+						1000, 
+						{
+							offset: {
+								top: (self.getAttribute("height") / 2) - ($(window).height() / 2), 
+								left: (self.getAttribute("width") / 2) - ($(window).width() / 2)
+							} 
+						}
+					);
+				}
 			}
 		}
 	}
