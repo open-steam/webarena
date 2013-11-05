@@ -423,7 +423,7 @@ GeneralObject.adjustControls = function() {
 		
 	});
 	}
-	
+
 	GUI.userMarker.setPosition(this.id);
 	
 }
@@ -1488,9 +1488,9 @@ GeneralObject.selectedClickHandler = function(event) {
 		if (GUI.couplingModeActive) {
 			var index = ObjectManager.getIndexOfObject(this.getId());
 			if (index === 'right') {
-				x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(ObjectManager.getIndexOfObject(this.getId()));
+				x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
 			} else {
-				x += GUI.getPanX(ObjectManager.getIndexOfObject(this.getId()));
+				x += GUI.getPanX(index);
 			}
 			y += GUI.getPanY(index);
 		}

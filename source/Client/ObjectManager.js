@@ -457,7 +457,6 @@ ObjectManager.init=function(){
 		}
 		
 		if (data.message.selection) {
-			
 			if (data.userId != ObjectManager.user.id) { //do not display own selections
 				
 				GUI.userMarker.select({
@@ -605,11 +604,11 @@ ObjectManager.serverMemoryInfo=function(){
 	ObjectManager.Modules.Dispatcher.query('memoryUsage','',console.log);
 }
 
-ObjectManager.inform=function(type,content){
+ObjectManager.inform=function(type,content,index){
 	var data={};
 	data.message={};
 	data.message[type]=content;
-	data.room=this.getRoomID();
+	data.room=this.getRoomID(index);
 	data.user=this.getUser().username;
 	data.color=this.getUser().color;
 	data.userId=this.getUser().id;
@@ -621,15 +620,15 @@ ObjectManager.tell=function(text){
 }
 
 ObjectManager.informAboutSelection=function(id){
-	ObjectManager.inform('selection',id);
+	ObjectManager.inform('selection',id,ObjectManager.getIndexOfObject(id));
 }
 
 ObjectManager.informAboutDeselection=function(id){
-	ObjectManager.inform('deselection',id);
+	ObjectManager.inform('deselection',id,ObjectManager.getIndexOfObject(id));
 }
 
 ObjectManager.requestAttentionToObject=function(id){
-	ObjectManager.inform('requestAttention',id);
+	ObjectManager.inform('requestAttention',id,ObjectManager.getIndexOfObject(id));
 }
 
 ObjectManager.reportBug=function(data, callback){

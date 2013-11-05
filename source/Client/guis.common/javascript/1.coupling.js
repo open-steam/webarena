@@ -16,175 +16,188 @@ GUI.couplingTransformMatrix = { 'left': [1,0,0,1,0,0], 'right' : [1,0,0,1,0,0] }
 /**
  * Enter the coupling mode
  */
-GUI.enterCouplingMode= function() {
+GUI.enterCouplingMode = function() {
 
-	GUI.couplingModeActive = true;
+	if (Modules.Config.couplingMode) {
+		GUI.couplingModeActive = true;
 
-	GUI.couplingNavigationActive = true;
+		GUI.couplingNavigationActive = true;
 
-	GUI.sidebar.saveStateAndHide();
+		GUI.sidebar.saveStateAndHide();
 
-	window.scrollTo(0, 0);
-	$('body').css('overflow', 'hidden');
+		window.scrollTo(0, 0);
+		$('body').css('overflow', 'hidden');
 
-	$("#header > div.header_left").children().hide();
-	$("#header > div.header_right").children().hide();
-	
-	// add navigation button
-	var navigationButton = document.createElement("span");
-	$(navigationButton).addClass("header_button");
-	$(navigationButton).addClass("jCoupling_navi");
-	$(navigationButton).html(GUI.translate("Navigation"));
-	$(navigationButton).bind("click", function(event) {
-		if (GUI.couplingNavigationActive) {
-			$('#couplingNavigation').hide('blind');
-			GUI.couplingNavigationActive = false;
-		} else {
-			$('#couplingNavigation').show('blind');
-			GUI.couplingNavigationActive = true;
-		}
-	});
+		$("#header > div.header_left").children().hide();
+		$("#header > div.header_right").children().hide();
+		
+		// add navigation button
+		var navigationButton = document.createElement("span");
+		$(navigationButton).addClass("header_button");
+		$(navigationButton).addClass("jCoupling_navi");
+		$(navigationButton).html(GUI.translate("Navigation"));
+		$(navigationButton).bind("click", function(event) {
+			if (GUI.couplingNavigationActive) {
+				$('#couplingNavigation').hide('blind');
+				GUI.couplingNavigationActive = false;
+			} else {
+				$('#couplingNavigation').show('blind');
+				GUI.couplingNavigationActive = true;
+			}
+		});
 
-	$("#header > div.header_left").append(navigationButton);
+		$("#header > div.header_left").append(navigationButton);
 
-	$(navigationButton).css({
-		position : "absolute"
-	});
-	$(navigationButton).offset({
-		left : ($(window).width() / 2) - (($(navigationButton).width() / 2) + 10)
-	})	
+		$(navigationButton).css({
+			position : "absolute"
+		});
+		$(navigationButton).offset({
+			left : ($(window).width() / 2) - (($(navigationButton).width() / 2) + 10)
+		})	
 
-	// add close button
-	var closeButton = document.createElement("span");
-	$(closeButton).addClass("header_button");
-	$(closeButton).addClass("button_save");
-	$(closeButton).addClass("jCoupling_navi");
-	$(closeButton).html(GUI.translate("close"));
-	$(closeButton).bind("click", function(event) {
-		GUI.closeCouplingMode();
-	});
+		// add close button
+		var closeButton = document.createElement("span");
+		$(closeButton).addClass("header_button");
+		$(closeButton).addClass("button_save");
+		$(closeButton).addClass("jCoupling_navi");
+		$(closeButton).html(GUI.translate("close"));
+		$(closeButton).bind("click", function(event) {
+			GUI.closeCouplingMode();
+		});
 
-	$("#header > div.header_right").append(closeButton);	
+		$("#header > div.header_right").append(closeButton);	
 
-	// add vertical bar
-	var verticalBar = GUI.svg.line($(window).width() / 2, 0, $(window).width() / 2, $(window).height(), { 'stroke' : 'black', 'stroke-width' : 10 });
-	$(verticalBar).attr("id", "couplingBar");
-	$(verticalBar).hover(function() {
-		$(this).css('cursor','w-resize');
-	}, function() {
-		$(this).css('cursor','n-pointer');
-	});
-	$(verticalBar).bind('mousedown', function(event) {
-	    $(verticalBar).bind('mousemove', function(event) {
-	       	$(verticalBar).attr('x1', event.pageX);
-	       	$(verticalBar).attr('x2', event.pageX);
+		// add vertical bar
+		var verticalBar = GUI.svg.line($(window).width() / 2, 0, $(window).width() / 2, $(window).height(), { 'stroke' : 'black', 'stroke-width' : 10 });
+		$(verticalBar).attr("id", "couplingBar");
+		$(verticalBar).hover(function() {
+			$(this).css('cursor','w-resize');
+		}, function() {
+			$(this).css('cursor','n-pointer');
+		});
+		$(verticalBar).bind('mousedown', function(event) {
+		    $(document).bind('mousemove', function(event) {
+		       	$(verticalBar).attr('x1', event.pageX);
+		       	$(verticalBar).attr('x2', event.pageX);
 
-	       	$('#room_right_wrapper').attr('x', event.pageX);
-			$('#room_right_wrapper').attr('width', $(window).width() - event.pageX);
-			$('#couplingGreyRectangle').attr('width', $(window).width() - event.pageX);
-			$('#room_left_wrapper').attr('width', event.pageX);
+		       	$('#room_right_wrapper').attr('x', event.pageX);
+				$('#room_right_wrapper').attr('width', $(window).width() - event.pageX);
+				$('#couplingGreyRectangle').attr('width', $(window).width() - event.pageX);
+				$('#room_left_wrapper').attr('width', event.pageX);
 
-			$(navigationButton).offset({
-				left : (event.pageX - ($(navigationButton).width() / 2) - 10)
-			})	
-			$('#couplingNavigation').dialog({
-				position: [event.pageX - 100, 30],
-			});
-	    });
+				$(navigationButton).offset({
+					left : (event.pageX - ($(navigationButton).width() / 2) - 10)
+				})	
+				$('#couplingNavigation').dialog({
+					position: [event.pageX - 100, 30],
+				});
+		    });
 
-	    $(verticalBar).bind('mouseup',function(){
-	        $(verticalBar).unbind('mousemove')
-	    });
-	});
+		    $(document).bind('mouseup',function(){
+		        $(document).unbind('mousemove')
+		    });
+		});
 
-	// window resize handling
-	$(window).resize(function() {
-		if (GUI.couplingModeActive) {
-			$('#couplingBar').attr('y2', $(window).height());
+		// window resize handling
+		$(window).resize(function() {
+			if (GUI.couplingModeActive) {
+				$('#couplingBar').attr('y2', $(window).height());
 
-			$('#couplingGreyRectangle').attr('height', $(window).height());
-			$('#couplingGreyRectangle').attr('width', $(window).width() - $('#couplingBar').attr('x1'));
+				$('#couplingGreyRectangle').attr('height', $(window).height());
+				$('#couplingGreyRectangle').attr('width', $(window).width() - $('#couplingBar').attr('x1'));
 
-			$('#room_right_wrapper').attr('height', $(window).height());
-			$('#room_right_wrapper').attr('width', $(window).width() - $('#couplingBar').attr('x1'));
+				$('#room_right_wrapper').attr('height', $(window).height());
+				$('#room_right_wrapper').attr('width', $(window).width() - $('#couplingBar').attr('x1'));
 
-			$('#leftCouplingControl').attr('y', $(window).height()-138);
-			$('#rightCouplingControl').attr('y', $(window).height()-138);
+				$('#leftCouplingControl').attr('y', $(window).height()-138);
+				$('#rightCouplingControl').attr('y', $(window).height()-138);
 
-			$("#canvas").css("width", $(window).width());
-			$("#content").css("width", $(window).width());
-			
-			$("#canvas").css("height", $(window).height());
-			$("#content").css("height", $(window).height());
-		}
-	});
+				$("#canvas").css("width", $(window).width());
+				$("#content").css("width", $(window).width());
+				
+				$("#canvas").css("height", $(window).height());
+				$("#content").css("height", $(window).height());
+			}
+		});
 
-	// initialize navigation
-	$('#couplingNavigation').dialog({ 
-		draggable: false,
-		resizable: false,
-		position: [($(window).width() / 2) - 100, 30],
-		height: 'auto',
-		width: 200
-	});
-	$("#couplingNavigation").siblings('div.ui-dialog-titlebar').remove();
+		// initialize navigation
+		$('#couplingNavigation').dialog({ 
+			draggable: false,
+			resizable: false,
+			position: [($(window).width() / 2) - 100, 30],
+			height: 'auto',
+			width: 200
+		});
+		$("#couplingNavigation").siblings('div.ui-dialog-titlebar').remove();
 
-	// initialize jsTree in navigation
-	var navigationDiv = document.createElement("div");
-	$(navigationDiv).jstree({
-		json_data : {
-			"ajax" : {
-				"url" : "/getRoomHierarchy",
-				"data" : function (n) {
-					return { id : n.attr ? n.attr("id") : "" };
+		// initialize jsTree in navigation
+		var navigationDiv = document.createElement("div");
+		$(navigationDiv).jstree({
+			json_data : {
+				"ajax" : {
+					"url" : "/getRoomHierarchy",
+					"data" : function (n) {
+						return { id : n.attr ? n.attr("id") : "" };
+					}
+				},
+				"ui" : {
+					"select_limit" : 1,
+				},
+			},
+			plugins : [ "themes", "json_data", "ui" ],
+			callback : {
+		      	onselect: function(node, tree) {
+		         	alert('test');
+		      	}
+	   		}
+		}).bind('select_node.jstree', function(event,data) { 
+			var selectedObj = data.rslt.obj;
+			var roomId = selectedObj.attr("id");
+
+			if (ObjectManager.getRoomID('left') != roomId && ObjectManager.getRoomID('right') != roomId) {
+	        	ObjectManager.loadRoom(selectedObj.attr("id"), true, 'right');
+	        	$('#couplingGreyRectangle').remove();
+	        	GUI.addZoomPanControl('right', $(window).width()-105, $('#couplingBar').attr('y2')-138);
+	        } else {
+	        	alert('Room already displayed.');
+	        }
+		});
+		$('#couplingNavigation').append(navigationDiv);
+
+		// initialize left zoom and pan control
+		GUI.addZoomPanControl('left', 4, $('#couplingBar').attr('y2')-138);
+		
+		// initialize grey rectangle in right work area
+		var greyRectangle = GUI.svg.rect($('#room_right'),
+			0, //x
+			0, //y
+			($(window).width() / 2), //width
+			$(window).height() //height
+		);
+		$(greyRectangle).attr("fill", "grey");
+		$(greyRectangle).attr("id", "couplingGreyRectangle");
+
+		// mouse wheel scrolling
+		$(document).bind("mousewheel", function(event, delta, deltaX, deltaY) {
+			if (event.pageX < parseInt($('#room_right_wrapper').attr("x"))) {
+				GUI.pan('left', deltaX * 25, deltaY * 25);
+			} else {
+				if (ObjectManager.getRoomID('right')) {
+					GUI.pan('right', deltaX * 25, deltaY * 25);
 				}
-			},
-			"ui" : {
-				"select_limit" : 1,
-			},
-		},
-		plugins : [ "themes", "json_data", "ui" ],
-		callback : {
-	      	onselect: function(node, tree) {
-	         	alert('test');
-	      	}
-   		}
-	}).bind('select_node.jstree', function(event,data) { 
-		var selectedObj = data.rslt.obj;
-		var roomId = selectedObj.attr("id");
+			}
+		});
 
-		if (ObjectManager.getRoomID('left') != roomId && ObjectManager.getRoomID('right') != roomId) {
-        	ObjectManager.loadRoom(selectedObj.attr("id"), true, 'right');
-        	$('#couplingGreyRectangle').remove();
-        	GUI.addZoomPanControl('right', $(window).width()-105, $('#couplingBar').attr('y2')-138);
-        } else {
-        	alert('Room already displayed.');
-        }
-	});
-	$('#couplingNavigation').append(navigationDiv);
+		// resize left and right room
+		$('#room_right_wrapper').attr("x", ($(window).width() / 2));
+		$('#room_right_wrapper').attr("width", ($(window).width() / 2));
+		$('#room_left_wrapper').attr("width", ($(window).width() / 2));
 
-	// initialize left zoom and pan control
-	GUI.addZoomPanControl('left', 4, $('#couplingBar').attr('y2')-138);
-	
-	// initialize grey rectangle in right work area
-	var greyRectangle = GUI.svg.rect($('#room_right'),
-		0, //x
-		0, //y
-		($(window).width() / 2), //width
-		$(window).height() //height
-	);
-	$(greyRectangle).attr("fill", "grey");
-	$(greyRectangle).attr("id", "couplingGreyRectangle");
-
-	// resize left and right room
-	$('#room_right_wrapper').attr("x", ($(window).width() / 2));
-	$('#room_right_wrapper').attr("width", ($(window).width() / 2));
-	$('#room_left_wrapper').attr("width", ($(window).width() / 2));
-
-	$("#canvas").css("width", $(window).width());
-	$("#canvas").css("height", $(window).height());
-	$("#content").css("width", $(window).width());
-	$("#content").css("height", $(window).height());
+		$("#canvas").css("width", $(window).width());
+		$("#canvas").css("height", $(window).height());
+		$("#content").css("width", $(window).width());
+		$("#content").css("height", $(window).height());
+	}
 }
 
 /**
@@ -224,6 +237,8 @@ GUI.closeCouplingMode = function() {
   	$('#room_left_wrapper').attr("width", "100%"); // else chrome displays an empty workarea
   	//document.getElementById('room_right_wrapper').removeAttribute('x');
   	//document.getElementById('room_right_wrapper').removeAttribute('width');
+
+  	$(document).unbind("mousewheel");
 
 	ObjectManager.leaveRoom('', 'right');
 

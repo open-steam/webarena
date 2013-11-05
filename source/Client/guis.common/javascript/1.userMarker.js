@@ -33,12 +33,14 @@ GUI.userMarker = {
 		
 		var obj = ObjectManager.getObject(objId);
 		
-		var x = obj.getViewBoundingBoxX();
-		var y = obj.getViewBoundingBoxY()-6;
+		//var x = obj.getViewBoundingBoxX();
+		//var y = obj.getViewBoundingBoxY()-6;
+		var x = obj.getAttribute("x");
+		var y = obj.getAttribute("y")-6;
 	
 		for (var i in GUI.userMarker.markers[objId]["markers"]) {
 			var marker = GUI.userMarker.markers[objId]["markers"][i];
-			
+
 			if (!marker) continue;
 			
 			y = y-$(marker).find("rect").attr("height")-2;
