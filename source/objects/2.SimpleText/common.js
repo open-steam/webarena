@@ -51,6 +51,9 @@ SimpleText.isResizable=function(){
 	return false;
 }
 
+SimpleText.intelligentRename=function(newValue){
+}
+
 SimpleText.register('SimpleText');
 SimpleText.isCreatable=true;
 
