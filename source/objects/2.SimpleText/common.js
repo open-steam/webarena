@@ -52,6 +52,15 @@ SimpleText.isResizable=function(){
 }
 
 SimpleText.intelligentRename=function(newValue){
+	var objectName = this.getAttribute("name");
+	var that = this;
+	this.getContentAsString(function(oldValue){
+		if ( newValue.length > 30 )
+		{ newValue = newValue.substring(0, 30); }
+	
+		if ( objectName == "SimpleText" || objectName == oldValue )
+		{ that.setAttribute("name", newValue); }
+	});
 }
 
 SimpleText.register('SimpleText');

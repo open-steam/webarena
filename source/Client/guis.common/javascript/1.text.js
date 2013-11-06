@@ -50,8 +50,8 @@ GUI.editText = function(webarenaObject, multiLine, width, height, passThrough) {
 		} else {
 		
 			var value = $(domContent).find("input").val();
-			webarenaObject.setContent(value);
 			if (webarenaObject.intelligentRename) webarenaObject.intelligentRename(value);
+			webarenaObject.setContent(value);
 		}
 		
 	};
