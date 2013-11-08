@@ -17,6 +17,7 @@ var printLogo = function(){
 	'#        Felix Winkelnkemper             #',
 	'#        Tobias Kempkensteffen           #',
 	'#        Viktor Koop                     #',
+	'#        Jan Petertonkoker               #',
 	'#                                        #',
 	'##########################################'];
 
