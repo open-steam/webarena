@@ -959,6 +959,7 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 								"roomID": toRoom
 							}
 							that.history.add(transactionId, context.user.username, historyEntry);
+							Modules.EventBus.emit("room::" + toRoom + "::action::createObject", {objectID: newId});
 
 							updateObjects(); //try to update objects
 
@@ -1107,6 +1108,7 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 								"roomID": toRoom
 							}
 							that.history.add(transactionId, context.user.username, historyEntry);
+							Modules.EventBus.emit(["room", toRoom, "action" ,  "createObject"], {objectID: newId});
 
 
 							updateObjects(); //try to update objects
