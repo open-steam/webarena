@@ -801,7 +801,7 @@ ObjectManager.countSubrooms = function (roomID, context) {
 	return counter;
 }
 
-ObjectManager.duplicate = function (socket, data, responseID) {
+ObjectManager.duplicate = function (socket, data, responseID, callback) {
 	var that = this;
 
 	var context = Modules.UserManager.getConnectionBySocket(socket);
@@ -915,6 +915,8 @@ ObjectManager.duplicate = function (socket, data, responseID) {
 
 			if (socket && responseID) {
 				Modules.Dispatcher.respond(socket, responseID, idList);
+			} else if(callback){
+				callback(idList);
 			}
 		}
 	}
