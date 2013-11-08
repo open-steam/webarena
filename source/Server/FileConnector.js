@@ -72,8 +72,6 @@ fileConnector.getTrashRoom = function(context, callback){
 
 
 fileConnector.listRooms = function(callback){
-	var availableRooms = [];
-
 	var filebase = this.Modules.Config.filebase;
 	fs.readdir(filebase, function(err, files){
 		if(err){
