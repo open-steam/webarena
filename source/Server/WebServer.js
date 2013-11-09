@@ -10,7 +10,7 @@
 var Modules = false;
 
 var WebServer = {};
-var _ = require('underscore');
+var _ = require('lodash');
 var mime = require('mime');
 mime.default_type = 'text/plain';
 var Q = require('q');
