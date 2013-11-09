@@ -1,41 +1,17 @@
-var net = require('net');
 var config = require('./config.js');
-var EventEmmiter2 = require('eventemitter2').EventEmitter2;
 
-var eventBus = new EventEmmiter2({
-	wildcard: true,
-	delimiter: '::'
-});
+var VerwaltungsApp = {};
 
-var client = net.connect(config.apiPort, function () {
-	this.on('data', function (data) {
-		var response = JSON.parse(data.toString());
-
-		if(response.eventData && response.eventData.sourceType && response.eventData.sourceType === "Tunnel"){
+VerwaltungsApp.init = function(eventBus){
+	console.log("init plugin...")
+	this.eventBus = eventBus;
+	eventBus.on("**", function(eventData){
+		if(eventData.sourceType && eventData.sourceType === "Tunnel"){
 			console.log("Try to send a mail");
 			sendMail();
 		}
 	});
-});
-
-//TODO improve error handling
-client.on("error", function(err){console.log(err)});
-
-
-function initialSubscribe (){
-	var subscriptionRequest = {
-		"requestType": "subscribeEvents",
-		"eventlist": '**'
-	};
-
-	client.write(JSON.stringify(subscriptionRequest));
 }
-
-function startUp(){
-	initialSubscribe()
-}
-
-
 
 var sendMail = function(){
 	//TODO create some possibility to add mails to a room
@@ -74,3 +50,11 @@ var sendMail = function(){
 		}
 	});
 }
+
+function create(){
+	return Object.create(VerwaltungsApp);
+}
+
+module.exports = {
+	create : create
+};
