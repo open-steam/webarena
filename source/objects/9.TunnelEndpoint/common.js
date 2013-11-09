@@ -6,6 +6,7 @@ TunnelEndpoint.register=function(type){
 	// Registering the object
 	Modules.ObjectManager.getPrototype('Hotspot').register.call(this,type);
 	this.makeStructuring();
+	this.makeSensitive();
 
 	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});
 	this.registerAttribute('value',{type:'text',standard:'',category:'Selection'});
