@@ -96,3 +96,9 @@ var fs = require('fs');
 if (!fs.existsSync("./Server/tmp")) {
 	fs.mkdirSync("./Server/tmp", 0777);
 }
+
+//load plugins
+if(Modules.config.plugins){
+	Modules.PluginManager = require('./Server/PluginManager.js').create();
+	Modules.PluginManager.init(Modules.config.plugins);
+}
