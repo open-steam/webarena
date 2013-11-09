@@ -9,19 +9,19 @@ var DEFAULT_PORT = 8125;
 var TCPSocketServer = {};
 var theModules = false;
 
+var JsonSocket = require('json-socket');
+
 
 var onConnectionEnd = function () {
 	console.log("Ended connection");
 }
 
-var emitAsJson = function(connection, object){
-	connection.write(JSON.stringify(object));
-};
+
 
 var subscriptionHandle = function(connection, parsedRequest){
 	var toSubscribe = parsedRequest.eventlist;
 	if(!parsedRequest.eventlist){
-		emitAsJson(connection, {error: "Missing eventlist"});
+		connection.sendMessage( {error: "Missing eventlist"});
 		return;
 	}
 	if(!_.isArray(toSubscribe))toSubscribe = [toSubscribe];
@@ -34,10 +34,10 @@ var subscriptionHandle = function(connection, parsedRequest){
 				eventData: eventData
 			};
 
-			emitAsJson(connection, eventEnvelope);
+			connection.sendMessage(eventEnvelope);
 		})
 	});
-	emitAsJson(connection, {"status": "ok"});
+	connection.sendMessage({"status": "ok"});
 }
 
 
@@ -47,16 +47,9 @@ var subscriptionHandle = function(connection, parsedRequest){
  * @param connection - the tcp connection
  * @param data - incoming Data
  */
-var dataHandle = function(connection, data){
-	try{
-		var parsedRequest = JSON.parse(data.toString());
-	} catch(e){
-		emitAsJson(connection, {"error": "invalid json expression."});
-		return;
-	}
-
+var dataHandle = function(connection, parsedRequest){
 	if (!parsedRequest.requestType){
-		emitAsJson(connection, {"error": "missing argument: requestType."});
+		connection.sendMessage({"error": "missing argument: requestType."});
 		return;
 	}
 	else if (parsedRequest.requestType === "subscribeEvents") {
@@ -69,12 +62,12 @@ TCPSocketServer.init = function (modules) {
 	theModules = modules;
 
 	var server = net.createServer(function (connection) {
-		connection.on('data', function (data) {
-			dataHandle(this, data);
+		var jsonconnection = new JsonSocket(connection);
+		jsonconnection.on('message', function (data) {
+			dataHandle(jsonconnection, data);
 		});
 
-		connection.on('end', onConnectionEnd);
-
+		jsonconnection.on('end', onConnectionEnd);
 	});
 
 	server.listen(DEFAULT_PORT, function () {

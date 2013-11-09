@@ -3,6 +3,9 @@ var expect = require('chai').expect;
 var should = require('chai').should();
 
 var net = require('net');
+var JsonSocket = require('json-socket');
+var port = 8125;
+var host = '127.0.0.1';
 
 describe('TcpServer', function () {
 	it('tcp server should be running', function (done) {
@@ -14,14 +17,15 @@ describe('TcpServer', function () {
 
 	it('should return error if request type missing', function (done) {
 		this.timeout(3000);
-		var client = net.connect(8125, function () {
-			this.on('data', function (data) {
-				var response = JSON.parse(data.toString());
+		var client = new JsonSocket(new net.Socket());
+		client.connect(port, host);
+		client.on("connect", function () {
+			this.on('message', function (response) {
 				expect(response).to.be.an("object");
 				expect(response).to.have.property('error');
 				done();
 			});
-			client.write("....");
+			client.sendMessage("....");
 			//setTimeout(done, 1);
 		});
 	});
@@ -30,9 +34,9 @@ describe('TcpServer', function () {
 describe('TCP subscribe events', function () {
 	var client;
 	beforeEach(function (done) {
-		client = net.connect({port: 8125}, function () {
-			done();
-		});
+		client = new JsonSocket(new net.Socket());
+		client.connect(port, host);
+		client.on("connect", function () {done();});
 	});
 
 	afterEach(function(){
@@ -42,8 +46,7 @@ describe('TCP subscribe events', function () {
 	it('should return error if eventlist is missing', function (done) {
 		this.timeout(3000);
 
-		client.on('data', function (data) {
-			var response = JSON.parse(data.toString());
+		client.on('message', function (response) {
 			expect(response).to.be.an("object");
 			expect(response).to.have.property('error');
 			done();
@@ -53,14 +56,13 @@ describe('TCP subscribe events', function () {
 			requestType: "subscribeEvents"
 		};
 
-		client.write(JSON.stringify(subscriptionEvent));
+		client.sendMessage(subscriptionEvent);
 	});
 
 	it('should return success for event subscription', function (done) {
 		this.timeout(3000);
 
-		client.on('data', function (data) {
-			var response = JSON.parse(data.toString());
+		client.on('message', function (response) {
 			expect(response).to.be.an("object");
 			expect(response).to.have.property('status');
 			expect(response.status).to.be.eql("ok");
@@ -72,12 +74,11 @@ describe('TCP subscribe events', function () {
 			eventlist: "**"
 		};
 
-		client.write(JSON.stringify(subscriptionEvent));
+		client.sendMessage(subscriptionEvent);
 	});
 
 	it('should except event array', function(done){
-		client.on('data', function(data){
-			var response = JSON.parse(data.toString());
+		client.on('message', function(response){
 			expect(response).to.be.an("object");
 			expect(response).to.have.property('status');
 			expect(response.status).to.be.eql("ok");
@@ -89,6 +90,6 @@ describe('TCP subscribe events', function () {
 			eventlist: ["**"]
 		};
 
-		client.write(JSON.stringify(subscriptionEvent));
+		client.sendMessage(subscriptionEvent);
 	});
 });
