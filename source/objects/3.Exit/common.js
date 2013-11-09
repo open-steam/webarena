@@ -16,34 +16,52 @@ Exit.register=function(type){
 	IconObject.register.call(this,type);
 	
 	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality',changedFunction: function(object) { object.updateIcon(); }});
+	this.registerAttribute('destinationObject',{type:'text',standard:'',category:'Functionality'});
+
+	this.registerAction('Follow',function(object){
+		object.execute();
+	},true);
 	
-	var self=this;
-	
-	this.registerAction('Follow',function(){
-		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var object = selected[i];
-			
-			object.execute();
-			
-		}
-		
+	this.registerAction('Open in new window',function(object){	
+		object.execute(true);
 	},true);
 
 }
 
-Exit.execute=function(){
+Exit.execute=function(openInNewWindow){
 	
 	var destination=this.getAttribute('destination');
 	
 	if (!destination) return;
+
+	var self=this;
+
+	var callback = false;
+	if (self.getAttribute("destinationObject") !== '') {
+		callback = function() {
+			if (document.getElementById(self.getAttribute("destinationObject"))) {
+				$(document).scrollTo(
+					$('#'+self.getAttribute("destinationObject")), 
+					1000, 
+					{
+						offset: {
+							top: (self.getAttribute("height") / 2) - ($(window).height() / 2), 
+							left: (self.getAttribute("width") / 2) - ($(window).width() / 2)
+						} 
+					}
+				);
+			}
+		}
+	}
 	
-	ObjectManager.loadRoom(destination);
+	console.log(openInNewWindow);
+	
+	if (openInNewWindow)
+	{ console.log("follow"); window.open(destination); }
+	else
+	{ console.log("new window"); ObjectManager.loadRoom(destination,false,callback); }
 	
 	//window.location.href = "/room/"+destination;
-	
 }
 
 Exit.register('Exit');

@@ -139,7 +139,9 @@ class User extends CI_Model {
     function loadCourseData($frozen = false, $admin = false) {
         log_message("debug", "user loadCourseData: username = ".$this->username);
         
-        require_once(APPPATH . 'models/Course.php');
+        if (!class_exists('Course')) {
+            require_once(APPPATH . 'models/Course.php');
+        }
         
         foreach ($this->courses as $courseID) {
             $course = new Course();
@@ -168,7 +170,9 @@ class User extends CI_Model {
     function loadAllCourseData() {
         log_message("debug", "user loadAllCourseData: username = ".$this->username);
         
-        require_once(APPPATH . 'models/Course.php');
+        if (!class_exists('Course')) {
+            require_once(APPPATH . 'models/Course.php');
+        }
         
         $courses = scandir($this->config->item('courseFolder'));
         foreach ($courses as $courseID) {
@@ -251,6 +255,33 @@ class User extends CI_Model {
             } else {
                 return "error";
             }
+        }
+    }
+    
+    function deleteUser() {
+        // delete course files
+        foreach ($this->courses as $course) {
+            $appliedFile = $this->config->item('courseFolder') . "/" . $course . "/verified/" . $this->username . ".txt";
+            $verifiedFile = $this->config->item('courseFolder') . "/" . $course . "/verified/" . $this->username . ".txt";
+            
+            if (file_exists($appliedFile)) {
+                if (!unlink($appliedFile)) {
+                    return false;
+                }
+            }
+            if (file_exists($verifiedFile)) {
+                if (!unlink($verifiedFile)) {
+                    return false;
+                }
+            }
+        }
+        
+        // delete user file
+        $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
+        if (unlink($filename)) {
+            return true;
+        } else {
+            return false;
         }
     }
 }

@@ -11,8 +11,11 @@ elabConnector.login=function(username,password,externalSession,rp,context){
 
 	var data={};
 	
+	var home = "";
+
 	if (externalSession === true) {
 		if (self.externalSessions[password] === undefined) rp(false);
+		home = self.externalSessions[password].home;
 		password = self.externalSessions[password].password; //get real password from external session
 	} else {
 		var crypto = require('crypto')
@@ -41,7 +44,11 @@ elabConnector.login=function(username,password,externalSession,rp,context){
 
 		data.username=username;
 		data.password=password;
-		data.home = attributes.room;
+		if (home != "") {
+			data.home =  home;
+		} else {
+			data.home = attributes.room;
+		}
 
 		self.elabConnections[context.socket.id] = username;
 			

@@ -11,80 +11,59 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
 
 
+//is called when ANY object is repositioned within a room
 theObject.evaluatePositionFor=function(object,data){
-	//console.log('room','evaluatePositionFor',object.toString(),data);
+	
+	//when the object is structuring or sensitive ("the background"), its onObjectMove function is called
 	
 	if (object.onObjectMove) return object.onObjectMove(data);
+	
+	//if the object is not active (neutral) do nothing at all
+	
+	//if (!object.isActive()) return;
+	
+	//let the moved object be evaluated by every structuring or sensitive object in the room
 	
 	var inventory=this.getInventory();
 	
 	for (var i in inventory){
-		var activeObject=inventory[i];
-		if (!activeObject.evaluateObject) {
-			continue;
-		} else {
-			activeObject.evaluateObject(object,data);
+		var obj=inventory[i];
+		if (obj.isStructuring() || obj.isSensitive()) {
+			obj.evaluateObject(object,data);
 		}
 	}
 	
 }
 
-theObject.evaluatePositions=function(){
+//sets active objects to their positions
+theObject.placeActiveObjects=function(){
 	
 	var objects=this.getInventory();
-	var activeObjects=this.getActiveObjects(objects);  //idea hold active objects yet in ObjectManager for speedup
 	
-	for (var j in objects){	
-		
-		var greens=[];
-		var reds=[];
-		
-		var dataObject=objects[j];
-		for (var i in activeObjects){
-			var activeObject=activeObjects[i];
-			if (dataObject.evaluateObject) continue; //objects that evaluate are not evaluated themselves
-			var g=activeObject.getGreenPositions(dataObject);
-			var r=activeObject.getRedPositions(dataObject);
-			
-			if (g) greens.push(g);
-			if (r) reds.push(r);
+	for (var key in objects){
+		var active=objects[key];
+		var currentIsActive;
+		if(active.isActive === "function"){
+			currentIsActive = active.isActive();
 		}
-		
-		//calculte the overlapping green
-		var green=false;
-		
-		if (greens.length){
-			
-			var green={x:-500000,y:-500000,x2:500000,y2:500000};
-			
-			
-			
-			for (var i in greens){
-				var thisGreen=greens[i];
-			
-				thisGreen.x2=thisGreen.x+thisGreen.width;
-				thisGreen.y2=thisGreen.y+thisGreen.height;
-				
-				if (thisGreen.x>green.x) green.x=thisGreen.x;
-				if (thisGreen.y>green.y) green.y=thisGreen.y;
-				if (thisGreen.x2<green.x2) green.x2=thisGreen.x2;
-				if (thisGreen.y2<green.y2) green.y2=thisGreen.y2;
-				
+		if (currentIsActive !== false){
+			for (var key2 in objects){
+				var structuring=objects[key2];
+				if (structuring.isStructuring()){
+					if(currentIsActive || structuring.decideIfActive(active)){
+						var data=structuring.getPositioningDataFor(active);
+						console.log(active+' structured by '+structuring+' '+data);
+					}
+				}
 			}
-			
 		}
-		
-		if (checkPosition(dataObject,green,reds)) continue;
-		
-		
-		var position=getPosition(dataObject,green,reds);
-		
-		console.log(dataObject+' NEEDS REPOSITIONING',position,green);
-		
-		dataObject.setAttribute('x',position.x);
-		dataObject.setAttribute('y',position.y);
-		
 	}
+	
+	//get all structuring objects
+	//get all active objects
+	
+	//for every active object, get possible positions
+	//position them
 	
 }
 
@@ -148,19 +127,6 @@ function checkPosition(dataObject,green,reds){
 
 theObject.getInventory=function(){
 	return Modules.ObjectManager.getObjects(this.id,this.context);
-}
-
-theObject.getActiveObjects=function(inventory){
-	if (!inventory) inventory=this.getInventory();
-	
-	var result=[];
-	
-	for (var i in inventory){
-		var object=inventory[i];
-		if (object.evaluateObject) result.push(object);
-	}
-	
-	return result;
 }
 
 module.exports=theObject;

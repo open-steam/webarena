@@ -23,15 +23,16 @@ var _ = require('underscore');
 module.exports=theObject;
 
 
-theObject.makeReactive=function(){
-	this.isReactiveFlag=true;
+// ****************************************************************
+// * MAKE SENSITIVE ***********************************************
+// ****************************************************************
+
+theObject.makeSensitive=function(){
+	this.isSensitiveFlag=true;
 	
 	var theObject=this;
 	
-	theObject.onObjectMove=function(changeData){
-		
-		console.log('calling evaluate on'+this);
-		console.trace();
+	this.onObjectMove=function(changeData){
 	
 		//complete data
 		
@@ -50,6 +51,9 @@ theObject.makeReactive=function(){
 		for (var i in inventory){
 			
 			var object=inventory[i];
+			
+			if(object.id==this.id) continue;
+			
 			var bbox=object.getBoundingBox();
 			
 			//determine intersections
@@ -136,7 +140,7 @@ theObject.makeReactive=function(){
 	
 	
 	/**
-	*	ReActiveObjects evaluate other objects in respect to themselves.
+	*	SensitiveObjects evaluate other objects in respect to themselves.
 	*
 	*	object the object that shall be evaluated
 	*	changeData old and new values of positioning (e.g. changeData.old.x) 
@@ -168,54 +172,57 @@ theObject.makeReactive=function(){
 		if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
 	}
 	
-	
-	theObject.onMoveWithin=function(object,data){
+	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
 		
 	};
 	
-	theObject.onMoveOutside=function(object,data){
+	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
 		
 	};
 	
-	theObject.onLeave=function(object,data){
+	if (!theObject.onLeave) theObject.onLeave=function(object,data){
 		
 	};
 	
-	theObject.onEnter=function(object,data){
+	if (!theObject.onEnter) theObject.onEnter=function(object,data){
 		
 	};
-	
-	theObject.getGreenPositions=function(object){
-		
-		var result=false;
-		
-		return result;
-		
-	}
-	
-	theObject.getRedPositions=function(object){
-		
-		var result=false;
-		
-		return result;
-		
-	}
 
 }
 
+
+// ****************************************************************
+// * MAKE STRUCTURING *********************************************
+// ****************************************************************
+
 theObject.makeStructuring=function(){
 	this.isStructuringFlag=true;
-	this.makeReactive();
-	this.isActiveFlag=false;
+	this.makeSensitive();
+	this.isSensitiveFlag=false;
 	
-	this.onObjectMove=function(){
+	this.onObjectMove=function(changeData){
+		
+		//when a structuring object is moved, every active object may be in need of repositioning
+		
+		console.log('obObjectMove on structuring object '+this);
+		
+		this.getRoom().placeActiveObjects();
 	}
-	this.onNewObject=function(){
+	
+	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
+		
+		var result={reference:'ignore'};
+		
+		//reference: must, mustnot, ignore
+		//minX
+		//maxX
+		//minY
+		//maxY
+		
+		return result;
+		
 	}
-	this.placeObjects=function(){
-	}
-	this.placeObject=function(){
-	}
+
 }
 
 
@@ -432,32 +439,11 @@ theObject.getBoundingBox=function(){
 	
 }
 
-theObject.onSwitchContext=function(context){
+theObject.fireEvent=function(name,data){
 	
-	if (Modules.Config.noContext) return;
-	
-	//using set instead of setObject to avoid evaluation of these changes.
-	
-	if (!this.getAttribute('position_on_all_contexts')){
-		this.set('x',this.getAttribute('x_'+context)||this.getAttribute('x_general')||this.getAttribute('x'));
-		this.set('y',this.getAttribute('y_'+context)||this.getAttribute('y_general')||this.getAttribute('y'));
-	}
-	
-	if (!this.getAttribute('appearance_on_all_contexts')){
-		this.set('width',this.getAttribute('width_'+context)||this.getAttribute('width_general')||this.getAttribute('width'));
-		this.set('height',this.getAttribute('height_'+context)||this.getAttribute('height_general')||this.getAttribute('height'));
-	}
-	
-	this.persist();
-	
-	var contexts=this.whichContexts();
-	if (contexts!==true){
-		var visible=false;
-		for (var i in contexts){
-			var comp=contexts[i];
-			if (comp==context) visible=true;
-		}
-		this.setAttribute('visible',visible);
-	}
+	console.log(this+' fireing '+name+' ('+data+')');
+	console.log('###Note: Event fireing not implemented yet (GeneralObject)');
+
+	Modules.EventBus.emit(name, data);
 	
 }

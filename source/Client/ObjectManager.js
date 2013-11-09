@@ -69,15 +69,6 @@ ObjectManager.buildObject=function(type, attributes){
 		
     }
 
-	//Determine this room's contexts
-
-	if (!Config.noContexts){
-		var room=object.getRoom();
-		if (room){
-			room.updateContexts();
-		}
-	}
-
     return object;
 
 }
@@ -106,11 +97,11 @@ ObjectManager.getObjectsByLayer=function() {
 
     objectsArray.sort(function(a,b) {
 		
-		if (a.alwaysOnTop === true) {
+		if (a.alwaysOnTop() === true) {
 			return 1;
 		}
 		
-		if (b.alwaysOnTop === true) {
+		if (b.alwaysOnTop() === true) {
 			return -1;
 		}
 		
@@ -198,10 +189,6 @@ ObjectManager.attributeChanged=function(object,key,newValue,local){
 	
     if (this.informGUI) this.informGUI(object,key,newValue,local)
     else console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
-    
-    //updating room contexts on every attribut change, as contexts can be derived from various
-    //attributes. These evaluation is done by the objects themselves.
-    if (!Config.noContexts) object.getRoom().updateContexts();
 	
 }
 
@@ -216,11 +203,21 @@ ObjectManager.contentUpdate=function(data){
 }
 
 ObjectManager.remove=function(object){
-    console.log("REMOVE");
+    var that = this;
+    if(! this.transactionId){
+        that.transactionId = new Date().getTime();
+    } else {
+        window.transactionTimer = window.setTimeout(function(){
+            //calculate new transactionId
+            //TODO: isn't safe - concurrent users may result in same timestamp
+            that.transactionId = new Date().getTime();
+        }, this.transactionTimeout);
+    }
+
     Modules.SocketClient.serverCall('deleteObject',{
         'roomID':object.getRoomID(),
         'objectID':object.getID(),
-        'transactionId' : new Date().getTime(),
+        'transactionId': that.transactionId,
         'userId' : GUI.userid
     });
 }
@@ -262,7 +259,7 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
-ObjectManager.loadRoom=function(roomid,byBrowserNav){
+ObjectManager.loadRoom=function(roomid,byBrowserNav,callback){
 	
 	var self = this;
 	
@@ -283,6 +280,8 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav){
 		    if (!byBrowserNav){
 				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
 		    }
+
+		    if (callback) setTimeout(callback, 1200);
 		
 		}
 		
@@ -328,7 +327,8 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
 }
 
 ObjectManager.init=function(){
-
+    this.transactionId = false;
+    this.transactionTimeout = 500;
 	
 	Modules.Dispatcher.registerCall('infotext', function(text){
         var translatedText = GUI.translate(text);
@@ -643,10 +643,34 @@ ObjectManager.pasteObjects=function() {
 
 			// select new objects after duplication
 		    var newIDs=[];
+		    var minX = Number.MAX_VALUE;
+		    var minY = Number.MAX_VALUE;
 		    var selectNewObjects = function() {
 				for (var key in newIDs) {
 					var newObject = ObjectManager.getObject(newIDs[key]);
 					newObject.select(true);
+
+					// determine left most and top most coordinates of pasted objects in case of scrolling
+					if (newObject.getAttribute('x') < minX) {
+						minX = newObject.getAttribute('x');
+					}
+					if (newObject.getAttribute('y') < minY) {
+						minY = newObject.getAttribute('y');
+					}
+				}
+
+				// if objects were moved between rooms scroll to position of pasted objects
+				if (requestData.fromRoom != requestData.toRoom) {
+					if (minX - 30 < 0) minX = 30;
+					if (minY - 30 < 0) minY = 30;
+					
+					$(document).scrollTo(
+						{ 
+							top: minY - 30, 
+							left: minX - 30
+						},
+						1000
+					);
 				}
 			};
 

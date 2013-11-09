@@ -75,7 +75,7 @@ class Courses extends MY_Controller {
         }
     }
 
-    public function showCourse($id) {
+    public function singleCourse($id) {
         $this->load->library('session');
         
         $this->load->model('course');

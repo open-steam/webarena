@@ -1,4 +1,4 @@
 ActivatorHotspot.setTranslations('de',{
-	'ActivatorHotspot':'Aktivatorfläche'
+	'Group':'Gruppe'
 }
 );

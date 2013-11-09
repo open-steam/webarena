@@ -18,16 +18,21 @@ Subroom.register=function(type){
 	
 	var self=this;
 	
-	this.registerAction('Follow',function(){
+	this.registerAction('Follow',function(object){
 		
-		self.execute();
+		object.execute();
 		
 	},true);
 	
+	this.registerAction('Open in new window',function(object){
+		
+		object.execute(true);
+		
+	},true);
 	
 }
 
-Subroom.execute=function(){
+Subroom.execute=function(openInNewWindow){
 	
 	var destination=this.getAttribute('destination');
 	
@@ -39,8 +44,8 @@ Subroom.execute=function(){
 		destination = random;
 	}
 	
-	ObjectManager.loadRoom(destination);
-	
+	if (openInNewWindow) { window.open(destination); }
+	else { ObjectManager.loadRoom(destination); }
 }
 
 Subroom.register('Subroom');

@@ -32,6 +32,7 @@ File.register=function(type){
 	this.registerAttribute('preview',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
 		if (local) {
 			object.updateIcon();
+			GUI.updateLayers();
 			GUI.deselectAllObjects();
 			object.select(true);
 		}
@@ -170,5 +171,11 @@ File.isCreatable=true;
 File.moveByTransform = function(){return true;};
 
 File.category='Files';
+
+File.alwaysOnTop = function () {
+	if (this.hasContent() == true && this.getAttribute("preview") == true) {
+		return false;
+	} else return true;
+};
 
 module.exports=File;

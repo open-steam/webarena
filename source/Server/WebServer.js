@@ -22,552 +22,557 @@ var Q = require('q');
  */
 WebServer.init = function (theModules) {
 
-    Modules = theModules;
+	Modules = theModules;
 
-    var app = require('http').createServer(handler),
-        fs = require('fs');
+	var app = require('http').createServer(handler),
+			fs = require('fs');
 
-    WebServer.server = app;
+	WebServer.server = app;
 
 
 
-    app.listen(global.config.port);  // start server (port set in config)
+	app.listen(global.config.port);  // start server (port set in config)
 
-    function handler(req, res) {
-        var url = req.url.replace('%20', ' ');
-        var agent = req.headers['user-agent'];
+	function handler(req, res) {
+		var url = req.url.replace('%20', ' ');
+		var agent = req.headers['user-agent'];
 
-        if (agent && agent.indexOf('MSIE') > 0) {
-            res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
-            data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
-            res.end(data);
-            return;
-        }
+		if (agent && agent.indexOf('MSIE') > 0) {
+			res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
+			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
+			res.end(data);
+			return;
+		}
 
-        /* get userHash */
-        var userHashIndex = url.indexOf("/___");
-        if (userHashIndex > -1) {
-            /* userHash found */
+		/* get userHash */
+		var userHashIndex = url.indexOf("/___");
+		if (userHashIndex > -1) {
+			/* userHash found */
 
-            var userHash = url.slice(userHashIndex + 1);
-            url = url.slice(0, userHashIndex);
+			var userHash = url.slice(userHashIndex + 1);
+			url = url.slice(0, userHashIndex);
 
-            var context = Modules.UserManager.getConnectionByUserHash(userHash);
+			var context = Modules.UserManager.getConnectionByUserHash(userHash);
 
-        } else {
-            var userHash = false;
-            var context = false;
-        }
+		} else {
+			var userHash = false;
+			var context = false;
+		}
 
 
-        if (url == '/') url = Modules.config.homepage;
+		if (url == '/') url = Modules.config.homepage;
 
-        if (url.substr(0, 6) == '/room/') {
-            /* open room */
+		if (url.substr(0, 6) == '/room/') {
+			/* open room */
 
-            try {
+			try {
 
-                var roomId = url.substr(6);
+				var roomId = url.substr(6);
 
-                var indexFilename = '/../Client/guis/desktop/index.html';
+				var indexFilename = '/../Client/guis/desktop/index.html';
 
-                fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
+				fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
 
-                    if (err) {
-                        res.writeHead(404);
-                        Modules.Log.warn("Error loading index file (" + url + ")");
-                        return res.end('404 Error loading index file');
-                    }
+					if (err) {
+						res.writeHead(404);
+						Modules.Log.warn("Error loading index file (" + url + ")");
+						return res.end('404 Error loading index file');
+					}
 
-                    res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
+					res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
 
-                    data = data.replace("##START_ROOM##", roomId);
+					data = data.replace("##START_ROOM##", roomId);
 
-                    res.end(data);
-                });
+					res.end(data);
+				});
 
-            } catch (err) {
-                res.writeHead(500, {"Content-Type": "text/plain"});
-                res.write("500 Internal Server Error");
-                res.end();
-                Modules.Log.error(err);
-            }
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
 
-            return;
-        }
+			return;
+		}
 
 
-        // Object Icons
-        if (url.substr(0, 12) == '/objectIcons') {
+		// Object Icons
+		if (url.substr(0, 12) == '/objectIcons') {
 
-            try {
+			try {
 
-                var objectType = url.substr(13);
+				var objectType = url.substr(13);
 
-                var separator = objectType.indexOf('/');
+				var separator = objectType.indexOf('/');
 
-                if (separator > 0) {
+				if (separator > 0) {
 
-                    var section = objectType.substring(separator + 1);
-                    objectType = objectType.substring(0, separator);
+					var section = objectType.substring(separator + 1);
+					objectType = objectType.substring(0, separator);
 
-                } else var section = false;
+				} else var section = false;
 
-                var obj = Modules.ObjectManager.getPrototype(objectType);
+				var obj = Modules.ObjectManager.getPrototype(objectType);
 
-                if (!obj) {
-                    res.writeHead(404);
-                    return res.end('Object not found ' + objectType);
-                }
+				if (!obj) {
+					res.writeHead(404);
+					return res.end('Object not found ' + objectType);
+				}
 
-                fs.readFile(obj.localIconPath(section),
-                    function (err, data) {
-                        if (err) {
-                            res.writeHead(404);
-                            Modules.Log.warn('Icon file is missing for ' + objectType + " (" + url + ")");
-                            return res.end('Icon file is missing for ' + objectType);
-                        }
+				fs.readFile(obj.localIconPath(section),
+						function (err, data) {
+							if (err) {
+								res.writeHead(404);
+								Modules.Log.warn('Icon file is missing for ' + objectType + " (" + url + ")");
+								return res.end('Icon file is missing for ' + objectType);
+							}
 
-                        res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
-                        res.end(data);
-                    });
+							res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+							res.end(data);
+						});
 
-            } catch (err) {
-                res.writeHead(500, {"Content-Type": "text/plain"});
-                res.write("500 Internal Server Error");
-                res.end();
-                Modules.Log.error(err);
-            }
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
 
-            return;
-        }
+			return;
+		}
 
-        // setContent
+		// setContent
 
-        else if (url.substr(0, 11) == '/setContent' && req.method.toLowerCase() == 'post') {
+		else if (url.substr(0, 11) == '/setContent' && req.method.toLowerCase() == 'post') {
 
-            try {
+			try {
 
-                var ids = url.substr(12).split('/');
-                var roomID = ids[0];
-                var objectID = ids[1];
+				var ids = url.substr(12).split('/');
+				var roomID = ids[0];
+				var objectID = ids[1];
 
-                var object = Modules.ObjectManager.getObject(roomID, objectID, context);
-                var historyEntry = {
-                    'objectID' : roomID,
-                    'roomID' : roomID,
-                    'action' : 'setContent'
-                }
-                Modules.ObjectManager.history.add(
-                    new Date().toDateString(), context.user.username, historyEntry
-                )
+				var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+				var historyEntry = {
+					'objectID' : roomID,
+					'roomID' : roomID,
+					'action' : 'setContent'
+				}
+				Modules.ObjectManager.history.add(
+						new Date().toDateString(), context.user.username, historyEntry
+				)
 
-                if (!object) {
-                    res.writeHead(404);
-                    Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
-                    return res.end('Object not found');
-                }
+				if (!object) {
+					res.writeHead(404);
+					Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+					return res.end('Object not found');
+				}
 
 
-                var formidable = require('formidable');
-                var util = require('util');
+				var formidable = require('formidable');
+				var util = require('util');
 
-                var form = new formidable.IncomingForm();
+				var form = new formidable.IncomingForm();
 
-                form.parse(req, function (err, fields, files) {
+				form.parse(req, function (err, fields, files) {
 
-                    object.copyContentFromFile(files.file.path, function () {
+					object.copyContentFromFile(files.file.path, function () {
 
-                        object.set('hasContent', true);
-                        object.set('contentAge', new Date().getTime());
-                        object.set('mimeType', files.file.type);
+						object.set('hasContent', true);
+						object.set('contentAge', new Date().getTime());
+						object.set('mimeType', files.file.type);
 
-                        /* check if content is inline displayable */
-                        if (Modules.Connector.isInlineDisplayable(files.file.type)) {
+						/* check if content is inline displayable */
+						if (Modules.Connector.isInlineDisplayable(files.file.type)) {
 
-                            object.set('preview', true);
-                            object.persist();
+							object.set('preview', true);
+							object.persist();
 
-                            /* get dimensions */
-                            Modules.Connector.getInlinePreviewDimensions(roomID, objectID, function (width, height) {
+							/* get dimensions */
+							Modules.Connector.getInlinePreviewDimensions(roomID, objectID, function (width, height) {
 
-                                if (width != false)    object.setAttribute("width", width);
-                                if (height != false) object.setAttribute("height", height);
+								if (width != false)    object.setAttribute("width", width);
+								if (height != false) object.setAttribute("height", height);
 
-                                //send object update to all listeners
-                                object.persist();
-                                object.updateClients('contentUpdate');
+								//send object update to all listeners
+								object.persist();
+								object.updateClients('contentUpdate');
 
-                                res.writeHead(200);
-                                res.end();
+								res.writeHead(200);
+								res.end();
 
-                            }, files.file.type, true);
+							}, files.file.type, true);
 
-                        } else {
-                            object.set('preview', false);
+						} else {
+							object.set('preview', false);
 
-                            //send object update to all listeners
-                            object.persist();
-                            object.updateClients('contentUpdate');
+							//send object update to all listeners
+							object.persist();
+							object.updateClients('contentUpdate');
 
-                            res.writeHead(200);
-                            res.end();
-                        }
+							res.writeHead(200);
+							res.end();
+						}
 
 
-                    });
+					});
 
-                });
+				});
 
-            } catch (err) {
-                res.writeHead(500, {"Content-Type": "text/plain"});
-                res.write("500 Internal Server Error");
-                res.end();
-                Modules.Log.error(err);
-            }
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
 
-            return;
-        }
+			return;
+		}
 
-        // getContent
+		// getContent
 
-        else if (url.substr(0, 11) == '/getContent') {
+		else if (url.substr(0, 11) == '/getContent') {
 
-            try {
+			try {
 
-                var ids = url.substr(12).split('/');
-                var roomID = ids[0];
-                var objectID = ids[1];
-                var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+				var ids = url.substr(12).split('/');
+				var roomID = ids[0];
+				var objectID = ids[1];
+				var object = Modules.ObjectManager.getObject(roomID, objectID, context);
 
-                if (!object) {
-                    res.writeHead(404);
-                    Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
-                    return res.end('Object not found');
-                }
+				if (!object) {
+					res.writeHead(404);
+					Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+					return res.end('Object not found');
+				}
 
-                var mimeType = object.getAttribute('mimeType') || 'text/plain';
+				var mimeType = object.getAttribute('mimeType') || 'text/plain';
 
-                res.writeHead(200, {
-                    'Content-Type': mimeType,
-                    'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'
-                });
-                if(Modules.Connector.getContentStream !== undefined){
-                    var objStream = Modules.Connector.getContentStream(roomID, objectID, context);
-                    objStream.pipe(res);
-                    objStream.on("end", function(){
-                        res.end();
-                    })
-                } else {
-                    var data = object.getContent();
-                    res.end(new Buffer(data));
-                }
+				res.writeHead(200, {
+					'Content-Type': mimeType,
+					'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'
+				});
+				if(Modules.Connector.getContentStream !== undefined){
+					var objStream = Modules.Connector.getContentStream(roomID, objectID, context);
+					objStream.pipe(res);
+					objStream.on("end", function(){
+						res.end();
+					})
+				} else {
+					var data = object.getContent();
+					res.end(new Buffer(data));
+				}
 
-            } catch (err) {
+			} catch (err) {
 
-                res.writeHead(500, {"Content-Type": "text/plain"});
-                res.write("500 Internal Server Error");
-                res.end();
-                Modules.Log.error(err);
-            }
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
 
-            return;
-        }
+			return;
+		}
 
 
-        // getPreviewContent
+		// getPreviewContent
 
-        else if (url.substr(0, 18) == '/getPreviewContent') {
+		else if (url.substr(0, 18) == '/getPreviewContent') {
 
-            try {
+			try {
 
-                var ids = url.substr(19).split('/');
-                var roomID = ids[0];
-                var objectID = ids[1];
-                var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+				var ids = url.substr(19).split('/');
+				var roomID = ids[0];
+				var objectID = ids[1];
+				var object = Modules.ObjectManager.getObject(roomID, objectID, context);
 
-                if (!object) {
-                    res.writeHead(404);
-                    return res.end('Object not found');
-                }
+				if (!object) {
+					res.writeHead(404);
+					return res.end('Object not found');
+				}
 
-                object.getInlinePreviewMimeType(function (mimeType) {
+				object.getInlinePreviewMimeType(function (mimeType) {
 
-                    object.getInlinePreview(function (data) {
+					object.getInlinePreview(function (data) {
 
-                        if (!data) {
+						if (!data) {
 
-                            Modules.Log.warn('no inline preview found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+							Modules.Log.warn('no inline preview found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
 
-                            if (mimeType.indexOf("image/") >= 0) {
+							if (mimeType.indexOf("image/") >= 0) {
 
-                                fs.readFile(__dirname + '/../Client/guis.common/images/imageNotFound.png', function (err, data) {
+								fs.readFile(__dirname + '/../Client/guis.common/images/imageNotFound.png', function (err, data) {
 
-                                    if (err) {
-                                        res.writeHead(404);
-                                        Modules.Log.warn("Error loading imageNotFound.png file (" + url + ")");
-                                        return res.end('404 Error loading imageNotFound.png file');
-                                    }
+									if (err) {
+										res.writeHead(404);
+										Modules.Log.warn("Error loading imageNotFound.png file (" + url + ")");
+										return res.end('404 Error loading imageNotFound.png file');
+									}
 
-                                    res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
-                                    res.end(data);
+									res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+									res.end(data);
 
-                                });
+								});
 
-                            } else {
-                                res.writeHead(404);
-                                res.end('Object not found');
-                            }
+							} else {
+								res.writeHead(404);
+								res.end('Object not found');
+							}
 
-                        } else {
-                            res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Disposition': 'inline'});
-                            res.end(new Buffer(data));
-                        }
+						} else {
+							res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Disposition': 'inline'});
+							res.end(new Buffer(data));
+						}
 
-                    }, mimeType, true);
+					}, mimeType, true);
 
-                });
+				});
 
-            } catch (err) {
-                res.writeHead(500, {"Content-Type": "text/plain"});
-                res.write("500 Internal Server Error");
-                res.end();
-                Modules.Log.error(err);
-            }
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
 
-            return;
-        }
+			return;
+		}
 
-        //get external session data
+		//get external session data
 
-        else if (url == '/pushSession' && req.method.toLowerCase() == 'post') {
+		else if (url == '/pushSession' && req.method.toLowerCase() == 'post') {
 
-            var qs = require('querystring');
-            var data = '';
-            req.on('data', function (chunk) {
-                data += chunk;
-            });
-            req.on('end', function () {
-                var post = qs.parse(data);
+			var qs = require('querystring');
+			var data = '';
+			req.on('data', function (chunk) {
+				data += chunk;
+			});
+			req.on('end', function () {
+				var post = qs.parse(data);
 
-                if (Modules.Connector.addExternalSession !== undefined) {
-                    Modules.Connector.addExternalSession({
-                        "id": post.id,
-                        "username": post.username,
-                        "password": post.password
-                    });
-                }
+				var home = post.home;
+				if (!home) {
+					home = "";
+				}
+				if (Modules.Connector.addExternalSession !== undefined) {
+					Modules.Connector.addExternalSession({
+						"id": post.id,
+						"username": post.username,
+						"password": post.password,
+						"home": home
+					});
+				}
 
-            });
+			});
 
-        }
-        else if (url == '/javascriptDependencies') {
-            if(process.env.NODE_ENV === "production"){
-                //TODO: cache combined file - don't recalculate each time
-            } else {
+		}
+		else if (url == '/javascriptDependencies') {
+			if(process.env.NODE_ENV === "production"){
+				//TODO: cache combined file - don't recalculate each time
+			} else {
 
-                var jsDeps = require("../Client/javascriptDependencies.js")
-                var readFileQ = Q.denodeify(fs.readFile);
+				var jsDeps = require("../Client/javascriptDependencies.js")
+				var readFileQ = Q.denodeify(fs.readFile);
 
-                var promises = jsDeps.map(function(filename){
-                    return readFileQ("Client/" + filename);
-                })
+				var promises = jsDeps.map(function(filename){
+					return readFileQ("Client/" + filename);
+				})
 
-                var combinedJS = "";
+				var combinedJS = "";
 
-                //Go on if all files are loaded
-                Q.allSettled(promises).then(function(results){
-                    results.forEach(function(result){
-                        combinedJS += result.value + "\n";
-                    })
+				//Go on if all files are loaded
+				Q.allSettled(promises).then(function(results){
+					results.forEach(function(result){
+						combinedJS += result.value + "\n";
+					})
 
-                    var mimeType = 'text/javascript';
-                    res.writeHead(200, {'Content-Type': mimeType});
-                    
-                    res.end(combinedJS);
-                })
-            }
+					var mimeType = 'text/javascript';
+					res.writeHead(200, {'Content-Type': mimeType});
 
-        }
+					res.end(combinedJS);
+				})
+			}
 
-        else if (url == '/defaultJavascripts') {
+		}
 
-            //combine all javascript files in guis.common/javascript
-            Q.nfcall(fs.readdir, 'Client/guis.common/javascript').then(function(files){
-                files.sort(function (a, b) {
-                    return parseInt(a) - parseInt(b);
-                });
-                var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
+		else if (url == '/defaultJavascripts') {
 
-                files = _.filter(files, function (fname) {
-                    return fileReg.test(fname);
-                })
+			//combine all javascript files in guis.common/javascript
+			Q.nfcall(fs.readdir, 'Client/guis.common/javascript').then(function(files){
+				files.sort(function (a, b) {
+					return parseInt(a) - parseInt(b);
+				});
+				var fileReg = /[0-9]+\.[a-zA-Z]+\.js/;
 
-                var etag = "";
+				files = _.filter(files, function (fname) {
+					return fileReg.test(fname);
+				})
 
+				var etag = "";
 
-                files.forEach(function (file) {
-                    var stats = fs.statSync('Client/guis.common/javascript/' + file);
-                    etag += stats.size + '-' + Date.parse(stats.mtime);
-                })
 
-                if (req.headers['if-none-match'] === etag) {
-                    res.statusCode = 304;
-                    res.end();
-                } else {
-                    var readFileQ = Q.denodeify(fs.readFile);
+				files.forEach(function (file) {
+					var stats = fs.statSync('Client/guis.common/javascript/' + file);
+					etag += stats.size + '-' + Date.parse(stats.mtime);
+				})
 
-                    var promises = files.map(function(filename){
-                        return readFileQ('Client/guis.common/javascript/' + filename)
-                    })
+				if (req.headers['if-none-match'] === etag) {
+					res.statusCode = 304;
+					res.end();
+				} else {
+					var readFileQ = Q.denodeify(fs.readFile);
 
-                    var combinedJS = "";
+					var promises = files.map(function(filename){
+						return readFileQ('Client/guis.common/javascript/' + filename)
+					})
 
-                    //Go on if all files are loaded
-                    Q.allSettled(promises).then(function(results){
-                        results.forEach(function(result){
-                            combinedJS += result.value + "\n";
-                        })
+					var combinedJS = "";
 
-                        var mimeType = 'application/javascript';
-                        res.writeHead(200, {'Content-Type': mimeType,'ETag': etag});
-                        res.end(combinedJS);
-                    })
-                }
-            })
+					//Go on if all files are loaded
+					Q.allSettled(promises).then(function(results){
+						results.forEach(function(result){
+							combinedJS += result.value + "\n";
+						})
 
+						var mimeType = 'application/javascript';
+						res.writeHead(200, {'Content-Type': mimeType,'ETag': etag});
+						res.end(combinedJS);
+					})
+				}
+			})
 
-        }
 
-        // objects
+		}
 
-        else if (url == '/objects') {
+		// objects
 
-            try {
+		else if (url == '/objects') {
 
-                var code = Modules.ObjectManager.getClientCode();
+			try {
 
-                var mimeType = 'application/javascript';
+				var code = Modules.ObjectManager.getClientCode();
 
-                res.writeHead(200, {'Content-Type': mimeType});
-                res.end(code);
+				var mimeType = 'application/javascript';
 
-            } catch (err) {
-                res.writeHead(500, {"Content-Type": "text/plain"});
-                res.write("500 Internal Server Error");
-                res.end();
-                Modules.Log.error(err);
-            }
+				res.writeHead(200, {'Content-Type': mimeType});
+				res.end(code);
 
-        } else if (url.substr(0, 10) !== "/socket.io") {
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
 
-            // plain files
+		} else if (url.substr(0, 10) !== "/socket.io") {
 
-            try {
+			// plain files
 
-                var urlParts = url.split('/');
+			try {
 
-                var filebase = __dirname + '/../Client';
-                var filePath = filebase + url;
+				var urlParts = url.split('/');
 
-                if (urlParts.length > 2) {
-                    switch (urlParts[1]) {
-                        case 'Common':
-                            filebase = __dirname + '/..';
-                            filePath = filebase + url;
-                            break;
-                    }
-                }
+				var filebase = __dirname + '/../Client';
+				var filePath = filebase + url;
 
-                fs.readFile(filePath,
-                    function (err, data) {
-                        if (err) {
-                            res.writeHead(404);
-                            Modules.Log.warn('Error loading ' + url);
-                            return res.end('Error loading ' + url);
-                        }
+				if (urlParts.length > 2) {
+					switch (urlParts[1]) {
+						case 'Common':
+							filebase = __dirname + '/..';
+							filePath = filebase + url;
+							break;
+					}
+				}
 
-                        fs.stat(filePath, function (err, stat) {
-                            if (err) {
-                                res.statusCode = 500;
-                                res.end()
-                            } else {
-                                var etag = stat.size + '-' + Date.parse(stat.mtime);
+				fs.readFile(filePath,
+						function (err, data) {
+							if (err) {
+								res.writeHead(404);
+								Modules.Log.warn('Error loading ' + url);
+								return res.end('Error loading ' + url);
+							}
 
+							fs.stat(filePath, function (err, stat) {
+								if (err) {
+									res.statusCode = 500;
+									res.end()
+								} else {
+									var etag = stat.size + '-' + Date.parse(stat.mtime);
 
-                                if (req.headers['if-none-match'] === etag) {
-                                    res.statusCode = 304;
-                                    res.end();
-                                } else {
-                                    var contentType = false;
 
-                                    contentType = mime.lookup(url)
+									if (req.headers['if-none-match'] === etag) {
+										res.statusCode = 304;
+										res.end();
+									} else {
+										var contentType = false;
 
-                                    var shouldSendETag = true;
+										contentType = mime.lookup(url)
 
-                                    var ETagExclude = ["html"];
-                                    _(ETagExclude).each(function(toExcludeS){
-                                        if(url.length >= toExcludeS.length && url.substr(url.length - toExcludeS.length) == toExcludeS) shouldSendETag = false;
-                                    })
+										var shouldSendETag = true;
 
-                                    var head = {
-                                        'Content-Type': contentType,
-                                        'Content-Disposition': 'inline',
-                                        'Last-Modified': stat.mtime
-                                    }
-                                    if(shouldSendETag){
-                                        head['ETag'] = etag;
-                                        head['Content-Length'] =  data.length
-                                    }
-                                    res.writeHead(200, head);
+										var ETagExclude = ["html"];
+										_(ETagExclude).each(function(toExcludeS){
+											if(url.length >= toExcludeS.length && url.substr(url.length - toExcludeS.length) == toExcludeS) shouldSendETag = false;
+										})
 
+										var head = {
+											'Content-Type': contentType,
+											'Content-Disposition': 'inline',
+											'Last-Modified': stat.mtime
+										}
+										if(shouldSendETag){
+											head['ETag'] = etag;
+											head['Content-Length'] =  data.length
+										}
+										res.writeHead(200, head);
 
-                                    if (url.search(".html") !== -1) {
-                                        data = data.toString('utf8');
-                                        var position1 = data.search('<serverscript');
-                                        if (position1 != -1) {
-                                            var src = data;
-                                            src = src.substr(position1);
 
-                                            var position2 = src.search('"') + 1;
-                                            src = src.substr(position2);
+										if (url.search(".html") !== -1) {
+											data = data.toString('utf8');
+											var position1 = data.search('<serverscript');
+											if (position1 != -1) {
+												var src = data;
+												src = src.substr(position1);
 
-                                            var position3 = src.search('"');
-                                            src = src.substr(0, position3);
+												var position2 = src.search('"') + 1;
+												src = src.substr(position2);
 
+												var position3 = src.search('"');
+												src = src.substr(0, position3);
 
-                                            var pre = data.substr(0, position1);
-                                            var post = data.substr(position1 + position2 + position3 + 2);
 
-                                            var theScript = require('./scripts/' + src);
+												var pre = data.substr(0, position1);
+												var post = data.substr(position1 + position2 + position3 + 2);
 
-                                            theScript.run(url);
-                                            var result = theScript.export;
+												var theScript = require('./scripts/' + src);
 
-                                            data = pre + result + post;
+												theScript.run(url);
+												var result = theScript.export;
 
-                                        }
-                                    }
+												data = pre + result + post;
 
+											}
+										}
 
-                                    res.end(data);
-                                }
-                            }
-                        })
 
-                    });
+										res.end(data);
+									}
+								}
+							})
 
-            } catch (err) {
-                res.writeHead(500, {"Content-Type": "text/plain"});
-                res.write("500 Internal Server Error");
-                res.end();
-                Modules.Log.error(err);
-            }
+						});
 
-        }
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
 
+		}
 
-    }  // handler
+
+	}  // handler
 
 
 };

@@ -48,7 +48,7 @@ $route['courses/verifyUser'] = "courses/verifyUser";
 $route['courses/changeWriteAccessUser'] = "courses/changeWriteAccessUser";
 $route['courses/deleteUser'] = "courses/deleteUser";
 $route['courses/apply'] = "courses/apply";
-$route['courses/(:any)'] = "courses/showCourse/$1";
+$route['courses/(:any)'] = "courses/singleCourse/$1";
 
 $route['users/(:any)'] = "users/editProfile/$1";
 
