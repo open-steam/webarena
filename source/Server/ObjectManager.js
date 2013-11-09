@@ -9,7 +9,7 @@
 "use strict";
 
 var fs = require('fs');
-var _ = require('underscore');
+var _ = require('lodash');
 var tokenChecker = require("./TokenChecker.js");
 
 var Modules = false;

@@ -17,7 +17,7 @@ var theObject=Object.create(require('./common.js'));
 // Module.ObjectManager
 
 var Modules=require('../../server.js');
-var _ = require('underscore');
+var _ = require('lodash');
 
 // Make the object public
 module.exports=theObject;
