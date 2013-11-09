@@ -5,7 +5,6 @@
     "socket.io": ">=0.9.14",
     "formidable": "*",
     "imagemagick": "0.1.2",
-    "underscore": "*",
     "sharepoint": "*",
     "node-uuid": "*",
     "mime": "*",
@@ -14,6 +13,7 @@
     "eventemitter2": "~0.4.13",
     "async": "~0.2.9",
     "json-socket": "~0.1.2"
+    "lodash": "~2.2.1"
   },
   "devDependencies": {
     "superagent": "~0.15.7",
