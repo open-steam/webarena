@@ -100,5 +100,5 @@ if (!fs.existsSync("./Server/tmp")) {
 //load plugins
 if(Modules.config.plugins){
 	Modules.PluginManager = require('./Server/PluginManager.js').create();
-	Modules.PluginManager.init(Modules.config.plugins);
+	Modules.PluginManager.init(Modules, Modules.config.plugins);
 }
