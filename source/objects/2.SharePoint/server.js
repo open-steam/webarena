@@ -5,7 +5,7 @@ var Modules=require('../../server.js');
 
 var SP = require('./adaptedSharepoint');
 var https = require('https');
-var _ = require('underscore');
+var _ = require('lodash');
 
 module.exports=theObject;
 
