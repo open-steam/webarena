@@ -3,7 +3,7 @@
 
 var util = require("util");
 var net = require('net');
-var _ = require("underscore");
+var _ = require("lodash");
 
 var DEFAULT_PORT = 8125;
 var TCPSocketServer = {};
