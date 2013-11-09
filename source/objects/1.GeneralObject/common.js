@@ -91,7 +91,7 @@ GeneralObject.contentURLOnly = true;
 /**
  * The currrent language
  */
-GeneralObject.currentLanguage = undefined;
+GeneralObject.currentLanguage = Modules.Config.language;
 
 /**
  * Registers the object
