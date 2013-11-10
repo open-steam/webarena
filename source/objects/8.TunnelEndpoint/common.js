@@ -8,8 +8,6 @@ TunnelEndpoint.register=function(type){
 	this.makeStructuring();
 	this.makeSensitive();
 
-	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});
-	this.registerAttribute('value',{type:'text',standard:'',category:'Selection'});
 
 	this.registerAttribute('source',{type:'text',standard:'',category:'Selection'});
 }
