@@ -441,10 +441,12 @@ theObject.getBoundingBox=function(){
 
 theObject.fireEvent=function(name,data){
 	
-	//console.log(this+' fireing '+name+' ('+data+')');
+	console.log(this+' fireing '+name+' ('+data+')');
 	//console.log('###Note: Event fireing not implemented yet (GeneralObject)');
 
 	//TODO reactive!
 	Modules.EventBus.emit(name, data);
 	
 }
+
+theObject.fireEvent.public=true; //Function can be accessed by customObjectFunctionCall
