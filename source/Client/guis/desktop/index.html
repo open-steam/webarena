@@ -235,6 +235,14 @@
 	<div id="progressBar"><div class="progressBar_container"></div></div>
 
     <!-- BEGIN: Underscore Template Definition. -->
+    <script type="text/template" id="process-log-template">
+      <div>
+        <% _.each(logEntries, function(logEntry) { %>
+          <p> <%= logEntry.timestamp %></p>
+          <p> <%= logEntry.message %></p>
+        <% }); %>
+      </div>
+    </script>
     <script type="text/template" id="discussion-message-template">
 
         <div class='discussion-statement <%- additionalClasses %>' data-message-id='<%- message.timestamp %>'>
