@@ -269,40 +269,13 @@ ObjectManager.createObject = function (roomID, type, attributes, content, socket
 
 }
 
-/**
- *  addToClientCode (internal)
- **/
-ObjectManager.clientCode = '';
-function addToClientCode(filename) {
-	var file = false;
-	try {
-		file = fs.readFileSync(filename, 'UTF8');
-		ObjectManager.clientCode += enter + enter + '//' + filename + enter + enter + file;
-	} catch (e) {
-		ObjectManager.clientCode += enter + enter + '//' + filename + enter + enter + '//' + e;
-	}
-}
-
-/**
- *  init
- *
- *  initializes the ObjectManager
- **/
-ObjectManager.init = function (theModules) {
-	var that = this;
-	Modules = theModules;
-
-	//go through all objects, build its client code (the code for the client side)
-	//register the object types.
-
+ObjectManager.getEnabledObjectTypes = function(){
 	var files = fs.readdirSync('objects');
 	var objectTypes = {};
 
 	files.sort(function (a, b) {
 		return parseInt(a) - parseInt(b);
 	});
-
-	ObjectManager.clientCode = '//Object Code for WebArena Client ' + enter;
 
 	var whiteList = {};
 	var blackList = {};
@@ -325,36 +298,52 @@ ObjectManager.init = function (theModules) {
 		whiteList.ImageObject = true;
 	}
 
+	var result = [];
+
 	files.forEach(function (filename) {
+		var fileinfo = filename.split('.');
+		var index = fileinfo[0];
+		var objName = fileinfo[1];
 
-		try {
+		if (!index) return;
+		if (!objName) return;
 
-			var fileinfo = filename.split('.');
-			var index = fileinfo[0];
-			var objName = fileinfo[1];
-			if (!index) return;
-			if (!objName) return;
+		if (hasWhiteList && !whiteList[objName]) {
+			console.log('Type ' + objName + ' not whitelisted.');
+			return;
+		}
 
-			if (hasWhiteList && !whiteList[objName]) {
-				console.log('Type ' + objName + ' not whitelisted.');
-				return;
-			}
+		if (blackList[objName]) {
+			console.log('Type ' + objName + ' is blacklisted.');
+			return;
+		}
 
-			if (blackList[objName]) {
-				console.log('Type ' + objName + ' is blacklisted.');
-				return;
-			}
+		result.push(filename);
+	});
 
-			var filebase = __dirname + '/../objects/' + filename;
+	return result;
+}
 
+/**
+ *  init
+ *
+ *  initializes the ObjectManager
+ **/
+ObjectManager.init = function (theModules) {
+	var that = this;
+	Modules = theModules;
+
+	//go through all objects, build its client code (the code for the client side)
+	//register the object types.
+
+	var files = this.getEnabledObjectTypes();
+	files.forEach(function (filename) {
+		var fileinfo = filename.split('.');
+		var objName = fileinfo[1];
+		var filebase = __dirname + '/../objects/' + filename;
+
+		try{
 			var obj = require(filebase + '/server.js');
-
-			addToClientCode(filebase + '/common.js');
-			addToClientCode(filebase + '/client.js');
-			addToClientCode(filebase + '/view.js');
-			ObjectManager.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
-			addToClientCode(filebase + '/languages.js');
-
 			obj.ObjectManager = Modules.ObjectManager;
 			obj.register(objName);
 
@@ -362,12 +351,10 @@ ObjectManager.init = function (theModules) {
 				selection = (selection) ? '_' + selection : '';
 				return filebase + '/icon' + selection + '.png';
 			}
-
 		} catch (e) {
 			Modules.Log.warn('Could not register ' + objName);
 			Modules.Log.warn(e);
 		}
-
 	});
 
 	//This is the interface for clients. Registering functions for attribute access and
@@ -739,31 +726,7 @@ ObjectManager.getRoom = function (roomID, context, callback, oldRoomId) {
 
 }
 
-/**
- *  getClientCode
- *
- *  get the combined client side sourcecode for objects.
- **/
-ObjectManager.getClientCode = function () {
 
-	//turn on strict mode for client side scripting
-	var code = '"use strict";';
-
-	var lines = this.clientCode.split(enter);
-
-	var showDebugLineNumbers = !!Modules.config.showDebugLineNumbers;
-	//fill in line numbers for debugging
-	for (var i = 0; i < lines.length; i++) {
-		var line = lines[i];
-		code += line
-
-		if (showDebugLineNumbers) code += ' //' + (i + 1)
-
-		code += enter
-	}
-
-	return code;
-}
 
 /*
  ObjectManager.sendChatMessages=function(roomID,socket) {
@@ -1111,7 +1074,6 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 					} else {
 						Modules.SocketServer.sendToSocket(socket, 'error', 'No rights to insert in room ' + toRoom);
 					}
-
 				});
 
 			} else {
