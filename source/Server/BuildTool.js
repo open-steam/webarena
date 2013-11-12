@@ -3,6 +3,7 @@ var fs = require('fs');
 var  BuildTool = {}
 var enter = String.fromCharCode(10);
 var Modules = false;
+var showDebugLineNumbers;
 
 /**
  *  addToClientCode (internal)
@@ -10,17 +11,25 @@ var Modules = false;
 BuildTool.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
 
 BuildTool.addToClientCode = function(filename) {
-	var file = false;
+	var fileContent = false;
 	try {
-		file = fs.readFileSync(filename, 'UTF8');
-		BuildTool.clientCode += enter + enter + '//' + filename + enter + enter + file;
+		fileContent = fs.readFileSync(filename, 'UTF8');
+
+		//Add linenumbers as in file
+		if(showDebugLineNumbers){
+			fileContent = fileContent.split(enter).reduce(function(soFar, line, index){
+				return soFar + line + " //" + (index +1) + enter;
+			}, "");
+		}
+		BuildTool.clientCode += enter + enter + '//' + filename + enter + enter + fileContent;
 	} catch (e) {
-		BuildTool.clientCode += enter + enter + '//' + filename + enter + enter + '//' + e;
+		BuildTool.clientCode += enter + enter + '//' + filename + enter + enter + ' //' + e;
 	}
 }
 
 BuildTool.buildClientCode = function(){
 	var files = fs.readdirSync('objects');
+	var that = this;
 
 	files.sort(function (a, b) {
 		return parseInt(a) - parseInt(b);
@@ -68,29 +77,12 @@ BuildTool.buildClientCode = function(){
 
 		var obj = require(filebase + '/server.js');
 
-		BuildTool.addToClientCode(filebase + '/common.js');
-		BuildTool.addToClientCode(filebase + '/client.js');
-		BuildTool.addToClientCode(filebase + '/view.js');
-		BuildTool.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
-		BuildTool.addToClientCode(filebase + '/languages.js');
+		that.addToClientCode(filebase + '/common.js');
+		that.addToClientCode(filebase + '/client.js');
+		that.addToClientCode(filebase + '/view.js');
+		that.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
+		that.addToClientCode(filebase + '/languages.js');
 	});
-
-	//TODO - remove if possible ...only add line numbers if needed
-	var lines = this.clientCode.split(enter);
-	var showDebugLineNumbers = !!Modules.config.showDebugLineNumbers;
-	var code ="";
-
-	//fill in line numbers for debugging
-	for (var i = 0; i < lines.length; i++) {
-		var line = lines[i];
-		code += line
-
-		if (showDebugLineNumbers) code += ' //' + (i + 1)
-
-		code += enter
-	}
-
-	this.clientCode = code;
 }
 
 /**
@@ -104,6 +96,7 @@ BuildTool.getClientCode = function () {
 
 BuildTool.init = function(theModules){
 	Modules = theModules;
+	showDebugLineNumbers = !!Modules.config.showDebugLineNumbers;
 	this.buildClientCode();
 }
 
