@@ -16,16 +16,14 @@ theObject.isInCutMode = function(){
 theObject.duplicationLogic = function(enteredObject){
 	var objectId = enteredObject.id;
 	var eventName = "object::" + this.id + "::enter"  ;
+	var that = this;
 	this.fireEvent(eventName,  {
 		enteredElementID : objectId,
 		sourceType : this.getType()
 	});
 
-
-
 	//TODO: handle if not set
 	var targetRoom = this.getAttribute("target");
-	var that = this;
 	var requestData = {
 		toRoom : targetRoom,
 		fromRoom : this.getRoomID(),
@@ -33,23 +31,27 @@ theObject.duplicationLogic = function(enteredObject){
 		cut : that.isInCutMode()
 	}
 
-	Modules.ObjectManager.duplicate(this.context.socket, requestData, false, this.sendExecutedHandler);
+	/**
+	 * The function is executed after the "tunnel-action" was called, e.g. the file was copied to another room.
+	 */
+	var sendExecutedHandler = function(idList){
+		console.log("copied...with new id: " + idList);
+
+		var copyId = idList[0];
+		var thecopy = Modules.ObjectManager.getObject(requestData.toRoom,  copyId, that.context);
+
+		//TODO: remove timeout - only there for debug purpose
+		setTimeout(function(){
+			console.log("set args to: ∂..." + requestData.fromRoom);
+			thecopy.setAttribute("tunnel_inbox", requestData.fromRoom);
+		}, 2000);
+
+	}
+
+	Modules.ObjectManager.duplicate(this.context.socket, requestData, false, sendExecutedHandler);
 }
 
-/**
- * The function is executed after the "tunnel-action" was called, e.g. the file was copied to another room.
- */ 
-theObject.sendExecutedHandler = function(newIds){
-	console.log("copied...with new id: " + idList);
-	var copyId = idList[0];
-	var thecopy = Modules.ObjectManager.getObject(requestData.toRoom,  copyId, that.context);
 
-	//TODO: remove timeout - only there for debug purpose
-	setTimeout(function(){
-		thecopy.setAttribute("tunnel_inbox", requestData.fromRoom);
-	}, 2000);
-
-}
 
 theObject.onEnter=function(object,oldData,newData){
 	this.duplicationLogic(object);
