@@ -1,4 +1,4 @@
-Tunnel.justCreated = function () {
+ObjectTransport.justCreated = function () {
 	selectTarget();
 }
 
