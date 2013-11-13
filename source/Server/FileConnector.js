@@ -10,6 +10,7 @@
 
 
 var fileConnector={};
+var fs = require('fs');
 
 fileConnector.init=function(theModules){
 	this.Modules=theModules;
@@ -205,38 +206,46 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 *	returns the room hierarchy starting by given roomID as root
 *
 */
-fileConnector.getRoomHierarchy=function(roomID,context){
+fileConnector.getRoomHierarchy=function(roomID,context,callback){
 	var result = {
 		'rooms' : {},
 		'relation' : {},
 		'roots' : []
 	};
 
-	var fs = require('fs');
 	var files = fs.readdirSync(this.Modules.Config.filebase);
-
     files = (files) ? files : [];
 
-    var self=this;
+    var resultCounter = 0;
+    var returnResults = function() {
+    	resultCounter++;
+    	if (resultCounter === files.length) {
+	    	callback(result);
+		}
+    }
 
+    var self=this;
 	files.forEach(function(value,index) {
 		var obj=self.getObjectDataByFile(value,value);
 			
 		if (obj) {
-			result.rooms[value] = ''+obj.attributes.name;
-			if (obj.attributes.parent !== undefined) {
-				if (result.relation[obj.attributes.parent] === undefined) {
-					result.relation[obj.attributes.parent] = new Array(''+value);
-				} else {
-					result.relation[obj.attributes.parent].push(''+value);
+			self.mayEnter(obj.id, context, function(mayEnter) {
+				if (mayEnter) {
+					result.rooms[value] = ''+obj.attributes.name;
+					if (obj.attributes.parent !== undefined) {
+						if (result.relation[obj.attributes.parent] === undefined) {
+							result.relation[obj.attributes.parent] = new Array(''+value);
+						} else {
+							result.relation[obj.attributes.parent].push(''+value);
+						}
+					} else {
+						result.roots.push(''+value);
+					}
 				}
-			} else {
-				result.roots.push(''+value);
-			}
-		}
+				returnResults();
+			});
+		} else returnResults();
 	});
-
-	return result;
 }
 
 /**

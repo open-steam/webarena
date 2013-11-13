@@ -159,7 +159,7 @@ GUI.enterCouplingMode = function() {
 	        	$('#couplingGreyRectangle').remove();
 	        	GUI.addZoomPanControl('right', $(window).width()-105, $('#couplingBar').attr('y2')-138);
 	        } else {
-	        	alert('Room already displayed.');
+	        	alert(GUI.translate("Room already displayed"));
 	        }
 		});
 		$('#couplingNavigation').append(navigationDiv);
@@ -242,8 +242,8 @@ GUI.closeCouplingMode = function() {
 
   	$(document).unbind("mousewheel");
 
-	ObjectManager.leaveRoom('', 'right');
-
+  	ObjectManager.leaveRoom(ObjectManager.getRoomID('right'), 'right', !GUI.relogin);
+		
 	GUI.adjustContent();
 
 	$('#room_right').html("");

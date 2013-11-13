@@ -101,34 +101,35 @@ WebServer.init = function (theModules) {
 
             var roomId = url.substr(21);
 
-            var hierarchy = Modules.Connector.getRoomHierarchy(roomId);
+            var hierarchy = Modules.Connector.getRoomHierarchy(roomId, false, function(hierarchy) {
+                var result = [];
 
-            var result = [];
-
-            if (roomId === "") {
-                for (var key in hierarchy.roots) {
-                    var node = {};
-                    node.data = hierarchy.rooms[hierarchy.roots[key]];
-                    node.attr = { "id" : hierarchy.roots[key] };
-                    if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
-                        node.state = "closed";
+                if (roomId === "") {
+                    for (var key in hierarchy.roots) {
+                        var node = {};
+                        node.data = hierarchy.rooms[hierarchy.roots[key]];
+                        node.attr = { "id" : hierarchy.roots[key] };
+                        if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
+                            node.state = "closed";
+                        }
+                        result.push(node);
                     }
-                    result.push(node);
-                }
-            } else {
-                for (var key in hierarchy.relation[roomId]) {
-                    var node = {};
-                    node.data = hierarchy.rooms[hierarchy.relation[roomId][key]];
-                    node.attr = { "id" : hierarchy.relation[roomId][key]};
-                    if (hierarchy.relation[hierarchy.relation[roomId][key]] != undefined) {
-                        node.state = "closed";
+                } else {
+                    for (var key in hierarchy.relation[roomId]) {
+                        var node = {};
+                        node.data = hierarchy.rooms[hierarchy.relation[roomId][key]];
+                        node.attr = { "id" : hierarchy.relation[roomId][key]};
+                        if (hierarchy.relation[hierarchy.relation[roomId][key]] != undefined) {
+                            node.state = "closed";
+                        }
+                        result.push(node);
                     }
-                    result.push(node);
                 }
-            }
 
-            res.writeHead(200, {'Content-Type': "application/json"});
-            res.end(JSON.stringify(result));
+                res.writeHead(200, {'Content-Type': "application/json"});
+                res.end(JSON.stringify(result));
+            });
+
             return;
         }
 

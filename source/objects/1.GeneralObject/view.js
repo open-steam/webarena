@@ -948,19 +948,28 @@ GeneralObject.moveStart = function(event) {
 	};
 	
 	var end = function(event) {
-		var cut = !event.ctrlKey;
+		var cut = !(event.ctrlKey || event.metaKey);
+
+		var movedBetweenRooms = false;
 
 		var rep = self.getRepresentation();
 		if (GUI.couplingModeActive) {
 			// coupling mode is switched on, determine if elements were moved between rooms
 			if (parseInt($('#room_right_wrapper').attr('x')) < event.clientX) {
 				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
-					// moved from the left room the the right
+					// moved from the left room to the right
 					if (ObjectManager.getRoomID('right') != false) {
 						$.each(ObjectManager.getSelected(), function(index, object) {
-							var newX = object.getViewX() - $('#room_right_wrapper').attr('x');
+							var newX = object.getViewX() - $('#room_right_wrapper').attr('x') - GUI.getPanX('right');
 							if (newX < 0) newX = 0;
+							var newY = object.getViewY() - GUI.getPanY('right');
+
 							object.setViewX(newX);
+							object.setViewY(newY);
+
+							if (cut) {
+								$(object.getRepresentation()).appendTo('#room_right');
+							}
 						});
 
 						GUI.startNoAnimationTimer();
@@ -974,6 +983,8 @@ GeneralObject.moveStart = function(event) {
 								$(object.getRepresentation()).appendTo('#room_left');
 							});
 						}
+
+						movedBetweenRooms = true;
 					} else {
 						$.each(ObjectManager.getSelected(), function(index, object) {
 							object.setViewX(object.moveObjectStartX);
@@ -981,7 +992,7 @@ GeneralObject.moveStart = function(event) {
 
 							$(object.getRepresentation()).appendTo('#room_left');
 						});
-						alert('No room loaded.');
+						alert(GUI.translate('No room loaded.'));
 					}
 				} else {
 					$.each(ObjectManager.getSelected(), function(index, object) {
@@ -999,6 +1010,15 @@ GeneralObject.moveStart = function(event) {
 			} else {
 				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'right') {
 					// moved from the right room to the left
+					$.each(ObjectManager.getSelected(), function(index, object) {
+						object.setViewX(object.getViewX() - GUI.getPanX('left'));
+						object.setViewY(object.getViewY() - GUI.getPanY('left'));
+
+						if (cut) {
+							$(object.getRepresentation()).appendTo('#room_left');
+						}
+					});
+
 					GUI.startNoAnimationTimer();
 					ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('right'), ObjectManager.getRoomID('left'), cut);
 
@@ -1010,6 +1030,8 @@ GeneralObject.moveStart = function(event) {
 							$(object.getRepresentation()).appendTo('#room_right');
 						});
 					}
+
+					movedBetweenRooms = true;
 				} else {
 					$.each(ObjectManager.getSelected(), function(index, object) {
 						$(object.getRepresentation()).appendTo('#room_left');
@@ -1028,8 +1050,10 @@ GeneralObject.moveStart = function(event) {
 		
 		self.moving = false;
 		
-		self.showControls();
-		self.adjustControls();
+		if (!movedBetweenRooms) {
+			self.showControls();
+			self.adjustControls();
+		}
 		
 		GUI.showLinks(self);
 		

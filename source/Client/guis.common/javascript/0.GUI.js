@@ -687,7 +687,13 @@ GUI.disconnected = function() {
 GUI.connected = function() {
 
 	if (GUI.relogin === true) {
+
+		if (GUI.couplingModeActive) {
+			GUI.closeCouplingMode();
+		}
+
 		GUI.relogin = false;
+
 		GUI.login();
 	}
 	
