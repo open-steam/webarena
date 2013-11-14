@@ -724,6 +724,7 @@ ObjectManager.pasteObjects=function() {
 			requestData.toRoom=this.getRoomID();
 		    requestData.objects=ObjectManager.clipBoard.objects;
 		    requestData.cut=ObjectManager.clipBoard.cut;
+		    requestData.attributes={};
 
 			// select new objects after duplication
 		    var newIDs=[];
