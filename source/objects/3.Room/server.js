@@ -42,12 +42,18 @@ theObject.placeActiveObjects=function(){
 	
 	for (var key in objects){
 		var active=objects[key];
-		if (active.isActive()){
+		var currentIsActive;
+		if(active.isActive === "function"){
+			currentIsActive = active.isActive();
+		}
+		if (currentIsActive !== false){
 			for (var key2 in objects){
 				var structuring=objects[key2];
 				if (structuring.isStructuring()){
-					var data=structuring.getPositioningDataFor(active);
-					console.log(active+' structured by '+structuring+' '+data);
+					if(currentIsActive || structuring.decideIfActive(active)){
+						var data=structuring.getPositioningDataFor(active);
+						console.log(active+' structured by '+structuring+' '+data);
+					}
 				}
 			}
 		}

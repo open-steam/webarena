@@ -5,6 +5,8 @@
  * Auth token could be designed using uuid.v4()
  */
 
+"use strict";
+
 var fs = require('fs');
 var tokens = [];
 var tokenMap = {};

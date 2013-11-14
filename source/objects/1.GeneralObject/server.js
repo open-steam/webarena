@@ -439,7 +439,10 @@ theObject.getBoundingBox=function(){
 
 theObject.fireEvent=function(name,data){
 	
-	console.log(this+' fireing '+name+' ('+data+')');
-	console.log('###Note: Event fireing not implemented yet (GeneralObject)');
+	//console.log(this+' fireing '+name+' ('+data+')');
+	//console.log('###Note: Event fireing not implemented yet (GeneralObject)');
+
+	//TODO reactive!
+	Modules.EventBus.emit(name, data);
 	
 }

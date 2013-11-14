@@ -9,7 +9,7 @@ var GUI={};
  * language of the client (used by translate function)
  * @default de
  */
-GUI.currentLanguage='de';
+GUI.currentLanguage=Modules.Config.language;
 
 
 //This is called then forward or backwards-buttons are used in the browser.

@@ -508,6 +508,12 @@ ObjectManager.init = function (theModules) {
 
 	});
 
+	Modules.Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
+		Modules.Connector.listRooms(function(rooms){
+			Modules.Dispatcher.respond(socket, responseID, rooms);
+		});
+	});
+
 	Modules.Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
 		var context = Modules.UserManager.getConnectionBySocket(socket);
 		var roomID = data.roomID
@@ -794,7 +800,7 @@ ObjectManager.countSubrooms = function (roomID, context) {
 	return counter;
 }
 
-ObjectManager.duplicate = function (socket, data, responseID) {
+ObjectManager.duplicate = function (socket, data, responseID, callback) {
 	var that = this;
 
 	var context = Modules.UserManager.getConnectionBySocket(socket);
@@ -917,20 +923,14 @@ ObjectManager.duplicate = function (socket, data, responseID) {
 
 			if (socket && responseID) {
 				Modules.Dispatcher.respond(socket, responseID, idList);
+			} else if(callback){
+				callback(idList);
 			}
 		}
 	}
 
 	for (var key in objectList) {
 		var object = objectList[key];
-
-		if (object.getType() === "Subroom") {
-			var roomData = {};
-			roomData.fromRoom = object.getAttribute("destination");
-			roomData.toRoom = toRoom;
-
-			_.extend(roomTranslationList, ObjectManager.duplicateRoom(socket, roomData, responseID, updateRoomLinks, transactionId));
-		}
 
 		Modules.Connector.mayRead(fromRoom, object.id, context, function (mayRead) {
 
@@ -939,6 +939,14 @@ ObjectManager.duplicate = function (socket, data, responseID) {
 				Modules.Connector.mayInsert(toRoom, context, function (mayInsert) {
 
 					if (mayInsert) {
+
+						if (object.getType() === "Subroom") {
+							var roomData = {};
+							roomData.fromRoom = object.getAttribute("destination");
+							roomData.toRoom = toRoom;
+
+							_.extend(roomTranslationList, ObjectManager.duplicateRoom(socket, roomData, responseID, updateRoomLinks, transactionId));
+						}
 
 						Modules.Connector.duplicateObject(fromRoom, object.id, function (newId, oldId) {
 							var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
@@ -959,6 +967,7 @@ ObjectManager.duplicate = function (socket, data, responseID) {
 								"roomID": toRoom
 							}
 							that.history.add(transactionId, context.user.username, historyEntry);
+							Modules.EventBus.emit("room::" + toRoom + "::action::createObject", {objectID: newId});
 
 							updateObjects(); //try to update objects
 
@@ -998,15 +1007,9 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 
 	// create a new subroom in toRoom
 	var uuid = require('node-uuid');
-	Modules.Connector.mayInsert(toRoom, context, function (mayInsert) {
-		if (mayInsert) {
-			var newRoom = Modules.Connector.getRoomData(uuid.v4(), context, undefined, toRoom);
-			toRoom = newRoom.id;
-			roomTranslationList[fromRoom] = newRoom.id;
-		} else {
-			Modules.SocketServer.sendToSocket(socket, 'error', 'No rights to insert in room ' + toRoom);
-		}
-	});
+	var newRoom = Modules.Connector.getRoomData(uuid.v4(), context, undefined, toRoom);
+	toRoom = newRoom.id;
+	roomTranslationList[fromRoom] = newRoom.id;
 
 	// var transactionId = new Date().getTime(); ?
 
@@ -1107,6 +1110,7 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 								"roomID": toRoom
 							}
 							that.history.add(transactionId, context.user.username, historyEntry);
+							Modules.EventBus.emit(["room", toRoom, "action" ,  "createObject"], {objectID: newId});
 
 
 							updateObjects(); //try to update objects
