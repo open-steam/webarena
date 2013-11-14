@@ -226,7 +226,7 @@ WebServer.init = function (theModules) {
 							object.persist();
 
 							/* get dimensions */
-							Modules.Connector.getInlinePreviewDimensions(roomID, objectID, function (width, height) {
+							Modules.Connector.getInlinePreviewDimensions(roomID, objectID, files.file.type, true, function (width, height) {
 
 								if (width != false)    object.setAttribute("width", width);
 								if (height != false) object.setAttribute("height", height);
@@ -238,7 +238,7 @@ WebServer.init = function (theModules) {
 								res.writeHead(200);
 								res.end();
 
-							}, files.file.type, true);
+							});
 
 						} else {
 							object.set('preview', false);

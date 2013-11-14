@@ -845,7 +845,7 @@ fileConnector.getInlinePreviewProviders=function() {
 	}
 }
 
-fileConnector.getInlinePreviewDimensions=function(roomID, objectID, callback, mimeType,context) {
+fileConnector.getInlinePreviewDimensions=function(roomID, objectID, mimeType,context, callback) {
 	
 	var self = this;
 	
