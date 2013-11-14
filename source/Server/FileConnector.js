@@ -531,7 +531,7 @@ fileConnector.createObject=function(roomID,type,data,callback,context){
 *	after(objectID)
 *
 */
-fileConnector.duplicateObject=function(roomID,objectID,callback,context,toRoom){
+fileConnector.duplicateObject=function(roomID, objectID, context, toRoom, callback){
 
 	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', toRoom: '"+toRoom+"')");
 	
@@ -557,14 +557,11 @@ fileConnector.duplicateObject=function(roomID,objectID,callback,context,toRoom){
 	var fs = require("fs");
 	
 	var copyFunc = function(source, dest, callback) {
-		
 		var read = fs.createReadStream(source);
 		var write = fs.createWriteStream(dest);
 
 		read.on("end", callback);
 		read.pipe(write);
-
-		
 	}
 	
 	/* callback function after duplicating files */

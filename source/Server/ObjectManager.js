@@ -388,14 +388,14 @@ ObjectManager.init = function (theModules) {
 
 
 				Modules.Connector.getTrashRoom(context, function (toRoom) {
-					Modules.Connector.duplicateObject(roomID, objectID, function (newId, oldId) {
+					Modules.Connector.duplicateObject(roomID, objectID, context, toRoom.id, function (newId, oldId) {
 						object.remove();
 						historyEntry["objectID"] = newId;
 
 						var transactionId = data.transactionId;
 
 						that.history.add(transactionId, data.userId, historyEntry);
-					}, context, toRoom.id);
+					});
 
 				});
 
@@ -422,11 +422,11 @@ ObjectManager.init = function (theModules) {
 
 
 						if (e.action === 'delete') {
-							Modules.Connector.duplicateObject(e.roomID, e.objectID, function (newId) {
+							Modules.Connector.duplicateObject(e.roomID, e.objectID, context, e.oldRoomID, function (newId) {
 								var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
 								o2.updateClients("objectUpdate");
 								object.remove();
-							}, context, e.oldRoomID);
+							});
 							undoMessage = 'info.undo.delete';
 
 						} else if (e.action === 'setAttribute') {
@@ -911,7 +911,7 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 							_.extend(roomTranslationList, ObjectManager.duplicateRoom(socket, roomData, responseID, updateRoomLinks, transactionId));
 						}
 
-						Modules.Connector.duplicateObject(fromRoom, object.id, function (newId, oldId) {
+						Modules.Connector.duplicateObject(fromRoom, object.id, context, toRoom, function (newId, oldId) {
 							var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
 
 							// remove old object if the action was cut
@@ -934,7 +934,7 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 
 							updateObjects(); //try to update objects
 
-						}, context, toRoom);
+						});
 
 					} else {
 						Modules.SocketServer.sendToSocket(socket, 'error', 'No rights to insert in room ' + toRoom);
@@ -1054,7 +1054,7 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 
 					if (mayInsert) {
 
-						Modules.Connector.duplicateObject(fromRoom, object.id, function (newId, oldId) {
+						Modules.Connector.duplicateObject(fromRoom, object.id, context, toRoom, function (newId, oldId) {
 							var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
 
 							// remove old object if the action was cut
@@ -1078,7 +1078,7 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 
 							updateObjects(); //try to update objects
 
-						}, context, toRoom);
+						});
 
 					} else {
 						Modules.SocketServer.sendToSocket(socket, 'error', 'No rights to insert in room ' + toRoom);
