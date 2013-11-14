@@ -11,6 +11,25 @@ VerwaltungsApp.init = function(eventBus){
 			sendMail();
 		}
 	});
+
+	eventBus.on("applicationevent::kokoa::initProcess", function(){
+		console.log("start init...");
+		//create room instances for all parties
+		//e.g. faculty, dezernate1/4 etc.
+		//naming of the template rooms should follow the convention:
+		//Dezernat4_Berufungsverfahren_Template
+		//PARTICIPANT_Berufungsverfahren_Template
+		var participants = ["Dezernat1", "Dezernat4", "FakultätX"];
+
+		participants.forEach(function(part){
+			//send command to copy the room
+			eventBus.emit("rpc::server",{
+				method : "duplicateRoom",
+				//args: from, to
+				arguments : [part + "_Berufungsverfahren_Template", part]
+			});
+		});
+	});
 }
 
 var sendMail = function(){

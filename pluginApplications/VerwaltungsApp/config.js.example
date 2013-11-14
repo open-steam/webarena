@@ -1,0 +1,10 @@
+module.exports = {
+	smtp: {
+		user: "",
+		password: ""
+	},
+
+	tunnel: {
+		senderMail : ''
+	}
+}
