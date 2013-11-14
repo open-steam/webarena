@@ -171,6 +171,10 @@ ObjectManager.getObject = function (roomID, objectID, context) {
  *
  *  This function can either be called synchronous or asyncronous.
  *
+ * @param roomID
+ * @param context
+ * @param {Function}[callback]
+ *
  */
 ObjectManager.getObjects = function (roomID, context, callback) {
 
@@ -216,11 +220,14 @@ ObjectManager.getObjects = function (roomID, context, callback) {
 			callback(inventory);
 
 		});
-
 	}
-
 }
 
+/**
+ *
+ *
+ * @see ObjectManager.getObjects
+ */
 ObjectManager.getInventory = ObjectManager.getObjects;
 
 /**
