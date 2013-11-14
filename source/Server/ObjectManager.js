@@ -244,7 +244,7 @@ ObjectManager.createObject = function (roomID, type, attributes, content, socket
 
 	var proto = this.getPrototypeFor(type);
 
-	Modules.Connector.createObject(roomID, type, proto.standardData, function (id) {
+	Modules.Connector.createObject(roomID, type, proto.standardData, context, function (id) {
 		var object = ObjectManager.getObject(roomID, id, context);
 
 		//set default attributes
@@ -271,7 +271,7 @@ ObjectManager.createObject = function (roomID, type, attributes, content, socket
 			Modules.Dispatcher.respond(socket, responseID, object.id);
 		}
 
-	}, context);
+	});
 
 }
 

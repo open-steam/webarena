@@ -496,7 +496,7 @@ fileConnector.remove=function(roomID,objectID,context){
 *	after(objectID)
 *
 */
-fileConnector.createObject=function(roomID,type,data,callback,context){
+fileConnector.createObject=function(roomID,type,data, context, callback){
 
 	this.Modules.Log.debug("Create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
