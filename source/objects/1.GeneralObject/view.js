@@ -1045,6 +1045,7 @@ GeneralObject.moveStart = function(event) {
 					});
 				}
 			}
+			GUI.updateLayers();
 		}
 
 		event.preventDefault();
