@@ -956,6 +956,7 @@ GeneralObject.moveStart = function(event) {
 		if (GUI.couplingModeActive) {
 			// coupling mode is switched on, determine if elements were moved between rooms
 			if (parseInt($('#room_right_wrapper').attr('x')) < event.clientX) {
+				GUI.defaultZoomPanState('right', false);
 				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
 					// moved from the left room to the right
 					if (ObjectManager.getRoomID('right') != false) {
@@ -1008,6 +1009,7 @@ GeneralObject.moveStart = function(event) {
 					});
 				}
 			} else {
+				GUI.defaultZoomPanState('left', false);
 				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'right') {
 					// moved from the right room to the left
 					$.each(ObjectManager.getSelected(), function(index, object) {
