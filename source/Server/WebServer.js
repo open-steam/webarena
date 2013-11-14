@@ -450,7 +450,7 @@ WebServer.init = function (theModules) {
 
 			try {
 
-				var code = Modules.ObjectManager.getClientCode();
+				var code = Modules.BuildTool.getClientCode();
 
 				var mimeType = 'application/javascript';
 
