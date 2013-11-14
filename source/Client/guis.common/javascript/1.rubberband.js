@@ -99,36 +99,38 @@ GUI.rubberbandStart = function(event) {
 		$(GUI.rubberband).attr("x", GUI.rubberbandX);
 		$(GUI.rubberband).attr("y", GUI.rubberbandY);
 
-		// scrolling if mouse curser is close to window boundaries
-		var scrollPixel = 15; // how many pixels to scroll each event
-		var scrollSensitivity = 15; // boundary for scrolling
-		/* enlarge room dimensions if scrolling over boundaries
-		var currentRoom = ObjectManager.getCurrentRoom();
-		if (GUI.rubberbandX + GUI.rubberbandWidth >= $('#content').width() - visibleWidth) {
-			GUI.setRoomWidth(parseInt(currentRoom.getAttribute("width")) + scrollPixel);
-		}
-		if (GUI.rubberbandY + GUI.rubberbandHeight >= $('#content').height() - scrollSensitivity) {
-			GUI.setRoomHeight(parseInt(currentRoom.getAttribute("height")) + scrollPixel);
-		}*/
-		var visibleWidth = scrollSensitivity;
-		if (GUI.sidebar.open) {
-			visibleWidth += parseInt($("#sidebar").css("width"), 10);
-		}
-		// right
-		if ((event.pageX >= $(document).scrollLeft() + $(window).width() - visibleWidth) && (GUI.rubberbandX + GUI.rubberbandWidth >= $(document).scrollLeft() + $(window).width() - visibleWidth)) {
-			$(document).scrollLeft($(document).scrollLeft() + scrollPixel);
-		}
-		// left
-		if ((event.pageX - $(document).scrollLeft() <= scrollSensitivity) && (GUI.rubberbandX - $(document).scrollLeft() <= scrollSensitivity)) {
-			$(document).scrollLeft($(document).scrollLeft() - scrollPixel);
-		}
-		// bottom
-		if ((event.pageY >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity) && (GUI.rubberbandY + GUI.rubberbandHeight >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity)) {
-			$(document).scrollTop($(document).scrollTop() + scrollPixel);
-		}
-		// top
-		if ((event.pageY - contentPosition.top - $(document).scrollTop() <= scrollSensitivity) && (GUI.rubberbandY - $(document).scrollTop() <= scrollSensitivity)) {
-			$(document).scrollTop($(document).scrollTop() - scrollPixel);
+		if (!GUI.couplingModeActive) {
+			// scrolling if mouse curser is close to window boundaries
+			var scrollPixel = 15; // how many pixels to scroll each event
+			var scrollSensitivity = 15; // boundary for scrolling
+			/* enlarge room dimensions if scrolling over boundaries
+			var currentRoom = ObjectManager.getCurrentRoom();
+			if (GUI.rubberbandX + GUI.rubberbandWidth >= $('#content').width() - visibleWidth) {
+				GUI.setRoomWidth(parseInt(currentRoom.getAttribute("width")) + scrollPixel);
+			}
+			if (GUI.rubberbandY + GUI.rubberbandHeight >= $('#content').height() - scrollSensitivity) {
+				GUI.setRoomHeight(parseInt(currentRoom.getAttribute("height")) + scrollPixel);
+			}*/
+			var visibleWidth = scrollSensitivity;
+			if (GUI.sidebar.open) {
+				visibleWidth += parseInt($("#sidebar").css("width"), 10);
+			}
+			// right
+			if ((event.pageX >= $(document).scrollLeft() + $(window).width() - visibleWidth) && (GUI.rubberbandX + GUI.rubberbandWidth >= $(document).scrollLeft() + $(window).width() - visibleWidth)) {
+				$(document).scrollLeft($(document).scrollLeft() + scrollPixel);
+			}
+			// left
+			if ((event.pageX - $(document).scrollLeft() <= scrollSensitivity) && (GUI.rubberbandX - $(document).scrollLeft() <= scrollSensitivity)) {
+				$(document).scrollLeft($(document).scrollLeft() - scrollPixel);
+			}
+			// bottom
+			if ((event.pageY >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity) && (GUI.rubberbandY + GUI.rubberbandHeight >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity)) {
+				$(document).scrollTop($(document).scrollTop() + scrollPixel);
+			}
+			// top
+			if ((event.pageY - contentPosition.top - $(document).scrollTop() <= scrollSensitivity) && (GUI.rubberbandY - $(document).scrollTop() <= scrollSensitivity)) {
+				$(document).scrollTop($(document).scrollTop() - scrollPixel);
+			}
 		}
 					
 	}
