@@ -860,7 +860,7 @@ fileConnector.getInlinePreviewDimensions=function(roomID, objectID, mimeType,con
 			self.Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
 			callback(false, false); //do not set width and height (just send update to clients)
 		} else {
-			self.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, callback, context);
+			self.inlinePreviewProviders[generatorName].dimensions(roomID, objectID, context, callback);
 		}
 		
 	}
@@ -896,7 +896,7 @@ fileConnector.getInlinePreview=function(roomID, objectID, mimeType,context, call
 				self.Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
 				callback(false); //do not set width and height (just send update to clients)
 			} else {
-				self.inlinePreviewProviders[generatorName].preview(roomID, objectID, callback, context);
+				self.inlinePreviewProviders[generatorName].preview(roomID, objectID, context, callback);
 			}
 		
 		}
@@ -952,7 +952,7 @@ fileConnector.inlinePreviewProviders = {
 			
 			return mimeType;
 		},
-		'dimensions' : function(roomID, objectID, callback, context) {
+		'dimensions' : function(roomID, objectID, context, callback) {
 			
 			if (!context) throw new Error('Missing context in dimensions for image');
 
@@ -996,7 +996,7 @@ fileConnector.inlinePreviewProviders = {
 			
 
 		},
-		'preview' : function(roomID, objectID, callback, context) {
+		'preview' : function(roomID, objectID, context, callback) {
 			
 			if (!context) throw new Error('Missing context in preview for image');
 //TODO: change image orientation
