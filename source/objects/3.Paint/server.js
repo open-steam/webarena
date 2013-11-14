@@ -31,7 +31,7 @@ theObject.setContent=function(content,callback){
 	Modules.Connector.saveContent(this.inRoom, this.id, content, function() {
 		
 		/* trim image (remove transpartent "border") */
-		Modules.Connector.trimImage(self.inRoom, self.id, function(dX, dY, newWidth, newHeight) {
+		Modules.Connector.trimImage(self.inRoom, self.id, self.context, function(dX, dY, newWidth, newHeight) {
 
 			if (newWidth == 1 && newHeight == 1) {
 				console.log("IMAGE #"+self.id+" HAS NO CONTENT --> DELETE IT");
@@ -58,7 +58,7 @@ theObject.setContent=function(content,callback){
 			self.persist();
 			self.updateClients('contentUpdate');
 		
-		},self.context);
+		});
 		
 	},self.context);
 	

@@ -707,7 +707,7 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 
 
 
-fileConnector.trimImage=function(roomID, objectID, callback, context) {
+fileConnector.trimImage=function(roomID, objectID, context, callback) {
 
 	var self = this;
 	
