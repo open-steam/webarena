@@ -155,8 +155,11 @@ GeneralObject.getRepresentation=function(){
  */
 GeneralObject.representationCreated = function() {
 
-	GUI.updateLayersDelayed();
-	
+	if (!GUI.couplingModeActive) {
+		GUI.updateLayersDelayed();
+	} else {
+		GUI.updateLayers();
+	}
 }
 
 /**
@@ -1007,6 +1010,7 @@ GeneralObject.moveStart = function(event) {
 
 						object.moveHandler();
 					});
+					GUI.updateLayers();
 				}
 			} else {
 				GUI.defaultZoomPanState('left', false);
@@ -1043,6 +1047,7 @@ GeneralObject.moveStart = function(event) {
 
 						object.moveHandler();
 					});
+					GUI.updateLayers();
 				}
 			}
 		}

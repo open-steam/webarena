@@ -48,42 +48,55 @@ GUI.initSVG = function() {
  * Resort all svg elements by their layer
  */
 GUI.updateLayers = function() {
+	// in coupling mode refresh layers of both rooms
+	if (GUI.couplingModeActive) {
+		var roomIndex = Array();
+		for (var index in ObjectManager.currentRoom) {
+			roomIndex.push(index);
+		}
+	} else {
+		var roomIndex = Array("left");
+	}
 
-	/* check if layers must be updated */
-	var oldOrder = "";
-	
-	$("#room_left>svg").children().each(function(i, el) {
-	
-		var id = $(el).attr("id");
+	for (var key = 0; key < roomIndex.length; key++) {
+		var index = roomIndex[key];
+
+		/* check if layers must be updated */
+		var oldOrder = "";
 		
-		if (id !== undefined && id != "") {
-			oldOrder += id+"###";
+		$("#room_"+index).children().each(function(i, el) {
+		
+			var id = $(el).attr("id");
+			
+			if (id !== undefined && id != "") {
+				oldOrder += id+"###";
+			}
+			
+		});
+		
+		var newOrder = "";
+		
+		var objectsArray = ObjectManager.getObjectsByLayer(index); //get all objects ordered by layer
+
+		for (var i in objectsArray){
+			var obj = objectsArray[i];
+			
+			newOrder += obj.id+"###";
+			
 		}
 		
-	});
-	
-	var newOrder = "";
-	
-	var objectsArray = ObjectManager.getObjectsByLayer(); //get all objects ordered by layer
-	
-	for (var i in objectsArray){
-		var obj = objectsArray[i];
-		
-		newOrder += obj.id+"###";
-		
-	}
-	
-	if (oldOrder == newOrder) return; //no change of order
+		if (oldOrder == newOrder) continue; //no change of order
 
-	var objectsArray = ObjectManager.getObjectsByLayerInverted(); //get all objects ordered by layer
-	
-	for (var i in objectsArray){
-		var obj = objectsArray[i];
-		
-		var rep = obj.getRepresentation();
-		
-		$(rep).prependTo("#room_left>svg");
-		
+		var objectsArray = ObjectManager.getObjectsByLayerInverted(index); //get all objects ordered by layer
+
+		for (var i in objectsArray){
+			var obj = objectsArray[i];
+			
+			var rep = obj.getRepresentation();
+			
+			$(rep).prependTo("#room_"+index);
+			
+		}
 	}
 	
 }
