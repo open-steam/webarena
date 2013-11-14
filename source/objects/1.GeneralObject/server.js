@@ -364,7 +364,7 @@ theObject.getContent.neededRights = {
 *	get the object's inline preview
 */
 theObject.getInlinePreview=function(callback,mimeType){
-	return Modules.Connector.getInlinePreview(this.inRoom, this.id, callback, mimeType, this.context);
+	return Modules.Connector.getInlinePreview(this.inRoom, this.id, mimeType, this.context, callback);
 }
 
 theObject.getInlinePreviewMimeType=function(callback) {

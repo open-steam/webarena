@@ -877,7 +877,7 @@ fileConnector.getInlinePreviewDimensions=function(roomID, objectID, mimeType,con
 	
 }
 
-fileConnector.getInlinePreview=function(roomID, objectID, callback, mimeType,context) {
+fileConnector.getInlinePreview=function(roomID, objectID, mimeType,context, callback) {
 
 	var self = this;
 
