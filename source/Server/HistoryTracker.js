@@ -51,6 +51,8 @@ var HistoryTracker = function(maxStackSize){
         var found = false;
         var changedByOthers = [];
 
+	    //Go back until end of history, as long as not found
+	    //history entry for the user id.
         while(i-- && !found){
             var hid = historyTransactionIds[i];
             var changeSet = historyEntries[hid].changeSet;
