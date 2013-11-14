@@ -65,6 +65,7 @@ Modules.UserManager = require('./Server/UserManager.js');
 Modules.Helper = require('./Server/Helper.js');
 Modules.EventBus =  require("./Server/Eventbus.js");
 /*Modules.TokenChecker = require("./Server/TokenChecker");*/
+Modules.BuildTool = require('./Server/BuildTool.js');
 
 	// These object exist for every object type or every single object. They shall not be
 	// modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
