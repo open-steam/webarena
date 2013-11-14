@@ -1,6 +1,6 @@
-IconObject.createRepresentation = function() {
+IconObject.createRepresentation = function(parent) {
 	
-	var rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
 	var size = 32;
 	if (this.getAttribute("bigIcon")) {

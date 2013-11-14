@@ -134,9 +134,8 @@ GeneralObject.hasContent=function(){
 }
 
 GeneralObject.contentUpdated=function(){
-
 	this.fetchContent(false, true);
-	
+
 	this.draw();
 }
 
@@ -197,6 +196,7 @@ GeneralObject.getRoom=function(){
 *	determine if the current object intersects with the square x,y,width,height
 */
 GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
+	if (!this.isGraphical) return false;
 
 	var thisx = this.getViewBoundingBoxX();
 	var thisy = this.getViewBoundingBoxY();

@@ -96,9 +96,9 @@ Scale.draw=function(external){
 }
 
 
-Scale.createRepresentation = function() {
+Scale.createRepresentation = function(parent) {
 
-	var rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 
 	var selectLine=GUI.svg.line(rep, 0, 0, 20, 20, {});
  	var line=GUI.svg.line(rep, 0, 0, 20, 20, {});

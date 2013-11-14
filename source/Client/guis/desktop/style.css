@@ -71,8 +71,6 @@ body {
 	float: left;
 }
 
-
-
 #header>div.header_right>span.header_button {
 	display: block;
 	margin-right: 20px;
@@ -571,7 +569,7 @@ input {
 
 .overfloating-y{
     overflow-y: auto;
-}
+}´
 
 /*   TOAST MESSAGE */
 .toast-container {
@@ -718,3 +716,37 @@ input {
     top: 50%;
 }
 /* END  TOAST MESSAGE */
+
+/* coupling */
+#header>div.header_left>span.header_button {
+	display: block;
+	margin-right: 20px;
+	background-color: #565656;
+	padding: 6px;
+	border-radius: 2px;
+	position: absolute;
+	font-size: 10px;
+	top: 8px;
+	cursor: pointer;
+	-webkit-box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.2);
+	box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 1px inset;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.couplingButton {
+	fill:  #225EA8;
+	stroke:  #0C2C84;
+ 	stroke-miterlimit:  6;
+	stroke-linecap:  round;
+}
+
+.couplingButton:hover{
+	stroke-width:  2;
+}
+
+.couplingPlusMinus {
+	fill:  #fff;
+	pointer-events: none;
+}
+/* end coupling */

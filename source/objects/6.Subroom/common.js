@@ -45,8 +45,7 @@ Subroom.execute=function(openInNewWindow){
 	}
 	
 	if (openInNewWindow) { window.open(destination); }
-	else { ObjectManager.loadRoom(destination); }
-}
+	else { ObjectManager.loadRoom(destination,false,ObjectManager.getIndexOfObject(this.getAttribute('id'))); }}
 
 Subroom.register('Subroom');
 Subroom.isCreatable=true;

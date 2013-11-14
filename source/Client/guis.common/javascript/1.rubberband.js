@@ -13,20 +13,41 @@ GUI.rubberbandStart = function(event) {
 	$("#content").find(".webarenaRubberband").remove();
 	
 	if (GUI.paintModeActive) return;
-	
+
 	/* deselect all objects */
 	GUI.deselectAllObjects();
 
 	var contentPosition = $("#content").offset();
 
-	GUI.rubberbandStartX = event.pageX;
-	GUI.rubberbandStartY = event.pageY-contentPosition.top;
+	// coupling adjustments
+	var index = 'left';
+	if (GUI.couplingModeActive) {
+		// no rubberband if vertical bar was clicked
+		if ($('#couplingBar:hover').length != 0) return;
+
+		// adjust position according to current pan state in corresponding room (left or right)
+		if (event.pageX > $('#couplingBar').attr('x1')) {
+			var index = 'right';
+			var pageX = event.pageX - $('#couplingBar').attr('x1') - GUI.getPanX('right');
+			var pageY = event.pageY - contentPosition.top - GUI.getPanY('right');
+		} else {
+			var index = 'left';
+			var pageX = event.pageX - GUI.getPanX('left');
+			var pageY = event.pageY - contentPosition.top - GUI.getPanY('left');
+		}
+	} else {
+		var pageX = event.pageX;
+		var pageY = event.pageY-contentPosition.top;
+	}
+
+	GUI.rubberbandStartX = pageX;
+	GUI.rubberbandStartY = pageY;
 	GUI.rubberbandWidth = 0;
 	GUI.rubberbandHeight = 0;
 	GUI.rubberbandX = 0;
 	GUI.rubberbandY = 0;
 
-	GUI.rubberband = GUI.svg.rect(
+	GUI.rubberband = GUI.svg.rect($('#room_'+index),
 		GUI.rubberbandStartX, //x
 		GUI.rubberbandStartY, //y
 		0, //width
@@ -45,8 +66,18 @@ GUI.rubberbandStart = function(event) {
 		
 		event.preventDefault();
 		
-		GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX;
-		GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top;
+		if (GUI.couplingModeActive) {
+			if (index === 'right') {
+				GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX-$('#couplingBar').attr('x1')-GUI.getPanX('right');
+				GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('right');
+			} else {
+				GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX-GUI.getPanX('left');
+				GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('left');
+			}
+		} else {
+			GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX;
+			GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top;
+		}
 		
 		GUI.rubberbandX = GUI.rubberbandStartX;
 		GUI.rubberbandY = GUI.rubberbandStartY;
@@ -111,7 +142,7 @@ GUI.rubberbandStart = function(event) {
 		
 			var count = 0;
 		
-			$.each(ObjectManager.getObjects(), function(index, object) {
+			$.each(ObjectManager.getObjects(index), function(index, object) {
 			
 				if (!object.getAttribute("visible")) return;
 				

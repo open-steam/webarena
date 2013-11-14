@@ -343,8 +343,6 @@ theObject.copyContentFromFile=function(filename,callback) {
 *	get the object's content
 */
 theObject.getContent=function(callback){
-
-	
 	if (!this.context) throw new Error('Missing context in GeneralObject.getContent');
 	
 	var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);

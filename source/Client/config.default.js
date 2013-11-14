@@ -11,5 +11,6 @@ var Config={
 	projectTitle:'WebArena 1.0',
 	language:'de',
 	presentationMode:false,
+	couplingMode:true,
 	bidURL:''
 };

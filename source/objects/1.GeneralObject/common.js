@@ -533,7 +533,7 @@ GeneralObject.getId=function(){
 }
 
 GeneralObject.getCurrentRoom=function(){
-	return ObjectManager.currentRoom.get('id');
+	return this.getAttribute("inRoom");
 }
 
 GeneralObject.stopOperation=function(){
@@ -656,12 +656,17 @@ GeneralObject.refreshDelayed=function(){
 	var theTimer=400;
 	
 	this.refreshDelay=setTimeout(function(){
-		
 		//If the current room has changed in the meantime, do not refresh at all
-		if (that.getAttribute('inRoom')!==ObjectManager.getRoomID()){
-			return;
+		if (GUI.couplingModeActive) {
+			if (that.getAttribute('inRoom') != ObjectManager.getRoomID('left') && that.getAttribute('inRoom') != ObjectManager.getRoomID('right')){
+				return;
+			}
+		} else {
+			if (that.getAttribute('inRoom') != ObjectManager.getRoomID()){
+				return;
+			}
 		}
-		
+
 		that.refresh();
 	},theTimer);
 }
@@ -726,7 +731,7 @@ GeneralObject.getLinkedObjects=function() {
 			return ObjectManager.getObject(id);
 		}
 		var getObjects = function() {
-			return ObjectManager.getObjects();
+			return ObjectManager.getObjects(ObjectManager.getIndexOfObject(self.getId()));
 		}
 	}
 

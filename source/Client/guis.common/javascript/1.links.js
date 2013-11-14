@@ -43,7 +43,6 @@ GUI.showLinks = function(object) {
 	 * get all objects linked with this object
 	 */
 	$.each(object.getLinkedObjects(), function(index, target) {
-	
 		if (!target.object) return;
 	
 		var objectX = object.getViewBoundingBoxX()+(object.getViewBoundingBoxWidth()/2);
@@ -53,11 +52,11 @@ GUI.showLinks = function(object) {
 		var targetY = target.object.getViewBoundingBoxY()+(target.object.getViewBoundingBoxHeight()/2);
 
 		/* draw link line */
-		var line = GUI.svg.line(objectX, objectY, targetX, targetY, {
+		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId()));
+		var line = GUI.svg.line(parent, objectX, objectY, targetX, targetY, {
 			strokeWidth: 6,
 			stroke: "#CCCCCC"
 		});
-
 
 
 		$(line).addClass("webarenaLink_"+object.id);
@@ -72,6 +71,16 @@ GUI.showLinks = function(object) {
         $(line).bind("mouseup", function(event){
             var x = (parseFloat($(this).attr("x1")) + parseFloat($(this).attr("x2")))/2
             var y = (parseFloat($(this).attr("y1")) + parseFloat($(this).attr("y2")))/2
+
+			if (GUI.couplingModeActive) {
+				var index = ObjectManager.getIndexOfObject(object.getId());
+				if (index === 'right') {
+					x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
+				} else {
+					x += GUI.getPanX(index);
+				}
+				y += GUI.getPanY(index);
+			}
 
             GUI.showActionsheet(x,y, {
                 "actions" : [
@@ -115,7 +124,7 @@ GUI.showLinks = function(object) {
 
 		}, 1);
 
-        $("svg").prepend($(line));
+        parent.prepend($(line));
 		
 	});
 	

@@ -63,11 +63,11 @@ Polygon.drawPolygon = function() {
 }
 
 
-Polygon.createRepresentation = function() {
+Polygon.createRepresentation = function(parent) {
 	
 	this.points = [];
 
-	var rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 
 	var polyline = GUI.svg.polyline(rep, this.points);
 

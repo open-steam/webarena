@@ -36,32 +36,32 @@ ObjectManager.registerType = function (type, constr) {
 }
 
 /**
- *  sendRoom
- *
- *  sends a rooms content to a client (given by its socket)
- *
- */
-ObjectManager.sendRoom = function (socket, roomID) {
-
-	var context = Modules.UserManager.getConnectionBySocket(socket);
-
-	Modules.ObjectManager.getRoom(roomID, context, function (room) { //the room object
+*	sendRoom
+*
+*	sends a rooms content to a client (given by its socket)
+*
+*/
+ObjectManager.sendRoom=function(socket, roomID, index){
+	var context=Modules.UserManager.getConnectionBySocket(socket);
+	
+	Modules.ObjectManager.getRoom(roomID, context, function(room) { //the room object
 
 		room.updateClient(socket);				//and send it to the client
-
-		Modules.ObjectManager.getInventory(roomID, context, function (objects) {
-			for (var i in objects) {
+		
+		Modules.ObjectManager.getInventory(roomID, context, function(objects) {
+			for (var i in objects){
 				var object = objects[i];
-				object.updateClient(socket);	//the object data
+				object.context.room = object.context.rooms[index];
+				object.updateClient(socket, 'objectUpdate');	//the object data
 				if (object.hasContent()) {		//and its content if there is some
 					object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
 				}
 			}
 
 		});
-
-	});
-
+		
+	});	
+ 
 }
 
 /**
@@ -124,7 +124,6 @@ function buildObjectFromObjectData(objectData, roomID, type) {
 	obj.init(objectData.id);
 
 	//set the object's attributes and rights
-
 	obj.setAll(objectData.attributes);
 	obj.rights = objectData.rights;
 	obj.id = objectData.id;
@@ -773,6 +772,7 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 	var fromRoom = data.fromRoom;
 	var toRoom = data.toRoom;
 	var objects = data.objects;
+	var attributes = data.attributes;
 
 	var transactionId = new Date().getTime();
 
@@ -811,6 +811,7 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 	var counter = 0;
 	var roomCounter = 0;
 	var idTranslationList = {}; //list of object ids and their duplicated new ids
+	var reverseIdTranslationList = {};
 	var newObjects = []; //list of new (duplicated) objects
 	var idList = [];
 	var roomTranslationList = {}; // list of old room ids and their duplicated new ids
@@ -864,6 +865,13 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 					object.setAttribute("group", object.getAttribute("group") + 1);
 				}
 
+				// set attributes sent by frontend (e.g. new position when moving objects in concurrent view)
+				if (attributes[reverseIdTranslationList[object.id]] != undefined) {
+					for (var key in attributes[reverseIdTranslationList[object.id]]) {
+						object.setAttribute(key, attributes[reverseIdTranslationList[object.id]][key]);
+					}
+				}
+
 				object.updateClients();
 
 				if (object.hasContent()) {
@@ -914,6 +922,7 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 
 							newObjects.push(obj);
 							idTranslationList[oldId] = newId;
+							reverseIdTranslationList[newId] = oldId;
 
 							var historyEntry = {
 								"action": "duplicate",
