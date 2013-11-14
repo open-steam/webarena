@@ -74,14 +74,12 @@ BuildTool.buildClientCode = function(){
 		}
 
 		var filebase = __dirname + '/../objects/' + filename;
-
-		var obj = require(filebase + '/server.js');
-
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
 		that.addToClientCode(filebase + '/view.js');
 		that.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
 		that.addToClientCode(filebase + '/languages.js');
+
 	});
 }
 
