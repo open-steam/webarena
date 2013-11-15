@@ -31,7 +31,8 @@ var printLogo = function(){
 //if an error occured and log the error
 
 process.on('uncaughtException', function (err) {
-	Modules.Log.error(err);
+	console.log('##### UNCAUGHT EXCEPTTION');
+	console.log(err);
 });
 
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
