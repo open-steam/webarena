@@ -90,14 +90,16 @@ Dispatcher.registerCall('inform', function (socket, data, responseID) {
 	Modules.RoomController.informAllInRoom(data, wrapper(socket, responseID));
 });
 
-Modules.Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
+Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
 	Modules.ServerController.bugreport(data, wrapper(socket, responseID));
 });
 
-Modules.Dispatcher.registerCall('undo', function(socket, data, responseID){
+Dispatcher.registerCall('undo', function(socket, data, responseID){
 	var context = Modules.UserManager.getConnectionBySocket(socket);
         Modules.ObjectManager.undo( data, context, infoWrapper(socket)  );
 });
+
+
 
 function infoWrapper(socket){
 	return function(err, message){
