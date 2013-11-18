@@ -276,7 +276,7 @@ ObjectManager.createObject = function (roomID, type, attributes, content, socket
 }
 
 ObjectManager.getEnabledObjectTypes = function(){
-	var files = fs.readdirSync('objects');
+	var files = fs.readdirSync(__dirname + '/../objects');
 	var objectTypes = {};
 
 	files.sort(function (a, b) {

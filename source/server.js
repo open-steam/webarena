@@ -94,8 +94,8 @@ for (var name in Modules){
 
 //create temp. directory
 var fs = require('fs');
-if (!fs.existsSync("./Server/tmp")) {
-	fs.mkdirSync("./Server/tmp", 0777);
+if (!fs.existsSync(__dirname + "/tmp")) {
+	fs.mkdirSync(__dirname + "/tmp", 777);
 }
 
 //load plugins

@@ -28,7 +28,7 @@ BuildTool.addToClientCode = function(filename) {
 }
 
 BuildTool.buildClientCode = function(){
-	var files = fs.readdirSync('objects');
+	var files = fs.readdirSync(__dirname + '/../objects');
 	var that = this;
 
 	files.sort(function (a, b) {
