@@ -118,7 +118,7 @@ fileConnector.mayRead=function(roomID,objectID,connection,callback) {
 }
 
 fileConnector.mayDelete=function(roomID,objectID,connection,callback) {
-	callback(true);
+	callback(null, true);
 }
 
 fileConnector.mayEnter=function(roomID,connection,callback) {

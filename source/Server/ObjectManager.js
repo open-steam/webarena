@@ -357,54 +357,8 @@ ObjectManager.init = function (theModules) {
 		}
 	});
 
-	//This is the interface for clients. Registering functions for attribute access and
-	//other object updates
-
-	//deleteObject
-	Modules.Dispatcher.registerCall('deleteObject', function (socket, data, responseID) {
-
-		var context = Modules.UserManager.getConnectionBySocket(socket);
-
-		var roomID = data.roomID
-		var objectID = data.objectID;
-
-		Modules.Connector.mayDelete(roomID, objectID, context, function (mayDelete) {
-
-			if (mayDelete) {
-
-				var object = ObjectManager.getObject(roomID, objectID, context);
-				if (!object) {
-					Modules.SocketServer.sendToSocket(socket, 'error', 'Object not found ' + objectID);
-					return;
-				}
-
-				Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
-
-				var historyEntry = {
-					'oldRoomID': roomID,
-					'oldObjectId': objectID,
-					'roomID': 'trash',
-					'action': 'delete'
-				}
 
 
-				Modules.Connector.getTrashRoom(context, function (toRoom) {
-					Modules.Connector.duplicateObject(roomID, objectID, context, toRoom.id, function (newId, oldId) {
-						object.remove();
-						historyEntry["objectID"] = newId;
-
-						var transactionId = data.transactionId;
-
-						that.history.add(transactionId, data.userId, historyEntry);
-					});
-
-				});
-
-			} else {
-				Modules.SocketServer.sendToSocket(socket, 'error', 'No rights to get attribute ' + objectID);
-			}
-		});
-	});
 
 	Modules.Dispatcher.registerCall('undo', function (socket, data) {
 		var userID = data.userID;
@@ -1073,6 +1027,52 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 
 	// return list of old room ids => new room ids
 	return roomTranslationList;
+}
+
+
+//deleteObject
+ObjectManager.deleteObject =  function ( data, context, callback) {
+
+	var roomID = data.roomID
+	var objectID = data.objectID;
+
+	var afterRightsCheck = function(err, hasRights){
+		if(err) callback(err, null);
+		else{
+			if(hasRights){
+				var object = ObjectManager.getObject(roomID, objectID, context);
+				if (!object) {
+					callback(new Error('Object not found ' + objectID), null);
+					return;
+				}
+
+				Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
+				var historyEntry = {
+					'oldRoomID': roomID,
+					'oldObjectId': objectID,
+					'roomID': 'trash',
+					'action': 'delete'
+				}
+
+				Modules.Connector.getTrashRoom(context, function (toRoom) {
+					Modules.Connector.duplicateObject(roomID, objectID, context, toRoom.id, function (newId, oldId) {
+						object.remove();
+						historyEntry["objectID"] = newId;
+
+						var transactionId = data.transactionId;
+
+						that.history.add(transactionId, data.userId, historyEntry);
+					});
+
+				});
+
+			} else {
+				callback(new Error('No rights to delete object: ' + objectID), null);
+			}
+		}
+	}
+
+	Modules.Connector.mayDelete(roomID, objectID, context, afterRightsCheck)
 }
 
 module.exports = ObjectManager;

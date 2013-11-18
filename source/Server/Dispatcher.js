@@ -62,7 +62,10 @@ Dispatcher.init=function(theModules){
 	Modules=theModules;
 }
 
-
+Dispatcher.registerCall('deleteObject', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ObjectManager.deleteObject(data, context, wrapper(socket, responseID));
+});
 
 Dispatcher.registerCall('createObject', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
