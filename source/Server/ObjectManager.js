@@ -236,9 +236,8 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *  creates a new object
  *
  **/
-ObjectManager.createObject = function (roomID, type, attributes, content, socket, responseID) {
+ObjectManager.createObject = function (roomID, type, attributes, content, context, callback) {
 
-	var context = Modules.UserManager.getConnectionBySocket(socket);
 
 	//TODO send error to client if there is a rights issue here
 
@@ -266,13 +265,8 @@ ObjectManager.createObject = function (roomID, type, attributes, content, socket
 		}
 
 		Modules.EventBus.emit("room::" + roomID + "::action::createObject", {objectID: id});
-
-		if (socket && responseID) {
-			Modules.Dispatcher.respond(socket, responseID, object.id);
-		}
-
+		callback(null, object.id);
 	});
-
 }
 
 ObjectManager.getEnabledObjectTypes = function(){
@@ -464,33 +458,7 @@ ObjectManager.init = function (theModules) {
 		}
 	});
 
-	//createObject
-	Modules.Dispatcher.registerCall('createObject', function (socket, data, responseID) {
 
-		var context = Modules.UserManager.getConnectionBySocket(socket);
-
-		var roomID = data.roomID;
-		var type = data.type;
-		var attributes = data.attributes;
-		var content = data.content;
-
-		//Provide response id to inform the client of the newly created object
-
-		//TODO: check why all clients get notified about object creation (spooky =) )
-
-		Modules.Connector.mayInsert(roomID, context, function (mayInsert) {
-
-			if (mayInsert) {
-
-				Modules.ObjectManager.createObject(roomID, type, attributes, content, socket, responseID);
-
-			} else {
-				Modules.SocketServer.sendToSocket(socket, 'error', 'No rights to insert in room ' + roomID);
-			}
-
-		});
-
-	});
 
 	// duplicateObjects
 	Modules.Dispatcher.registerCall('duplicateObjects', _.bind(that.duplicate, that));
@@ -906,7 +874,7 @@ ObjectManager.duplicate = function (socket, data, responseID, callback) {
 
 			if (mayRead) {
 
-				Modules.Connector.mayInsert(toRoom, context, function (mayInsert) {
+				Modules.Connector.mayInsert(toRoom, context, function (error, mayInsert) {
 
 					if (mayInsert) {
 
@@ -1057,7 +1025,7 @@ ObjectManager.duplicateRoom = function (socket, data, responseID, updateRoomLink
 
 			if (mayRead) {
 
-				Modules.Connector.mayInsert(toRoom, context, function (mayInsert) {
+				Modules.Connector.mayInsert(toRoom, context, function (error, mayInsert) {
 
 					if (mayInsert) {
 

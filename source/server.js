@@ -81,6 +81,10 @@ if(Modules.config.tcpApiServer){
 
 Modules.Connector=Modules.config.connector; //shortcut
 
+//Controllers
+Modules.RoomController = require('./Server/controllers/RoomController.js');
+Modules.ObjectController = require('./Server/controllers/ObjectController.js');
+
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports=Modules;
 

@@ -125,8 +125,14 @@ fileConnector.mayEnter=function(roomID,connection,callback) {
 	callback(true);
 }
 
+/**
+ *
+ * @param roomID
+ * @param connection
+ * @param {Function} callback
+ */
 fileConnector.mayInsert=function(roomID,connection,callback) {
-	callback(true);
+	callback(null, true);
 }
 
 

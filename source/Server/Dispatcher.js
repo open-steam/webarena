@@ -62,4 +62,21 @@ Dispatcher.init=function(theModules){
 	Modules=theModules;
 }
 
+
+
+Dispatcher.registerCall('createObject', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.RoomController.createObject(data, context, wrapper(socket, responseID));
+});
+
+function wrapper(socket, responseID){
+	return function(err, data){
+		if(err){
+			Modules.SocketServer.sendToSocket(socket, 'error', err.message);
+		} else {
+			Modules.Dispatcher.respond(socket, responseID, data);
+		}
+	}
+}
+
 module.exports=Dispatcher;
