@@ -330,13 +330,6 @@ ObjectManager.init = function (theModules) {
 		}
 	});
 
-
-
-
-
-
-
-
 	// duplicateObjects
 	Modules.Dispatcher.registerCall('duplicateObjects', _.bind(that.duplicate, that));
 
