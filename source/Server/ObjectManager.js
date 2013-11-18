@@ -515,19 +515,7 @@ ObjectManager.init = function (theModules) {
 	});
 
 
-	Modules.Dispatcher.registerCall('memoryUsage', function (socket, data, responseID) {
 
-		var util = require('util');
-
-		var result = {};
-
-		result.memory = util.inspect(process.memoryUsage());
-
-		console.log(result);
-
-		Modules.Dispatcher.respond(socket, responseID, result);
-
-	});
 
 	//Information are sent to all clients in the same room
 	Modules.Dispatcher.registerCall('inform', function (socket, data, responseID) {

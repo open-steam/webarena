@@ -80,6 +80,11 @@ Dispatcher.registerCall('getPreviewableMimeTypes', function (socket, data, respo
 	this.respond(socket, responseID, Modules.Connector.getInlinePreviewMimeTypes());
 });
 
+Dispatcher.registerCall('memoryUsage', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ServerController.getMemoryUsage(data, context, wrapper(socket, responseID));
+});
+
 function wrapper(socket, responseID){
 	return function(err, data){
 		if(err){
