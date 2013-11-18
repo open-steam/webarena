@@ -76,6 +76,10 @@ Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
 	Modules.RoomController.listRooms(wrapper(socket, responseID));
 });
 
+Dispatcher.registerCall('getPreviewableMimeTypes', function (socket, data, responseID) {
+	this.respond(socket, responseID, Modules.Connector.getInlinePreviewMimeTypes());
+});
+
 function wrapper(socket, responseID){
 	return function(err, data){
 		if(err){

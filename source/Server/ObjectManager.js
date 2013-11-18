@@ -418,11 +418,7 @@ ObjectManager.init = function (theModules) {
 	Modules.Dispatcher.registerCall('duplicateObjects', _.bind(that.duplicate, that));
 
 	//TODO: find a better place for this...
-	Modules.Dispatcher.registerCall('getPreviewableMimeTypes', function (socket, data, responseID) {
 
-		Modules.Dispatcher.respond(socket, responseID, Modules.Connector.getInlinePreviewMimeTypes());
-
-	});
 
 
 
