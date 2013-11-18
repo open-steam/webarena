@@ -77,7 +77,7 @@ Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
 });
 
 Dispatcher.registerCall('getPreviewableMimeTypes', function (socket, data, responseID) {
-	this.respond(socket, responseID, Modules.Connector.getInlinePreviewMimeTypes());
+	Dispatcher.respond(socket, responseID, Modules.Connector.getInlinePreviewMimeTypes());
 });
 
 Dispatcher.registerCall('memoryUsage', function (socket, data, responseID) {
