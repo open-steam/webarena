@@ -483,7 +483,7 @@ ObjectManager.undo =  function (data, context, callback) {
 		callback( null, 'info.undo.nothing');
 
 	}
-});
+};
 
 /**
  *  getRoom
