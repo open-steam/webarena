@@ -41,5 +41,16 @@ RoomController.listRooms = function(callback){
 	Modules.Connector.listRooms(callback)
 }
 
+//Information are sent to all clients in the same room
+RoomController.informAllInRoom =  function (data, callback) {
+
+	var connections = Modules.UserManager.getConnectionsForRoom(data.room);
+
+	for (var i in connections) {
+		var socket = connections[i].socket;
+		Modules.SocketServer.sendToSocket(socket, 'inform', data);
+	}
+};
+
 module.exports = RoomController;
 

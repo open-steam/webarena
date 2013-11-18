@@ -517,35 +517,7 @@ ObjectManager.init = function (theModules) {
 
 
 
-	//Information are sent to all clients in the same room
-	Modules.Dispatcher.registerCall('inform', function (socket, data, responseID) {
 
-		var connections = Modules.UserManager.getConnectionsForRoom(data.room);
-
-		for (var i in connections) {
-			var socket = connections[i].socket;
-			Modules.SocketServer.sendToSocket(socket, 'inform', data);
-		}
-
-		/*
-		 if (data.message.text !== undefined) {
-		 // chat message
-
-		 var context=Modules.UserManager.getConnectionBySocket(socket);
-		 ObjectManager.getRoom(data.room,context,function(room) {
-
-		 var oldMessages = room.get('chatMessages');
-		 if (oldMessages === undefined) oldMessages = [];
-		 oldMessages.push(data);
-
-		 oldMessages = oldMessages.slice(-20); //only save the last 20 messages
-		 room.set('chatMessages', oldMessages); room.persist();
-
-		 });
-		 }
-		 */
-
-	});
 
 	Modules.Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
 

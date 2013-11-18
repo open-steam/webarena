@@ -85,6 +85,11 @@ Dispatcher.registerCall('memoryUsage', function (socket, data, responseID) {
 	Modules.ServerController.getMemoryUsage(data, context, wrapper(socket, responseID));
 });
 
+//Information are sent to all clients in the same room
+Dispatcher.registerCall('inform', function (socket, data, responseID) {
+	Modules.RoomController.informAllInRoom(data, wrapper(socket, responseID));
+});
+
 function wrapper(socket, responseID){
 	return function(err, data){
 		if(err){
