@@ -30,7 +30,6 @@ RoomController.createObject = function(data, context, callback){
 			} else {
 				callback(new Error("No rights to write into room: " + roomID), null);
 			}
-
 		}
 	}
 
@@ -51,6 +50,32 @@ RoomController.informAllInRoom =  function (data, callback) {
 		Modules.SocketServer.sendToSocket(socket, 'inform', data);
 	}
 };
+
+/**
+ *	sendRoom
+ *
+ *	sends a rooms content to a client (given by its socket)
+ *
+ */
+RoomController.sendRoom=function(socket, roomID, index){
+	var context=Modules.UserManager.getConnectionBySocket(socket);
+
+	Modules.ObjectManager.getRoom(roomID, context, function(room) { //the room object
+
+		room.updateClient(socket);				//and send it to the client
+
+		Modules.ObjectManager.getInventory(roomID, context, function(objects) {
+			for (var i in objects){
+				var object = objects[i];
+				object.context.room = object.context.rooms[index];
+				object.updateClient(socket, 'objectUpdate');	//the object data
+				if (object.hasContent()) {		//and its content if there is some
+					object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
+				}
+			}
+		});
+	});
+}
 
 module.exports = RoomController;
 
