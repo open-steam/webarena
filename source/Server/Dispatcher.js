@@ -90,6 +90,10 @@ Dispatcher.registerCall('inform', function (socket, data, responseID) {
 	Modules.RoomController.informAllInRoom(data, wrapper(socket, responseID));
 });
 
+Modules.Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
+	Modules.ServerController.bugreport(data, wrapper(socket, responseID));
+});
+
 function wrapper(socket, responseID){
 	return function(err, data){
 		if(err){
@@ -99,5 +103,7 @@ function wrapper(socket, responseID){
 		}
 	}
 }
+
+
 
 module.exports=Dispatcher;
