@@ -72,6 +72,10 @@ Dispatcher.registerCall('createObject', function (socket, data, responseID) {
 	Modules.RoomController.createObject(data, context, wrapper(socket, responseID));
 });
 
+Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
+	Modules.RoomController.listRooms(wrapper(socket, responseID));
+});
+
 function wrapper(socket, responseID){
 	return function(err, data){
 		if(err){
