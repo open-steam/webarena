@@ -360,57 +360,7 @@ ObjectManager.init = function (theModules) {
 
 
 
-	Modules.Dispatcher.registerCall('undo', function (socket, data) {
-		var userID = data.userID;
-		var context = Modules.UserManager.getConnectionBySocket(socket);
 
-
-		var lastChange = that.history.getLastChangeForUser(userID);
-
-		if (lastChange) {
-			if (!lastChange.blocked) {
-				var changeSet = lastChange.changeSet;
-				var undoMessage = ""
-				try {
-					changeSet.forEach(function (e) {
-						var object = ObjectManager.getObject(e.roomID, e.objectID, context);
-
-
-						if (e.action === 'delete') {
-							Modules.Connector.duplicateObject(e.roomID, e.objectID, context, e.oldRoomID, function (newId) {
-								var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
-								o2.updateClients("objectUpdate");
-								object.remove();
-							});
-							undoMessage = 'info.undo.delete';
-
-						} else if (e.action === 'setAttribute') {
-							object.setAttribute(e.attribute, e.old);
-							undoMessage = 'info.undo.attribute';
-
-						} else if (e.action === 'duplicate') {
-							object.remove();
-							undoMessage = 'info.undo.duplication';
-
-						} else if (e.action === 'setContent') {
-							undoMessage = "Undo of the action isn't supported";
-						}
-					});
-					Modules.SocketServer.sendToSocket(socket, 'infotext', undoMessage);
-				} catch (e) {
-					Modules.SocketServer.sendToSocket(socket, 'infotext', "info.error");
-				}
-
-				that.history.removeHistoryEntry(lastChange.transactionId);
-
-			} else {
-				Modules.SocketServer.sendToSocket(socket, 'infotext', 'info.undo.blocked');
-			}
-		} else {
-			Modules.SocketServer.sendToSocket(socket, 'infotext', 'info.undo.nothing');
-
-		}
-	});
 
 
 
@@ -515,6 +465,52 @@ ObjectManager.init = function (theModules) {
 	});
 
 }
+
+ObjectManager.undo =  function (data, context, callback) {
+	var that = this;
+	var userID = data.userID;
+	var lastChange = that.history.getLastChangeForUser(userID);
+
+	if (lastChange) {
+		if (!lastChange.blocked) {
+			var changeSet = lastChange.changeSet;
+			var undoMessage = ""
+			try {
+				changeSet.forEach(function (e) {
+					var object = ObjectManager.getObject(e.roomID, e.objectID, context);
+					if (e.action === 'delete') {
+						Modules.Connector.duplicateObject(e.roomID, e.objectID, context, e.oldRoomID, function (newId) {
+							var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
+							o2.updateClients("objectUpdate");
+							object.remove();
+						});
+						undoMessage = 'info.undo.delete';
+
+					} else if (e.action === 'setAttribute') {
+						object.setAttribute(e.attribute, e.old);
+						undoMessage = 'info.undo.attribute';
+					} else if (e.action === 'duplicate') {
+						object.remove();
+						undoMessage = 'info.undo.duplication';
+					} else if (e.action === 'setContent') {
+						undoMessage = "Undo of the action isn't supported";
+					}
+				});
+				callback(null, undoMessage);
+			} catch (e) {
+				callback(null, "info.error");
+			}
+
+			that.history.removeHistoryEntry(lastChange.transactionId);
+
+		} else {
+			callback(null, 'info.undo.blocked');
+		}
+	} else {
+		callback( null, 'info.undo.nothing');
+
+	}
+});
 
 /**
  *  getRoom
