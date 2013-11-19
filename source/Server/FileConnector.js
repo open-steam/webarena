@@ -110,11 +110,11 @@ fileConnector.isLoggedIn=function(context) {
 /* RIGHTS */
 
 fileConnector.mayWrite=function(roomID,objectID,connection,callback) {
-	callback(true);
+	callback(null, true);
 }
 
 fileConnector.mayRead=function(roomID,objectID,connection,callback) {
-	callback(true);
+	callback(null, true);
 }
 
 fileConnector.mayDelete=function(roomID,objectID,connection,callback) {
@@ -289,7 +289,9 @@ fileConnector.getRoomHierarchy=function(roomID,context,callback){
 *
 *	if an "after" function is specified, it is called after saving
 *
+*
 */
+//TODO: async
 fileConnector.saveObjectData=function(roomID,objectID,data,after,context,createIfNotExists){
 	this.Modules.Log.debug("Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 
@@ -537,7 +539,7 @@ fileConnector.createObject=function(roomID,type,data, context, callback){
 *	after(objectID)
 *
 */
-fileConnector.duplicateObject=function(roomID, objectID, context, toRoom, callback){
+fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callback){
 
 	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', toRoom: '"+toRoom+"')");
 	
@@ -572,9 +574,7 @@ fileConnector.duplicateObject=function(roomID, objectID, context, toRoom, callba
 	
 	/* callback function after duplicating files */
 	var cb = function() {
-
-		if (callback) callback(newObjectID, objectID);
-		
+		if (callback) callback(null, newObjectID, objectID);
 	}
 	
 	/* copy object data */

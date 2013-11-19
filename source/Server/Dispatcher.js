@@ -96,8 +96,14 @@ Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
 
 Dispatcher.registerCall('undo', function(socket, data, responseID){
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-        Modules.ObjectManager.undo( data, context, infoWrapper(socket)  );
+    Modules.ObjectManager.undo( data, context, infoWrapper(socket)  );
 });
+
+Dispatcher.registerCall('duplicateObjects', function(socket, data, responseID){
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ObjectManager.duplicateNew(data, context, wrapper(socket, responseID));
+});
+
 
 
 

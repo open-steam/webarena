@@ -26,7 +26,7 @@ theObject.register = function(type) {
 			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 		}
 
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
+		Modules.Connector.mayRead(roomID, objectID, context, function(err, mayRead) {
 
 			if (mayRead) {
 
@@ -69,7 +69,7 @@ theObject.register = function(type) {
 			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 		}
 
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
+		Modules.Connector.mayRead(roomID, objectID, context, function(err, mayRead) {
 
 			if (mayRead) {
 
