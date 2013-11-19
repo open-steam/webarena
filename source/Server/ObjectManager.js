@@ -647,12 +647,12 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 		var objectCopyTasks = [];
 		var roomCopyTasks = [];
 
-		async.series([innerReadCheck2, toWriteCheck],  function (err, result) {
+		async.series([innerReadCheck2, toWriteCheck],  function (err) {
 			//TODO send error to cb
 			if (err) console.log("Error: " + err);
 			else {
-				for (var objectId in uniqueObjects) {
-					var object = uniqueObjects[objectId];
+				for (var objectId123 in uniqueObjects) {
+					var object = uniqueObjects[objectId123];
 					if (object.getType() === "Subroom") {
 						var roomData = {};
 						roomData.fromRoom = object.getAttribute("destination");
@@ -668,33 +668,36 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 
 							myInnerFunction(roomData, callback);
 						});
-
-
 					}
-					objectCopyTasks.push(function (callback) {
-						//TODO: rewrite duplicateObject callback to nodejs convention
-						Modules.Connector.duplicateObject(fromRoom,toRoom, objectId, context, function (err, newId, oldId) {
-							if (err) console.log("Error: " + err);
-							var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+					//need function scope because "looping problem" //TODO: link to example
+					(function(id){
+						objectCopyTasks.push(function (callback) {
+							console.log(id);
 
-							if (cut) {
-								var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
-								oldObject.remove();
-							}
+							Modules.Connector.duplicateObject(fromRoom,toRoom, id, context, function (err, newId, oldId) {
+								if (err) console.log("Error: " + err);
 
-							newObjects.push(obj);
-							idTranslationList[oldId] = newId;
-							//TODO: remove reverseIdTranslationList can be constructed afterwards
-							reverseIdTranslationList[newId] = oldId;
+								var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
 
-							callback();
+								if (cut) {
+									var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
+									oldObject.remove();
+								}
+
+								newObjects.push(obj);
+								idTranslationList[oldId] = newId;
+								//TODO: remove reverseIdTranslationList can be constructed afterwards
+								reverseIdTranslationList[newId] = oldId;
+
+								callback();
+							});
 						});
-					});
-
-					async.series(objectCopyTasks.concat(roomCopyTasks ), function(err, res){
-						updateObj(cbi);
-					});
+					})(objectId123);
 				}
+				var tasks = roomCopyTasks.concat( objectCopyTasks);
+				async.series( tasks , function(err, res){
+					updateObj(cbi);
+				});
 			}
 		});
 
@@ -708,6 +711,7 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 
 //deleteObject
 ObjectManager.deleteObject = function (data, context, callback) {
+	var that = this;
 
 	var roomID = data.roomID
 	var objectID = data.objectID;
