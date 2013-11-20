@@ -32,7 +32,7 @@ var printLogo = function(){
 //if an error occured and log the error
 
 process.on('uncaughtException', function (err) {
-	console.log('##### UNCAUGHT EXCEPTTION');
+	console.log('##### UNCAUGHT EXCEPTION');
 	console.log(err);
 });
 

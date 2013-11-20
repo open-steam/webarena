@@ -229,7 +229,7 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *  creates a new object
  *
  **/
-ObjectManager.createObject = function (roomID, type, attributes, content, socket, responseID) {
+ObjectManager.createObject = function (roomID, type, attributes, content, socket, responseID, callback) {
 
 	var context = Modules.UserManager.getConnectionBySocket(socket);
 
@@ -262,6 +262,10 @@ ObjectManager.createObject = function (roomID, type, attributes, content, socket
 
 		if (socket && responseID) {
 			Modules.Dispatcher.respond(socket, responseID, object.id);
+		}
+		
+		if (callback){
+			callback(false,object);
 		}
 
 	}, context);
