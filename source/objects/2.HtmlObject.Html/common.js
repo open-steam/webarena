@@ -27,7 +27,7 @@ HtmlObject.register('HtmlObject');
 //have its class set to "moveArea". Set restrictedMovingArea to false if you use the HTML
 //element for diplaying purposes only.
 
-HtmlTest.restrictedMovingArea = true;
+HtmlObject.restrictedMovingArea = true;
 HtmlObject.isCreatable=false;
 
 module.exports=HtmlObject;

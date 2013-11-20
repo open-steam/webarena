@@ -18,8 +18,6 @@ HtmlTest.register=function(type){
 	
 }
 
-
-
 HtmlTest.register('HtmlTest');
 HtmlTest.isCreatable=true;
 
