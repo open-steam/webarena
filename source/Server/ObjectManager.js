@@ -491,6 +491,8 @@ ObjectManager.countSubrooms = function (roomID, context) {
 	return counter;
 }
 
+
+//TODO: outsource helpers
 var falseToError = function (message, cb) {
 	return function (err, res) {
 		if (err) cb(err, null);
@@ -511,7 +513,6 @@ var mayReadMultiple = function (fromRoom, files, context, cb) {
 		if (err) cb(err, null);
 		else cb(null, true);
 	});
-
 }
 
 
@@ -534,6 +535,8 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 
 	var idList = [];
 
+	//go through all rooms with new room id
+	//  go through the subrooms and references of the room and update the room ids to the corresponding new ids.
 	var updateRoomIds = function (callback) {
 		for (var key in roomTranslationList) {
 			var inventory = Modules.Connector.getInventory(roomTranslationList[key], context);
@@ -546,23 +549,24 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 		callback();
 	}
 
+	//inner function to do the "main work" recursive for all nested rooms
 	var myInnerFunction = function (dataInner, cbi) {
 		var newObjects = [];
 		var fromRoom = dataInner.fromRoom;
 		var toRoom = dataInner.toRoom;
 		var objectKeys = dataInner.objects;
 		if (objectKeys === "ALL") {
-			var asdf = Modules.Connector.getInventory(fromRoom, context);
+			var inventoryObjects = Modules.Connector.getInventory(fromRoom, context);
 			objectKeys = [];
-			for(var i = 0 ; i < asdf.length; i++){
-				if(asdf[i].id !== "undefined"){
-					objectKeys.push(asdf[i].id);
+			for(var i = 0 ; i < inventoryObjects.length; i++){
+				if(inventoryObjects[i].id !== "undefined"){
+					objectKeys.push(inventoryObjects[i].id);
 				}
 			}
 		}
 		if(objectKeys === undefined) objectKeys = [];
 
-
+		//find all unique objects - als traverse the linked objects
 		var uniqueObjects = {};
 		var findUniqueRelatedObjectsIds = function (objectId) {
 			var object = ObjectManager.getObject(fromRoom, objectId, context);
@@ -575,6 +579,8 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 		}
 		objectKeys.forEach(findUniqueRelatedObjectsIds);
 
+		//is called after call object were copied
+		//updated some properties + visual arrangement
 		var updateObj = function (callback) {
 			newObjects.forEach(function (object) {
 				object.updateLinkIds(idTranslationList); //update links
@@ -613,9 +619,11 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 			callback();
 		}
 
+
 		var toWriteCheck = function (cb) {
 			Modules.Connector.mayInsert(toRoom, context, falseToError("Can't insert into the target room!", cb));
 		}
+
 
 		var innerReadCheck2 = function (cb) {
 			mayReadMultiple(fromRoom, Object.keys(uniqueObjects), context, cb);
@@ -625,12 +633,16 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 		var objectCopyTasks = [];
 		var roomCopyTasks = [];
 
+		//check permissions and if successful
+		//go on with further work
 		async.series([innerReadCheck2, toWriteCheck],  function (err) {
 			//TODO send error to cb
 			if (err) console.log("Error: " + err);
 			else {
-				for (var objectId123 in uniqueObjects) {
-					var object = uniqueObjects[objectId123];
+				for (var someObject in uniqueObjects) {
+					var object = uniqueObjects[someObject];
+
+					//if room we have to copy it recursively
 					if (object.getType() === "Subroom") {
 						var roomData = {};
 						roomData.fromRoom = object.getAttribute("destination");
@@ -668,18 +680,21 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 								callback();
 							});
 						});
-					})(objectId123);
+					})(someObject);
 				}
+
+				//execute the copy tasks
 				var tasks = roomCopyTasks.concat( objectCopyTasks);
 				async.series( tasks , function(err, res){
 					updateObj(cbi);
 				});
 			}
 		});
-
-
 	}
 
+	//Do the recursive copies etc.
+	//When finished update the room IDs
+	//In the end we can call the outer callback - we finished our task.
 	async.series([function(cb){myInnerFunction(data, cb)}, updateRoomIds], cbo);
 
 }
