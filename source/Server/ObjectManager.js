@@ -448,7 +448,7 @@ var mayReadMultiple = function (fromRoom, files, context, cb) {
 ObjectManager.duplicateNew = function (data, context, cbo) {
 	var cut = data.cut;
 
-	var attributes = data.attributes;
+	var attributes = data.attributes || {};
 	var idTranslationList = {};
 	var reverseIdTranslationList = {};
 	var roomTranslationList = {};
@@ -522,7 +522,7 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 				}
 
 				// set attributes sent by frontend (e.g. new position when moving objects in concurrent view)
-				if (attributes[reverseIdTranslationList[object.id]] != undefined) {
+				if (attributes[reverseIdTranslationList[object.id]] !== undefined) {
 					for (var key in attributes[reverseIdTranslationList[object.id]]) {
 						object.setAttribute(key, attributes[reverseIdTranslationList[object.id]][key]);
 					}
@@ -530,9 +530,10 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 
 				object.updateClients();
 
-				if (object.hasContent()) {
-					object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
-				}
+				//TODO update clients
+//				if (object.hasContent()) {
+//					object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
+//				}
 
 				idList.push(object.id);
 			});
@@ -615,7 +616,9 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 	//Do the recursive copies etc.
 	//When finished update the room IDs
 	//In the end we can call the outer callback - we finished our task.
-	async.series([function(cb){myInnerFunction(data, cb)}, updateRoomIds], cbo);
+	async.series([function(cb){myInnerFunction(data, cb)}, updateRoomIds], function(){
+		cbo(idList);
+	});
 
 }
 
