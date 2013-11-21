@@ -48,7 +48,7 @@ theObject.duplicationLogic = function(enteredObject){
 
 	}
 
-	Modules.ObjectManager.duplicate(this.context.socket, requestData, false, sendExecutedHandler);
+	Modules.ObjectManager.duplicateNew(requestData, this.context, sendExecutedHandler);
 }
 
 
