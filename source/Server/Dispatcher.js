@@ -104,7 +104,10 @@ Dispatcher.registerCall('duplicateObjects', function(socket, data, responseID){
 	Modules.ObjectManager.duplicateNew(data, context, wrapper(socket, responseID));
 });
 
-
+Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ObjectController.executeServersideAction(data, context, wrapper(socket, responseID));
+});
 
 
 function infoWrapper(socket){
