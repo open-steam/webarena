@@ -239,7 +239,7 @@ ObjectManager.createObject = function (roomID, type, attributes, content, contex
 		}
 
 		Modules.EventBus.emit("room::" + roomID + "::action::createObject", {objectID: id});
-		callback(null, object.id);
+		callback(false, object);
 	});
 }
 

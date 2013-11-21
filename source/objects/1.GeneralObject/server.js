@@ -356,6 +356,15 @@ theObject.getContent.neededRights = {
     read : true
 }
 
+theObject.getContentAsString=function(callback){
+	if (callback === undefined) {
+		return GeneralObject.utf8.parse(this.getContent());
+	} else {
+		this.getContent(function(content){
+			callback(GeneralObject.utf8.parse(this.content));
+		});
+	}
+}
 
 
 /**
