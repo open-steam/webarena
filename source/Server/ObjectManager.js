@@ -524,28 +524,6 @@ var mayReadMultiple = function (fromRoom, files, context, cb) {
  * 4. Change destinations
  * 5. Update object link targets
  */
-ObjectManager.dupdup = function(data, context, cbo){
-	var cut = data.cut;
-	var idTranslationList = {};
-	var reverseIdTranslationList = {};
-	var roomTranslationList = {};
-
-	var  myInnerDupdup = function(){
-
-	}
-}
-
-
-
-/**
- * 1. Get specified objects (or all of room)
- * 2. Get related objects
- * 3. Copy objects to target room /recursive
- *  3.1 after each recursion-step update objects in room
- *  3.2 after finishing recursion update the room structures
- * 4. Change destinations
- * 5. Update object link targets
- */
 ObjectManager.duplicateNew = function (data, context, cbo) {
 	var cut = data.cut;
 
@@ -672,8 +650,6 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 					//need function scope because "looping problem" //TODO: link to example
 					(function(id){
 						objectCopyTasks.push(function (callback) {
-							console.log(id);
-
 							Modules.Connector.duplicateObject(fromRoom,toRoom, id, context, function (err, newId, oldId) {
 								if (err) console.log("Error: " + err);
 
