@@ -15,7 +15,7 @@
 	        var tempClone = {};
 	
 	        if (typeof(oldObject) == "object")
-	            for (prop in oldObject)
+	            for (var prop in oldObject)
 	                // for array use private method getCloneOfArray
 	                if ((typeof(oldObject[prop]) == "object") &&
 	                                (oldObject[prop]).__isArray)
