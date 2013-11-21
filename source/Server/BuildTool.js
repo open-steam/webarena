@@ -1,3 +1,9 @@
+/**
+ * Provides mechanisms to create the client code.
+ */
+
+"use strict";
+
 var fs = require('fs');
 
 var  BuildTool = {}
