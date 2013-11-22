@@ -5,7 +5,7 @@ var elabConnector=require('./FileConnector.js');
 elabConnector.elabConnections = {};
 elabConnector.externalSessions = {};
 
-elabConnector.login=function(username,password,externalSession,rp,context){
+elabConnector.login=function(username,password,externalSession,context, rp){
 
 	var self = this;
 

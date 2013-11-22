@@ -7,7 +7,7 @@ bidConnector.bidRights = {};
 
 bidConnector.externalSessions = {};
 
-bidConnector.login=function(username,password,externalSession,rp,context){
+bidConnector.login=function(username,password,externalSession,context, rp){
 
 	var self = this;
 

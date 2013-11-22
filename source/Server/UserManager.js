@@ -102,7 +102,7 @@ UserManager.login=function(socketOrUser,data){
 	var socketServer=Modules.SocketServer;
 	
 	//try to login on the connector
-	connector.login(data.username,data.password, data.externalSession, function(data){
+	connector.login(data.username,data.password, data.externalSession, connection, function(data){
 		
 		//if the connector returns data, login was successful. In this case
 		//a new user object is created and a loggedIn event is sent to the
@@ -150,7 +150,7 @@ UserManager.login=function(socketOrUser,data){
 			socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
 		}
 		
-	}, connection);
+	});
 	
 }
 
