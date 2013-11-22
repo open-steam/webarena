@@ -466,32 +466,23 @@ fileConnector.getContentStream = function(roomID,objectID,context){
 *
 *	remove an object from the persistence layer
 */
-fileConnector.remove=function(roomID,objectID,context){
+fileConnector.remove=function(roomID,objectID,context, callback){
+	var that = this;
 	
 	this.Modules.Log.debug("Remove object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 
-	try {
+	var objectBase = this.Modules.Config.filebase + '/' + roomID + "/" + objectID;
+	var files = ['.object.txt', '.content', '.preview'].map(function( ending ){
+		return objectBase + ending;
+	});
 	
-		var filebase=this.Modules.Config.filebase;
-
-		var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
-
-		fs.unlink(filename, function (err) {});
-
-		var filename=filebase+'/'+roomID+'/'+objectID+'.content';
-
-		fs.unlink(filename, function (err) {});
-
-		var filename=filebase+'/'+roomID+'/'+objectID+'.preview';
-
-		fs.unlink(filename, function (err) {});
-	
-	} catch (e) {
-		this.Modules.Log.error("Could not remove file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	}
-	
+	async.each(files, fs.unlink, function(err, resp){
+		if(callback){
+		callback();
+		}
+	});
 }
 
 /**
