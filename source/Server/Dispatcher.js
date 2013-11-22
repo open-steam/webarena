@@ -27,11 +27,9 @@ Dispatcher.call=function(socket,message){
 	if (calls[type]){
 		process.nextTick(function(){ 
 
-			var response=calls[type](socket,data,responseID); 		// this is still blocking, swtich to callbacks if necessary
+			var response=calls[type](socket,data,responseID); 		//TODO: this is still blocking, swtich to callbacks if necessary
 
 			//TODO: Fire an event
-
-
 				/**
 				*	Clients can provide a unique responseID when calling a function on the server. If the
 				*	function called has a result other than undefined and a responseID is given, the response
@@ -109,7 +107,12 @@ Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
 	Modules.ObjectController.executeServersideAction(data, context, wrapper(socket, responseID));
 });
 
-
+/**
+ * Creates a callback function that sends the result as an info message to the client.
+ *
+ * @param socket
+ * @returns {Function}
+ */
 function infoWrapper(socket){
 	return function(err, message){
 		if(err) Modules.SocketServer.sendToSocket(socket, 'error', err.message);
@@ -117,6 +120,13 @@ function infoWrapper(socket){
 	};
 }
 
+/**
+ * Creates a callback function that sends the result message to the client.
+ *
+ * @param socket
+ * @param responseID
+ * @returns {Function}
+ */
 function wrapper(socket, responseID){
 	return function(err, data){
 		if(err){
