@@ -326,7 +326,7 @@ theObject.setContent.neededRights = {
 
 theObject.copyContentFromFile=function(filename,callback) {
 
-	Modules.Connector.copyContentFromFile(this.inRoom, this.id, filename, callback, this.context);
+	Modules.Connector.copyContentFromFile(this.inRoom, this.id, filename, this.context, callback);
 	
 	this.set('hasContent',true);
 	this.set('contentAge',new Date().getTime());

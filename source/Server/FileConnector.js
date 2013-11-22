@@ -382,7 +382,7 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
 *	if a callback function is specified, it is called after saving
 *
 */
-fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, callback,context) {
+fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, context, callback) {
 	var that = this
 	this.Modules.Log.debug("Copy content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', source: '"+sourceFilename+"')");
 	
@@ -731,37 +731,27 @@ fileConnector.trimImage=function(roomID, objectID, context, callback) {
 						if (!err) {
 
 							//save new content:
-							self.copyContentFromFile(roomID, objectID, filename, function() {
+							self.copyContentFromFile(roomID, objectID, filename, context, function() {
 							
 								//delete temp. file
 								fs.unlink(filename);
 							
 								callback(dX, dY, newWidth, newHeight);
 								
-							},context);
+							});
 							
 						} else {
 							//TODO: delete temp. file
 							self.Modules.Log.error("Error while trimming "+roomID+"/"+objectID);
 						}
-
 					});
-
 				} else {
 					console.log(err);
 					self.Modules.Log.error("Error getting trim information of "+roomID+"/"+objectID);
 				}
-
 			});
-
-
-
 		});
-		
 	});
-	
-	
-	
 };
 
 
