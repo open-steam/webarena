@@ -6,12 +6,23 @@ var RoomController = {}
 
 var Modules = false;
 
-
-
-
-
 RoomController.init = function(theModules){
 	Modules = theModules;
+}
+
+RoomController.duplicateRoom = function(data, context, callback){
+	var roomID = data.fromRoom;
+    var newRoomID = data.toRoom;
+
+	//TODO: it is really ugly that getRoomData is used to create a room
+	var newRoom = Modules.Connector.getRoomData(newRoomID, context, undefined, "public"); //TODO: don't use public as parent
+
+	var requestData = {
+		objects : "ALL",
+		fromRoom : roomID,
+		toRoom : newRoomID
+	};
+	Modules.ObjectManager.duplicateNew(requestData, context, callback);
 }
 
 RoomController.createObject = function(data, context, callback){
@@ -55,6 +66,7 @@ RoomController.informAllInRoom =  function (data, callback) {
  *	sendRoom
  *
  *	sends a rooms content to a client (given by its socket)
+ * TODO: there should be no socket! We are inside of a controller
  *
  */
 RoomController.sendRoom=function(socket, roomID, index){

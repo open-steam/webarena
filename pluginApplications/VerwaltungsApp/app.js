@@ -19,15 +19,21 @@ VerwaltungsApp.init = function(eventBus){
 		//naming of the template rooms should follow the convention:
 		//Dezernat4_Berufungsverfahren_Template
 		//PARTICIPANT_Berufungsverfahren_Template
-		var participants = ["Dezernat1", "Dezernat4", "FakultätX"];
+		var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
 
 		participants.forEach(function(part){
 			//send command to copy the room
-			eventBus.emit("rpc::server",{
-				method : "duplicateRoom",
-				//args: from, to
-				arguments : [part + "_Berufungsverfahren_Template", part]
+//			eventBus.emit("rpc::server",{
+//				method : "duplicateRoom",
+//				//args: from, to
+//				arguments : [part + "_Berufungsverfahren_Template", part]
+//			});
+			eventBus.emit("copyRoom", {
+				fromRoom : part + "_Berufungsverfahren_Template",
+				toRoom : part + "_" +(Math.random() * 10000 ),  //TODO change so better naming with UUID
+				callback : function(){console.log("App got answer...")}
 			});
+
 		});
 	});
 }

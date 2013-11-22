@@ -34,6 +34,7 @@ var printLogo = function(){
 process.on('uncaughtException', function (err) {
 	console.log('##### UNCAUGHT EXCEPTION');
 	console.log(err);
+	Modules.Log.error(err);
 });
 
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
@@ -86,6 +87,8 @@ Modules.Connector=Modules.config.connector; //shortcut
 Modules.RoomController = require('./Server/controllers/RoomController.js');
 Modules.ObjectController = require('./Server/controllers/ObjectController.js');
 Modules.ServerController = require('./Server/controllers/ServerController.js');
+
+Modules.InternalAPI = require('./Server/apihandler/InternalAPI.js');
 
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports=Modules;
