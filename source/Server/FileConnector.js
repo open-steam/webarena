@@ -72,7 +72,7 @@ fileConnector.getTrashRoom = function(context, callback){
 
 
 fileConnector.listRooms = function(callback){
-	var filebase = this.Modules.Config.filebase;
+	var filebase = fileConnector.Modules.Config.filebase;
 	fs.readdir(filebase, function(err, files){
 		if(err){
 			//TODO
@@ -80,21 +80,19 @@ fileConnector.listRooms = function(callback){
 
 		var isRoom = function(file, callback){
 			if(/^\./.exec(file)){
-				callback(false);
-				return;
+				return callback(false);
 			}
 			file = filebase + file;
 			fs.stat(file, function(err, result){
 				if(err){
-					callback(err, null);
-					return;
+					return callback(err, null);
 				}
 				callback(result.isDirectory());
 			});
 		}
 
 		async.filter(files,isRoom, function( directories){
-			callback(directories);
+			callback(null, directories);
 		});
 	});
 
@@ -160,7 +158,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 	var files=fs.readdirSync(filebase+'/'+roomID);
 
-    files=(files)?files:[];
+    files= files || [];
 
 	files.forEach(function(value,index){
 		var position=value.indexOf('.object.txt');
@@ -243,38 +241,51 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 *
 */
 fileConnector.getRoomHierarchy=function(roomID,context,callback){
+	var self=this;
 	var result = {
 		'rooms' : {},
 		'relation' : {},
 		'roots' : []
 	};
 
+	//filter only "accessible" rooms
+	var filter = function(folders, cb){
+		async.filter(folders,
+			//Filter function
+			function(folder, cb1){
+				self.mayEnter(folder, context, function(err, res){
+					if(err) cb1(false);
+					else cb1(res);
+				});
+			},
+			//Response function
+			function(results){
+				cb(null, results);
+			}
+		);
+	}
 
-	var files = fs.readdirSync(this.Modules.Config.filebase);
-    files = (files) ? files : [];
-
-    var self=this;
-	files.forEach(function(value,index) {
-		var obj=self.getObjectDataByFile(value,value);
-			
-		if (obj) {
-			self.mayEnter(obj.id, context, function(err, mayEnter) {
-				if (mayEnter) {
-					result.rooms[value] = ''+obj.attributes.name;
+	var buildTree = function(files, cb){
+		files.forEach(function(file){
+			var obj = self.getObjectDataByFile(file,file);
+			result.rooms[file] = '' + obj.attributes.name;
 					if (obj.attributes.parent !== undefined) {
 						if (result.relation[obj.attributes.parent] === undefined) {
-							result.relation[obj.attributes.parent] = new Array(''+value);
+					result.relation[obj.attributes.parent] = new Array(''+file);
 						} else {
-							result.relation[obj.attributes.parent].push(''+value);
+					result.relation[obj.attributes.parent].push(''+file);
 						}
 					} else {
-						result.roots.push(''+value);
+				result.roots.push(''+file);
 					}
-				}
-				returnResults();
 			});
-		} else returnResults();
+		cb(null, result);
+	}
+
+	async.waterfall([self.listRooms, filter, buildTree], function(err, res){
+		callback(res);
 	});
+
 }
 
 /**
