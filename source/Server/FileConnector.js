@@ -122,7 +122,7 @@ fileConnector.mayDelete=function(roomID,objectID,connection,callback) {
 }
 
 fileConnector.mayEnter=function(roomID,connection,callback) {
-	callback(true);
+	callback(null, true);
 }
 
 /**
@@ -249,23 +249,16 @@ fileConnector.getRoomHierarchy=function(roomID,context,callback){
 		'roots' : []
 	};
 
+
 	var files = fs.readdirSync(this.Modules.Config.filebase);
     files = (files) ? files : [];
-
-    var resultCounter = 0;
-    var returnResults = function() {
-    	resultCounter++;
-    	if (resultCounter === files.length) {
-	    	callback(result);
-		}
-    }
 
     var self=this;
 	files.forEach(function(value,index) {
 		var obj=self.getObjectDataByFile(value,value);
 			
 		if (obj) {
-			self.mayEnter(obj.id, context, function(mayEnter) {
+			self.mayEnter(obj.id, context, function(err, mayEnter) {
 				if (mayEnter) {
 					result.rooms[value] = ''+obj.attributes.name;
 					if (obj.attributes.parent !== undefined) {

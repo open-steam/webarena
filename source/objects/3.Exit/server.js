@@ -40,7 +40,7 @@ theObject.browse = function(data, callback) {
             callback(result);
         });
     } else {
-        Modules.Connector.mayEnter(roomId, this.context, function(mayEnter) {
+        Modules.Connector.mayEnter(roomId, this.context, function(err, mayEnter) {
             if (mayEnter) {
                 // get inventory of room with roomId
                 var room = Modules.ObjectManager.getObject(roomId, roomId, self.context);
@@ -63,7 +63,7 @@ theObject.browse = function(data, callback) {
                     }
 
                     if (inventory[key].getAttribute("type") === "Subroom" && inventory[key].getAttribute("destination") !== undefined) {
-                        Modules.Connector.mayEnter(inventory[key].getAttribute("destination"), self.context, function(mayEnter) {
+                        Modules.Connector.mayEnter(inventory[key].getAttribute("destination"), self.context, function(err, mayEnter) {
                             if (mayEnter) {
                                 var object = Modules.ObjectManager.getObject(inventory[key].getAttribute("destination"), inventory[key].getAttribute("destination"), self.context);
 

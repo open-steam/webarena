@@ -184,7 +184,7 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 	var user=connection.user;
 
 	//try to enter the room on the connector
-	connector.mayEnter(roomID,connection, function(mayEnter) {
+	connector.mayEnter(roomID,connection, function(err, mayEnter) {
 
 		//if the connector responds true, the client is informed about the successful entering of the room
 		//and all clients in the same rooms get new awarenessData.
