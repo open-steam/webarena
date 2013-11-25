@@ -357,9 +357,7 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
             var contentBuffer = new Buffer(content);
 
             for (var j = 0; j < contentBuffer.length; j++) {
-
                 byteArray.push(contentBuffer.readUInt8(j));
-
             }
 
             content = byteArray;
@@ -373,10 +371,6 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
             if (after) after(objectID);
         });
     }
-
-
-
-	
 }
 
 
@@ -522,8 +516,6 @@ fileConnector.createObject=function(roomID,type,data, context, callback){
 }
 
 
-
-
 /**
 *	duplicateObject
 *
@@ -587,38 +579,24 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 
 				/* check if preview exists */
 				if (path.existsSync(previewFilename)) {
-
 					/* copy preview */
 					copyFunc(previewFilename, previewFilenameNew, function() {
 						/* object preview copied */
-
 						cb();
 						return true;
-
 					});
-
 				} else {
-
 					cb();
 					return true;
 				}
-				
 			});
-
 		} else {
-
 			cb();
 			return true;
 		}
-		
 	});
 
 }
-
-
-
-
-
 
 
 /**
