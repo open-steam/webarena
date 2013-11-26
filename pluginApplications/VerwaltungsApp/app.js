@@ -1,6 +1,9 @@
 var config = require('./config.js');
+var uuid = require('node-uuid');
 
 var VerwaltungsApp = {};
+
+
 
 VerwaltungsApp.init = function(eventBus){
 	console.log("init plugin...")
@@ -12,6 +15,21 @@ VerwaltungsApp.init = function(eventBus){
 		}
 	});
 
+	eventBus.on("applicationevent::kokoa::initMasterRooms", function(){
+		console.log("start init master rooms...");
+
+		var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
+
+		participants.forEach(function(part){
+			eventBus.emit("copyRoom", {
+				fromRoom : "Overview_Template",
+				toRoom : "Overview_Instance_" + part,
+				callback : function(){console.log("App got answer...")}
+			});
+		});
+
+	});
+
 	eventBus.on("applicationevent::kokoa::initProcess", function(){
 		console.log("start init...");
 		//create room instances for all parties
@@ -20,20 +38,18 @@ VerwaltungsApp.init = function(eventBus){
 		//Dezernat4_Berufungsverfahren_Template
 		//PARTICIPANT_Berufungsverfahren_Template
 		var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
+		var instanceId = uuid.v4();
 
 		participants.forEach(function(part){
 			//send command to copy the room
-//			eventBus.emit("rpc::server",{
-//				method : "duplicateRoom",
-//				//args: from, to
-//				arguments : [part + "_Berufungsverfahren_Template", part]
-//			});
 			eventBus.emit("copyRoom", {
 				fromRoom : part + "_Berufungsverfahren_Template",
-				toRoom : part + "_" +(Math.random() * 10000 ),  //TODO change so better naming with UUID
-				callback : function(){console.log("App got answer...")}
+				toRoom : part + "_Berufungsverfahren_Instance_" + instanceId,
+				parentRoom : "Overview_Instance_" + part,
+				callback : function(){
+					console.log("App got answer...")
+				}
 			});
-
 		});
 	});
 }
