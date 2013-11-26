@@ -22,4 +22,8 @@ Button.moveByTransform = function () {
 	return false;
 }
 
+Button.isResizable=function(){
+	return false;
+}
+
 module.exports = Button;
