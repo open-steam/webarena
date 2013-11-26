@@ -68,6 +68,7 @@ RoomController.createObject = function(data, context, callback){
 	Modules.Connector.mayInsert(roomID, context, afterRightsCheck)
 }
 
+//TODO: remove? combine with "browse" of exit object
 RoomController.listRooms = function(callback){
 	Modules.Connector.listRooms(callback)
 }
