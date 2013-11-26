@@ -29,7 +29,7 @@ theObject.browse = function(data, callback) {
                 node.metadata = { 
                     "id" : ''+hierarchy.roots[key], 
                     "name" : ''+hierarchy.rooms[hierarchy.roots[key]],
-                    "type" : "Room",
+                    "type" : "Room"
                 };
                 if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
                     node.state = "closed";

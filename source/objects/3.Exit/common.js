@@ -62,11 +62,14 @@ Exit.execute=function(openInNewWindow){
 			}
 		}
 
-		if (openInNewWindow)
-		{ console.log("new window"); window.open(destination); }
-		else
-		{ console.log("follow"); ObjectManager.loadRoom(destination,false,ObjectManager.getIndexOfObject(this.getAttribute('id')),callback); }
-		
+		if (openInNewWindow) {
+			console.log("new window");
+			window.open(destination);
+		} else {
+			console.log("follow");
+			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
+		}
+
 		//window.location.href = "/room/"+destination;
 	}
 }

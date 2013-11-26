@@ -5,8 +5,6 @@ var Button = Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 Button.register = function (type) {
 	GeneralObject = Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this, type);
-	var that = this;
-
 
 	this.registerAttribute('linesize', {hidden: true});
 	this.registerAttribute('linecolor', {hidden: true});

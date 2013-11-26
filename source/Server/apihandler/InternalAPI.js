@@ -17,7 +17,6 @@ InternalAPI.init = function(theModules){
 				username : "server",
 				password : "server"
 			}
-
 		};
 
 		Modules.RoomController.duplicateRoom(data, context, data.callback);
