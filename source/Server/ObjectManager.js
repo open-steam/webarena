@@ -382,6 +382,8 @@ ObjectManager.undo = function (data, context, callback) {
  *  getRoom
  *
  *  returns the a room object for a given roomID
+ *
+ *  TODO: callback should be last parameter
  **/
 ObjectManager.getRoom = function (roomID, context, callback, oldRoomId) {
 
@@ -528,13 +530,7 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 					}
 				}
 
-				object.updateClients();
-
-				//TODO update clients
-//				if (object.hasContent()) {
-//					object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
-//				}
-
+				//object.updateClients();
 				idList.push(object.id);
 			});
 			callback();
@@ -558,7 +554,7 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 		//go on with further work
 		async.series([innerReadCheck2, toWriteCheck],  function (err) {
 			//TODO send error to cb
-			if (err) console.log("Error: " + err);
+			if (err) cbi(err, null);
 			else {
 				for (var someObject in uniqueObjects) {
 					var object = uniqueObjects[someObject];
@@ -616,8 +612,9 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 	//Do the recursive copies etc.
 	//When finished update the room IDs
 	//In the end we can call the outer callback - we finished our task.
-	async.series([function(cb){myInnerFunction(data, cb)}, updateRoomIds], function(){
-		cbo(idList);
+	async.series([function(cb){myInnerFunction(data, cb)}, updateRoomIds], function(err){
+		if(err) cbo(err, null);
+		else cbo(null, idList);
 	});
 
 }
