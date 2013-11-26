@@ -1,30 +1,37 @@
-Button.clickHandler = function(event) {
+Button.clickHandler = function (event) {
 
 	event.stopPropagation();
 	event.preventDefault();
 	var myEvent = this.getAttribute("event");
 
 	this.serverCall("fireEvent", myEvent, {
-		objectID : this.id
+		objectID: this.id
 	});
 }
 
-Button.dblclickHandler = function(event){
+Button.dblclickHandler = function (event) {
 	event.stopPropagation();
 	event.preventDefault();
 }
 
-Button.createRepresentation = function () {
+Button.draw = function (external) {
+	GeneralObject.draw.call(this, external);
 
+	var rep = this.getRepresentation();
+	var label = this.getAttribute("name");
+	$(rep).find("button").html(label);
+}
+
+Button.createRepresentation = function () {
 	var rep = GUI.svg.other("foreignObject");
 	rep.dataObject = this;
 	var body = document.createElement("body");
+	var label = this.getAttribute("name");
 
-	$(body).append("<button>Test123</button>");
+	$(body).append('<button>' + label + '</button>');
+
 	$(rep).append(body);
 	$(rep).attr("id", this.getAttribute('id'));
-
-	console.log("recreate...");
 
 	return rep;
 }
