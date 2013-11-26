@@ -13,9 +13,30 @@ RoomController.init = function(theModules){
 RoomController.duplicateRoom = function(data, context, callback){
 	var roomID = data.fromRoom;
     var newRoomID = data.toRoom;
+	var parent = data.parentRoom ;
 
 	//TODO: it is really ugly that getRoomData is used to create a room
-	var newRoom = Modules.Connector.getRoomData(newRoomID, context, undefined, "public"); //TODO: don't use public as parent
+	if(parent){
+		Modules.Connector.getRoomData(newRoomID, context, undefined, parent); //TODO: set parent if necessary
+		//TODO add subroom object to parent
+
+		//Subroom item
+		var subRoomItemData = {
+			roomID : parent,
+			type : "Subroom",
+			attributes : {
+				name : newRoomID,
+				destination : newRoomID
+			}
+		}
+
+		//TODO: callback
+		this.createObject(subRoomItemData, context, function(){
+			console.log("Created item....");
+		});
+	} else {
+		Modules.Connector.getRoomData(newRoomID, context, undefined); //TODO: set parent if necessary
+	}
 
 	var requestData = {
 		objects : "ALL",
