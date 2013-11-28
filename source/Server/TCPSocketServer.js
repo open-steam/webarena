@@ -7,64 +7,38 @@ var _ = require("lodash");
 
 var DEFAULT_PORT = 8125;
 var TCPSocketServer = {};
-var theModules = false;
+
 
 var JsonSocket = require('json-socket');
 
+TCPSocketServer.tcpDispatcher = require('./apihandler/TcpDispatcher.js');
 
-var onConnectionEnd = function () {
-	console.log("Ended connection");
+TCPSocketServer.modules = false;
+
+TCPSocketServer.requestToEvent = function(request, connection){
+	if (!request.requestType) {
+		return connection.sendMessage({"error": "missing argument: requestType."});
+	}
+
+	var eventData = {
+		connection : connection
+	}
+
+	eventData = _.extend(eventData, request);
+	this.tcpDispatcher.emit(request.requestType, eventData);
 }
 
-
-
-var subscriptionHandle = function(connection, parsedRequest){
-	var toSubscribe = parsedRequest.eventlist;
-	if(!parsedRequest.eventlist){
-		connection.sendMessage( {error: "Missing eventlist"});
-		return;
-	}
-	if(!_.isArray(toSubscribe))toSubscribe = [toSubscribe];
-
-	toSubscribe.forEach(function (eventParam) {
-		theModules.EventBus.on(eventParam, function (eventData) {
-
-			var eventEnvelope = {
-				eventName: this.event,
-				eventData: eventData
-			};
-
-			connection.sendMessage(eventEnvelope);
-		})
-	});
-	connection.sendMessage({"status": "ok"});
-}
-
-
-/**
- * Handles incoming data
- *
- * @param connection - the tcp connection
- * @param data - incoming Data
- */
-var dataHandle = function(connection, parsedRequest){
-	if (!parsedRequest.requestType){
-		connection.sendMessage({"error": "missing argument: requestType."});
-		return;
-	}
-	else if (parsedRequest.requestType === "subscribeEvents") {
-		subscriptionHandle(connection, parsedRequest);
-	}
-}
 
 TCPSocketServer.init = function (modules) {
 	var that = this;
-	theModules = modules;
+	this.modules = modules;
+
+	this.tcpDispatcher.init(modules);
 
 	var server = net.createServer(function (connection) {
 		var jsonconnection = new JsonSocket(connection);
 		jsonconnection.on('message', function (data) {
-			dataHandle(jsonconnection, data);
+			that.requestToEvent(data, jsonconnection);
 		});
 
 		jsonconnection.on('end', onConnectionEnd);
@@ -73,6 +47,10 @@ TCPSocketServer.init = function (modules) {
 	server.listen(DEFAULT_PORT, function () {
 		console.log("TCP Server startet");
 	});
+}
+
+var onConnectionEnd = function () {
+	console.log("Ended connection");
 }
 
 var createServer = function () {
