@@ -82,9 +82,6 @@ GeneralObject.fetchContent=function(worker, forced){
 	//Do not use "this" in response fucntions as they do not refer to the object in there!
 	
 	var functionLoadedCallback = function(newContent){
-		if (!newContent){
-			alert('Got empty new content for '+this);
-		}
 		that.content=newContent;
 		that.contentFetched=true;
 		worker(newContent);
