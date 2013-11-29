@@ -354,12 +354,13 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
 
         }
 
-        fs.writeFile(filename, new Buffer(content), function (err) {
-            if (err) {
-                this.Modules.Log.error("Could not write content to file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-            }
-            if (after) after(objectID);
-        });
+		try {
+			fs.writeFileSync(filename, new Buffer(content));
+		} catch (err) {
+            this.Modules.Log.error("Could not write content to file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+        }
+		if (after) after(objectID);
+    
     }
 
 
@@ -693,21 +694,6 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 
 	return data;
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 fileConnector.trimImage=function(roomID, objectID, callback, context) {

@@ -204,7 +204,7 @@ theObject.makeStructuring=function(){
 		
 		//when a structuring object is moved, every active object may be in need of repositioning
 		
-		console.log('obObjectMove on structuring object '+this);
+		console.log('onObjectMove on structuring object '+this);
 		
 		this.getRoom().placeActiveObjects();
 	}
@@ -361,7 +361,7 @@ theObject.getContentAsString=function(callback){
 		return GeneralObject.utf8.parse(this.getContent());
 	} else {
 		this.getContent(function(content){
-			callback(GeneralObject.utf8.parse(this.content));
+			callback(GeneralObject.utf8.parse(content));
 		});
 	}
 }
@@ -432,8 +432,11 @@ theObject.evaluatePositionInt=function(data){
 
 
 theObject.getRoom=function(callback){
+	
+	//save the room differenty. This is a hack 
+	
 	if (!this.context) return;
-	return this.context.room;
+	return this.context.rooms['left'];
 }
 
 theObject.getBoundingBox=function(){

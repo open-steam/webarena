@@ -73,7 +73,6 @@ GeneralObject.fetchContent=function(worker, forced){
 	}
 
 	if (this.contentFetched && forced !== true) {
-		console.log('Using old content '+this.content);
 		worker(this.content);
 		return;
 	}

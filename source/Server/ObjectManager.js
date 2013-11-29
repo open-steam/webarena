@@ -51,7 +51,7 @@ ObjectManager.sendRoom=function(socket, roomID, index){
 		Modules.ObjectManager.getInventory(roomID, context, function(objects) {
 			for (var i in objects){
 				var object = objects[i];
-				object.context.room = object.context.rooms[index];
+				//object.context.room = object.context.rooms[index];
 				object.updateClient(socket, 'objectUpdate');	//the object data
 				if (object.hasContent()) {		//and its content if there is some
 					object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
