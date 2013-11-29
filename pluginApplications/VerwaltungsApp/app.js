@@ -3,58 +3,64 @@ var uuid = require('node-uuid');
 
 var VerwaltungsApp = {};
 
+VerwaltungsApp.initAppointmentProcedure = function(){
+	var that = this;
+	//create room instances for all parties
+	//e.g. faculty, dezernate1/4 etc.
+	//naming of the template rooms should follow the convention:
+	//Dezernat4_Berufungsverfahren_Template
+	//PARTICIPANT_Berufungsverfahren_Template
+	var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
+	var instanceId = uuid.v4();
 
-
-VerwaltungsApp.init = function(eventBus){
-	console.log("init plugin...")
-	this.eventBus = eventBus;
-	eventBus.on("**", function(eventData){
-		if(eventData.sourceType && eventData.sourceType === "Tunnel"){
-			console.log("Try to send a mail");
-			sendMail();
-		}
-	});
-
-	eventBus.on("applicationevent::kokoa::initMasterRooms", function(){
-		console.log("start init master rooms...");
-
-		var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
-
-		participants.forEach(function(part){
-			eventBus.emit("copyRoom", {
-				fromRoom : "Overview_Template",
-				toRoom : "Overview_Instance_" + part,
-				callback : function(){console.log("App got answer...")}
-			});
-		});
-
-	});
-
-	eventBus.on("applicationevent::kokoa::initProcess", function(){
-		console.log("start init...");
-		//create room instances for all parties
-		//e.g. faculty, dezernate1/4 etc.
-		//naming of the template rooms should follow the convention:
-		//Dezernat4_Berufungsverfahren_Template
-		//PARTICIPANT_Berufungsverfahren_Template
-		var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
-		var instanceId = uuid.v4();
-
-		participants.forEach(function(part){
-			//send command to copy the room
-			eventBus.emit("copyRoom", {
-				fromRoom : part + "_Berufungsverfahren_Template",
-				toRoom : part + "_Berufungsverfahren_Instance_" + instanceId,
-				parentRoom : "Overview_Instance_" + part,
-				callback : function(){
-					console.log("App got answer...")
-				}
-			});
+	participants.forEach(function (part) {
+		//send command to copy the room
+		that.eventBus.emit("copyRoom", {
+			fromRoom: part + "_Berufungsverfahren_Template",
+			toRoom: part + "_Berufungsverfahren_Instance_" + instanceId,
+			parentRoom: "Overview_Instance_" + part,
+			callback: function () {
+				console.log("App got answer...")
+			}
 		});
 	});
 }
 
-var sendMail = function(){
+VerwaltungsApp.initOverviewRooms = function(){
+	var that = this;
+	var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
+
+	participants.forEach(function (part) {
+		that.eventBus.emit("copyRoom", {
+			fromRoom: "Overview_Template",
+			toRoom: "Overview_Instance_" + part,
+			callback: function () {
+				console.log("App got answer...")
+			}
+		});
+	});
+}
+
+
+VerwaltungsApp.init = function (eventBus) {
+	this.eventBus = eventBus;
+	var that = this;
+	eventBus.on("**", function (eventData) {
+		if (eventData.sourceType && eventData.sourceType === "Tunnel") {
+			that.sendMail();
+		}
+	});
+
+	eventBus.on("applicationevent::kokoa::initMasterRooms", function () {
+		that.initOverviewRooms();
+	});
+
+	eventBus.on("applicationevent::kokoa::initProcess", function () {
+		that.initAppointmentProcedure();
+	});
+}
+
+VerwaltungsApp.sendMail = function () {
 	//TODO create some possibility to add mails to a room
 	var recipient = "viktor.koop@gmail.com" //Modules.config.mailRecipient;
 
@@ -67,7 +73,7 @@ var sendMail = function(){
 	var subject = "Neue Nachricht.";
 	var text = "Sehr geehrter Nutzer, in dem Postfach befindet sich eine neue Nachricht. ";
 
-	var smtpTransport = nodemailer.createTransport("SMTP",{
+	var smtpTransport = nodemailer.createTransport("SMTP", {
 		service: "Hotmail",
 		auth: {
 			user: smtpUser,
@@ -76,14 +82,14 @@ var sendMail = function(){
 	});
 
 	var mailOptions = {
-		"from" : config.tunnel.senderMail ,
-		"to" : recipient,
-		"subject" : subject,
-		"text" : text
+		"from": config.tunnel.senderMail,
+		"to": recipient,
+		"subject": subject,
+		"text": text
 	};
 
-	smtpTransport.sendMail(mailOptions, function(err, response){
-		if(err){
+	smtpTransport.sendMail(mailOptions, function (err, response) {
+		if (err) {
 			console.log("Failed while trying to send a mail.");
 			console.log(err);
 		} else {
@@ -92,10 +98,10 @@ var sendMail = function(){
 	});
 }
 
-function create(){
+function create() {
 	return Object.create(VerwaltungsApp);
 }
 
 module.exports = {
-	create : create
+	create: create
 };
