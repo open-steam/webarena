@@ -73,6 +73,7 @@ GeneralObject.fetchContent=function(worker, forced){
 	}
 
 	if (this.contentFetched && forced !== true) {
+		console.log('Using old content '+this.content);
 		worker(this.content);
 		return;
 	}
@@ -81,6 +82,7 @@ GeneralObject.fetchContent=function(worker, forced){
 	//Do not use "this" in response fucntions as they do not refer to the object in there!
 	
 	var functionLoadedCallback = function(newContent){
+		console.log('got new content '+newContent);
 		that.content=newContent;
 		that.contentFetched=true;
 		worker(newContent);
@@ -92,9 +94,15 @@ GeneralObject.fetchContent=function(worker, forced){
 
 GeneralObject.getContentAsString=function(callback){
 	if (callback === undefined) {
+		if (!this.contentFetched) {
+			alert('Synchronous content access before it has been fetched! Inform the programmer about this issue!');
+			return false;
+		}
 		return GeneralObject.utf8.parse(this.content);
 	} else {
-		callback(GeneralObject.utf8.parse(this.content));
+		this.fetchContent(function(content){
+			callback(GeneralObject.utf8.parse(content));
+		});
 	}
 }
 
@@ -104,6 +112,7 @@ GeneralObject.hasContent=function(){
 
 GeneralObject.contentUpdated=function(){
 	var that=this;
+	this.contentFetched=false;
 	this.fetchContent(function(){
 		that.draw();
 	}, true);
