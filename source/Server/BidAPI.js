@@ -172,12 +172,7 @@ function BidConnection(protocol, host, port, username, password) {
 			
 			res.on('data', function (chunk) {
 				//console.log(chunk);
-<<<<<<< HEAD
- 			});
-
-=======
 			});
->>>>>>> release/1.13.1
 			
 		});
 		
