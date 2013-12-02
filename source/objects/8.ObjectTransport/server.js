@@ -34,18 +34,13 @@ theObject.duplicationLogic = function(enteredObject){
 	/**
 	 * The function is executed after the "tunnel-action" was called, e.g. the file was copied to another room.
 	 */
-	var sendExecutedHandler = function(idList){
+	var sendExecutedHandler = function(err, idList){
 		console.log("copied...with new id: " + idList);
 
 		var copyId = idList[0];
 		var thecopy = Modules.ObjectManager.getObject(requestData.toRoom,  copyId, that.context);
 
-		//TODO: remove timeout - only there for debug purpose
-		setTimeout(function(){
-			console.log("set args to: ∂..." + requestData.fromRoom);
-			thecopy.setAttribute("tunnel_inbox", requestData.fromRoom);
-		}, 2000);
-
+        thecopy.setAttribute("tunnel_inbox", requestData.fromRoom);
 	}
 
 	Modules.ObjectManager.duplicateNew(requestData, this.context, sendExecutedHandler);
@@ -54,6 +49,12 @@ theObject.duplicationLogic = function(enteredObject){
 
 
 theObject.onEnter=function(object,oldData,newData){
-	this.duplicationLogic(object);
+    var that = this;
+
+    //hacky hack...use timeout to prevent some timing bugs (deleted object reappears...)
+    setTimeout(function(){
+        that.duplicationLogic(object);
+    }, 500);
+
 };
 
