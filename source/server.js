@@ -78,7 +78,7 @@ Modules.ActionManager = require('./Common/ActionManager.js');
 
 
 if(Modules.config.tcpApiServer){
-	Modules['TcpEventServer'] = 	require("./Server/TCPSocketServer.js").create();
+	Modules['TcpEventServer'] = 	require("./Server/TcpSocketServer.js").create();
 }
 
 Modules.Connector=Modules.config.connector; //shortcut
