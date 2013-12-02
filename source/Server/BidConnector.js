@@ -19,6 +19,10 @@ bidConnector.login=function(username,password,externalSession,rp,context){
 	}
 	
 	var protocol = (global.config.bidServerIsHttps)?'https':'http';
+<<<<<<< HEAD
+
+=======
+>>>>>>> release/1.13.1
 
 	var BidConnection = require('./BidAPI.js').BidConnection;
 	self.bidConnections[context.socket.id] = new BidConnection(protocol,global.config.bidServer, global.config.bidPort, username, password);
