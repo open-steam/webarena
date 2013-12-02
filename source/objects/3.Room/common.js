@@ -40,6 +40,14 @@ Room.execute=function(){
 	ObjectManager.loadRoom(destination);
 }
 
+Room.hasObject=function(obj){
+	var inventory=this.getInventory();
+	for (var i in inventory){
+		if (inventory[i].id==obj.id) return true;
+	}
+	return false;
+}
+
 Room.register('Room');
 Room.isCreatable=false;
 

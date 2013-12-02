@@ -41,7 +41,7 @@ ObjectManager.registerType = function (type, constr) {
 *	sends a rooms content to a client (given by its socket)
 *
 */
-ObjectManager.sendRoom=function(socket, roomID, index){
+ObjectManager.sendRoom=function(socket, roomID){
 	var context=Modules.UserManager.getConnectionBySocket(socket);
 	
 	Modules.ObjectManager.getRoom(roomID, context, function(room) { //the room object
@@ -51,7 +51,6 @@ ObjectManager.sendRoom=function(socket, roomID, index){
 		Modules.ObjectManager.getInventory(roomID, context, function(objects) {
 			for (var i in objects){
 				var object = objects[i];
-				//object.context.room = object.context.rooms[index];
 				object.updateClient(socket, 'objectUpdate');	//the object data
 				if (object.hasContent()) {		//and its content if there is some
 					object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
