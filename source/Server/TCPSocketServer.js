@@ -1,3 +1,14 @@
+/**
+ * The Tcp Socket Server provides the possibility to create a tcp connection
+ * to the WebArena server.
+ * The main feature is to provide a possibility to connect to the WebArena server
+ * using other programming languages.
+ *
+ * The "coupling" is done by the TcpDispatcher module.
+ *
+ * Tcp Client can subscribe for certain server events.
+ */
+
 "use strict";
 
 
@@ -6,16 +17,27 @@ var net = require('net');
 var _ = require("lodash");
 
 var DEFAULT_PORT = 8125;
-var TCPSocketServer = {};
+var TcpSocketServer = {};
 
-
+/**
+ * Json socket is an light-weight wrapper around a socket. Providing
+ * the needed abstraction to communicate directly using JSON messages.
+ *
+ * @type {JsonSocket|exports}
+ */
 var JsonSocket = require('json-socket');
 
-TCPSocketServer.tcpDispatcher = require('./apihandler/TcpDispatcher.js');
+TcpSocketServer.tcpDispatcher = require('./apihandler/TcpDispatcher.js');
 
-TCPSocketServer.modules = false;
+TcpSocketServer.modules = false;
 
-TCPSocketServer.requestToEvent = function(request, connection){
+/**
+ * Converts an incoming request to a server-event.
+ *
+ * @param request
+ * @param connection
+ */
+TcpSocketServer.requestToEvent = function(request, connection){
 	if (!request.requestType) {
 		return connection.sendMessage({"error": "missing argument: requestType."});
 	}
@@ -29,7 +51,7 @@ TCPSocketServer.requestToEvent = function(request, connection){
 }
 
 
-TCPSocketServer.init = function (modules) {
+TcpSocketServer.init = function (modules) {
 	var that = this;
 	this.modules = modules;
 
@@ -54,7 +76,7 @@ var onConnectionEnd = function () {
 }
 
 var createServer = function () {
-	return Object.create(TCPSocketServer);
+	return Object.create(TcpSocketServer);
 }
 
 module.exports = {
