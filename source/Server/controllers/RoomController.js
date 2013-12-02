@@ -14,8 +14,11 @@ RoomController.duplicateRoom = function(data, context, callback){
 	var roomID = data.fromRoom;
     var newRoomID = data.toRoom;
 	var parent = data.parentRoom ;
+    var roomName = data.roomName;
 
 	//TODO: it is really ugly that getRoomData is used to create a room
+    //If parent is set.
+    //Create subroom item in parent.
 	if(parent){
 		Modules.Connector.getRoomData(newRoomID, context, undefined, parent); //TODO: set parent if necessary
 		//TODO add subroom object to parent
@@ -25,15 +28,10 @@ RoomController.duplicateRoom = function(data, context, callback){
 			roomID : parent,
 			type : "Subroom",
 			attributes : {
-				name : newRoomID,
+				name : roomName || newRoomID,
 				destination : newRoomID
 			}
 		}
-
-		//TODO: callback
-		this.createObject(subRoomItemData, context, function(){
-			console.log("Created item....");
-		});
 	} else {
 		Modules.Connector.getRoomData(newRoomID, context, undefined); //TODO: set parent if necessary
 	}
