@@ -7,7 +7,7 @@
  * Refresh the SVG
  */
 GUI.refreshSVG = function() {
-	$("#content").hide().show();
+	$("#room_left").hide().show();
 	GUI.updateLayers();
 }
 
@@ -16,62 +16,87 @@ GUI.refreshSVG = function() {
  */
 GUI.initSVG = function() {
 	
+	// initialize svg canvas
 	$("#content").svg();
-	
-	GUI.svg = $("#content").svg('get');
-	GUI.svgDefs = GUI.svg.defs();
+	var canvas = $("#content svg");
+	$(canvas).attr('id', 'canvas');
+
+	var contentSVG = $("#content").svg('get');
+	GUI.svg = contentSVG;
+	GUI.svgDefs = contentSVG.defs();
+
+	// initialize two nested svgs for concurrent view of two rooms
+	var room_left_wrapper = contentSVG.svg();
+	$(room_left_wrapper).attr('id', 'room_left_wrapper');
+	var room_left = contentSVG.group(room_left_wrapper);
+	$(room_left).attr('id', 'room_left');
+	var room_right_wrapper = contentSVG.svg();
+	$(room_right_wrapper).attr('id', 'room_right_wrapper');
+	var room_right = contentSVG.group(room_right_wrapper);
+	$(room_right).attr('id', 'room_right');
 
 	$("#content").droppable({
 		accept: ".toolbar_draggable",
 		drop: function( event, ui ) {
 			$(ui.helper).hide();
 			ui.helper[0].callback(ui.offset.left, ui.offset.top);
-			
 		}
 	});
-
 }
 
 /**
  * Resort all svg elements by their layer
  */
 GUI.updateLayers = function() {
+	// in coupling mode refresh layers of both rooms
+	if (GUI.couplingModeActive) {
+		var roomIndex = Array();
+		for (var index in ObjectManager.currentRoom) {
+			roomIndex.push(index);
+		}
+	} else {
+		var roomIndex = Array("left");
+	}
 
-	/* check if layers must be updated */
-	var oldOrder = "";
-	
-	$("#content>svg").children().each(function(i, el) {
-	
-		var id = $(el).attr("id");
+	for (var key = 0; key < roomIndex.length; key++) {
+		var index = roomIndex[key];
+
+		/* check if layers must be updated */
+		var oldOrder = "";
 		
-		if (id !== undefined && id != "") {
-			oldOrder += id+"###";
+		$("#room_"+index).children().each(function(i, el) {
+		
+			var id = $(el).attr("id");
+			
+			if (id !== undefined && id != "") {
+				oldOrder += id+"###";
+			}
+			
+		});
+		
+		var newOrder = "";
+		
+		var objectsArray = ObjectManager.getObjectsByLayer(index); //get all objects ordered by layer
+
+		for (var i in objectsArray){
+			var obj = objectsArray[i];
+			
+			newOrder += obj.id+"###";
+			
 		}
 		
-	});
-	
-	var newOrder = "";
-	
-	var objectsArray = ObjectManager.getObjectsByLayer(); //get all objects ordered by layer
-	
-	for (var i in objectsArray){
-		var obj = objectsArray[i];
-		
-		newOrder += obj.id+"###";
-		
-	}
-	
-	if (oldOrder == newOrder) return; //no change of order
+		if (oldOrder == newOrder) continue; //no change of order
 
-	var objectsArray = ObjectManager.getObjectsByLayerInverted(); //get all objects ordered by layer
-	
-	for (var i in objectsArray){
-		var obj = objectsArray[i];
-		
-		var rep = obj.getRepresentation();
-		
-		$(rep).prependTo("#content>svg");
-		
+		var objectsArray = ObjectManager.getObjectsByLayerInverted(index); //get all objects ordered by layer
+
+		for (var i in objectsArray){
+			var obj = objectsArray[i];
+			
+			var rep = obj.getRepresentation();
+			
+			$(rep).prependTo("#room_"+index);
+			
+		}
 	}
 	
 }

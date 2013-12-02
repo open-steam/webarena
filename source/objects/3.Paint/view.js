@@ -21,9 +21,9 @@ Paint.draw=function(external){
 	*/
 }
 
-Paint.createRepresentation = function() {
+Paint.createRepresentation = function(parent) {
 
-	var rep=ImageObject.createRepresentation.call(this);
+	var rep=ImageObject.createRepresentation.call(this,parent);
 
 	this.createCanvas();
 	this.updateCanvas(this.getPreviewContentURL());

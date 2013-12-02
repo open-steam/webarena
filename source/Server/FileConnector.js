@@ -8,8 +8,11 @@
 
 "use strict";
 
-
 var fileConnector={};
+var fs = require('fs');
+var async = require('async');
+
+var Q = require('q');
 
 fileConnector.init=function(theModules){
 	this.Modules=theModules;
@@ -68,6 +71,36 @@ fileConnector.getTrashRoom = function(context, callback){
 }
 
 
+fileConnector.listRooms = function(callback){
+	var filebase = this.Modules.Config.filebase;
+	fs.readdir(filebase, function(err, files){
+		if(err){
+			//TODO
+		}
+
+		var isRoom = function(file, callback){
+			if(/^\./.exec(file)){
+				callback(false);
+				return;
+			}
+			file = filebase + file;
+			fs.stat(file, function(err, result){
+				if(err){
+					callback(err, null);
+					return;
+				}
+				callback(result.isDirectory());
+			});
+		}
+
+		async.filter(files,isRoom, function( directories){
+			callback(directories);
+		});
+	});
+
+}
+
+
 
 fileConnector.isLoggedIn=function(context) {
 	return true;
@@ -116,8 +149,6 @@ fileConnector.getInventory=function(roomID,context,callback){
 	var filebase=this.Modules.Config.filebase;
 
 	var inventory=[];
-
-	var fs = require('fs');
 
 	try {fs.mkdirSync(filebase+'/'+roomID)} catch(e){};
 
@@ -200,6 +231,54 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 }
 
 /**
+*	getRoomHierarchy
+*
+*	returns the room hierarchy starting by given roomID as root
+*
+*/
+fileConnector.getRoomHierarchy=function(roomID,context,callback){
+	var result = {
+		'rooms' : {},
+		'relation' : {},
+		'roots' : []
+	};
+
+	var files = fs.readdirSync(this.Modules.Config.filebase);
+    files = (files) ? files : [];
+
+    var resultCounter = 0;
+    var returnResults = function() {
+    	resultCounter++;
+    	if (resultCounter === files.length) {
+	    	callback(result);
+		}
+    }
+
+    var self=this;
+	files.forEach(function(value,index) {
+		var obj=self.getObjectDataByFile(value,value);
+			
+		if (obj) {
+			self.mayEnter(obj.id, context, function(mayEnter) {
+				if (mayEnter) {
+					result.rooms[value] = ''+obj.attributes.name;
+					if (obj.attributes.parent !== undefined) {
+						if (result.relation[obj.attributes.parent] === undefined) {
+							result.relation[obj.attributes.parent] = new Array(''+value);
+						} else {
+							result.relation[obj.attributes.parent].push(''+value);
+						}
+					} else {
+						result.roots.push(''+value);
+					}
+				}
+				returnResults();
+			});
+		} else returnResults();
+	});
+}
+
+/**
 *	save the object (by given data)
 *
 *	if an "after" function is specified, it is called after saving
@@ -214,8 +293,6 @@ fileConnector.saveObjectData=function(roomID,objectID,data,after,context,createI
 	var filebase=this.Modules.Config.filebase;
 	
 	var foldername=filebase+'/'+roomID;
-	
-	var fs = require('fs');
 	
 	try {fs.mkdirSync(foldername)} catch(e){};
 	
@@ -245,7 +322,6 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
 	this.Modules.Log.debug("Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	var that = this;
 
-	var fs = require('fs');
     var filebase=this.Modules.Config.filebase;
     var foldername=filebase+'/'+roomID;
     try {fs.mkdirSync(foldername)} catch(e){};
@@ -278,12 +354,13 @@ fileConnector.saveContent=function(roomID,objectID,content,after,context, inputI
 
         }
 
-        fs.writeFile(filename, new Buffer(content), function (err) {
-            if (err) {
-                this.Modules.Log.error("Could not write content to file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-            }
-            if (after) after(objectID);
-        });
+		try {
+			fs.writeFileSync(filename, new Buffer(content));
+		} catch (err) {
+            this.Modules.Log.error("Could not write content to file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+        }
+		if (after) after(objectID);
+    
     }
 
 
@@ -303,8 +380,7 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, cal
 	this.Modules.Log.debug("Copy content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', source: '"+sourceFilename+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
-	
-	var fs = require('fs');
+
 
     var rds = fs.createReadStream(sourceFilename);
     rds.on("error", function(err) {
@@ -325,9 +401,7 @@ fileConnector.copyContentFromFile=function(roomID, objectID, sourceFilename, cal
 fileConnector.getContent=function(roomID,objectID,context,callback){
 	
 	this.Modules.Log.debug("Get content (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
-	var fs = require('fs');
-	
+
 	var filebase=this.Modules.Config.filebase;
 	
 	var filename=filebase+'/'+roomID+'/'+objectID+'.content';
@@ -367,8 +441,6 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 
 fileConnector.getContentStream = function(roomID,objectID,context){
     this.Modules.Log.debug("Get content stream (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-
-    var fs = require('fs');
     var filebase=this.Modules.Config.filebase;
     var filename=filebase+'/'+roomID+'/'+objectID+'.content';
 
@@ -392,9 +464,7 @@ fileConnector.remove=function(roomID,objectID,context){
 	this.Modules.Log.debug("Remove object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
-	
-	var fs = require('fs');
-	
+
 	try {
 	
 		var filebase=this.Modules.Config.filebase;
@@ -484,8 +554,7 @@ fileConnector.duplicateObject=function(roomID,objectID,callback,context,toRoom){
 	var objectFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.object.txt';
 	var contentFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.content';
 	var previewFilenameNew = filebase+'/'+toRoom+'/'+newObjectID+'.preview';
-	
-	var sys = require("util");
+
 	var fs = require("fs");
 	
 	var copyFunc = function(source, dest, callback) {
@@ -493,8 +562,9 @@ fileConnector.duplicateObject=function(roomID,objectID,callback,context,toRoom){
 		var read = fs.createReadStream(source);
 		var write = fs.createWriteStream(dest);
 
-		read.on("end", callback); 
-		sys.pump(read, write);
+		read.on("end", callback);
+		read.pipe(write);
+
 		
 	}
 	
@@ -580,9 +650,6 @@ fileConnector.getObjectData=function(roomID,objectID,context){
 *	read an object file and return the attribute set
 */
 fileConnector.getObjectDataByFile=function(roomID,objectID){
-
-	var fs = require('fs');
-
 	var filebase = this.Modules.Config.filebase;
 	
 	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
@@ -629,21 +696,6 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 fileConnector.trimImage=function(roomID, objectID, callback, context) {
 
 	var self = this;
@@ -655,8 +707,6 @@ fileConnector.trimImage=function(roomID, objectID, callback, context) {
 	var filename = __dirname+"/tmp/trim_"+roomID+"_"+objectID;
 
 	this.getContent(roomID,objectID,context,function(content) {
-		
-		var fs = require('fs');
 
 		fs.writeFile(filename, new Buffer(content), function (err) {
 		 	if (err) throw err;
@@ -691,7 +741,6 @@ fileConnector.trimImage=function(roomID, objectID, callback, context) {
 							self.copyContentFromFile(roomID, objectID, filename, function() {
 							
 								//delete temp. file
-								var fs = require('fs');
 								fs.unlink(filename);
 							
 								callback(dX, dY, newWidth, newHeight);
@@ -900,9 +949,6 @@ fileConnector.inlinePreviewProviders = {
 			var filename = __dirname+"/tmp/image_preview_dimensions_"+roomID+"_"+objectID;
 
 			fileConnector.getContent(roomID,objectID,context,function(content) {
-				
-				var fs = require('fs');
-
 				fs.writeFile(filename, Buffer(content), function (err) {
 				 	if (err) throw err;
 					/* temp. file saved */
@@ -927,7 +973,6 @@ fileConnector.inlinePreviewProviders = {
 						}
 
 						//delete temp. file
-						var fs = require('fs');
 						fs.unlink(filename);
 						
 						callback(width, height);
@@ -982,7 +1027,6 @@ fileConnector.inlinePreviewProviders = {
 				} else {
 
 					try {
-						var fs = require('fs');
 						var content = fs.readFileSync(filenamePreview);
 						callback(content);
 					} catch (e) {
@@ -1048,7 +1092,6 @@ fileConnector.inlinePreviewProviders = {
 			} else {
 				/* preview file exists */
 				try {
-					var fs = require('fs');
 					var content = fs.readFileSync(filename);
 					callback(content);
 				} catch (e) {

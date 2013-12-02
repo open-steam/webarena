@@ -30,10 +30,10 @@ GUI.setupInspectorContent = function(inspector) {
 	
 	} else {
 		/* if no objects are selected the current room is shown in the inspector */
-		var objects = [ObjectManager.currentRoom];
-		GUI.currentInspectorObject = ObjectManager.currentRoom;
+		var objects = [ObjectManager.currentRoom['left']]; 
+		GUI.currentInspectorObject = ObjectManager.currentRoom['left'];
 	}
-	
+
 	var object = objects[0]; //needed for translations
 	
 	/* reset the inspector */
@@ -121,14 +121,14 @@ GUI.setupInspectorContent = function(inspector) {
 		
 		$.each(elements, function(attribute, info) {
 		
-			var element = section.addElement(object.translate('de',info.description));
+			var element = section.addElement(object.translate(GUI.currentLanguage,info.description));
 		
 			if (info.readonly) {
 				
 				if (info.multipleValues) {
 					element.setValue(GUI.translate("multiple values"));
 				} else {
-					element.setValue(object.translate('de',info.value)+" "+object.translate('de',info.unit));
+					element.setValue(object.translate(GUI.currentLanguage,info.value)+" "+object.translate(GUI.currentLanguage,info.unit));
 				}
 				
 				element.setInactive();

@@ -170,21 +170,24 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 		actionsheet.css("opacity", 1);
 
         // automatically scroll to actionsheet if it is not visible in current scroll position
-        var scrollTop = $(document).scrollTop();
-        var scrollLeft = $(document).scrollLeft();
-        if (actionsheetLeft + actionsheetWidth > scrollLeft + $(window).width()) {
-            // actionsheet flows over right window border
-            scrollLeft = actionsheetLeft - 10;
+        if (!GUI.couplingModeActive) {
+            var scrollTop = $(document).scrollTop();
+            var scrollLeft = $(document).scrollLeft();
+            if (actionsheetLeft + actionsheetWidth > scrollLeft + $(window).width()) {
+                // actionsheet flows over right window border
+                scrollLeft = actionsheetLeft - 10;
+            }
+            if (scrollTop > actionsheetTop) {
+                // actionsheet y coordinate not inside viewing pane
+                scrollTop = actionsheetTop - 40;
+            }
+            if (scrollLeft > actionsheetLeft) {
+                // actionsheet x coordinate not inside viewing pane
+                scrollLeft = actionsheetLeft - 10;
+            }
+
+            $(document).scrollTo( {top: scrollTop, left: scrollLeft}, 800 );
         }
-        if (scrollTop > actionsheetTop) {
-            // actionsheet y coordinate not inside viewing pane
-            scrollTop = actionsheetTop - 40;
-        }
-        if (scrollLeft > actionsheetLeft) {
-            // actionsheet x coordinate not inside viewing pane
-            scrollLeft = actionsheetLeft - 10;
-        }
-        $(document).scrollTo( {top: scrollTop, left: scrollLeft}, 800 );
 		
 	}, 10);
 	

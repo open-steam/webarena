@@ -5,9 +5,8 @@
 *
 */
 
-Ellipse.createRepresentation = function() {
-	
-	var rep = GUI.svg.group(this.getAttribute('id'));
+Ellipse.createRepresentation = function(parent) {
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
 	var ellipse = GUI.svg.ellipse(rep,
 		10, //cx

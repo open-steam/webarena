@@ -219,6 +219,36 @@ GUI.initToolbar = function() {
 		}
 	
 	});
+
+	/*add coupling button*/
+	if (Modules.Config.couplingMode) {
+		var couplingButton = document.createElement("img");
+		$(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");
+		$(couplingButton).attr("width", "24").attr("height", "24");
+
+		$(couplingButton).attr("id", "paste_button");
+		$(couplingButton).addClass("sidebar_button");
+
+		$(couplingButton).css("padding-left", "20px");
+		$(couplingButton).css("padding-right", "20px");
+		$(couplingButton).css("margin-right", "20px");
+		$(couplingButton).css("border-right", "1px solid #636363");
+		
+		$(couplingButton).attr("title", GUI.translate("Coupling"));
+
+		$("#header > .header_right").append(couplingButton);
+		
+		var click = function() {
+			GUI.enterCouplingMode();
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(couplingButton).bind("touchstart", click);
+		} else {
+			$(couplingButton).bind("mousedown", click);
+		}
+	}
+
 		
 	/*add parent button*/
 	
