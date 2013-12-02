@@ -119,6 +119,10 @@ GeneralObject.contentUpdated=function(){
 
 //triggered by non local change of values
 GeneralObject.refresh = function() {
+	
+	//do not trigger a draw if the refreshed object is the room object
+	if(this.id==this.getAttribute('inRoom')) return;
+	
 	if (this.moving) return;
 	this.draw(true);
 }
