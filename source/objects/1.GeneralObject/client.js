@@ -17,7 +17,7 @@ GeneralObject.setContent=function(content){
 	this.content=content;
 	this.contentFetched=true;
 	
-    this.serverCall('setContent', content, this.afterSetContent)	
+    this.serverCall('setContent', content, this.afterSetContent);	
 }
 
 /**
