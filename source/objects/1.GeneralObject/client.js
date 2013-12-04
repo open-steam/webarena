@@ -173,6 +173,10 @@ GeneralObject.getRoom=function(){
 	return Modules.ObjectManager.getCurrentRoom();
 }
 
+GeneralObject.getCurrentUserName=function(){
+	return Modules.ObjectManager.getUser().username;
+}
+
 /**
 *	determine if the current object intersects with the square x,y,width,height
 */

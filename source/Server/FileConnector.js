@@ -568,6 +568,21 @@ fileConnector.getContentStream = function(roomID,objectID,context){
 }
 
 
+fileConnector.getPaintingStream = function(roomID,user,context){
+		
+    this.Modules.Log.debug("Get content stream (roomID: '"+roomID+"', user: '"+user+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+    var filebase=this.Modules.Config.filebase;
+    var filename=filebase+'/'+roomID+'/'+user+'.painting';
+
+    var rds = fs.createReadStream(filename);
+    rds.on("error", function(err) {
+        this.Modules.Log.error("Error reading file: " + filename);
+    });
+
+    return rds;
+}
+
+
 
 /**
 *	remove
