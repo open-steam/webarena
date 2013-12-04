@@ -337,6 +337,11 @@ theObject.copyContentFromFile=function(filename,callback) {
 	
 }
 
+theObject.getCurrentUserName=function(){
+	if (!this.context) return 'root';
+	return this.context.user.username;
+}
+
 /**
 *	getContent
 *

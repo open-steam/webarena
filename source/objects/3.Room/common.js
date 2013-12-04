@@ -48,6 +48,14 @@ Room.hasObject=function(obj){
 	return false;
 }
 
+Room.getPaintingURL = function(user) {
+	if (!user) user=this.getCurrentUserName();
+	
+	//maybe it is necessary to add a time here to get rid of cache issues
+	
+	return "/paintings/"+this.getRoomID()+"/"+user+"/"+ObjectManager.userHash;
+}
+
 Room.register('Room');
 Room.isCreatable=false;
 
