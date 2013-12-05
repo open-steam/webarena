@@ -24,7 +24,6 @@ GUI.hideActionsheet = function() {
  */
 GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
-    //TODO: Es muss nicht unbedingt ein webarenaObject übergeben werden
     //{
     //actions : [
     // {"actionName": "ex1", "actionFunction" : fnc},
