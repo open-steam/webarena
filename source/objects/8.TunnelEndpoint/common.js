@@ -5,12 +5,13 @@ TunnelEndpoint.register=function(type){
 
 	// Registering the object
 	Modules.ObjectManager.getPrototype('Hotspot').register.call(this,type);
-	this.makeStructuring();
-	this.makeSensitive();
-
+    this.makeSensitive();
+    this.makeStructuring();
 
 	this.registerAttribute('source',{type:'text',standard:'',category:'Selection'});
 }
+
+
 
 TunnelEndpoint.isCreatable=true;
 TunnelEndpoint.category = 'Active';
