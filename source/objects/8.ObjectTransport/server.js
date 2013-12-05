@@ -35,12 +35,19 @@ theObject.duplicationLogic = function(enteredObject){
 	 * The function is executed after the "tunnel-action" was called, e.g. the file was copied to another room.
 	 */
 	var sendExecutedHandler = function(err, idList){
-		console.log("copied...with new id: " + idList);
-
 		var copyId = idList[0];
 		var thecopy = Modules.ObjectManager.getObject(requestData.toRoom,  copyId, that.context);
 
         thecopy.setAttribute("tunnel_inbox", requestData.fromRoom);
+
+        //TODO: rebuild with "transport room"
+        Modules.EventBus.emit("send_object", {
+           from : requestData.fromRoom,
+           to : requestData.toRoom,
+           objectId : copyId,
+           timestamp : new Date().getTime(),
+           objectName : enteredObject.getAttribute("name")
+        });
 	}
 
 	Modules.ObjectManager.duplicateNew(requestData, this.context, sendExecutedHandler);
@@ -57,4 +64,3 @@ theObject.onEnter=function(object,oldData,newData){
     }, 500);
 
 };
-
