@@ -569,7 +569,7 @@ input {
 
 .overfloating-y{
     overflow-y: auto;
-}´
+}ï¿½
 
 /*   TOAST MESSAGE */
 .toast-container {
@@ -750,3 +750,21 @@ input {
 	pointer-events: none;
 }
 /* end coupling */
+
+/* process log */
+.processlog{
+  overflow-y: scroll;
+  border: 1px solid rgba(0, 0, 0 , 0.6);
+  box-sizing: border-box;
+}
+
+.outgoing-message{
+  padding: 5px;
+  background-color: rgba(0, 200, 0 , 0.2);
+}
+
+.incoming-message{
+  padding: 5px;
+  background-color: rgba(0, 200, 0 , 0.6);
+}
+/* end process log*/
