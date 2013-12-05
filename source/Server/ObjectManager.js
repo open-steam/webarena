@@ -109,6 +109,10 @@ function buildObjectFromObjectData(objectData, roomID, type) {
 
 	obj.runtimeData = runtimeData[obj.id];
 
+    if(typeof obj.afterCreation == "function"){
+        obj.afterCreation();
+    }
+
 	return obj;
 }
 

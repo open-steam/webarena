@@ -94,6 +94,11 @@ ObjectManager.buildObject=function(type, attributes){
     	this.objects[index][object.id]=object;
     }
 
+    if(typeof object.afterCreation == "function"){
+        object.afterCreation();
+    }
+
+
     return object;
 
 }
@@ -411,6 +416,7 @@ ObjectManager.createObject=function(type,attributes,content,callback,index) {
 ObjectManager.init=function(){
     this.transactionId = false;
     this.transactionTimeout = 500;
+    var that = this;
 	
 	Modules.Dispatcher.registerCall('infotext', function(text){
         var translatedText = GUI.translate(text);
