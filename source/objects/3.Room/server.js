@@ -133,4 +133,53 @@ theObject.createObject=function(type,callback){
     return Modules.ObjectManager.createObject(this.id, type, false, false, this.context.socket, false, callback);
 }
 
+theObject.saveUserPaintingData=function(content,callback){
+	var self = this;
+	
+	if (content.substr(0,22)=='data:image/png;base64,'){
+		
+		var base64Data = content.replace(/^data:image\/png;base64,/,""),
+		content = new Buffer(base64Data, 'base64');
+	}
+	
+	Modules.Connector.savePainting(this.inRoom, content, function() {
+		if (callback) callback();
+		self.updateClients('paintingsUpdate');
+	},this.context);
+	
+	
+}
+theObject.saveUserPaintingData.public = true;
+theObject.saveUserPaintingData.neededRights = {
+    write : true
+}
+
+theObject.getUserPaintings=function(callback){
+	
+	Modules.Connector.getPaintings(this.inRoom,this.context,function(rawData){
+		
+		//This data should be improved
+		callback(rawData);
+		
+	});
+	
+}
+theObject.getUserPaintings.public = true;
+theObject.getUserPaintings.neededRights = {
+    read : true
+}
+
+theObject.deleteUserPainting=function(){
+	var self = this;
+	
+	Modules.Connector.deletePainting(this.inRoom, function() {
+		self.updateClients('paintingsUpdate');
+	},this.context);
+	
+}
+theObject.deleteUserPainting.public = true;
+theObject.deleteUserPainting.neededRights = {
+    write : true
+}
+
 module.exports=theObject;
