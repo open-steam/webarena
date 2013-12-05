@@ -204,7 +204,7 @@ theObject.makeStructuring=function(){
 		
 		//when a structuring object is moved, every active object may be in need of repositioning
 		
-		console.log('obObjectMove on structuring object '+this);
+		console.log('onObjectMove on structuring object '+this);
 		
 		this.getRoom().placeActiveObjects();
 	}
@@ -337,6 +337,11 @@ theObject.copyContentFromFile=function(filename,callback) {
 	
 }
 
+theObject.getCurrentUserName=function(){
+	if (!this.context) return 'root';
+	return this.context.user.username;
+}
+
 /**
 *	getContent
 *
@@ -361,7 +366,7 @@ theObject.getContentAsString=function(callback){
 		return GeneralObject.utf8.parse(this.getContent());
 	} else {
 		this.getContent(function(content){
-			callback(GeneralObject.utf8.parse(this.content));
+			callback(GeneralObject.utf8.parse(content));
 		});
 	}
 }
@@ -432,8 +437,19 @@ theObject.evaluatePositionInt=function(data){
 
 
 theObject.getRoom=function(callback){
+	
 	if (!this.context) return;
-	return this.context.room;
+	
+	//search the room in the context and return the room this object is in
+	
+	for (var index in this.context.rooms){
+		var test=this.context.rooms[index];
+		if (test && test.hasObject && test.hasObject(this)) {
+			return test;
+		}
+	}
+	
+	return false;
 }
 
 theObject.getBoundingBox=function(){

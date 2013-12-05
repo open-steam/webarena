@@ -685,6 +685,8 @@ GUI.savePaintMode = function() {
 	GUI.currentPaintObject.setAttribute("x", minX, true);
 	GUI.currentPaintObject.setAttribute("y", minY, true);
 
+	//This is where the content is saved.
+
 	GUI.currentPaintObject.setContent($("#webarena_paintCanvas").get(0).toDataURL(), function() {
 		GUI.currentPaintObject.draw();
 	});

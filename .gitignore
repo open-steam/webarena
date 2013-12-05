@@ -25,3 +25,8 @@ node_modules/
 
 ## Jetbrains
 .idea
+source/objects/8.Test/common.js
+source/objects/8.Test/icon.png
+source/objects/8.Test/languages.js
+source/objects/8.Test/server.js
+source/objects/8.Test/view.js
