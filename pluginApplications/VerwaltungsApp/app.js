@@ -61,7 +61,8 @@ VerwaltungsApp.initAppointmentProcedure = function () {
             attributes: {
                 x: 270,
                 y: 50,
-                group: groupId
+                group: groupId,
+                kokoa_processid :  instanceId
             }
         });
 
@@ -98,22 +99,106 @@ VerwaltungsApp.initOverviewRooms = function () {
 }
 
 
-VerwaltungsApp.init = function (eventBus) {
-    this.eventBus = eventBus;
+VerwaltungsApp.init = function (modules) {
+    this.Modules = modules;
+    this.eventBus = modules.EventBus;
     var that = this;
-    eventBus.on("**", function (eventData) {
+    this.eventBus.on("**", function (eventData) {
         if (eventData.sourceType && eventData.sourceType === "Tunnel") {
             that.sendMail();
         }
     });
 
-    eventBus.on("applicationevent::kokoa::initMasterRooms", function () {
+    this.eventBus.on("applicationevent::kokoa::initMasterRooms", function () {
         that.initOverviewRooms();
     });
 
-    eventBus.on("applicationevent::kokoa::initProcess", function () {
+    this.eventBus.on("applicationevent::kokoa::initProcess", function () {
         that.initAppointmentProcedure();
     });
+
+    this.eventBus.on("send_object", function(data){
+         that.addLogEntry(data);
+    });
+}
+
+VerwaltungsApp.addLogEntry = function(data){
+    var from = data.from;
+    var to = data.to;
+    var timestamp = data.timestamp;
+    var objectName = data.objectName;
+
+    var pat =  /(^[a-zA-Z0-9]+)_/;
+
+    var pFrom = pat.exec(from);
+    var pTo = pat.exec(to);
+
+    if(!pFrom[1]|| ! pTo[1])return;
+
+
+    var fromEntry = "Verschickt: (" + objectName + ") an " + pTo[1];
+    var toEntry = "Erhalten ("+ objectName + ") von " + pFrom[1];
+
+    var overviewRoomFrom = "Overview_Instance_" + pFrom[1];
+    var overviewRoomTo = "Overview_Instance_" + pTo[1];
+
+    //find log
+    this.Modules.ObjectManager.getInventory(overviewRoomFrom, ContextObject, function(items){
+        items.forEach(function(item){
+            if(item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")){
+                //Add text....
+                var oldContent = item.getContentAsString()
+
+                //try to parse the content
+                try{
+                    var content = JSON.parse(oldContent);
+                } catch(e){
+                    //failed to parse...reset the content
+                    var content = {entries : []};
+                }
+
+                //add entry to json
+                var entry  = {
+                    "message" : fromEntry,
+                    "timestamp" : timestamp,
+                    "cssclass" : "outgoing-message"
+                }
+
+                content.entries.push(entry);
+
+                //save the new content
+                item.setContent(JSON.stringify(content));
+            }
+        });
+    });
+
+    this.Modules.ObjectManager.getInventory(overviewRoomTo, ContextObject, function(items){
+        items.forEach(function(item){
+            if(item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")){
+                var oldContent = item.getContentAsString()
+
+                //try to parse the content
+                try{
+                    var content = JSON.parse(oldContent);
+                } catch(e){
+                    //failed to parse...reset the content
+                    var content = {entries : []};
+                }
+
+                //add entry to json
+                var entry  = {
+                    "message" : toEntry,
+                    "timestamp" : timestamp,
+                    "cssclass" :"incoming-message"
+                }
+
+                content.entries.push(entry);
+
+                item.setContent(JSON.stringify(content));
+            }
+        });
+    });
+
 }
 
 VerwaltungsApp.sendMail = function () {
