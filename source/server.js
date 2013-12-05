@@ -66,7 +66,7 @@ Modules.WebServer = require('./Server/WebServer.js');
 Modules.SocketServer = require('./Server/SocketServer.js');
 Modules.UserManager = require('./Server/UserManager.js');
 Modules.Helper = require('./Server/Helper.js');
-Modules.EventBus =  require("./Server/Eventbus.js");
+Modules.EventBus =  require("./Server/EventBus.js");
 /*Modules.TokenChecker = require("./Server/TokenChecker");*/
 Modules.BuildTool = require('./Server/BuildTool.js');
 
