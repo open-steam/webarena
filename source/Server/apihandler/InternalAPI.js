@@ -11,19 +11,13 @@ InternalAPI.init = function(theModules){
 	Modules.EventBus.on("copyRoom", function(data){
 		data.objects = "ALL";
 
-		//TODO real context...
-		var context = {
-			user : {
-				username : "server",
-				password : "server"
-			}
-		};
-
-		Modules.RoomController.duplicateRoom(data, context, data.callback);
+		Modules.RoomController.duplicateRoom(data, data.context, data.callback);
 	});
+
+    Modules.EventBus.on("createObject", function(data){
+        Modules.RoomController.createObject(data, data.context, data.callback);
+    });
 }
-
-
 
 
 module.exports = InternalAPI
