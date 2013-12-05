@@ -18,7 +18,7 @@ PluginManager.init = function (moduleRegistry, modulesToLoad) {
 			this.loadedPlugins[moduleName] = require(modulesToLoad[moduleName]).create();
 
 			//TODO - perhaps use wrapper around EventBus if need to filter messages that shouldn't be available to plugins like login credentials
-			this.loadedPlugins[moduleName].init(moduleRegistry.EventBus);
+			this.loadedPlugins[moduleName].init(moduleRegistry);
 		} catch(e){
 			console.log("error loading: " + moduleName);
 			//TODO - do some error handling....
