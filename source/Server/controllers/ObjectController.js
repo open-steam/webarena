@@ -40,9 +40,9 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 
 	Modules.EventBus.emit("room::" + roomID + "::" + objectID, data);
 
-	var responseCallback = function (res) {
-		Modules.Dispatcher.respond(socket, responseID, res);
-	};
+	var responseCallback = function(data){
+        cb(null, data);
+    }
 
 	var object = ObjectManager.getObject(roomID, objectID, context);
 
