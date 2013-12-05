@@ -65,3 +65,10 @@ theObject.decideIfActive = function(object){
 	return  res;
 }
 
+
+theObject.afterCreation = function(){
+    var that = this;
+    Modules.EventBus.on("send_object", function(){
+        that.getRoom().placeActiveObjects();
+    });
+}
