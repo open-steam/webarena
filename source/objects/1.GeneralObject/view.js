@@ -757,9 +757,14 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		event.stopPropagation();
 		
 		self.onMoveStart();
-
-		control.startMouseX = event.pageX;
-		control.startMouseY = event.pageY;
+		
+		if (!GUI.isTouchDevice) {
+			control.startMouseX = event.pageX;
+			control.startMouseY = event.pageY;
+		} else {
+			control.startMouseX = event.targetTouches[0].pageX;
+			control.startMouseY = event.targetTouches[0].pageY;
+		}
 		control.objectStartWidth = self.getViewWidth();
 		control.objectStartHeight = self.getViewHeight();
 		control.objectStartX = self.getViewX();
