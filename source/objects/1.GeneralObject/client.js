@@ -17,7 +17,7 @@ GeneralObject.setContent=function(content){
 	this.content=content;
 	this.contentFetched=true;
 	
-    this.serverCall('setContent', content, this.afterSetContent)	
+    this.serverCall('setContent', content, this.afterSetContent);	
 }
 
 /**
@@ -119,6 +119,10 @@ GeneralObject.contentUpdated=function(){
 
 //triggered by non local change of values
 GeneralObject.refresh = function() {
+	
+	//do not trigger a draw if the refreshed object is the room object
+	if(this.id==this.getAttribute('inRoom')) return;
+	
 	if (this.moving) return;
 	this.draw(true);
 }
@@ -167,6 +171,10 @@ GeneralObject.justCreated=function(){
 
 GeneralObject.getRoom=function(){
 	return Modules.ObjectManager.getCurrentRoom();
+}
+
+GeneralObject.getCurrentUserName=function(){
+	return Modules.ObjectManager.getUser().username;
 }
 
 /**

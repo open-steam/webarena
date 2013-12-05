@@ -337,6 +337,11 @@ theObject.copyContentFromFile=function(filename,callback) {
 	
 }
 
+theObject.getCurrentUserName=function(){
+	if (!this.context) return 'root';
+	return this.context.user.username;
+}
+
 /**
 *	getContent
 *
@@ -433,10 +438,18 @@ theObject.evaluatePositionInt=function(data){
 
 theObject.getRoom=function(callback){
 	
-	//save the room differenty. This is a hack 
-	
 	if (!this.context) return;
-	return this.context.rooms['left'];
+	
+	//search the room in the context and return the room this object is in
+	
+	for (var index in this.context.rooms){
+		var test=this.context.rooms[index];
+		if (test && test.hasObject && test.hasObject(this)) {
+			return test;
+		}
+	}
+	
+	return false;
 }
 
 theObject.getBoundingBox=function(){
