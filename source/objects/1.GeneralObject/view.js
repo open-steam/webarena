@@ -773,7 +773,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			
 			event.preventDefault();
 
-			if (event.pageX) {
+			if (!GUI.isTouchDevice) {
 				/* mouse */
 				var dx = event.pageX-control.startMouseX;
 				var dy = event.pageY-control.startMouseY;
@@ -888,7 +888,7 @@ GeneralObject.moveStart = function(event) {
 	GUI.hideActionsheet();
 	GUI.hideLinks(self);
 
-	if (event.pageX) {
+	if (!GUI.isTouchDevice) {
 		/* mouse */
 		self.moveStartMouseX = event.pageX;
 		self.moveStartMouseY = event.pageY;
@@ -933,7 +933,7 @@ GeneralObject.moveStart = function(event) {
 		
 		self.moved = true;
 		
-		if (event.pageX) {
+		if (!GUI.isTouchDevice) {
 			/* mouse */
 			var dx = event.pageX-self.moveStartMouseX;
 			var dy = event.pageY-self.moveStartMouseY;
