@@ -89,6 +89,7 @@ VerwaltungsApp.initOverviewRooms = function () {
 
     participants.forEach(function (part) {
         that.eventBus.emit("copyRoom", {
+            context: ContextObject,
             fromRoom: "Overview_Template",
             toRoom: "Overview_Instance_" + part,
             callback: function () {
