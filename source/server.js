@@ -29,13 +29,7 @@ var printLogo = function(){
 
 "use strict";
 
-//General error handling. Let the server try to continue
-//if an error occured and log the error
 
-process.on('uncaughtException', function (err) {
-	console.log('##### UNCAUGHT EXCEPTION');
-	console.log(err);
-});
 
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
 
@@ -50,6 +44,18 @@ try {
 } catch (e) {
 	console.log('Attention: No local config');
 }
+
+//General error handling. Let the server try to continue
+//if an error occured and log the error
+
+if (!config.debugMode){
+	process.on('uncaughtException', function (err) {
+		console.log('##### UNCAUGHT EXCEPTION');
+		console.log(err);
+	});
+}
+
+
 
 var Modules = {};
 
