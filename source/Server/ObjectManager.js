@@ -314,25 +314,36 @@ ObjectManager.init = function (theModules) {
 	//go through all objects, build its client code (the code for the client side)
 	//register the object types.
 
+    var processFunction = function(filename){
+        var fileinfo = filename.split('.');
+        var objName = fileinfo[1];
+        var filebase = __dirname + '/../objects/' + filename;
+
+        var obj = require(filebase + '/server.js');
+        obj.ObjectManager = Modules.ObjectManager;
+        obj.register(objName);
+
+        obj.localIconPath = function (selection) {
+            selection = (selection) ? '_' + selection : '';
+            return filebase + '/icon' + selection + '.png';
+        }
+    }
+
 	var files = this.getEnabledObjectTypes();
 	files.forEach(function (filename) {
-		var fileinfo = filename.split('.');
-		var objName = fileinfo[1];
-		var filebase = __dirname + '/../objects/' + filename;
 
-		try {
-			var obj = require(filebase + '/server.js');
-			obj.ObjectManager = Modules.ObjectManager;
-			obj.register(objName);
 
-			obj.localIconPath = function (selection) {
-				selection = (selection) ? '_' + selection : '';
-				return filebase + '/icon' + selection + '.png';
-			}
-		} catch (e) {
-			Modules.Log.warn('Could not register ' + objName);
-			Modules.Log.warn(e);
-		}
+        if(Modules.Config.debugMode){
+            processFunction(filename);
+        } else {
+            try {
+                processFunction(filename)
+            } catch (e) {
+                Modules.Log.warn('Could not register ' + objName);
+                Modules.Log.warn(e.stack);
+            }
+        }
+
 	});
 }
 

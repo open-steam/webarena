@@ -16,6 +16,13 @@ Line.draw=function(external){
 	}
 	
 	$(rep).children("line").attr("stroke-width", this.getAttribute('linesize'));
+	
+	switch (this.getAttribute('linestyle')){
+		case 'dotted':var dasharray='5,5';break;
+		case 'dashed':var dasharray='10,5';break;
+		default:var dasharray='1,0';break;
+	}
+	$(rep).children("line").attr("stroke-dasharray", dasharray);
 
 	if (this.getAttribute("direction") == 1) {
 		$(rep).children("line").attr("x1", 0);
