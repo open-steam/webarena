@@ -67,7 +67,7 @@ Dispatcher.registerCall('deleteObject', function (socket, data, responseID) {
 
 Dispatcher.registerCall('createObject', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-	Modules.RoomController.createObject(data, context, wrapper(socket, responseID));
+	Modules.ObjectController.createObject(data, context, wrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
