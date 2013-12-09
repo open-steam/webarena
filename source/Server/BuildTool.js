@@ -100,7 +100,7 @@ BuildTool.getClientCode = function () {
 
 BuildTool.init = function(theModules){
 	Modules = theModules;
-	showDebugLineNumbers = !!Modules.config.showDebugLineNumbers;
+	showDebugLineNumbers = !!Modules.config.debugMode;
 	this.buildClientCode();
 }
 
