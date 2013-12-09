@@ -1,11 +1,16 @@
+/**
+ * InternalDispatcher is used to provide an API for
+ * Plugins.
+ * 
+ */
 'use strict';
 
-var InternalAPI = {};
+var InternalDispatcher = {};
 var Modules = false;
 var _ = require('lodash');
 
 
-InternalAPI.init = function(theModules){
+InternalDispatcher.init = function(theModules){
 	Modules = theModules;
 
 	Modules.EventBus.on("copyRoom", function(data){
@@ -20,4 +25,4 @@ InternalAPI.init = function(theModules){
 }
 
 
-module.exports = InternalAPI
+module.exports = InternalDispatcher;

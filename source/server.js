@@ -89,7 +89,7 @@ Modules.RoomController = require('./Server/controllers/RoomController.js');
 Modules.ObjectController = require('./Server/controllers/ObjectController.js');
 Modules.ServerController = require('./Server/controllers/ServerController.js');
 
-Modules.InternalAPI = require('./Server/apihandler/InternalAPI.js');
+Modules.InternalDispatcher = require('./Server/apihandler/InternalDispatcher.js');
 
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports=Modules;
