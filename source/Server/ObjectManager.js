@@ -247,6 +247,11 @@ ObjectManager.createObject = function (roomID, type, attributes, content, contex
 	});
 }
 
+/**
+ * Looks which object types are enabled/blacklisted/whitelisted
+ *
+ * @returns {Array} - filenames of enabled object types
+ */
 ObjectManager.getEnabledObjectTypes = function () {
 	var files = fs.readdirSync(__dirname + '/../objects');
 	var objectTypes = {};
