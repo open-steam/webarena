@@ -34,33 +34,8 @@ BuildTool.addToClientCode = function(filename) {
 }
 
 BuildTool.buildClientCode = function(){
-	var files = fs.readdirSync(__dirname + '/../objects');
 	var that = this;
-
-	files.sort(function (a, b) {
-		return parseInt(a) - parseInt(b);
-	});
-
-	var whiteList = {};
-	var blackList = {};
-	var hasWhiteList = false;
-
-	for (var i in Modules.config.objectWhitelist) {
-		hasWhiteList = true;
-		whiteList[Modules.config.objectWhitelist[i]] = true;
-	}
-
-	for (var i in Modules.config.objectBlacklist) {
-		blackList[Modules.config.objectBlacklist[i]] = true;
-	}
-
-	if (hasWhiteList) {
-		whiteList.GeneralObject = true;
-		whiteList.Room = true;
-		whiteList.IconObject = true;
-		whiteList.UnknownObject = true;
-		whiteList.ImageObject = true;
-	}
+	var files = Modules.ObjectManager.getEnabledObjectTypes();
 
 	files.forEach(function (filename) {
 		var fileinfo = filename.split('.');
@@ -68,16 +43,6 @@ BuildTool.buildClientCode = function(){
 		var objName = fileinfo[1];
 		if (!index) return;
 		if (!objName) return;
-
-		if (hasWhiteList && !whiteList[objName]) {
-			console.log('Type ' + objName + ' not whitelisted.');
-			return;
-		}
-
-		if (blackList[objName]) {
-			console.log('Type ' + objName + ' is blacklisted.');
-			return;
-		}
 
 		var filebase = __dirname + '/../objects/' + filename;
 		that.addToClientCode(filebase + '/common.js');
