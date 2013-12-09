@@ -327,9 +327,7 @@ ObjectManager.init = function (theModules) {
 		whiteList.ImageObject = true;
 	}
 
-	files.forEach(function (filename) {
-
-		try {
+	var processFunction=function (filename) {
 
 			var fileinfo = filename.split('.');
 			var index = fileinfo[0];
@@ -364,12 +362,22 @@ ObjectManager.init = function (theModules) {
 				selection = (selection) ? '_' + selection : '';
 				return filebase + '/icon' + selection + '.png';
 			}
+		 
+	}
 
-		} catch (e) {
-			Modules.Log.warn('Could not register ' + objName);
-			Modules.Log.warn(e);
+	files.forEach(function(filename){
+		
+		if (Modules.Config.debugMode) {
+			processFunction(filename);
+		} else {
+			try {
+				processFunction(filename);
+			} catch (e) {
+				Modules.Log.warn('Could not register ' + objName);
+				Modules.Log.warn(e.stack);
+			}
 		}
-
+		
 	});
 
 	//This is the interface for clients. Registering functions for attribute access and
@@ -753,15 +761,15 @@ ObjectManager.getClientCode = function () {
 
 	var lines = this.clientCode.split(enter);
 
-	var showDebugLineNumbers = !!Modules.config.showDebugLineNumbers;
+	var showDebugLineNumbers = !!Modules.config.debugMode;
 	//fill in line numbers for debugging
 	for (var i = 0; i < lines.length; i++) {
 		var line = lines[i];
-		code += line
+		code += line;
 
-		if (showDebugLineNumbers) code += ' //' + (i + 1)
+		if (showDebugLineNumbers) code += ' //' + (i + 1);
 
-		code += enter
+		code += enter;
 	}
 
 	return code;
