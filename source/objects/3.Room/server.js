@@ -40,6 +40,8 @@ theObject.placeActiveObjects=function(){
 	
 	var objects=this.getInventory();
 	
+	var positions={};
+	
 	for (var key in objects){
 		var active=objects[key];
 		var currentIsActive;
@@ -52,76 +54,109 @@ theObject.placeActiveObjects=function(){
 				if (structuring.isStructuring()){
 					if(currentIsActive || structuring.decideIfActive(active)){
 						var data=structuring.getPositioningDataFor(active);
-						console.log(active+' structured by '+structuring+' '+data);
+						if (data.reference!=='ignore'){
+							if (!positions[active.id]) positions[active.id]={object:active,musts:[],mustnots:[]};
+							if (data.reference=='must') {
+								positions[active.id].musts.push(data);
+							} else {
+								positions[active.id].mustnots.push(data);
+							}
+						}
 					}
 				}
 			}
 		}
 	}
 	
-	//get all structuring objects
-	//get all active objects
 	
-	//for every active object, get possible positions
-	//position them
-	
-}
-
-function getPosition(dataObject,green,reds){
-	
-	//TODO choose more random positions.
-	
-	for (var x=green.x;x<=green.x2;x++){
-		for (var y=green.y;y<green.y2;y++){
-			
-			var inRed=false;
-			for (var i in reds){
-				var red=reds[i];
-				if ((x>red.x && x+w<red.x2) && (y>red.y && y+h<red.y2)){
-					inRed=true;
+	for (var i in positions){
+		var task=positions[i];
+		var object=task.object;
+		var musts=task.musts;
+		var mustnots=task.mustnots;
+		
+		var x=object.getAttribute('x');
+		var y=object.getAttribute('y');
+		
+		//check if position is still okay; 
+		var isOK=true;
+		
+		for (var i in musts){
+			var must=musts[i];
+			if (x<must.minX || x>must.maxX || y<must.minY || y>must.maxY) {
+				var isOK=false;
+				break;
+			}
+		}
+		
+		if (isOK){
+			for (var i in mustnots){
+				var mustnot=mustnots[i];
+				if (x>mustnot.minX && x<mustnot.maxX && y>mustnot.minY && y<mustnot.maxY) {
+					var isOK=false;
 					break;
-				}
+				}				
 			}
-			if (inRed) continue;
+		}
+		
+		if (isOK){
+			//position does not need to be changed
+			continue;
+		} else {
 			
-			return {'x':x,'y':y};
-		}
-	}
-	
-	return false;
-	
-}
-
-function checkPosition(dataObject,green,reds){
-	
-	var x=dataObject.getAttribute('x');
-	var y=dataObject.getAttribute('y');
-	var w=dataObject.getAttribute('width');
-	var h=dataObject.getAttribute('height');
-	
-	if (green){
-		if (x<green.x ||x+w>green.x2 || y<green.y ||y+h>green.y2){
-			console.log(dataObject+' out of green');
-			return false;
-		}
-	} else {
-		console.log(dataObject+' has no green');
-	}
-	
-	if (reds.length){
-		for (var i in reds){
-			var red=reds[i];
-			if ((x>red.x && x+w<red.x2) && (y>red.y && y+h<red.y2)){
-				console.log(dataObject+' in red');
-				return false;
+			var conflicts=false;
+			
+			if (musts.length){
+				var first=musts.pop();
+				var minX=first.minX;
+				var maxX=first.maxX;
+				var minY=first.minY;
+				var maxY=first.maxY;
+				
+				for (var i in musts){
+					var must=musts[i];
+					
+					var intersects=!(  must.minX>maxX 
+					 				|| must.maxX<minX
+					 				|| must.minY>maxY
+					 				|| must.maxY<minY);
+					 			
+					 if (!intersects){
+					 	conflicts=true;
+					 	break;	
+					 }	 
+					 
+					 minX=Math.max(must.minX,minX);
+					 minY=Math.max(must.minY,minY);
+					 
+					 maxX=Math.min(must.maxX,maxX);
+					 maxY=Math.min(must.maxY,maxY);
+					 
+				}
+				
 			}
+			
+			if (conflicts) {
+				object.setAttribute('visible',false);
+				continue;
+			}
+			
+			var newX=Modules.Helper.getRandom(minX,maxX);
+			var newY=Modules.Helper.getRandom(minY,maxY);
+			
+			object.setAttribute('x',newX);
+			object.setAttribute('y',newY);
+			object.setAttribute('visible',true);
+			
 		}
-	} else {
-		console.log(dataObject+' has no red');
+	
 	}
 	
-	console.log('Position of '+dataObject+' is okay.');
-	return true;
+	//get all structuring objects - check
+	//get all active objects - check
+	
+	//for every active object, get possible positions - check
+	//position them
 	
 }
 
