@@ -18,10 +18,6 @@ theObject.evaluatePositionFor=function(object,data){
 	
 	if (object.onObjectMove) return object.onObjectMove(data);
 	
-	//if the object is not active (neutral) do nothing at all
-	
-	//if (!object.isActive()) return;
-	
 	//let the moved object be evaluated by every structuring or sensitive object in the room
 	
 	var inventory=this.getInventory();
@@ -143,6 +139,8 @@ theObject.placeActiveObjects=function(){
 			
 			var newX=Modules.Helper.getRandom(minX,maxX);
 			var newY=Modules.Helper.getRandom(minY,maxY);
+			
+			//TODO include mustnots
 			
 			object.setAttribute('x',newX);
 			object.setAttribute('y',newY);

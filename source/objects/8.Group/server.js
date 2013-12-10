@@ -80,16 +80,20 @@ theObject.getPositioningDataFor=function(activeObject){
 		
 			if (gValue===oValue){
 				var result={reference:'must'};
+				
+				result.minX=this.getAttribute('x')-activeObject.getAttribute('width')/2;
+				result.maxX=this.getAttribute('x')+this.getAttribute('width')/2;
+				result.minY=this.getAttribute('y')-activeObject.getAttribute('height')/2;
+				result.maxY=this.getAttribute('y')+this.getAttribute('height')/2;
 			} else {
 				var result={reference:'mustnot'};
+				
+				result.minX=this.getAttribute('x')-activeObject.getAttribute('width')/2;
+				result.maxX=this.getAttribute('x')+this.getAttribute('width')/2;
+				result.minY=this.getAttribute('y')-activeObject.getAttribute('height')/2;
+				result.maxY=this.getAttribute('y')+this.getAttribute('height')/2;
 			}
-			var width=this.getAttribute('width')-activeObject.getAttribute('width');
-			var height=this.getAttribute('height')-activeObject.getAttribute('height');
-			
-			result.minX=this.getAttribute('x');
-			result.maxX=this.getAttribute('x')+width;
-			result.minY=this.getAttribute('y');
-			result.maxY=this.getAttribute('y')+height;
+
 			
 		}
 		
