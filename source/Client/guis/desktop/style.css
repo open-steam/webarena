@@ -768,3 +768,15 @@ input {
   background-color: rgba(0, 200, 0 , 0.6);
 }
 /* end process log*/
+
+svg text.font-icon{
+  font-family: FontAwesome;
+}
+
+.half-transparent{
+  opacity: 0.2;
+}
+
+.hidden{
+  display: none;
+}

@@ -929,6 +929,10 @@ GeneralObject.moveStart = function(event) {
 	self.hideControls();
 	
 	var move = function(event) {
+        $("body").trigger({
+            type : "moveObject.wa",
+            objectId : self.id
+        });
 		if (GUI.isTouchDevice && event.touches.length > 1) return;
 
 		if (!self.moving) return;
@@ -956,6 +960,11 @@ GeneralObject.moveStart = function(event) {
 	};
 	
 	var end = function(event) {
+
+        $("body").trigger({
+            type : "moveend.wa",
+            objectId : self.id
+        })
 		var cut = !(event.ctrlKey || event.metaKey);
 
 		var movedBetweenRooms = false;

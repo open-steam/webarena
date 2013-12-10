@@ -13,8 +13,9 @@ theObject.isInCutMode = function(){
 	return this.getAttribute("cut");
 }
 
-theObject.duplicationLogic = function(enteredObject){
-	var objectId = enteredObject.id;
+theObject.copyOrCut = function(objectId){
+    var enteredObject = Modules.ObjectManager.getObject(this.getRoomID(), objectId, this.context);
+
 	var eventName = "object::" + this.id + "::enter"  ;
 	var that = this;
 	this.fireEvent(eventName,  {
@@ -53,14 +54,4 @@ theObject.duplicationLogic = function(enteredObject){
 	Modules.ObjectManager.duplicateNew(requestData, this.context, sendExecutedHandler);
 }
 
-
-
-theObject.onEnter=function(object,oldData,newData){
-    var that = this;
-
-    //hacky hack...use timeout to prevent some timing bugs (deleted object reappears...)
-    setTimeout(function(){
-        that.duplicationLogic(object);
-    }, 500);
-
-};
+theObject.copyOrCut.public = true;
