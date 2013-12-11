@@ -46,6 +46,85 @@ GUI.setPaintSize = function(value) {
 GUI.paintColors = [];
 GUI.paintSizes = [];
 
+var COPY = {	started     : false,
+				selecting   : false,
+				dragging    : false,
+				enabled     : false,
+
+				sourceX     : 0,
+				sourceY     : 0,
+				sourceXTemp : 0,
+				sourceYTemp : 0,
+				destX       : 0,
+				destY       : 0,
+
+				draggingOffsetX : 0,
+				draggingOffsetY : 0,
+
+				timingPaste     : 0,
+
+				mouseOverSelectionBox : false,
+				paste : ""
+};
+
+var CUT = {		started     : false,
+				selecting   : false,
+				dragging    : false,
+				enabled     : false,
+
+				sourceX     : 0,
+				sourceY     : 0,
+				sourceXTemp : 0,
+				sourceYTemp : 0,
+				destX       : 0,
+				destY       : 0,
+
+				draggingOffsetX : 0,
+				draggingOffsetY : 0,
+
+				selectionData   : "",
+				timingPaste     : 0,
+
+				mouseOverSelectionBox : false,
+				paste : ""
+};
+
+COPY.paste = function()
+{
+	COPY.started = false;
+	COPY.selecting = false;
+	COPY.dragging = false;
+	COPY.enabled = false;
+
+	GUI.paintContext.drawImage(GUI.paintCanvas,
+		COPY.sourceX, // source x	 
+		COPY.sourceY, // source y
+		COPY.sourceW, // source width
+		COPY.sourceH, // source height
+		COPY.destX, // dest x
+		COPY.destY, // dest y
+		COPY.sourceW, // dest width
+		COPY.sourceH // dest height
+	);
+
+	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+	clearTimeout(COPY.timingPaste);
+};
+
+CUT.paste = function()
+{
+	CUT.started = false;
+	CUT.selecting = false;
+	CUT.dragging = false;
+	CUT.enabled = false;
+
+	GUI.paintContext.putImageData(CUT.selectionData,CUT.destX,CUT.destY);
+
+	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+	clearTimeout(CUT.timingPaste);
+};
 
 /**
  * Reset all paint colors
@@ -131,10 +210,6 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	GUI.addPaintSize(24);
 	
 	
-	
-	
-	
-	
 	/* add color selection */
 	
 	$.each(GUI.paintColors, function(index, color) {
@@ -198,7 +273,25 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		GUI.setPaintSize(3);
 	}
 
-	
+
+	/* add copy'n'paste */
+	var copyPasteButton = document.createElement("span");
+	$(copyPasteButton).addClass("header_button");
+	$(copyPasteButton).addClass("jPaint_navi");
+	$(copyPasteButton).html(GUI.translate("copy"));
+	$(copyPasteButton).bind( "click", function(event) { COPY.enabled = true; $(GUI.paintCanvasTemp).css("visibility", "visible"); } );	
+
+	$("#header > div.header_right").append(copyPasteButton);
+
+
+	/* add cut'n'paste */
+	var cutPasteButton = document.createElement("span");
+	$(cutPasteButton).addClass("header_button");
+	$(cutPasteButton).addClass("jPaint_navi");
+	$(cutPasteButton).html(GUI.translate("cut"));
+	$(cutPasteButton).bind( "click", function(event) { CUT.enabled = true; $(GUI.paintCanvasTemp).css("visibility", "visible"); } );
+
+	$("#header > div.header_right").append(cutPasteButton);	
 
 
 	/* add cancel button */
@@ -227,20 +320,37 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	
 	/* create html canvas */
 	GUI.paintCanvas = document.createElement("canvas");
+	GUI.paintCanvasTemp = document.createElement("canvas");
 	
+	GUI.paintContext = GUI.paintCanvas.getContext('2d');
+	GUI.paintContextTemp = GUI.paintCanvasTemp.getContext('2d');
+
 	var svgpos = $("#content").offset();
 	
 	/* align canvas */
 	$(GUI.paintCanvas).css("position", "absolute");
+	$(GUI.paintCanvasTemp).css("position", "absolute");
+
 	$(GUI.paintCanvas).css("top", svgpos.top+$(document).scrollTop());
+	$(GUI.paintCanvasTemp).css("top", svgpos.top+$(document).scrollTop());
+
 	$(GUI.paintCanvas).css("left", $(document).scrollLeft());
-	
+	$(GUI.paintCanvasTemp).css("left", $(document).scrollLeft());
 	
 	$(GUI.paintCanvas).attr("width", $(window).width());
+	$(GUI.paintCanvasTemp).attr("width", $(window).width());
+
 	$(GUI.paintCanvas).attr("height", $(window).height()-svgpos.top);
-	
+	$(GUI.paintCanvasTemp).attr("height", $(window).height()-svgpos.top);
+
 	$(GUI.paintCanvas).css("z-index", 10000);
+	$(GUI.paintCanvasTemp).css("z-index", 10001);
+
 	$(GUI.paintCanvas).attr("id", "webarena_paintCanvas");
+	$(GUI.paintCanvasTemp).attr("id", "webarena_paintCanvas_temp");
+
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+
 	//$(GUI.paintCanvas).css("background-color", "yellow");
 	//$(GUI.paintCanvas).css("border", "1px solid red");
 
@@ -254,9 +364,8 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	}
 		
 	$("body").append(GUI.paintCanvas);
+	$("body").append(GUI.paintCanvasTemp);
 	
-	
-
 
 	/* set lower opacity to all objects */
 	$.each(ObjectManager.getObjects(), function(index, object) {
@@ -304,8 +413,6 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	$("#webarena_paintCanvas").unbind("mousedown");
 	$("#webarena_paintCanvas").unbind("touchend");
 	
-	
-	
 	var start = function(event) {
 
 		GUI.paintLastPoint = undefined;
@@ -314,43 +421,45 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		event.stopPropagation();
 		
 		GUI.painted = true;
-		
-		if (!GUI.paintEraseModeActive) {
-		
+
+		if (GUI.isTouchDevice)
+		{
+			/* touch */
+			
+			var x = event.targetTouches[0].pageX;
+			var y = event.targetTouches[0].pageY;
+			
+			x = x-$(document).scrollLeft();
+			y = y-$(document).scrollTop();
+		} else {
+			/* click */
+			
+			var x = event.pageX;
+			var y = event.pageY;
+			
+			x = x-$(document).scrollLeft();
+			y = y-$(document).scrollTop();
+		}
+
+
+		if (!GUI.paintEraseModeActive)
+		{
 			var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 
 			canvasContext.strokeStyle = GUI.paintColor;
 			canvasContext.lineWidth = GUI.paintSize;
-			
 			canvasContext.lineCap = "round";
-			
 			canvasContext.beginPath();
 		
 		
 			if (GUI.isTouchDevice) {
 				/* touch */
-				
-				var x = event.targetTouches[0].pageX;
-				var y = event.targetTouches[0].pageY;
-				
-				x = x-$(document).scrollLeft();
-				y = y-$(document).scrollTop();
-
 				GUI.paintMove(x, y);
-		
 				GUI.paintPaint(x, y);
 				GUI.paintPaint(x+1, y);
 			} else {
 				/* click */
-				
-				var x = event.pageX;
-				var y = event.pageY;
-				
-				x = x-$(document).scrollLeft();
-				y = y-$(document).scrollTop();
-				
 				GUI.paintMove(x, y);
-		
 				GUI.paintPaint(x, y);
 				GUI.paintPaint(x+1, y);
 			}
@@ -359,29 +468,14 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 			
 			if (GUI.isTouchDevice) {
 				/* touch */
-				
-				var x = event.targetTouches[0].pageX;
-				var y = event.targetTouches[0].pageY;
-				
-				x = x-$(document).scrollLeft();
-				y = y-$(document).scrollTop();
-				
 				GUI.paintErase(x, y);
 			} else {
 				/* click */
-				
-				var x = event.pageX;
-				var y = event.pageY;
-				
-				x = x-$(document).scrollLeft();
-				y = y-$(document).scrollTop();
-				
 				GUI.paintErase(x, y);
 			}
 			
 		}
-		
-		
+
 		var move = function(event) {
 			
 			event.preventDefault();
@@ -395,7 +489,6 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 				
 				x = x-$(document).scrollLeft();
 				y = y-$(document).scrollTop();
-				
 			} else {
 				/* click */
 				
@@ -406,6 +499,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 				y = y-$(document).scrollTop();
 			}
 
+
 			if (!GUI.paintEraseModeActive) {
 				GUI.paintPaint(x, y);
 			} else {
@@ -413,8 +507,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 			}
 
 		}
-		
-		
+
 		var end = function(event) {
 			
 			event.preventDefault();
@@ -425,9 +518,7 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 			
 			$("#webarena_paintCanvas").unbind("touchmove");
 			$("#webarena_paintCanvas").unbind("touchend");
-
-		}
-
+		};
 		
 		
 		if (GUI.isTouchDevice) {
@@ -439,8 +530,318 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 			$("#webarena_paintCanvas").bind("mousemove", move);
 			$("#webarena_paintCanvas").bind("mouseup", end);
 		}
-		
+
+		/* for copy'n'paste and cut'n'paste */
+		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousedown", startCopy, false);
+		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousemove", moveCopy, false);
+		$("#webarena_paintCanvas_temp").get(0).addEventListener("mouseup", endCopy, false);
+
+		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousedown", startCut, false);
+		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousemove", moveCut, false);
+		$("#webarena_paintCanvas_temp").get(0).addEventListener("mouseup", endCut, false);
 	}
+
+	var startCopy = function(event) {
+
+	if ( !COPY.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+	
+	if (GUI.isTouchDevice)
+	{
+		/* touch */
+		
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	} else {
+		/* click */
+		
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	}
+
+	COPY.started = true;
+
+	if (!COPY.selecting)
+	{
+		// start creating selection frame
+		COPY.sourceXTemp = x;
+		COPY.sourceYTemp = y;
+
+		GUI.paintContextTemp.strokeStyle = 'rgba(0,0,255,1)';
+		GUI.paintContextTemp.lineWidth = 2;
+	}
+	else if (!COPY.dragging && COPY.mouseOverSelectionBox)
+	{
+		// start moving selection frame
+		COPY.dragging = true;
+		COPY.draggingOffsetX =  x - COPY.destX;
+		COPY.draggingOffsetY =  y - COPY.destY;
+		clearTimeout(COPY.timingPaste);
+	}
+	else { return; }
+}
+
+var moveCopy = function(event) {
+	
+	if ( !COPY.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (GUI.isTouchDevice) {
+		/* touch */
+		
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	} else {
+		/* click */
+		
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	}
+
+	if ( !COPY.started ) { return; }
+
+	if (!COPY.selecting)
+	{
+		// creating selection frame
+		COPY.sourceX = Math.min(x, COPY.sourceXTemp);
+		COPY.sourceY = Math.min(y, COPY.sourceYTemp);
+		COPY.sourceW = Math.abs(x - COPY.sourceXTemp);
+		COPY.sourceH = Math.abs(y - COPY.sourceYTemp);
+
+		COPY.destX = COPY.sourceX;
+		COPY.destY = COPY.sourceY;
+		
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		if (!COPY.sourceW || !COPY.sourceH) { return; }
+		GUI.paintContextTemp.strokeRect(COPY.sourceX, COPY.sourceY, COPY.sourceW, COPY.sourceH);
+	}
+	else if (!COPY.dragging)
+	{
+		// selection frame drawn
+		COPY.mouseOverSelectionBox = ( COPY.destX < x && x < COPY.destX + COPY.sourceW ) && ( COPY.destY < y && y < COPY.destY + COPY.sourceH );
+	
+		if (COPY.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
+		else { document.body.style.cursor = "default"; }
+	}
+	else
+	{
+		// selection frame currently moving
+		COPY.destX = x - COPY.draggingOffsetX;
+		COPY.destY = y - COPY.draggingOffsetY;
+
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		GUI.paintContextTemp.strokeRect(COPY.destX, COPY.destY, COPY.sourceW, COPY.sourceH);
+		
+		GUI.paintContextTemp.drawImage(
+			GUI.paintCanvas,
+			COPY.sourceX, // source x	 
+			COPY.sourceY, // source y
+			COPY.sourceW, // source width
+			COPY.sourceH, // source height
+			COPY.destX, // dest x
+			COPY.destY, // dest y
+			COPY.sourceW, // dest width
+			COPY.sourceH // dest height
+		);
+	}
+}
+
+
+var endCopy = function(event) {
+	
+	if ( !COPY.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (!COPY.selecting)
+	{
+		// selection frame just created
+		COPY.selecting = true;
+	}
+	else if (COPY.dragging)
+	{
+		// selection frame just moved
+		COPY.dragging = false;
+		COPY.timingPaste = setTimeout(function(){COPY.paste();}, 2000);
+	}
+};
+
+
+var startCut = function(event) {
+
+	if ( !CUT.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+	
+	if (GUI.isTouchDevice)
+	{
+		/* touch */
+		
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	} else {
+		/* click */
+		
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	}
+
+	CUT.started = true;
+
+	if (!CUT.selecting)
+	{
+		// start creating selection frame
+		CUT.sourceXTemp = x;
+		CUT.sourceYTemp = y;
+
+		GUI.paintContextTemp.strokeStyle = 'rgba(0,0,255,1)';
+		GUI.paintContextTemp.lineWidth = 2;
+	}
+	else if (!CUT.dragging && CUT.mouseOverSelectionBox)
+	{
+		// start moving selection frame
+		CUT.dragging = true;
+		CUT.draggingOffsetX =  x - CUT.destX;
+		CUT.draggingOffsetY =  y - CUT.destY;
+		clearTimeout(CUT.timingPaste);
+	}
+	else { return; }
+}
+
+
+
+var moveCut = function(event) {
+
+	if ( !CUT.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (GUI.isTouchDevice) {
+		/* touch */
+		
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	} else {
+		/* click */
+		
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+		
+		x = x-$(document).scrollLeft();
+		y = y-$(document).scrollTop();
+	}
+
+	if ( !CUT.started ) { return; }
+
+	if (!CUT.selecting)
+	{
+		// creating selection frame
+		CUT.sourceX = Math.min(x, CUT.sourceXTemp);
+		CUT.sourceY = Math.min(y, CUT.sourceYTemp);
+		CUT.sourceW = Math.abs(x - CUT.sourceXTemp);
+		CUT.sourceH = Math.abs(y - CUT.sourceYTemp);
+
+		CUT.destX = CUT.sourceX;
+		CUT.destY = CUT.sourceY;
+		
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		if (!CUT.sourceW || !CUT.sourceH) { return; }
+		GUI.paintContextTemp.strokeRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
+	}
+	else if (!CUT.dragging)
+	{
+		// selection frame drawn
+		CUT.mouseOverSelectionBox = ( CUT.destX < x && x < CUT.destX + CUT.sourceW ) && ( CUT.destY < y && y < CUT.destY + CUT.sourceH );
+	
+		if (CUT.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
+		else { document.body.style.cursor = "default"; }
+	}
+	else
+	{
+		// selection frame currently moving
+		CUT.destX = x - CUT.draggingOffsetX;
+		CUT.destY = y - CUT.draggingOffsetY;
+
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		GUI.paintContextTemp.strokeRect(CUT.destX, CUT.destY, CUT.sourceW, CUT.sourceH);
+		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.destX, CUT.destY);
+	}
+
+}
+
+
+var endCut = function(event) {
+
+	if ( !CUT.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (!CUT.selecting)
+	{
+		// selection frame just created
+		CUT.selecting = true;
+
+		CUT.selectionData = GUI.paintContext.getImageData(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
+		GUI.paintContext.clearRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
+		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.sourceX, CUT.sourceY);
+	}
+	else if (CUT.dragging)
+	{
+		// selection frame just moved
+		CUT.dragging = false;
+		CUT.timingPaste = setTimeout(function(){CUT.paste();}, 2000);
+	}
+}
+
 	
 	
 	if (GUI.isTouchDevice) {
@@ -633,6 +1034,7 @@ GUI.closePaintMode = function() {
 	$("#header > div.header_right").children().show();
 	
 	$("#webarena_paintCanvas").remove();
+	$("#webarena_paintCanvas_temp").remove();
 	
 	/* set normal opacity to all objects */
 	$.each(ObjectManager.getObjects(), function(index, object) {
@@ -692,5 +1094,4 @@ GUI.savePaintMode = function() {
 	});
 	
 	GUI.closePaintMode();
-	
 }
