@@ -125,12 +125,9 @@ CUT.paste = function()
 	var tempCanvas = document.createElement('canvas');
 	var tempContext = tempCanvas.getContext('2d');
 
-	tempCanvas.style.width = CUT.sourceW;
-	tempCanvas.style.height = CUT.sourceH;
-
 	tempContext.putImageData(CUT.selectionData, 0, 0);
-	
 	GUI.paintContext.drawImage(tempCanvas, CUT.destX, CUT.destY);
+	
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(CUT.timingPaste);
