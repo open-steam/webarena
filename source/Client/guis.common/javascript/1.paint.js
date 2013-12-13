@@ -118,9 +118,19 @@ CUT.paste = function()
 	CUT.selecting = false;
 	CUT.dragging = false;
 	CUT.enabled = false;
+	
+	//existing pixels are being overwritten by transparent pixels
+	//GUI.paintContext.putImageData(CUT.selectionData, CUT.destX, CUT.destY);
 
-	GUI.paintContext.putImageData(CUT.selectionData,CUT.destX,CUT.destY);
+	var tempCanvas = document.createElement('canvas');
+	var tempContext = tempCanvas.getContext('2d');
 
+	tempCanvas.style.width = CUT.sourceW;
+	tempCanvas.style.height = CUT.sourceH;
+
+	tempContext.putImageData(CUT.selectionData, 0, 0);
+	
+	GUI.paintContext.drawImage(tempCanvas, CUT.destX, CUT.destY);
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(CUT.timingPaste);
