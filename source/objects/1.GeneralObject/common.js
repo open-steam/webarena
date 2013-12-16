@@ -888,7 +888,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 		var target = linkedObjects[id];
 		var targetObject = target.object;
 		
-		if (!list[targetObject.get('id')]) {
+		if (targetObject && targetObject && !list[targetObject.get('id')]) {
 			targetObject.getObjectsToDuplicate(list);
 		}
 		
