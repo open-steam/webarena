@@ -1,5 +1,12 @@
+/**
+ * WebArena Plugin Application for the "Kokoa Project"
+ *
+ * @author Viktor Koop <viktor.koop@gmail.com>
+ */
+
 var config = require('./config.js');
 var uuid = require('node-uuid');
+var _ = require('lodash');
 
 var VerwaltungsApp = {};
 
@@ -10,6 +17,10 @@ var ContextObject = {
     }
 }
 
+/**
+ * Create all needed structures for a "Berufungsverfahren".
+ * - Create needed room-structures
+ */
 VerwaltungsApp.initAppointmentProcedure = function () {
     var that = this;
     //create room instances for all parties
@@ -104,11 +115,6 @@ VerwaltungsApp.init = function (modules) {
     this.Modules = modules;
     this.eventBus = modules.EventBus;
     var that = this;
-    this.eventBus.on("**", function (eventData) {
-        if (eventData.sourceType && eventData.sourceType === "Tunnel") {
-            that.sendMail();
-        }
-    });
 
     this.eventBus.on("applicationevent::kokoa::initMasterRooms", function () {
         that.initOverviewRooms();
@@ -119,7 +125,8 @@ VerwaltungsApp.init = function (modules) {
     });
 
     this.eventBus.on("send_object", function(data){
-         that.addLogEntry(data);
+        that.addLogEntry(data);
+        that.sendMail();
     });
 }
 
@@ -134,7 +141,7 @@ VerwaltungsApp.addLogEntry = function(data){
     var pFrom = pat.exec(from);
     var pTo = pat.exec(to);
 
-    if(!pFrom[1]|| ! pTo[1])return;
+    if(pFrom == null || pTo == null || !pFrom[1]|| ! pTo[1])return;
 
 
     var fromEntry = "Verschickt: (" + objectName + ") an " + pTo[1];
@@ -202,9 +209,15 @@ VerwaltungsApp.addLogEntry = function(data){
 
 }
 
-VerwaltungsApp.sendMail = function () {
+/**
+ * Send mail to all users that are configured to get a mail when a new message entered
+ * a room.
+ *
+ * @param roomID
+ */
+VerwaltungsApp.sendMail = function (roomID) {
     //TODO create some possibility to add mails to a room
-    var recipient = "viktor.koop@gmail.com" //Modules.config.mailRecipient;
+    var recipients = this.Modules.config.kokoa.mail;
 
     var smtpServer = "";
     var smtpUser = config.smtp.user;
@@ -225,19 +238,22 @@ VerwaltungsApp.sendMail = function () {
 
     var mailOptions = {
         "from": config.tunnel.senderMail,
-        "to": recipient,
         "subject": subject,
         "text": text
     };
 
-    smtpTransport.sendMail(mailOptions, function (err, response) {
-        if (err) {
-            console.log("Failed while trying to send a mail.");
-            console.log(err);
-        } else {
-            console.log("Message send successfully");
-        }
+    _(recipients).each(function(recipient){
+        mailOptions.to = recipient;
+        smtpTransport.sendMail(mailOptions, function (err, response) {
+            if (err) {
+                console.log("Failed while trying to send a mail.");
+                console.log(err);
+            } else {
+                console.log("Message send successfully");
+            }
+        });
     });
+
 }
 
 function create() {
