@@ -47,11 +47,10 @@ try {
 
 //General error handling. Let the server try to continue
 //if an error occured and log the error
-
 if (!config.debugMode){
 	process.on('uncaughtException', function (err) {
 		console.log('##### UNCAUGHT EXCEPTION');
-		console.log(err);
+		console.log(err.stack);
 	});
 }
 
