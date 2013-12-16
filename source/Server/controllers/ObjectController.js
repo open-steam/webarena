@@ -33,7 +33,10 @@ ObjectController.createObject = function(data, context, callback){
             callback(err, null);
         } else {
             if(mayInsert){
-                Modules.ObjectManager.createObject(roomID, type, attributes, content, context, callback);
+                Modules.ObjectManager.createObject(roomID, type, attributes, content, context, function(err, obj){
+                    // we are only interested in the object id.
+                    callback(err, obj.id);
+                });
             } else {
                 callback(new Error("No rights to write into room: " + roomID), null);
             }

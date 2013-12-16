@@ -24,7 +24,7 @@ SimpleText.register=function(type){
 			return true;
 		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
 
-	}});;
+	}});
 	
 	this.attributeManager.registerAttribute('width',{hidden:true});
 	this.attributeManager.registerAttribute('height',{hidden:true});
