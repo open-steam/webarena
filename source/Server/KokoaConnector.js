@@ -4,7 +4,7 @@ var kokoaConnector = require('./FileConnector.js');
 var bcrypt = require('bcrypt');
 var _ = require('lodash');
 
-kokoaConnector.login = function (username, password, externalSession, context, rp) {
+kokoaConnector.login = function (username, password, externalSession, context, callback) {
     var self = this;
     var config = this.Modules.config;
 
@@ -17,9 +17,9 @@ kokoaConnector.login = function (username, password, externalSession, context, r
         var hash = logins[username];
         bcrypt.compare(password, hash, function (err, res) {
             if (err || res === false) {
-                rp(false)
+                callback(false)
             } else {
-                rp({
+                callback({
                     username: username,
                     password: password
                 });
