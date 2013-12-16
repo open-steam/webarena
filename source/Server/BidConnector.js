@@ -16,6 +16,7 @@ bidConnector.login=function(username,password,externalSession,context, rp){
 	if (externalSession === true) {
 		if (self.externalSessions[password] === undefined) rp(false);
 		password = self.externalSessions[password].password; //get real password from external session
+		delete(self.externalSessions[password]);
 	}
 	
 	var protocol = (global.config.bidServerIsHttps)?'https':'http';
