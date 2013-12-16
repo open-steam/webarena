@@ -62,6 +62,7 @@ WebServer.init = function (theModules) {
 
 		if (url == '/') url = Modules.config.homepage;
 
+
 		if (url.substr(0, 6) == '/room/') {
 			/* open room */
 
@@ -444,35 +445,8 @@ WebServer.init = function (theModules) {
 			});
 
 		}
-		else if (url == '/javascriptDependencies') {
-			if(process.env.NODE_ENV === "production"){
-				//TODO: cache combined file - don't recalculate each time
-			} else {
 
-				var jsDeps = require("../Client/javascriptDependencies.js")
-				var readFileQ = Q.denodeify(fs.readFile);
-
-				var promises = jsDeps.map(function(filename){
-					return readFileQ("Client/" + filename);
-				})
-
-				var combinedJS = "";
-
-				//Go on if all files are loaded
-				Q.allSettled(promises).then(function(results){
-					results.forEach(function(result){
-						combinedJS += result.value + "\n";
-					})
-
-					var mimeType = 'text/javascript';
-					res.writeHead(200, {'Content-Type': mimeType});
-
-					res.end(combinedJS);
-				})
-			}
-
-		}
-
+        //TODO: only cache if in production mode
 		else if (url == '/defaultJavascripts') {
 
 			//combine all javascript files in guis.common/javascript
