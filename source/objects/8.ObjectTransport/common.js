@@ -11,6 +11,11 @@ ObjectTransport.register=function(type){
 
 }
 
+ObjectTransport.execute=function(){
+    var destination = this.getAttribute("target");
+    ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')));
+}
+
 ObjectTransport.isCreatable=true;
 ObjectTransport.category = 'Active';
 
