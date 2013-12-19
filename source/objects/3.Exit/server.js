@@ -9,6 +9,7 @@
 
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../server.js');
+var _ = require('lodash');
 
 module.exports=theObject;
 
@@ -17,20 +18,52 @@ theObject.browse = function(data, callback) {
 	var result = [];
     var self = this;
 
+    var createSubroomNode = function(){
+        var args = arguments[0];
+        var defaults = {
+            'icon' : "/objectIcons/Subroom",
+            'name' : args["title"],
+            'type' : "Room"
+        }
+        args = _.defaults(args, defaults)
+
+        return createNode(args);
+    }
+
+    var createNode = function(){
+        var node = {};
+        var args = arguments[0];
+        var defaults = {
+            icon : "/objectIcons/" + args.type
+        }
+        args = _.defaults(args, defaults);
+
+        node.data = {
+            "title" : args.title,
+            "icon" : args.icon
+        };
+
+        node.metadata = {
+            "id" : args.id,
+            "name" : args.name,
+            "type" : args.type
+        };
+
+        if(args.inRoom){
+            node.metadata["inRoom"] = args.inRoom;
+        }
+
+        return node;
+    }
+
     if (roomId === -1) {
     	// get root rooms
         Modules.Connector.getRoomHierarchy(roomId, this.context, function(hierarchy) {
             for (var key in hierarchy.roots) {
-                var node = {};
-                node.data = { 
-                    "title" : hierarchy.rooms[hierarchy.roots[key]],
-                    "icon" : "/objectIcons/Subroom"
-                };
-                node.metadata = { 
-                    "id" : ''+hierarchy.roots[key], 
-                    "name" : ''+hierarchy.rooms[hierarchy.roots[key]],
-                    "type" : "Room"
-                };
+                var node = createSubroomNode({
+                    id : hierarchy.roots[key],
+                    title : hierarchy.rooms[hierarchy.roots[key]]
+                });
                 if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
                     node.state = "closed";
                 }
@@ -68,15 +101,10 @@ theObject.browse = function(data, callback) {
                                 var object = Modules.ObjectManager.getObject(inventory[key].getAttribute("destination"), inventory[key].getAttribute("destination"), self.context);
 
                                 if (object) {
-                	            	node.data = {
-                                        "title" : "" + object.getAttribute("name"),
-                                        "icon" : "/objectIcons/Subroom"
-                                    };
-                		            node.metadata = { 
-                		            	"id" : "" + object.getAttribute("id"), 
-                		            	"name" : "" + object.getAttribute("name"),
-                		            	"type" : "Room"
-                		            };
+                                    node = createSubroomNode({
+                                        id : object.getAttribute("id"),
+                                        title: object.getAttribute("name")
+                                    });
 
                 		            var subInventory = object.getInventory();
                                     for (var subKey in subInventory) {
@@ -104,16 +132,14 @@ theObject.browse = function(data, callback) {
                             returnResults();
                         });
                     } else {
-                    	node.data = {
+                        node = createNode({
                             "title" : "" + inventory[key].getAttribute("name"),
-                            "icon" : "/objectIcons/" + inventory[key].getAttribute("type")
-                        };
-        	            node.metadata = { 
-        	            	"id" : "" + inventory[key].getAttribute("id"), 
-        	            	"name" : "" + inventory[key].getAttribute("name"),
-        	            	"type" : "" + inventory[key].getAttribute("type"),
-        	            	"inRoom" : "" + inventory[key].getAttribute("inRoom")
-        	            };
+                            "id" : "" + inventory[key].getAttribute("id"),
+                            "name" : "" + inventory[key].getAttribute("name"),
+                            "type" : "" + inventory[key].getAttribute("type"),
+                            "inRoom" : "" + inventory[key].getAttribute("inRoom")
+                        })
+
                         result.push(node);
                         returnResults();
                     }
