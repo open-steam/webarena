@@ -29,6 +29,11 @@ ObjectTransport.draw = function (external) {
     GeneralObject.draw.call(this, external);
 }
 
+/**
+ * Have to be overwritten because we want to set the position by transforming the svg group.
+ *
+ * @param value
+ */
 ObjectTransport.setViewX = function (value) {
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=,)/, value);
@@ -39,6 +44,11 @@ ObjectTransport.setViewX = function (value) {
 
 }
 
+/**
+ * Have to be overwritten because we want to set the position by transforming the svg group.
+ *
+ * @param value
+ */
 ObjectTransport.setViewY = function (value) {
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=\))/, value);

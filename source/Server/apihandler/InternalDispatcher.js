@@ -1,6 +1,6 @@
 /**
  * InternalDispatcher is used to provide an API for
- * Plugins.
+ * Plugins in the same NodeJS process.
  *
  */
 'use strict';

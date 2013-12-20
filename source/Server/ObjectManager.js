@@ -433,7 +433,15 @@ ObjectManager.countSubrooms = function (roomID, context) {
 }
 
 
-//TODO: outsource helpers
+/**
+ *
+ * When using "async" sometimes it is helpful to create a
+ * callback wrapper that transforms "false" to an error.
+ *
+ * @param message - the error message
+ * @param cb
+ * @returns {Function}
+ */
 var falseToError = function (message, cb) {
 	return function (err, res) {
 		if (err) cb(err, null);
@@ -442,6 +450,14 @@ var falseToError = function (message, cb) {
 	}
 }
 
+/**
+ * Check read rights for multiple files.
+ *
+ * @param fromRoom
+ * @param files
+ * @param context
+ * @param cb
+ */
 var mayReadMultiple = function (fromRoom, files, context, cb) {
 	var checks = [];
 	files.forEach(function (file) {

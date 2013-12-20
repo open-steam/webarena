@@ -1,3 +1,8 @@
+/**
+ * TcpDispatcher is used to provide an API for
+ * Plugins that use a TCP connection.
+ *
+ */
 'use strict';
 
 var util = require("util");
