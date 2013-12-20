@@ -62,16 +62,16 @@ Dispatcher.init=function(theModules){
 
 Dispatcher.registerCall('deleteObject', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-	Modules.ObjectManager.deleteObject(data, context, wrapper(socket, responseID));
+	Modules.ObjectManager.deleteObject(data, context, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('createObject', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-	Modules.ObjectController.createObject(data, context, wrapper(socket, responseID));
+	Modules.ObjectController.createObject(data, context, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
-	Modules.RoomController.listRooms(wrapper(socket, responseID));
+	Modules.RoomController.listRooms(resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('getPreviewableMimeTypes', function (socket, data, responseID) {
@@ -80,31 +80,31 @@ Dispatcher.registerCall('getPreviewableMimeTypes', function (socket, data, respo
 
 Dispatcher.registerCall('memoryUsage', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-	Modules.ServerController.getMemoryUsage(data, context, wrapper(socket, responseID));
+	Modules.ServerController.getMemoryUsage(data, context, resultCallbackWrapper(socket, responseID));
 });
 
 //Information are sent to all clients in the same room
 Dispatcher.registerCall('inform', function (socket, data, responseID) {
-	Modules.RoomController.informAllInRoom(data, wrapper(socket, responseID));
+	Modules.RoomController.informAllInRoom(data, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
-	Modules.ServerController.bugreport(data, wrapper(socket, responseID));
+	Modules.ServerController.bugreport(data, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('undo', function(socket, data, responseID){
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-    Modules.ObjectManager.undo( data, context, infoWrapper(socket)  );
+    Modules.ObjectManager.undo( data, context, infoCallbackWrapper(socket)  );
 });
 
 Dispatcher.registerCall('duplicateObjects', function(socket, data, responseID){
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-	Modules.ObjectManager.duplicateNew(data, context, wrapper(socket, responseID));
+	Modules.ObjectManager.duplicateNew(data, context, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
-	Modules.ObjectController.executeServersideAction(data, context, wrapper(socket, responseID));
+	Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
 });
 
 /**
@@ -113,7 +113,7 @@ Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
  * @param socket
  * @returns {Function}
  */
-function infoWrapper(socket){
+function infoCallbackWrapper(socket){
 	return function(err, message){
 		if(err) Modules.SocketServer.sendToSocket(socket, 'error', err.message);
 		else Modules.SocketServer.sendToSocket(socket, 'infotext', message);
@@ -127,7 +127,7 @@ function infoWrapper(socket){
  * @param responseID
  * @returns {Function}
  */
-function wrapper(socket, responseID){
+function resultCallbackWrapper(socket, responseID){
 	return function(err, data){
 		if(err){
 			Modules.SocketServer.sendToSocket(socket, 'error', err.message);
