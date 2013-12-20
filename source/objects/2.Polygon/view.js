@@ -11,11 +11,12 @@ Polygon.draw=function(external){
 	
 	GeneralObject.draw.call(this, external);
 
-	$(rep).find("polyline").attr("fill", this.getAttribute('fillcolor'));
+	$(rep).attr("fill",  this.getAttribute('fillcolor'));
+
 	
 	if (!$(rep).hasClass("selected")) {
-		$(rep).find("polyline").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("polyline").attr("stroke-width", this.getAttribute('linesize'));
+		$(rep).attr("stroke", this.getAttribute('linecolor'));
+		$(rep).attr("stroke-width", this.getAttribute('linesize'));
 	}
 	
 	this.drawPolygon();
@@ -24,11 +25,8 @@ Polygon.draw=function(external){
 
 
 Polygon.drawPolygon = function() {
-
 	var rep=this.getRepresentation();
-
 	var edges = this.getAttribute("edges");
-	
 	var angle = 360/edges;
 	
 	this.points = [];
@@ -66,25 +64,16 @@ Polygon.drawPolygon = function() {
 Polygon.createRepresentation = function(parent) {
 	
 	this.points = [];
-
-	var rep = GUI.svg.group(parent,this.getAttribute('id'));
-
-	var polyline = GUI.svg.polyline(rep, this.points);
+	var rep = GUI.svg.polygon(parent, this.points);
 
 	rep.dataObject=this;
+    $(rep).attr("id", this.getAttribute('id'));
 
 	this.initGUI(rep);
 	
 	return rep;
 	
 }
-
-
-
-
-
-
-
 
 /* view getter */
 
