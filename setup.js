@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 //create temp. directory
 //TODO: folder like tmp shouldn't be inside of source folder
 var fs = require('fs');
