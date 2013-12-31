@@ -373,6 +373,14 @@ theObject.getContentAsString=function(callback){
 	}
 }
 
+theObject.getContentFromApplication = function(applicationName, callback){
+    var eventName = "applicationevent::" + applicationName + "::getContent"
+    var event = {
+        objectID : this.getID(),
+        callback : callback
+    }
+    Modules.EventBus.emit(eventName, event);
+}
 
 /**
 *	getInlinePreview

@@ -115,6 +115,7 @@ VerwaltungsApp.init = function (modules) {
     this.Modules = modules;
     this.eventBus = modules.EventBus;
     var that = this;
+    that.statusLights = {};
 
     this.eventBus.on("applicationevent::kokoa::initMasterRooms", function () {
         that.initOverviewRooms();
@@ -128,7 +129,23 @@ VerwaltungsApp.init = function (modules) {
         that.addLogEntry(data);
         that.sendMail();
     });
+
+    this.eventBus.on("applicationevent::kokoa::getContent", function(event){
+        var proceedingId = event.proceedingId;
+        var callback = event.callback;
+
+        //Load status of proceeding if not loaded already
+        if(!that.statusLights[proceedingId]){
+            that.statusLights[proceedingId] = require('./statusLights.js').create(proceedingId);
+        }
+
+        var proceedingStatus = that.statusLights[proceedingId].getStatus();
+        callback(proceedingStatus);
+
+    });
 }
+
+
 
 VerwaltungsApp.addLogEntry = function(data){
     var from = data.from;
