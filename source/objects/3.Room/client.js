@@ -10,11 +10,14 @@ Room.getInventory=function(){
 	return Modules.ObjectManager.getObjects();
 }
 
-
-Room.saveUserPaintingData=function(content){
+Room.saveUserPaintingData=function(content, callback){
 	this.serverCall('saveUserPaintingData', content, function(){
-		//update the view
+		callback();
 	});
+}
+
+Room.getUserPaintingURL=function(){
+	return "/paintings/"+ObjectManager.getCurrentRoom().id+'/'+ObjectManager.user.username+"/"+(new Date().getTime())+'/'+ObjectManager.userHash;
 }
 
 Room.getUserPaintings=function(callback){

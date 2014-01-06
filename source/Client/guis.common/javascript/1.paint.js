@@ -172,50 +172,29 @@ GUI.addPaintSize = function(size) {
  * @param {webarenaObject} webarenaObject The webarena object to save/load the paint data
  * @param {bool} highlighterMode True if the paint mode should be displayed in highlighter mode (different colors, sizes and opacity)
  */
-GUI.editPaint = function(webarenaObject, highlighterMode) {
-
-	if (webarenaObject === undefined) console.error("cannot paint on undefined object!");
-
-	GUI.currentPaintObject = webarenaObject;
-	GUI.currentPaintObjectIsHighlighter = highlighterMode;
+GUI.editPaint = function() {
 
 	GUI.painted = false;
-
 	GUI.paintModeActive = true;
-
 	GUI.sidebar.saveStateAndHide();
-
 	
 	$("#header > div.header_left").children().hide();
 	$("#header > div.header_right").children().hide();
 	
-	
 	GUI.resetPaintColors();
-	
-	if (highlighterMode) {
-		GUI.addPaintColor("#f6ff00", "yellow");
-	} else {
-		GUI.addPaintColor("#000000", "black");
-	}
-	
+	GUI.addPaintColor("#000000", "black");
 	GUI.addPaintColor("red");
 	GUI.addPaintColor("green");
 	GUI.addPaintColor("blue");
-	
 	GUI.resetPaintSizes();
 	
-	if (!highlighterMode) {
-	
-		GUI.addPaintSize(1);
-		GUI.addPaintSize(3);
-		GUI.addPaintSize(7);
-	
-	}
+	GUI.addPaintSize(1);
+	GUI.addPaintSize(3);
+	GUI.addPaintSize(7);
 	
 	GUI.addPaintSize(14);
 	GUI.addPaintSize(20);
 	GUI.addPaintSize(24);
-	
 	
 	/* add color selection */
 	
@@ -252,7 +231,6 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 		
 	});
 	
-	
 
 	/* add eraser selection */
 	
@@ -270,17 +248,10 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 
 	$("#header > div.header_left").append(eraser);
 
+	GUI.setPaintColor("#000000", "black");
+	GUI.setPaintSize(3);
 
 	
-	if (highlighterMode) {
-		GUI.setPaintColor("#f6ff00", "yellow");
-		GUI.setPaintSize(20);
-	} else {
-		GUI.setPaintColor("#000000", "black");
-		GUI.setPaintSize(3);
-	}
-
-
 	/* add copy'n'paste */
 	var copyPasteButton = document.createElement("span");
 	$(copyPasteButton).addClass("header_button");
@@ -361,60 +332,23 @@ GUI.editPaint = function(webarenaObject, highlighterMode) {
 	//$(GUI.paintCanvas).css("background-color", "yellow");
 	//$(GUI.paintCanvas).css("border", "1px solid red");
 
-	
-	if (webarenaObject) {
-		var rep = webarenaObject.getRepresentation();
-	}
-	
-	if (highlighterMode) {
-		$(GUI.paintCanvas).css("opacity", Highlighter.normalOpacity);
-	}
-		
 	$("body").append(GUI.paintCanvas);
 	$("body").append(GUI.paintCanvasTemp);
-	
 
-	/* set lower opacity to all objects */
-	$.each(ObjectManager.getObjects(), function(index, object) {
-		$(object.getRepresentation()).css("opacity", 0.4);
-	});
-	
-	
-	/* hide representation of webarenaObject */
-	if (webarenaObject) {
-		$(rep).css("opacity", 0);
-	}
-	
 	
 	/* load content */
-	if (webarenaObject && webarenaObject.hasContent()) {
+	GUI.painted = true;
 
-		GUI.painted = true;
-
-		var img = new Image();
-		
-		$(img).bind("load", function() {
-
-			var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-			
-			var x = webarenaObject.getAttribute("x");
-			var y = webarenaObject.getAttribute("y");
-
-			canvasContext.drawImage(img, x, y, img.width, img.height);
-			
-			GUI.paintMinX = x;
-			GUI.paintMinY = y;
-			GUI.paintMaxX = x+img.width;
-			GUI.paintMaxY = y+img.height;
-			
-		});
-		
-		var rep = webarenaObject.getRepresentation();
-		
-		$(img).attr("src", webarenaObject.getPreviewContentURL());
-		
-	}
+	var img = new Image();
 	
+	$(img).bind("load", function() {
+		var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
+		
+		canvasContext.drawImage(img, 0, 0, img.width, img.height);
+		
+	});
+		
+	$(img).attr("src", ObjectManager.getCurrentRoom().getUserPaintingURL());
 	
 	//unbind old events
 	$("#webarena_paintCanvas").unbind("mousedown");
@@ -1058,47 +992,8 @@ GUI.closePaintMode = function() {
  */
 GUI.savePaintMode = function() {
 	
-	if (!GUI.painted) {
-		GUI.cancelPaintMode();
-		return;
-	}
-	
-
-	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-	
-	var pixelFound = true;
-	
-	var maxX = GUI.paintMaxX+5;
-	var maxY = GUI.paintMaxY+5;
-	var minX = GUI.paintMinX-5;
-	var minY = GUI.paintMinY-5;
-	
-	var width = maxX-minX;
-	var height = maxY-minY;
-	
-	/* resize image */
-	
-	var img = canvasContext.getImageData(minX,minY,width,height);
-
-	$("#webarena_paintCanvas").attr("width", width);
-	$("#webarena_paintCanvas").attr("height", height);
-	
-	canvasContext.putImageData(img,0,0);
-	
-	minX = minX+$(document).scrollLeft();
-	minY = minY+$(document).scrollTop();
-	
-	GUI.currentPaintObject.setAttribute("width", width, true);
-	GUI.currentPaintObject.setAttribute("height", height, true);
-
-	GUI.currentPaintObject.setAttribute("x", minX, true);
-	GUI.currentPaintObject.setAttribute("y", minY, true);
-
 	//This is where the content is saved.
-
-	GUI.currentPaintObject.setContent($("#webarena_paintCanvas").get(0).toDataURL(), function() {
-		GUI.currentPaintObject.draw();
-	});
+	ObjectManager.getCurrentRoom().saveUserPaintingData($("#webarena_paintCanvas").get(0).toDataURL(), function(){});
 	
 	GUI.closePaintMode();
 }
