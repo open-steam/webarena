@@ -24,6 +24,6 @@ StatusLight.register = function (type) {
 StatusLight.register('StatusLight');
 StatusLight.isCreatable = true;
 StatusLight.category = 'Texts';
-
+StatusLight.isResizable = function(){ return false; }
 
 module.exports = StatusLight;
