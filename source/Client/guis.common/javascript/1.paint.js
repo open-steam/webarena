@@ -110,6 +110,7 @@ COPY.paste = function()
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(COPY.timingPaste);
+	GUI.savePaintMode();
 };
 
 CUT.paste = function()
@@ -128,6 +129,7 @@ CUT.paste = function()
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(CUT.timingPaste);
+	GUI.savePaintMode();
 };
 
 /**
