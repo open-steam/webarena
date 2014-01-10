@@ -111,10 +111,30 @@ VerwaltungsApp.initOverviewRooms = function () {
 }
 
 
+VerwaltungsApp.checkIfLoaded = function(proceedingID){
+    //Load status of proceeding if not loaded already
+    if(!this.statusLights[proceedingID]){
+        this.statusLights[proceedingID] = require('./statusLights.js').create(proceedingID);
+    }
+}
+
 VerwaltungsApp.init = function (modules) {
     this.Modules = modules;
     this.eventBus = modules.EventBus;
     var that = this;
+    that.statusLights = {};
+
+    //Should return:
+    // green - if in time
+    // yellow - if runs out of time soon
+    // red - if out of time
+    this.eventBus.on("applicationevent::kokoa::getMilestoneState", function (event) {
+        var proceedingId = event.proceedingId;
+        var callback = event.callback;
+
+        that.checkIfLoaded(proceedingId);
+        callback( that.statusLights[proceedingId].getCurrentMileStoneStatus());
+    });
 
     this.eventBus.on("applicationevent::kokoa::initMasterRooms", function () {
         that.initOverviewRooms();
@@ -128,7 +148,38 @@ VerwaltungsApp.init = function (modules) {
         that.addLogEntry(data);
         that.sendMail();
     });
+
+    this.eventBus.on("applicationevent::kokoa::getContent", function(event){
+        var proceedingId = event.proceedingId;
+        var callback = event.callback;
+
+        that.checkIfLoaded(proceedingId);
+
+        var proceedingStatus = that.statusLights[proceedingId].getStatus();
+        callback(proceedingStatus);
+    });
+
+    this.eventBus.on("applicationevent::kokoa::saveMilestones", function(event){
+        var changedMilestone = event.milestoneChanges.milestoneIndex;
+        var proceedingId = event.proceedingId;
+        var callback = event.callback;
+
+        that.checkIfLoaded(proceedingId);
+        var currentProceeding = that.statusLights[proceedingId];
+
+        if(event.milestoneChanges.diff.done){
+            currentProceeding.finishCurrent();
+        }
+        if(event.milestoneChanges.diff.enddate){
+            currentProceeding.mileStones[changedMilestone].enddate = event.milestoneChanges.diff.enddate;
+        }
+
+        currentProceeding.save(callback);
+
+    })
 }
+
+
 
 VerwaltungsApp.addLogEntry = function(data){
     var from = data.from;

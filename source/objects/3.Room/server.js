@@ -162,6 +162,10 @@ theObject.getInventory=function(){
 	return Modules.ObjectManager.getObjects(this.id,this.context);
 }
 
+theObject.getInventoryAsync = function(cb){
+    return Modules.ObjectManager.getObjects(this.id, this.context, cb);
+}
+
 theObject.createObject=function(type,callback){	
     return Modules.ObjectManager.createObject(this.id, type, false, false, this.context.socket, false, callback);
 }
