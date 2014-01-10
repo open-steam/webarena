@@ -4,6 +4,8 @@ var moment = require('moment');
 var StatusLights = {};
 StatusLights.proceedingId = false;
 
+//default milestones
+//TODO: should add the actual milestones
 var mileStonesDefault = [
     {
         id : 1,
@@ -37,25 +39,32 @@ var mileStonesDefault = [
     }
 ];
 
-StatusLights.mileStonesAccess = [
-    {
-        milestoneId : 1,
-        read : [],
-        write : []
-    }
-];
 
+/**
+ *
+ * @param context - providing username
+ * @param callback
+ *
+ * TODO: not used and implemented yet
+ */
 StatusLights.mayRead = function(context, callback){
-    //TODO
     callback(true);
 }
 
+
+/**
+ *
+ * @param context - providing username
+ * @param callback
+ *
+ * TODO: not used and implemented yet
+ */
 StatusLights.mayWrite = function(context, callback){
     callback(true);
 }
 
 /**
- * Try to load status otherwise initalize with default values
+ * Try to load status otherwise initalize with default values if couldn't load.
  */
 StatusLights.load = function(){
     var path = require('path');
@@ -69,12 +78,20 @@ StatusLights.load = function(){
     }
 }
 
+/**
+ * Initialize a proceeding with the default milestones.
+ */
 StatusLights.initFromDefault = function(){
     this.mileStones = _.cloneDeep(mileStonesDefault);
-
     this.initMileStone(0);
 }
 
+/**
+ * 1. Set startdate
+ * 2. Set enddate (calculated from startdate + recommended time-slot)
+ *
+ * @param index - milestone index
+ */
 StatusLights.initMileStone = function(index){
     var milestone = this.mileStones[index];
     var now = moment();
@@ -83,7 +100,7 @@ StatusLights.initMileStone = function(index){
 }
 
 /**
- * Save status to disk.
+ * Save status to disk. (JSON file)
  */
 StatusLights.save = function(callback){
     var fs = require("fs");
@@ -99,6 +116,10 @@ StatusLights.getStatus = function(){
     return this.mileStones;
 }
 
+/**
+ * Search for current milestone (first undone). Set it to done.
+ * Initialize next milestone.
+ */
 StatusLights.finishCurrent = function(){
     var firstNotDoneIndex = _(this.mileStones).findIndex(function(elem){
         return !elem.done;
@@ -114,6 +135,10 @@ StatusLights.finishCurrent = function(){
 
 }
 
+/**
+ * Search for current milestone (first undone)
+ * @returns { name : String , status : [green | yellow | res]}
+ */
 StatusLights.getCurrentMileStoneStatus = function(){
     var firstNotDone = _(this.mileStones).find(function(elem){
         return !elem.done;
