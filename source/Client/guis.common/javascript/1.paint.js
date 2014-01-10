@@ -119,9 +119,6 @@ CUT.paste = function()
 	CUT.dragging = false;
 	CUT.enabled = false;
 	
-	//existing pixels are being overwritten by transparent pixels
-	//GUI.paintContext.putImageData(CUT.selectionData, CUT.destX, CUT.destY);
-
 	var tempCanvas = document.createElement('canvas');
 	var tempContext = tempCanvas.getContext('2d');
 
@@ -180,6 +177,7 @@ GUI.editPaint = function() {
 	
 	$("#header > div.header_left").children().hide();
 	$("#header > div.header_right").children().hide();
+	$("img[id^='userPainting_']").hide();
 	
 	GUI.resetPaintColors();
 	GUI.addPaintColor("#000000", "black");
@@ -273,6 +271,7 @@ GUI.editPaint = function() {
 
 
 	/* add cancel button */
+	/*
 	var cancelButton = document.createElement("span");
 	$(cancelButton).addClass("header_button");
 	$(cancelButton).addClass("jPaint_navi");
@@ -282,16 +281,16 @@ GUI.editPaint = function() {
 	});
 
 	$("#header > div.header_right").append(cancelButton);
+	*/
 	
-	
-	/* add save/close button */
+	/* add close button */
 	var closeButton = document.createElement("span");
 	$(closeButton).addClass("header_button");
 	$(closeButton).addClass("button_save");
 	$(closeButton).addClass("jPaint_navi");
-	$(closeButton).html(GUI.translate("save"));
+	$(closeButton).html(GUI.translate("close"));
 	$(closeButton).bind("click", function(event) {
-		GUI.savePaintMode();
+		GUI.closePaintMode();
 	});
 
 	$("#header > div.header_right").append(closeButton);	
@@ -453,6 +452,7 @@ GUI.editPaint = function() {
 			
 			event.preventDefault();
 			event.stopPropagation();
+			GUI.savePaintMode();
 
 			$("#webarena_paintCanvas").unbind("mousemove");
 			$("#webarena_paintCanvas").unbind("mouseup");
@@ -973,6 +973,7 @@ GUI.closePaintMode = function() {
 	
 	$("#header > div.header_left").children().show();
 	$("#header > div.header_right").children().show();
+	$("img[id^='userPainting_']").show();
 	
 	$("#webarena_paintCanvas").remove();
 	$("#webarena_paintCanvas_temp").remove();
@@ -994,6 +995,4 @@ GUI.savePaintMode = function() {
 	
 	//This is where the content is saved.
 	ObjectManager.getCurrentRoom().saveUserPaintingData($("#webarena_paintCanvas").get(0).toDataURL(), function(){});
-	
-	GUI.closePaintMode();
 }

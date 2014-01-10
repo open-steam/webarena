@@ -32,6 +32,7 @@ Room.register=function(type){
     this.registerAttribute('x',{hidden:true});
 	this.registerAttribute('y',{hidden:true});
 	this.registerAttribute('group',{hidden:true});
+	this.registerAttribute('showUserPaintings',{type:"boolean", standard:true, changedFunction: function(object, value) {object.showUserPaintings(value);}});
     
 }
 
@@ -54,6 +55,14 @@ Room.getPaintingURL = function(user) {
 	//maybe it is necessary to add a time here to get rid of cache issues
 	
 	return "/paintings/"+this.getRoomID()+"/"+user+"/"+ObjectManager.userHash;
+}
+
+Room.showUserPaintings = function(value)
+{
+	if ( value )
+	{ ObjectManager.paintingUpdate(); }
+	else
+	{ $('img[id^="userPainting_"]').remove(); }
 }
 
 Room.register('Room');

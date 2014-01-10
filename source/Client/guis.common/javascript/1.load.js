@@ -110,28 +110,10 @@ GUI.loadGUI = function(step) {
 		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
 		GUI.updateLayers(); //update z-order by layer-attribute
 		GUI.updateInspector();
-
-		var paintings = ObjectManager.getCurrentRoom().getUserPaintings();
-		
-		console.log(paintings);
-		
-		//for ( var n = 0 ; n < paintings.length ; n++ )
-		{
-			var img = document.createElement("image");
-			
-			img.setAttribute("x", 0);
-			img.setAttribute("y", 0);
-			img.setAttribute("width", 100);
-			img.setAttribute("height", 100);
-			img.setAttribute("href", "/getPreviewContent/public/770fa88a-906d-458d-afcb-440273e7e36e/0/___5c11cbf9890eb9862303b5385f984589");
-			img.style.pointerEvents = "none";
-			
-			document.getElementById("room_left").appendChild(img);
-		}
-		
 		GUI.loaded = true;
 		GUI.hideLogin();
-		
+		ObjectManager.paintingUpdate();
+	
 	} else {
 		console.error("unknown load step");
 	}

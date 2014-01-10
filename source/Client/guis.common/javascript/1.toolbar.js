@@ -297,7 +297,7 @@ GUI.initToolbar = function() {
 	
 	/*add paint button*/
 	var homeButton = document.createElement("img");
-	$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
+	$(homeButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
 	$(homeButton).attr("width", "24").attr("height", "24");
 
 	$(homeButton).attr("id", "bug_button");
