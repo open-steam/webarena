@@ -150,6 +150,7 @@ CUT.abort = function()
 	CUT.enabled = false;
 	
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+	GUI.paintContext.putImageData(CUT.selectionData, CUT.sourceX, CUT.sourceY);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(CUT.timingPaste);
 	
@@ -527,15 +528,10 @@ GUI.editPaint = function() {
 	if (GUI.isTouchDevice)
 	{
 		/* touch */
-		
 		var x = event.targetTouches[0].pageX;
 		var y = event.targetTouches[0].pageY;
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	} else {
 		/* click */
-		
 		if (event.layerX || event.layerX == 0) { // Firefox
 		  var x = event.layerX;
 		  var y = event.layerY;
@@ -543,9 +539,6 @@ GUI.editPaint = function() {
 		  var x = event.offsetX;
 		  var y = event.offsetY;
 		}
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	}
 
 	COPY.started = true;
@@ -582,15 +575,10 @@ var moveCopy = function(event) {
 
 	if (GUI.isTouchDevice) {
 		/* touch */
-		
 		var x = event.targetTouches[0].pageX;
 		var y = event.targetTouches[0].pageY;
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	} else {
 		/* click */
-		
 		if (event.layerX || event.layerX == 0) { // Firefox
 		  var x = event.layerX;
 		  var y = event.layerY;
@@ -598,9 +586,6 @@ var moveCopy = function(event) {
 		  var x = event.offsetX;
 		  var y = event.offsetY;
 		}
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	}
 
 	if ( !COPY.started ) { return; }
@@ -683,15 +668,10 @@ var startCut = function(event) {
 	if (GUI.isTouchDevice)
 	{
 		/* touch */
-		
 		var x = event.targetTouches[0].pageX;
 		var y = event.targetTouches[0].pageY;
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	} else {
 		/* click */
-		
 		if (event.layerX || event.layerX == 0) { // Firefox
 		  var x = event.layerX;
 		  var y = event.layerY;
@@ -699,9 +679,6 @@ var startCut = function(event) {
 		  var x = event.offsetX;
 		  var y = event.offsetY;
 		}
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	}
 
 	CUT.started = true;
@@ -730,7 +707,6 @@ var startCut = function(event) {
 }
 
 
-
 var moveCut = function(event) {
 
 	if ( !CUT.enabled ) { return; }
@@ -740,15 +716,10 @@ var moveCut = function(event) {
 
 	if (GUI.isTouchDevice) {
 		/* touch */
-		
 		var x = event.targetTouches[0].pageX;
 		var y = event.targetTouches[0].pageY;
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	} else {
 		/* click */
-		
 		if (event.layerX || event.layerX == 0) { // Firefox
 		  var x = event.layerX;
 		  var y = event.layerY;
@@ -756,9 +727,6 @@ var moveCut = function(event) {
 		  var x = event.offsetX;
 		  var y = event.offsetY;
 		}
-		
-		x = x-$(document).scrollLeft();
-		y = y-$(document).scrollTop();
 	}
 
 	if ( !CUT.started ) { return; }
