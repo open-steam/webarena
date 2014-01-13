@@ -1,6 +1,6 @@
 Paint.execute=function(){
 
-	GUI.editPaint(this);
+	alert('Zeichnungen können nicht mehr bearbeitet werden!');
 	
 }
 
