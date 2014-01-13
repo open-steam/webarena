@@ -364,17 +364,17 @@ GUI.editPaint = function() {
 	$(GUI.paintCanvas).css("position", "absolute");
 	$(GUI.paintCanvasTemp).css("position", "absolute");
 
-	$(GUI.paintCanvas).css("top", svgpos.top+$(document).scrollTop());
-	$(GUI.paintCanvasTemp).css("top", svgpos.top+$(document).scrollTop());
+	$(GUI.paintCanvas).css("top", svgpos.top);
+	$(GUI.paintCanvasTemp).css("top", svgpos.top);
 
-	$(GUI.paintCanvas).css("left", $(document).scrollLeft());
-	$(GUI.paintCanvasTemp).css("left", $(document).scrollLeft());
+	$(GUI.paintCanvas).css("left", svgpos.left);
+	$(GUI.paintCanvasTemp).css("left", svgpos.left);
 	
-	$(GUI.paintCanvas).attr("width", $(window).width());
-	$(GUI.paintCanvasTemp).attr("width", $(window).width());
+	$(GUI.paintCanvas).attr("width", ObjectManager.getCurrentRoom().getAttribute('width'));
+	$(GUI.paintCanvasTemp).attr("width", ObjectManager.getCurrentRoom().getAttribute('width'));
 
-	$(GUI.paintCanvas).attr("height", $(window).height()-svgpos.top);
-	$(GUI.paintCanvasTemp).attr("height", $(window).height()-svgpos.top);
+	$(GUI.paintCanvas).attr("height", ObjectManager.getCurrentRoom().getAttribute('height')-svgpos.top);
+	$(GUI.paintCanvasTemp).attr("height", ObjectManager.getCurrentRoom().getAttribute('height')-svgpos.top);
 
 	$(GUI.paintCanvas).css("z-index", 10000);
 	$(GUI.paintCanvasTemp).css("z-index", 10001);
@@ -383,9 +383,6 @@ GUI.editPaint = function() {
 	$(GUI.paintCanvasTemp).attr("id", "webarena_paintCanvas_temp");
 
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
-
-	//$(GUI.paintCanvas).css("background-color", "yellow");
-	//$(GUI.paintCanvas).css("border", "1px solid red");
 
 	$("body").append(GUI.paintCanvas);
 	$("body").append(GUI.paintCanvasTemp);
@@ -421,22 +418,13 @@ GUI.editPaint = function() {
 		if (GUI.isTouchDevice)
 		{
 			/* touch */
-			
 			var x = event.targetTouches[0].pageX;
 			var y = event.targetTouches[0].pageY;
-			
-			x = x-$(document).scrollLeft();
-			y = y-$(document).scrollTop();
 		} else {
 			/* click */
-			
 			var x = event.pageX;
 			var y = event.pageY;
-			
-			x = x-$(document).scrollLeft();
-			y = y-$(document).scrollTop();
 		}
-
 
 		if (!GUI.paintEraseModeActive)
 		{
@@ -479,22 +467,13 @@ GUI.editPaint = function() {
 
 			if (GUI.isTouchDevice) {
 				/* touch */
-				
 				var x = event.targetTouches[0].pageX;
 				var y = event.targetTouches[0].pageY;
-				
-				x = x-$(document).scrollLeft();
-				y = y-$(document).scrollTop();
 			} else {
 				/* click */
-				
 				var x = event.pageX;
 				var y = event.pageY;
-				
-				x = x-$(document).scrollLeft();
-				y = y-$(document).scrollTop();
 			}
-
 
 			if (!GUI.paintEraseModeActive) {
 				GUI.paintPaint(x, y);
