@@ -64,7 +64,8 @@ var COPY = {	started     : false,
 				timingPaste     : 0,
 
 				mouseOverSelectionBox : false,
-				paste : ""
+				paste : "",
+				abort : ""
 };
 
 var CUT = {		started     : false,
@@ -86,7 +87,8 @@ var CUT = {		started     : false,
 				timingPaste     : 0,
 
 				mouseOverSelectionBox : false,
-				paste : ""
+				paste : "",
+				abort : ""
 };
 
 COPY.paste = function()
@@ -110,6 +112,10 @@ COPY.paste = function()
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(COPY.timingPaste);
+	
+	$(".header_button").css("display", "inline");
+	$("#abortButton").css("display", "none");
+	
 	GUI.savePaintMode();
 };
 
@@ -129,7 +135,41 @@ CUT.paste = function()
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(CUT.timingPaste);
+	
+	$(".header_button").css("display", "inline");
+	$("#abortButton").css("display", "none");
+	
 	GUI.savePaintMode();
+};
+
+CUT.abort = function()
+{
+	CUT.started = false;
+	CUT.selecting = false;
+	CUT.dragging = false;
+	CUT.enabled = false;
+	
+	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+	clearTimeout(CUT.timingPaste);
+	
+	$(".header_button").css("display", "inline");
+	$("#abortButton").css("display", "none");
+};
+
+COPY.abort = function()
+{
+	COPY.started = false;
+	COPY.selecting = false;
+	COPY.dragging = false;
+	COPY.enabled = false;
+	
+	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+	clearTimeout(COPY.timingPaste);
+	
+	$(".header_button").css("display", "inline");
+	$("#abortButton").css("display", "none");
 };
 
 /**
@@ -251,6 +291,20 @@ GUI.editPaint = function() {
 	GUI.setPaintColor("#000000", "black");
 	GUI.setPaintSize(3);
 
+	/* add abort button for copy'n'paste and cut'n'paste */
+	var abortButton = document.createElement("span");
+	$(abortButton).addClass("header_button");
+	$(abortButton).addClass("button_save");
+	$(abortButton).addClass("jPaint_navi");
+	$(abortButton).html(GUI.translate("abort"));
+	$(abortButton).css("display", "none");
+	$(abortButton).attr("id", "abortButton");
+	$(abortButton).bind("click", function(event) {
+		if (CUT.started) CUT.abort();
+		else if (COPY.started) COPY.abort();		
+	});
+
+	$("#header > div.header_right").append(abortButton);
 	
 	/* add copy'n'paste */
 	var copyPasteButton = document.createElement("span");
@@ -294,7 +348,7 @@ GUI.editPaint = function() {
 	$(closeButton).bind("click", function(event) {
 		GUI.closePaintMode();
 	});
-
+	
 	$("#header > div.header_right").append(closeButton);	
 	
 	/* create html canvas */
@@ -516,6 +570,9 @@ GUI.editPaint = function() {
 	}
 
 	COPY.started = true;
+	
+	$(".header_button").css("display", "none");
+	$("#abortButton").css("display", "inline");
 
 	if (!COPY.selecting)
 	{
@@ -669,6 +726,9 @@ var startCut = function(event) {
 	}
 
 	CUT.started = true;
+	
+	$(".header_button").css("display", "none");
+	$("#abortButton").css("display", "inline");
 
 	if (!CUT.selecting)
 	{
