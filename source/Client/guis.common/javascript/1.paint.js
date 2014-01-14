@@ -42,7 +42,6 @@ GUI.setPaintSize = function(value) {
 	$("#header").find(".jPaint_navi_size_"+value).addClass("active");
 }
 
-
 GUI.paintColors = [];
 GUI.paintSizes = [];
 
@@ -62,10 +61,13 @@ var COPY = {	started     : false,
 				draggingOffsetY : 0,
 
 				timingPaste     : 0,
-
 				mouseOverSelectionBox : false,
+				
+				start : "",
+				move : "",
+				end : "",
 				paste : "",
-				abort : ""
+				cancel : ""
 };
 
 var CUT = {		started     : false,
@@ -85,10 +87,151 @@ var CUT = {		started     : false,
 
 				selectionData   : "",
 				timingPaste     : 0,
-
 				mouseOverSelectionBox : false,
+				
+				start : "",
+				move : "",
+				end : "",
 				paste : "",
-				abort : ""
+				cancel : ""
+};
+
+COPY.start = function(event)
+{
+	if ( !COPY.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+	
+	if (GUI.isTouchDevice)
+	{
+		/* touch */
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+	} else {
+		/* click */
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+	}
+
+	COPY.started = true;
+	
+	$(".header_button").css("display", "none");
+	$("#abortButton").css("display", "inline");
+
+	if (!COPY.selecting)
+	{
+		// start creating selection frame
+		COPY.sourceXTemp = x;
+		COPY.sourceYTemp = y;
+
+		GUI.paintContextTemp.strokeStyle = 'rgba(0,0,255,1)';
+		GUI.paintContextTemp.lineWidth = 2;
+	}
+	else if (!COPY.dragging && COPY.mouseOverSelectionBox)
+	{
+		// start moving selection frame
+		COPY.dragging = true;
+		COPY.draggingOffsetX =  x - COPY.destX;
+		COPY.draggingOffsetY =  y - COPY.destY;
+		clearTimeout(COPY.timingPaste);
+	}
+	else { return; }
+}
+
+COPY.move = function(event)
+{
+	if ( !COPY.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (GUI.isTouchDevice) {
+		/* touch */
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+	} else {
+		/* click */
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+	}
+
+	if ( !COPY.started ) { return; }
+
+	if (!COPY.selecting)
+	{
+		// creating selection frame
+		COPY.sourceX = Math.min(x, COPY.sourceXTemp);
+		COPY.sourceY = Math.min(y, COPY.sourceYTemp);
+		COPY.sourceW = Math.abs(x - COPY.sourceXTemp);
+		COPY.sourceH = Math.abs(y - COPY.sourceYTemp);
+
+		COPY.destX = COPY.sourceX;
+		COPY.destY = COPY.sourceY;
+		
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		if (!COPY.sourceW || !COPY.sourceH) { return; }
+		GUI.paintContextTemp.strokeRect(COPY.sourceX, COPY.sourceY, COPY.sourceW, COPY.sourceH);
+	}
+	else if (!COPY.dragging)
+	{
+		// selection frame drawn
+		COPY.mouseOverSelectionBox = ( COPY.destX < x && x < COPY.destX + COPY.sourceW ) && ( COPY.destY < y && y < COPY.destY + COPY.sourceH );
+	
+		if (COPY.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
+		else { document.body.style.cursor = "default"; }
+	}
+	else
+	{
+		// selection frame currently moving
+		COPY.destX = x - COPY.draggingOffsetX;
+		COPY.destY = y - COPY.draggingOffsetY;
+
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		GUI.paintContextTemp.strokeRect(COPY.destX, COPY.destY, COPY.sourceW, COPY.sourceH);
+		
+		GUI.paintContextTemp.drawImage(
+			GUI.paintCanvas,
+			COPY.sourceX, // source x	 
+			COPY.sourceY, // source y
+			COPY.sourceW, // source width
+			COPY.sourceH, // source height
+			COPY.destX, // dest x
+			COPY.destY, // dest y
+			COPY.sourceW, // dest width
+			COPY.sourceH // dest height
+		);
+	}
+}
+
+COPY.end = function(event)
+{
+	if ( !COPY.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (!COPY.selecting)
+	{
+		// selection frame just created
+		COPY.selecting = true;
+	}
+	else if (COPY.dragging)
+	{
+		// selection frame just moved
+		COPY.dragging = false;
+		COPY.timingPaste = setTimeout(function(){COPY.paste();}, 2000);
+	}
 };
 
 COPY.paste = function()
@@ -119,6 +262,153 @@ COPY.paste = function()
 	GUI.savePaintMode();
 };
 
+COPY.cancel = function()
+{
+	COPY.started = false;
+	COPY.selecting = false;
+	COPY.dragging = false;
+	COPY.enabled = false;
+	
+	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+	clearTimeout(COPY.timingPaste);
+	
+	$(".header_button").css("display", "inline");
+	$("#abortButton").css("display", "none");
+};
+
+CUT.start = function(event)
+{
+	if ( !CUT.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+	
+	if (GUI.isTouchDevice)
+	{
+		/* touch */
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+	} else {
+		/* click */
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+	}
+
+	CUT.started = true;
+	
+	$(".header_button").css("display", "none");
+	$("#abortButton").css("display", "inline");
+
+	if (!CUT.selecting)
+	{
+		// start creating selection frame
+		CUT.sourceXTemp = x;
+		CUT.sourceYTemp = y;
+
+		GUI.paintContextTemp.strokeStyle = 'rgba(0,0,255,1)';
+		GUI.paintContextTemp.lineWidth = 2;
+	}
+	else if (!CUT.dragging && CUT.mouseOverSelectionBox)
+	{
+		// start moving selection frame
+		CUT.dragging = true;
+		CUT.draggingOffsetX =  x - CUT.destX;
+		CUT.draggingOffsetY =  y - CUT.destY;
+		clearTimeout(CUT.timingPaste);
+	}
+	else { return; }
+}
+
+CUT.move = function(event)
+{
+	if ( !CUT.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (GUI.isTouchDevice) {
+		/* touch */
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+	} else {
+		/* click */
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+	}
+
+	if ( !CUT.started ) { return; }
+
+	if (!CUT.selecting)
+	{
+		// creating selection frame
+		CUT.sourceX = Math.min(x, CUT.sourceXTemp);
+		CUT.sourceY = Math.min(y, CUT.sourceYTemp);
+		CUT.sourceW = Math.abs(x - CUT.sourceXTemp);
+		CUT.sourceH = Math.abs(y - CUT.sourceYTemp);
+
+		CUT.destX = CUT.sourceX;
+		CUT.destY = CUT.sourceY;
+		
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		if (!CUT.sourceW || !CUT.sourceH) { return; }
+		GUI.paintContextTemp.strokeRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
+	}
+	else if (!CUT.dragging)
+	{
+		// selection frame drawn
+		CUT.mouseOverSelectionBox = ( CUT.destX < x && x < CUT.destX + CUT.sourceW ) && ( CUT.destY < y && y < CUT.destY + CUT.sourceH );
+	
+		if (CUT.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
+		else { document.body.style.cursor = "default"; }
+	}
+	else
+	{
+		// selection frame currently moving
+		CUT.destX = x - CUT.draggingOffsetX;
+		CUT.destY = y - CUT.draggingOffsetY;
+
+		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		GUI.paintContextTemp.strokeRect(CUT.destX, CUT.destY, CUT.sourceW, CUT.sourceH);
+		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.destX, CUT.destY);
+	}
+
+}
+
+CUT.end = function(event)
+{
+	if ( !CUT.enabled ) { return; }
+
+	event.preventDefault();
+	event.stopPropagation();
+
+	if (!CUT.selecting)
+	{
+		// selection frame just created
+		CUT.selecting = true;
+
+		CUT.selectionData = GUI.paintContext.getImageData(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
+		GUI.paintContext.clearRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
+		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.sourceX, CUT.sourceY);
+	}
+	else if (CUT.dragging)
+	{
+		// selection frame just moved
+		CUT.dragging = false;
+		CUT.timingPaste = setTimeout(function(){CUT.paste();}, 2000);
+	}
+}
+
 CUT.paste = function()
 {
 	CUT.started = false;
@@ -142,7 +432,7 @@ CUT.paste = function()
 	GUI.savePaintMode();
 };
 
-CUT.abort = function()
+CUT.cancel = function()
 {
 	CUT.started = false;
 	CUT.selecting = false;
@@ -153,21 +443,6 @@ CUT.abort = function()
 	GUI.paintContext.putImageData(CUT.selectionData, CUT.sourceX, CUT.sourceY);
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	clearTimeout(CUT.timingPaste);
-	
-	$(".header_button").css("display", "inline");
-	$("#abortButton").css("display", "none");
-};
-
-COPY.abort = function()
-{
-	COPY.started = false;
-	COPY.selecting = false;
-	COPY.dragging = false;
-	COPY.enabled = false;
-	
-	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
-	$(GUI.paintCanvasTemp).css("visibility", "hidden");
-	clearTimeout(COPY.timingPaste);
 	
 	$(".header_button").css("display", "inline");
 	$("#abortButton").css("display", "none");
@@ -292,17 +567,17 @@ GUI.editPaint = function() {
 	GUI.setPaintColor("#000000", "black");
 	GUI.setPaintSize(3);
 
-	/* add abort button for copy'n'paste and cut'n'paste */
+	/* add cancel button for copy'n'paste and cut'n'paste */
 	var abortButton = document.createElement("span");
 	$(abortButton).addClass("header_button");
 	$(abortButton).addClass("button_save");
 	$(abortButton).addClass("jPaint_navi");
-	$(abortButton).html(GUI.translate("abort"));
+	$(abortButton).html(GUI.translate("cancel"));
 	$(abortButton).css("display", "none");
 	$(abortButton).attr("id", "abortButton");
 	$(abortButton).bind("click", function(event) {
-		if (CUT.started) CUT.abort();
-		else if (COPY.started) COPY.abort();		
+		if (CUT.started) CUT.cancel();
+		else if (COPY.started) COPY.cancel();		
 	});
 
 	$("#header > div.header_right").append(abortButton);
@@ -359,6 +634,14 @@ GUI.editPaint = function() {
 	GUI.paintContext = GUI.paintCanvas.getContext('2d');
 	GUI.paintContextTemp = GUI.paintCanvasTemp.getContext('2d');
 
+	GUI.paintCanvasTemp.addEventListener("mousedown", COPY.start, false);
+	GUI.paintCanvasTemp.addEventListener("mousemove", COPY.move, false);
+	GUI.paintCanvasTemp.addEventListener("mouseup", COPY.end, false);
+
+	GUI.paintCanvasTemp.addEventListener("mousedown", CUT.start, false);
+	GUI.paintCanvasTemp.addEventListener("mousemove", CUT.move, false);
+	GUI.paintCanvasTemp.addEventListener("mouseup", CUT.end, false);
+	
 	var svgpos = $("#content").offset();
 	
 	/* align canvas */
@@ -382,7 +665,7 @@ GUI.editPaint = function() {
 
 	$(GUI.paintCanvas).attr("id", "webarena_paintCanvas");
 	$(GUI.paintCanvasTemp).attr("id", "webarena_paintCanvas_temp");
-
+	
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 
 	$("body").append(GUI.paintCanvas);
@@ -507,292 +790,7 @@ GUI.editPaint = function() {
 			$("#webarena_paintCanvas").bind("mousemove", move);
 			$("#webarena_paintCanvas").bind("mouseup", end);
 		}
-
-		/* for copy'n'paste and cut'n'paste */
-		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousedown", startCopy, false);
-		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousemove", moveCopy, false);
-		$("#webarena_paintCanvas_temp").get(0).addEventListener("mouseup", endCopy, false);
-
-		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousedown", startCut, false);
-		$("#webarena_paintCanvas_temp").get(0).addEventListener("mousemove", moveCut, false);
-		$("#webarena_paintCanvas_temp").get(0).addEventListener("mouseup", endCut, false);
 	}
-
-	var startCopy = function(event) {
-
-	if ( !COPY.enabled ) { return; }
-
-	event.preventDefault();
-	event.stopPropagation();
-	
-	if (GUI.isTouchDevice)
-	{
-		/* touch */
-		var x = event.targetTouches[0].pageX;
-		var y = event.targetTouches[0].pageY;
-	} else {
-		/* click */
-		if (event.layerX || event.layerX == 0) { // Firefox
-		  var x = event.layerX;
-		  var y = event.layerY;
-		} else if (event.offsetX || event.offsetX == 0) { // Opera
-		  var x = event.offsetX;
-		  var y = event.offsetY;
-		}
-	}
-
-	COPY.started = true;
-	
-	$(".header_button").css("display", "none");
-	$("#abortButton").css("display", "inline");
-
-	if (!COPY.selecting)
-	{
-		// start creating selection frame
-		COPY.sourceXTemp = x;
-		COPY.sourceYTemp = y;
-
-		GUI.paintContextTemp.strokeStyle = 'rgba(0,0,255,1)';
-		GUI.paintContextTemp.lineWidth = 2;
-	}
-	else if (!COPY.dragging && COPY.mouseOverSelectionBox)
-	{
-		// start moving selection frame
-		COPY.dragging = true;
-		COPY.draggingOffsetX =  x - COPY.destX;
-		COPY.draggingOffsetY =  y - COPY.destY;
-		clearTimeout(COPY.timingPaste);
-	}
-	else { return; }
-}
-
-var moveCopy = function(event) {
-	
-	if ( !COPY.enabled ) { return; }
-
-	event.preventDefault();
-	event.stopPropagation();
-
-	if (GUI.isTouchDevice) {
-		/* touch */
-		var x = event.targetTouches[0].pageX;
-		var y = event.targetTouches[0].pageY;
-	} else {
-		/* click */
-		if (event.layerX || event.layerX == 0) { // Firefox
-		  var x = event.layerX;
-		  var y = event.layerY;
-		} else if (event.offsetX || event.offsetX == 0) { // Opera
-		  var x = event.offsetX;
-		  var y = event.offsetY;
-		}
-	}
-
-	if ( !COPY.started ) { return; }
-
-	if (!COPY.selecting)
-	{
-		// creating selection frame
-		COPY.sourceX = Math.min(x, COPY.sourceXTemp);
-		COPY.sourceY = Math.min(y, COPY.sourceYTemp);
-		COPY.sourceW = Math.abs(x - COPY.sourceXTemp);
-		COPY.sourceH = Math.abs(y - COPY.sourceYTemp);
-
-		COPY.destX = COPY.sourceX;
-		COPY.destY = COPY.sourceY;
-		
-		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
-		if (!COPY.sourceW || !COPY.sourceH) { return; }
-		GUI.paintContextTemp.strokeRect(COPY.sourceX, COPY.sourceY, COPY.sourceW, COPY.sourceH);
-	}
-	else if (!COPY.dragging)
-	{
-		// selection frame drawn
-		COPY.mouseOverSelectionBox = ( COPY.destX < x && x < COPY.destX + COPY.sourceW ) && ( COPY.destY < y && y < COPY.destY + COPY.sourceH );
-	
-		if (COPY.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
-		else { document.body.style.cursor = "default"; }
-	}
-	else
-	{
-		// selection frame currently moving
-		COPY.destX = x - COPY.draggingOffsetX;
-		COPY.destY = y - COPY.draggingOffsetY;
-
-		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
-		GUI.paintContextTemp.strokeRect(COPY.destX, COPY.destY, COPY.sourceW, COPY.sourceH);
-		
-		GUI.paintContextTemp.drawImage(
-			GUI.paintCanvas,
-			COPY.sourceX, // source x	 
-			COPY.sourceY, // source y
-			COPY.sourceW, // source width
-			COPY.sourceH, // source height
-			COPY.destX, // dest x
-			COPY.destY, // dest y
-			COPY.sourceW, // dest width
-			COPY.sourceH // dest height
-		);
-	}
-}
-
-
-var endCopy = function(event) {
-	
-	if ( !COPY.enabled ) { return; }
-
-	event.preventDefault();
-	event.stopPropagation();
-
-	if (!COPY.selecting)
-	{
-		// selection frame just created
-		COPY.selecting = true;
-	}
-	else if (COPY.dragging)
-	{
-		// selection frame just moved
-		COPY.dragging = false;
-		COPY.timingPaste = setTimeout(function(){COPY.paste();}, 2000);
-	}
-};
-
-
-var startCut = function(event) {
-
-	if ( !CUT.enabled ) { return; }
-
-	event.preventDefault();
-	event.stopPropagation();
-	
-	if (GUI.isTouchDevice)
-	{
-		/* touch */
-		var x = event.targetTouches[0].pageX;
-		var y = event.targetTouches[0].pageY;
-	} else {
-		/* click */
-		if (event.layerX || event.layerX == 0) { // Firefox
-		  var x = event.layerX;
-		  var y = event.layerY;
-		} else if (event.offsetX || event.offsetX == 0) { // Opera
-		  var x = event.offsetX;
-		  var y = event.offsetY;
-		}
-	}
-
-	CUT.started = true;
-	
-	$(".header_button").css("display", "none");
-	$("#abortButton").css("display", "inline");
-
-	if (!CUT.selecting)
-	{
-		// start creating selection frame
-		CUT.sourceXTemp = x;
-		CUT.sourceYTemp = y;
-
-		GUI.paintContextTemp.strokeStyle = 'rgba(0,0,255,1)';
-		GUI.paintContextTemp.lineWidth = 2;
-	}
-	else if (!CUT.dragging && CUT.mouseOverSelectionBox)
-	{
-		// start moving selection frame
-		CUT.dragging = true;
-		CUT.draggingOffsetX =  x - CUT.destX;
-		CUT.draggingOffsetY =  y - CUT.destY;
-		clearTimeout(CUT.timingPaste);
-	}
-	else { return; }
-}
-
-
-var moveCut = function(event) {
-
-	if ( !CUT.enabled ) { return; }
-
-	event.preventDefault();
-	event.stopPropagation();
-
-	if (GUI.isTouchDevice) {
-		/* touch */
-		var x = event.targetTouches[0].pageX;
-		var y = event.targetTouches[0].pageY;
-	} else {
-		/* click */
-		if (event.layerX || event.layerX == 0) { // Firefox
-		  var x = event.layerX;
-		  var y = event.layerY;
-		} else if (event.offsetX || event.offsetX == 0) { // Opera
-		  var x = event.offsetX;
-		  var y = event.offsetY;
-		}
-	}
-
-	if ( !CUT.started ) { return; }
-
-	if (!CUT.selecting)
-	{
-		// creating selection frame
-		CUT.sourceX = Math.min(x, CUT.sourceXTemp);
-		CUT.sourceY = Math.min(y, CUT.sourceYTemp);
-		CUT.sourceW = Math.abs(x - CUT.sourceXTemp);
-		CUT.sourceH = Math.abs(y - CUT.sourceYTemp);
-
-		CUT.destX = CUT.sourceX;
-		CUT.destY = CUT.sourceY;
-		
-		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
-		if (!CUT.sourceW || !CUT.sourceH) { return; }
-		GUI.paintContextTemp.strokeRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
-	}
-	else if (!CUT.dragging)
-	{
-		// selection frame drawn
-		CUT.mouseOverSelectionBox = ( CUT.destX < x && x < CUT.destX + CUT.sourceW ) && ( CUT.destY < y && y < CUT.destY + CUT.sourceH );
-	
-		if (CUT.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
-		else { document.body.style.cursor = "default"; }
-	}
-	else
-	{
-		// selection frame currently moving
-		CUT.destX = x - CUT.draggingOffsetX;
-		CUT.destY = y - CUT.draggingOffsetY;
-
-		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
-		GUI.paintContextTemp.strokeRect(CUT.destX, CUT.destY, CUT.sourceW, CUT.sourceH);
-		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.destX, CUT.destY);
-	}
-
-}
-
-
-var endCut = function(event) {
-
-	if ( !CUT.enabled ) { return; }
-
-	event.preventDefault();
-	event.stopPropagation();
-
-	if (!CUT.selecting)
-	{
-		// selection frame just created
-		CUT.selecting = true;
-
-		CUT.selectionData = GUI.paintContext.getImageData(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
-		GUI.paintContext.clearRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
-		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.sourceX, CUT.sourceY);
-	}
-	else if (CUT.dragging)
-	{
-		// selection frame just moved
-		CUT.dragging = false;
-		CUT.timingPaste = setTimeout(function(){CUT.paste();}, 2000);
-	}
-}
-
-	
 	
 	if (GUI.isTouchDevice) {
 		/* touch */		
@@ -801,7 +799,6 @@ var endCut = function(event) {
 		/* click */
 		$("#webarena_paintCanvas").bind("mousedown", start);
 	}
-	
 	
 	$(document).bind("keydown.paint", function(event) {
 		
@@ -823,8 +820,6 @@ var endCut = function(event) {
 		}
 		
 	});
-	
-	
 }
 
 /**
