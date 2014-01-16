@@ -108,15 +108,12 @@ GUI.loadGUI = function(step) {
 	} else if (step == 5) {
 		
 		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
-		
 		GUI.updateLayers(); //update z-order by layer-attribute
-		
 		GUI.updateInspector();
-		
 		GUI.loaded = true;
-		
 		GUI.hideLogin();
-		
+		ObjectManager.paintingUpdate();
+	
 	} else {
 		console.error("unknown load step");
 	}

@@ -456,6 +456,10 @@ ObjectManager.init=function(){
         ObjectManager.objectUpdate(data);
     })
 	
+	Modules.Dispatcher.registerCall('paintingsUpdate',function(data){ 	
+        ObjectManager.paintingUpdate(data);
+    })
+	
     Modules.Dispatcher.registerCall('objectDelete',function(data){
         ObjectManager.removeLocally(data);
     });
@@ -894,4 +898,31 @@ ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
 			setTimeout(selectNewObjects, 200);
 		});
 	}
+}
+
+ObjectManager.paintingUpdate = function(data)
+{
+	if ( !ObjectManager.getCurrentRoom().getAttribute("showUserPaintings") ) return;
+	
+	ObjectManager.getCurrentRoom().getUserPaintings(function(paintings)
+	{
+		for ( var n = 0 ; n < paintings.length ; n++ )
+		{
+			if ( $("#userPainting_" + paintings[n]).length == 0 )
+			{
+				var img = document.createElement("img");
+				
+				img.setAttribute("id", "userPainting_" + paintings[n]);
+				img.style.pointerEvents = "none";
+				img.style.position = "absolute";
+				img.style.left = 0;
+				img.style.top = 0;
+				img.style.zIndex = n + 1;
+				
+				document.getElementById("content").appendChild(img);
+			}
+			
+			$("#userPainting_" + paintings[n]).attr("src", ObjectManager.getCurrentRoom().getUserPaintingURL(paintings[n]));
+		}
+	});	
 }

@@ -40,7 +40,7 @@ Paint.isResizable=function(){
 Paint.removeObjectWithoutContent = true;
 
 Paint.register('Paint');
-Paint.isCreatable=true;
+Paint.isCreatable=false;
 
 Paint.category='Paintings';
 

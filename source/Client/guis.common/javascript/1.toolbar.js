@@ -294,6 +294,28 @@ GUI.initToolbar = function() {
 	} else {
 		$(homeButton).bind("mousedown", click);
 	}
+	
+	/*add paint button*/
+	var homeButton = document.createElement("img");
+	$(homeButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
+	$(homeButton).attr("width", "24").attr("height", "24");
+
+	$(homeButton).attr("id", "bug_button");
+	$(homeButton).addClass("sidebar_button");
+	
+	$(homeButton).attr("title", GUI.translate("Paint"));
+
+	$("#header > .header_right").append(homeButton);
+	
+	var click = function() {
+		GUI.editPaint();
+	}
+	
+	if (GUI.isTouchDevice) {
+		$(homeButton).bind("touchstart", click);
+	} else {
+		$(homeButton).bind("mousedown", click);
+	}
 
 	/*add paste button*/
 	var pasteButton = document.createElement("img");
