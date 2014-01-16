@@ -9,6 +9,7 @@
 
 var SocketServer = {};
 var Modules = false;
+var uuid = require('node-uuid');
 
 SocketServer.init = function (theModules) {
 
@@ -31,6 +32,24 @@ SocketServer.init = function (theModules) {
 
 	});
 
+}
+
+/**
+ * Send request to client, add one time response listener.
+ *
+ * @param socket
+ * @param name
+ * @param data
+ * @param callback
+ */
+SocketServer.askSocket = function (socket, name, data, callback){
+    var requestID = uuid.v4();
+    data.responseID = requestID;
+    socket.once('response::' + name +'::' + requestID, function(responseData){
+        callback(responseData);
+    });
+
+    this.sendToSocket(socket, name, data);
 }
 
 
