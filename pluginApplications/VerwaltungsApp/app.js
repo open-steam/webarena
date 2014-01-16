@@ -7,9 +7,16 @@
 var config = require('./config.js');
 var uuid = require('node-uuid');
 var _ = require('lodash');
+var async = require('async');
 
-var VerwaltungsApp = {};
+var VerwaltungsApp = {
+    overviewRoomTemplateName : "Overview_Template",
+    overviewRoomInstancePrefix : "Overview_Instance_",
+    proceedingRoomTemplateSuffix : "_Berufungsverfahren_Template",
+    proceedingRoomInstanceInfix : "_Berufungsverfahren_Instance_"
+};
 
+//TODO: Use application specific "application root password"
 var ContextObject = {
     user: {
         username: "server",
@@ -17,92 +24,136 @@ var ContextObject = {
     }
 }
 
+
 /**
  * Create all needed structures for a "Berufungsverfahren".
  * - Create needed room-structures
  */
-VerwaltungsApp.initAppointmentProcedure = function () {
+VerwaltungsApp.initAppointmentProcedure = function (faculty) {
     var that = this;
-    //create room instances for all parties
-    //e.g. faculty, dezernate1/4 etc.
-    //naming of the template rooms should follow the convention:
-    //Dezernat4_Berufungsverfahren_Template
-    //PARTICIPANT_Berufungsverfahren_Template
-    var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
+
+    /*
+     * create room instances for all parties
+     * e.g. faculty, dezernate1/4 etc.
+     * naming of the template rooms should follow the convention:
+     * Dezernat4_Berufungsverfahren_Template
+     * PARTICIPANT_Berufungsverfahren_Template
+     */
+    var participants = ["Dezernat1", "Dezernat4", "Fakultaet_" + faculty];
+
     var instanceId = uuid.v4();
+
+    var rewireObjectTransports = function (room, proceedingID) {
+        var roomToGet = room;
+        that.Modules.ObjectManager.getInventory(roomToGet, ContextObject, function (items) {
+            if(items){
+                items.forEach(function (item) {
+                    var regex = /(^[a-zA-Z0-9]+)_/;
+                    var toTransfrom;
+
+                    if(item.getType() == "TunnelEndpoint"){
+                        toTransfrom = item.getAttribute("source");
+                    } else if(item.getType() == "ObjectTransport"){
+                        toTransfrom = item.getAttribute("target");
+                    }
+
+                    var match = regex.exec( toTransfrom ) ;
+                    var rewiredTarget = match[1] + that.proceedingRoomInstanceInfix + proceedingID;
+
+                    if(item.getType() == "TunnelEndpoint"){
+                        item.setAttribute("source", rewiredTarget);
+                    } else if(item.getType() == "ObjectTransport"){
+                        item.setAttribute("target", rewiredTarget);
+                    }
+                });
+            }
+        });
+    }
 
     participants.forEach(function (part) {
         //send command to copy the room
         var groupId = new Date().getTime();
 
         that.eventBus.emit("copyRoom", {
-            fromRoom: part + "_Berufungsverfahren_Template",
-            toRoom: part + "_Berufungsverfahren_Instance_" + instanceId,
-            parentRoom: "Overview_Instance_" + part,
+            fromRoom: part + that.proceedingRoomTemplateSuffix,
+            toRoom: part + that.proceedingRoomInstanceInfix + instanceId,
+            parentRoom: that.overviewRoomInstancePrefix + part,
             roomName: "Verfahren " + instanceId,
             callback: function () {
-                console.log("App got answer...");
+                rewireObjectTransports( part + that.proceedingRoomInstanceInfix + instanceId , instanceId );
             },
             context: ContextObject
         });
 
-        that.eventBus.emit("createObject", {
-            roomID: "Overview_Instance_" + part,
-            type: "Subroom",
+        var objectDefaults = {
+            roomID: that.overviewRoomInstancePrefix + part,
+            context: ContextObject,
             callback: function () {
                 console.log("Created object...");
-            },
-            context: ContextObject,
-            attributes: {
-                x: 40,
-                y: 50,
-                group: groupId,
-                name: "Verfahren " + instanceId,
-                destination: part + "_Berufungsverfahren_Instance_" + instanceId
             }
+        }
+
+        var objectsToCreate = [
+            {
+                type: "Subroom",
+                attributes: {
+                    x: 40,
+                    y: 50,
+                    group: groupId,
+                    name: "Verfahren " + instanceId,
+                    destination: part + that.proceedingRoomInstanceInfix + instanceId
+                }
+            },
+            {
+                type: "ProcessLog",
+                attributes: {
+                    x: 270,
+                    y: 50,
+                    group: groupId,
+                    kokoa_processid: instanceId
+                }
+            },
+            {
+                type: "ObjectTransport",
+                attributes: {
+                    x: 150,
+                    y: 50,
+                    group: groupId,
+                    target: part + that.proceedingRoomInstanceInfix + instanceId
+                }
+            },
+            {
+                type: "StatusLight",
+                attributes : {
+                    x : 40,
+                    y : 10,
+                    group: groupId,
+                    proceedingID : instanceId
+
+                }
+            }
+        ];
+
+        //add default values for all objects
+        objectsToCreate = objectsToCreate.map(function (elem) {
+            return _.defaults(elem, objectDefaults)
         });
 
-        that.eventBus.emit("createObject", {
-            roomID: "Overview_Instance_" + part,
-            type: "ProcessLog",
-            callback: function () {
-                console.log("Created object...");
-            },
-            context: ContextObject,
-            attributes: {
-                x: 270,
-                y: 50,
-                group: groupId,
-                kokoa_processid :  instanceId
-            }
-        });
-
-        that.eventBus.emit("createObject", {
-            roomID: "Overview_Instance_" + part,
-            type: "ObjectTransport",
-            callback: function () {
-                console.log("Created object...");
-            },
-            context: ContextObject,
-            attributes: {
-                x: 150,
-                y: 50,
-                group: groupId,
-                target : part + "_Berufungsverfahren_Instance_" + instanceId
-            }
+        objectsToCreate.forEach(function (objectToCreate) {
+            that.eventBus.emit("createObject", objectToCreate);
         });
     });
 }
 
 VerwaltungsApp.initOverviewRooms = function () {
     var that = this;
-    var participants = ["Dezernat1", "Dezernat4", "FakultaetX"];
+    var participants = this.getFaculties().concat(["Dezernat1", "Dezernat4"]);
 
     participants.forEach(function (part) {
         that.eventBus.emit("copyRoom", {
             context: ContextObject,
-            fromRoom: "Overview_Template",
-            toRoom: "Overview_Instance_" + part,
+            fromRoom: that.overviewRoomTemplateName,
+            toRoom: that.overviewRoomInstancePrefix + part,
             callback: function () {
                 console.log("App got answer...")
             }
@@ -110,12 +161,111 @@ VerwaltungsApp.initOverviewRooms = function () {
     });
 }
 
+/**
+ * Create all needed template rooms:
+ * 1. Overview template (used by each participant)
+ * 2. Individual proceeding templates for each participant, e.g. Dezernat 2/4
+ */
+VerwaltungsApp.initTemplates = function () {
+    var that = this;
+    var overviewRoomTemplateName = that.overviewRoomTemplateName;
+    var proceedingRoomTemplateSuffix = that.proceedingRoomTemplateSuffix;
 
-VerwaltungsApp.checkIfLoaded = function(proceedingID){
+    //all faculties + Dezernat 1/4
+    var participants = this.getFaculties().concat(["Dezernat1", "Dezernat4"]);
+    var proceedingRoomTemplates = participants.map(function (participant) {
+        return participant + proceedingRoomTemplateSuffix;
+    });
+
+    var createRoom = function (name, callback) {
+        var data = {
+            roomID: name
+        };
+        that.Modules.RoomController.createRoom(data, ContextObject, callback);
+    }
+
+    var roomsToCreate = proceedingRoomTemplates.concat([overviewRoomTemplateName]);
+
+    async.each(roomsToCreate, createRoom, function (err) {
+        console.log("Finished creating templaterooms");
+    });
+}
+
+/**
+ *
+ * @returns {Array<String>} - The faculties
+ */
+VerwaltungsApp.getFaculties = function () {
+    return config.faculties;
+}
+
+VerwaltungsApp.checkIfLoaded = function (proceedingID) {
     //Load status of proceeding if not loaded already
-    if(!this.statusLights[proceedingID]){
+    if (!this.statusLights[proceedingID]) {
         this.statusLights[proceedingID] = require('./statusLights.js').create(proceedingID);
     }
+}
+
+
+VerwaltungsApp.getMilestoneState = function (event) {
+    var proceedingId = event.proceedingId;
+    var callback = event.callback;
+
+    this.checkIfLoaded(proceedingId);
+    callback(this.statusLights[proceedingId].getCurrentMileStoneStatus());
+}
+
+VerwaltungsApp.initProceeding = function (event) {
+    var faculties = this.getFaculties();
+    var that = this;
+
+    //get socket from context
+    var clientSocket = event.context.socket;
+    var processAnswer = function (response) {
+        var faculty = response.choice;
+        console.log("GOT CHOICE: " + response.choice);
+        that.initAppointmentProcedure(faculty);
+    }
+
+    //set request to client
+    that.Modules.SocketServer.askSocket(clientSocket, "askForChoice",
+        {
+            'choices': faculties,
+            'title': "Beteiligte Fakultät"
+        }, processAnswer);
+}
+
+VerwaltungsApp.sendObjectHandler = function (data) {
+    this.addLogEntry(data);
+    this.sendMail();
+}
+
+VerwaltungsApp.getContent = function (event) {
+    var proceedingId = event.proceedingId;
+    var callback = event.callback;
+
+    this.checkIfLoaded(proceedingId);
+
+    var proceedingStatus = this.statusLights[proceedingId].getStatus();
+    callback(proceedingStatus);
+}
+
+VerwaltungsApp.saveMilestones = function (event) {
+    var changedMilestone = event.milestoneChanges.milestoneIndex;
+    var proceedingId = event.proceedingId;
+    var callback = event.callback;
+
+    this.checkIfLoaded(proceedingId);
+    var currentProceeding = this.statusLights[proceedingId];
+
+    if (event.milestoneChanges.diff.done) {
+        currentProceeding.finishCurrent();
+    }
+    if (event.milestoneChanges.diff.enddate) {
+        currentProceeding.mileStones[changedMilestone].enddate = event.milestoneChanges.diff.enddate;
+    }
+
+    currentProceeding.save(callback);
 }
 
 VerwaltungsApp.init = function (modules) {
@@ -124,103 +274,62 @@ VerwaltungsApp.init = function (modules) {
     var that = this;
     that.statusLights = {};
 
-    //Should return:
-    // green - if in time
-    // yellow - if runs out of time soon
-    // red - if out of time
-    this.eventBus.on("applicationevent::kokoa::getMilestoneState", function (event) {
-        var proceedingId = event.proceedingId;
-        var callback = event.callback;
 
-        that.checkIfLoaded(proceedingId);
-        callback( that.statusLights[proceedingId].getCurrentMileStoneStatus());
-    });
+    this.eventBus.on("applicationevent::kokoa::getMilestoneState", that.getMilestoneState.bind(that));
 
-    this.eventBus.on("applicationevent::kokoa::initMasterRooms", function () {
-        that.initOverviewRooms();
-    });
+    this.eventBus.on("applicationevent::kokoa::initMasterRooms", that.initOverviewRooms.bind(that));
 
-    this.eventBus.on("applicationevent::kokoa::initProcess", function () {
-        that.initAppointmentProcedure();
-    });
+    this.eventBus.on("applicationevent::kokoa::initProcess", that.initProceeding.bind(that));
 
-    this.eventBus.on("send_object", function(data){
-        that.addLogEntry(data);
-        that.sendMail();
-    });
+    this.eventBus.on("send_object", that.sendObjectHandler.bind(that));
 
-    this.eventBus.on("applicationevent::kokoa::getContent", function(event){
-        var proceedingId = event.proceedingId;
-        var callback = event.callback;
+    this.eventBus.on("applicationevent::kokoa::getContent", that.getContent.bind(that));
 
-        that.checkIfLoaded(proceedingId);
+    this.eventBus.on("applicationevent::kokoa::saveMilestones", that.saveMilestones.bind(that))
 
-        var proceedingStatus = that.statusLights[proceedingId].getStatus();
-        callback(proceedingStatus);
-    });
-
-    this.eventBus.on("applicationevent::kokoa::saveMilestones", function(event){
-        var changedMilestone = event.milestoneChanges.milestoneIndex;
-        var proceedingId = event.proceedingId;
-        var callback = event.callback;
-
-        that.checkIfLoaded(proceedingId);
-        var currentProceeding = that.statusLights[proceedingId];
-
-        if(event.milestoneChanges.diff.done){
-            currentProceeding.finishCurrent();
-        }
-        if(event.milestoneChanges.diff.enddate){
-            currentProceeding.mileStones[changedMilestone].enddate = event.milestoneChanges.diff.enddate;
-        }
-
-        currentProceeding.save(callback);
-
-    })
+    this.eventBus.on("applicationevent::kokoa::initTemplates", that.initTemplates.bind(that));
 }
 
 
-
-VerwaltungsApp.addLogEntry = function(data){
+VerwaltungsApp.addLogEntry = function (data) {
     var from = data.from;
     var to = data.to;
     var timestamp = data.timestamp;
     var objectName = data.objectName;
 
-    var pat =  /(^[a-zA-Z0-9]+)_/;
+    var pat = /(^[a-zA-Z0-9]+)_/;
 
     var pFrom = pat.exec(from);
     var pTo = pat.exec(to);
 
-    if(pFrom == null || pTo == null || !pFrom[1]|| ! pTo[1])return;
-
+    if (pFrom == null || pTo == null || !pFrom[1] || !pTo[1])return;
 
     var fromEntry = "Verschickt: (" + objectName + ") an " + pTo[1];
-    var toEntry = "Erhalten ("+ objectName + ") von " + pFrom[1];
+    var toEntry = "Erhalten (" + objectName + ") von " + pFrom[1];
 
-    var overviewRoomFrom = "Overview_Instance_" + pFrom[1];
-    var overviewRoomTo = "Overview_Instance_" + pTo[1];
+    var overviewRoomFrom = this.overviewRoomInstancePrefix + pFrom[1];
+    var overviewRoomTo = this.overviewRoomInstancePrefix + pTo[1];
 
     //find log
-    this.Modules.ObjectManager.getInventory(overviewRoomFrom, ContextObject, function(items){
-        items.forEach(function(item){
-            if(item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")){
+    this.Modules.ObjectManager.getInventory(overviewRoomFrom, ContextObject, function (items) {
+        items.forEach(function (item) {
+            if (item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")) {
                 //Add text....
                 var oldContent = item.getContentAsString()
 
                 //try to parse the content
-                try{
+                try {
                     var content = JSON.parse(oldContent);
-                } catch(e){
+                } catch (e) {
                     //failed to parse...reset the content
-                    var content = {entries : []};
+                    var content = {entries: []};
                 }
 
                 //add entry to json
-                var entry  = {
-                    "message" : fromEntry,
-                    "timestamp" : timestamp,
-                    "cssclass" : "outgoing-message"
+                var entry = {
+                    "message": fromEntry,
+                    "timestamp": timestamp,
+                    "cssclass": "outgoing-message"
                 }
 
                 content.entries.push(entry);
@@ -231,28 +340,27 @@ VerwaltungsApp.addLogEntry = function(data){
         });
     });
 
-    this.Modules.ObjectManager.getInventory(overviewRoomTo, ContextObject, function(items){
-        items.forEach(function(item){
-            if(item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")){
+    this.Modules.ObjectManager.getInventory(overviewRoomTo, ContextObject, function (items) {
+        items.forEach(function (item) {
+            if (item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")) {
                 var oldContent = item.getContentAsString()
 
                 //try to parse the content
-                try{
+                try {
                     var content = JSON.parse(oldContent);
-                } catch(e){
+                } catch (e) {
                     //failed to parse...reset the content
-                    var content = {entries : []};
+                    var content = {entries: []};
                 }
 
                 //add entry to json
-                var entry  = {
-                    "message" : toEntry,
-                    "timestamp" : timestamp,
-                    "cssclass" :"incoming-message"
+                var entry = {
+                    "message": toEntry,
+                    "timestamp": timestamp,
+                    "cssclass": "incoming-message"
                 }
 
                 content.entries.push(entry);
-
                 item.setContent(JSON.stringify(content));
             }
         });
@@ -293,7 +401,7 @@ VerwaltungsApp.sendMail = function (roomID) {
         "text": text
     };
 
-    _(recipients).each(function(recipient){
+    _(recipients).each(function (recipient) {
         mailOptions.to = recipient;
         smtpTransport.sendMail(mailOptions, function (err, response) {
             if (err) {
