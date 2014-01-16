@@ -93,7 +93,7 @@ StatusLight.createRepresentation = function (parent) {
     this.initGUI(rep);
 
 
-
+    this.draw();
     return rep;
 
 }
@@ -124,12 +124,13 @@ StatusLight.draw = function (external) {
  * @param value
  */
 StatusLight.setViewX = function (value) {
+    GeneralObject.setViewX.call(this, value);
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=,)/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
 
-    GeneralObject.setViewX.call(this, value);
+
 }
 
 /**
@@ -138,12 +139,14 @@ StatusLight.setViewX = function (value) {
  * @param value
  */
 StatusLight.setViewY = function (value) {
+    GeneralObject.setViewY.call(this, value);
+
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=\))/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
 
-    GeneralObject.setViewY.call(this, value);
+
 }
 
 StatusLight.setViewWidth = function (value) {

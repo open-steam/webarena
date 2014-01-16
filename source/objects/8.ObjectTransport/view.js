@@ -10,6 +10,9 @@ ObjectTransport.createRepresentation = function (parent) {
     $(rep).attr("id", this.getAttribute('id'));
     rep.dataObject = this;
     this.initGUI(rep);
+
+    this.draw();
+
     return rep;
 
 }
@@ -35,13 +38,12 @@ ObjectTransport.draw = function (external) {
  * @param value
  */
 ObjectTransport.setViewX = function (value) {
+
+    GeneralObject.setViewX.call(this, value);
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=,)/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
-
-    GeneralObject.setViewX.call(this, value);
-
 }
 
 /**
@@ -50,12 +52,11 @@ ObjectTransport.setViewX = function (value) {
  * @param value
  */
 ObjectTransport.setViewY = function (value) {
+    GeneralObject.setViewY.call(this, value);
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=\))/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
-
-    GeneralObject.setViewY.call(this, value);
 }
 
 ObjectTransport.setViewWidth = function (value) {
