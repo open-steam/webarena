@@ -8,7 +8,7 @@ module.exports = {
 		senderMail : ''
 	},
 
-	faculties : [],
+	faculties : ["Kulturwissenschaften", "Wirtschaftswissenschaften", "Naturwissenschaften", "Maschinenbau", "EIM"],
 	datalocation: ''
 	
 }
