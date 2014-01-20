@@ -29,7 +29,7 @@ var ContextObject = {
  * Create all needed structures for a "Berufungsverfahren".
  * - Create needed room-structures
  */
-VerwaltungsApp.initProceeding = function (faculty) {
+VerwaltungsApp.initProceedingInstance = function (faculty) {
     var that = this;
 
     /*
@@ -37,10 +37,8 @@ VerwaltungsApp.initProceeding = function (faculty) {
      * e.g. faculty, dezernate1/4 etc.
      * naming of the template rooms should follow the convention:
      * Dezernat4_Berufungsverfahren_Template
-     * PARTICIPANT_Berufungsverfahren_Template
      */
-    var participants = ["Dezernat1", "Dezernat4", "Fakultaet_" + faculty];
-
+    var participants = ["Dezernat1", "Dezernat4", "Fakultaet" + faculty];
     var instanceId = uuid.v4();
 
     var rewireObjectTransports = function (room, proceedingID) {
@@ -58,12 +56,22 @@ VerwaltungsApp.initProceeding = function (faculty) {
                     }
 
                     var match = regex.exec( toTransfrom ) ;
-                    var rewiredTarget = match[1] + that.proceedingRoomInstanceInfix + proceedingID;
+
+                    //links to overview rooms don't need to be rewired
+                    if(match[1] == "Overview") return;
+
+                    if(match[1] == "Fakultaet"){
+                        var rewiredTarget = "Fakultaet" + faculty + that.proceedingRoomInstanceInfix + proceedingID;
+                    } else {
+                        var rewiredTarget = match[1] + that.proceedingRoomInstanceInfix + proceedingID;
+                    }
+
 
                     if(item.getType() == "TunnelEndpoint"){
                         item.setAttribute("source", rewiredTarget);
                     } else if(item.getType() == "ObjectTransport"){
                         item.setAttribute("target", rewiredTarget);
+                        item.setAttribute("customKeyValuePair", "processID:" + proceedingID);
                     }
                 });
             }
@@ -89,7 +97,7 @@ VerwaltungsApp.initProceeding = function (faculty) {
             roomID: that.overviewRoomInstancePrefix + part,
             context: ContextObject,
             callback: function () {
-                console.log("Created object...");
+
             }
         }
 
@@ -147,7 +155,10 @@ VerwaltungsApp.initProceeding = function (faculty) {
 
 VerwaltungsApp.initOverviewRooms = function () {
     var that = this;
-    var participants = this.getFaculties().concat(["Dezernat1", "Dezernat4"]);
+    var participants = this.getFaculties().map(function(faculty){
+        return "Fakultaet" + faculty;
+    });
+    participants = participants.concat(["Dezernat1", "Dezernat4"]);
 
     participants.forEach(function (part) {
         that.eventBus.emit("copyRoom", {
@@ -155,7 +166,7 @@ VerwaltungsApp.initOverviewRooms = function () {
             fromRoom: that.overviewRoomTemplateName,
             toRoom: that.overviewRoomInstancePrefix + part,
             callback: function () {
-                console.log("App got answer...")
+
             }
         });
     });
@@ -172,7 +183,10 @@ VerwaltungsApp.initTemplates = function () {
     var proceedingRoomTemplateSuffix = that.proceedingRoomTemplateSuffix;
 
     //all faculties + Dezernat 1/4
-    var participants = this.getFaculties().concat(["Dezernat1", "Dezernat4"]);
+    var participants = this.getFaculties().map(function(faculty){
+        return "Fakultaet" + faculty;
+    });
+    participants = participants.concat(["Dezernat1", "Dezernat4"]);
     var proceedingRoomTemplates = participants.map(function (participant) {
         return participant + proceedingRoomTemplateSuffix;
     });
@@ -223,8 +237,7 @@ VerwaltungsApp.initProceeding = function (event) {
     var clientSocket = event.context.socket;
     var processAnswer = function (response) {
         var faculty = response.choice;
-        console.log("GOT CHOICE: " + response.choice);
-        that.initProceeding(faculty);
+        that.initProceedingInstance(faculty);
     }
 
     //set request to client
@@ -297,6 +310,7 @@ VerwaltungsApp.addLogEntry = function (data) {
     var to = data.to;
     var timestamp = data.timestamp;
     var objectName = data.objectName;
+    var processID = data.processID;
 
     var pat = /(^[a-zA-Z0-9]+)_/;
 
@@ -347,7 +361,8 @@ VerwaltungsApp.addLogEntry = function (data) {
             })},
             function(items, cb){
                 var logsItems = _.filter(items, function(item){
-                    return item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid");
+                    var valid = item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid") && item.getAttribute("kokoa_processid") === processID;
+                    return valid;
                 });
                 cb(null, logsItems);
             }
@@ -358,9 +373,11 @@ VerwaltungsApp.addLogEntry = function (data) {
         });
     }
 
-    addToLog(overviewRoomFrom, fromEntry, "outgoing-message")
-    addToLog(overviewRoomTo, toEntry, "incoming-message")
-
+    //if objects are copied from "overview" room they shouldn't be logged
+    if(pFrom[1] !== "Overview"){
+        addToLog(overviewRoomFrom, fromEntry, "outgoing-message")
+        addToLog(overviewRoomTo, toEntry, "incoming-message")
+    }
 }
 
 /**
@@ -371,7 +388,8 @@ VerwaltungsApp.addLogEntry = function (data) {
  */
 VerwaltungsApp.sendMail = function (roomID) {
     //TODO create some possibility to add mails to a room
-    var recipients = this.Modules.config.kokoa.mail;
+    //TODO load from user tool
+    var recipients = [];
 
     var smtpServer = "";
     var smtpUser = config.smtp.user;
