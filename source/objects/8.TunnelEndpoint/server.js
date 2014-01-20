@@ -16,8 +16,6 @@ theObject.onLeave=function(object,oldData,newData){
 
 
 theObject.getPositioningDataFor = function(object){
-	console.log("try to find position");
-
 	//TODO: should only return not set position...
 	object.setAttribute("x", this.getAttribute("x") + 30);
 	object.setAttribute("y", this.getAttribute("y") + 30);
@@ -72,4 +70,7 @@ theObject.afterCreation = function(){
         }
         this.runtimeData.inboxlistener();
     }
+
+    setTimeout(this.getObjectsFromCommunicationChannel.bind(this), 5000);
+
 }
