@@ -7,38 +7,7 @@ StatusLights.proceedingId = false;
 
 //default milestones
 //TODO: should add the actual milestones
-var mileStonesDefault = [
-    {
-        id : 1,
-        name : "Der erste Meilenstein",
-        deadline: {
-            recommended : 130 //days after finishing last milestone
-        },
-        done : false,
-        startdate : false,
-        enddate : false
-    },
-    {
-        id : 2,
-        name : "Der zweite Meilenstein",
-        deadline: {
-            recommended : 130 //days after finishing last milestone
-        },
-        done : false,
-        startdate : false,
-        enddate : false
-    },
-    {
-        id : 3,
-        name : "Der dritter Meilenstein",
-        deadline: {
-            recommended : 130 //days after finishing last milestone
-        },
-        done : false,
-        startdate : false,
-        enddate : false
-    }
-];
+var mileStonesDefault = require('./milestones.json').milestones;
 
 
 /**
