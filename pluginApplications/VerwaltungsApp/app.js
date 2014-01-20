@@ -29,7 +29,7 @@ var ContextObject = {
  * Create all needed structures for a "Berufungsverfahren".
  * - Create needed room-structures
  */
-VerwaltungsApp.initAppointmentProcedure = function (faculty) {
+VerwaltungsApp.initProceeding = function (faculty) {
     var that = this;
 
     /*
@@ -224,7 +224,7 @@ VerwaltungsApp.initProceeding = function (event) {
     var processAnswer = function (response) {
         var faculty = response.choice;
         console.log("GOT CHOICE: " + response.choice);
-        that.initAppointmentProcedure(faculty);
+        that.initProceeding(faculty);
     }
 
     //set request to client
