@@ -292,6 +292,7 @@ VerwaltungsApp.init = function (modules) {
 
 
 VerwaltungsApp.addLogEntry = function (data) {
+    var that = this;
     var from = data.from;
     var to = data.to;
     var timestamp = data.timestamp;
@@ -310,61 +311,55 @@ VerwaltungsApp.addLogEntry = function (data) {
     var overviewRoomFrom = this.overviewRoomInstancePrefix + pFrom[1];
     var overviewRoomTo = this.overviewRoomInstancePrefix + pTo[1];
 
-    //find log
-    this.Modules.ObjectManager.getInventory(overviewRoomFrom, ContextObject, function (items) {
-        items.forEach(function (item) {
-            if (item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")) {
-                //Add text....
-                var oldContent = item.getContentAsString()
 
-                //try to parse the content
-                try {
-                    var content = JSON.parse(oldContent);
-                } catch (e) {
-                    //failed to parse...reset the content
-                    var content = {entries: []};
-                }
 
-                //add entry to json
-                var entry = {
-                    "message": fromEntry,
-                    "timestamp": timestamp,
-                    "cssclass": "outgoing-message"
-                }
+    var addEntry = function(logobject, message, cssClass){
+        //Add text....
+        var oldContent = logobject.getContentAsString()
 
-                content.entries.push(entry);
+        //try to parse the content
+        try {
+            var content = JSON.parse(oldContent);
+        } catch (e) {
+            //failed to parse...reset the content
+            var content = {entries: []};
+        }
 
-                //save the new content
-                item.setContent(JSON.stringify(content));
+        //add entry to json
+        var entry = {
+            "message": message,
+            "timestamp": timestamp,
+            "cssclass": cssClass
+        }
+
+        content.entries.push(entry);
+
+        //save the new content
+        logobject.setContent(JSON.stringify(content));
+    }
+
+
+
+    var addToLog = function(roomName, message, cssClass){
+        async.waterfall([
+            function(cb){that.Modules.ObjectManager.getInventory( roomName, ContextObject, function(items){
+                cb(null, items);
+            })},
+            function(items, cb){
+                var logsItems = _.filter(items, function(item){
+                    return item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid");
+                });
+                cb(null, logsItems);
             }
+        ], function(err, logItems){
+            logItems.forEach(function(logItem){
+                addEntry(logItem, message, cssClass)
+            })
         });
-    });
+    }
 
-    this.Modules.ObjectManager.getInventory(overviewRoomTo, ContextObject, function (items) {
-        items.forEach(function (item) {
-            if (item.getType() === "ProcessLog" && item.getAttribute("kokoa_processid")) {
-                var oldContent = item.getContentAsString()
-
-                //try to parse the content
-                try {
-                    var content = JSON.parse(oldContent);
-                } catch (e) {
-                    //failed to parse...reset the content
-                    var content = {entries: []};
-                }
-
-                //add entry to json
-                var entry = {
-                    "message": toEntry,
-                    "timestamp": timestamp,
-                    "cssclass": "incoming-message"
-                }
-
-                content.entries.push(entry);
-                item.setContent(JSON.stringify(content));
-            }
-        });
-    });
+    addToLog(overviewRoomFrom, fromEntry, "outgoing-message")
+    addToLog(overviewRoomTo, toEntry, "incoming-message")
 
 }
 
