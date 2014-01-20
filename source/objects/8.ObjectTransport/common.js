@@ -9,6 +9,8 @@ ObjectTransport.register=function(type){
 	this.registerAttribute('target',{type:'text',standard:'',category:'Selection'});
 	this.registerAttribute('cut',{type:'boolean',standard:false, category:'Selection'});
 
+    this.registerAttribute('customKeyValuePair', {type: 'text', standard: '', category: 'Selection'});
+
 }
 
 ObjectTransport.execute=function(){
