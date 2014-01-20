@@ -6,5 +6,9 @@ module.exports = {
 
 	tunnel: {
 		senderMail : ''
-	}
+	},
+
+	faculties : [],
+	datalocation: ''
+	
 }

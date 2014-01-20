@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var moment = require('moment');
+var config = require('./config.js');
 
 var StatusLights = {};
 StatusLights.proceedingId = false;
@@ -67,10 +68,8 @@ StatusLights.mayWrite = function(context, callback){
  * Try to load status otherwise initalize with default values if couldn't load.
  */
 StatusLights.load = function(){
-    var path = require('path');
-    var sourcePath = path.resolve("../source");
+    var sourcePath = config.datalocation;
     var filename = sourcePath + "/status_" + this.proceedingId + ".json";
-    var json;
     try{
         this.mileStones = require(filename);
     } catch (e){
@@ -104,7 +103,10 @@ StatusLights.initMileStone = function(index){
  */
 StatusLights.save = function(callback){
     var fs = require("fs");
-    fs.writeFile( "status_" + this.proceedingId +".json", JSON.stringify( this.mileStones ), "utf8", callback );
+    var content = JSON.stringify( this.mileStones );
+    var location = config.datalocation + "/status_" + this.proceedingId +".json";
+
+    fs.writeFile(location , content, "utf8", callback );
 }
 
 /**
