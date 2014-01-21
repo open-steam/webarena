@@ -1,5 +1,5 @@
 var Modules=require('../../server.js')
-var ObjectTransport=Object.create(Modules.ObjectManager.getPrototype('Hotspot'));
+var ObjectTransport=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 ObjectTransport.register=function(type){
 

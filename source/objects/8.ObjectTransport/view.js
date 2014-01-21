@@ -23,13 +23,15 @@ ObjectTransport.getIconText = function () {
 
 ObjectTransport.draw = function (external) {
 
+    GeneralObject.draw.call(this, external);
+
     var rep = this.getRepresentation();
     var rect = $(rep).find("rect");
     var icon = $(rep).find(".font-icon");
 
     icon.text(this.getIconText());
     rect.attr("fill", this.getAttribute('fillcolor'));
-    GeneralObject.draw.call(this, external);
+
 }
 
 /**
@@ -86,7 +88,7 @@ ObjectTransport.hideActivationMarker = function () {
 ObjectTransport.representationCreated = function () {
     GeneralObject.representationCreated.call(this);
     var that = this;
-    var rep = this.getRepresentation();
+
     var intersectMode = false;
     var rect = $("rect");
 
