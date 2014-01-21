@@ -125,5 +125,10 @@ ObjectTransport.representationCreated = function () {
             that.hideActivationMarker();
             intersectMode = false;
         }
+    });
+
+    ObjectManager.registerRoomChangeCallbacks(function(){
+        $("body").unbind("moveObject.wa");
+        $("body").unbind("moveend.wa");
     })
 }
