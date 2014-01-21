@@ -68,9 +68,11 @@ theObject.afterCreation = function(){
                 }, 1000);
             });
         }
+
         this.runtimeData.inboxlistener();
+
+        setTimeout(function () {
+            that.getObjectsFromCommunicationChannel();
+        }, 5000);
     }
-
-    setTimeout(this.getObjectsFromCommunicationChannel.bind(this), 5000);
-
 }
