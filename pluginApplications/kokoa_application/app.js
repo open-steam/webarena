@@ -16,13 +16,8 @@ var VerwaltungsApp = {
     proceedingRoomInstanceInfix : "_Berufungsverfahren_Instance_"
 };
 
-//TODO: Use application specific "application root password"
-var ContextObject = {
-    user: {
-        username: "server",
-        password: "server"
-    }
-}
+
+var ContextObject = config.application_context_user;
 
 
 /**

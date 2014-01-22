@@ -9,6 +9,10 @@ module.exports = {
 	},
 
 	faculties : ["Kulturwissenschaften", "Wirtschaftswissenschaften", "Naturwissenschaften", "Maschinenbau", "EIM"],
-	datalocation: ''
+	datalocation: '',
+    application_context_user : {
+        username : '',
+        password : ''
+    }
 	
 }
