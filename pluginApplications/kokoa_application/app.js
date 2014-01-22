@@ -38,7 +38,7 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
 
     var rewireObjectTransports = function (room, proceedingID) {
         var roomToGet = room;
-        that.Modules.ObjectManager.getInventory(roomToGet, ContextObject, function (items) {
+        var transformTransportTargets = function (items) {
             if(items){
                 items.forEach(function (item) {
                     var regex = /(^[a-zA-Z0-9]+)_/;
@@ -70,7 +70,9 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
                     }
                 });
             }
-        });
+        }
+
+        that.Modules.ObjectManager.getInventory(roomToGet, ContextObject, transformTransportTargets);
     }
 
     participants.forEach(function (part) {
@@ -148,11 +150,13 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
     });
 }
 
+/**
+ * Create overview rooms. Can be used during server setup etc.
+ */
 VerwaltungsApp.initOverviewRooms = function () {
     var that = this;
-    var participants = this.getFaculties().map(function(faculty){
-        return "Fakultaet" + faculty;
-    });
+    var participants = this.getFacultiesWithPrefix();
+    
     participants = participants.concat(["Dezernat1", "Dezernat4"]);
 
     participants.forEach(function (part) {
@@ -178,9 +182,7 @@ VerwaltungsApp.initTemplates = function () {
     var proceedingRoomTemplateSuffix = that.proceedingRoomTemplateSuffix;
 
     //all faculties + Dezernat 1/4
-    var participants = this.getFaculties().map(function(faculty){
-        return "Fakultaet" + faculty;
-    });
+    var participants = this.getFacultiesWithPrefix();
     participants = participants.concat(["Dezernat1", "Dezernat4"]);
     var proceedingRoomTemplates = participants.map(function (participant) {
         return participant + proceedingRoomTemplateSuffix;
@@ -206,6 +208,12 @@ VerwaltungsApp.initTemplates = function () {
  */
 VerwaltungsApp.getFaculties = function () {
     return config.faculties;
+}
+
+VerwaltungsApp.getFacultiesWithPrefix = function () {
+    return this.getFaculties().map(function(faculty){
+        return "Fakultaet" + faculty;
+    });
 }
 
 VerwaltungsApp.checkIfLoaded = function (proceedingID) {
