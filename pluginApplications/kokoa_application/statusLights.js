@@ -5,33 +5,8 @@ var config = require('./config.js');
 var StatusLights = {};
 StatusLights.proceedingId = false;
 
-//default milestones
-//TODO: should add the actual milestones
 var mileStonesDefault = require('./milestones.json').milestones;
 
-
-/**
- *
- * @param context - providing username
- * @param callback
- *
- * TODO: not used and implemented yet
- */
-StatusLights.mayRead = function(context, callback){
-    callback(true);
-}
-
-
-/**
- *
- * @param context - providing username
- * @param callback
- *
- * TODO: not used and implemented yet
- */
-StatusLights.mayWrite = function(context, callback){
-    callback(true);
-}
 
 /**
  * Try to load status otherwise initalize with default values if couldn't load.
