@@ -761,11 +761,17 @@ GUI.editPaint = function() {
 	$(GUI.paintCanvas).css("left", svgpos.left);
 	$(GUI.paintCanvasTemp).css("left", svgpos.left);
 	
-	$(GUI.paintCanvas).attr("width", ObjectManager.getCurrentRoom().getAttribute('width'));
-	$(GUI.paintCanvasTemp).attr("width", ObjectManager.getCurrentRoom().getAttribute('width'));
+	var windowWidth = $(window).width();
+	var roomWidth = ObjectManager.getCurrentRoom().getAttribute('width');
 
-	$(GUI.paintCanvas).attr("height", ObjectManager.getCurrentRoom().getAttribute('height')-svgpos.top);
-	$(GUI.paintCanvasTemp).attr("height", ObjectManager.getCurrentRoom().getAttribute('height')-svgpos.top);
+	$(GUI.paintCanvas).attr("width", Math.max(windowWidth, roomWidth));
+	$(GUI.paintCanvasTemp).attr("width", Math.max(windowWidth, roomWidth));
+
+	var windowHeight = $(window).height();
+	var roomHeight = ObjectManager.getCurrentRoom().getAttribute('height');
+	
+	$(GUI.paintCanvas).attr("height", Math.max(windowHeight, roomHeight));
+	$(GUI.paintCanvasTemp).attr("height", Math.max(windowHeight, roomHeight));
 
 	$(GUI.paintCanvas).css("z-index", 10000);
 	$(GUI.paintCanvasTemp).css("z-index", 10001);
