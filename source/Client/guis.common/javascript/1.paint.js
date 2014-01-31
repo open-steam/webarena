@@ -63,11 +63,11 @@ var COPY = {	started     : false,
 				timingPaste     : 0,
 				mouseOverSelectionBox : false,
 				
-				start : "",
-				move : "",
-				end : "",
-				paste : "",
-				cancel : ""
+				start : null,
+				move : null,
+				end : null,
+				paste : null,
+				cancel : null
 };
 
 var CUT = {		started     : false,
@@ -89,11 +89,105 @@ var CUT = {		started     : false,
 				timingPaste     : 0,
 				mouseOverSelectionBox : false,
 				
-				start : "",
-				move : "",
-				end : "",
-				paste : "",
-				cancel : ""
+				start : null,
+				move : null,
+				end : null,
+				paste : null,
+				cancel : null
+};
+
+
+var ERASER = {	enabled   : false,
+				selecting : false,
+				x         : 0,
+				y         : 0,
+				xTemp     : 0,
+				yTemp     : 0,
+				width     : 0,
+				height    : 0,  
+				
+				start     : null,
+				move      : null,
+				end       : null
+};
+
+ERASER.start = function(event)
+{
+	if ( !ERASER.enabled ) { return; }
+	
+	event.preventDefault();
+	event.stopPropagation();
+	
+	if (GUI.isTouchDevice)
+	{
+		/* touch */
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+	} else {
+		/* click */
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+	}
+	
+	ERASER.selecting = true;
+	
+	// start creating selection frame
+	ERASER.xTemp = x;
+	ERASER.yTemp = y;
+
+	GUI.paintContextTemp.strokeStyle = 'rgba(0,0,255,1)';
+	GUI.paintContextTemp.lineWidth = 2;
+};
+
+ERASER.move = function(event)
+{
+	if ( !ERASER.enabled || !ERASER.selecting ) { return; }
+
+	if (GUI.isTouchDevice) {
+		/* touch */
+		var x = event.targetTouches[0].pageX;
+		var y = event.targetTouches[0].pageY;
+	} else {
+		/* click */
+		if (event.layerX || event.layerX == 0) { // Firefox
+		  var x = event.layerX;
+		  var y = event.layerY;
+		} else if (event.offsetX || event.offsetX == 0) { // Opera
+		  var x = event.offsetX;
+		  var y = event.offsetY;
+		}
+	}
+	
+	// creating selection frame
+	ERASER.x = Math.min(x, ERASER.xTemp);
+	ERASER.y = Math.min(y, ERASER.yTemp);
+	ERASER.width = Math.abs(x - ERASER.xTemp);
+	ERASER.height = Math.abs(y - ERASER.yTemp);
+
+	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+	if (!ERASER.width || !ERASER.height) { return; }
+	GUI.paintContextTemp.strokeRect(ERASER.x, ERASER.y, ERASER.width, ERASER.height);
+};
+
+ERASER.end = function(event)
+{
+	if ( !ERASER.enabled || !ERASER.selecting ) { return; }
+
+	ERASER.selecting = false;
+	ERASER.enabled = false;
+	
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+	$(".header_button").css("display", "inline");
+	$("#abortButton").css("display", "none");
+		
+	GUI.paintContext.clearRect(ERASER.x, ERASER.y, ERASER.width, ERASER.height);
+	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+	GUI.savePaintMode();
 };
 
 COPY.start = function(event)
@@ -142,7 +236,7 @@ COPY.start = function(event)
 		clearTimeout(COPY.timingPaste);
 	}
 	else { return; }
-}
+};
 
 COPY.move = function(event)
 {
@@ -212,7 +306,7 @@ COPY.move = function(event)
 			COPY.sourceH // dest height
 		);
 	}
-}
+};
 
 COPY.end = function(event)
 {
@@ -323,7 +417,7 @@ CUT.start = function(event)
 		clearTimeout(CUT.timingPaste);
 	}
 	else { return; }
-}
+};
 
 CUT.move = function(event)
 {
@@ -383,7 +477,7 @@ CUT.move = function(event)
 		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.destX, CUT.destY);
 	}
 
-}
+};
 
 CUT.end = function(event)
 {
@@ -407,7 +501,7 @@ CUT.end = function(event)
 		CUT.dragging = false;
 		CUT.timingPaste = setTimeout(function(){CUT.paste();}, 2000);
 	}
-}
+};
 
 CUT.paste = function()
 {
@@ -549,7 +643,6 @@ GUI.editPaint = function() {
 	
 
 	/* add eraser selection */
-	
 	var eraser = document.createElement("img");
 	$(eraser).attr("src", "../../guis.common/images/paint/eraser.png");
 	$(eraser).addClass("jPaint_navi");
@@ -564,6 +657,16 @@ GUI.editPaint = function() {
 
 	$("#header > div.header_left").append(eraser);
 
+	
+	/* add area eraser selection */
+	var areaEraser = document.createElement("img");
+	$(areaEraser).attr("src", "../../guis.common/images/paint/eraser.png");
+	$(areaEraser).addClass("jPaint_navi");
+	$(areaEraser).addClass("jPaint_navi_eraser");
+	$(areaEraser).bind("click", function(event) { ERASER.enabled = true; $(GUI.paintCanvasTemp).css("visibility", "visible"); $(".header_button").css("display", "none"); });
+	$("#header > div.header_left").append(areaEraser);
+
+	//get user color from chat
 	GUI.setPaintColor("#000000", "black");
 	GUI.setPaintSize(3);
 
@@ -641,6 +744,10 @@ GUI.editPaint = function() {
 	GUI.paintCanvasTemp.addEventListener("mousedown", CUT.start, false);
 	GUI.paintCanvasTemp.addEventListener("mousemove", CUT.move, false);
 	GUI.paintCanvasTemp.addEventListener("mouseup", CUT.end, false);
+	
+	GUI.paintCanvasTemp.addEventListener("mousedown", ERASER.start, false);
+	GUI.paintCanvasTemp.addEventListener("mousemove", ERASER.move, false);
+	GUI.paintCanvasTemp.addEventListener("mouseup", ERASER.end, false);
 	
 	var svgpos = $("#content").offset();
 	
