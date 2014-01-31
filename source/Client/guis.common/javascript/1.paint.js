@@ -592,7 +592,8 @@ GUI.editPaint = function() {
 	$("img[id^='userPainting_']").hide();
 	
 	GUI.resetPaintColors();
-	GUI.addPaintColor("#000000", "black");
+	GUI.addPaintColor(ObjectManager.getUser().color, "usercolor");
+	GUI.addPaintColor("black");
 	GUI.addPaintColor("red");
 	GUI.addPaintColor("green");
 	GUI.addPaintColor("blue");
@@ -607,7 +608,6 @@ GUI.editPaint = function() {
 	GUI.addPaintSize(24);
 	
 	/* add color selection */
-	
 	$.each(GUI.paintColors, function(index, color) {
 	
 		var colorSelection = document.createElement("img");
