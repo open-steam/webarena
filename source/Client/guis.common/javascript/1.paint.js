@@ -667,7 +667,7 @@ GUI.editPaint = function() {
 	$("#header > div.header_left").append(areaEraser);
 
 	//get user color from chat
-	GUI.setPaintColor("#000000", "black");
+	GUI.setPaintColor(ObjectManager.getUser().color, "black");
 	GUI.setPaintSize(3);
 
 	/* add cancel button for copy'n'paste and cut'n'paste */
