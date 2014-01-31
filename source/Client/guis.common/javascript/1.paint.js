@@ -23,6 +23,25 @@ GUI.setPaintColor = function(color, colorName) {
 }
 
 /**
+ * Set pen or highlight mode
+ * @param {String} pen or highlighter
+ */
+GUI.setPaintMode = function(mode) {
+	if ( mode == "pen" )
+	{
+		GUI.paintOpacity = 1;
+		$("#header").find(".jPaint_navi_pen").addClass("active");
+		$("#header").find(".jPaint_navi_highlighter").removeClass("active");
+	}
+	else if ( mode == "highlighter" )
+	{
+		GUI.paintOpacity = 0.01;
+		$("#header").find(".jPaint_navi_highlighter").addClass("active");
+		$("#header").find(".jPaint_navi_pen").removeClass("active");
+	}
+}
+
+/**
  * Set the cursor
  * @param {String} cursorName The name of the cursor icon
  */
@@ -593,10 +612,10 @@ GUI.editPaint = function() {
 	
 	GUI.resetPaintColors();
 	GUI.addPaintColor(ObjectManager.getUser().color, "usercolor");
-	GUI.addPaintColor("black");
-	GUI.addPaintColor("red");
-	GUI.addPaintColor("green");
-	GUI.addPaintColor("blue");
+	GUI.addPaintColor("#000000", "black");
+	GUI.addPaintColor("#ff0000", "red");
+	GUI.addPaintColor("#008000", "green");
+	GUI.addPaintColor("#0000ff", "blue");
 	GUI.resetPaintSizes();
 	
 	GUI.addPaintSize(1);
@@ -640,7 +659,30 @@ GUI.editPaint = function() {
 		$("#header > div.header_left").append(sizeSelection);
 		
 	});
+
+	/* add pen selection */
+	var pen = document.createElement("img");
+	$(pen).attr("src", "../../guis.common/images/categories/Paintings.png");
+	$(pen).addClass("jPaint_navi");
+	$(pen).addClass("jPaint_navi_pen");
+	$(pen).bind("click", function(event) {
+		GUI.setPaintMode("pen");
+		GUI.paintEraseModeActive = false;
+	});
 	
+	$("#header > div.header_left").append(pen);
+	
+	/* add highlighter selection */
+	var highlighter = document.createElement("img");
+	$(highlighter).attr("src", "../../guis.common/images/categories/Highlighters.png");
+	$(highlighter).addClass("jPaint_navi");
+	$(highlighter).addClass("jPaint_navi_highlighter");
+	$(highlighter).bind("click", function(event) {
+		GUI.setPaintMode("highlighter");
+		GUI.paintEraseModeActive = false;
+	});
+
+	$("#header > div.header_left").append(highlighter);	
 
 	/* add eraser selection */
 	var eraser = document.createElement("img");
@@ -662,14 +704,11 @@ GUI.editPaint = function() {
 	var areaEraser = document.createElement("img");
 	$(areaEraser).attr("src", "../../guis.common/images/paint/eraser.png");
 	$(areaEraser).addClass("jPaint_navi");
-	$(areaEraser).addClass("jPaint_navi_eraser");
+	$(areaEraser).addClass("jPaint_navi_area_eraser");
 	$(areaEraser).bind("click", function(event) { ERASER.enabled = true; $(GUI.paintCanvasTemp).css("visibility", "visible"); $(".header_button").css("display", "none"); });
+	
 	$("#header > div.header_left").append(areaEraser);
-
-	//get user color from chat
-	GUI.setPaintColor(ObjectManager.getUser().color, "black");
-	GUI.setPaintSize(3);
-
+	
 	/* add cancel button for copy'n'paste and cut'n'paste */
 	var abortButton = document.createElement("span");
 	$(abortButton).addClass("header_button");
@@ -729,7 +768,7 @@ GUI.editPaint = function() {
 	});
 	
 	$("#header > div.header_right").append(closeButton);	
-	
+
 	/* create html canvas */
 	GUI.paintCanvas = document.createElement("canvas");
 	GUI.paintCanvasTemp = document.createElement("canvas");
@@ -780,6 +819,7 @@ GUI.editPaint = function() {
 	$(GUI.paintCanvasTemp).attr("id", "webarena_paintCanvas_temp");
 	
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+	$(GUI.paintCanvasTemp).css("cursor", "crosshair");
 
 	$("body").append(GUI.paintCanvas);
 	$("body").append(GUI.paintCanvasTemp);
@@ -802,6 +842,11 @@ GUI.editPaint = function() {
 	//unbind old events
 	$("#webarena_paintCanvas").unbind("mousedown");
 	$("#webarena_paintCanvas").unbind("touchend");
+	
+	// set initial values
+	GUI.setPaintColor(ObjectManager.getUser().color, "usercolor");
+	GUI.setPaintMode("pen");
+	GUI.setPaintSize(3);
 	
 	var start = function(event) {
 
@@ -827,11 +872,14 @@ GUI.editPaint = function() {
 		{
 			var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
 
-			canvasContext.strokeStyle = GUI.paintColor;
+			var hex2rgb = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})$/;
+			var matches = hex2rgb.exec(GUI.paintColor);
+			var rgba = "rgba(" + parseInt(matches[1], 16) + "," + parseInt(matches[2], 16) + "," + parseInt(matches[3], 16) + "," + GUI.paintOpacity + ")";
+
+			canvasContext.strokeStyle = rgba;
 			canvasContext.lineWidth = GUI.paintSize;
 			canvasContext.lineCap = "round";
 			canvasContext.beginPath();
-		
 		
 			if (GUI.isTouchDevice) {
 				/* touch */
