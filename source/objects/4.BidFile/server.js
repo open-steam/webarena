@@ -26,7 +26,7 @@ theObject.register = function(type) {
 			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 		}
 
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
+		Modules.Connector.mayRead(roomID, objectID, context, function(err, mayRead) {
 
 			if (mayRead) {
 
@@ -69,7 +69,7 @@ theObject.register = function(type) {
 			return Modules.SocketServer.sendToSocket(socket,'error','Object not found '+objectID);
 		}
 
-		Modules.Connector.mayRead(roomID, objectID, context, function(mayRead) {
+		Modules.Connector.mayRead(roomID, objectID, context, function(err, mayRead) {
 
 			if (mayRead) {
 
@@ -180,7 +180,7 @@ theObject.setFile = function(bidObjectId, socket, callback) {
 					self.persist();
 
 					/* get dimensions */
-					Modules.Connector.getInlinePreviewDimensions(self.get('inRoom'), self.id, function(width, height) {
+					Modules.Connector.getInlinePreviewDimensions(self.get('inRoom'), self.id, mimeType, true, function(width, height) {
 
 						if (width != false)	self.setAttribute("width", width);
 						if (height != false) self.setAttribute("height", height);
@@ -191,7 +191,7 @@ theObject.setFile = function(bidObjectId, socket, callback) {
 						
 						callback();
 
-					}, mimeType, true);
+					});
 
 				} else {
 					self.set('inline') = false;

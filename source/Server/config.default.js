@@ -6,23 +6,24 @@
 */
 
 module.exports={
-	filebase:'/path/to/server', // The path where object data is saved (for the fileConnector)
+	filebase:'/path/to/data_folder', // The path where object data is saved (for the fileConnector)
 	connector:require('./FileConnector.js'), // The chosen connector
 	language:'de', // The current language (e.g. for error messages)
 	port: 8080,     // HTTP Port for server
 	homepage: '/index.html',
+	tcpApiServer: false,
 	imageUpload: {
 		maxDimensions: 400
 	},
-    easydb: {
-        apiUrl : "easydb.uni-paderborn.de",
-        apiPath: "/easy/fs.php?",
-        username: "",
-        password: ""
+	easydb: {
+		apiUrl: "easydb.uni-paderborn.de",
+		apiPath: "/easy/fs.php?",
+		username: "",
+		password: ""
 	},
-    sharepoint : {
-        basepath : "https://projects.uni-paderborn.de/websites/studiolo/"
-    },
+	sharepoint: {
+		basepath: "https://projects.uni-paderborn.de/websites/studiolo/"
+	},
 	bidServer: 'www.bid-owl.de.localhost',
 	bidPort: 80,
 	elab: {
@@ -34,8 +35,7 @@ module.exports={
 		"debug" : false,
 		"info" : false
 	},
-	developerInfo: false,
 	objectWhitelist: [],	//an empty whitelist whitelists everything
 	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
-    showDebugLineNumbers: false
+	debugMode: false
 };

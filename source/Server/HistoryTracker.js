@@ -1,15 +1,15 @@
 "use strict";
 
-var _ = require("underscore");
+var _ = require("lodash");
 
 var HistoryTracker = function(maxStackSize){
-    var that = {}
+    var that = { };
 
     /**
      * The ids of the stored transactions. Should be ordered by time.
      * @type {Array}
      */
-    var historyTransactionIds = []
+    var historyTransactionIds = [];
 
     /**
      * For each history entry there should exist an object attribute,
@@ -20,7 +20,7 @@ var HistoryTracker = function(maxStackSize){
      */
     var historyEntries = {
 
-    }
+    };
 
     /**
      * The history stack should have a limited size. Therefore it should be shortened
@@ -51,6 +51,8 @@ var HistoryTracker = function(maxStackSize){
         var found = false;
         var changedByOthers = [];
 
+	    //Go back until end of history, as long as not found
+	    //history entry for the user id.
         while(i-- && !found){
             var hid = historyTransactionIds[i];
             var changeSet = historyEntries[hid].changeSet;

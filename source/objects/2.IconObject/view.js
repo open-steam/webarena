@@ -1,6 +1,6 @@
-IconObject.createRepresentation = function() {
+IconObject.createRepresentation = function(parent) {
 	
-	var rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
 	var size = 32;
 	if (this.getAttribute("bigIcon")) {
@@ -46,6 +46,52 @@ IconObject.draw=function(external){
 	if (!$(rep).hasClass("selected")) {
 		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
 		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+	}
+
+	if (!$(rep).hasClass("webarena_ghost")) {
+		
+		if (this.selected) {
+			$(rep).css("visibility", "visible");
+		} else {
+			
+			if (this.getAttribute("visible")) {
+				
+				if (external) {
+					if ($(rep).css("visibility") == "hidden") {
+						/* fade in */
+						$(rep).css("opacity", 0);
+						$(rep).css("visibility", "visible");
+						$(rep).animate({
+							"opacity" : 1
+						}, {queue:false, duration:500});
+					}
+				} else {
+					$(rep).css("visibility", "visible");
+				}
+				
+			} else {
+				
+				if (external) {
+					if ($(rep).css("visibility") == "visible") {
+						/* fade out */
+						$(rep).css("opacity", 1);
+						$(rep).animate({
+							"opacity" : 0
+						}, {queue:false, 
+							complete:function() {
+								$(rep).css("visibility", "hidden");
+							}
+							});
+					}
+				} else {
+					$(rep).css("visibility", "hidden");
+				}
+				
+			}
+			
+		}
+
+		
 	}
 
 	this.createPixelMap();

@@ -1,5 +1,5 @@
 var http = require('https');
-var _ = require('underscore');
+var _ = require('lodash');
 // var Log = require('../../Common/Log.js');
 var config=require('../../Server/config.local.js');
 
@@ -111,9 +111,6 @@ EasyDbAPI.apicall = function(args, callback){
         callPath += index + "=" + encodeURIComponent(args[index]) + "&";
     }
 
-    // Log.debug("EasyDbAPI","call path", callPath);
-    //console.log("callpath: ")
-    //console.log(callPath);
 
     var options = {
         host: this.apiUrl,

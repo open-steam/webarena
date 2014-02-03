@@ -24,7 +24,7 @@ SimpleText.register=function(type){
 			return true;
 		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
 
-	}});;
+	}});
 	
 	this.attributeManager.registerAttribute('width',{hidden:true});
 	this.attributeManager.registerAttribute('height',{hidden:true});
@@ -49,6 +49,18 @@ SimpleText.execute=function(){
 
 SimpleText.isResizable=function(){
 	return false;
+}
+
+SimpleText.intelligentRename=function(newValue){
+	var objectName = this.getAttribute("name");
+	var that = this;
+	this.getContentAsString(function(oldValue){
+		if ( newValue.length > 30 )
+		{ newValue = newValue.substring(0, 30); }
+	
+		if ( objectName == "SimpleText" || objectName == oldValue )
+		{ that.setAttribute("name", newValue); }
+	});
 }
 
 SimpleText.register('SimpleText');

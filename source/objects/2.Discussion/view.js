@@ -158,11 +158,11 @@ Discussion.switchState = function () {
 }
 
 
-Discussion.createRepresentationEmbedded = function () {
+Discussion.createRepresentationEmbedded = function (parent) {
     var that = this;
 
     // wrapper
-    var rep = GUI.svg.other("foreignObject");
+    var rep = GUI.svg.other(parent,"foreignObject");
     rep.dataObject = this;
 
     var heading = this.getAttribute("discussionTitle") || "Bitte klicken Sie hier, um den Text zu ändern."
@@ -235,10 +235,10 @@ Discussion.createRepresentationEmbedded = function () {
     return rep;
 }
 
-Discussion.createRepresentationIcon = function () {
+Discussion.createRepresentationIcon = function (parent) {
 
     //var rep = GUI.svg.group(this.getAttribute('id'));
-    var rep = GUI.svg.other("foreignObject");
+    var rep = GUI.svg.other(parent,"foreignObject");
 
     var body = document.createElement("body");
     var title = this.getAttribute('discussionTitle') || "Nicht gesetzt.";
@@ -258,13 +258,13 @@ Discussion.getFileIcon = function () {
 }
 
 
-Discussion.createRepresentation = function () {
+Discussion.createRepresentation = function (parent) {
     var embedded = this.getAttribute("show_embedded");
     var rep;
     if (embedded) {
-        rep = this.createRepresentationEmbedded();
+        rep = this.createRepresentationEmbedded(parent);
     } else {
-        rep = this.createRepresentationIcon();
+        rep = this.createRepresentationIcon(parent);
     }
 
     return rep;

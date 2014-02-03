@@ -7,7 +7,7 @@ bidConnector.bidRights = {};
 
 bidConnector.externalSessions = {};
 
-bidConnector.login=function(username,password,externalSession,rp,context){
+bidConnector.login=function(username,password,externalSession,context, rp){
 
 	var self = this;
 
@@ -16,6 +16,7 @@ bidConnector.login=function(username,password,externalSession,rp,context){
 	if (externalSession === true) {
 		if (self.externalSessions[password] === undefined) rp(false);
 		password = self.externalSessions[password].password; //get real password from external session
+		delete(self.externalSessions[password]);
 	}
 	
 	var protocol = (global.config.bidServerIsHttps)?'https':'http';
@@ -68,7 +69,7 @@ bidConnector.mayAnything=function(roomID, connection, callback) {
 	
 	if (this.bidRights[connection.socket.id][roomID] !== undefined) {
 		this.Modules.Log.debug("Got right from cache (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(connection)+"')");
-		callback(this.bidRights[connection.socket.id][roomID]);
+		callback(null, this.bidRights[connection.socket.id][roomID]);
 		return;
 	}
 	
@@ -82,10 +83,10 @@ bidConnector.mayAnything=function(roomID, connection, callback) {
 		resp = parseInt(resp);
 		if (resp == 1) {
 			self.bidRights[connection.socket.id][roomID] = true; //cache rights
-			callback(true);
+			callback(null, true);
 		} else {
 			self.bidRights[connection.socket.id][roomID] = false; //cache rights
-			callback(false);
+			callback(null, false);
 		}
 		
 	});

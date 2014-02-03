@@ -16,6 +16,13 @@ Line.draw=function(external){
 	}
 	
 	$(rep).children("line").attr("stroke-width", this.getAttribute('linesize'));
+	
+	switch (this.getAttribute('linestyle')){
+		case 'dotted':var dasharray='5,5';break;
+		case 'dashed':var dasharray='10,5';break;
+		default:var dasharray='1,0';break;
+	}
+	$(rep).children("line").attr("stroke-dasharray", dasharray);
 
 	if (this.getAttribute("direction") == 1) {
 		$(rep).children("line").attr("x1", 0);
@@ -45,9 +52,9 @@ Line.draw=function(external){
 }
 
 
-Line.createRepresentation = function() {
+Line.createRepresentation = function(parent) {
 
-	var rep = GUI.svg.group(this.getAttribute('id'));
+	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 
 	var selectLine=GUI.svg.line(rep, 0, 0, 20, 20, {});
  	var line=GUI.svg.line(rep, 0, 0, 20, 20, {});

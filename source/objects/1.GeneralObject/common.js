@@ -45,6 +45,35 @@ GeneralObject.isStructuring=function(){
 }
 
 
+GeneralObject.utf8={};
+
+GeneralObject.utf8.toByteArray = function(str) {
+    var byteArray = [];
+    for (var i = 0; i < str.length; i++)
+        if (str.charCodeAt(i) <= 0x7F)
+            byteArray.push(str.charCodeAt(i));
+        else {
+            var h = encodeURIComponent(str.charAt(i)).substr(1).split('%');
+            for (var j = 0; j < h.length; j++)
+                byteArray.push(parseInt(h[j], 16));
+        }
+    return byteArray;
+};
+
+GeneralObject.utf8.parse = function(byteArray) {
+    var str = '';
+    for (var i = 0; i < byteArray.length; i++)
+        str +=  byteArray[i] <= 0x7F?
+                byteArray[i] === 0x25 ? "%25" : // %
+                String.fromCharCode(byteArray[i]) :
+                "%" + byteArray[i].toString(16).toUpperCase();
+    try {
+    	return decodeURIComponent(str);
+    } catch (e) {
+    }
+    return '';
+};
+
 /**
  * Checks if an objects is moved by transform
  * @returns {bool} True if moved by transform
@@ -75,7 +104,7 @@ GeneralObject.contentURLOnly = true;
 /**
  * The currrent language
  */
-GeneralObject.currentLanguage = undefined;
+GeneralObject.currentLanguage = Modules.Config.language;
 
 /**
  * Registers the object
@@ -533,7 +562,7 @@ GeneralObject.getId=function(){
 }
 
 GeneralObject.getCurrentRoom=function(){
-	return ObjectManager.currentRoom.get('id');
+	return this.getAttribute("inRoom");
 }
 
 GeneralObject.stopOperation=function(){
@@ -656,12 +685,17 @@ GeneralObject.refreshDelayed=function(){
 	var theTimer=400;
 	
 	this.refreshDelay=setTimeout(function(){
-		
 		//If the current room has changed in the meantime, do not refresh at all
-		if (that.getAttribute('inRoom')!==ObjectManager.getRoomID()){
-			return;
+		if (GUI.couplingModeActive) {
+			if (that.getAttribute('inRoom') != ObjectManager.getRoomID('left') && that.getAttribute('inRoom') != ObjectManager.getRoomID('right')){
+				return;
+			}
+		} else {
+			if (that.getAttribute('inRoom') != ObjectManager.getRoomID()){
+				return;
+			}
 		}
-		
+
 		that.refresh();
 	},theTimer);
 }
@@ -726,7 +760,7 @@ GeneralObject.getLinkedObjects=function() {
 			return ObjectManager.getObject(id);
 		}
 		var getObjects = function() {
-			return ObjectManager.getObjects();
+			return ObjectManager.getObjects(ObjectManager.getIndexOfObject(self.getId()));
 		}
 	}
 
@@ -854,7 +888,7 @@ GeneralObject.getObjectsToDuplicate = function(list) {
 		var target = linkedObjects[id];
 		var targetObject = target.object;
 		
-		if (!list[targetObject.get('id')]) {
+		if (targetObject && targetObject && !list[targetObject.get('id')]) {
 			targetObject.getObjectsToDuplicate(list);
 		}
 		

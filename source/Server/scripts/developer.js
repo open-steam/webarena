@@ -19,7 +19,7 @@ thisScript.export='';
 
 thisScript.run=function(url){
 	
-	if (!Modules.Config.developerInfo){
+	if (!Modules.Config.debugMode){
 		this.export='';
 		return;
 	}

@@ -5,7 +5,7 @@ var elabConnector=require('./FileConnector.js');
 elabConnector.elabConnections = {};
 elabConnector.externalSessions = {};
 
-elabConnector.login=function(username,password,externalSession,rp,context){
+elabConnector.login=function(username,password,externalSession,context, rp){
 
 	var self = this;
 
@@ -82,7 +82,7 @@ elabConnector.mayWrite=function(roomID,objectID,connection,callback) {
 	var username = connection.user.username;
 
 	if (roomID === username) {
-		callback(true);
+		callback(null, true);
 		return;
 	}
 
@@ -92,16 +92,16 @@ elabConnector.mayWrite=function(roomID,objectID,connection,callback) {
 		if (exists) {
 		  	var rights = fs.readFileSync(filename, 'utf8');
 		  	if (rights === 'write') {
-		  		callback(true);
+		  		callback(null, true);
 		  	} else {
-		  		callback(false);
+		  		callback(null, false);
 		  	}
 		} else {
 			self.getRoomData(roomID, connection, function(obj) { 
 				if (obj.attributes.parent !== undefined) {
 					self.mayWrite(obj.attributes.parent, null, connection, callback);
 		  		} else {
-		  			callback(false);
+		  			callback(null, false);
 		  		}
 		  	});
 		}
@@ -118,7 +118,7 @@ elabConnector.mayRead=function(roomID,objectID,connection,callback) {
 	var username = connection.user.username;
 
 	if (roomID === username) {
-		callback(true);
+		callback(null, true);
 		return;
 	}
 
@@ -126,18 +126,18 @@ elabConnector.mayRead=function(roomID,objectID,connection,callback) {
 
 	fs.exists(filename, function(exists) {
 		if (exists) {
-		  	callback(true);
+		  	callback(null, true);
 		} else {
 			var obj = self.getObjectDataByFile(roomID, roomID);
 			if (obj) {
 				if (obj.attributes.parent !== undefined) {
 					self.mayRead(obj.attributes.parent, null, connection, callback);
 		  		} else {
-		  			callback(false);
+		  			callback(null, false);
 		  		}
 		  	} else {
 		  		// subroom, room object does not exist yet (it is created when it is first entered)
-		  		callback(true);
+		  		callback(null, true);
 		  	}
 		}
 	});

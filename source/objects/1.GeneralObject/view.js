@@ -12,9 +12,8 @@
  * @param {bool} external True if triggered externally (and not by the object itself)
  */
 GeneralObject.draw=function(external){
-	
+
 	if (!this.isGraphical) return;
-	
 	
 	var rep=this.getRepresentation();
 
@@ -141,8 +140,8 @@ GeneralObject.getRepresentation=function(){
 	var rep=document.getElementById(this.getAttribute('id'));
 
 	if (!rep){
-
-		var rep = this.createRepresentation();
+		var parent = $('#room_'+ObjectManager.getIndexOfObject(this.getAttribute("inRoom")));
+		var rep = this.createRepresentation(parent);
 		this.representationCreated();
 		
 	}
@@ -156,8 +155,11 @@ GeneralObject.getRepresentation=function(){
  */
 GeneralObject.representationCreated = function() {
 
-	GUI.updateLayersDelayed();
-	
+	if (!GUI.couplingModeActive) {
+		GUI.updateLayersDelayed();
+	} else {
+		GUI.updateLayers();
+	}
 }
 
 /**
@@ -169,7 +171,7 @@ GeneralObject.createRepresentation = function() {
 
 	if (!this.isGraphical) return;
 
-	var rep = GUI.svg.rect(
+	var rep = GUI.svg.rect(parent,
 		10, //x
 		10, //y
 		10, //width
@@ -355,56 +357,68 @@ GeneralObject.adjustControls = function() {
 	var self = this;
 	
 	var rep = this.getRepresentation();
+
+	var couplingX = 0;
+	var couplingY = 0;
+	if (GUI.couplingModeActive) {
+		if (ObjectManager.getIndexOfObject(this.id) != 'left') {
+			couplingX = parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right');
+			couplingY = GUI.getPanY('right');
+		} else {
+			couplingX = GUI.getPanX('left');
+			couplingY = GUI.getPanY('left');
+		}
+	}
 	
 	if (this.controls) {
 	$.each(this.controls, function(index, control) {
 		
 		/* Position: right, vertically centered */
 		if (control.type == "x") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth();
-			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
+			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()+couplingX;
+			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2+couplingY;
 		}
 		
 		/* Position: left, vertically centered */
 		if (control.type == "x2") {
-			var x = self.getViewBoundingBoxX();
-			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2;
+			var x = self.getViewBoundingBoxX()+couplingX;
+			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2+couplingY;
 		}
 
 		/* Position: bottom, horizontally centered */
 		if (control.type == "y") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
-			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight();
+			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2+couplingX;
+			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()+couplingY;
 		}
 		
 		/* Position: top, horizontally centered */
 		if (control.type == "y2") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2;
-			var y = self.getViewBoundingBoxY();
+			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2+couplingX;
+			var y = self.getViewBoundingBoxY()+couplingY;
 		}
 		
 		/* Position: left, top */
 		if (control.type == "xy1") {
-			var x = self.getViewX();
-			var y = self.getViewY();
+			var x = self.getViewX()+couplingX;
+			var y = self.getViewY()+couplingY;
 		}
 		
 		/* Position: right, top */
 		if (control.type == "xy2") {
-			var x = self.getViewX()+self.getViewWidth();
-			var y = self.getViewY();
+			var x = self.getViewX()+self.getViewWidth()+couplingX;
+			var y = self.getViewY()+couplingY;
 		}
 		
 		/* Position: right, bottom */
 		if (control.type == "xy3") {
-			var x = self.getViewX()+self.getViewWidth();
-			var y = self.getViewY()+self.getViewHeight();
+			var x = self.getViewX()+self.getViewWidth()+couplingX;
+			var y = self.getViewY()+self.getViewHeight()+couplingY;
 		}
 		
 		/* Position: left, bottom */
 		if (control.type == "xy4") {
-			var x = self.getViewX();
-			var y = self.getViewY()+self.getViewHeight();
+			var x = self.getViewX()+couplingX;
+			var y = self.getViewY()+self.getViewHeight()+couplingY;
 		}
 
 		$(control).attr("cx", x);
@@ -412,7 +426,7 @@ GeneralObject.adjustControls = function() {
 		
 	});
 	}
-	
+
 	GUI.userMarker.setPosition(this.id);
 	
 }
@@ -743,9 +757,14 @@ GeneralObject.addControl = function(type, resizeFunction) {
 		event.stopPropagation();
 		
 		self.onMoveStart();
-
-		control.startMouseX = event.pageX;
-		control.startMouseY = event.pageY;
+		
+		if (!GUI.isTouchDevice) {
+			control.startMouseX = event.pageX;
+			control.startMouseY = event.pageY;
+		} else {
+			control.startMouseX = event.targetTouches[0].pageX;
+			control.startMouseY = event.targetTouches[0].pageY;
+		}
 		control.objectStartWidth = self.getViewWidth();
 		control.objectStartHeight = self.getViewHeight();
 		control.objectStartX = self.getViewX();
@@ -759,7 +778,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			
 			event.preventDefault();
 
-			if (event.pageX) {
+			if (!GUI.isTouchDevice) {
 				/* mouse */
 				var dx = event.pageX-control.startMouseX;
 				var dy = event.pageY-control.startMouseY;
@@ -837,10 +856,18 @@ GeneralObject.addControl = function(type, resizeFunction) {
  * (used by GeneralObject.moveRelative)
  */
 GeneralObject.saveMoveStartPosition = function() {
-	
-	this.moveObjectStartX = this.getViewX();
-	this.moveObjectStartY = this.getViewY();
-	
+	if (GUI.couplingModeActive) { 
+		if (ObjectManager.getIndexOfObject(this.id) === 'right') {
+			this.moveObjectStartX = this.getViewX() + parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right');
+			this.moveObjectStartY = this.getViewY() + GUI.getPanY('right');
+		} else {
+			this.moveObjectStartX = this.getViewX() + GUI.getPanX('left');
+			this.moveObjectStartY = this.getViewY() + GUI.getPanY('left');
+		}
+	} else {
+		this.moveObjectStartX = this.getViewX();
+		this.moveObjectStartY = this.getViewY();
+	}
 }
 
 
@@ -856,7 +883,6 @@ GeneralObject.moveStart = function(event) {
 		var self = ObjectManager.getObject(this.id);
 	}
 
-
 	if (!self.selected) self.select();
 	
 	var contentPosition = $("#content").offset();
@@ -867,7 +893,7 @@ GeneralObject.moveStart = function(event) {
 	GUI.hideActionsheet();
 	GUI.hideLinks(self);
 
-	if (event.pageX) {
+	if (!GUI.isTouchDevice) {
 		/* mouse */
 		self.moveStartMouseX = event.pageX;
 		self.moveStartMouseY = event.pageY;
@@ -876,10 +902,25 @@ GeneralObject.moveStart = function(event) {
 		self.moveStartMouseX = event.targetTouches[0].pageX;
 		self.moveStartMouseY = event.targetTouches[0].pageY;
 	}
-	
+
 	/* save start position for all selected objects */
 	$.each(ObjectManager.getSelected(), function(index, object) {
 		object.saveMoveStartPosition();
+
+		if (GUI.couplingModeActive) {
+			// append to main canvas
+			var rep = object.getRepresentation();
+			$(rep).appendTo('#canvas');
+
+			// if object is in the right room adjust x coordinate on main canvas
+			if (ObjectManager.getIndexOfObject(object.getId()) != 'left') {
+				object.setViewX(object.getViewX() + parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right'));
+				object.setViewY(object.getViewY() + GUI.getPanY('right'));
+			} else {
+				object.setViewX(object.getViewX() + GUI.getPanX('left'));
+				object.setViewY(object.getViewY() + GUI.getPanY('left'));
+			}
+		}
 	});
 
 	self.moving = true;
@@ -888,7 +929,10 @@ GeneralObject.moveStart = function(event) {
 	self.hideControls();
 	
 	var move = function(event) {
-
+        $("body").trigger({
+            type : "moveObject.wa",
+            objectId : self.id
+        });
 		if (GUI.isTouchDevice && event.touches.length > 1) return;
 
 		if (!self.moving) return;
@@ -898,7 +942,7 @@ GeneralObject.moveStart = function(event) {
 		
 		self.moved = true;
 		
-		if (event.pageX) {
+		if (!GUI.isTouchDevice) {
 			/* mouse */
 			var dx = event.pageX-self.moveStartMouseX;
 			var dy = event.pageY-self.moveStartMouseY;
@@ -917,13 +961,120 @@ GeneralObject.moveStart = function(event) {
 	
 	var end = function(event) {
 
+        $("body").trigger({
+            type : "moveend.wa",
+            objectId : self.id
+        })
+		var cut = !(event.ctrlKey || event.metaKey);
+
+		var movedBetweenRooms = false;
+
+		var rep = self.getRepresentation();
+		if (GUI.couplingModeActive) {
+			// coupling mode is switched on, determine if elements were moved between rooms
+			if (parseInt($('#room_right_wrapper').attr('x')) < event.clientX) {
+				GUI.defaultZoomPanState('right', false);
+				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
+					// moved from the left room to the right
+					if (ObjectManager.getRoomID('right') != false) {
+						$.each(ObjectManager.getSelected(), function(index, object) {
+							var newX = object.getViewX() - $('#room_right_wrapper').attr('x') - GUI.getPanX('right');
+							if (newX < 0) newX = 0;
+							var newY = object.getViewY() - GUI.getPanY('right');
+
+							object.setViewX(newX);
+							object.setViewY(newY);
+
+							if (cut) {
+								$(object.getRepresentation()).appendTo('#room_right');
+							}
+						});
+
+						GUI.startNoAnimationTimer();
+						ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('left'), ObjectManager.getRoomID('right'), cut);
+
+						if (!cut) {
+							$.each(ObjectManager.getSelected(), function(index, object) {
+								object.setViewX(object.moveObjectStartX);
+								object.setViewY(object.moveObjectStartY);
+
+								$(object.getRepresentation()).appendTo('#room_left');
+							});
+						}
+
+						movedBetweenRooms = true;
+					} else {
+						$.each(ObjectManager.getSelected(), function(index, object) {
+							object.setViewX(object.moveObjectStartX);
+							object.setViewY(object.moveObjectStartY);
+
+							$(object.getRepresentation()).appendTo('#room_left');
+						});
+						alert(GUI.translate('No room loaded.'));
+					}
+				} else {
+					$.each(ObjectManager.getSelected(), function(index, object) {
+						if (object.getViewX() > parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right')) {
+							object.setViewX(object.getViewX() - parseInt($('#room_right_wrapper').attr('x')) - GUI.getPanX('right'));
+						} else {
+							object.setViewX(0);
+						}
+						object.setViewY(object.getViewY() - GUI.getPanY('right'));
+						$(object.getRepresentation()).appendTo('#room_right');
+
+						object.moveHandler();
+					});
+					GUI.updateLayers();
+				}
+			} else {
+				GUI.defaultZoomPanState('left', false);
+				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'right') {
+					// moved from the right room to the left
+					$.each(ObjectManager.getSelected(), function(index, object) {
+						object.setViewX(object.getViewX() - GUI.getPanX('left'));
+						object.setViewY(object.getViewY() - GUI.getPanY('left'));
+
+						if (cut) {
+							$(object.getRepresentation()).appendTo('#room_left');
+						}
+					});
+
+					GUI.startNoAnimationTimer();
+					ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('right'), ObjectManager.getRoomID('left'), cut);
+
+					if (!cut) {
+						$.each(ObjectManager.getSelected(), function(index, object) {
+							object.setViewX(object.moveObjectStartX);
+							object.setViewY(object.moveObjectStartY);
+
+							$(object.getRepresentation()).appendTo('#room_right');
+						});
+					}
+
+					movedBetweenRooms = true;
+				} else {
+					$.each(ObjectManager.getSelected(), function(index, object) {
+						$(object.getRepresentation()).appendTo('#room_left');
+
+						object.setViewX(object.getViewX() - GUI.getPanX('left'));
+						object.setViewY(object.getViewY() - GUI.getPanY('left'));
+
+						object.moveHandler();
+					});
+					GUI.updateLayers();
+				}
+			}
+		}
+
 		event.preventDefault();
 		event.stopPropagation();
 		
 		self.moving = false;
 		
-		self.showControls();
-		self.adjustControls();
+		if (!movedBetweenRooms) {
+			self.showControls();
+			self.adjustControls();
+		}
 		
 		GUI.showLinks(self);
 		
@@ -992,14 +1143,16 @@ GeneralObject.makeMovable = function() {
  * @param {int} dy Moved x distance
  */
 GeneralObject.moveRelative = function(dx, dy) {
-
 	if (this.getAttribute("locked")) return;
 
 	this.setViewX(this.moveObjectStartX+dx);
 	this.setViewY(this.moveObjectStartY+dy);
-	
+
 	this.adjustControls();
-	this.moveHandler();
+
+	if (!GUI.couplingModeActive) {
+		this.moveHandler();
+	}
 	
 }
 
@@ -1376,6 +1529,16 @@ GeneralObject.selectedClickHandler = function(event) {
 
 		var x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()/2;
 		var y = this.getViewBoundingBoxY();
+
+		if (GUI.couplingModeActive) {
+			var index = ObjectManager.getIndexOfObject(this.getId());
+			if (index === 'right') {
+				x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
+			} else {
+				x += GUI.getPanX(index);
+			}
+			y += GUI.getPanY(index);
+		}
 
 		GUI.showActionsheet(x, y, this);
 	

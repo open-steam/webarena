@@ -26,25 +26,16 @@ Dispatcher.call=function(socket,message){
 	
 	if (calls[type]){
 		process.nextTick(function(){ 
-			
-		  /*try {*/
-			 
-			//provide callFunction with the responseID (for asynchronous responding)
-		  	var response=calls[type](socket,data,responseID); 		// this is still blocking, swtich to callbacks if necessary
-		  /*	
-		  } catch (e) {
-		  	console.log('ERROR: Function for '+type,e);
-		  	SocketServer.sendToSocket(socket,'error','ERROR: Function for '+type);
-		  }
-		  */
-		  
-		  /**
-		  *	Clients can provide a unique responseID when calling a function on the server. If the
-		  *	function called has a result other than undefined and a responseID is given, the response
-		  *	is sent back to the client (including the responseID)
-		  */
-		  
-		  if (responseID!==undefined && response!==undefined) Modules.Dispatcher.respond(socket,responseID,response);
+
+			var response=calls[type](socket,data,responseID); 		//TODO: this is still blocking, swtich to callbacks if necessary
+
+			//TODO: Fire an event
+				/**
+				*	Clients can provide a unique responseID when calling a function on the server. If the
+				*	function called has a result other than undefined and a responseID is given, the response
+				*	is sent back to the client (including the responseID)
+				*/
+				if (responseID!==undefined && response!==undefined) Modules.Dispatcher.respond(socket,responseID,response);
 		});
 	} else {
 		console.log('ERROR: No function for '+type);
@@ -68,5 +59,84 @@ Dispatcher.registerCall=function(type,callFunction){
 Dispatcher.init=function(theModules){
 	Modules=theModules;
 }
+
+Dispatcher.registerCall('deleteObject', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ObjectManager.deleteObject(data, context, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('createObject', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ObjectController.createObject(data, context, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('roomlist' , function(socket, data, responseID){
+	Modules.RoomController.listRooms(resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('getPreviewableMimeTypes', function (socket, data, responseID) {
+	Dispatcher.respond(socket, responseID, Modules.Connector.getInlinePreviewMimeTypes());
+});
+
+Dispatcher.registerCall('memoryUsage', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ServerController.getMemoryUsage(data, context, resultCallbackWrapper(socket, responseID));
+});
+
+//Information are sent to all clients in the same room
+Dispatcher.registerCall('inform', function (socket, data, responseID) {
+	Modules.RoomController.informAllInRoom(data, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
+	Modules.ServerController.bugreport(data, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('undo', function(socket, data, responseID){
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+    Modules.ObjectManager.undo( data, context, infoCallbackWrapper(socket)  );
+});
+
+Dispatcher.registerCall('duplicateObjects', function(socket, data, responseID){
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ObjectManager.duplicateNew(data, context, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
+});
+
+/**
+ * Creates a callback function that sends the result as an info message to the client.
+ *
+ * @param socket
+ * @returns {Function}
+ */
+function infoCallbackWrapper(socket){
+	return function(err, message){
+		if(err) Modules.SocketServer.sendToSocket(socket, 'error', err.message);
+		else Modules.SocketServer.sendToSocket(socket, 'infotext', message);
+	};
+}
+
+/**
+ * Creates a callback function that sends the result message to the client.
+ *
+ * @param socket
+ * @param responseID
+ * @returns {Function}
+ */
+function resultCallbackWrapper(socket, responseID){
+	return function(err, data){
+		if(err){
+			Modules.SocketServer.sendToSocket(socket, 'error', err.message);
+		} else {
+			Modules.Dispatcher.respond(socket, responseID, data);
+		}
+	}
+}
+
+
 
 module.exports=Dispatcher;

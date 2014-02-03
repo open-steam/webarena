@@ -12,7 +12,7 @@ var Highlighter=Object.create(Modules.ObjectManager.getPrototype('Paint'));
 
 
 Highlighter.register('Highlighter');
-Highlighter.isCreatable=true;
+Highlighter.isCreatable=false;
 
 Highlighter.category='Highlighters';
 

@@ -71,8 +71,6 @@ body {
 	float: left;
 }
 
-
-
 #header>div.header_right>span.header_button {
 	display: block;
 	margin-right: 20px;
@@ -553,6 +551,10 @@ input {
 	height: 100px;
 }
 
+#bug input[type=email] {
+	width: 100%;
+}
+
 .bug_success {
 	color: #4AA03F;
 }
@@ -567,7 +569,7 @@ input {
 
 .overfloating-y{
     overflow-y: auto;
-}
+}�
 
 /*   TOAST MESSAGE */
 .toast-container {
@@ -714,3 +716,67 @@ input {
     top: 50%;
 }
 /* END  TOAST MESSAGE */
+
+/* coupling */
+#header>div.header_left>span.header_button {
+	display: block;
+	margin-right: 20px;
+	background-color: #565656;
+	padding: 6px;
+	border-radius: 2px;
+	position: absolute;
+	font-size: 10px;
+	top: 8px;
+	cursor: pointer;
+	-webkit-box-shadow: inset 0px 1px 1px rgba(255, 255, 255, 0.2);
+	box-shadow: rgba(255, 255, 255, 0.2) 0px 0px 1px inset;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.couplingButton {
+	fill:  #225EA8;
+	stroke:  #0C2C84;
+ 	stroke-miterlimit:  6;
+	stroke-linecap:  round;
+}
+
+.couplingButton:hover{
+	stroke-width:  2;
+}
+
+.couplingPlusMinus {
+	fill:  #fff;
+	pointer-events: none;
+}
+/* end coupling */
+
+/* process log */
+.processlog{
+  overflow-y: scroll;
+  border: 1px solid rgba(0, 0, 0 , 0.6);
+  box-sizing: border-box;
+}
+
+.outgoing-message{
+  padding: 5px;
+  background-color: rgba(0, 200, 0 , 0.2);
+}
+
+.incoming-message{
+  padding: 5px;
+  background-color: rgba(0, 200, 0 , 0.6);
+}
+/* end process log*/
+
+svg text.font-icon{
+  font-family: FontAwesome;
+}
+
+.half-transparent{
+  opacity: 0.2;
+}
+
+.hidden{
+  display: none;
+}

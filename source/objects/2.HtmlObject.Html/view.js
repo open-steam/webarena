@@ -40,9 +40,9 @@ HtmlObject.updateContent = function() {
 }
 
 
-HtmlObject.createRepresentation = function() {
+HtmlObject.createRepresentation = function(parent) {
 	
-	var rep = GUI.svg.other("foreignObject");
+	var rep = GUI.svg.other(parent,"foreignObject");
 
 	rep.dataObject=this;
 	
