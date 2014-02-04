@@ -881,28 +881,11 @@ GUI.editPaint = function() {
 			canvasContext.lineCap = "round";
 			canvasContext.beginPath();
 		
-			if (GUI.isTouchDevice) {
-				/* touch */
-				GUI.paintMove(x, y);
-				GUI.paintPaint(x, y);
-				GUI.paintPaint(x+1, y);
-			} else {
-				/* click */
-				GUI.paintMove(x, y);
-				GUI.paintPaint(x, y);
-				GUI.paintPaint(x+1, y);
-			}
-
+			GUI.paintMove(x, y);
+			GUI.paintPaint(x, y);
+			GUI.paintPaint(x+1, y);
 		} else {
-			
-			if (GUI.isTouchDevice) {
-				/* touch */
-				GUI.paintErase(x, y);
-			} else {
-				/* click */
-				GUI.paintErase(x, y);
-			}
-			
+			GUI.paintErase(x, y);
 		}
 
 		var move = function(event) {
