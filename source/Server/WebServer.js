@@ -279,15 +279,27 @@ WebServer.init = function (theModules) {
 				var mimeType = 'image/png';
 				
 				if(Modules.Connector.getPaintingStream !== undefined){
+					
+
 					var objStream = Modules.Connector.getPaintingStream(roomID, user, context);
-					objStream.pipe(res);
-					objStream.on("end", function(){
-						res.writeHead(200, {
-							'Content-Type': mimeType,
-							'Content-Disposition': 'inline; filename="' + user + '.png"'
-						});
+					
+					if ( objStream == undefined )
+					{
+						res.writeHead(404, {"Content-Type": "text/plain"});
+						res.write("404 Image not found");
 						res.end();
-					})
+					}
+					else
+					{
+						objStream.pipe(res);
+						objStream.on("end", function(){
+							res.writeHead(200, {
+								'Content-Type': mimeType,
+								'Content-Disposition': 'inline; filename="' + user + '.png"'
+							});
+							res.end();
+						})
+					}
 				} else {
 					res.writeHead(200, {
 							'Content-Type':'text/plain'
