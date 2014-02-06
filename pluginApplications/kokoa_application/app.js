@@ -48,6 +48,9 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
                         toTransfrom = item.getAttribute("source");
                     } else if(item.getType() == "ObjectTransport"){
                         toTransfrom = item.getAttribute("target");
+                    } else {
+                        //only "TunnelEndpoint" and "ObjectTransport" need transformation
+                        return;
                     }
 
                     //check if connection to overview-room
@@ -56,7 +59,7 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
                           var rewiredTarget = "Overview_Instance_Fakultaet" + faculty;
                       } else{
                           //do nothing
-                          rewiredTarget = toTransfrom;
+                          var rewiredTarget = toTransfrom;
                       }
                     }
                     //if link to faculty, we have to specify the faculty
