@@ -42,7 +42,6 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
         var transformTransportTargets = function (items) {
             if(items){
                 items.forEach(function (item) {
-                    var regex = /(^[a-zA-Z0-9]+)_/;
                     var toTransfrom;
 
                     if(item.getType() == "TunnelEndpoint"){
@@ -51,15 +50,22 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
                         toTransfrom = item.getAttribute("target");
                     }
 
-                    var match = regex.exec( toTransfrom ) ;
-
-                    //links to overview rooms don't need to be rewired
-                    if(match[1] == "Overview") return;
-
-                    if(match[1] == "Fakultaet"){
+                    //check if connection to overview-room
+                    if(toTransfrom.indexOf("Overview") !== -1){
+                      if(toTransfrom.indexOf("Fakultaet")!== -1){
+                          var rewiredTarget = "Overview_Instance_Fakultaet" + faculty;
+                      } else{
+                          //do nothing
+                          rewiredTarget = toTransfrom;
+                      }
+                    }
+                    //if link to faculty, we have to specify the faculty
+                    else if(toTransfrom == "Fakultaet"){
                         var rewiredTarget = "Fakultaet" + faculty + that.proceedingRoomInstanceInfix + proceedingID;
-                    } else {
-                        var rewiredTarget = match[1] + that.proceedingRoomInstanceInfix + proceedingID;
+                    }
+                    //e.g. Dezernat1 -> Dezernat1_Berunfungsverfahren_SOMEID
+                    else {
+                        var rewiredTarget = toTransfrom + that.proceedingRoomInstanceInfix + proceedingID;
                     }
 
 
