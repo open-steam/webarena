@@ -17,7 +17,8 @@ var VerwaltungsApp = {
 };
 
 
-var ContextObject = config.application_context_user;
+var ContextObject = {};
+ContextObject.user = config.application_context_user;
 
 
 /**
