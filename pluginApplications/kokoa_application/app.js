@@ -80,7 +80,7 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
         //send command to copy the room
         var groupId = new Date().getTime();
 
-        that.eventBus.emit("copyRoom", {
+        var copyEventData = {
             fromRoom: part + that.proceedingRoomTemplateSuffix,
             toRoom: part + that.proceedingRoomInstanceInfix + instanceId,
             parentRoom: that.overviewRoomInstancePrefix + part,
@@ -89,7 +89,14 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
                 rewireObjectTransports( part + that.proceedingRoomInstanceInfix + instanceId , instanceId );
             },
             context: ContextObject
-        });
+        }
+
+        //All faculties share the same template-room
+        if(part.indexOf("Fakultaet") !== -1 ){
+            copyEventData.fromRoom = "Fakultaet" + that.proceedingRoomTemplateSuffix;
+        }
+
+        that.eventBus.emit("copyRoom", copyEventData);
 
         var objectDefaults = {
             roomID: that.overviewRoomInstancePrefix + part,
@@ -183,8 +190,7 @@ VerwaltungsApp.initTemplates = function () {
     var proceedingRoomTemplateSuffix = that.proceedingRoomTemplateSuffix;
 
     //all faculties + Dezernat 1/4
-    var participants = this.getFacultiesWithPrefix();
-    participants = participants.concat(["Dezernat1", "Dezernat4"]);
+    var participants = ["Dezernat1", "Dezernat4", "Fakultaet"];
     var proceedingRoomTemplates = participants.map(function (participant) {
         return participant + proceedingRoomTemplateSuffix;
     });
