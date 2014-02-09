@@ -53,12 +53,12 @@ StatusLight.execute = function(){
             dialog_buttons
         );
 
-        $(dialog).find(".datepicker-trigger").datepicker({
-            "dateFormat" : "d.m.yy",
-            onSelect : function(e){
-                changedDate  = moment(e, "D.M.YYYY")._d.getTime();
-            }
-        });
+//        $(dialog).find(".datepicker-trigger").datepicker({
+//            "dateFormat" : "d.m.yy",
+//            onSelect : function(e){
+//                changedDate  = moment(e, "D.M.YYYY")._d.getTime();
+//            }
+//        });
 
         ($($(dialog).find("input[type=checkbox]")[firstNotDoneIndex])).change(function(e){
             newStatus = e.target.checked ;
