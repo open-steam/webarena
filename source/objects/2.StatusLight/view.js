@@ -53,6 +53,11 @@ StatusLight.execute = function(){
             dialog_buttons
         );
 
+        $(dialog).find(".datepicker-trigger").onChange(function(){
+            var value = this.value;
+            changedDate  = moment(value, "D.M.YYYY")._d.getTime();
+        });
+
 //        $(dialog).find(".datepicker-trigger").datepicker({
 //            "dateFormat" : "d.m.yy",
 //            onSelect : function(e){
