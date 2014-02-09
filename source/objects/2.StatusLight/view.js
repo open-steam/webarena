@@ -53,8 +53,8 @@ StatusLight.execute = function(){
             dialog_buttons
         );
 
-        $(dialog).find(".datepicker-trigger").onChange(function(){
-            var value = this.value;
+        $(dialog).find(".datepicker-trigger").change(function(){
+            var value = this.val();
             changedDate  = moment(value, "D.M.YYYY")._d.getTime();
         });
 
