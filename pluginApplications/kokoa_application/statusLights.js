@@ -104,9 +104,9 @@ StatusLights.getCurrentMileStoneStatus = function(){
         name : firstNotDone.name
     };
 
-    if(timeTogo < 0){
+    if(timeTogo < 14){
         result.status = "red"
-    } else if(timeTogo < 7){
+    } else if(timeTogo < 30){
         result.status = "yellow"
     } else {
         result.status = "green"
