@@ -184,6 +184,37 @@ GUI.getSvgMarkerId = function(type, color, up) {
 	
 }
 
+GUI.initSVGMobilePhone = function() {
+	// initialize svg canvas
+	$("#objectview").svg({settings: {width: '0px', height: '0px'}});
+	var canvas = $("#objectview svg");
+	$(canvas).attr('id', 'canvas');
+
+	var objectViewSVG = $("#objectview").svg('get');
+	GUI.mobileSVG = objectViewSVG;
+	GUI.mobileSVGDefs = objectViewSVG.defs();
+
+	/*
+	// initialize two nested svgs for concurrent view of two rooms
+	var room_left_wrapper = contentSVG.svg();
+	$(room_left_wrapper).attr('id', 'room_left_wrapper');
+	var room_left = contentSVG.group(room_left_wrapper);
+	$(room_left).attr('id', 'room_left');
+	var room_right_wrapper = contentSVG.svg();
+	$(room_right_wrapper).attr('id', 'room_right_wrapper');
+	var room_right = contentSVG.group(room_right_wrapper);
+	$(room_right).attr('id', 'room_right');
+
+	$("#content").droppable({
+		accept: ".toolbar_draggable",
+		drop: function( event, ui ) {
+			$(ui.helper).hide();
+			ui.helper[0].callback(ui.offset.left, ui.offset.top);
+		}
+	});
+	*/
+}
+
 
 
 

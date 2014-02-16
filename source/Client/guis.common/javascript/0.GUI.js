@@ -47,6 +47,20 @@ GUI.translate=function(text){
 GUI.isTouchDevice = false;
 
 
+/**
+ * Variable indicates the type of gui which is currently used.
+ * Default value is 'desktop'.
+ */
+GUI.guiType = 'desktop';
+
+
+$(function() {
+    var userAgent = navigator.userAgent;
+    if (userAgent.indexOf('iPhone') > 0) {
+      GUI.guiType = 'mobilephone';
+    }
+});
+
 
 /**
  * @deprecated still needed?

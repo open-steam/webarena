@@ -8,6 +8,29 @@ body {
 
 
 #header {
+	margin: 0px;
+	padding: 0px;
+	height: 33px;
+	width: auto;
+	background: -moz-linear-gradient(
+		center top,
+		#3E3E3E 0%,
+		#1E1E1E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #3E3E3E),
+		color-stop(1, #1E1E1E)
+		);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+	/*text-align: center;*/
+	/*color: #AEAEAE;*/
+	/*font-size: 14px;*/
+	/*cursor: pointer;*/
+	/* old */
+	/*
 	z-index: 11001;
 	height: 33px;
 	position: fixed;
@@ -30,6 +53,7 @@ body {
 	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
 	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
 	border-right: 1px solid #000000;
+	*/
 }
 
 #header img {
@@ -122,7 +146,7 @@ body {
 
 #objectlist {
 	z-index: 11002;
-	width: 230px;
+	width: auto;
 	margin: 0px auto;
 	padding: 0px;
 	position: absolute;
@@ -133,8 +157,8 @@ body {
 }
 
 #objectview {
-	z-index: 11002;
-	width: 230px;
+	/*z-index: 11002;*/
+	width: auto;
 	margin: 0px auto;
 	padding: 0px;
 	position: absolute;
@@ -143,6 +167,8 @@ body {
 	right: 0px;
 	background-color: #DDE0E5;
 	/*border: 1px solid #000000;*/
+	padding-top: 33px;
+	padding-bottom: 33px;
 }
 
 #objectlist>div.category
@@ -154,11 +180,143 @@ body {
 		top,
 		#3E3E3E 0%,
 		#1E1E1E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #3E3E3E),
+		color-stop(1, #1E1E1E)
+		);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
 	border-top: 1px solid #AEAEAE;
 	text-align: center;
 	color: #AEAEAE;
 	font-size: 14px;
 	cursor: pointer;
+}
+
+#objectview>div.header {
+	margin: 0px;
+	padding: 0px;
+	height: 48px;
+	background: -moz-linear-gradient(
+		top,
+		#3E3E3E 0%,
+		#1E1E1E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #3E3E3E),
+		color-stop(1, #1E1E1E)
+		);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+	border-top: 1px solid #AEAEAE;
+	text-align: center;
+	color: #AEAEAE;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.header
+{
+	z-index: 9999;
+	width: 100%;
+	height: 33px;
+	line-height: 33px;
+	position: fixed;
+	top: 0px;
+	vertical-align: middle;
+	text-align: center;
+	color: #AEAEAE;
+	font-size: 14px;
+	border-radius: 5px;
+	
+	background: -moz-linear-gradient(
+		top,
+		#3E3E3E 0%,
+		#1E1E1E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #3E3E3E),
+		color-stop(1, #1E1E1E)
+		);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+}
+
+.table
+{
+	margin: 0px;
+	padding: 0px;
+	width: 100%;
+	border-top: 1px solid #AEAEAE;
+	/*border-collapse: collapse;*/
+}
+
+.row
+{
+	margin: 0px;
+	padding: 0px;
+}
+
+.leftCell
+{
+	margin: 10px;
+	padding: 10px;
+}
+
+.rightCell
+{
+	margin: 10px;
+	padding: 10px;
+	background-color: #AEAEAE;
+	border: 1px solid #AEAEAE;
+	border-radius: 5px;
+}
+
+.closeButton
+{
+	width: 100%;
+	height: 33px;
+	line-height: 33px;
+	position: fixed;
+	bottom: 0px;
+	vertical-align: middle;
+	text-align: center;
+	color: #AEAEAE;
+	cursor: pointer;
+	border-radius: 5px;
+	
+	background: -moz-linear-gradient(
+		top,
+		#3E3E3E 0%,
+		#1E1E1E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #3E3E3E),
+		color-stop(1, #1E1E1E)
+		);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+}
+
+p.attribute
+{
+	margin: 0px;
+	padding-top: 15px;
+	height: 33px;
+	background-color: #DDE0E5;
+	border-top: 1px solid #AEAEAE;
+	text-align: left;
+	color: #1E1E1E;
+	font-size: 12px;
 }
 
 div.object

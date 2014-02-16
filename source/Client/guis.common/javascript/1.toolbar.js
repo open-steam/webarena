@@ -442,10 +442,262 @@ GUI.initToolbar = function() {
 
 		GUI.sidebar.openPage("inspector", inspectorButton);
 	
+	}	
+}
+
+GUI.initToolbarMobilePhone = function() {
+	/* insert icons for creating new objects: */
+	var types = {};
+	
+	/* get types of objects */
+	$.each(ObjectManager.getTypes(), function(key, object) { 
+	
+		if (object.isCreatable) {
+			
+			if (object.category == undefined) {
+				object.category = "default";
+			}
+			
+			if (types[object.category] == undefined) {
+				types[object.category] = [];
+			}
+			
+			types[object.category].push(object);
+			
+		}
+	
+	});
+	
+	var toolbar_locked_elements = {};
+	
+	/* build categories for each type */
+	$.each(types, function(key, object) { 
+	
+		var newCategoryIcon = document.createElement("img");
+		$(newCategoryIcon).attr("src", "../../guis.common/images/categories/"+object[0].category+".png").attr("alt", "");
+		$(newCategoryIcon).attr("width", "24").attr("height", "24");
+	
+		$("#header>div.header_left").append(newCategoryIcon);
+	
+		if (object.length > 1) {
+			$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
+			
+			/* add Popover */
+			$(newCategoryIcon).jPopover({
+				positionOffsetY : $("#header").height()-7,
+				onSetup : function(domEl, popover) {
+					
+					var page = popover.addPage(GUI.translate(key));
+					var section = page.addSection();
+			
+					$.each(object, function(key, object) {
+			
+						var name = object.translate(GUI.currentLanguage,object.type);
+			
+						var element = section.addElement('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" /> '+name);
+			
+						var click = function(attributes) {
+			
+							popover.hide();
+			
+							var proto = ObjectManager.getPrototype(object.type);
+							
+							if (!Modules.Config.presentationMode) {
+			
+								proto.create(attributes);
+								
+							} else {
+								alert(GUI.translate("You cannot create objects in presentation mode"));	
+							}
+							
+						}
+			
+						if (GUI.isTouchDevice) {
+							$(element.getDOM()).bind("touchstart", function() {
+								click({
+									"x" : window.pageXOffset + 40, 
+									"y" : window.pageYOffset + 40
+								}); 
+							});
+						} else {
+							$(element.getDOM()).bind("click", function() { 
+								click({
+									"x" : window.pageXOffset + 40, 
+									"y" : window.pageYOffset + 40
+								}); 
+							});
+						}
+						
+						
+						/* make draggable */
+						var helper = $('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" />');
+						helper.get(0).callback = function(offsetX,offsetY) {
+							
+							var svgpos = $("#content").offset();
+							
+							var top = offsetY-svgpos.top;
+							var left = offsetX;
+			
+							click({
+								"x" : left,
+								"y" : top
+							});
+						
+						}
+						
+						$(element.getDOM()).addClass("toolbar_draggable");
+						$(element.getDOM()).draggable({
+							revert: true,
+							distance : 20,
+							cursor: "move",
+							helper: function(event) {
+								return helper;
+							}
+						});
+			
+					});
+					
+				}
+			});
+		
+		} else {
+			
+			/* add link to icon (no Popover) */
+			
+			$(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
+			
+			var click = function(attributes) {
+			
+				if (toolbar_locked_elements[object[0].type] === true) return; //element is locked
+			
+				if (object[0].type == "Paint" || object[0].type == "Highlighter") {
+					
+					toolbar_locked_elements[object[0].type] = true;
+					
+					/* create unlock timer */
+					window.setTimeout(function() {
+						toolbar_locked_elements[object[0].type] = undefined;
+					}, 2000);
+					
+				}
+			
+				//jPopoverManager.hideAll();
+			
+				var proto = ObjectManager.getPrototype(object[0].type);
+				
+				if (!Modules.Config.presentationMode) {
+					proto.create(attributes);
+				} else {
+					alert(GUI.translate("You cannot create objects in presentation mode"));	
+				}
+				
+			}
+			
+			if (GUI.isTouchDevice) {
+				$(newCategoryIcon).bind("touchstart", function() { 
+					click({
+						"x" : window.pageXOffset + 40, 
+						"y" : window.pageYOffset + 40
+					}); 
+				});
+			} else {
+				$(newCategoryIcon).bind("click", function() {
+					click({
+						"x" : window.pageXOffset + 40, 
+						"y" : window.pageYOffset + 40
+					}); 
+				});
+			}
+			
+			/* All objects (except for Paint and Highlighter) can be created by dragging them to the svg area */
+			if (object[0].type != "Paint" && object[0].type != "Highlighter") {
+				
+				/* make draggable */
+				var helper = $('<img src="../../guis.common/images/categories/'+object[0].category+'.png" alt="" width="24" height="24" />');
+				helper.get(0).callback = function(offsetX,offsetY) {
+			
+					var svgpos = $("#content").offset();
+			
+					var top = offsetY-svgpos.top;
+					var left = offsetX;
+			
+					click({
+						"x" : left,
+						"y" : top
+					});
+			
+				}
+			
+				$(newCategoryIcon).addClass("toolbar_draggable");
+				$(newCategoryIcon).draggable({
+					revert: true,
+					distance : 20,
+					cursor: "move",
+					helper: function(event) {
+						return helper;
+					}
+				});
+				
+			}
+			
+		
+		}
+		
+		var effect = function() {
+			$(this).animate({ opacity: 1 }, 500, function() {
+				$(this).animate({ opacity: 0.6 }, 500);
+			});
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(newCategoryIcon).bind("touchstart", effect);
+		} else {
+			$(newCategoryIcon).bind("mousedown", effect);
+		}
+	
+	});
+	
+	/*add parent button*/
+	var parentButton = document.createElement("img");
+	$(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
+	$(parentButton).attr("width", "24").attr("height", "24");
+	
+	$(parentButton).attr("id", "bug_button");
+	$(parentButton).addClass("sidebar_button");
+	
+	$(parentButton).attr("title", GUI.translate("Home"));
+	
+	$("#header > .header_right").append(parentButton);
+	
+	var click = function() {
+		Modules.ObjectManager.goParent();
 	}
 	
-
+	if (GUI.isTouchDevice) {
+		$(parentButton).bind("touchstart", click);
+	} else {
+		$(parentButton).bind("mousedown", click);
+	}
 	
+	/*add home button*/
+	var homeButton = document.createElement("img");
+	$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
+	$(homeButton).attr("width", "24").attr("height", "24");
 	
+	$(homeButton).attr("id", "bug_button");
+	$(homeButton).addClass("sidebar_button");
 	
+	$(homeButton).attr("title", GUI.translate("Home"));
+	
+	$("#header > .header_right").append(homeButton);
+	
+	var click = function() {
+		Modules.ObjectManager.goHome();
+	}
+	
+	if (GUI.isTouchDevice) {
+		$(homeButton).bind("touchstart", click);
+	} else {
+		$(homeButton).bind("mousedown", click);
+	}
 }

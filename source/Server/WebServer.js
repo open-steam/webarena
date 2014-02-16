@@ -15,6 +15,8 @@ var mime = require('mime');
 mime.default_type = 'text/plain';
 var Q = require('q');
 
+WebServer.userGUI = 'desktop';
+
 /*
  *	init
  *
@@ -43,6 +45,10 @@ WebServer.init = function (theModules) {
 			res.end(data);
 			return;
 		}
+		
+		if (agent && agent.indexOf('iPhone') > 0) {
+			this.userGUI = 'mobilephone';
+		}
 
 		/* get userHash */
 		var userHashIndex = url.indexOf("/___");
@@ -70,8 +76,13 @@ WebServer.init = function (theModules) {
 
 				var roomId = url.substr(6);
 
-				// var indexFilename = '/../Client/guis/desktop/index.html';
-				var indexFilename = '/../Client/guis/mobilephone/index.html';
+				/* Get the most suitable index file in dependency to the given user agent. */
+				var indexFilename = '';
+				if (this.userGUI == 'mobilephone') {
+					indexFilename = '/../Client/guis/mobilephone/index.html';
+				} else {
+					indexFilename = '/../Client/guis/desktop/index.html';
+				}
 
 				fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
 

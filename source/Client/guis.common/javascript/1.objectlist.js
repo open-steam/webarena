@@ -11,7 +11,7 @@ GUI.initObjectList = function() {
         types[type.category] = true;
         
         var categoryID = type.category.replace(/\s/g, "");
-        var typeText = document.createTextNode(type.category);
+        var typeText = document.createTextNode(GUI.translate(type.category));
         var typeElement = document.createElement("p");
         var typeDiv = document.createElement("div");
         typeDiv.setAttribute("id", categoryID);
@@ -31,7 +31,6 @@ GUI.initObjectList = function() {
                 var objectText = document.createTextNode(object.getName());
                 var objectElement = document.createElement("p");
                 var objectDiv = document.createElement("div");
-                //objectDiv.setAttribute("id", object.getId());
                 objectElement.appendChild(objectText);
                 objectDiv.appendChild(objectElement);
                 $(objectDiv).addClass("object");
@@ -39,27 +38,46 @@ GUI.initObjectList = function() {
                 $("#" + categoryID + "Container").append(objectDiv);
                 
                 $(objectDiv).bind("click", function() {
+                    var attrHeader = document.createElement("div");
                     var objectPresenter = document.createElement("div");
+                    var attrTable = GUI.buildAttributeTable(object);
+                    objectPresenter.appendChild(attrTable);
                     
-                    $.each(object.getAttributes(), function(key, attr) {
-                        if (!attr.readonly) {
-                            var attrName = document.createTextNode(attr.description + ": " + attr.value);
-                            var attrElement = document.createElement("p");
-                            attrElement.appendChild(attrName);
-                            objectPresenter.appendChild(attrElement);
-                        }
-                    });
+                    $("#objectview").prepend(document.createElement("div").appendChild(attrHeader));
+                    
+                    $("#objectview > svg").css("width", $(window).width());
+                    var rep = object.getRepresentation();
+                    var offset = 10;
+                    rep.setAttribute("x", ($(window).width())/2 - (rep.getAttribute("width"))/2);
+                    rep.setAttribute("y", offset);
+                    $("#objectview > svg").css("height", parseInt(rep.getAttribute("height")) + 2 * offset);
                     
                     $("#objectview").append(objectPresenter);
                     
-                    $("#objectview").bind("click", function() {
-                        $("#objectview").slideUp("slow");
+                    var header = document.createElement("div");
+                    var objectName = document.createTextNode(object.getName());
+                    header.appendChild(objectName);
+                    $(header).addClass("header");
+                    
+                    $("body").prepend(header);
+                    
+                    var closeButton = document.createElement("div");
+                    var buttonText = document.createTextNode("Ansicht schliessen");
+                    closeButton.appendChild(buttonText);
+                    $(closeButton).addClass("closeButton");
+                    
+                    $("body").append(closeButton);
+                    
+                    $(closeButton).bind("click", function() {
+                        $("#objectview").fadeOut("slow");
                         $("#objectlist").fadeIn("slow");
                         $(objectPresenter).remove();
+                        $(header).remove();
+                        $(closeButton).remove();
                     });
                     
                     $("#objectlist").fadeOut("slow");
-                    $("#objectview").slideDown("slow");
+                    $("#objectview").fadeIn("slow");
                 });
             }
         });
@@ -67,5 +85,35 @@ GUI.initObjectList = function() {
         $(typeDiv).bind("click", function() {
             $("#" + categoryID + "Container").slideToggle();
         });
+        
+        $("#" + categoryID + "Container").slideUp();
     });
+}
+
+GUI.buildAttributeTable = function(object) {
+    var table = document.createElement("table");
+    $(table).addClass("table");
+    
+    $.each(object.getAttributes(), function(key, attr) {
+        if (attr.description == "name") {
+            return true;
+        }
+        
+        var attrDesc = document.createTextNode(object.translate(GUI.currentLanguage, attr.description));
+        var attrVal = document.createTextNode(attr.value);
+        var leftCell = document.createElement("td");
+        $(leftCell).addClass("leftCell");
+        var rightCell = document.createElement("td");
+        $(rightCell).addClass("rightCell");
+        var row = document.createElement("tr");
+        $(row).addClass("row");
+        
+        leftCell.appendChild(attrDesc);
+        rightCell.appendChild(attrVal);
+        row.appendChild(leftCell);
+        row.appendChild(rightCell);
+        table.appendChild(row);
+    });
+    
+    return table;
 }

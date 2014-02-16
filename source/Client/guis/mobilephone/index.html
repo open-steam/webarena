@@ -12,11 +12,11 @@
 
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 
-	<script src="/socket.io/socket.io.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
-	<!--
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+	<!--
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jsTree/jquery.jstree.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.toastmessage.js"></script>
 	-->
@@ -37,12 +37,10 @@
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.scrollTo.min.js"></script>
 	-->
 
-	<!--
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
-	-->
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
@@ -119,8 +117,8 @@
 	
 
 	<!-- <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jDesktopInspector.js"></script>
-	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" />
-	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" /> -->
+	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" /> -->
+	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
 
     <script type="text/javascript" src="/guis/mobilephone/main.js"></script>
 	<script>
@@ -173,10 +171,19 @@
 
 	<!-- <div id="couplingNavigation"></div> -->
 	
-	<!--<div id="content"></div>-->
+	<div id="content"></div>
 	
 	<!-- For representation on mobile phones. -->
-	<div id="objectlist"></div>
+	<div id="header">
+			<div class="header_left"></div>
+			<div class="header_right"></div>
+		</div>
+	<div id="objectlist">
+		<div id="header">
+			<div class="header_left"></div>
+			<div class="header_right"></div>
+		</div>
+	</div>
 	<div id="objectview"></div>
 	
 	<!--
