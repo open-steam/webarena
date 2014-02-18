@@ -14,6 +14,14 @@ GUI.editValueTable = function(webarenaObject) {
 		$(yValues).append(valueY);
 	}
 	
+	var addValuePair = $('<input type="button" name="newValuePair" value="Neuer Eintrag" />');
+	$(addValuePair).bind("click", function() {
+		content.points.push([0, 0]);
+		
+		webarenaObject.setContent(JSON.stringify(content));
+	});
+	
+	$(dom).append(addValuePair);
 	$(dom).append(xValues);
 	$(dom).append(yValues);
 	
@@ -29,17 +37,6 @@ GUI.editValueTable = function(webarenaObject) {
 			
 			webarenaObject.setContent(JSON.stringify(content));
 		}
-		/*
-		if (multiLine) {
-			var value = $(domContent).find("textarea").val();
-			if (webarenaObject.intelligentRename) webarenaObject.intelligentRename(value);
-			webarenaObject.setContent(value);
-		} else {
-			var value = $(domContent).find("input").val();
-			if (webarenaObject.intelligentRename) webarenaObject.intelligentRename(value);
-			webarenaObject.setContent(value);
-		}
-		*/
 	};
 	
 	GUI.dialog("Edit value table", dom, buttons)

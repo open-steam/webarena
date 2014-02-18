@@ -30,15 +30,17 @@ Plotter.moveByTransform = function() {
 	return true;
 }
 
+Plotter.contentURLOnly = false;
+
 Plotter.content = JSON.stringify({
 	xAxis: {
 		scale: {
 			min: 0,
-			max: 200
+			max: 100
 		},
 		ticks: {
-			major: 20,
-			minor: 5
+			major: 10,
+			minor: 0
 		}
 	},
 	yAxis: {
@@ -48,10 +50,10 @@ Plotter.content = JSON.stringify({
 		},
 		ticks: {
 			major: 10,
-			minor: 5
+			minor: 0
 		}
 	},
-	points: [[0,0],[50,100],[100,0],[150,100]]
+	points: [[0,0],[25,75],[50,25],[100,50]]
 });
 
 Plotter.justCreated=function(){

@@ -48,6 +48,8 @@ WebServer.init = function (theModules) {
 		
 		if (agent && agent.indexOf('iPhone') > 0) {
 			this.userGUI = 'mobilephone';
+		} else {
+			this.userGUI = 'desktop';
 		}
 
 		/* get userHash */

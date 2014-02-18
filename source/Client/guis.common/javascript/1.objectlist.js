@@ -44,13 +44,18 @@ GUI.initObjectList = function() {
                     objectPresenter.appendChild(attrTable);
                     
                     $("#objectview").prepend(document.createElement("div").appendChild(attrHeader));
-                    
                     $("#objectview > svg").css("width", $(window).width());
                     var rep = object.getRepresentation();
                     var offset = 10;
-                    rep.setAttribute("x", ($(window).width())/2 - (rep.getAttribute("width"))/2);
-                    rep.setAttribute("y", offset);
-                    $("#objectview > svg").css("height", parseInt(rep.getAttribute("height")) + 2 * offset);
+                    var x = ($(window).width())/2 - (parseFloat($(rep).attr("width")))/2;
+                    var y = offset;
+                    var group = GUI.mobileSVG.group();
+                    $(group).attr("x", x);
+                    $(group).attr("y", y);
+                    $("#objectview > svg").css("height", parseFloat($(rep).attr("height")) + 2 * offset);
+                    $(group).attr("transform", "translate(" + x + "," + y + ")");
+                    $(group).append($(rep).children())
+                    $("#objectview > svg").append(group);
                     
                     $("#objectview").append(objectPresenter);
                     
@@ -74,6 +79,7 @@ GUI.initObjectList = function() {
                         $(objectPresenter).remove();
                         $(header).remove();
                         $(closeButton).remove();
+                        $("#objectview > svg").remove(group);
                     });
                     
                     $("#objectlist").fadeOut("slow");
