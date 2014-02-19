@@ -12,5 +12,9 @@ var Config={
 	language:'de',
 	presentationMode:false,
 	couplingMode:true,
+	paintIcon:true,
+	chatIcon:true,
+	bugreportIcon:true,
+	showSidebarbydefault:false,
 	bidURL:''
 };
