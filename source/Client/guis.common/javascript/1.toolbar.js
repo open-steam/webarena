@@ -447,8 +447,7 @@ GUI.initToolbar = function() {
 		GUI.sidebar.openPage("inspector", inspectorButton);
 		
 		if (!Modules.Config.showSidebarbydefault){
-			console.log('testetst' + Modules.Config.showSidebarbydefault);
-			GUI.sidebar.closeSidebar(true);
+			GUI.sidebar.closeSidebar(false);
 		}
 
 	}

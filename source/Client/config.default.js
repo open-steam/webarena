@@ -15,6 +15,6 @@ var Config={
 	paintIcon:true,
 	chatIcon:true,
 	bugreportIcon:true,
-	showSidebarbydefault:false,
+	showSidebarbydefault:true,
 	bidURL:''
 };
