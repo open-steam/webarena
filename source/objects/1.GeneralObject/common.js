@@ -27,6 +27,9 @@ GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
 GeneralObject.alwaysOnTop = function() {return false;};
+GeneralObject.onMobile = false;
+GeneralObject.hasMobileRep = false;
+GeneralObject.hasEditableMobileContent = false;
 
 GeneralObject.makeSensitive=function(){
 	this.isSensitiveFlag=true;

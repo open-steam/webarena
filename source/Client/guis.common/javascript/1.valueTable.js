@@ -19,6 +19,12 @@ GUI.editValueTable = function(webarenaObject) {
 		content.points.push([0, 0]);
 		
 		webarenaObject.setContent(JSON.stringify(content));
+		content = JSON.parse(webarenaObject.content);
+		
+		var newValueX = $('<td><input type="text" name="x' + i + '" value="' + content.points[content.length-1][0] + '" /></td>');
+		var newValueY = $('<td><input type="text" name="y' + i + '" value="' + content.points[content.length-1][1] + '" /></td>');
+		$(xValues).append(newValueX);
+		$(yValues).append(newValueY);
 	});
 	
 	$(dom).append(addValuePair);

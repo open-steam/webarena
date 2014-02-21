@@ -186,6 +186,7 @@ GUI.getSvgMarkerId = function(type, color, up) {
 
 GUI.initSVGMobilePhone = function() {
 	// initialize svg canvas
+	/*
 	$("#objectview").svg({settings: {width: '0px', height: '0px'}});
 	var canvas = $("#objectview svg");
 	$(canvas).attr('id', 'canvas');
@@ -193,6 +194,7 @@ GUI.initSVGMobilePhone = function() {
 	var objectViewSVG = $("#objectview").svg('get');
 	GUI.mobileSVG = objectViewSVG;
 	GUI.mobileSVGDefs = objectViewSVG.defs();
+	*/
 
 	/*
 	// initialize two nested svgs for concurrent view of two rooms
@@ -214,6 +216,16 @@ GUI.initSVGMobilePhone = function() {
 	});
 	*/
 }
+
+$(function() {
+	$("#objectview").svg({settings: {width: $(window).width(), height: $(window).height()/2}});
+	var canvas = $("#objectview svg");
+	$(canvas).attr('id', 'canvas');
+
+	var objectViewSVG = $("#objectview").svg('get');
+	GUI.mobileSVG = objectViewSVG;
+	GUI.mobileSVGDefs = objectViewSVG.defs();
+});
 
 
 

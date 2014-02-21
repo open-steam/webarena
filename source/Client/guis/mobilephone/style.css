@@ -220,6 +220,28 @@ body {
 	cursor: pointer;
 }
 
+input.login_input {
+	border: 1px solid #DFDFE1;
+	background-color: #FFFFFF;
+	padding: 5px;
+	font-size: 12px;
+	color: #888888;
+	border-radius: 3px;
+	width: auto;
+	margin-top: 20px;
+	padding-left: 5px;
+	margin-left: 20px;
+}
+
+input.login_input:focus {
+	border: 1px solid #3684DD;
+	box-shadow: 0px 0px 3px #6CA5E7;
+	-webkit-box-shadow: 0px 0px 3px #6CA5E7;
+	-moz-box-shadow: #6CA5E7 0px 0px 3px;
+	outline: 0;
+	color: #262626;
+}
+
 .header
 {
 	z-index: 9999;

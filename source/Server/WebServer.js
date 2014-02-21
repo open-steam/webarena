@@ -46,7 +46,8 @@ WebServer.init = function (theModules) {
 			return;
 		}
 		
-		if (agent && agent.indexOf('iPhone') > 0) {
+		if (agent && agent.indexOf('iPhone') > 0 ||
+			(agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0)) {
 			this.userGUI = 'mobilephone';
 		} else {
 			this.userGUI = 'desktop';
