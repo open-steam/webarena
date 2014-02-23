@@ -167,6 +167,7 @@ File.isResizable=function(){
 
 File.register('File');
 File.isCreatable=true;
+File.onMobile = true;
 
 File.moveByTransform = function(){return true;};
 

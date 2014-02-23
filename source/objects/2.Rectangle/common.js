@@ -20,5 +20,6 @@ Rectangle.register=function(type){
 
 Rectangle.register('Rectangle');
 Rectangle.isCreatable=true;
+Rectangle.onMobile = true;
 
 module.exports=Rectangle;

@@ -49,6 +49,7 @@ Subroom.execute=function(openInNewWindow){
 
 Subroom.register('Subroom');
 Subroom.isCreatable=true;
+Subroom.onMobile = true;
 
 Subroom.category='Rooms';
 

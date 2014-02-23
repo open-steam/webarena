@@ -65,6 +65,7 @@ SimpleText.intelligentRename=function(newValue){
 
 SimpleText.register('SimpleText');
 SimpleText.isCreatable=true;
+SimpleText.onMobile = true;
 
 SimpleText.contentURLOnly = false; //content is only accessible via URL
 

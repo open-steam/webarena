@@ -452,7 +452,7 @@ GUI.initToolbarMobilePhone = function() {
 	/* get types of objects */
 	$.each(ObjectManager.getTypes(), function(key, object) { 
 	
-		if (object.isCreatable) {
+		if (object.isCreatable && object.onMobile) {
 			
 			if (object.category == undefined) {
 				object.category = "default";
@@ -471,8 +471,7 @@ GUI.initToolbarMobilePhone = function() {
 	var toolbar_locked_elements = {};
 	
 	/* build categories for each type */
-	$.each(types, function(key, object) { 
-	
+	$.each(types, function(key, object) {
 		var newCategoryIcon = document.createElement("img");
 		$(newCategoryIcon).attr("src", "../../guis.common/images/categories/"+object[0].category+".png").attr("alt", "");
 		$(newCategoryIcon).attr("width", "24").attr("height", "24");
@@ -491,6 +490,9 @@ GUI.initToolbarMobilePhone = function() {
 					var section = page.addSection();
 			
 					$.each(object, function(key, object) {
+						if (!object.onMobile) {
+							return true;
+						}
 			
 						var name = object.translate(GUI.currentLanguage,object.type);
 			
@@ -505,6 +507,9 @@ GUI.initToolbarMobilePhone = function() {
 							if (!Modules.Config.presentationMode) {
 			
 								proto.create(attributes);
+								window.setTimeout(function() {
+									GUI.updateContainer(object.getCategory());
+								}, 500);
 								
 							} else {
 								alert(GUI.translate("You cannot create objects in presentation mode"));	
@@ -610,9 +615,10 @@ GUI.initToolbarMobilePhone = function() {
 			}
 			
 			/* All objects (except for Paint and Highlighter) can be created by dragging them to the svg area */
-			if (object[0].type != "Paint" && object[0].type != "Highlighter") {
+			/*
+			if (object[0].type != "Paint" && object[0].type != "Highlighter") {*/
 				
-				/* make draggable */
+				/* make draggable *//*
 				var helper = $('<img src="../../guis.common/images/categories/'+object[0].category+'.png" alt="" width="24" height="24" />');
 				helper.get(0).callback = function(offsetX,offsetY) {
 			
@@ -639,8 +645,7 @@ GUI.initToolbarMobilePhone = function() {
 				});
 				
 			}
-			
-		
+			*/
 		}
 		
 		var effect = function() {

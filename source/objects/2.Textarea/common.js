@@ -60,6 +60,7 @@ Textarea.intelligentRename=function(newValue){
 
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
+Textarea.onMobile = true;
 
 Textarea.contentURLOnly = false; //content is only accessible via URL
 

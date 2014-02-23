@@ -218,7 +218,7 @@ GUI.initSVGMobilePhone = function() {
 }
 
 $(function() {
-	$("#objectview").svg({settings: {width: $(window).width(), height: $(window).height()/2}});
+	$("#objectview").svg({settings: {width: '0px', height: '0px'}});
 	var canvas = $("#objectview svg");
 	$(canvas).attr('id', 'canvas');
 

@@ -211,8 +211,8 @@ Plotter.buildFormForEditableContent = function() {
     
     for (var i = 0; i < content.points.length; ++i) {
         var valuePair = $('<tr></tr>');
-        var valueX = $('<td>x' + i + '</td><td><input type="text" name="x' + i + '" value="' + content.points[i][0] + '" /></td>');
-		var valueY = $('<td>y' + i + '</td><td><input type="text" name="y' + i + '" value="' + content.points[i][1] + '" /></td>');
+        var valueX = $('<td>x' + i + '</td><td><input type="text" size="8" name="x' + i + '" value="' + content.points[i][0] + '" /></td>');
+		var valueY = $('<td>y' + i + '</td><td><input type="text" size="8" name="y' + i + '" value="' + content.points[i][1] + '" /></td>');
         $(valuePair).append(valueX);
         $(valuePair).append(valueY);
         
@@ -257,8 +257,8 @@ Plotter.buildFormForEditableContent = function() {
         $(rep).attr("width", $(window).width());
 		
 		var valuePair = $('<tr></tr>');
-        var valueX = $('<td>x' + newIndex + '</td><td><input type="text" name="x' + newIndex + '" value="' + content.points[newIndex][0] + '" /></td>');
-		var valueY = $('<td>y' + newIndex + '</td><td><input type="text" name="y' + newIndex + '" value="' + content.points[newIndex][1] + '" /></td>');
+        var valueX = $('<td>x' + newIndex + '</td><td><input type="text" size="8" name="x' + newIndex + '" value="' + content.points[newIndex][0] + '" /></td>');
+		var valueY = $('<td>y' + newIndex + '</td><td><input type="text" size="8" name="y' + newIndex + '" value="' + content.points[newIndex][1] + '" /></td>');
         $(valuePair).append(valueX);
         $(valuePair).append(valueY);
         

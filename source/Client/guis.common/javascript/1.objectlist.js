@@ -71,3 +71,32 @@ GUI.initObjectList = function() {
         $("#" + categoryID + "Container").slideUp();
     });
 }
+
+GUI.updateContainer = function(category) {
+    var categoryID = category.replace(/\s/g, "");
+    $("#" + categoryID + "Container").empty();
+    
+    // Fetch all objects of the specified category.
+    $.each(ObjectManager.getObjects(), function(key, object) {
+        if (!object.onMobile || object.getCategory() != category) {
+            // Like continue in a for loop.
+            return true;
+        }
+        
+        // Add this object to the list.
+        var objectText = document.createTextNode(object.getName());
+        var objectElement = document.createElement("p");
+        var objectDiv = document.createElement("div");
+        objectElement.appendChild(objectText);
+        objectDiv.appendChild(objectElement);
+        $(objectDiv).addClass("object");
+         
+        $("#" + categoryID + "Container").append(objectDiv);
+        
+        // If the user touch the object, it will show the object with its
+        // details.
+        $(objectDiv).bind('click', function () {
+            GUI.buildObjectView(object);
+        });
+    });
+}

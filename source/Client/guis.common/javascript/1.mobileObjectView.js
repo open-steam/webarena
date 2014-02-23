@@ -52,9 +52,13 @@ GUI.buildAttributeTable = function(object) {
     $(table).addClass("table");
     
     $.each(object.getAttributes(), function(key, attr) {
-        if (attr.description == "name") {
-            return true;
-        }
+        if (attr.description == "name" ||
+			attr.description == 'layer' ||
+			attr.description == 'x' ||
+			attr.description == 'y' ||
+			attr.description == 'hasContent') {
+			return true;
+		}
         
         var attrDesc = document.createTextNode(object.translate(GUI.currentLanguage, attr.description));
         var attrVal = document.createTextNode(attr.value);
