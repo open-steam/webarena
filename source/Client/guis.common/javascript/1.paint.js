@@ -32,12 +32,20 @@ GUI.setPaintMode = function(mode) {
 		GUI.paintOpacity = 1;
 		$("#header").find(".jPaint_navi_pen").addClass("active");
 		$("#header").find(".jPaint_navi_highlighter").removeClass("active");
+		$("#header").find(".jPaint_navi_eraser").removeClass("active");
 	}
 	else if ( mode == "highlighter" )
 	{
 		GUI.paintOpacity = 0.01;
 		$("#header").find(".jPaint_navi_highlighter").addClass("active");
 		$("#header").find(".jPaint_navi_pen").removeClass("active");
+		$("#header").find(".jPaint_navi_eraser").removeClass("active");		
+	}
+	else if ( mode == "eraser" )
+	{
+		$("#header").find(".jPaint_navi_eraser").addClass("active");
+		$("#header").find(".jPaint_navi_highlighter").removeClass("active");
+		$("#header").find(".jPaint_navi_pen").removeClass("active");		
 	}
 }
 
@@ -301,8 +309,8 @@ COPY.move = function(event)
 		// selection frame drawn
 		COPY.mouseOverSelectionBox = ( COPY.destX < x && x < COPY.destX + COPY.sourceW ) && ( COPY.destY < y && y < COPY.destY + COPY.sourceH );
 	
-		if (COPY.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
-		else { document.body.style.cursor = "default"; }
+		if (COPY.mouseOverSelectionBox) { $(GUI.paintCanvasTemp).css("cursor", "move"); }
+		else { $(GUI.paintCanvasTemp).css("cursor", "crosshair"); }
 	}
 	else
 	{
@@ -482,8 +490,8 @@ CUT.move = function(event)
 		// selection frame drawn
 		CUT.mouseOverSelectionBox = ( CUT.destX < x && x < CUT.destX + CUT.sourceW ) && ( CUT.destY < y && y < CUT.destY + CUT.sourceH );
 	
-		if (CUT.mouseOverSelectionBox) { document.body.style.cursor = "pointer"; }
-		else { document.body.style.cursor = "default"; }
+		if (CUT.mouseOverSelectionBox) { $(GUI.paintCanvasTemp).css("cursor", "move"); }
+		else { $(GUI.paintCanvasTemp).css("cursor", "crosshair"); }
 	}
 	else
 	{
@@ -690,24 +698,13 @@ GUI.editPaint = function() {
 	$(eraser).addClass("jPaint_navi");
 	$(eraser).addClass("jPaint_navi_eraser");
 	$(eraser).bind("click", function(event) {
+		GUI.setPaintMode("eraser");
 		GUI.setPaintCursor("eraser");
 		GUI.paintEraseModeActive = true;
-
-		$("#header").find(".jPaint_navi_eraser").addClass("active");
-		
 	});
 
 	$("#header > div.header_left").append(eraser);
 
-	
-	/* add area eraser selection */
-	var areaEraser = document.createElement("img");
-	$(areaEraser).attr("src", "../../guis.common/images/paint/eraser.png");
-	$(areaEraser).addClass("jPaint_navi");
-	$(areaEraser).addClass("jPaint_navi_area_eraser");
-	$(areaEraser).bind("click", function(event) { ERASER.enabled = true; $(GUI.paintCanvasTemp).css("visibility", "visible"); $(".header_button").css("display", "none"); });
-	
-	$("#header > div.header_left").append(areaEraser);
 	
 	/* add cancel button for copy'n'paste and cut'n'paste */
 	var abortButton = document.createElement("span");
@@ -723,6 +720,16 @@ GUI.editPaint = function() {
 	});
 
 	$("#header > div.header_right").append(abortButton);
+	
+	/* add area eraser selection */
+	var areaEraserButton = document.createElement("span");
+	$(areaEraserButton).addClass("header_button");
+	$(areaEraserButton).addClass("jPaint_navi");
+	$(areaEraserButton).html(GUI.translate("erase"));
+	$(areaEraserButton).bind( "click", function(event) { ERASER.enabled = true; $(GUI.paintCanvasTemp).css("visibility", "visible"); } );
+	
+	$("#header > div.header_right").append(areaEraserButton);
+
 	
 	/* add copy'n'paste */
 	var copyPasteButton = document.createElement("span");
