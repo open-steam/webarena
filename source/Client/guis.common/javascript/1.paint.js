@@ -16,9 +16,8 @@ GUI.paintModeActive = false;
 GUI.setPaintColor = function(color, colorName) {
 	GUI.paintColor = color;
 	GUI.setPaintCursor(colorName);
-	GUI.paintEraseModeActive = false;
+	GUI.setPaintMode(GUI.paintMode);
 	$("#header").find(".jPaint_navi_color").removeClass("active");
-	$("#header").find(".jPaint_navi_eraser").removeClass("active");
 	$("#header").find(".jPaint_navi_color_"+colorName).addClass("active");
 }
 
@@ -29,6 +28,8 @@ GUI.setPaintColor = function(color, colorName) {
 GUI.setPaintMode = function(mode) {
 	if ( mode == "pen" )
 	{
+		GUI.paintMode = "pen";
+		GUI.paintEraseModeActive = false;
 		GUI.paintOpacity = 1;
 		$("#header").find(".jPaint_navi_pen").addClass("active");
 		$("#header").find(".jPaint_navi_highlighter").removeClass("active");
@@ -36,16 +37,19 @@ GUI.setPaintMode = function(mode) {
 	}
 	else if ( mode == "highlighter" )
 	{
+		GUI.paintMode = "highlighter";
+		GUI.paintEraseModeActive = false;
 		GUI.paintOpacity = 0.01;
 		$("#header").find(".jPaint_navi_highlighter").addClass("active");
 		$("#header").find(".jPaint_navi_pen").removeClass("active");
-		$("#header").find(".jPaint_navi_eraser").removeClass("active");		
+		$("#header").find(".jPaint_navi_eraser").removeClass("active");
 	}
 	else if ( mode == "eraser" )
 	{
+		GUI.paintEraseModeActive = true;
 		$("#header").find(".jPaint_navi_eraser").addClass("active");
 		$("#header").find(".jPaint_navi_highlighter").removeClass("active");
-		$("#header").find(".jPaint_navi_pen").removeClass("active");		
+		$("#header").find(".jPaint_navi_pen").removeClass("active");
 	}
 }
 
@@ -63,9 +67,8 @@ GUI.setPaintCursor = function(cursorName) {
  */
 GUI.setPaintSize = function(value) {
 	GUI.paintSize = value;
-	GUI.paintEraseModeActive = false;
+	GUI.setPaintMode(GUI.paintMode);
 	$("#header").find(".jPaint_navi_size").removeClass("active");
-	$("#header").find(".jPaint_navi_eraser").removeClass("active");
 	$("#header").find(".jPaint_navi_size_"+value).addClass("active");
 }
 
