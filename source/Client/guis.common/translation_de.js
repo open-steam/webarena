@@ -35,6 +35,7 @@ GUI.setTranslations('de',{
 	'Object inspector' : 'Objektinspektor',
 	'Toggle hidden mode' : 'Versteckt-Modus wechseln',
 	'Texts' : 'Texte',
+	'Mode' : 'Modus',
 	'erase' : 'Löschen',
 	'copy' : 'Kopieren',
 	'cut' : 'Ausschneiden',

@@ -247,7 +247,10 @@ COPY.start = function(event)
 	
 	$(".header_button").css("display", "none");
 	$("#abortButton").css("display", "inline");
-
+	
+	$("#statusLabel").html(GUI.translate("Mode") + ": " + GUI.translate("copy"));
+	$("#statusLabel").css("display", "inline");
+	
 	if (!COPY.selecting)
 	{
 		// start creating selection frame
@@ -382,6 +385,7 @@ COPY.paste = function()
 	
 	$(".header_button").css("display", "inline");
 	$("#abortButton").css("display", "none");
+	$("#statusLabel").css("display", "none");
 	
 	GUI.savePaintMode();
 };
@@ -399,6 +403,7 @@ COPY.cancel = function()
 	
 	$(".header_button").css("display", "inline");
 	$("#abortButton").css("display", "none");
+	$("#statusLabel").css("display", "none");
 };
 
 CUT.start = function(event)
@@ -428,6 +433,9 @@ CUT.start = function(event)
 	
 	$(".header_button").css("display", "none");
 	$("#abortButton").css("display", "inline");
+	
+	$("#statusLabel").html(GUI.translate("Mode") + ": " + GUI.translate("cut"));
+	$("#statusLabel").css("display", "inline");
 
 	if (!CUT.selecting)
 	{
@@ -552,6 +560,7 @@ CUT.paste = function()
 	
 	$(".header_button").css("display", "inline");
 	$("#abortButton").css("display", "none");
+	$("#statusLabel").css("display", "none");
 	
 	GUI.savePaintMode();
 };
@@ -570,6 +579,7 @@ CUT.cancel = function()
 	
 	$(".header_button").css("display", "inline");
 	$("#abortButton").css("display", "none");
+	$("#statusLabel").css("display", "none");
 };
 
 /**
@@ -707,7 +717,16 @@ GUI.editPaint = function() {
 	});
 
 	$("#header > div.header_left").append(eraser);
-
+	
+	
+	/* add status label */
+	var statusLabel = document.createElement("span");
+	$(statusLabel).addClass("header_label");
+	$(statusLabel).css("display", "none");
+	$(statusLabel).attr("id", "statusLabel");
+	
+	$("#header > div.header_right").append(statusLabel);
+	
 	
 	/* add cancel button for copy'n'paste and cut'n'paste */
 	var abortButton = document.createElement("span");
@@ -751,8 +770,8 @@ GUI.editPaint = function() {
 	$(cutPasteButton).html(GUI.translate("cut"));
 	$(cutPasteButton).bind( "click", function(event) { CUT.enabled = true; $(GUI.paintCanvasTemp).css("visibility", "visible"); } );
 
-	$("#header > div.header_right").append(cutPasteButton);	
-
+	$("#header > div.header_right").append(cutPasteButton);		
+	
 
 	/* add cancel button */
 	/*
