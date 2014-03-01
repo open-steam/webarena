@@ -6,7 +6,7 @@ class Home extends MY_Controller {
 
     public function index() {
         $this->load->library('session');
-        
+        $this->load->library('getText');
         $this->load->model('user');
         $this->user->loadUserdata($this->session->userdata('username'));
         

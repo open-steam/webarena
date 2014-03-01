@@ -2,11 +2,11 @@
     <br></br>
     <br></br>
     <ul class="nav nav-tabs">
-        <li><a href="<?php echo $this->config->site_url("courses"); ?>">Meine Kurse</a></li>
-        <li><a href="<?php echo $this->config->site_url("courses/all"); ?>">Aktive Kurse</a></li>
+        <li><a href="<?php echo $this->config->site_url("courses"); ?>"><?php echo $this->gettext->getText("Meine Kurse"); ?></a></li>
+        <li><a href="<?php echo $this->config->site_url("courses/all"); ?>"><?php echo $this->gettext->getText("Aktive Kurse"); ?></a></li>
         <li class="active"><a>Kurs Details</a></li>
         <?php if ($is_admin) { ?>
-            <li><a href="<?php echo $this->config->site_url("courses/create"); ?>">Kurs erstellen</a></li>
+            <li><a href="<?php echo $this->config->site_url("courses/create"); ?>"><?php echo $this->gettext->getText("Kurs erstellen"); ?></a></li>
         <?php } ?>
     </ul>
     <div class="row">

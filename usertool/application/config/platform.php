@@ -1,11 +1,16 @@
 <?php  if ( ! defined('BASEPATH')) exit('No direct script access allowed');
 
-$config['admins'] = array("janp");
+$config['admins'] = array("csens");
 $config['webarenaHost'] = "localhost";
 $config['webarenaPort'] = "8080";
-$config['dataFolder'] = "C:\\Users\\Dermtd\\Desktop\\benutzerverwaltung";
+$config['dataFolder'] = "/Users/christophsens/webarena/";
 
 $config['userFolder'] = $config['dataFolder'] . "/users";
 $config['courseFolder'] = $config['dataFolder'] . "/courses";
+
+
+defined("PLATTFORM_ID") ||
+    define("PLATTFORM_ID", "Berufungsverfahren");
+
 
 ?>

@@ -6,6 +6,8 @@ class Webarena extends MY_Controller {
 
     public function index($room) {
         $this->load->library('session');
+        $this->load->library('getText');
+        
        
         if ($this->session->userdata('logged_in')) {
             $host = $this->config->item('webarenaHost');
