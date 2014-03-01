@@ -10,7 +10,10 @@ $config['courseFolder'] = $config['dataFolder'] . "/courses";
 
 
 defined("PLATTFORM_ID") ||
-    define("PLATTFORM_ID", "Berufungsverfahren");
+    define("PLATTFORM_ID", "a");
+
+defined("LOGIN_WITH_EMAIL") ||
+    define("LOGIN_WITH_EMAIL", FALSE);
 
 
 ?>
