@@ -16,5 +16,6 @@ var Config={
 	chatIcon:true,
 	bugreportIcon:true,
 	showSidebarbydefault:true,
+	maxFilesizeInMB:10,
 	bidURL:''
 };

@@ -12,6 +12,7 @@ module.exports={
 	port: 8080,     // HTTP Port for server
 	homepage: '/index.html',
 	tcpApiServer: false,
+	maxFilesizeInMB:10,
 	imageUpload: {
 		maxDimensions: 400
 	},
