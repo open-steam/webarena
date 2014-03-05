@@ -6,6 +6,8 @@ class Users extends MY_Controller {
     
     public function editProfile($username) {
         $this->load->library('session');
+        $this->load->library('getText');
+        
         
         $this->load->model('user');
         $this->user->loadUserData($username);

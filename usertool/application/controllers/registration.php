@@ -1,24 +1,29 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 
 class Registration extends CI_Controller {
 
     public function index() {
         $this->load->library('session');
+        $this->load->library('getText');
+
         $data = array();
 
         if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
-            
-            $namePattern = "/^[a-z\d]+$/i";
-            if (!preg_match($namePattern, $this->input->post('username'))) {
-                $response["status"] = "error";
-                $response["error"] = "characters";
-                echo(json_encode($response));
-                return;
+
+            if (!defined("LOGIN_WITH_EMAIL") || !LOGIN_WITH_EMAIL) {
+                $namePattern = "/^[a-z\d]+$/i";
+                if (!preg_match($namePattern, $this->input->post('username'))) {
+                    $response["status"] = "error";
+                    $response["error"] = "characters";
+                    echo(json_encode($response));
+                    return;
+                }
             }
-            
+
             if ($this->input->post('password') != $this->input->post('passwordRE')) {
                 $response["status"] = "error";
                 $response["error"] = "passwordRE";
@@ -27,10 +32,14 @@ class Registration extends CI_Controller {
             }
 
             $this->load->library('encrypt');
-            $password = $this->encrypt->sha1($this->config->item('encryption_key').$this->input->post('password'));
-                    
+            $password = $this->encrypt->sha1($this->config->item('encryption_key') . $this->input->post('password'));
+
             $this->load->model('user');
+            
+            //TODO: Kommt als Username die Email zurueck?
             $this->user->setUsername($this->input->post('username'));
+            //$this->user->setUsername($this->input->post('email'));
+            
             $this->user->setPassword($password);
             $this->user->setEmail($this->input->post('email'));
             $this->user->setFirstName($this->input->post('firstName'));
@@ -67,5 +76,6 @@ class Registration extends CI_Controller {
                 $this->load->view('footer');
             }
         }
-    }  
+    }
+
 }

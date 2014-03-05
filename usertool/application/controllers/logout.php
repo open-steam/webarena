@@ -6,6 +6,8 @@ class Logout extends CI_Controller {
 
     public function index() {
         $this->load->library('session');
+        $this->load->library('getText');
+        
         $this->session->sess_destroy();
 
         header('Location:' . $this->config->base_url());
@@ -14,6 +16,8 @@ class Logout extends CI_Controller {
     
     public function delete() {
         $this->load->library('session');
+        $this->load->library('getText');
+        
         $this->load->model('user');
         
         $this->user->loadUserData($this->session->userdata('username'));

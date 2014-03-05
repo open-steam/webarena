@@ -10,6 +10,7 @@ data/
 
 # NodeJS
 node_modules/
+npm-debug.log
 
 # IDE settings
 ## Sublime
@@ -25,9 +26,7 @@ node_modules/
 
 ## Jetbrains
 .idea
-source/objects/8.Test/common.js
-source/objects/8.Test/icon.png
-source/objects/8.Test/languages.js
-source/objects/8.Test/server.js
-source/objects/8.Test/view.js
-npm-debug.log
+
+
+## Kokoa
+pluginApplications/VerwaltungsApp/config.local.js

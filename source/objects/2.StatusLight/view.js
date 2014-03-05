@@ -53,12 +53,17 @@ StatusLight.execute = function(){
             dialog_buttons
         );
 
-        $(dialog).find(".datepicker-trigger").datepicker({
-            "dateFormat" : "d.m.yy",
-            onSelect : function(e){
-                changedDate  = moment(e, "D.M.YYYY")._d.getTime();
-            }
+        $(dialog).find(".datepicker-trigger").change(function(){
+            var value = this.value;
+            changedDate  = moment(value, "D.M.YYYY")._d.getTime();
         });
+
+//        $(dialog).find(".datepicker-trigger").datepicker({
+//            "dateFormat" : "d.m.yy",
+//            onSelect : function(e){
+//                changedDate  = moment(e, "D.M.YYYY")._d.getTime();
+//            }
+//        });
 
         ($($(dialog).find("input[type=checkbox]")[firstNotDoneIndex])).change(function(e){
             newStatus = e.target.checked ;
@@ -93,7 +98,7 @@ StatusLight.createRepresentation = function (parent) {
     this.initGUI(rep);
 
 
-
+    this.draw();
     return rep;
 
 }
@@ -124,12 +129,13 @@ StatusLight.draw = function (external) {
  * @param value
  */
 StatusLight.setViewX = function (value) {
+    GeneralObject.setViewX.call(this, value);
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=,)/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
 
-    GeneralObject.setViewX.call(this, value);
+
 }
 
 /**
@@ -138,12 +144,14 @@ StatusLight.setViewX = function (value) {
  * @param value
  */
 StatusLight.setViewY = function (value) {
+    GeneralObject.setViewY.call(this, value);
+
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=\))/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
 
-    GeneralObject.setViewY.call(this, value);
+
 }
 
 StatusLight.setViewWidth = function (value) {

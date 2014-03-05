@@ -211,15 +211,15 @@ WebServer.init = function (theModules) {
 				var util = require('util');
 
 				var form = new formidable.IncomingForm();
-
+					
 				form.parse(req, function (err, fields, files) {
-
-					object.copyContentFromFile(files.file.path, function () {
-
+													
+					object.copyContentFromFile(files.file.path, function() {
+														
 						object.set('hasContent', true);
 						object.set('contentAge', new Date().getTime());
 						object.set('mimeType', files.file.type);
-
+								
 						/* check if content is inline displayable */
 						if (Modules.Connector.isInlineDisplayable(files.file.type)) {
 
@@ -251,19 +251,28 @@ WebServer.init = function (theModules) {
 							res.writeHead(200);
 							res.end();
 						}
-
-
+						
+						
+						/* Restrict the uploaded file size, the maximum filesize is spezified in config.default */
+						var filesize = files.file.size; 
+						if(Modules.Config.maxFilesizeInMB*1000000<filesize){
+							fs.unlinkSync(files.file.path);
+							
+							//delete the object after waiting for a couple of time to avoid deleting an unfinished object
+							setTimeout(function(){Modules.ObjectManager.remove(object)},3000);		
+						}	
+														
 					});
-
+												
 				});
-
+				
 			} catch (err) {
 				res.writeHead(500, {"Content-Type": "text/plain"});
 				res.write("500 Internal Server Error");
 				res.end();
 				Modules.Log.error(err);
 			}
-
+	
 			return;
 		}
 
@@ -279,15 +288,27 @@ WebServer.init = function (theModules) {
 				var mimeType = 'image/png';
 				
 				if(Modules.Connector.getPaintingStream !== undefined){
+					
+
 					var objStream = Modules.Connector.getPaintingStream(roomID, user, context);
-					objStream.pipe(res);
-					objStream.on("end", function(){
-						res.writeHead(200, {
-							'Content-Type': mimeType,
-							'Content-Disposition': 'inline; filename="' + user + '.png"'
-						});
+					
+					if ( objStream == undefined )
+					{
+						res.writeHead(404, {"Content-Type": "text/plain"});
+						res.write("404 Image not found");
 						res.end();
-					})
+					}
+					else
+					{
+						objStream.pipe(res);
+						objStream.on("end", function(){
+							res.writeHead(200, {
+								'Content-Type': mimeType,
+								'Content-Disposition': 'inline; filename="' + user + '.png"'
+							});
+							res.end();
+						})
+					}
 				} else {
 					res.writeHead(200, {
 							'Content-Type':'text/plain'
@@ -313,7 +334,7 @@ WebServer.init = function (theModules) {
 		else if (url.substr(0, 11) == '/getContent') {
 
 			try {
-
+			
 				var ids = url.substr(12).split('/');
 				var roomID = ids[0];
 				var objectID = ids[1];

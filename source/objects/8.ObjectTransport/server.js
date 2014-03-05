@@ -28,15 +28,25 @@ theObject.copyOrCut = function (objectId) {
      */
     var sendExecutedHandler = function (err, idList) {
         var copyId = idList[0];
-
-        //TODO: rebuild with "transport room"
-        Modules.EventBus.emit("send_object", {
+        var eventData = {
             from: fromSourceRoom,
             to: targetRoom,
             objectId: copyId,
             timestamp: new Date().getTime(),
             objectName: enteredObject.getAttribute("name")
-        });
+        };
+
+        var customKeyValuePair = that.getAttribute('customKeyValuePair');
+        if(customKeyValuePair){
+            var cPairArray = customKeyValuePair.split(":");
+            var key = cPairArray[0];
+            var value = cPairArray[1];
+
+            eventData[key] = value;
+        }
+
+        //TODO: rebuild with "transport room"
+        Modules.EventBus.emit("send_object", eventData);
     }
 
     //Create communication room

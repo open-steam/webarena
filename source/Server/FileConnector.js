@@ -583,7 +583,8 @@ fileConnector.getPaintingStream = function(roomID,user,context){
     var rds = fs.createReadStream(filename);
 	var that=this;
     rds.on("error", function(err) {
-        that.Modules.Log.error("Error reading file: " + filename);
+        // that.Modules.Log.debug("Error reading file: " + filename);
+        return undefined;
     });
 
     return rds;

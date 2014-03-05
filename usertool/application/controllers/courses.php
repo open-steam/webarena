@@ -1,16 +1,18 @@
 <?php
 
-if (!defined('BASEPATH')) exit('No direct script access allowed');
+if (!defined('BASEPATH'))
+    exit('No direct script access allowed');
 
 class Courses extends MY_Controller {
 
     public function index() {
         $this->load->library('session');
-        
+        $this->load->library('getText');
+
         $this->load->model('user');
         $this->user->loadUserData($this->session->userdata('username'));
         $this->user->loadCourseData(true, $this->session->userdata('is_admin'));
-        
+
         $data = array(
             "navbar" => array("", "active"),
             "logged_in" => $this->session->userdata('logged_in'),
@@ -24,12 +26,13 @@ class Courses extends MY_Controller {
     }
 
     public function all() {
+        $this->load->library('getText');
         $this->load->library('session');
-        
+
         $this->load->model('user');
         $this->user->setUsername($this->session->userdata('username'));
         $this->user->loadAllCourseData();
-        
+
         $data = array(
             "navbar" => array("", "active"),
             "logged_in" => $this->session->userdata('logged_in'),
@@ -43,12 +46,17 @@ class Courses extends MY_Controller {
     }
 
     public function create() {
+        //Session is checked
         $this->load->library('session');
+        $this->load->library('getText');
 
-        if($this->input->is_ajax_request() == TRUE) {
+
+        //TODO: The following part can be used to create rooms from outside.
+        // import post variables: courseName and description
+        if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             $this->load->model('course');
-            $this->load->library('uuid'); 
+            $this->load->library('uuid');
             $this->course->setId($this->uuid->v4());
             $this->course->setName($this->input->post('courseName'));
             $this->course->setDescription($this->input->post('description'));
@@ -77,10 +85,12 @@ class Courses extends MY_Controller {
 
     public function singleCourse($id) {
         $this->load->library('session');
-        
+        $this->load->library('getText');
+
+
         $this->load->model('course');
         $this->course->loadCourseData($id);
-        if($this->input->is_ajax_request() == TRUE) {
+        if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             if ($this->session->userdata("is_admin")) {
                 if ($this->input->post("name") === "courseName") {
@@ -121,11 +131,13 @@ class Courses extends MY_Controller {
             $this->load->view('footer');
         }
     }
-    
+
     public function verifyUser() {
         $this->load->library('session');
-        
-        if($this->input->is_ajax_request() == TRUE) {
+        $this->load->library('getText');
+
+
+        if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             if ($this->session->userdata('is_admin')) {
                 $this->load->model('course');
@@ -143,11 +155,13 @@ class Courses extends MY_Controller {
             echo(json_encode($response));
         }
     }
-    
+
     public function changeWriteAccessUser() {
         $this->load->library('session');
-        
-        if($this->input->is_ajax_request() == TRUE) {
+        $this->load->library('getText');
+
+
+        if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             if ($this->session->userdata('is_admin')) {
                 $this->load->model('course');
@@ -165,11 +179,13 @@ class Courses extends MY_Controller {
             echo(json_encode($response));
         }
     }
-    
+
     public function apply() {
         $this->load->library('session');
-        
-        if($this->input->is_ajax_request() == TRUE) {
+        $this->load->library('getText');
+
+
+        if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             $this->load->model('course');
             $this->course->setId($this->input->post("courseID"));
@@ -183,11 +199,13 @@ class Courses extends MY_Controller {
             echo(json_encode($response));
         }
     }
-    
+
     public function deleteUser() {
         $this->load->library('session');
-        
-        if($this->input->is_ajax_request() == TRUE) {
+        $this->load->library('getText');
+
+
+        if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             if ($this->session->userdata('is_admin')) {
                 $this->load->model('course');
@@ -205,11 +223,13 @@ class Courses extends MY_Controller {
             echo(json_encode($response));
         }
     }
-    
+
     public function freeze() {
         $this->load->library('session');
-        
-        if($this->input->is_ajax_request() == TRUE) {
+        $this->load->library('getText');
+
+
+        if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
             if ($this->session->userdata('is_admin')) {
                 $this->load->model('course');
@@ -228,4 +248,5 @@ class Courses extends MY_Controller {
             echo(json_encode($response));
         }
     }
+
 }

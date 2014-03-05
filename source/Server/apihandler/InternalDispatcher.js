@@ -19,8 +19,8 @@ InternalDispatcher.init = function(theModules){
 		Modules.RoomController.duplicateRoom(data, data.context, data.callback);
 	});
 
-    Modules.EventBus.on("ObjectController", function(data){
-        Modules.RoomController.createObject(data, data.context, data.callback);
+    Modules.EventBus.on("createObject", function(data){
+        Modules.ObjectController.createObject(data, data.context, data.callback);
     });
 }
 

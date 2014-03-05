@@ -1,10 +1,10 @@
 var Modules=require('../../server.js')
-var TunnelEndpoint=Object.create(Modules.ObjectManager.getPrototype('Hotspot'));
+var TunnelEndpoint=Object.create(Modules.ObjectManager.getPrototype('Rectangle'));
 
 TunnelEndpoint.register=function(type){
 
 	// Registering the object
-	Modules.ObjectManager.getPrototype('Hotspot').register.call(this,type);
+	Modules.ObjectManager.getPrototype('Rectangle').register.call(this,type);
     this.makeSensitive();
     this.makeStructuring();
 

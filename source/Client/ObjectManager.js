@@ -18,6 +18,7 @@ ObjectManager.clientID = new Date().getTime()-1296055327011;
 ObjectManager.prototypes={};
 ObjectManager.user={};
 ObjectManager.clipBoard={};
+ObjectManager.roomChangeCallbacks = [];
 
 ObjectManager.registerType=function(type,constr){
     this.prototypes[type]=constr;
@@ -298,8 +299,20 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
+ObjectManager.registerRoomChangeCallbacks = function(doOnChange){
+    this.roomChangeCallbacks.push(doOnChange);
+}
+
+ObjectManager.executeRoomChangeCallbacks = function(){
+    while(this.roomChangeCallbacks.length > 0){
+        this.roomChangeCallbacks.pop().call(this);
+    }
+}
+
 ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 	var self = this;
+
+    this.executeRoomChangeCallbacks();
 
 	if (!index) var index = 'left';
 		
@@ -331,9 +344,7 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 		    	}
 
 				if (callback) setTimeout(callback, 1200);
-				
 			}
-				
 		});
 	} else {
 		alert(GUI.translate("Room already displayed"));
@@ -521,7 +532,39 @@ ObjectManager.init=function(){
 		}
 
     });
-	
+
+
+    Modules.Dispatcher.registerCall('askForChoice', function(data){
+
+        var dialogTitle = data.title;
+        var choices = data.choices;
+
+        var onSave = function(){
+            var responseEvent = 'response::askForChoice::' + data.responseID
+            var choice = $(dialog).find('input:radio:checked').val();
+            console.log(choice);
+            Modules.Socket.emit(responseEvent, {choice : choice});
+        }
+        var onExit = function(){return false;};
+
+        var dialogButtons = {
+            "Antworten" : onSave,
+            "Abbrechen" : onExit
+        };
+
+        var content = '<form>';
+        content = _(choices).reduce(function(accum, choice){
+            //TODO perhaps need to escape whitesapces in choice
+            return accum + "<input type='radio' name='some-choice' value='" + choice + "'>" + choice + "<br/>";
+        }, content)
+        content += "</form>";
+        console.log(content);
+        console.log(data);
+
+        var dialog = GUI.dialog(dialogTitle, content, dialogButtons);
+
+
+    });
 }
 
 ObjectManager.getRoomID=function(index){

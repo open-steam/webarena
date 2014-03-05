@@ -10,6 +10,9 @@ ObjectTransport.createRepresentation = function (parent) {
     $(rep).attr("id", this.getAttribute('id'));
     rep.dataObject = this;
     this.initGUI(rep);
+
+    this.draw();
+
     return rep;
 
 }
@@ -20,13 +23,15 @@ ObjectTransport.getIconText = function () {
 
 ObjectTransport.draw = function (external) {
 
+    GeneralObject.draw.call(this, external);
+
     var rep = this.getRepresentation();
     var rect = $(rep).find("rect");
     var icon = $(rep).find(".font-icon");
 
     icon.text(this.getIconText());
     rect.attr("fill", this.getAttribute('fillcolor'));
-    GeneralObject.draw.call(this, external);
+
 }
 
 /**
@@ -35,13 +40,12 @@ ObjectTransport.draw = function (external) {
  * @param value
  */
 ObjectTransport.setViewX = function (value) {
+
+    GeneralObject.setViewX.call(this, value);
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=,)/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
-
-    GeneralObject.setViewX.call(this, value);
-
 }
 
 /**
@@ -50,12 +54,11 @@ ObjectTransport.setViewX = function (value) {
  * @param value
  */
 ObjectTransport.setViewY = function (value) {
+    GeneralObject.setViewY.call(this, value);
     var transformation = $(this.getRepresentation()).attr("transform");
     var newTrans = transformation.replace(/(\d)+(?=\))/, value);
 
     $(this.getRepresentation()).attr("transform", newTrans);
-
-    GeneralObject.setViewY.call(this, value);
 }
 
 ObjectTransport.setViewWidth = function (value) {
@@ -85,7 +88,7 @@ ObjectTransport.hideActivationMarker = function () {
 ObjectTransport.representationCreated = function () {
     GeneralObject.representationCreated.call(this);
     var that = this;
-    var rep = this.getRepresentation();
+
     var intersectMode = false;
     var rect = $("rect");
 
@@ -124,5 +127,10 @@ ObjectTransport.representationCreated = function () {
             that.hideActivationMarker();
             intersectMode = false;
         }
+    });
+
+    ObjectManager.registerRoomChangeCallbacks(function(){
+        $("body").unbind("moveObject.wa");
+        $("body").unbind("moveend.wa");
     })
 }

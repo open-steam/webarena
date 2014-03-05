@@ -1,67 +1,19 @@
 var _ = require('lodash');
 var moment = require('moment');
+var config = require('./config.js');
 
 var StatusLights = {};
 StatusLights.proceedingId = false;
 
-var mileStonesDefault = [
-    {
-        id : 1,
-        name : "Der erste Meilenstein",
-        deadline: {
-            recommended : 130 //days after finishing last milestone
-        },
-        done : false,
-        startdate : false,
-        enddate : false
-    },
-    {
-        id : 2,
-        name : "Der zweite Meilenstein",
-        deadline: {
-            recommended : 130 //days after finishing last milestone
-        },
-        done : false,
-        startdate : false,
-        enddate : false
-    },
-    {
-        id : 3,
-        name : "Der dritter Meilenstein",
-        deadline: {
-            recommended : 130 //days after finishing last milestone
-        },
-        done : false,
-        startdate : false,
-        enddate : false
-    }
-];
+var mileStonesDefault = require('./milestones.json').milestones;
 
-StatusLights.mileStonesAccess = [
-    {
-        milestoneId : 1,
-        read : [],
-        write : []
-    }
-];
-
-StatusLights.mayRead = function(context, callback){
-    //TODO
-    callback(true);
-}
-
-StatusLights.mayWrite = function(context, callback){
-    callback(true);
-}
 
 /**
- * Try to load status otherwise initalize with default values
+ * Try to load status otherwise initalize with default values if couldn't load.
  */
 StatusLights.load = function(){
-    var path = require('path');
-    var sourcePath = path.resolve("../source");
+    var sourcePath = config.datalocation;
     var filename = sourcePath + "/status_" + this.proceedingId + ".json";
-    var json;
     try{
         this.mileStones = require(filename);
     } catch (e){
@@ -69,12 +21,20 @@ StatusLights.load = function(){
     }
 }
 
+/**
+ * Initialize a proceeding with the default milestones.
+ */
 StatusLights.initFromDefault = function(){
     this.mileStones = _.cloneDeep(mileStonesDefault);
-
     this.initMileStone(0);
 }
 
+/**
+ * 1. Set startdate
+ * 2. Set enddate (calculated from startdate + recommended time-slot)
+ *
+ * @param index - milestone index
+ */
 StatusLights.initMileStone = function(index){
     var milestone = this.mileStones[index];
     var now = moment();
@@ -83,11 +43,14 @@ StatusLights.initMileStone = function(index){
 }
 
 /**
- * Save status to disk.
+ * Save status to disk. (JSON file)
  */
 StatusLights.save = function(callback){
     var fs = require("fs");
-    fs.writeFile( "status_" + this.proceedingId +".json", JSON.stringify( this.mileStones ), "utf8", callback );
+    var content = JSON.stringify( this.mileStones );
+    var location = config.datalocation + "/status_" + this.proceedingId +".json";
+
+    fs.writeFile(location , content, "utf8", callback );
 }
 
 /**
@@ -99,6 +62,10 @@ StatusLights.getStatus = function(){
     return this.mileStones;
 }
 
+/**
+ * Search for current milestone (first undone). Set it to done.
+ * Initialize next milestone.
+ */
 StatusLights.finishCurrent = function(){
     var firstNotDoneIndex = _(this.mileStones).findIndex(function(elem){
         return !elem.done;
@@ -114,6 +81,10 @@ StatusLights.finishCurrent = function(){
 
 }
 
+/**
+ * Search for current milestone (first undone)
+ * @returns { name : String , status : [green | yellow | res]}
+ */
 StatusLights.getCurrentMileStoneStatus = function(){
     var firstNotDone = _(this.mileStones).find(function(elem){
         return !elem.done;
@@ -133,9 +104,9 @@ StatusLights.getCurrentMileStoneStatus = function(){
         name : firstNotDone.name
     };
 
-    if(timeTogo < 0){
+    if(timeTogo < 14){
         result.status = "red"
-    } else if(timeTogo < 7){
+    } else if(timeTogo < 30){
         result.status = "yellow"
     } else {
         result.status = "green"
