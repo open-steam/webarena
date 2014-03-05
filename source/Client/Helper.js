@@ -121,6 +121,44 @@ var Helper = new function () {
 		return result;
 
 	}
+	
+	this.beep=function(){
+		//beeping for debug and development purposes
+		
+		var beep = (function () {
+			if (!window.webkitAudioContext){
+				return function (duration, type, finishedCallback){console.log('beep');}
+			}
+		    var ctx = new(window.audioContext || window.webkitAudioContext);
+		    return function (duration, type, finishedCallback) {
+		
+		        duration = +duration;
+		
+		        // Only 0-4 are valid types.
+		        type = (type % 5) || 0;
+		
+		        if (typeof finishedCallback != "function") {
+		            finishedCallback = function () {};
+		        }
+		
+		        var osc = ctx.createOscillator();
+		
+		        osc.type = type;
+		
+		        osc.connect(ctx.destination);
+		        osc.noteOn(0);
+		
+		        setTimeout(function () {
+		            osc.noteOff(0);
+		            finishedCallback();
+		        }, duration);
+		
+		    };
+		})();
+		
+		beep(100,3);
+		
+	}
 
 }
 
