@@ -1065,7 +1065,12 @@ GeneralObject.moveStart = function(event) {
 				}
 			}
 		}
-
+		else{
+			$.each(ObjectManager.getSelected(), function(index, object) {
+				object.moveHandler();
+			});
+		}
+			
 		event.preventDefault();
 		event.stopPropagation();
 		
@@ -1150,10 +1155,11 @@ GeneralObject.moveRelative = function(dx, dy) {
 
 	this.adjustControls();
 
+	/*    deactivated to simplify the evaluation of objects (the object position is only set after the object movement by calling moveHandler) 
 	if (!GUI.couplingModeActive) {
-		this.moveHandler();
+		this.moveHandler();  
 	}
-	
+	*/
 }
 
 /**
@@ -1302,7 +1308,7 @@ GeneralObject.setViewX = function(value) {
 		
 		$(rep).attr("transform", "translate("+value+","+y+")");	
 	}
-	
+		
 	$(rep).attr("x", value);
 	
 	GUI.adjustContent(this);
