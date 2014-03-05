@@ -74,9 +74,17 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 	serverFunctionParams.push(responseCallback);
 
 	var fn = object[serverFunction];
+	
+	if (!fn){
+		console.log('Function not found');
+		console.log('------------------')
+		console.log(object,serverFunction);
+		return;
+	}
 
 	if (!fn.public) {
 		cb(new Error("Tried to access non-public method. Request will be aborted."), null);
+		return;
 	}
 
 	var callbackStack = [];

@@ -160,6 +160,63 @@ GeneralObject.representationCreated = function() {
 	} else {
 		GUI.updateLayers();
 	}
+	
+	if (!this.isSensitive()) return;
+	
+	var that = this;
+
+    var intersectMode = false;
+
+    $("body").on("moveObject.wa", function (e) {
+        if (e.objectId !== that.getID()) {
+            var movedObject = ObjectManager.getObject(e.objectId);
+
+            //new intersection
+            if (that.intersectsWith(movedObject) && !intersectMode) {
+                intersectMode = true;
+                that.showActivationMarker();
+            }
+            //not intersecting anymore
+            else if (!that.intersectsWith(movedObject) && intersectMode) {
+                intersectMode = false;
+                that.hideActivationMarker();
+            }
+        }
+
+    });
+
+    $("body").on("moveend.wa", function (e) {
+        if (e.objectId !== that.getID()) {
+            var movedObject = ObjectManager.getObject(e.objectId);
+
+            //execute copy/cut - if intersecting on mouse/touch release
+            if (that.intersectsWith(movedObject)) {
+                var selected = ObjectManager.getSelected();
+                _(selected).each(function (elem) {
+                    if (elem !== that) {
+                        that.serverCall("onDrop", elem.getID());
+                    }
+                })
+            }
+
+            that.hideActivationMarker();
+            intersectMode = false;
+        }
+    });
+
+    ObjectManager.registerRoomChangeCallbacks(function(){
+        $("body").unbind("moveObject.wa");
+        $("body").unbind("moveend.wa");
+    })
+
+}
+
+GeneralObject.showActivationMarker=function(){
+	this.addSelectedIndicator();
+}
+
+GeneralObject.hideActivationMarker=function(){
+	this.removeSelectedIndicator();
 }
 
 /**

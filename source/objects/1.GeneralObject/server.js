@@ -173,20 +173,27 @@ theObject.makeSensitive=function(){
 	}
 	
 	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
-		
+		this.fireEvent('object::'+this.id+'::moveWithin',object.id);
 	};
 	
 	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
-		
+		this.fireEvent('object::'+this.id+'::moveOutside',object.id);
 	};
 	
 	if (!theObject.onLeave) theObject.onLeave=function(object,data){
-		
+		this.fireEvent('object::'+this.id+'::leave',object.id);
 	};
 	
 	if (!theObject.onEnter) theObject.onEnter=function(object,data){
-		
+		this.fireEvent('object::'+this.id+'::enter',object.id);
 	};
+	
+	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
+		
+		this.fireEvent('object::'+this.id+'::drop',objectId);
+	};
+
+	theObject.onDrop.public=true;
 
 }
 
@@ -473,6 +480,14 @@ theObject.getBoundingBox=function(){
 }
 
 theObject.fireEvent=function(name,data){
+	
+	console.log('event fired',name,data);
+	
+	if (!data) {
+		console.log('#### NO DATA');
+		return;
+	}
+	
     data.context = this.context;
 
 	Modules.EventBus.emit(name, data);
