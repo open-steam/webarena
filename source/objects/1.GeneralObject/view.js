@@ -211,13 +211,7 @@ GeneralObject.representationCreated = function() {
 
 }
 
-GeneralObject.showActivationMarker=function(){
-	this.addSelectedIndicator();
-}
 
-GeneralObject.hideActivationMarker=function(){
-	this.removeSelectedIndicator();
-}
 
 /**
  * Creates a new representation for this object
@@ -261,7 +255,10 @@ GeneralObject.initGUI = function(rep) {
  * This typically is a blue border around the objects SVG representation
  * (If the SVG object itself has no border property, an SVG rect with the class "borderRect" can be used as the indicator)
  */
-GeneralObject.addSelectedIndicator = function() {
+GeneralObject.addSelectedIndicator = function(color, width, dashed) {
+	
+	if (!color) color='#1F7BFE';
+	if (!width) width=2;
 
 	var rep = this.getRepresentation();
 
@@ -283,8 +280,9 @@ GeneralObject.addSelectedIndicator = function() {
 	if (this.oldAttrStroke == undefined) this.oldAttrStroke = "";
 	if (this.oldAttrStrokeWidth == undefined) this.oldAttrStrokeWidth = 0;
 	
-	$(borderRep).attr("stroke", '#1F7BFE');
-	$(borderRep).attr("stroke-width", "2");
+	$(borderRep).attr("stroke", color);
+	$(borderRep).attr("stroke-width", width);
+	if (dashed) $(borderRep).attr("stroke-dasharray", (width*2)+","+(width*2));
 
 	$(rep).addClass("selected");
 	
@@ -312,9 +310,18 @@ GeneralObject.removeSelectedIndicator = function() {
 	
 	$(borderRep).attr("stroke", this.oldAttrStroke);
 	$(borderRep).attr("stroke-width", this.oldAttrStrokeWidth);
+	$(borderRep).attr("stroke-dasharray", "none");
 	
 	$(rep).removeClass("selected");
 	
+}
+
+GeneralObject.showActivationMarker=function(){
+	this.addSelectedIndicator('red',10,true);
+}
+
+GeneralObject.hideActivationMarker=function(){
+	this.removeSelectedIndicator();
 }
 
 /**
@@ -1122,12 +1129,7 @@ GeneralObject.moveStart = function(event) {
 				}
 			}
 		}
-		else{
-			$.each(ObjectManager.getSelected(), function(index, object) {
-				object.moveHandler();
-			});
-		}
-			
+
 		event.preventDefault();
 		event.stopPropagation();
 		
@@ -1212,11 +1214,10 @@ GeneralObject.moveRelative = function(dx, dy) {
 
 	this.adjustControls();
 
-	/*    deactivated to simplify the evaluation of objects (the object position is only set after the object movement by calling moveHandler) 
 	if (!GUI.couplingModeActive) {
-		this.moveHandler();  
+		this.moveHandler();
 	}
-	*/
+	
 }
 
 /**
@@ -1365,7 +1366,7 @@ GeneralObject.setViewX = function(value) {
 		
 		$(rep).attr("transform", "translate("+value+","+y+")");	
 	}
-		
+	
 	$(rep).attr("x", value);
 	
 	GUI.adjustContent(this);

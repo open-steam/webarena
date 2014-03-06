@@ -76,14 +76,12 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 	var fn = object[serverFunction];
 	
 	if (!fn){
-		console.log('Function not found');
-		console.log('------------------')
-		console.log(object,serverFunction);
+		Log.warn("Client called a nonexisting function ("+serverFunction+","+object+"). Request will be aborted.");
 		return;
 	}
 
 	if (!fn.public) {
-		cb(new Error("Tried to access non-public method. Request will be aborted."), null);
+		Log.warn("Tried to access non-public method ("+serverFunction+","+object+"). Request will be aborted.");
 		return;
 	}
 
