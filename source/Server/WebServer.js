@@ -180,6 +180,43 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
+		// Category Icons
+		if (url.substr(0, 14) == '/categoryIcons') {
+
+			try {
+
+				var category = url.substr(15);
+
+				var path = __dirname + '/../objects/' + category + '/icon.png';
+				
+				if (!fs.existsSync(path)) {
+					res.writeHead(404);
+					return res.end('Object not found ' + category);
+				}
+
+				fs.readFile(path,
+						function (err, data) {
+							if (err) {
+								res.writeHead(404);
+								Modules.Log.warn('Icon file is missing for ' + objectType + " (" + url + ")");
+								return res.end('Icon file is missing for ' + objectType);
+							}
+
+							res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+							res.end(data);
+						});
+
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
+
+			return;
+		}
+
+
 		// setContent
 
 		else if (url.substr(0, 11) == '/setContent' && req.method.toLowerCase() == 'post') {

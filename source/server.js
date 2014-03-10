@@ -10,7 +10,7 @@ var printLogo = function(){
    var logo = ['##########################################',
 	'#    W E B A R E N A   S E R V E R       #',
 	'#                                        #',
-	'#    (c) 2012-13 Contextual Informatics, #',
+	'#    (c) 2012-14 Contextual Informatics, #',
 	'#                Universität Paderborn   #',
 	'#                                        #',
 	'#    Main contributors:                  #',

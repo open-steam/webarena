@@ -36,7 +36,7 @@ module.exports={
 		"debug" : false,
 		"info" : false
 	},
-	objectWhitelist: [],	//an empty whitelist whitelists everything
 	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
+	enabledCategories: ['graphical','texts','collaboration','connections','content'],
 	debugMode: false
 };

@@ -35,7 +35,7 @@ GUI.initToolbar = function() {
 	$.each(types, function(key, object) { 
 
 		var newCategoryIcon = document.createElement("img");
-		$(newCategoryIcon).attr("src", "../../guis.common/images/categories/"+object[0].category+".png").attr("alt", "");
+		$(newCategoryIcon).attr("src", "/categoryIcons/"+object[0].category).attr("alt", "");
 		$(newCategoryIcon).attr("width", "24").attr("height", "24");
 
 		$("#header>div.header_left").append(newCategoryIcon);
@@ -176,7 +176,7 @@ GUI.initToolbar = function() {
 			if (object[0].type != "Paint" && object[0].type != "Highlighter") {
 				
 				/* make draggable */
-				var helper = $('<img src="../../guis.common/images/categories/'+object[0].category+'.png" alt="" width="24" height="24" />');
+				var helper = $('<img src="categoryIcons/'+object[0].category+'" alt="" width="24" height="24" />');
 				helper.get(0).callback = function(offsetX,offsetY) {
 
 					var svgpos = $("#content").offset();

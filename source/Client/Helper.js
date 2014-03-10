@@ -11,7 +11,7 @@ var module = {};  // For compatibility with node.js models.
 
 function require(input) {
 	switch (input) {
-		case '../../server.js':
+		case '../../../server.js':
 			return Modules;
 		default:
 			alert('Unknown requirement: ' + input);

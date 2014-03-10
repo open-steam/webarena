@@ -37,18 +37,23 @@ BuildTool.buildClientCode = function(){
 	var that = this;
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
 
-	files.forEach(function (filename) {
+	files.forEach(function (data) {
+		
+		var filename=data.filename;
+		var category=data.category;
+		
 		var fileinfo = filename.split('.');
 		var index = fileinfo[0];
 		var objName = fileinfo[1];
 		if (!index) return;
 		if (!objName) return;
 
-		var filebase = __dirname + '/../objects/' + filename;
+		var filebase = __dirname + '/../objects/' + category + '/' + filename;
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
 		that.addToClientCode(filebase + '/view.js');
 		that.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
+		that.clientCode += enter + objName + '.category="' + category +'";' + enter + enter;
 		that.addToClientCode(filebase + '/languages.js');
 
 	});
