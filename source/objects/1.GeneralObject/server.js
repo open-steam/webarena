@@ -310,7 +310,7 @@ theObject.hasContent=function(){
 */
 theObject.setContent=function(content,callback){
 	
-	console.log(content);
+	//console.log(content);
 	
 	if ((typeof content) != "object" && content.substr(0,22)=='data:image/png;base64,'){
 		
@@ -481,7 +481,7 @@ theObject.getBoundingBox=function(){
 
 theObject.fireEvent=function(name,data){
 	
-	console.log('event fired',name,data);
+	//console.log('event fired',name,data);
 	
 	if (!data) {
 		console.log('#### NO DATA');
