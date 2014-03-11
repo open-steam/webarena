@@ -65,7 +65,6 @@ Modules.Log = require('./Common/Log.js');
 Modules.config = config;
 Modules.Config = config;
 Modules.ObjectManager = require('./Server/ObjectManager.js');
-Modules.Dispatcher = require('./Server/Dispatcher.js');
 Modules.WebServer = require('./Server/WebServer.js');
 Modules.SocketServer = require('./Server/SocketServer.js');
 Modules.UserManager = require('./Server/UserManager.js');
@@ -94,6 +93,7 @@ Modules.ObjectController = require('./Server/controllers/ObjectController.js');
 Modules.ServerController = require('./Server/controllers/ServerController.js');
 
 Modules.InternalDispatcher = require('./Server/apihandler/InternalDispatcher.js');
+Modules.Dispatcher = require('./Server/apihandler/Dispatcher.js');
 
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports=Modules;
