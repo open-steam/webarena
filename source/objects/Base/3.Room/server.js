@@ -20,14 +20,14 @@ theObject.evaluatePositionFor=function(object,data){
 	
 	//let the moved object be evaluated by every structuring or sensitive object in the room
 	
-	var inventory=this.getInventory();
-	
-	for (var i in inventory){
-		var obj=inventory[i];
-		if (obj.isStructuring() || obj.isSensitive()) {
-			obj.evaluateObject(object,data);
+	this.getInventoryAsync(function(inventory){
+		for (var i in inventory){
+			var obj=inventory[i];
+			if (obj.isStructuring() || obj.isSensitive()) {
+				obj.evaluateObject(object,data);
+			}
 		}
-	}
+	});
 	
 }
 
@@ -159,11 +159,36 @@ theObject.placeActiveObjects=function(){
 }
 
 theObject.getInventory=function(){
+	console.log('>>>> Synchronous getInventory in Room');
 	return Modules.ObjectManager.getObjects(this.id,this.context);
 }
 
 theObject.getInventoryAsync = function(cb){
     return Modules.ObjectManager.getObjects(this.id, this.context, cb);
+}
+
+theObject.hasObject=function(obj){
+	console.log('>>>> Synchronous hasObject in Room');
+	
+	var inventory=this.getInventory();
+	for (var i in inventory){
+		if (inventory[i].id==obj.id) return true;
+	}
+	return false;
+}
+
+theObject.hasObjectAsync=function(obj,trueCB,falseCB){
+	
+	this.getInventoryAsync(function(inventory){
+		
+		if (trueCB){
+			for (var i in inventory){
+				if (inventory[i].id==obj.id) return trueCB();
+			}
+			if (falseCB) falseCB();
+		}
+		
+	});
 }
 
 theObject.createObject=function(type,callback){	

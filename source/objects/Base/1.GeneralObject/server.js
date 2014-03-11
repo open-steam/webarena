@@ -46,28 +46,34 @@ theObject.makeSensitive=function(){
 			newData[field]=changeData['new'][field] || this.getAttribute(field);
 		}
 		
-		var inventory=this.getRoom().getInventory();
+		var that=this;
 		
-		for (var i in inventory){
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			room.getInventoryAsync(function(inventory){
+				for (var i in inventory){
 			
-			var object=inventory[i];
-			
-			if(object.id==this.id) continue;
-			
-			var bbox=object.getBoundingBox();
-			
-			//determine intersections
-		
-			var oldIntersects=this.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-			var newIntersects=this.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-			
-			//handle move
-			
-			if (oldIntersects && newIntersects)  this.onMoveWithin(object,newData);
-			if (!oldIntersects && !newIntersects)  this.onMoveOutside(object,newData);
-			if (oldIntersects && !newIntersects)  this.onLeave(object,newData);
-			if (!oldIntersects && newIntersects)  this.onEnter(object,newData);
-		}
+					var object=inventory[i];
+					
+					if(object.id==that.id) continue;
+					
+					var bbox=object.getBoundingBox();
+					
+					//determine intersections
+				
+					var oldIntersects=that.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+					var newIntersects=that.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+					
+					//handle move
+					
+					if (oldIntersects && newIntersects)  that.onMoveWithin(object,newData);
+					if (!oldIntersects && !newIntersects)  that.onMoveOutside(object,newData);
+					if (oldIntersects && !newIntersects)  that.onLeave(object,newData);
+					if (!oldIntersects && newIntersects)  that.onEnter(object,newData);
+				}
+			});
+		})
 		
 	}
 	
@@ -444,17 +450,20 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 
 theObject.evaluatePositionInt=function(data){
 	
-	var room=this.getRoom();
+	var that=this;
 	
-	if (!room) return;
-	
-	room.evaluatePositionFor(this,data);
+	this.getRoomAsync(function(){
+		//error
+	},function(room){
+		if (!room) return;
+		room.evaluatePositionFor(that,data);
+	});
 
 }
 
 
 theObject.getRoom=function(callback){
-	
+	console.log('>>>> Synchronous getRoom in GeneralObject');
 	if (!this.context) return;
 	
 	//search the room in the context and return the room this object is in
@@ -467,6 +476,23 @@ theObject.getRoom=function(callback){
 	}
 	
 	return false;
+}
+
+theObject.getRoomAsync=function(error,cb){
+	if (!this.context) error();
+	
+	//search the room in the context and return the room this object is in
+	
+	for (var index in this.context.rooms){
+		var test=this.context.rooms[index];
+		if (test && test.hasObjectAsync) {
+			test.hasObjectAsync(this,function(){
+				cb(test);
+			});
+		}
+	}
+	
+	error();
 }
 
 theObject.getBoundingBox=function(){

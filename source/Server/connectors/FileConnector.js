@@ -13,13 +13,15 @@ var fs = require('fs');
 var async = require('async');
 
 var Q = require('q');
+var Modules=false;
 
 fileConnector.init=function(theModules){
 	this.Modules=theModules;
+	Modules=theModules;
 }
 
 fileConnector.info=function(){
-	return "FileConnector 1.0";
+	return "FileConnector 1.5";
 }
 
 /**
@@ -154,7 +156,9 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 	var inventory=[];
 
-	try {fs.mkdirSync(filebase+'/'+roomID)} catch(e){};
+	try {
+		fs.mkdirSync(filebase+'/'+roomID)
+	} catch(e){};
 
 	var files=fs.readdirSync(filebase+'/'+roomID);
 
@@ -180,6 +184,8 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 	if (callback === undefined) {
 		/* sync */
+		console.log('>>>> Synchronous return on getInventory (fileConnector)');
+		console.trace();
 		return inventory;
 	} else {
 		/* async */
@@ -226,6 +232,7 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 	} else {
     	if (callback === undefined) {
 			/* sync */
+			console.log('>>>> Synchronous return on getRoomData (fileConnector)');
 			return obj;
 		} else {
 			/* async */
@@ -268,6 +275,9 @@ fileConnector.getRoomHierarchy=function(roomID,context,callback){
 	var buildTree = function(files, cb){
 		files.forEach(function(file){
 			var obj = self.getObjectDataByFile(file,file);
+			if (!obj.attributes) {
+				return;
+			}
 			result.rooms[file] = '' + obj.attributes.name;
 					if (obj.attributes.parent !== undefined) {
 						if (result.relation[obj.attributes.parent] === undefined) {
@@ -457,7 +467,7 @@ fileConnector.getPaintings=function(roomID,context,callback){
 
 	this.Modules.Log.debug("Request paintings (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
-	if (!context) throw new Error('Missing context in getInventory');
+	if (!context) throw new Error('Missing context in getPaintings');
 	
 	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
@@ -481,6 +491,8 @@ fileConnector.getPaintings=function(roomID,context,callback){
 
 	if (callback === undefined) {
 		/* sync */
+		console.log('>>>> Synchronous return on getPaintings (fileConnector)');
+		console.trace();
 		return paintings;
 	} else {
 		/* async */
@@ -551,6 +563,8 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 		this.Modules.Log.debug("Could not read content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 		if (callback == undefined) {
 			//sync
+			console.log('>>>> Synchronous return on getContent (fileConnector)');
+			console.trace();
 			return false;
 		} else {
 			//async
