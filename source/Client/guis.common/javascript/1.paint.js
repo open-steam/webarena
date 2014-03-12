@@ -683,7 +683,7 @@ GUI.editPaint = function() {
 
 	/* add pen selection */
 	var pen = document.createElement("img");
-	$(pen).attr("src", "../../guis.common/images/categories/Paintings.png");
+	$(pen).attr("src", "../../guis.common/images/painting.png");
 	$(pen).addClass("jPaint_navi");
 	$(pen).addClass("jPaint_navi_pen");
 	$(pen).bind("click", function(event) {
@@ -794,6 +794,7 @@ GUI.editPaint = function() {
 	$(closeButton).html(GUI.translate("close"));
 	$(closeButton).bind("click", function(event) {
 		GUI.closePaintMode();
+		$("#statusLabel").remove();
 	});
 	
 	$("#header > div.header_right").append(closeButton);	
