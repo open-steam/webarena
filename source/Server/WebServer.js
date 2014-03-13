@@ -554,6 +554,24 @@ WebServer.init = function (theModules) {
 
 		}
 
+		else if (url == '/time'){
+			var currentdate = new Date(); 
+			var etag=currentdate.getTime();
+			if (req.headers['if-none-match'] === etag) {
+					res.statusCode = 304;
+					res.end();
+			} else {
+				var datetime = "Time: " + currentdate.getDate() + "/"
+				                + (currentdate.getMonth()+1)  + "/" 
+				                + currentdate.getFullYear() + " @ "  
+				                + currentdate.getHours() + ":"  
+				                + currentdate.getMinutes() + ":" 
+				                + currentdate.getSeconds();
+				res.writeHead(200, {'ETag': etag});
+				res.end(datetime);
+			}
+		}
+
 		// objects
 
 		else if (url == '/objects') {
@@ -612,6 +630,9 @@ WebServer.init = function (theModules) {
 
 									if (req.headers['if-none-match'] === etag) {
 										res.statusCode = 304;
+										
+										console.log(url+' in cache '+etag);
+										
 										res.end();
 									} else {
 										var contentType = false;
