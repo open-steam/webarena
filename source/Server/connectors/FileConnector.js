@@ -189,7 +189,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 		return inventory;
 	} else {
 		/* async */
-		callback(inventory);
+		process.nextTick(function(){callback(inventory);});
 	}
 	
 }
@@ -236,7 +236,7 @@ fileConnector.getRoomData=function(roomID,context,callback,oldRoomId){
 			return obj;
 		} else {
 			/* async */
-			callback(obj);
+			process.nextTick(function(){callback(obj);});
 		}
 	}
 }
@@ -496,7 +496,7 @@ fileConnector.getPaintings=function(roomID,context,callback){
 		return paintings;
 	} else {
 		/* async */
-		callback(paintings);
+		process.nextTick(function(){callback(paintings);});
 	}
 	
 }
@@ -553,10 +553,12 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 
 		if (callback == undefined) {
 			//sync
+			console.log('>>>> Synchronous return on getContent (fileConnector)');
+			console.trace();
 			return byteArray;
 		} else {
 			//async
-			callback(byteArray);
+			process.nextTick(function(){callback(byteArray);});
 		}
 		
 	} catch (e) {
@@ -568,7 +570,7 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 			return false;
 		} else {
 			//async
-			callback(false);
+			process.nextTick(function(){callback(false);});
 		}
 	}
 	

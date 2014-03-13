@@ -18,6 +18,7 @@ var theObject=Object.create(require('./common.js'));
 
 var Modules=require('../../../server.js');
 var _ = require('lodash');
+var async = require("async");
 
 // Make the object public
 module.exports=theObject;
@@ -364,11 +365,15 @@ theObject.getCurrentUserName=function(){
 */
 theObject.getContent=function(callback){
 	if (!this.context) throw new Error('Missing context in GeneralObject.getContent');
-	
-	var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
 
-    if(_.isFunction(callback)) callback(content);
-    else return content;
+    if(_.isFunction(callback)) {
+    	Modules.Connector.getContent(this.inRoom, this.id, this.context,callback);
+    }
+    else {
+    	console.log('>>>> Synchronous getContent in GeneralObject');
+    	var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
+    	return content;
+    }
 
 }
 theObject.getContent.public = true;
@@ -378,6 +383,7 @@ theObject.getContent.neededRights = {
 
 theObject.getContentAsString=function(callback){
 	if (callback === undefined) {
+		console.log('>>>> Synchronous getContentAsString in GeneralObject');
 		return GeneralObject.utf8.parse(this.getContent());
 	} else {
 		this.getContent(function(content){
@@ -520,3 +526,279 @@ theObject.fireEvent=function(name,data){
 }
 
 theObject.fireEvent.public=true; //Function can be accessed by customObjectFunctionCall
+
+theObject.getLinkedObjectsAsync=function(callback) {
+	
+	var self = this;
+
+	var getObjects = function(callback) {
+		return Modules.ObjectManager.getObjects(self.get('inRoom'), self.context,callback);
+	}
+	
+	/* get objects linked by this object */
+	var ownLinkedObjectsIds = [];
+
+	if (this.get('link') instanceof Array) {
+        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.get('link'));
+	} else {
+		ownLinkedObjectsIds.push(this.get('link'));
+	}
+	
+	/* get objects which link to this object */
+	var linkingObjectsIds = [];
+	
+	getObjects(function(objects){
+		for (var index in objects) {
+			var object = objects[index];
+	
+			if (object.get('link')) {
+				
+				if (object.get('link') instanceof Array) {
+	
+					for (var index in object.get('link')) {
+						var objectId = object.get('link')[index];
+					
+						if (objectId == self.get('id')) {
+							linkingObjectsIds.push(object.get('id'));
+						}
+						
+					}
+					
+				} else {
+	
+					if (object.get('link') == self.get('id')) {
+						linkingObjectsIds.push(object.get('id'));
+					}
+					
+				}
+				
+			}
+			
+		}
+		
+		var links = {};
+
+		if (ownLinkedObjectsIds) {
+	
+			for (var index in ownLinkedObjectsIds) {
+				var objectId = ownLinkedObjectsIds[index];
+	
+				if (!objectId) break;
+	
+				var webarenaObject = getObject(objectId);
+	
+				links[objectId] = {
+					object : webarenaObject,
+					direction : "out"
+				}
+	
+			}
+		}
+		
+		
+		if (linkingObjectsIds) {
+	
+			for (var index in linkingObjectsIds) {
+				var objectId = linkingObjectsIds[index];
+				
+				if (!objectId) break;
+	
+				var webarenaObject = getObject(objectId);
+	
+				links[objectId] = {
+					object : webarenaObject,
+					direction : "in"
+				}
+	
+			}
+		}
+	
+		callback(links);
+		
+		
+	});		
+	
+}
+
+theObject.getLinkedObjects=function() {
+	
+	console.log('>>>> Synchronous GETLINKEDOBJECTS');
+	
+	var self = this;
+	
+	var getObject = function(id) {
+		return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
+	}
+	var getObjects = function() {
+		return Modules.ObjectManager.getObjects(self.get('inRoom'), self.context);
+	}
+
+	/* get objects linked by this object */
+	var ownLinkedObjectsIds = [];
+
+
+	if (this.get('link') instanceof Array) {
+        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.get('link'));
+	} else {
+		ownLinkedObjectsIds.push(this.get('link'));
+	}
+
+	/* get objects which link to this object */
+	var linkingObjectsIds = [];
+	
+
+	var objects = getObjects();
+
+	for (var index in objects) {
+		var object = objects[index];
+
+		if (object.get('link')) {
+			
+			if (object.get('link') instanceof Array) {
+
+				for (var index in object.get('link')) {
+					var objectId = object.get('link')[index];
+				
+					if (objectId == self.get('id')) {
+						linkingObjectsIds.push(object.get('id'));
+					}
+					
+				}
+				
+			} else {
+
+				if (object.get('link') == self.get('id')) {
+					linkingObjectsIds.push(object.get('id'));
+				}
+				
+			}
+			
+		}
+		
+	}
+
+	var links = {};
+
+	if (ownLinkedObjectsIds) {
+
+		for (var index in ownLinkedObjectsIds) {
+			var objectId = ownLinkedObjectsIds[index];
+
+			if (!objectId) break;
+
+			var webarenaObject = getObject(objectId);
+
+			links[objectId] = {
+				object : webarenaObject,
+				direction : "out"
+			}
+
+		}
+	}
+	
+	
+	if (linkingObjectsIds) {
+
+		for (var index in linkingObjectsIds) {
+			var objectId = linkingObjectsIds[index];
+			
+			if (!objectId) break;
+
+			var webarenaObject = getObject(objectId);
+
+			links[objectId] = {
+				object : webarenaObject,
+				direction : "in"
+			}
+
+		}
+	}
+
+	return links;
+}
+
+theObject.getObjectsToDuplicateAsync = function(list,callback) {
+	
+	if (list == undefined) {
+		/* init new list */
+		
+		/* list of objects which will be duplicated */
+		var list = {};
+		
+	}	
+
+	this.getLinkedObjectsAsync(function(linkedObjects){
+		
+		var temp=[];
+		
+		for (var id in linkedObjects) {
+			var target = linkedObjects[id];
+			var targetObject = target.object;
+			
+			if (targetObject && targetObject && !list[targetObject.get('id')]) {
+				temp.push(targetObject.getObjectsToDuplicate);
+		}
+		
+		temp.push=function(list,callback){
+			list[self.get('id')] = true; //add this object to list
+		}
+		
+		async.applyEachSeries(temp, list, function(){
+			var arrList = [];
+	
+			for (var objectId in list) {
+		
+				arrList.push(objectId);
+				
+			}
+			
+			callback(arrList);
+		});
+		
+		
+	});
+
+	
+}
+
+
+theObject.getObjectsToDuplicate = function(list) {
+	
+	console.log('>>>> Synchronous GETOBJECTSTODUPLICATE');
+	
+	var self = this;
+	
+	if (list == undefined) {
+		/* init new list */
+		
+		/* list of objects which will be duplicated */
+		var list = {};
+		
+	}
+	
+	list[self.get('id')] = true; //add this object to list
+	
+	var linkedObjects = this.getLinkedObjects();
+
+	for (var id in linkedObjects) {
+		var target = linkedObjects[id];
+		var targetObject = target.object;
+		
+		if (targetObject && targetObject && !list[targetObject.get('id')]) {
+			targetObject.getObjectsToDuplicate(list);
+		}
+		
+	}
+
+	var arrList = [];
+	
+	for (var objectId in list) {
+
+		arrList.push(objectId);
+		
+	}
+	
+	return arrList;
+	
+}
+

@@ -220,3 +220,98 @@ GeneralObject.hasPixelAt=function(x,y){
 }
 
 GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
+
+GeneralObject.getLinkedObjects=function() {
+	var self = this;
+
+	var getObject = function(id) {
+		return ObjectManager.getObject(id);
+	}
+	var getObjects = function() {
+		return ObjectManager.getObjects(ObjectManager.getIndexOfObject(self.getId()));
+	}
+
+	/* get objects linked by this object */
+	var ownLinkedObjectsIds = [];
+
+
+	if (this.get('link') instanceof Array) {
+        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.get('link'));
+	} else {
+		ownLinkedObjectsIds.push(this.get('link'));
+	}
+
+	/* get objects which link to this object */
+	var linkingObjectsIds = [];
+	
+
+	var objects = getObjects();
+
+	for (var index in objects) {
+		var object = objects[index];
+
+		if (object.get('link')) {
+			
+			if (object.get('link') instanceof Array) {
+
+				for (var index in object.get('link')) {
+					var objectId = object.get('link')[index];
+				
+					if (objectId == self.get('id')) {
+						linkingObjectsIds.push(object.get('id'));
+					}
+					
+				}
+				
+			} else {
+
+				if (object.get('link') == self.get('id')) {
+					linkingObjectsIds.push(object.get('id'));
+				}
+				
+			}
+			
+		}
+		
+	}
+
+	var links = {};
+
+	if (ownLinkedObjectsIds) {
+
+		for (var index in ownLinkedObjectsIds) {
+			var objectId = ownLinkedObjectsIds[index];
+
+			if (!objectId) break;
+
+			var webarenaObject = getObject(objectId);
+
+			links[objectId] = {
+				object : webarenaObject,
+				direction : "out"
+			}
+
+		}
+	}
+	
+	
+	if (linkingObjectsIds) {
+
+		for (var index in linkingObjectsIds) {
+			var objectId = linkingObjectsIds[index];
+			
+			if (!objectId) break;
+
+			var webarenaObject = getObject(objectId);
+
+			links[objectId] = {
+				object : webarenaObject,
+				direction : "in"
+			}
+
+		}
+	}
+
+	return links;
+}
+
