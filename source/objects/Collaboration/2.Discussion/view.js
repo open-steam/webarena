@@ -9,7 +9,7 @@ Discussion.drawEmbedded = function () {
 
     var rep = this.getRepresentation();
     rep.dataObject = this;
-
+		
     // set properties
     this.setViewX(this.getAttribute('x'));
     this.setViewY(this.getAttribute('y'));
@@ -47,8 +47,9 @@ Discussion.updateHeading = function(newHeading){
 }
 
 Discussion.drawIcon = function () {
-    var rep = this.getRepresentation();
-
+		
+	var rep = this.getRepresentation();
+		
     this.setViewX(this.getAttribute('x'));
     this.setViewY(this.getAttribute('y'));
 
@@ -112,9 +113,9 @@ Discussion.enableInlineEditors = function () {
 
     $(rep).find('.discussion-statement-text').editable(saveFunction, {
         type: "autogrow",
-        submit: 'Speichern',
-        cancel: 'Abbrechen',
-        placeholderHTML5: 'Diskussions-Titel',
+        submit: this.translate(GUI.currentLanguage, "Save"),
+        cancel: this.translate(GUI.currentLanguage, "Cancel"),
+        placeholderHTML5: this.translate(GUI.currentLanguage, "Title of discussion"),
         autogrow: {
             lineHeight: 16,
             maxHeight: 512
@@ -159,13 +160,14 @@ Discussion.switchState = function () {
 
 
 Discussion.createRepresentationEmbedded = function (parent) {
+	
     var that = this;
 
     // wrapper
     var rep = GUI.svg.other(parent,"foreignObject");
     rep.dataObject = this;
 
-    var heading = this.getAttribute("discussionTitle") || "Bitte klicken Sie hier, um den Text zu ändern."
+    var heading = this.getAttribute("discussionTitle") || this.translate(GUI.currentLanguage, "Title of discussion");
 
     // content
     var body = document.createElement("body");
@@ -230,7 +232,9 @@ Discussion.createRepresentationEmbedded = function (parent) {
         );
     }, 1000);
 
-    this.fetchDiscussion(rep);
+	if(this.getAttribute('hasContent')){
+		this.fetchDiscussion(rep);
+	}
 
     return rep;
 }
@@ -241,7 +245,7 @@ Discussion.createRepresentationIcon = function (parent) {
     var rep = GUI.svg.other(parent,"foreignObject");
 
     var body = document.createElement("body");
-    var title = this.getAttribute('discussionTitle') || "Nicht gesetzt.";
+    var title = this.getAttribute('discussionTitle') || this.translate(GUI.currentLanguage, "Discussion without title");
 
     $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text moveArea'>" + title + "</div></div>");
 
@@ -259,6 +263,7 @@ Discussion.getFileIcon = function () {
 
 
 Discussion.createRepresentation = function (parent) {
+
     var embedded = this.getAttribute("show_embedded");
     var rep;
     if (embedded) {
@@ -327,6 +332,7 @@ Discussion.updateInnerHeightIcon = function (value) {
 }
 
 Discussion.representationCreated = function () {
+
     GeneralObject.representationCreated.call(this);
     var that = this;
 
@@ -340,9 +346,9 @@ Discussion.representationCreated = function () {
     var rep = this.getRepresentation();
     $(rep).find('.discussion-heading').editable(saveFunction, {
         type: "autogrow",
-        submit: 'Speichern',
-        placeholderHTML5: 'Diskussions-Titel',
-        cancel: "Abbrechen",
+        submit: this.translate(GUI.currentLanguage, "Save"),
+        placeholderHTML5: this.translate(GUI.currentLanguage, "Title of discussion"),
+        cancel: this.translate(GUI.currentLanguage, "Cancel"),
 
         data: function () {
             var headingText = that.getAttribute('discussionTitle') || '';

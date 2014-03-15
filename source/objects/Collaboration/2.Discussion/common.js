@@ -27,10 +27,7 @@ Discussion.register=function(type){
     this.registerAttribute('linecolor',{hidden: true});
 
     this.registerAttribute("show_embedded",{
-        hidden: true,
-        changedFunction: function(object, value) {
-            object.switchStateView();
-        }
+        hidden: true
     })
 
     this.registerAttribute("discussionTitle",{
@@ -42,18 +39,20 @@ Discussion.register=function(type){
 
 }
 
+
 Discussion.execute=function(){
     if(!this.getAttribute("show_embedded")){
         this.switchState();
     }
 }
 
+
 Discussion.moveByTransform = function(){
-   return false
+   return false 
 }
 
 Discussion.isCreatable=true;
-Discussion.restrictedMovingArea = true;
+Discussion.restrictedMovingArea = false; 
 Discussion.contentURLOnly = false;
 
 Discussion.register('Discussion');

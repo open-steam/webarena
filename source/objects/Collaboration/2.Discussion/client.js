@@ -12,11 +12,10 @@ Discussion.deleteStatement = function(timestamp){
 Discussion.fetchDiscussion = function(rep){
     if(!rep)rep = this.getRepresentation();
     var that = this;
-
+	
     var remoteContent = this.getContentAsString();
 
     if(remoteContent !== "") remoteContent = JSON.parse(remoteContent);
-
 
     that.messageArray = remoteContent;
 
