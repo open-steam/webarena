@@ -72,30 +72,22 @@ theObject.getPositioningDataFor=function(activeObject){
 		var gValue=this.getAttribute('value');
 		var oValue=activeObject.getAttribute(gKey);
 		
-		if (!oValue){
+		if (gValue===oValue){
+			var result={reference:'must'};
 			
-			var result={reference:'ignore'};
-		
+			result.minX=this.getAttribute('x');
+			result.maxX=this.getAttribute('x')+this.getAttribute('width');
+			result.minY=this.getAttribute('y');
+			result.maxY=this.getAttribute('y')+this.getAttribute('height');
 		} else {
-		
-			if (gValue===oValue){
-				var result={reference:'must'};
-				
-				result.minX=this.getAttribute('x')-activeObject.getAttribute('width')/2;
-				result.maxX=this.getAttribute('x')+this.getAttribute('width')/2;
-				result.minY=this.getAttribute('y')-activeObject.getAttribute('height')/2;
-				result.maxY=this.getAttribute('y')+this.getAttribute('height')/2;
-			} else {
-				var result={reference:'mustnot'};
-				
-				result.minX=this.getAttribute('x')-activeObject.getAttribute('width')/2;
-				result.maxX=this.getAttribute('x')+this.getAttribute('width')/2;
-				result.minY=this.getAttribute('y')-activeObject.getAttribute('height')/2;
-				result.maxY=this.getAttribute('y')+this.getAttribute('height')/2;
-			}
-
+			var result={reference:'mustnot'};
 			
+			result.minX=this.getAttribute('x');
+			result.maxX=this.getAttribute('x')+this.getAttribute('width');
+			result.minY=this.getAttribute('y');
+			result.maxY=this.getAttribute('y')+this.getAttribute('height');
 		}
+
 		
 		return result;
 }

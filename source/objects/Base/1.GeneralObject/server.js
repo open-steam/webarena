@@ -216,6 +216,18 @@ theObject.makeStructuring=function(){
 		this.getRoom().placeActiveObjects();
 	}
 	
+	if (!this.structures) this.structures=function(obj){
+		
+		//determines, if a given object is to be structured by this structuring object
+		
+		if (this.id==obj.id) return false;
+		
+		if (obj.isStructuring()) return false;
+		if (obj.isIllustrating()) return false;
+		
+		return true;
+	} 
+	
 	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
 		
 		var result={reference:'ignore'};

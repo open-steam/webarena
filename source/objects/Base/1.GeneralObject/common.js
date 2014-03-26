@@ -36,6 +36,18 @@ GeneralObject.makeStructuring=function(){
 	this.isStructuringFlag=true;
 }
 
+GeneralObject.makeActive=function(){
+	this.isActiveFlag=true;
+}
+
+GeneralObject.isActive=function(){
+	return this.isActiveFlag||false;
+}
+
+GeneralObject.isIllustrating=function(){
+	return !(this.isActive());
+}
+
 GeneralObject.isSensitive=function(){
 	return this.isSensitiveFlag||false;
 }
@@ -136,6 +148,20 @@ GeneralObject.register=function(type){
 	
 	this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
 	this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
+	
+	this.registerAttribute('cx',{hidden:true,getFunction:function(object){
+		return Math.floor(object.getAttribute('x')+object.getAttribute('width')/2);
+	},setFunction:function(object,value){
+		object.setAttribute('x',Math.floor(value-object.getAttribute('width')/2));
+	}});
+	this.registerAttribute('cy',{hidden:true,getFunction:function(object){
+		return Math.floor(object.getAttribute('y')+object.getAttribute('height')/2);
+	},setFunction:function(object,value){
+		object.setAttribute('y',Math.floor(value-object.getAttribute('height')/2));
+	}});
+
+
+	
 	this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
 		if (object.resizeProportional()) {

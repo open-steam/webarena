@@ -29,6 +29,8 @@ IconObject.register=function(type){
 	this.unregisterAction('to back');
 	this.unregisterAction('to front');
 	
+	this.makeActive(); // Icon object normally are subject to structuring
+	
 }
 
 

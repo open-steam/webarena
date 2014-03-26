@@ -631,8 +631,6 @@ WebServer.init = function (theModules) {
 									if (req.headers['if-none-match'] === etag) {
 										res.statusCode = 304;
 										
-										console.log(url+' in cache '+etag);
-										
 										res.end();
 									} else {
 										var contentType = false;

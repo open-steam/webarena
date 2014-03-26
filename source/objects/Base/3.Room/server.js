@@ -40,26 +40,19 @@ theObject.placeActiveObjects=function(){
 	
 	for (var key in objects){
 		var active=objects[key];
-		var currentIsActive;
-		if(active.isActive === "function"){
-			currentIsActive = active.isActive();
-		}
-		if (currentIsActive !== false){
-			for (var key2 in objects){
-				var structuring=objects[key2];
-				if (structuring.isStructuring()){
-					if(currentIsActive || structuring.decideIfActive(active)){
-						var data=structuring.getPositioningDataFor(active);
-						if (data.reference!=='ignore'){
-							if (!positions[active.id]) positions[active.id]={object:active,musts:[],mustnots:[]};
-							if (data.reference=='must') {
-								positions[active.id].musts.push(data);
-							} else {
-								positions[active.id].mustnots.push(data);
-							}
-						}
+		for (var key2 in objects){
+			var structuring=objects[key2];
+			if (structuring.isStructuring() && structuring.structures(active)){
+				console.log('#### '+structuring+' is structuring '+active);
+				var data=structuring.getPositioningDataFor(active);
+				if (data.reference!=='ignore'){
+					if (!positions[active.id]) positions[active.id]={object:active,musts:[],mustnots:[]};
+					if (data.reference=='must') {
+						positions[active.id].musts.push(data);
+					} else {
+						positions[active.id].mustnots.push(data);
 					}
-				}
+				}	
 			}
 		}
 	}
@@ -142,8 +135,12 @@ theObject.placeActiveObjects=function(){
 			
 			//TODO include mustnots
 			
-			object.setAttribute('x',newX);
-			object.setAttribute('y',newY);
+			if (!newX && !newY){
+				console.log('No potision for '+object);
+			}
+			
+			object.setAttribute('cx',newX);
+			object.setAttribute('cy',newY);
 			object.setAttribute('visible',true);
 			
 		}
