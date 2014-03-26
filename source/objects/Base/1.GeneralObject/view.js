@@ -232,8 +232,6 @@ GeneralObject.createRepresentation = function() {
 	rep.dataObject=this;
 
 	$(rep).attr("id", this.getAttribute('id'));
-	
-	$(rep).attr("contextmenu", 'html5menu');
 
 	this.initGUI(rep);
 	
@@ -1131,6 +1129,8 @@ GeneralObject.moveStart = function(event) {
 				}
 			}
 		}
+		
+		//call moveHandler only after finishing the move (to set the final x and y values)
 		else{
  			$.each(ObjectManager.getSelected(), function(index, object) {
  				object.moveHandler();
@@ -1221,7 +1221,8 @@ GeneralObject.moveRelative = function(dx, dy) {
 
 	this.adjustControls();
 
-	/*if (!GUI.couplingModeActive) {
+	/*    deactivated to simplify the evaluation of objects (the object position is only set after the object movement by calling moveHandler) 
+	if (!GUI.couplingModeActive) {
 		this.moveHandler();
 	}
 	*/
