@@ -232,6 +232,8 @@ GeneralObject.createRepresentation = function() {
 	rep.dataObject=this;
 
 	$(rep).attr("id", this.getAttribute('id'));
+	
+	$(rep).attr("contextmenu", 'html5menu');
 
 	this.initGUI(rep);
 	
@@ -1129,6 +1131,11 @@ GeneralObject.moveStart = function(event) {
 				}
 			}
 		}
+		else{
+ 			$.each(ObjectManager.getSelected(), function(index, object) {
+ 				object.moveHandler();
+ 			});
+		}
 
 		event.preventDefault();
 		event.stopPropagation();
@@ -1214,10 +1221,10 @@ GeneralObject.moveRelative = function(dx, dy) {
 
 	this.adjustControls();
 
-	if (!GUI.couplingModeActive) {
+	/*if (!GUI.couplingModeActive) {
 		this.moveHandler();
 	}
-	
+	*/
 }
 
 /**
@@ -1455,6 +1462,7 @@ GeneralObject.clickTimeout = false;
  * @param {DomEvent} event The DOM click event
  */
 GeneralObject.click = function(event) {
+
 	var self = this;
 	
 	if (GUI.isTouchDevice) {
