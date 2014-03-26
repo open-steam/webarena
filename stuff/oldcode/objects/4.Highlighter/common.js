@@ -5,15 +5,13 @@
 *
 */
 
-var Modules=require('../../server.js');
+var Modules=require('../../../server.js');
 
 var Highlighter=Object.create(Modules.ObjectManager.getPrototype('Paint'));
 
 
 
 Highlighter.register('Highlighter');
-Highlighter.isCreatable=false;
-
-Highlighter.category='Highlighters';
+Highlighter.isCreatable=true;
 
 module.exports=Highlighter;

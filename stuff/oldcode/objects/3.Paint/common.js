@@ -5,7 +5,7 @@
 *
 */
 
-var Modules=require('../../server.js');
+var Modules=require('../../../server.js');
 
 var Paint=Object.create(Modules.ObjectManager.getPrototype('ImageObject'));
 
@@ -40,8 +40,6 @@ Paint.isResizable=function(){
 Paint.removeObjectWithoutContent = true;
 
 Paint.register('Paint');
-Paint.isCreatable=false;
-
-Paint.category='Paintings';
+Paint.isCreatable=true;
 
 module.exports=Paint;
