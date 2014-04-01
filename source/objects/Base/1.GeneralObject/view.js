@@ -3,7 +3,7 @@
 *
 *    @author Felix Winkelnkemper, University of Paderborn, 2014
 *
-*	 GeneralObject view component.
+*	 GeneralObject view component
 *
 */
 
