@@ -1,7 +1,7 @@
 /**
 *    Webarena - A web application for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
+*    @author Felix Winkelnkemper, University of Paderborn, 2014
 *
 *	 GeneralObject view component
 *
