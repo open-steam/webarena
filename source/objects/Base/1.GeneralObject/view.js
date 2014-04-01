@@ -1129,6 +1129,13 @@ GeneralObject.moveStart = function(event) {
 				}
 			}
 		}
+		
+		//call moveHandler only after finishing the move (to set the final x and y values)
+		else{
+ 			$.each(ObjectManager.getSelected(), function(index, object) {
+ 				object.moveHandler();
+ 			});
+		}
 
 		event.preventDefault();
 		event.stopPropagation();
@@ -1214,10 +1221,11 @@ GeneralObject.moveRelative = function(dx, dy) {
 
 	this.adjustControls();
 
+	/*    deactivated to simplify the evaluation of objects (the object position is only set after the object movement by calling moveHandler) 
 	if (!GUI.couplingModeActive) {
 		this.moveHandler();
 	}
-	
+	*/
 }
 
 /**
@@ -1455,6 +1463,7 @@ GeneralObject.clickTimeout = false;
  * @param {DomEvent} event The DOM click event
  */
 GeneralObject.click = function(event) {
+
 	var self = this;
 	
 	if (GUI.isTouchDevice) {
