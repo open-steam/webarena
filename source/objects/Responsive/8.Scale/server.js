@@ -10,8 +10,8 @@
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 module.exports=theObject;
-/*
-theObject.onLeave=function(object,oldData,newData){
+
+theObject.onLeave=function(object,data){
 	
 	if (this.checkData()){
 		var data=this.getData();
@@ -23,10 +23,9 @@ theObject.onLeave=function(object,oldData,newData){
 	}
 
 };
-*/
 
-/*
-theObject.onEnter=function(object,oldData,newData){
+
+theObject.onEnter=function(object,data){
 	
 	if (this.checkData()){
 		var data=this.getData();
@@ -38,33 +37,35 @@ theObject.onEnter=function(object,oldData,newData){
 		
 	}
 };
-*/
 
-/*
+
+
 theObject.onMoveWithin=function(object,oldData,newData){
 	
 	return this.onEnter(object,oldData,newData);
 		
 };
-*/
 
-/*
+
+
 theObject.onMoveOutside=function(object,oldData,newData){
 	
 	return this.onLeave(object,oldData,newData);
 	
 };
-*/
 
-/*
+
 theObject.getData=function(){
 	var attribute=this.getAttribute('attribute');
-	var value=this.getAttribute('value');
+	var value=positionToValue(this);
 	return {'attribute':attribute,'value':value};	
 }
-*/
 
-/*
+function positionToValue(object){
+	return 5;
+}
+
+
 theObject.checkData=function(){
 	var data=this.getData();
 	
@@ -75,9 +76,8 @@ theObject.checkData=function(){
 	
 	return true;
 }
-*/
 
-/*
+
 theObject.getPositioningDataFor=function(activeObject){
 	
 		var gKey=this.getAttribute('attribute');
@@ -103,5 +103,4 @@ theObject.getPositioningDataFor=function(activeObject){
 		
 		return result;
 }
-*/
 	

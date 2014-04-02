@@ -38,7 +38,7 @@ theObject.makeSensitive=function(){
 		
 		var oldData={};
 		var newData={};
-		var fields=['x','y','width','height'];
+		var fields=['x','y','cx','cy','width','height'];
 		
 		for (var i=0;i<4;i++){
 			var field=fields[i];
@@ -151,7 +151,7 @@ theObject.makeSensitive=function(){
 		
 		var oldData={};
 		var newData={};
-		var fields=['x','y','width','height'];
+		var fields=['x','y','cx','cy','width','height'];
 		
 		for (var i=0;i<4;i++){
 			var field=fields[i];
