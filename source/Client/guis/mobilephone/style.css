@@ -150,7 +150,7 @@ body {
 	margin: 0px auto;
 	padding: 0px;
 	position: absolute;
-	top: 0px;
+	top: 33px;
 	left: 0px;
 	right: 0px;
 	/*border: 1px solid #000000;*/
@@ -254,7 +254,6 @@ input.login_input:focus {
 	text-align: center;
 	color: #AEAEAE;
 	font-size: 14px;
-	border-radius: 5px;
 	
 	background: -moz-linear-gradient(
 		top,
@@ -1010,4 +1009,21 @@ svg text.font-icon{
 
 .hidden{
   display: none;
+}
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.line {
+	fill: none;
+	stroke: steelblue;
+	shape-rendering: auto;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
 }

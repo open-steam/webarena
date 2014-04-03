@@ -48,8 +48,10 @@ WebServer.init = function (theModules) {
 		
 		if (agent && agent.indexOf('iPhone') > 0 ||
 			(agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0)) {
+			WebServer.userGUI = 'mobilephone';
 			this.userGUI = 'mobilephone';
 		} else {
+			WebServer.userGUI = 'desktop';
 			this.userGUI = 'desktop';
 		}
 
@@ -515,8 +517,8 @@ WebServer.init = function (theModules) {
 
 		else if (url == '/objects') {
 
+		console.log(WebServer.userGUI);
 			try {
-
 				var code = Modules.BuildTool.getClientCode();
 
 				var mimeType = 'application/javascript';

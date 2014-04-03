@@ -28,6 +28,7 @@ GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
 GeneralObject.alwaysOnTop = function() {return false;};
 GeneralObject.onMobile = false;
+GeneralObject.isSelectedOnMobile = false;
 GeneralObject.hasMobileRep = false;
 GeneralObject.hasEditableMobileContent = false;
 

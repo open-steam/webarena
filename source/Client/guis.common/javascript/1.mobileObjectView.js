@@ -1,14 +1,42 @@
 "use strict";
 
+window.onresize = function() {
+	if (GUI.currentObject == null) {
+		return;
+	}
+	
+	if (GUI.currentObject.hasMobileRep) {
+		GUI.refreshMobileRepresentation();
+	}
+}
+
+GUI.currentObject = null;
+
 GUI.buildObjectView = function(object) {
+	// Create the title bar of the object view.
+	GUI.currentObject = object;
+	var titlebar = document.createElement("div");
+	titlebar.appendChild(document.createTextNode(object.getName()));
+	$(titlebar).addClass("header");
+	
+	$("body").append(titlebar);
+	
+	$(titlebar).bind("click", function() {
+		object.isSelectedOnMobile = false;
+		GUI.currentObject.draw();
+		$("#objectview").fadeOut("slow");
+		$("#objectlist").fadeIn("slow");
+		$(objectCont).remove();
+		$(titlebar).remove();
+	});
+	
 	// Check for graphical representation on mobile view.
 	if (object.hasMobileRep) {
 		// Scale the canvas.
-		GUI.mobileSVG.configure(
-			{width: $(window).width(), height: $(window).height() / 2}, true);
-		
+		object.isSelectedOnMobile = true;
+		GUI.refreshMobileRepresentation();
 		// Build the mobile representation.
-		object.buildMobileRep(GUI.mobileSVG);
+		// object.buildMobileRep(GUI.mobileSVG);
 	}
 	
 	var objectCont = document.createElement('div');
@@ -25,26 +53,19 @@ GUI.buildObjectView = function(object) {
 	
 	$('#objectview').append(objectCont);
 	
-	// Create a close button.
-	var closeButton = document.createElement("div");
-    var buttonText = document.createTextNode("Ansicht schliessen");
-    closeButton.appendChild(buttonText);
-    $(closeButton).addClass("closeButton");
-                
-    $("body").append(closeButton);
-                
-    $(closeButton).bind("click", function() {
-		// Close the object view.
-		$("#objectview").fadeOut("slow");
-		$("#objectlist").fadeIn("slow");
-		$(objectCont).remove();
-		$(closeButton).remove();
-        GUI.mobileSVG.clear(true);
-    });
-	
 	// Switch to object view.
 	$("#objectlist").fadeOut("slow");
 	$("#objectview").fadeIn("slow");
+}
+
+GUI.updateObjectView = function(object, key, newValue, local) {
+	GUI.refreshMobileRepresentation();
+}
+
+GUI.refreshMobileRepresentation = function() {
+	GUI.svg.configure(
+		{width: $(window).width(), height: $(window).width()}, true);
+	GUI.currentObject.draw();
 }
 
 GUI.buildAttributeTable = function(object) {

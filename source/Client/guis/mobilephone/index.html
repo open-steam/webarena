@@ -41,7 +41,9 @@
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
-	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svggraph.min.js"></script>
+	
+	<!-- Library for creating data driven complex svg graphs. -->
+	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
@@ -179,12 +181,7 @@
 			<div class="header_left"></div>
 			<div class="header_right"></div>
 		</div>
-	<div id="objectlist">
-		<div id="header">
-			<div class="header_left"></div>
-			<div class="header_right"></div>
-		</div>
-	</div>
+	<div id="objectlist"></div>
 	<div id="objectview"></div>
 	
 	<!--

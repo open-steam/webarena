@@ -36,6 +36,7 @@ BuildTool.addToClientCode = function(filename) {
 BuildTool.buildClientCode = function(){
 	var that = this;
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
+	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
 
 	files.forEach(function (filename) {
 		var fileinfo = filename.split('.');
@@ -47,7 +48,17 @@ BuildTool.buildClientCode = function(){
 		var filebase = __dirname + '/../objects/' + filename;
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
-		that.addToClientCode(filebase + '/view.js');
+		
+		/* We take the view of the GeneralObject as the base prototype.
+		 * Objects which has a mobile representation must have a file named mobileView.js.
+		 */
+		console.log(Modules.WebServer.userGUI);
+		if (Modules.WebServer.userGUI == "desktop" || objName == "GeneralObject") {
+			that.addToClientCode(filebase + '/view.js');
+		} else {
+			that.addToClientCode(filebase + '/mobileView.js');
+		}
+		
 		that.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
 		that.addToClientCode(filebase + '/languages.js');
 
@@ -60,13 +71,14 @@ BuildTool.buildClientCode = function(){
  *  get the combined client side sourcecode for objects.
  **/
 BuildTool.getClientCode = function () {
+	this.buildClientCode();
 	return this.clientCode;
 }
 
 BuildTool.init = function(theModules){
 	Modules = theModules;
 	showDebugLineNumbers = !!Modules.config.debugMode;
-	this.buildClientCode();
+	// this.buildClientCode();
 }
 
 module.exports = BuildTool;

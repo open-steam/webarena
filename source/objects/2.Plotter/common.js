@@ -7,6 +7,7 @@ Plotter.register = function(type) {
 	GeneralObject = Modules.ObjectManager.getPrototype('GeneralObject')
 	GeneralObject.register.call(this, type);
 	
+	/* Maybe we will change this in the future. */
 	this.attributeManager.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
     this.attributeManager.registerAttribute('linestyle',{type:'selection',standard:'stroke',options:['stroke','dotted','dashed'],category:'Appearance'});
 	this.attributeManager.registerAttribute('linecolor',{standard:'black'});
@@ -26,6 +27,7 @@ Plotter.execute=function(){
 
 Plotter.register('Plotter');
 Plotter.isCreatable = true;
+/* Plotter is accessible and displayable on mobile version. */
 Plotter.onMobile = true;
 Plotter.hasMobileRep = true;
 Plotter.hasEditableMobileContent = true;
@@ -35,8 +37,10 @@ Plotter.moveByTransform = function() {
 
 Plotter.contentURLOnly = false;
 
+/* The content describes a chart which can be drawn by the plotter. */
 Plotter.content = JSON.stringify({
 	xAxis: {
+		label: "x",
 		scale: {
 			min: 0,
 			max: 100
@@ -47,6 +51,7 @@ Plotter.content = JSON.stringify({
 		}
 	},
 	yAxis: {
+		label: "y",
 		scale: {
 			min: 0,
 			max: 100
@@ -56,13 +61,19 @@ Plotter.content = JSON.stringify({
 			minor: 0
 		}
 	},
-	points: [[0,0],[25,75],[50,25],[100,50]]
+	values: [
+		[0, 10], [10, 0], [20, 10], [30, 0], [40, 10],
+		[50, 0], [60, 10], [70, 0], [80, 10], [90, 0],
+		[100, 10]
+	]
 });
 
+/* Sets the default content on creation. */
 Plotter.justCreated=function(){
 	this.setContent(this.content);
 }
 
+/* Returns the content as an object. */
 Plotter.getContentAsObject = function() {
 	// Check if the content is already fetched as a string.
 	if (typeof this.content != "string") {
@@ -85,6 +96,7 @@ Plotter.getContentAsObject = function() {
 	return undefined;
 }
 
+/* Sets content as a JSON string. */
 Plotter.setContentAsJSON = function(content) {
 	// Save content as a JSON string.
 	this.setContent(JSON.stringify(content));

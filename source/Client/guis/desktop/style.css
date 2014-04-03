@@ -780,3 +780,20 @@ svg text.font-icon{
 .hidden{
   display: none;
 }
+
+.axis text {
+  font: 10px sans-serif;
+}
+
+.line {
+	fill: none;
+	stroke: steelblue;
+	shape-rendering: auto;
+}
+
+.axis line,
+.axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}

@@ -1,6 +1,13 @@
 "use strict";
 
+GUI.objectListSettings = {
+    visible: true,
+    openedCategories: []
+}
+
 GUI.initObjectList = function() {
+    ObjectManager.registerOnObjectRemoveListener(this.onObjectRemove);
+    $("#objectview").hide();
     var types = [];
     
     // Display all categories which are accessible on mobile phone.
@@ -45,6 +52,7 @@ GUI.initObjectList = function() {
             var objectDiv = document.createElement("div");
             objectElement.appendChild(objectText);
             objectDiv.appendChild(objectElement);
+            objectDiv.setAttribute("id", object.getId() + "ID");
             $(objectDiv).addClass("object");
              
             $("#" + categoryID + "Container").append(objectDiv);
@@ -69,6 +77,52 @@ GUI.initObjectList = function() {
         
         // Close all categories on startup.
         $("#" + categoryID + "Container").slideUp();
+    });
+}
+
+GUI.onObjectRemove = function(object) {
+    $("#" + object.getId() + "ID").remove();
+}
+
+GUI.updateObjectList = function(object, key, newValue, local) {
+    // Do not update if the object list isn't visible.
+    if (!GUI.objectListSettings.visible) {
+        return;
+    }
+    
+    if ($("#" + object.getId() + "ID").length > 0) {
+        return;
+    }
+    GUI.addObjectToObjectList(object, object.category);
+    
+    
+    //$("#objectlist").empty();
+    //GUI.initObjectList();
+}
+
+GUI.addObjectToObjectList = function(object, category) {
+    if (!object.onMobile || object.getCategory() != category) {
+        // Like continue in a for loop.
+        return true;
+    }
+    
+    // Add this object to the list.
+    var objectText = document.createTextNode(object.getName());
+    var objectElement = document.createElement("p");
+    var objectDiv = document.createElement("div");
+    objectElement.appendChild(objectText);
+    objectDiv.appendChild(objectElement);
+    objectDiv.setAttribute("id", object.getId() + "ID");
+    $(objectDiv).addClass("object");
+    
+    // Get the container for the category of the specified object.
+    var categoryID = object.getCategory().replace(/\s/g, "");
+    $("#" + categoryID + "Container").append(objectDiv);
+    
+    // If the user touch the object, it will show the object with its
+    // details.
+    $(objectDiv).bind('click', function () {
+        GUI.buildObjectView(object);
     });
 }
 

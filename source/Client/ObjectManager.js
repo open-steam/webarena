@@ -171,7 +171,6 @@ ObjectManager.hasObject=function(obj){
 }
 
 ObjectManager.objectUpdate=function(data){
-	
     var object=ObjectManager.getObject(data.id);
 
     if (object){
@@ -234,6 +233,16 @@ ObjectManager.attributeChanged=function(object,key,newValue,local){
 	
 }
 
+ObjectManager.onObjectRemoveListeners = [];
+ObjectManager.registerOnObjectRemoveListener = function(listener) {
+	this.onObjectRemoveListeners.push(listener);
+}
+ObjectManager.onObjectRemove = function(object) {
+	for (var i = 0; i < this.onObjectRemoveListeners.length; ++i) {
+		this.onObjectRemoveListeners[i](object);
+	}
+}
+
 ObjectManager.informGUI=false;
 ObjectManager.registerAttributeChangedFunction=function(theFunction){
     this.informGUI=theFunction;
@@ -266,6 +275,7 @@ ObjectManager.remove=function(object){
 
 ObjectManager.removeLocally=function(data){
     var object=ObjectManager.getObject(data.id);
+	this.onObjectRemove(object);
 	
     //remove representation
     if (object.removeRepresentation){

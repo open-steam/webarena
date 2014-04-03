@@ -507,9 +507,11 @@ GUI.initToolbarMobilePhone = function() {
 							if (!Modules.Config.presentationMode) {
 			
 								proto.create(attributes);
+								/*
 								window.setTimeout(function() {
 									GUI.updateContainer(object.getCategory());
 								}, 500);
+								*/
 								
 							} else {
 								alert(GUI.translate("You cannot create objects in presentation mode"));	
