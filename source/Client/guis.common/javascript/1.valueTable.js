@@ -1,7 +1,7 @@
 "use strict";
 
 GUI.editValueTable = function(webarenaObject) {
-	var content = JSON.parse(webarenaObject.content);
+	var content = webarenaObject.getContentAsObject();
 	var dom = $('<table></table>');
 	var xValues = $('<tr></tr>');
 	var yValues = $('<tr></tr>');
@@ -41,7 +41,7 @@ GUI.editValueTable = function(webarenaObject) {
 			content.values[i][0] = valueX;
 			content.values[i][1] = valueY;
 			
-			webarenaObject.setContent(JSON.stringify(content));
+			webarenaObject.setContentAsJSON(content);
 		}
 	};
 	

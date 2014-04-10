@@ -32,6 +32,7 @@ Plotter.redraw = function(rep) {
 	
 	var chart = d3.select(rep).select("g");
 	chart.selectAll("g").remove();
+	chart.selectAll("text").remove();
 	chart.selectAll("path").remove();
 	
 	if (!$(rep).hasClass("selected")) {
@@ -52,7 +53,8 @@ Plotter.redraw = function(rep) {
 		
 	var xAxis = d3.svg.axis()
 		.scale(x)
-		.orient("bottom");
+		.orient("bottom")
+		.ticks(content.xAxis.ticks.major);
 	
 	// Declare the y-axis.
 	var y = d3.scale.linear()
@@ -60,7 +62,8 @@ Plotter.redraw = function(rep) {
 		
 	var yAxis = d3.svg.axis()
 		.scale(y)
-		.orient("left");
+		.orient("left")
+		.ticks(content.yAxis.ticks.major);
 	
 	var line = d3.svg.line()
 		.x(function(d) { return x(d.x); })
@@ -75,10 +78,34 @@ Plotter.redraw = function(rep) {
 		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis);
 	
+	chart.append("g")
+		.attr("class", "grid")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis.tickSize(-height, 0).tickFormat(""));
+	
+	// Draw the label for the x-axis.
+	chart.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 30)
+        .style("text-anchor", "middle")
+        .text(content.xAxis.label);
+	
 	// Draw the y-axis.
 	chart.append("g")
 		.attr("class", "y axis")
 		.call(yAxis);
+	
+	chart.append("g")
+		.attr("class", "grid")
+		.call(yAxis.tickSize(-width, 0).tickFormat(""));
+	
+	// Draw the label for the y-axis.
+	chart.append("text")
+		.attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -30)
+        .style("text-anchor", "middle")
+        .text(content.yAxis.label);
 	
 	var data = content.values.map(function(d) {
 		return {

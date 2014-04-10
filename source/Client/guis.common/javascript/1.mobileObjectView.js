@@ -1,5 +1,9 @@
 "use strict";
 
+GUI.objectViewSettings = {
+    visible: false,
+}
+
 window.onresize = function() {
 	if (GUI.currentObject == null) {
 		return;
@@ -13,20 +17,27 @@ window.onresize = function() {
 GUI.currentObject = null;
 
 GUI.buildObjectView = function(object) {
+	ObjectManager.registerOnContentUpdateListener(this.onContentUpdate);
 	// Create the title bar of the object view.
 	GUI.currentObject = object;
 	var titlebar = document.createElement("div");
-	titlebar.appendChild(document.createTextNode(object.getName()));
+	var title = $('<p style="margin: 0px; padding: 0px"></p>')
+	var backImg = $('<img src="../../guis/mobilephone/images/abc_ic_ab_back_holo_light.png" style="opacity: 1; vertical-align: middle; margin-right: 14px; cursor: pointer" />');
+	$(title).append(backImg);
+	$(title).append('<span style="vertical-align: middle">' + object.getName() + '</span>');
+	$(titlebar).append(title);
 	$(titlebar).addClass("header");
 	
 	$("body").append(titlebar);
 	
-	$(titlebar).bind("click", function() {
+	$(backImg).bind("click", function() {
 		object.isSelectedOnMobile = false;
 		GUI.currentObject.draw();
+		GUI.objectViewSettings.visible = false;
+		GUI.objectListSettings.visible = true;
 		$("#objectview").fadeOut("slow");
 		$("#objectlist").fadeIn("slow");
-		$(objectCont).remove();
+		$("#objectview div").empty();
 		$(titlebar).remove();
 	});
 	
@@ -38,6 +49,49 @@ GUI.buildObjectView = function(object) {
 		// Build the mobile representation.
 		// object.buildMobileRep(GUI.mobileSVG);
 	}
+	
+	var objectCont = document.createElement('div');
+	$(objectCont).addClass("objectcontent");
+	
+	// Check for editable content on mobile view.
+	if (object.hasEditableMobileContent) {
+		var form = object.buildFormForEditableContent();
+		$(objectCont).append(form);
+	}
+	
+	// Create the attribute table.
+	var attrTable = GUI.buildAttributeTable(object);
+	$(objectCont).append(attrTable);
+	
+	$('#objectview').append(objectCont);
+}
+
+GUI.onContentUpdate = function(object) {
+	if (!GUI.objectViewSettings.visible) {
+		return;
+	}
+	
+	GUI.updateContent(object);
+}
+
+GUI.updateObjectView = function(object, key, newValue, local) {
+	if (!GUI.objectViewSettings.visible) {
+		return;
+	}
+	
+	GUI.refreshMobileRepresentation();
+	GUI.updateContent(object);
+}
+
+GUI.refreshMobileRepresentation = function() {
+	GUI.svg.configure(
+		{width: $(window).width(), height: $(window).width()}, true);
+	$("#objectview svg").attr("style", "background-color: white");
+	GUI.currentObject.draw();
+}
+
+GUI.updateContent = function(object) {
+	$("#objectview div").empty();
 	
 	var objectCont = document.createElement('div');
 	
@@ -56,16 +110,6 @@ GUI.buildObjectView = function(object) {
 	// Switch to object view.
 	$("#objectlist").fadeOut("slow");
 	$("#objectview").fadeIn("slow");
-}
-
-GUI.updateObjectView = function(object, key, newValue, local) {
-	GUI.refreshMobileRepresentation();
-}
-
-GUI.refreshMobileRepresentation = function() {
-	GUI.svg.configure(
-		{width: $(window).width(), height: $(window).width()}, true);
-	GUI.currentObject.draw();
 }
 
 GUI.buildAttributeTable = function(object) {

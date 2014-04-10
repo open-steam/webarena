@@ -218,6 +218,7 @@ ObjectManager.objectUpdate=function(data){
         }
     }
 	
+	this.informGUI(object);
 }
 
 ObjectManager.attributeChanged=function(object,key,newValue,local){
@@ -248,9 +249,24 @@ ObjectManager.registerAttributeChangedFunction=function(theFunction){
     this.informGUI=theFunction;
 }
 
+ObjectManager.onContentUpdateListeners = [];
+ObjectManager.registerOnContentUpdateListener = function(listener) {
+	this.onContentUpdateListeners.push(listener);
+}
+
+ObjectManager.onContentUpdate = function(object) {
+	for (var i = 0; i < this.onContentUpdateListeners.length; ++i) {
+		this.onContentUpdateListeners[i](object);
+	}
+}
+
 ObjectManager.contentUpdate=function(data){
     var object=ObjectManager.getObject(data.id);
     object.contentUpdated();
+	var that = this;
+	window.setTimeout(function() {
+		that.onContentUpdate(object);
+	}, 500);
 }
 
 ObjectManager.remove=function(object){

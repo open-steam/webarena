@@ -41,7 +41,7 @@ GUI.initObjectList = function() {
         
         // Fetch all objects of the specified category.
         $.each(ObjectManager.getObjects(), function(key, object) {
-            if (!object.onMobile || object.getCategory() != type.category) {
+            if (!object.onMobile || !object.getAttribute('onMobile') || object.getCategory() != type.category) {
                 // Like continue in a for loop.
                 return true;
             }
@@ -59,9 +59,19 @@ GUI.initObjectList = function() {
             
             // If the user touch the object, it will show the object with its
             // details.
-            $(objectDiv).bind('click', function () {
-                GUI.buildObjectView(object);
-            });
+            if (object.getType() == "Subroom") {
+                $(objectDiv).bind('click', function () {
+                    object.execute(false);
+                });
+            } else {
+                $(objectDiv).bind('click', function () {
+                    GUI.buildObjectView(object);
+                    GUI.objectListSettings.visible = false;
+                    GUI.objectViewSettings.visible = true;
+                    $("#objectlist").fadeOut("slow");
+                    $("#objectview").fadeIn("slow");
+                });
+            }
         });
         
         // Display the objects of the type if the user touches the category.
@@ -82,18 +92,34 @@ GUI.initObjectList = function() {
 
 GUI.onObjectRemove = function(object) {
     $("#" + object.getId() + "ID").remove();
+    if (GUI.objectViewSettings.visible == true && GUI.currentObject == object) {
+        object.isSelectedOnMobile = false;
+		GUI.currentObject.draw();
+		GUI.objectViewSettings.visible = false;
+		GUI.objectListSettings.visible = true;
+		$("#objectview").fadeOut("slow");
+		$("#objectlist").fadeIn("slow");
+		$(".objectcontent").remove();
+		$(".header").remove();
+    }
 }
 
 GUI.updateObjectList = function(object, key, newValue, local) {
     // Do not update if the object list isn't visible.
+    /*
     if (!GUI.objectListSettings.visible) {
         return;
     }
+    */
     
     if ($("#" + object.getId() + "ID").length > 0) {
+        if (!object.getAttribute('onMobile')) {
+            $("#" + object.getId() + "ID").remove();
+        }
         return;
+    } else if (object.getAttribute('onMobile')) {
+        GUI.addObjectToObjectList(object, object.category);
     }
-    GUI.addObjectToObjectList(object, object.category);
     
     
     //$("#objectlist").empty();
@@ -121,9 +147,19 @@ GUI.addObjectToObjectList = function(object, category) {
     
     // If the user touch the object, it will show the object with its
     // details.
-    $(objectDiv).bind('click', function () {
-        GUI.buildObjectView(object);
-    });
+    if (object.getType() == "Subroom") {
+        $(objectDiv).bind('click', function () {
+            object.execute(false);
+        });
+    } else {
+        $(objectDiv).bind('click', function () {
+            GUI.buildObjectView(object);
+            GUI.objectListSettings.visible = false;
+            GUI.objectViewSettings.visible = true;
+            $("#objectlist").fadeOut("slow");
+            $("#objectview").fadeIn("slow");
+        });
+    }
 }
 
 GUI.updateContainer = function(category) {

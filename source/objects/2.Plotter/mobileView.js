@@ -35,6 +35,7 @@ Plotter.redraw = function(rep) {
 	
 	var chart = d3.select(rep).select("g");
 	chart.selectAll("g").remove();
+	chart.selectAll("text").remove();
 	chart.selectAll("path").remove();
 	
 	if (!this.isSelectedOnMobile) {
@@ -82,10 +83,34 @@ Plotter.redraw = function(rep) {
 		.attr("transform", "translate(0," + height + ")")
 		.call(xAxis);
 	
+	chart.append("g")
+		.attr("class", "grid")
+		.attr("transform", "translate(0," + height + ")")
+		.call(xAxis.tickSize(-height, 0).tickFormat(""));
+	
+	// Draw the label for the x-axis.
+	chart.append("text")
+        .attr("x", width / 2)
+        .attr("y", height + 30)
+        .style("text-anchor", "middle")
+        .text(content.xAxis.label);
+	
 	// Draw the y-axis.
 	chart.append("g")
 		.attr("class", "y axis")
 		.call(yAxis);
+	
+	chart.append("g")
+		.attr("class", "grid")
+		.call(yAxis.tickSize(-width, 0).tickFormat(""));
+	
+	// Draw the label for the y-axis.
+	chart.append("text")
+		.attr("transform", "rotate(-90)")
+        .attr("x", -height / 2)
+        .attr("y", -30)
+        .style("text-anchor", "middle")
+        .text(content.yAxis.label);
 	
 	var data = content.values.map(function(d) {
 		return {
@@ -245,7 +270,9 @@ Plotter.buildFormForEditableContent = function() {
         $(valueX).bind('keyup', {pos: i, val: valueX}, function(event) {
             var content = that.getContentAsObject();
             content.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
+            if (event.keyCode == 13) {
+				that.setContentAsJSON(content);
+			}
             
             var rep = that.buildMobileRep(GUI.mobileSVG);
             $(rep).attr("width", $(window).width());
@@ -254,7 +281,9 @@ Plotter.buildFormForEditableContent = function() {
         $(valueY).bind('keyup', {pos: i, val: valueY}, function(event) {
             var content = that.getContentAsObject();
             content.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
+            if (event.keyCode == 13) {
+				that.setContentAsJSON(content);
+			}
             
             var rep = that.buildMobileRep(GUI.mobileSVG);
             $(rep).attr("width", $(window).width());
@@ -291,7 +320,9 @@ Plotter.buildFormForEditableContent = function() {
         $(valueX).bind('keyup', {pos: newIndex, val: valueX}, function(event) {
             var content = that.getContentAsObject();
             content.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
+			if (event.keyCode == 13) {
+				that.setContentAsJSON(content);
+			}
             /*
             var rep = that.buildMobileRep(GUI.mobileSVG);
             $(rep).attr("width", $(window).width());
@@ -301,7 +332,9 @@ Plotter.buildFormForEditableContent = function() {
         $(valueY).bind('keyup', {pos: newIndex, val: valueY}, function(event) {
             var content = that.getContentAsObject();
             content.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
+            if (event.keyCode == 13) {
+				that.setContentAsJSON(content);
+			}
             /*
             var rep = that.buildMobileRep(GUI.mobileSVG);
             $(rep).attr("width", $(window).width());

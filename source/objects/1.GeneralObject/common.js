@@ -233,6 +233,8 @@ GeneralObject.register=function(type){
 	
 	this.registerAttribute('group',{type:'group',readonly:false,category:'Basic',standard:0});
 	
+	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic'});
+	
 	this.registerAction('Delete',function(){
 		
 		var selected = ObjectManager.getSelected();

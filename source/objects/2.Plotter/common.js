@@ -40,7 +40,7 @@ Plotter.contentURLOnly = false;
 /* The content describes a chart which can be drawn by the plotter. */
 Plotter.content = JSON.stringify({
 	xAxis: {
-		label: "x",
+		label: "Strecke [m]",
 		scale: {
 			min: 0,
 			max: 100
@@ -51,7 +51,7 @@ Plotter.content = JSON.stringify({
 		}
 	},
 	yAxis: {
-		label: "y",
+		label: "Zeit [s]",
 		scale: {
 			min: 0,
 			max: 100
