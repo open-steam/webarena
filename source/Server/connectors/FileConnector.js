@@ -268,6 +268,8 @@ fileConnector.getRoomHierarchy=function(roomID,context,callback){
 	var buildTree = function(files, cb){
 		files.forEach(function(file){
 			var obj = self.getObjectDataByFile(file,file);
+			if (!obj.attributes) return;
+			if (!obj.attributes.name) return;
 			result.rooms[file] = '' + obj.attributes.name;
 					if (obj.attributes.parent !== undefined) {
 						if (result.relation[obj.attributes.parent] === undefined) {
@@ -685,11 +687,18 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 	var fs = require("fs");
 	
 	var copyFunc = function(source, dest, callback) {
+		
+		var content=fs.readFileSync(source);
+		fs.writeFileSync(dest, content);
+		callback();
+		
+		/*
 		var read = fs.createReadStream(source);
 		var write = fs.createWriteStream(dest);
 
 		read.on("end", callback);
 		read.pipe(write);
+		*/
 	}
 	
 	/* callback function after duplicating files */
