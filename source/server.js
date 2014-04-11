@@ -42,6 +42,7 @@ try {
 		config[key]=value;
 	}
 } catch (e) {
+	console.log(e);
 	console.log('Attention: No local config');
 }
 
