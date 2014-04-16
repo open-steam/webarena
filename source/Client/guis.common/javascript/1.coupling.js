@@ -30,7 +30,8 @@ GUI.enterCouplingMode = function() {
 
 		$("#header > div.header_left").children().hide();
 		$("#header > div.header_right").children().hide();
-		
+		$("img[id^='userPainting_']").hide();
+				
 		// add navigation button
 		var navigationButton = document.createElement("span");
 		$(navigationButton).addClass("header_button");
@@ -221,6 +222,7 @@ GUI.closeCouplingMode = function() {
 
 	$("#header > div.header_left").children().show();
 	$("#header > div.header_right").children().show();
+	$("img[id^='userPainting_']").show();
 
 	$('#couplingNavigation').dialog("close");
 	$('#couplingNavigation').html("");
