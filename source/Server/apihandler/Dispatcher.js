@@ -89,7 +89,7 @@ Dispatcher.registerCall('inform', function (socket, data, responseID) {
 });
 
 Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
-	Modules.ServerController.bugreport(data, resultCallbackWrapper(socket, responseID));
+	Modules.ServerController.bugreport(data, socket, responseID, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('undo', function(socket, data, responseID){

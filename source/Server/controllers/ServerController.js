@@ -18,8 +18,7 @@ ServerController.getMemoryUsage =  function (data, context, callback) {
 
 }
 
-//TODO: refactor use email template instead of ugly string concat
-ServerController.bugreport = function (data, context, callback) {
+ServerController.bugreport = function (data, socket, responseID, callback) {
 
 	if (Modules.config.bugreport === undefined) {
 		console.log("Bug report settings missing!");

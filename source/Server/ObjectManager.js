@@ -478,7 +478,7 @@ var mayReadMultiple = function (fromRoom, files, context, cb) {
 	var checks = [];
 	files.forEach(function (file) {
 		checks.push(function (cb2) {
-			Modules.Connector.mayRead(fromRoom,file, null, falseToError("Can't read file: " + file, cb2))
+			Modules.Connector.mayRead(fromRoom,file, context, falseToError("Can't read file: " + file, cb2))
 		});
 	});
 
