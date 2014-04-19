@@ -55,19 +55,29 @@ GUI.enterCouplingMode = function() {
 		$(navigationButton).offset({
 			left : ($(window).width() / 2) - (($(navigationButton).width() / 2) + 10)
 		})	
-
-		// add close button
-		var closeButton = document.createElement("span");
-		$(closeButton).addClass("header_button");
-		$(closeButton).addClass("button_save");
-		$(closeButton).addClass("jCoupling_navi");
-		$(closeButton).html(GUI.translate("close"));
-		$(closeButton).bind("click", function(event) {
-			GUI.closeCouplingMode();
+				
+		// add EnterRightButton
+		var EnterRightButton = document.createElement("span");
+		$(EnterRightButton).addClass("header_button");
+		$(EnterRightButton).addClass("button_save");
+		$(EnterRightButton).addClass("jCoupling_navi");
+		$(EnterRightButton).bind("click", function(event) {
+				GUI.closeCouplingMode('right');
 		});
-
-		$("#header > div.header_right").append(closeButton);	
-
+		$("#header > div.header_right").append(EnterRightButton);	
+		$(EnterRightButton).hide();
+				
+		// add EnterLeftButton
+		var EnterLeftButton = document.createElement("span");
+		$(EnterLeftButton).addClass("header_button");
+		$(EnterLeftButton).addClass("button_save");
+		$(EnterLeftButton).addClass("jCoupling_navi");
+		$(EnterLeftButton).html(GUI.translate("Enter room ")+ObjectManager.getRoomID('left'));
+		$(EnterLeftButton).bind("click", function(event) {
+			GUI.closeCouplingMode('left');
+		});
+		$("#header > div.header_left").append(EnterLeftButton);
+		
 		// add vertical bar
 		var verticalBar = GUI.svg.line($(window).width() / 2, 0, $(window).width() / 2, $(window).height(), { 'stroke' : 'black', 'stroke-width' : 10 });
 		$(verticalBar).attr("id", "couplingBar");
@@ -158,6 +168,8 @@ GUI.enterCouplingMode = function() {
 			if (ObjectManager.getRoomID('left') != roomId && ObjectManager.getRoomID('right') != roomId) {
 	        	ObjectManager.loadRoom(selectedObj.attr("id"), true, 'right');
 	        	$('#couplingGreyRectangle').remove();
+				$(EnterRightButton).html(GUI.translate("Enter room ")+roomId);
+				$(EnterRightButton).show();
 	        	GUI.addZoomPanControl('right', $(window).width()-105, $('#couplingBar').attr('y2')-138);
 	        } else {
 	        	alert(GUI.translate("Room already displayed"));
@@ -206,16 +218,16 @@ GUI.enterCouplingMode = function() {
 /**
  * Close the coupling mode
  */
-GUI.closeCouplingMode = function() {
+GUI.closeCouplingMode = function(target) {
 	
 	GUI.couplingModeActive = false;
 
 	GUI.couplingNavigationActive = false;
 	
 	$('#couplingBar').remove();
-
+	
 	GUI.sidebar.restoreFromSavedState();
-
+	
 	$('body').removeAttr('style');
 	
 	$("#header").find(".jCoupling_navi").remove();
@@ -236,19 +248,20 @@ GUI.closeCouplingMode = function() {
 	var newMatrix = "matrix(" +  [1,0,0,1,0,0].join(' ') + ")";
   	$('#room_left').attr("transform", newMatrix);
   	$('#room_right').attr("transform", newMatrix);
-
-  	//document.getElementById('room_left_wrapper').removeAttribute('width');
-  	$('#room_left_wrapper').attr("width", "100%"); // else chrome displays an empty workarea
-  	//document.getElementById('room_right_wrapper').removeAttribute('x');
-  	//document.getElementById('room_right_wrapper').removeAttribute('width');
-
-  	$(document).unbind("mousewheel");
-
-  	ObjectManager.leaveRoom(ObjectManager.getRoomID('right'), 'right', !GUI.relogin);
 		
+	$('#room_left_wrapper').attr("width", "100%"); // else chrome displays an empty workarea
+
+	$(document).unbind("mousewheel");
+
+	ObjectManager.leaveRoom(ObjectManager.getRoomID('right'), 'right', !GUI.relogin);
+			
 	GUI.adjustContent();
 
 	$('#room_right').html("");
+	
+	if(target=='right'){
+		ObjectManager.loadRoom(ObjectManager.getRoomID('right'),false);
+	}	
 }
 
 GUI.addZoomPanControl = function(index, x, y) {

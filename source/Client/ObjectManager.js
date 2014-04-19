@@ -310,13 +310,14 @@ ObjectManager.executeRoomChangeCallbacks = function(){
 }
 
 ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
+
 	var self = this;
 
     this.executeRoomChangeCallbacks();
 
 	if (!index) var index = 'left';
 		
-	// in coupling mode: do not load room on both sides
+	// in coupling mode: do not load room if it is already displayed
 	var proceed = true;
 	if (GUI.couplingModeActive && (ObjectManager.getRoomID('left') == roomid || ObjectManager.getRoomID('right') == roomid)) {
 		proceed = false;
@@ -353,9 +354,10 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 }
 
 ObjectManager.leaveRoom=function(roomid,index,serverCall) {
+
 	var self = this;
 
-	if (!index) var index = 'right';
+	if (!index) var index = 'right'; 
 	
 	if (serverCall) {
 		Modules.Dispatcher.query('leave',{'roomID':roomid,'index':index,'user':self.getUser()},function(error){
@@ -367,9 +369,9 @@ ObjectManager.leaveRoom=function(roomid,index,serverCall) {
 			        var obj = objects[i];
 			        ObjectManager.removeLocally(obj);
 			    }
-
-			    self.currentRoomID[index] = false;
-			    self.currentRoom[index] = false;
+				
+				self.currentRoomID[index] = false;
+				self.currentRoom[index] = false;
 			
 			}
 			
@@ -383,7 +385,8 @@ ObjectManager.leaveRoom=function(roomid,index,serverCall) {
 
 		self.currentRoomID[index] = false;
 		self.currentRoom[index] = false;
-	}
+
+	}	
 }
 
 ObjectManager.createObject=function(type,attributes,content,callback,index) {

@@ -761,6 +761,11 @@ input {
 	fill:  #fff;
 	pointer-events: none;
 }
+
+#header>div.header_left>span.button_save {
+	background-color: #e5e31f;
+	color:black;
+}
 /* end coupling */
 
 /* process log */

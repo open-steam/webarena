@@ -59,6 +59,7 @@ GUI.setTranslations('de',{
 	'You are pasting' : 'Sie fügen ein:',
 	'objects' : 'Objekte',
 	'Do you want to continue?' : 'Wollen Sie fortsetzen?',
-	'Do you really want to delete the selected objects?' : 'Ausgewählte Objekte wirklich löschen?'
-}
+	'Do you really want to delete the selected objects?' : 'Ausgewählte Objekte wirklich löschen?',
+	'Enter room' : 'Betrete Raum'
+	}
 );
