@@ -599,10 +599,18 @@ WebServer.init = function (theModules) {
 			try {
 
 				var urlParts = url.split('/');
-
-				var filebase = __dirname + '/../Client';
+				
+				var filebase;
+				
+				//if the Client want to access the config, return the general config file which is stored outside from Client and Server
+				if(url=='/config.default.js'){
+					filebase = __dirname+'/..';					
+				}
+				else{
+					filebase = __dirname + '/../Client';
+				}
 				var filePath = filebase + url;
-
+				
 				if (urlParts.length > 2) {
 					switch (urlParts[1]) {
 						case 'Common':
@@ -618,6 +626,20 @@ WebServer.init = function (theModules) {
 								res.writeHead(404);
 								Modules.Log.warn('Error loading ' + url);
 								return res.end('Error loading ' + url);
+							}
+							
+							//if the Client want to access the config, the Server parameter (secret.xxx) are deleted before delivering the content of the config file
+							if(url=='/config.default.js'){
+								data = data.toString('utf8');
+											
+								var endcomment = data.lastIndexOf('*/')+2;
+								var comment = data.slice(0, endcomment);
+								var startClient = data.indexOf('module.exports');
+								var endClient = data.indexOf('secret')-4;
+								var Clientdata = data.slice(startClient, endClient);
+								Clientdata = Clientdata+"\n"+"};"; 
+								Clientdata = Clientdata.replace("module.exports","var Config");
+								data=comment+"\n"+"\n"+"\"use strict\";"+"\n"+"\n"+Clientdata;				
 							}
 
 							fs.stat(filePath, function (err, stat) {
@@ -654,8 +676,7 @@ WebServer.init = function (theModules) {
 											head['Content-Length'] =  data.length
 										}
 										res.writeHead(200, head);
-
-
+										
 										if (url.search(".html") !== -1) {
 											data = data.toString('utf8');
 											var position1 = data.search('<serverscript');

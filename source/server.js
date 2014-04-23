@@ -19,6 +19,7 @@ var printLogo = function(){
 	'#        Tobias Kempkensteffen           #',
 	'#        Viktor Koop                     #',
 	'#        Jan Petertonkoker               #',
+	'#        Steven Christopher Lücker       #',
 	'#                                        #',
 	'##########################################'];
 
@@ -29,17 +30,14 @@ var printLogo = function(){
 
 "use strict";
 
-
-
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
-
-var config=require('./Server/config.default.js');
-global.config = config;  // make config available for modules
+var config=require('./config.default.js');
+global.config = config.secret;  // make config available for modules
 try {
 	var localconfig=require('./Server/config.local.js');
 	for (var key in localconfig){
 		var value=localconfig[key];
-		config[key]=value;
+		config.secret[key]=value;
 	}
 } catch (e) {
 	console.log(e);
@@ -48,14 +46,12 @@ try {
 
 //General error handling. Let the server try to continue
 //if an error occured and log the error
-if (!config.debugMode){
+if (!config.secret.debugMode){
 	process.on('uncaughtException', function (err) {
 		console.log('##### UNCAUGHT EXCEPTION');
 		console.log(err.stack);
 	});
 }
-
-
 
 var Modules = {};
 
@@ -63,8 +59,10 @@ Modules.Log = require('./Common/Log.js');
 
 	// These modules are accessible everywhere by accessing the global variable Modules
 	// They shall exist only once for the whole server
-Modules.config = config;
-Modules.Config = config;
+	
+Modules.config = config.secret;
+Modules.Config = config.secret;
+
 Modules.ObjectManager = require('./Server/ObjectManager.js');
 Modules.WebServer = require('./Server/WebServer.js');
 Modules.SocketServer = require('./Server/SocketServer.js');
