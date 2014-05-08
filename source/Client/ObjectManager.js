@@ -233,6 +233,9 @@ ObjectManager.removeLocally=function(data){
 	
     //remove from local structure
     delete(ObjectManager.objects[data.id]);
+
+    // delete associated pad
+    ObjectManager.Pads.deletePadFor(data.id);
 }
 
 ObjectManager.login=function(username, password, externalSession){
@@ -282,7 +285,9 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav,callback){
 		    }
 
 		    if (callback) setTimeout(callback, 1200);
-		
+
+            // Create and display a pad for the room
+            ObjectManager.Pads.createRoomPad(ObjectManager.getRoomID());
 		}
 		
     });
@@ -562,11 +567,22 @@ ObjectManager.tell=function(text){
 	ObjectManager.inform('text',text);
 }
 
-ObjectManager.informAboutSelection=function(id){
+ObjectManager.informAboutSelection = function(id) {
+    // show/create pad for the selected object
+    ObjectManager.Pads.showPadFor(id);
+
 	ObjectManager.inform('selection',id);
 }
 
-ObjectManager.informAboutDeselection=function(id){
+ObjectManager.informAboutDeselection = function(id) {
+    // update CollText object upon deselection
+    if (ObjectManager.getObject(id).get('type') === 'CollText') {
+        ObjectManager.Pads.updateRepresentation(id);
+    }
+
+    // clear pad panel if nothing is selected
+    ObjectManager.Pads.showDefault();
+
 	ObjectManager.inform('deselection',id);
 }
 
@@ -728,4 +744,70 @@ ObjectManager.duplicateObjects=function(objects) {
 			});
 		}
 	}
+}
+
+//************************************
+//****** ETHERPAD FUNCTIONALITY ******
+//************************************
+
+ObjectManager.Pads = {
+    // access token required to use Etherpad HTTP API
+    apikey: 'SOpqBlUnNKJSOS92lBhZHrovhqdWQ8qV',
+
+
+    // displays the pad associated with currently selected object
+    // in the pad panel or creates one if it doesn't exist
+    showPadFor: function(id) {
+        top.frames['padframe'].location.href =
+            'http://localhost:9001/p/' +        // etherpad server + base address
+             ObjectManager.getRoomID() + id +   // this will be the pad name
+            '?showLineNumbers=false' +
+            '&showChat=false' +
+            '&noColors=true';
+    },
+
+    // creates a pad for specified room and displays it
+    createRoomPad: function(roomID) {
+        var defaultText = 'Describe current room here.';
+
+        $.get('http://localhost:9001/api/1.2.7/createPad' +
+              '?apikey=' + this.apikey +
+              '&padID=' + roomID +
+              '&text=' + encodeURIComponent(defaultText) )
+        .always(this.showDefault());
+    },
+
+    // reverts the pad panel to default state
+    showDefault: function() {
+        top.frames['padframe'].location.href =
+            'http://localhost:9001/p/' +
+             ObjectManager.getRoomID() +
+            '?showLineNumbers=false' +
+            '&showChat=false' +
+            '&noColors=true';
+    },
+
+
+    // deletes the pad associated with specified object id
+    deletePadFor: function(id) {
+        $.get('http://localhost:9001/api/1.2.7/deletePad' +
+              '?apikey=' + this.apikey +
+              '&padID=' + ObjectManager.getRoomID() + id);
+    },
+
+
+    // updates the collText object with current contents of its associated pad
+    updateRepresentation: function(id) {
+        $.ajax({
+            url: 'http://localhost:9001/api/1.2.7/getText' +
+                 '?apikey=' + this.apikey +
+                 '&padID=' + ObjectManager.getRoomID() + id,
+            dataType: 'jsonp',
+            jsonp: 'jsonp',
+            success: function(res) {
+                ObjectManager.getObject(id).setContent(res.data.text.substr(0,200));
+            }
+        });
+    }
+    
 }
