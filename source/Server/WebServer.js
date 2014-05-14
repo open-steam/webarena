@@ -31,7 +31,7 @@ WebServer.init = function (theModules) {
 
 
 
-	app.listen(global.config.port);  // start server (port set in config)
+	app.listen(Modules.config.port);  // start server (port set in config)
 
 	function handler(req, res) {
 		var url = req.url.replace('%20', ' ');
@@ -290,7 +290,7 @@ WebServer.init = function (theModules) {
 						}
 						
 						
-						/* Restrict the uploaded file size, the maximum filesize is spezified in config.default */
+						/* Restrict the uploaded file size, the maximum filesize is spezified in the config */
 						var filesize = files.file.size; 
 						if(Modules.Config.maxFilesizeInMB*1000000<filesize){
 							fs.unlinkSync(files.file.path);
@@ -597,14 +597,14 @@ WebServer.init = function (theModules) {
 			// plain files
 
 			try {
-
+			
 				var urlParts = url.split('/');
 				
 				var filebase;
 				
-				//if the Client want to access the config, return the general config file which is stored outside from Client and Server
-				if(url=='/config.default.js'){
-					filebase = __dirname+'/..';					
+				if(url=='/config.js'){
+					url='/config.local.js'
+					filebase = __dirname+'/..';		
 				}
 				else{
 					filebase = __dirname + '/../Client';
@@ -628,18 +628,16 @@ WebServer.init = function (theModules) {
 								return res.end('Error loading ' + url);
 							}
 							
-							//if the Client want to access the config, the Server parameter (secret.xxx) are deleted before delivering the content of the config file
-							if(url=='/config.default.js'){
+							//if the Client want to access the config, return the comment part from the config.local.js + Modules.ConfigClient
+							if(url=='/config.local.js'){
+							
 								data = data.toString('utf8');
-											
 								var endcomment = data.lastIndexOf('*/')+2;
 								var comment = data.slice(0, endcomment);
-								var startClient = data.indexOf('module.exports');
-								var endClient = data.indexOf('secret')-4;
-								var Clientdata = data.slice(startClient, endClient);
-								Clientdata = Clientdata+"\n"+"};"; 
-								Clientdata = Clientdata.replace("module.exports","var Config");
-								data=comment+"\n"+"\n"+"\"use strict\";"+"\n"+"\n"+Clientdata;				
+								
+								var obj = JSON.stringify(Modules.ConfigClient);
+									
+								data=comment+"\n"+"\n"+"\"use strict\";"+"\n"+"\n"+"var Config="+obj+';';	
 							}
 
 							fs.stat(filePath, function (err, stat) {

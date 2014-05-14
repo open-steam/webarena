@@ -5,7 +5,7 @@
 *
 */
 
-module.exports={
+module.exports={ //general config AND Client config
 	projectTitle:'WebArena 1.0',
 	language:'de',
 	presentationMode:false,
@@ -16,14 +16,12 @@ module.exports={
 	showSidebarbydefault:true,
 	maxFilesizeInMB:10,
 	bidURL:'',
-	secret: { //exclusive config data for server
+	server: { //exclusive!!! server config
 		filebase:'/path/to/data_folder', // The path where object data is saved (for the fileConnector)
 		connector:require('./Server/connectors/FileConnector.js'), // The chosen connector
-		language:'de', // The current language (e.g. for error messages)
 		port: 8080,     // HTTP Port for server
 		homepage: '/index.html',
 		tcpApiServer: false,
-		maxFilesizeInMB:10,
 		imageUpload: {
 			maxDimensions: 400
 		},
