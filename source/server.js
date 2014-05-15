@@ -36,8 +36,10 @@ var config=require('./config.default.js');
 try {
 	var localconfig=require('./config.local.js');
 	for (var key in localconfig){ //overwrite Client data
-		var value=localconfig[key];
-		config[key]=value;
+		if(key!="server"){
+			var value=localconfig[key];
+			config[key]=value;
+		}
 	}
 	for (var key in localconfig.server){ //overwrite Server data
 		var value=localconfig.server[key];
