@@ -10,7 +10,7 @@ var Modules = require('../../server.js');
 var CollText = Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 CollText.register = function(type) {
-	
+
 	// Registering the object
 	
 	GeneralObject = Modules.ObjectManager.getPrototype('GeneralObject');
@@ -37,7 +37,7 @@ CollText.register = function(type) {
 			object.execute();
 		});
 	}, true);
-	
+
 }
 
 CollText.execute = function() {

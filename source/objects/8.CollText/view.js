@@ -83,6 +83,11 @@ CollText.createRepresentation = function() {
 	$(rep).attr("id", this.getAttribute('id'));
 	this.initGUI(rep);
 
+	// create a pad holding the object's content
+	$.get('http://localhost:9001/api/1.2.7/createPad' +
+	      '?apikey=' + ObjectManager.Pads.apikey +
+	      '&padID=' + ObjectManager.getRoomID() + this.id + 'content');
+
 	return rep;
 }
 
@@ -91,7 +96,7 @@ CollText.createRepresentation = function() {
 CollText.editText = function() {
 
 	var cText = this.id,
-		padEmbed = '<iframe src="http://localhost:9001/p/' + ObjectManager.getRoomID() + this.id +
+		padEmbed = '<iframe src="http://localhost:9001/p/' + ObjectManager.getRoomID() + this.id + 'content' +
 				   '?showChat=false" width="800" height="480" style="border:none"></iframe>',
 		passThrough = {
 			beforeClose: function(event, ui) {
