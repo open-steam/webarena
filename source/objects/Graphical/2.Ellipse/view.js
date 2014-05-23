@@ -39,8 +39,6 @@ Ellipse.draw=function(external){
 
 }
 
-
-
 Ellipse.updateInnerObject=function() {
 	var rep=this.getRepresentation();
 	
@@ -63,7 +61,6 @@ Ellipse.updateInnerObject=function() {
 	
 }
 
-
 Ellipse.setViewWidth = function(value) {
 	GeneralObject.setViewWidth.call(this,value);
 	this.updateInnerObject();
@@ -72,4 +69,58 @@ Ellipse.setViewWidth = function(value) {
 Ellipse.setViewHeight = function(value) {
 	GeneralObject.setViewHeight.call(this,value);
 	this.updateInnerObject();
+}
+
+//calculate the Intersection point between an ellipse object and a line (which ends in the middle of the ellipse, described by a1 and a2)
+Ellipse.IntersectionObjectLine = function(a1, a2){
+
+	var rep = this.getRepresentation();
+	
+	var rx = parseFloat($(rep).find("ellipse").attr("rx"));
+	var ry = parseFloat($(rep).find("ellipse").attr("ry"));
+		
+	var P;
+		
+	if(a1.x == (this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()/2)) && a1.y == (this.getViewBoundingBoxY()+(this.getViewBoundingBoxHeight()/2))){ //a1 is center of ellipse
+		P = this.IntersectionLineEllipse(rx, ry, a1, a2);
+			
+		P.x = P.x + a1.x;
+		P.y = P.y + a1.y;
+	}
+	else{ //a2 is center of ellipse
+		P = this.IntersectionLineEllipse(rx, ry, a2, a1);
+			
+		P.x = P.x + a2.x;
+		P.y = P.y + a2.y;
+	}
+												
+	return P;
+}
+
+//calculate the Intersection point between an ellipse (described by rx, ry and a1) and a line (which ends in the middle of the ellipse, described by a1 and a2)
+Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2){
+
+	//a1 is center of ellipse
+	
+	var dy = a2.y-a1.y;
+	var dx = a2.x-a1.x;
+		
+	//padding	
+	rx = rx+20;
+	ry = ry+20;
+		
+	var phi = Math.atan(dy/dx);
+
+	var t = Math.atan((rx*Math.tan(phi))/ry)	
+	
+	if(dx<0 && dy<0) t=t-Math.PI;
+	
+	if(dx<0 && dy>0) t=t+Math.PI;
+				  		
+	var P = new Object();
+	P.x = rx * Math.cos(t);
+	P.y = ry * Math.sin(t);
+				
+	return P;
+
 }

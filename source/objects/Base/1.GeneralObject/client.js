@@ -198,7 +198,7 @@ GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 }
 
 /**
-*	determine if the current object intersects with oanother object
+*	determine if the current object intersects with another object
 */
 GeneralObject.intersectsWith=function(other){
 	var otherx=other.getViewBoundingBoxX();
