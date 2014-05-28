@@ -24,7 +24,7 @@ theObject.evaluatePositionFor=function(object,data){
 	
 	for (var i in inventory){
 		var obj=inventory[i];
-		if (obj.isStructuring() || obj.isSensitive()) {
+		if (obj.isStructuring()) {
 			obj.evaluateObject(object,data);
 		}
 	}

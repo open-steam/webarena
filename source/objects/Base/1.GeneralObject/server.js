@@ -1,7 +1,7 @@
 /**
 *    Webarena - A web application for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
+*    @author Felix Winkelnkemper, University of Paderborn, 2014
 *
 *	 GeneralObject server component
 *
@@ -29,48 +29,40 @@ module.exports=theObject;
 
 theObject.makeSensitive=function(){
 	this.isSensitiveFlag=true;
+		
+	// if there is no drop handling on the client side, an event is
+	// sent to the server. This is the default event handling for
+	// the drop event. Overwrite this if you want serverside drop
+	// handling. Leave it unchanged if you want an application to
+	// handle the drop event.
+		
+	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
+		
+		this.fireEvent('object::'+this.id+'::drop',objectId);
+	};
+
+	theObject.onDrop.public=true;
+
+}
+
+
+// ****************************************************************
+// * MAKE STRUCTURING *********************************************
+// ****************************************************************
+
+theObject.makeStructuring=function(){
+	this.isStructuringFlag=true;
 	
 	var theObject=this;
 	
 	this.onObjectMove=function(changeData){
-	
-		//complete data
 		
-		var oldData={};
-		var newData={};
-		var fields=['x','y','cx','cy','width','height'];
+		//when a structuring object is moved, every active object may be in need of repositioning
 		
-		for (var i=0;i<4;i++){
-			var field=fields[i];
-			oldData[field]=changeData['old'][field] || this.getAttribute(field);
-			newData[field]=changeData['new'][field] || this.getAttribute(field);
-		}
-		
-		var inventory=this.getRoom().getInventory();
-		
-		for (var i in inventory){
-			
-			var object=inventory[i];
-			
-			if(object.id==this.id) continue;
-			
-			var bbox=object.getBoundingBox();
-			
-			//determine intersections
-		
-			var oldIntersects=this.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-			var newIntersects=this.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-			
-			//handle move
-			
-			if (oldIntersects && newIntersects)  this.onMoveWithin(object,newData);
-			if (!oldIntersects && !newIntersects)  this.onMoveOutside(object,newData);
-			if (oldIntersects && !newIntersects)  this.onLeave(object,newData);
-			if (!oldIntersects && newIntersects)  this.onEnter(object,newData);
-		}
-		
+		console.log('needs to be changed... States need to change to placed here');
+		console.trace();
+				
 	}
-	
 	
 	theObject.bBoxIntersects=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
 		
@@ -187,34 +179,7 @@ theObject.makeSensitive=function(){
 	if (!theObject.onEnter) theObject.onEnter=function(object,data){
 		this.fireEvent('object::'+this.id+'::enter',object.id);
 	};
-	
-	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
-		
-		this.fireEvent('object::'+this.id+'::drop',objectId);
-	};
 
-	theObject.onDrop.public=true;
-
-}
-
-
-// ****************************************************************
-// * MAKE STRUCTURING *********************************************
-// ****************************************************************
-
-theObject.makeStructuring=function(){
-	this.isStructuringFlag=true;
-	this.makeSensitive();
-	this.isSensitiveFlag=false;
-	
-	this.onObjectMove=function(changeData){
-		
-		//when a structuring object is moved, every active object may be in need of repositioning
-		
-		console.log('onObjectMove on structuring object '+this);
-		
-		this.getRoom().placeActiveObjects();
-	}
 	
 	if (!this.structures) this.structures=function(obj){
 		
