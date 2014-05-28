@@ -189,12 +189,12 @@ GeneralObject.representationCreated = function() {
         if (e.objectId !== that.getID()) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
-            //execute copy/cut - if intersecting on mouse/touch release
+            //execute onDrop
             if (that.intersectsWith(movedObject)) {
                 var selected = ObjectManager.getSelected();
                 _(selected).each(function (elem) {
                     if (elem !== that) {
-                        that.serverCall("onDrop", elem.getID());
+                        that.onDrop(elem);
                     }
                 })
             }

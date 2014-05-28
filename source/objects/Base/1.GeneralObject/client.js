@@ -219,4 +219,14 @@ GeneralObject.hasPixelAt=function(x,y){
 	return this.boxIntersectsWith(x,y,0,0);
 }
 
+/**
+*	client side drop handler (for senstitve objects)
+*   overwrite this if you want to handle dropped elements
+*   on the client side. Leave it untouched, if you want to
+*   handle drop events on the server or in an application
+*/
+GeneralObject.onDrop=function(elem){
+	this.serverCall("onDrop", elem.getID());
+}
+
 GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
