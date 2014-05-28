@@ -33,6 +33,7 @@ Room.register=function(type){
 	this.registerAttribute('y',{hidden:true});
 	this.registerAttribute('group',{hidden:true});
 	this.registerAttribute('showUserPaintings',{type:"boolean", standard:true, changedFunction: function(object, value) {object.showUserPaintings(value);}});
+	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
     
 }
 

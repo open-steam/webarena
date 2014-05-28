@@ -19,6 +19,7 @@ var printLogo = function(){
 	'#        Tobias Kempkensteffen           #',
 	'#        Viktor Koop                     #',
 	'#        Jan Petertonkoker               #',
+	'#        Steven Christopher Lücker       #',
 	'#                                        #',
 	'##########################################'];
 
@@ -29,22 +30,43 @@ var printLogo = function(){
 
 "use strict";
 
-
-
 //Loading the configuration. Entires in config.local.js overlap those in config.default.js
+var config=require('./config.default.js');
 
-var config=require('./Server/config.default.js');
-global.config = config;  // make config available for modules
 try {
-	var localconfig=require('./Server/config.local.js');
-	for (var key in localconfig){
-		var value=localconfig[key];
-		config[key]=value;
+	var localconfig=require('./config.local.js');
+	for (var key in localconfig){ //overwrite Client data
+		if(key!="server"){
+			var value=localconfig[key];
+			config[key]=value;
+		}
+	}
+	for (var key in localconfig.server){ //overwrite Server data
+		var value=localconfig.server[key];
+		config.server[key]=value;
 	}
 } catch (e) {
 	console.log(e);
-	console.log('Attention: No local config');
+	console.log('Attention: No local config found!');
+	console.log('Solution: Copy the content of the config.default and create a new config.local in the same directory! Don\'t forget to update the filebase property to your desired folder!');
+	console.log('The old config.local files which are located IN the Client or Server folder can be removed.');
 }
+
+
+//store the general config/client config in an own variable
+var clientConfig = {};
+for (var prop in config) {
+	if(prop != "server"){
+		clientConfig[prop] = config[prop];
+	}
+}
+
+//mix the exclusive server config with the General/Client config
+for (var key in config.server){ 
+	var value=config.server[key];
+	config[key] = value;
+}
+delete config.server; 
 
 //General error handling. Let the server try to continue
 //if an error occured and log the error
@@ -55,16 +77,17 @@ if (!config.debugMode){
 	});
 }
 
-
-
 var Modules = {};
 
 Modules.Log = require('./Common/Log.js');
 
 	// These modules are accessible everywhere by accessing the global variable Modules
 	// They shall exist only once for the whole server
+	
 Modules.config = config;
 Modules.Config = config;
+Modules.ConfigClient = clientConfig;
+
 Modules.ObjectManager = require('./Server/ObjectManager.js');
 Modules.WebServer = require('./Server/WebServer.js');
 Modules.SocketServer = require('./Server/SocketServer.js');

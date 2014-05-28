@@ -116,3 +116,62 @@ Polygon.setViewHeight = function(value) {
 	GUI.adjustContent(this);
 	this.drawPolygon();
 }
+
+//calculate the Intersection point between a polygon object and a line (which ends in the middle of the polygon, described by a1 and a2)
+Polygon.IntersectionObjectLine = function(a1, a2){
+				
+	//calculate the corner points to build the bounding box lines:
+	var padding1 = 10;
+	var padding2 = 30;
+			
+	var CenterLeft = new Object();
+	CenterLeft.x = this.getViewBoundingBoxX()-padding2;
+	CenterLeft.y = this.getViewBoundingBoxY()+(this.getViewBoundingBoxHeight()/2);
+		
+	var CenterRight = new Object();
+	CenterRight.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()+padding2;
+	CenterRight.y = this.getViewBoundingBoxY()+(this.getViewBoundingBoxHeight()/2);
+		
+	var LeftTop = new Object();
+	LeftTop.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()/4)-padding1;
+	LeftTop.y = this.getViewBoundingBoxY()-padding1;
+		
+	var LeftBottom = new Object();
+	LeftBottom.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()/4)-padding1;
+	LeftBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding1;
+		
+	var RightBottom = new Object();
+	RightBottom.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()*0.75)+padding1;
+	RightBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding1;
+		
+	var RightTop = new Object();
+	RightTop.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()*0.75)+padding1;
+	RightTop.y = this.getViewBoundingBoxY()-padding1;
+		
+	//calculate the Intersection Points between the line and each bounding box line	
+	var Intersection1 = this.IntersectionLineLine(a1, a2, CenterLeft, LeftBottom);
+	var Intersection2 = this.IntersectionLineLine(a1, a2, LeftBottom, RightBottom);
+	var Intersection3 = this.IntersectionLineLine(a1, a2, RightBottom, CenterRight);
+	var Intersection4 = this.IntersectionLineLine(a1, a2, CenterRight, RightTop);
+	var Intersection5 = this.IntersectionLineLine(a1, a2, RightTop, LeftTop);
+	var Intersection6 = this.IntersectionLineLine(a1, a2, LeftTop, CenterLeft);
+		
+	if(typeof Intersection1.x != 'undefined' && typeof Intersection1.y != 'undefined'){ //Intersection left bottom
+		return Intersection1;
+	}
+	if(typeof Intersection2.x != 'undefined' && typeof Intersection2.y != 'undefined'){ //Intersection bottom
+		return Intersection2;
+	}
+	if(typeof Intersection3.x != 'undefined' && typeof Intersection3.y != 'undefined'){ //Intersection right bottom
+		return Intersection3;
+	}
+	if(typeof Intersection4.x != 'undefined' && typeof Intersection4.y != 'undefined'){ //Intersection right top
+		return Intersection4;
+	}
+	if(typeof Intersection5.x != 'undefined' && typeof Intersection5.y != 'undefined'){ //Intersection on top
+		return Intersection5;
+	}
+	if(typeof Intersection6.x != 'undefined' && typeof Intersection6.y != 'undefined'){ //Intersection left top
+		return Intersection6;
+	}		
+}

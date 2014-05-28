@@ -31,7 +31,7 @@ WebServer.init = function (theModules) {
 
 
 
-	app.listen(global.config.port);  // start server (port set in config)
+	app.listen(Modules.config.port);  // start server (port set in config)
 
 	function handler(req, res) {
 		var url = req.url.replace('%20', ' ');
@@ -290,7 +290,7 @@ WebServer.init = function (theModules) {
 						}
 						
 						
-						/* Restrict the uploaded file size, the maximum filesize is spezified in config.default */
+						/* Restrict the uploaded file size, the maximum filesize is spezified in the config */
 						var filesize = files.file.size; 
 						if(Modules.Config.maxFilesizeInMB*1000000<filesize){
 							fs.unlinkSync(files.file.path);
@@ -597,12 +597,20 @@ WebServer.init = function (theModules) {
 			// plain files
 
 			try {
-
+			
 				var urlParts = url.split('/');
-
-				var filebase = __dirname + '/../Client';
+				
+				var filebase;
+				
+				if(url=='/config.js'){
+					url='/config.local.js'
+					filebase = __dirname+'/..';		
+				}
+				else{
+					filebase = __dirname + '/../Client';
+				}
 				var filePath = filebase + url;
-
+				
 				if (urlParts.length > 2) {
 					switch (urlParts[1]) {
 						case 'Common':
@@ -618,6 +626,18 @@ WebServer.init = function (theModules) {
 								res.writeHead(404);
 								Modules.Log.warn('Error loading ' + url);
 								return res.end('Error loading ' + url);
+							}
+							
+							//if the Client want to access the config, return the comment part from the config.local.js + Modules.ConfigClient
+							if(url=='/config.local.js'){
+							
+								data = data.toString('utf8');
+								var endcomment = data.lastIndexOf('*/')+2;
+								var comment = data.slice(0, endcomment);
+								
+								var obj = JSON.stringify(Modules.ConfigClient);
+									
+								data=comment+"\n"+"\n"+"\"use strict\";"+"\n"+"\n"+"var Config="+obj+';';	
 							}
 
 							fs.stat(filePath, function (err, stat) {
@@ -654,8 +674,7 @@ WebServer.init = function (theModules) {
 											head['Content-Length'] =  data.length
 										}
 										res.writeHead(200, head);
-
-
+										
 										if (url.search(".html") !== -1) {
 											data = data.toString('utf8');
 											var position1 = data.search('<serverscript');

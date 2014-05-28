@@ -81,7 +81,7 @@ $(function() {
 
 			for (var i=0; i < files.length; i++) {
 			
-				/* Restrict the uploaded file size, the maximum filesize is spezified in config.default */
+				/* Restrict the uploaded file size, the maximum filesize is spezified in config */
 				var filesize = files[i].size;  
 				if(Modules.Config.maxFilesizeInMB*1000000<filesize){
 					alert('This file is too large. You can only upload files with a maximum size of '+Modules.Config.maxFilesizeInMB+' megabyte!'); 

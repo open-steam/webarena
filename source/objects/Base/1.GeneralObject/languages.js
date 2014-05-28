@@ -21,6 +21,8 @@ GeneralObject.setTranslations('de',{
 	'locked':'Angeheftet',
 	'visible':'Sichtbar',
 	'group':'Gruppe',
+	'Group':'Gruppieren',
+	'Ungroup':'Gruppierung aufheben',
 	'shadow':'Schatten',
 	'hidden':'Versteckt',
 	'id':'ID',
@@ -33,6 +35,12 @@ GeneralObject.setTranslations('de',{
 	'preview' : 'Vorschau',
 	'Copy' : 'Kopieren',
 	'Cut' : 'Ausschneiden',
-	'Completely transparent objects are not allowed.':'Komplett transparente Objekte sind nicht erlaubt.'
+	'Completely transparent objects are not allowed.':'Komplett transparente Objekte sind nicht erlaubt.',
+	'link direction:' : 'Richtung der Verknüpfung:',
+	'undirected' : 'ungerichtet',
+	'object as target' : 'Objekt als Ziel',
+	'object as source' : 'Objekt als Quelle',
+	'bidirectional' : 'bidirektional',
+	'change direction' : 'Richtung ändern'
 }
 );
