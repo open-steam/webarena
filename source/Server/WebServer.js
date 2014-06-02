@@ -571,6 +571,14 @@ WebServer.init = function (theModules) {
 				res.end(datetime);
 			}
 		}
+		
+		else if (url == '/config.js'){
+			var obj = JSON.stringify(Modules.ConfigClient);
+									
+			data="\"use strict\";"+"\n"+"\n"+"var Config="+obj+';';	
+			
+			res.end(data);
+		}
 
 		// objects
 
@@ -602,13 +610,8 @@ WebServer.init = function (theModules) {
 				
 				var filebase;
 				
-				if(url=='/config.js'){
-					url='/config.local.js'
-					filebase = __dirname+'/..';		
-				}
-				else{
-					filebase = __dirname + '/../Client';
-				}
+				filebase = __dirname + '/../Client';
+				
 				var filePath = filebase + url;
 				
 				if (urlParts.length > 2) {
@@ -626,18 +629,6 @@ WebServer.init = function (theModules) {
 								res.writeHead(404);
 								Modules.Log.warn('Error loading ' + url);
 								return res.end('Error loading ' + url);
-							}
-							
-							//if the Client want to access the config, return the comment part from the config.local.js + Modules.ConfigClient
-							if(url=='/config.local.js'){
-							
-								data = data.toString('utf8');
-								var endcomment = data.lastIndexOf('*/')+2;
-								var comment = data.slice(0, endcomment);
-								
-								var obj = JSON.stringify(Modules.ConfigClient);
-									
-								data=comment+"\n"+"\n"+"\"use strict\";"+"\n"+"\n"+"var Config="+obj+';';	
 							}
 
 							fs.stat(filePath, function (err, stat) {
