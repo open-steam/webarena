@@ -138,20 +138,32 @@ GUI.moveLinks = function(object){
 	});
 }
 
-//show or hide links in the current room (via checkbox in the inspector)
+//show or hide links in the current room (via checkbox in the inspector, only if both objects are visible)
 GUI.showLinks = function(value) {
 	
 	for (var id1 in ObjectManager.getObjects()){
-		for (var id2 in ObjectManager.getObjects()){
-			if(value){ //show
-				$(".webarenaLink_between_"+id1+"_and_"+id2).show();
-				$(".webarenaLink_between_"+id2+"_and_"+id1).show();
-			}
-			else{ //hide
-				$(".webarenaLink_between_"+id1+"_and_"+id2).hide();
-				$(".webarenaLink_between_"+id2+"_and_"+id1).hide();
+		var object1 = ObjectManager.getObject(id1);
+		if(object1.getAttribute("visible")){
+			for (var id2 in ObjectManager.getObjects()){
+				var object2 = ObjectManager.getObject(id2);
+				if(object2.getAttribute("visible")){
+					GUI.showLink(id1,id2,value);
+				}
 			}
 		}
+	}
+}
+
+//show or hide a link
+GUI.showLink = function(id1, id2, value) {
+
+	if(value){ //show
+		$(".webarenaLink_between_"+id1+"_and_"+id2).show();
+		$(".webarenaLink_between_"+id2+"_and_"+id1).show();
+	}
+	else{ //hide
+		$(".webarenaLink_between_"+id1+"_and_"+id2).hide();
+		$(".webarenaLink_between_"+id2+"_and_"+id1).hide();
 	}
 }
 
@@ -192,12 +204,7 @@ GUI.createLinks = function(object) {
 	}else if (oldLinks1){
 		newLinks1.push(oldLinks1);
 	}
-	
-	/**
-	 * get all objects linked with this object
-	 */
-	//$.each(object.getLinkedObjects(), function(index, target) {
-	
+		
 	$.each(newLinks1, function( index, value ) {
 			
 		var targetID = value.destination;
@@ -237,7 +244,7 @@ GUI.createLinks = function(object) {
 		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId()));
 		var line = GUI.svg.line(parent, objectCenterX, objectCenterY, targetCenterX, targetCenterY, {
 			strokeWidth: 6,
-			stroke: "#CCCCCC"
+			stroke: "#000000"
 		});
 		
 		$(line).addClass("webarenaLink_between_"+object.id+"_and_"+target.id);
@@ -258,7 +265,7 @@ GUI.createLinks = function(object) {
 			markerId = GUI.getSvgMarkerId("arrow", "black", true);
 			$(line).attr("marker-end", "url(#"+markerId+")");
 		}
-		
+				
 		GUI.moveLinks(object);
 		
         $(line).bind("mouseup", function(event){
@@ -403,17 +410,7 @@ GUI.createLinks = function(object) {
             }
         );
 		
-		
-		/* ghost objects */
-		var rep = target.getRepresentation();
-		
-		if (target.get('visible') == false) {
-			$(rep).css("opacity", 0.4);
-			$(rep).css("visibility", "visible");
-			$(rep).addClass("webarena_ghost");
-		}
-		
-		
+	
 		window.setTimeout(function() {
 
 			$(line).css("opacity", 1);
@@ -421,6 +418,17 @@ GUI.createLinks = function(object) {
 		}, 1);
 
         parent.prepend($(line));
+		
+		//after loading a room, hide links if "showLinks" is false or if the object/target is invisible 
+		var room = object.getRoom();
+		var show = room.getAttribute('showLinks');
+		if (target.get('visible') == false || !show){
+			window.setTimeout(function() {
+
+				GUI.showLink(object.id, target.id, false);
+
+			}, 100);	
+		}
 		
 	});
 }

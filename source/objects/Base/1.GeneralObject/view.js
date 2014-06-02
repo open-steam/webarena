@@ -14,7 +14,7 @@
 GeneralObject.draw=function(external){
 
 	if (!this.isGraphical) return;
-	
+		
 	var rep=this.getRepresentation();
 
 	this.setViewWidth(this.getAttribute('width'));
@@ -31,7 +31,7 @@ GeneralObject.draw=function(external){
 		} else {
 			
 			if (this.getAttribute("visible")) {
-				
+			
 				if (external) {
 					if ($(rep).css("visibility") == "hidden") {
 						/* fade in */
@@ -46,9 +46,9 @@ GeneralObject.draw=function(external){
 				}
 				
 			} else {
-				
+							
 				if (external) {
-					if ($(rep).css("visibility") == "visible") {
+					if ($(rep).css("visibility") == "visible") {			
 						/* fade out */
 						$(rep).css("opacity", 1);
 						$(rep).animate({
@@ -347,6 +347,38 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	this.selected = true;
 	
+	
+	//show invisible object if selected
+	var visible = true;
+	if(!this.getAttribute("visible")){
+		var rep = this.getRepresentation();
+		$(rep).css("opacity", 1);
+		$(rep).css("visibility", "visible");
+		visible = false;
+	}
+	
+	//add ghost mode for linked + invisible objects
+	var objectID = this.getId();
+	var room = this.getRoom();
+	var linkedObjects = this.getAttribute("link");
+	$.each(linkedObjects, function(index, value) {
+		var targetID = value.destination;
+		var target = ObjectManager.getObject(targetID);
+		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
+		
+			var rep = target.getRepresentation();
+			$(rep).css("opacity", 0.4);
+			$(rep).css("visibility", "visible");	
+			$(rep).addClass("webarena_ghost");
+
+			GUI.showLink(objectID, targetID, true);
+		}
+		if(!visible){
+			GUI.showLink(objectID, targetID, true);
+		}
+	});
+	
+
 	if (this.getAttribute("group") != 0 && !groupSelect) {
 		$.each(this.getGroupMembers(), function(index, object) {
 			object.select(true, true);
@@ -384,7 +416,7 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	/* inform all clients about the selection */
 	ObjectManager.informAboutSelection(this.id);
-	
+		
 }
 
 /**
@@ -396,6 +428,39 @@ GeneralObject.deselect = function() {
 
 	this.selected = false;
 	
+	
+	//hide invisible object after deselection
+	var visible = true;
+	if(!this.getAttribute("visible")){
+		var rep = this.getRepresentation();
+		$(rep).css("opacity", 0);
+		$(rep).css("visibility", "hidden");
+		visible = false;
+	}
+	
+	//remove ghost mode for linked + invisible objects
+	var objectID = this.getId();
+	var room = this.getRoom();
+	var linkedObjects = this.getAttribute("link");
+	$.each(linkedObjects, function(index, value) {
+		var targetID = value.destination;
+		var target = ObjectManager.getObject(targetID);
+		
+		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
+			
+			var rep = target.getRepresentation();
+			$(rep).css("opacity", 0);
+			$(rep).css("visibility", "hidden");	
+			$(rep).removeClass("webarena_ghost");
+
+			GUI.showLink(objectID, targetID, false);
+		}
+		if(!visible){
+			GUI.showLink(objectID, targetID, false);
+		}
+	});
+	
+
 	this.removeControls();
 	this.unmakeMovable();
 
@@ -870,6 +935,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			self.resizeHandler();
 			
 			self.onMoveEnd();
+			
+			GUI.moveLinks(self);
 			
 			if (!GUI.isTouchDevice) {
 				/* mouse */

@@ -209,7 +209,17 @@ GeneralObject.register=function(type){
 			return true;
 		}
 		
-	}});
+	},changedFunction: function(object, value) {
+		
+		var linkedObjects = object.getAttribute("link");
+
+		$.each(linkedObjects, function(index, val) {
+			GUI.showLink(object.id, val.destination, value); 
+		});
+	
+	}
+	
+	});
 	
 	this.registerAttribute('link',{multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
 		
@@ -395,6 +405,10 @@ GeneralObject.register=function(type){
 				});
 				
 				lastClicked.select();
+				
+				//show all links (if 'showLinks' is deactivated, activate it)
+				var room = lastClicked.getRoom();
+				room.setAttribute('showLinks', true);
 				
 				GUI.createLinks(lastClicked);
 			}
@@ -689,15 +703,6 @@ GeneralObject.mayChangeContent=function(){
 	return true; //TODO
 }
 
-GeneralObject.hide=function(){
-	this.setAttribute('visible',true);
-}
-
-GeneralObject.unHide=function(){
-	this.setAttribute('visible',false);
-}
-
-GeneralObject.unhide=GeneralObject.unHide;	
 	
 /**
 *	put the top left edge of the bounding box to x,y

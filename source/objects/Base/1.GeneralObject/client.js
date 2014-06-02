@@ -78,7 +78,7 @@ GeneralObject.fetchContent=function(worker, forced){
 	}
 
 	var that=this;
-	//Do not use "this" in response fucntions as they do not refer to the object in there!
+	//Do not use "this" in response functions as they do not refer to the object in there!
 	
 	var functionLoadedCallback = function(newContent){
 		that.content=newContent;
