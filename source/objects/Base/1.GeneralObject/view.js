@@ -364,6 +364,10 @@ GeneralObject.select = function(multiple, groupSelect) {
 	$.each(linkedObjects, function(index, value) {
 		var targetID = value.destination;
 		var target = ObjectManager.getObject(targetID);
+		if (!target){
+			//console.log(objectID+' has missing linked objects');
+			return;
+		}
 		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
 		
 			var rep = target.getRepresentation();
@@ -445,6 +449,10 @@ GeneralObject.deselect = function() {
 	$.each(linkedObjects, function(index, value) {
 		var targetID = value.destination;
 		var target = ObjectManager.getObject(targetID);
+		if (!target){
+			//console.log(objectID+' has missing linked objects');
+			return;
+		}
 		
 		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
 			
