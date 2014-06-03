@@ -1020,6 +1020,15 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 	
 }
 
+GeneralObject.isAccessible = function() {
+	if (!Modules.Config.structuringMode) return true;
+	
+	//TODO compare this object with room state
+	
+	return true;
+	
+}
+
 GeneralObject.deleteIt=GeneralObject.remove;
 
 module.exports=GeneralObject;
