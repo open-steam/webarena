@@ -40,6 +40,8 @@ module.exports={
 	
 	bugreportIcon:true,
 	
+	structuringMode: true,
+	
 // Development
 	
 	debugMode: false,
