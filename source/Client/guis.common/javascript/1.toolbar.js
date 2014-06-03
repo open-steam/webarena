@@ -40,7 +40,7 @@ GUI.initToolbar = function() {
 
 		$("#header>div.header_left").append(newCategoryIcon);
 
-		if (object.length > 1) {
+		if (object.length > 1) { //more than one object in the category
 			
 			$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
 			
@@ -123,7 +123,7 @@ GUI.initToolbar = function() {
 				}
 			});
 		
-		} else {
+		} else { //one object in the category
 			
 			/* add link to icon (no Popover) */
 			

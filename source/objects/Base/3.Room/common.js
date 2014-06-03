@@ -7,7 +7,7 @@
 
 var Modules=require('../../../server.js');
 
-var Room=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
+var Room=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
 Room.register=function(type){
 	
@@ -32,13 +32,13 @@ Room.register=function(type){
     this.registerAttribute('x',{hidden:true});
 	this.registerAttribute('y',{hidden:true});
 	this.registerAttribute('group',{hidden:true});
+	this.registerAttribute('bigIcon',{hidden:true});
+	this.registerAttribute('linecolor',{hidden:true});
+	this.registerAttribute('linesize',{hidden:true});
+	
 	this.registerAttribute('showUserPaintings',{type:"boolean", standard:true, changedFunction: function(object, value) {object.showUserPaintings(value);}});
+	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
     
-}
-
-Room.execute=function(){
-	var destination=this.getAttribute('id');	
-	ObjectManager.loadRoom(destination);
 }
 
 Room.hasObject=function(obj){

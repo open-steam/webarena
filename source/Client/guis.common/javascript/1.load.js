@@ -9,7 +9,7 @@ GUI.loaded = false;
  * called when a room is entered
  */
 GUI.entered = function() {
-	
+		
 	if (GUI.loaded) {
 		//GUI was loaded before --> this is a room change
 		GUI.progressBarManager.addProgress(GUI.translate('changing room'), "login");
@@ -113,6 +113,7 @@ GUI.loadGUI = function(step) {
 		GUI.loaded = true;
 		GUI.hideLogin();
 		ObjectManager.paintingUpdate();
+		GUI.createLinkRepresentations(); //create the representations of the existing links in the new room
 	
 	} else {
 		console.error("unknown load step");

@@ -1,4 +1,6 @@
 Room.setTranslations('de',{
-	'Room':'Raum'
+	'Room':'Raum',
+	'showUserPaintings':'Zeichnungen anzeigen',
+	'showLinks':'Verknüpfungen anzeigen'
 }
 );

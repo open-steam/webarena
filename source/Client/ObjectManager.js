@@ -266,7 +266,7 @@ ObjectManager.remove=function(object){
 
 ObjectManager.removeLocally=function(data){
     var object=ObjectManager.getObject(data.id);
-	
+		
     //remove representation
     if (object.removeRepresentation){
         object.removeRepresentation();
@@ -312,11 +312,13 @@ ObjectManager.executeRoomChangeCallbacks = function(){
 ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 
 	var self = this;
-
+	
+	GUI.deleteLinkRepresentations(); //delete the existing link representations in the old room
+	
     this.executeRoomChangeCallbacks();
 
 	if (!index) var index = 'left';
-		
+			
 	// in coupling mode: do not load room if it is already displayed
 	var proceed = true;
 	if (GUI.couplingModeActive && (ObjectManager.getRoomID('left') == roomid || ObjectManager.getRoomID('right') == roomid)) {
@@ -343,27 +345,26 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 				if (GUI.couplingModeActive) {
 		    		GUI.defaultZoomPanState(index, true);
 		    	}
-
+								
 				if (callback) setTimeout(callback, 1200);
 			}
 		});
 	} else {
 		alert(GUI.translate("Room already displayed"));
 	}
-
 }
 
 ObjectManager.leaveRoom=function(roomid,index,serverCall) {
-
+	
 	var self = this;
 
 	if (!index) var index = 'right'; 
 	
 	if (serverCall) {
 		Modules.Dispatcher.query('leave',{'roomID':roomid,'index':index,'user':self.getUser()},function(error){
-
+		
 			if (error !== true) {
-
+		
 			    var objects = self.getObjects(index);
 			    for (var i in objects) {
 			        var obj = objects[i];
@@ -475,6 +476,7 @@ ObjectManager.init=function(){
     })
 	
     Modules.Dispatcher.registerCall('objectDelete',function(data){
+		GUI.removeLinksfromObject(ObjectManager.getObject(data.id)); //delete all links which ends or starts in this object
         ObjectManager.removeLocally(data);
     });
 	

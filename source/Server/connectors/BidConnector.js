@@ -19,10 +19,10 @@ bidConnector.login=function(username,password,externalSession,context, rp){
 		delete(self.externalSessions[password]);
 	}
 	
-	var protocol = (global.config.bidServerIsHttps)?'https':'http';
+	var protocol = (Modules.config.bidServerIsHttps)?'https':'http';
 
 	var BidConnection = require('./BidAPI.js').BidConnection;
-	self.bidConnections[context.socket.id] = new BidConnection(protocol,global.config.bidServer, global.config.bidPort, username, password);
+	self.bidConnections[context.socket.id] = new BidConnection(protocol,Modules.config.bidServer, Modules.config.bidPort, username, password);
 
 	self.bidConnections[context.socket.id].checkLogin(function(loggedIn) {
 	

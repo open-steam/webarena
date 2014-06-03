@@ -14,7 +14,7 @@
 GeneralObject.draw=function(external){
 
 	if (!this.isGraphical) return;
-	
+		
 	var rep=this.getRepresentation();
 
 	this.setViewWidth(this.getAttribute('width'));
@@ -31,7 +31,7 @@ GeneralObject.draw=function(external){
 		} else {
 			
 			if (this.getAttribute("visible")) {
-				
+			
 				if (external) {
 					if ($(rep).css("visibility") == "hidden") {
 						/* fade in */
@@ -46,9 +46,9 @@ GeneralObject.draw=function(external){
 				}
 				
 			} else {
-				
+							
 				if (external) {
-					if ($(rep).css("visibility") == "visible") {
+					if ($(rep).css("visibility") == "visible") {			
 						/* fade out */
 						$(rep).css("opacity", 1);
 						$(rep).animate({
@@ -333,7 +333,7 @@ GeneralObject.hideActivationMarker=function(){
 GeneralObject.select = function(multiple, groupSelect) {
 
 	if (this.selected) return;
-	
+		
 	GUI.hideActionsheet();
 
 	if (!GUI.shiftKeyDown && !multiple) {
@@ -347,6 +347,42 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	this.selected = true;
 	
+	
+	//show invisible object if selected
+	var visible = true;
+	if(!this.getAttribute("visible")){
+		var rep = this.getRepresentation();
+		$(rep).css("opacity", 1);
+		$(rep).css("visibility", "visible");
+		visible = false;
+	}
+	
+	//add ghost mode for linked + invisible objects
+	var objectID = this.getId();
+	var room = this.getRoom();
+	var linkedObjects = this.getAttribute("link");
+	$.each(linkedObjects, function(index, value) {
+		var targetID = value.destination;
+		var target = ObjectManager.getObject(targetID);
+		if (!target){
+			//console.log(objectID+' has missing linked objects');
+			return;
+		}
+		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
+		
+			var rep = target.getRepresentation();
+			$(rep).css("opacity", 0.4);
+			$(rep).css("visibility", "visible");	
+			$(rep).addClass("webarena_ghost");
+
+			GUI.showLink(objectID, targetID, true);
+		}
+		if(!visible){
+			GUI.showLink(objectID, targetID, true);
+		}
+	});
+	
+
 	if (this.getAttribute("group") != 0 && !groupSelect) {
 		$.each(this.getGroupMembers(), function(index, object) {
 			object.select(true, true);
@@ -378,13 +414,13 @@ GeneralObject.select = function(multiple, groupSelect) {
 	},100);
 
 	
-	if (!groupSelect && !multiple) GUI.showLinks(this);
+	if (!groupSelect && !multiple) //GUI.showLinks(this);
 	
 	this.draw();
 	
 	/* inform all clients about the selection */
 	ObjectManager.informAboutSelection(this.id);
-	
+		
 }
 
 /**
@@ -396,6 +432,43 @@ GeneralObject.deselect = function() {
 
 	this.selected = false;
 	
+	
+	//hide invisible object after deselection
+	var visible = true;
+	if(!this.getAttribute("visible")){
+		var rep = this.getRepresentation();
+		$(rep).css("opacity", 0);
+		$(rep).css("visibility", "hidden");
+		visible = false;
+	}
+	
+	//remove ghost mode for linked + invisible objects
+	var objectID = this.getId();
+	var room = this.getRoom();
+	var linkedObjects = this.getAttribute("link");
+	$.each(linkedObjects, function(index, value) {
+		var targetID = value.destination;
+		var target = ObjectManager.getObject(targetID);
+		if (!target){
+			//console.log(objectID+' has missing linked objects');
+			return;
+		}
+		
+		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
+			
+			var rep = target.getRepresentation();
+			$(rep).css("opacity", 0);
+			$(rep).css("visibility", "hidden");	
+			$(rep).removeClass("webarena_ghost");
+
+			GUI.showLink(objectID, targetID, false);
+		}
+		if(!visible){
+			GUI.showLink(objectID, targetID, false);
+		}
+	});
+	
+
 	this.removeControls();
 	this.unmakeMovable();
 
@@ -768,11 +841,11 @@ GeneralObject.removeControls = function() {
 
 GeneralObject.onMoveStart=function(){
 	GUI.hideActionsheet();
-	GUI.hideLinks(this);
+	//GUI.hideLinks(this);
 }
 
 GeneralObject.onMoveEnd=function(){
-	GUI.showLinks(this);
+	//GUI.showLinks(this);
 }
 
 /**
@@ -856,8 +929,6 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			resizeFunction(dx, dy, control.objectStartWidth, control.objectStartHeight, rep, control.objectStartX, control.objectStartY);
 			
 			self.adjustControls();
-			
-			
 					
 		};
 		
@@ -872,6 +943,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			self.resizeHandler();
 			
 			self.onMoveEnd();
+			
+			GUI.moveLinks(self);
 			
 			if (!GUI.isTouchDevice) {
 				/* mouse */
@@ -955,7 +1028,7 @@ GeneralObject.moveStart = function(event) {
 	event.stopPropagation();
 	
 	GUI.hideActionsheet();
-	GUI.hideLinks(self);
+	//GUI.hideLinks(self);
 
 	if (!GUI.isTouchDevice) {
 		/* mouse */
@@ -1019,6 +1092,7 @@ GeneralObject.moveStart = function(event) {
 		/* move all selected objects */
 		$.each(ObjectManager.getSelected(), function(index, object) {
 			object.moveRelative(dx, dy);
+			GUI.moveLinks(object);
 		});
 
 	};
@@ -1147,7 +1221,7 @@ GeneralObject.moveStart = function(event) {
 			self.adjustControls();
 		}
 		
-		GUI.showLinks(self);
+		//GUI.showLinks(self);
 		
 		if (!self.moved) {
 			if (!self.selectionClickActive) self.click(event);
@@ -1242,8 +1316,10 @@ GeneralObject.moveBy = function(x, y) {
 	
 	this.moveHandler();
 	
-	GUI.hideLinks(this);
-	GUI.showLinks(this);
+	GUI.moveLinks(this);
+	
+	//GUI.hideLinks(this);
+	//GUI.showLinks(this);
 	
 }
 
@@ -1570,14 +1646,14 @@ GeneralObject.resizeHandler = function() {
  */
 GeneralObject.selectHandler = function() {
 	GUI.updateInspector(true);
-	GUI.showLinks(this);
+	//GUI.showLinks(this);
 }
 
 /**
  * Called after object deselection
  */
 GeneralObject.deselectHandler = function() {
-	GUI.hideLinks(this);
+	//GUI.hideLinks(this);
 }
 
 /**
@@ -1649,5 +1725,69 @@ GeneralObject.setDisplayGhost = function(s) {
 	this.draw();
 }
 
+//calculate the Intersection point between an object and a line (which ends in the middle of the object, described by a1 and a2).
+//The object shape has to be similar to an rectangle!
+//If another shape is desired, please define on own IntersectionObjectLine-function for this object (as seen for the ellipse and polygon).
+GeneralObject.IntersectionObjectLine = function(a1, a2){
+		
+	//calculate the corner points to build the bounding box lines:
+		
+	var padding = 20;
+		
+	var objectLeftTop = new Object();
+	objectLeftTop.x = this.getViewBoundingBoxX()-padding;
+	objectLeftTop.y = this.getViewBoundingBoxY()-padding;
+	
+	var objectLeftBottom = new Object();
+	objectLeftBottom.x = this.getViewBoundingBoxX()-padding;
+	objectLeftBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding;
+		
+	var objectRightBottom = new Object();
+	objectRightBottom.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()+padding;
+	objectRightBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding;
+	
+	var objectRightTop = new Object();
+	objectRightTop.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()+padding;
+	objectRightTop.y = this.getViewBoundingBoxY()-padding;
+	
+	//calculate the Intersection Points between the line and each bounding box line
+	var Intersection1 = this.IntersectionLineLine(a1, a2, objectLeftTop, objectRightTop);
+	var Intersection2 = this.IntersectionLineLine(a1, a2, objectLeftTop, objectLeftBottom);
+	var Intersection3 = this.IntersectionLineLine(a1, a2, objectLeftBottom, objectRightBottom);
+	var Intersection4 = this.IntersectionLineLine(a1, a2, objectRightBottom, objectRightTop);
+		
+	if(typeof Intersection1.x != 'undefined' || typeof Intersection1.y != 'undefined'){ //Intersection on top
+		return Intersection1;
+	}
+	if(typeof Intersection2.x != 'undefined' || typeof Intersection2.y != 'undefined'){ //Intersection on the left
+		return Intersection2;
+	}
+	if(typeof Intersection3.x != 'undefined' || typeof Intersection3.y != 'undefined'){ //Intersection on the bottom
+		return Intersection3;
+	}
+	if(typeof Intersection4.x != 'undefined' || typeof Intersection4.y != 'undefined'){ //Intersection on the right
+		return Intersection4;
+	}
+}
 
+//calculate the Intersection Point between two lines (endpoints are defined by a1, a2 and b1, b2)
+GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
 
+    var result = new Object();
+    
+    var t1 = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
+    var t2 = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
+    var t3  = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+
+    if ( t3 != 0 ) {
+        var t4 = t1 / t3;
+        var t5 = t2 / t3;
+
+        if ( 0 <= t4 && t4 <= 1 && 0 <= t5 && t5 <= 1 ) {
+            result.x = a1.x + t4 * (a2.x - a1.x);
+			result.y = a1.y + t4 * (a2.y - a1.y);
+        } 
+    }
+
+    return result;
+};

@@ -130,7 +130,7 @@ GeneralObject.register=function(type){
 	this.registerAttribute('id',{type:'number',readonly:true});
 	this.registerAttribute('type',{type:'text',readonly:true});
 	this.registerAttribute('name',{type:'text'});
-    
+	   
 	this.registerAttribute('hasContent',{type:'boolean',hidden:true,standard:false});
 	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {GUI.updateLayers();}});
 	
@@ -156,7 +156,6 @@ GeneralObject.register=function(type){
 		
 	}});
 
-	
 	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance',checkFunction: function(object,value) {
 
 		if (object.checkTransparency('fillcolor', value)) {
@@ -164,6 +163,7 @@ GeneralObject.register=function(type){
 		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
 
 	}});
+	
 	this.registerAttribute('linecolor',{type:'color',standard:'transparent',category:'Appearance',checkFunction: function(object,value) {
 
 		if (object.checkTransparency('linecolor', value)) {
@@ -171,6 +171,7 @@ GeneralObject.register=function(type){
 		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
 
 	}});
+	
 	this.registerAttribute('linesize',{type:'number',min:1,standard:1,max:30,category:'Appearance'});
 
 	this.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
@@ -208,9 +209,19 @@ GeneralObject.register=function(type){
 			return true;
 		}
 		
-	}});
+	},changedFunction: function(object, value) {
+		
+		var linkedObjects = object.getAttribute("link");
+
+		$.each(linkedObjects, function(index, val) {
+			GUI.showLink(object.id, val.destination, value); 
+		});
 	
-	this.registerAttribute('link',{type:'object_id',multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
+	}
+	
+	});
+	
+	this.registerAttribute('link',{multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
 		
 		var objects = ObjectManager.getObjects();
 		
@@ -263,33 +274,144 @@ GeneralObject.register=function(type){
     this.registerAction(
         'Link',
         function(lastClicked){
-            var selected = ObjectManager.getSelected();
-            var lastSelectedId = lastClicked.getId();
+					
+			var arrowheadAtotherObject;
+			var arrowheadAtthisObject;
+						
+			var undirected = lastClicked.translate(GUI.currentLanguage, "undirected");
+			var objectAsTarget = lastClicked.translate(GUI.currentLanguage, "object as target");
+			var objectAsSource = lastClicked.translate(GUI.currentLanguage, "object as source");
+			var bidirectional = lastClicked.translate(GUI.currentLanguage, "bidirectional");
+			var linkDirection = lastClicked.translate(GUI.currentLanguage, "link direction:");
+			
+			//Dialog for setting the link direction
+			var DirectionDialog = document.createElement("div");
+			$(DirectionDialog).attr("title", linkDirection);
 
-            var newLinks = [];
-            var oldLinks = lastClicked.getAttribute('link');
+			var dialogButtons = {};
+							
+			dialogButtons[undirected] = function() {
+				arrowheadAtotherObject = false;
+				arrowheadAtthisObject = false;
+				buildLinks();
+				$(this).dialog("close");
+			}
+			dialogButtons[objectAsTarget] = function() {
+				arrowheadAtotherObject = false;
+				arrowheadAtthisObject = true;
+				buildLinks();
+				$(this).dialog("close");
+			}
+			dialogButtons[objectAsSource] = function() {
+				arrowheadAtotherObject = true;
+				arrowheadAtthisObject = false;
+				buildLinks();
+				$(this).dialog("close");
+			}
+			dialogButtons[bidirectional] = function() {
+				arrowheadAtotherObject = true;
+				arrowheadAtthisObject = true;
+				buildLinks();
+				$(this).dialog("close");
+			}
 
-            //check if there already existing links
-            //	if yes - reinsert them
-            if(_.isArray(oldLinks)){
-                newLinks = newLinks.concat(oldLinks)
-            } else if(oldLinks){
-                newLinks.push(oldLinks);
-            }
-            
-            //check if selected object already is a link of the object
-            //	if no - add it
-            _.each(selected, function(current){
-                var selectedId = current.getId()
-                if(selectedId!==lastSelectedId && !_.contains(newLinks, current.getId())) newLinks.push(current.getId());
-            })
+			$(DirectionDialog).dialog("option", "buttons", dialogButtons);
+		
+			$(DirectionDialog).dialog({
+				modal: true,
+				resizable: false,
+				buttons: dialogButtons
+			});
+		
+			var buildLinks = function(){
+				var selected = ObjectManager.getSelected();
+				var lastSelectedId = lastClicked.getId();
 
-            lastClicked.setAttribute("link", newLinks);
-            _.each(selected, function(current){
-                current.deselect()
-                //current.select()
-            })
-            lastClicked.select();
+				var newLinks1 = [];
+				var oldLinks1 = lastClicked.getAttribute('link');
+
+				//check if there already existing links
+				//	if yes - reinsert them
+				if (_.isArray(oldLinks1)){
+					newLinks1 = newLinks1.concat(oldLinks1);
+				}else if (oldLinks1){
+					newLinks1.push(oldLinks1);
+				}
+				
+				//create or update the links for all selected objects
+				_.each(selected, function(current) {
+					var selectedId = current.getId();
+				  
+					if (selectedId !== lastSelectedId){ //this selected object is a target
+								
+						var selectedObject = ObjectManager.getObject(selectedId);
+				  
+						var newLinks2 = [];
+						var oldLinks2 = selectedObject.getAttribute("link");
+
+						//check if there already existing links
+						//	if yes - reinsert them
+						if (_.isArray(oldLinks2)){
+							newLinks2 = newLinks2.concat(oldLinks2);
+						}else if (oldLinks2){
+							newLinks2.push(oldLinks2);
+						}
+					
+						var exists = false;
+				  
+						 //if a link already exists (between the selected and the lastclicked)-->update directions
+						$.each(newLinks1, function( index, value ) {
+			
+							if(value.destination==selectedId){
+								value.arrowhead = arrowheadAtotherObject;
+								exists = true;
+							}
+						});
+							
+						$.each(newLinks2, function( index, value ) {
+			
+							if(value.destination==lastSelectedId){
+								value.arrowhead = arrowheadAtthisObject;
+								exists = true;
+							}
+						});
+						
+						if(!exists){ //no link between the selected and the lastclicked-->create new link
+							var link1 = {};
+							var link2 = {};
+		
+							link1 = {
+								destination: selectedId,
+								arrowhead: arrowheadAtotherObject
+							};
+							link2 = {
+								destination: lastSelectedId,
+								arrowhead: arrowheadAtthisObject
+							};	
+				
+							newLinks1.push(link1);
+							newLinks2.push(link2);
+						}
+						
+						selectedObject.setAttribute("link", newLinks2);
+					}
+				});
+
+				lastClicked.setAttribute("link", newLinks1);
+				
+				_.each(selected, function(current) {
+				  current.deselect();
+				  //current.select()
+				});
+				
+				lastClicked.select();
+				
+				//show all links (if 'showLinks' is deactivated, activate it)
+				var room = lastClicked.getRoom();
+				room.setAttribute('showLinks', true);
+				
+				GUI.createLinks(lastClicked);
+			}
         },
         false,
         function(){
@@ -494,8 +616,6 @@ GeneralObject.getAttribute=function(attribute,noevaluation){
 	return this.attributeManager.getAttribute(this,attribute,noevaluation);
 }
 
-
-
 GeneralObject.hasAttribute=function(attribute){
 	return this.attributeManager.hasAttribute(this,attribute);
 }
@@ -548,7 +668,6 @@ GeneralObject.setTranslations=function(language,data){
 
 GeneralObject.setTranslation=GeneralObject.setTranslations;
 	
-
 GeneralObject.getType=function(){
 	return this.getAttribute('type');
 }
@@ -572,7 +691,6 @@ GeneralObject.stopOperation=function(){
 * rights
 */
 
-
 GeneralObject.mayReadContent=function() {
 	return true; //TODO
 }
@@ -585,15 +703,6 @@ GeneralObject.mayChangeContent=function(){
 	return true; //TODO
 }
 
-GeneralObject.hide=function(){
-	this.setAttribute('visible',true);
-}
-
-GeneralObject.unHide=function(){
-	this.setAttribute('visible',false);
-}
-
-GeneralObject.unhide=GeneralObject.unHide;	
 	
 /**
 *	put the top left edge of the bounding box to x,y
@@ -704,8 +813,6 @@ GeneralObject.getRoomID=function(){
 	return this.get('inRoom');
 }
 
-
-
 GeneralObject.getID=function(){
 	return this.id;
 }
@@ -714,13 +821,32 @@ GeneralObject.remove=function(){
 	Modules.ObjectManager.remove(this);
 }
 
+//removes the entry with the specified ID from the object's link attribute  
 GeneralObject.removeLinkedObjectById = function(removeId){
-    var filteredIds = _.filter(this.get('link'), function(elem){return elem != removeId})
+		
+	var newLinks = [];
+	var oldLinks = this.getAttribute('link');
 
-    this.setAttribute("link", filteredIds);
+	//check if there already existing links
+	//	if yes - reinsert them
+	if (_.isArray(oldLinks)){
+		newLinks = newLinks.concat(oldLinks);
+	}else if (oldLinks){
+		newLinks.push(oldLinks);
+	}
+	
+	for(var i = 0; i<newLinks.length; i++){
+			
+		if(newLinks[i].destination==removeId){
+			newLinks.splice(i, 1);
+		}
+	}
+
+    this.setAttribute("link", newLinks);
 
 }
 
+//returns if an object has links to other objects or not
 GeneralObject.hasLinkedObjects=function() {
 	
 	var counter = 0;
@@ -742,7 +868,9 @@ GeneralObject.hasLinkedObjects=function() {
 	
 }
 
+//return a list of all objects which have a link to this object
 GeneralObject.getLinkedObjects=function() {
+
 	var self = this;
 	
 	/* getObject (this is different on server and client) */
@@ -764,87 +892,20 @@ GeneralObject.getLinkedObjects=function() {
 		}
 	}
 
-	/* get objects linked by this object */
-	var ownLinkedObjectsIds = [];
-
-
-	if (this.get('link') instanceof Array) {
-        ownLinkedObjectsIds = ownLinkedObjectsIds.concat(this.get('link'));
-	} else {
-		ownLinkedObjectsIds.push(this.get('link'));
-	}
-
-	/* get objects which link to this object */
-	var linkingObjectsIds = [];
+	var linkedObjects = this.getAttribute("link");
 	
-
-	var objects = getObjects();
-
-	for (var index in objects) {
-		var object = objects[index];
-
-		if (object.get('link')) {
-			
-			if (object.get('link') instanceof Array) {
-
-				for (var index in object.get('link')) {
-					var objectId = object.get('link')[index];
-				
-					if (objectId == self.get('id')) {
-						linkingObjectsIds.push(object.get('id'));
-					}
-					
-				}
-				
-			} else {
-
-				if (object.get('link') == self.get('id')) {
-					linkingObjectsIds.push(object.get('id'));
-				}
-				
-			}
-			
-		}
-		
-	}
-
 	var links = {};
-
-	if (ownLinkedObjectsIds) {
-
-		for (var index in ownLinkedObjectsIds) {
-			var objectId = ownLinkedObjectsIds[index];
-
-			if (!objectId) break;
-
-			var webarenaObject = getObject(objectId);
-
-			links[objectId] = {
-				object : webarenaObject,
-				direction : "out"
-			}
-
-		}
-	}
-	
-	
-	if (linkingObjectsIds) {
-
-		for (var index in linkingObjectsIds) {
-			var objectId = linkingObjectsIds[index];
+		
+	for(var i = 0; i<linkedObjects.length; i++){
 			
-			if (!objectId) break;
+		var targetID = linkedObjects[i].destination;
+		var target = getObject(targetID);
 
-			var webarenaObject = getObject(objectId);
-
-			links[objectId] = {
-				object : webarenaObject,
-				direction : "in"
-			}
-
+		links[targetID] = {
+			object : target,
 		}
 	}
-
+	
 	return links;
 }
 
