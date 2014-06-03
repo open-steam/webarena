@@ -286,7 +286,7 @@ ObjectManager.loadRoom=function(roomid,byBrowserNav,callback){
 
 		    if (callback) setTimeout(callback, 1200);
 
-            // Create and display a pad for the room
+            // Create and display an annotation pad for the room
             ObjectManager.Pads.createRoomPad(ObjectManager.getRoomID());
 		}
 		
@@ -568,14 +568,14 @@ ObjectManager.tell=function(text){
 }
 
 ObjectManager.informAboutSelection = function(id) {
-    // show/create pad for the selected object
+    // show the annotation pad for the selected object
     ObjectManager.Pads.showPadFor(id);
 
 	ObjectManager.inform('selection',id);
 }
 
 ObjectManager.informAboutDeselection = function(id) {
-    // clear pad panel if nothing is selected
+    // show room's annotation if nothing is selected
     ObjectManager.Pads.showDefault();
 
 	ObjectManager.inform('deselection',id);
@@ -747,58 +747,62 @@ ObjectManager.duplicateObjects=function(objects) {
 ObjectManager.Pads = {};
 
 
-// access token required to use Etherpad HTTP API
-ObjectManager.Pads.apikey = 'SOpqBlUnNKJSOS92lBhZHrovhqdWQ8qV';
+// Access token required to use Etherpad Lite's HTTP API
+ObjectManager.Pads.apikey = '';
+
+// Etherpad Lite server address
+ObjectManager.Pads.server = 'http://localhost:9001';
 
 
-// displays the pad associated with currently selected object
-// in the pad panel or creates one if it doesn't exist
+// Displays the pad containing the annotation for the currently
+// selected object or creates one if it doesn't exist.
 ObjectManager.Pads.showPadFor = function(id) {
     top.frames['padframe'].location.href =
-        'http://localhost:9001/p/' +        // etherpad server + base address
-         ObjectManager.getRoomID() + id +   // this will be the pad name
+        this.server + '/p/' +              // base address for pads
+        ObjectManager.getRoomID() + id +   // this will be the pad name
         '?showLineNumbers=false' +
-        '&showChat=false' +
-        '&noColors=true';
+        '&showChat=false';
 }
 
 
-// creates a pad for specified room and displays it
+// Creates an annotation pad for the specified room and displays it.
 ObjectManager.Pads.createRoomPad = function(roomID) {
-    var defaultText = 'Describe current room here.';
+    var defaultText = 'Sie können diesen Raum hier beschreiben.';
 
-    $.get('http://localhost:9001/api/1.2.7/createPad' +
-          '?apikey=' + this.apikey +
-          '&padID=' + roomID +
-          '&text=' + encodeURIComponent(defaultText) )
-    .always(this.showDefault());
+    $.get( this.server + '/api/1.2.7/createPad' +
+           '?apikey=' + this.apikey +
+           '&padID=' + roomID +
+           '&text=' + encodeURIComponent(defaultText) )
+    .always( this.showDefault() );
 }
 
 
-// reverts the pad panel to default state
+// Reverts the pad panel to default state,
+// i.e., shows the current room's annotation.
 ObjectManager.Pads.showDefault = function() {
-    top.frames['padframe'].location.href = 'http://localhost:9001/p/' +
+    top.frames['padframe'].location.href =  this.server + '/p/' +
                                             ObjectManager.getRoomID() +
-                                           '?showLineNumbers=false' +
-                                           '&showChat=false' +
-                                           '&noColors=true';
+                                            '?showLineNumbers=false' +
+                                            '&showChat=false' +
+                                            '&noColors=true';
 }
 
 
-// deletes the pad associated with specified object id
+// Deletes the pad associated with the specified object ID.
 ObjectManager.Pads.deletePadFor = function(id) {
-    $.get('http://localhost:9001/api/1.2.7/deletePad' +
-          '?apikey=' + this.apikey +
-          '&padID=' + ObjectManager.getRoomID() + id);
+    $.get(  this.server + '/api/1.2.7/deletePad' +
+            '?apikey=' + this.apikey +
+            '&padID=' + ObjectManager.getRoomID() + id);
 
-    $.get(  'http://localhost:9001/api/1.2.7/deletePad' +
+    // also delete the content pad of a CollText object
+    $.get(  this.server + '/api/1.2.7/deletePad' +
             '?apikey=' + this.apikey +
             '&padID=' + ObjectManager.getRoomID() + id + 'content');
 }
 
 
-// updates the collText object with current contents of its associated pad
-// also updates the linked master document
+// Updates the specified CollText object with current contents of its content pad.
+// Also updates the linked master document if it exists.
 ObjectManager.Pads.updateRepresentation = function(id) {
     var cText = ObjectManager.getObject(id);
 
@@ -806,7 +810,7 @@ ObjectManager.Pads.updateRepresentation = function(id) {
 
     // update the object with current pad content
     $.ajax({
-        url: 'http://localhost:9001/api/1.2.7/getText' +
+        url: this.server + '/api/1.2.7/getText' +
              '?apikey=' + this.apikey +
              '&padID=' + ObjectManager.getRoomID() + id + 'content',
         dataType: 'jsonp',
@@ -816,7 +820,7 @@ ObjectManager.Pads.updateRepresentation = function(id) {
         }
     });
 
-    // check if text is part of a master document
+    // check if text is a part of a master document
     if (cText.hasLinkedObjects()) {
         var links = cText.getLinkedObjects(),
             count = 0,
@@ -834,8 +838,8 @@ ObjectManager.Pads.updateRepresentation = function(id) {
         }
 
         if (count === 1) {
-            // check if the target of connection is really the master document
-            // i.e. is connected to more than 1 CollText. Not checking for this
+            // check if the target of connection is really the master document,
+            // i.e., is connected to more than 1 CollText. Not checking for this
             // can result in an infinite loop
             var targetCount = 0,
                 targetLinks = target.getLinkedObjects();
@@ -852,7 +856,7 @@ ObjectManager.Pads.updateRepresentation = function(id) {
     }
 }
 
-// Merges the content of all linked CollTexts into the master document
+// Merges the content of all linked CollTexts into the master document.
 ObjectManager.Pads.merge = function(master, masterID) {
     var links = master.getLinkedObjects(),
         subs = [],
@@ -884,11 +888,11 @@ ObjectManager.Pads.merge = function(master, masterID) {
     // retrieve content from subdocuments and merge into master
     for (var i = 0; i < subs.length; i++) {
         $.ajax({
-            url:    'http://localhost:9001/api/1.2.7/getText' +
-                    '?apikey=' + ObjectManager.Pads.apikey +
+            url:    this.server + '/api/1.2.7/getText' +
+                    '?apikey=' + this.apikey +
                     '&padID=' + ObjectManager.getRoomID() + subs[i] + 'content',
-            dataType:   'jsonp',
-            jsonp:      'jsonp',
+            dataType: 'jsonp',
+            jsonp: 'jsonp',
             success: function(index) {
                 return function(response) {
                     content[index] = response.data.text;
@@ -901,11 +905,11 @@ ObjectManager.Pads.merge = function(master, masterID) {
 
                     if (fetched === subs.length) {
                         // all parts there, merge into master
-                        $.get(  'http://localhost:9001/api/1.2.7/setText' +
+                        $.get(  ObjectManager.Pads.server + '/api/1.2.7/setText' +
                                 '?apikey=' + ObjectManager.Pads.apikey +
                                 '&padID=' + ObjectManager.getRoomID() + masterID + 'content' +
-                                '&text=' + encodeURIComponent(content.join('\n'))
-                        ).done(ObjectManager.Pads.updateRepresentation(masterID));
+                                '&text=' + encodeURIComponent(content.join('\n')) )
+                        .done(ObjectManager.Pads.updateRepresentation(masterID));
                     }
                 }
             }(i)
