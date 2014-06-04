@@ -397,7 +397,7 @@ GUI.initMouseHandler = function() {
 			/* find objects at this position */
 			var clickedObject = GUI.getObjectAt(x, y);
 
-			if (clickedObject && event.target != $("#content>svg").get(0)) {
+			if (clickedObject && clickedObject.isAccessible() && event.target != $("#content>svg").get(0)) {
 				event.preventDefault();
 				event.stopPropagation();
 				clickedObject.click(event);
@@ -439,7 +439,7 @@ GUI.initMouseHandler = function() {
 				}
 			}
 
-			if (clickedObject) {
+			if (clickedObject && clickedObject.isAccessible()) {
 				// Objects with restricted moving areas should get the "native" events
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
 				// should be prevented
@@ -450,7 +450,7 @@ GUI.initMouseHandler = function() {
 
 				clickedObject.click(event);
 			} else {
-				/* clicked on background */
+				/* clicked on background or unaccessible object*/
                 event.preventDefault();
                 event.stopPropagation();
 				GUI.rubberbandStart(event);

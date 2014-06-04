@@ -1,7 +1,7 @@
 /**
 *    Webarena - A web application for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
+*    @author Felix Winkelnkemper, University of Paderborn, 2014
 *
 *	 GeneralObject client component
 *
@@ -230,3 +230,19 @@ GeneralObject.onDrop=function(elem){
 }
 
 GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
+
+
+GeneralObject.isBackgroundObject = function(){
+	return true;
+}
+
+GeneralObject.isAccessible = function() {
+	if (!Modules.Config.structuringMode) return true;
+	
+	var roomInBackgroundMode=this.getRoom().isInBackgroundMode();
+	
+	var isBackgroundObject=this.isBackgroundObject();
+	
+	return (roomInBackgroundMode==isBackgroundObject);
+	
+}

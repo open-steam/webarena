@@ -331,6 +331,8 @@ GeneralObject.hideActivationMarker=function(){
  * @param {bool} groupSelect ?
  */
 GeneralObject.select = function(multiple, groupSelect) {
+	
+	if (!this.isAccessible()) return;   // refuse selecting if not in the right mode
 
 	if (this.selected) return;
 		

@@ -1,7 +1,7 @@
 /**
 *    Webarena - A web application for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
+*    @author Felix Winkelnkemper, University of Paderborn, 2014
 *
 *	 GeneralObject common elements for view and server
 *
@@ -1017,15 +1017,6 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 	} else {
 		this.setAttribute("link", update(this.get('link')));
 	}
-	
-}
-
-GeneralObject.isAccessible = function() {
-	if (!Modules.Config.structuringMode) return true;
-	
-	//TODO compare this object with room state
-	
-	return true;
 	
 }
 
