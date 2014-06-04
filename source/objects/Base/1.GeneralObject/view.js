@@ -30,7 +30,7 @@ GeneralObject.draw=function(external){
 			$(rep).css("visibility", "visible");
 		} else {
 			
-			if (this.getAttribute("visible")) {
+			if (this.isVisible()) {
 			
 				if (external) {
 					if ($(rep).css("visibility") == "hidden") {
@@ -352,7 +352,7 @@ GeneralObject.select = function(multiple, groupSelect) {
 	
 	//show invisible object if selected
 	var visible = true;
-	if(!this.getAttribute("visible")){
+	if(!this.isVisible()){
 		var rep = this.getRepresentation();
 		$(rep).css("opacity", 1);
 		$(rep).css("visibility", "visible");
@@ -370,7 +370,7 @@ GeneralObject.select = function(multiple, groupSelect) {
 			//console.log(objectID+' has missing linked objects');
 			return;
 		}
-		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
+		if(!target.isVisible() && room.getAttribute("showLinks")){
 		
 			var rep = target.getRepresentation();
 			$(rep).css("opacity", 0.4);
@@ -437,7 +437,7 @@ GeneralObject.deselect = function() {
 	
 	//hide invisible object after deselection
 	var visible = true;
-	if(!this.getAttribute("visible")){
+	if(!this.isVisible()){
 		var rep = this.getRepresentation();
 		$(rep).css("opacity", 0);
 		$(rep).css("visibility", "hidden");
@@ -456,7 +456,7 @@ GeneralObject.deselect = function() {
 			return;
 		}
 		
-		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
+		if(!target.isVisible() && room.getAttribute("showLinks")){
 			
 			var rep = target.getRepresentation();
 			$(rep).css("opacity", 0);

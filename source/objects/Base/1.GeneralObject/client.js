@@ -233,7 +233,11 @@ GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
 
 
 GeneralObject.isBackgroundObject = function(){
-	return true;
+	if (this.isStructuring()) return true;
+	if (this.isSensitive()) return true;
+	if (this.getAttribute('inBackground')) return true; 
+	
+	return false;
 }
 
 GeneralObject.isAccessible = function() {
@@ -244,5 +248,17 @@ GeneralObject.isAccessible = function() {
 	var isBackgroundObject=this.isBackgroundObject();
 	
 	return (roomInBackgroundMode==isBackgroundObject);
+	
+}
+
+GeneralObject.isVisible=function(){
+	
+	if (!this.getAttribute('visible')) return false;
+	
+	if (!Modules.Config.structuringMode) return true;
+	
+	if (this.getRoom().isInBackgroundMode() && ! this.isBackgroundObject()) return false;
+	
+	return true;
 	
 }

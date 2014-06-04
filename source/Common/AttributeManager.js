@@ -105,10 +105,10 @@ AttributeManager.init=function(proto){
 *			min - integer
 *			max - integer
 *			standard
-*			setFunction - function
+*			setFunction(obj) - function
 *			getFunction - function
 *			checkFunction - function
-* 			changedFunction - function
+* 			changedFunction - function called when attribute has changed (from inside or outside)
 *			readonly - true, false
 *			hidden - true, false
 *			category - a block or tab this attribute should be displayed in

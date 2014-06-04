@@ -32,3 +32,12 @@ Room.deleteUserPainting=function(){
 		//update the view
 	});	
 }
+
+
+Room.redraw=function(){
+	var inventory=this.getInventory();
+	for (var i in inventory){
+		var obj=inventory[i];
+		obj.draw();
+	}
+}
