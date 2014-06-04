@@ -209,16 +209,7 @@ GeneralObject.register=function(type){
 			return true;
 		}
 		
-	},changedFunction: function(object, value) {
-		
-		var linkedObjects = object.getAttribute("link");
-
-		$.each(linkedObjects, function(index, val) {
-			GUI.showLink(object.id, val.destination, value); 
-		});
-	
-	}
-	
+	}	
 	});
 	
 	this.registerAttribute('link',{multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
@@ -274,144 +265,11 @@ GeneralObject.register=function(type){
     this.registerAction(
         'Link',
         function(lastClicked){
-					
-			var arrowheadAtotherObject;
-			var arrowheadAtthisObject;
-						
-			var undirected = lastClicked.translate(GUI.currentLanguage, "undirected");
-			var objectAsTarget = lastClicked.translate(GUI.currentLanguage, "object as target");
-			var objectAsSource = lastClicked.translate(GUI.currentLanguage, "object as source");
-			var bidirectional = lastClicked.translate(GUI.currentLanguage, "bidirectional");
-			var linkDirection = lastClicked.translate(GUI.currentLanguage, "link direction:");
-			
-			//Dialog for setting the link direction
-			var DirectionDialog = document.createElement("div");
-			$(DirectionDialog).attr("title", linkDirection);
-
-			var dialogButtons = {};
-							
-			dialogButtons[undirected] = function() {
-				arrowheadAtotherObject = false;
-				arrowheadAtthisObject = false;
-				buildLinks();
-				$(this).dialog("close");
-			}
-			dialogButtons[objectAsTarget] = function() {
-				arrowheadAtotherObject = false;
-				arrowheadAtthisObject = true;
-				buildLinks();
-				$(this).dialog("close");
-			}
-			dialogButtons[objectAsSource] = function() {
-				arrowheadAtotherObject = true;
-				arrowheadAtthisObject = false;
-				buildLinks();
-				$(this).dialog("close");
-			}
-			dialogButtons[bidirectional] = function() {
-				arrowheadAtotherObject = true;
-				arrowheadAtthisObject = true;
-				buildLinks();
-				$(this).dialog("close");
-			}
-
-			$(DirectionDialog).dialog("option", "buttons", dialogButtons);
 		
-			$(DirectionDialog).dialog({
-				modal: true,
-				resizable: false,
-				buttons: dialogButtons
-			});
+			var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
 		
-			var buildLinks = function(){
-				var selected = ObjectManager.getSelected();
-				var lastSelectedId = lastClicked.getId();
-
-				var newLinks1 = [];
-				var oldLinks1 = lastClicked.getAttribute('link');
-
-				//check if there already existing links
-				//	if yes - reinsert them
-				if (_.isArray(oldLinks1)){
-					newLinks1 = newLinks1.concat(oldLinks1);
-				}else if (oldLinks1){
-					newLinks1.push(oldLinks1);
-				}
+			GUI.createDialog(lastClicked, lastClicked, linkProperties, true);	
 				
-				//create or update the links for all selected objects
-				_.each(selected, function(current) {
-					var selectedId = current.getId();
-				  
-					if (selectedId !== lastSelectedId){ //this selected object is a target
-								
-						var selectedObject = ObjectManager.getObject(selectedId);
-				  
-						var newLinks2 = [];
-						var oldLinks2 = selectedObject.getAttribute("link");
-
-						//check if there already existing links
-						//	if yes - reinsert them
-						if (_.isArray(oldLinks2)){
-							newLinks2 = newLinks2.concat(oldLinks2);
-						}else if (oldLinks2){
-							newLinks2.push(oldLinks2);
-						}
-					
-						var exists = false;
-				  
-						 //if a link already exists (between the selected and the lastclicked)-->update directions
-						$.each(newLinks1, function( index, value ) {
-			
-							if(value.destination==selectedId){
-								value.arrowhead = arrowheadAtotherObject;
-								exists = true;
-							}
-						});
-							
-						$.each(newLinks2, function( index, value ) {
-			
-							if(value.destination==lastSelectedId){
-								value.arrowhead = arrowheadAtthisObject;
-								exists = true;
-							}
-						});
-						
-						if(!exists){ //no link between the selected and the lastclicked-->create new link
-							var link1 = {};
-							var link2 = {};
-		
-							link1 = {
-								destination: selectedId,
-								arrowhead: arrowheadAtotherObject
-							};
-							link2 = {
-								destination: lastSelectedId,
-								arrowhead: arrowheadAtthisObject
-							};	
-				
-							newLinks1.push(link1);
-							newLinks2.push(link2);
-						}
-						
-						selectedObject.setAttribute("link", newLinks2);
-					}
-				});
-
-				lastClicked.setAttribute("link", newLinks1);
-				
-				_.each(selected, function(current) {
-				  current.deselect();
-				  //current.select()
-				});
-				
-				lastClicked.select();
-				
-				//show all links (if 'showLinks' is deactivated, activate it)
-				var room = lastClicked.getRoom();
-				room.setAttribute('showLinks', true);
-				
-				GUI.createLinks(lastClicked);
-			}
         },
         false,
         function(){
@@ -992,6 +850,110 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 		this.setAttribute("link", update(this.get('link')));
 	}
 	
+}
+
+//handle the desired inputs which was made in the setting-properties-dialog
+//especially: creating/changing the link attribute
+GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle){
+
+	var lastClicked = this;
+	var selected = ObjectManager.getSelected();
+	var lastSelectedId = lastClicked.getId();
+
+	var newLinks1 = [];
+	var oldLinks1 = lastClicked.getAttribute('link');
+
+	//check if there already existing links
+	//	if yes - reinsert them
+	if (_.isArray(oldLinks1)){
+		newLinks1 = newLinks1.concat(oldLinks1);
+	}else if (oldLinks1){
+		newLinks1.push(oldLinks1);
+	}
+	
+	//create or update the links for all selected objects
+	_.each(selected, function(current) {
+		var selectedId = current.getId();
+	  
+		if (selectedId !== lastSelectedId){ //this selected object is a target
+					
+			var selectedObject = ObjectManager.getObject(selectedId);
+	  
+			var newLinks2 = [];
+			var oldLinks2 = selectedObject.getAttribute("link");
+
+			//check if there already existing links
+			//	if yes - reinsert them
+			if (_.isArray(oldLinks2)){
+				newLinks2 = newLinks2.concat(oldLinks2);
+			}else if (oldLinks2){
+				newLinks2.push(oldLinks2);
+			}
+		
+			var exists = false;
+	  
+			 //if a link already exists (between the selected and the lastclicked)-->update directions
+			$.each(newLinks1, function( index, value ) {
+
+				if(value.destination==selectedId){
+					value.arrowhead = arrowheadAtotherObject;
+					value.width = lineWidth;
+					value.style = lineStyle;
+					
+					exists = true;
+				}
+			});
+				
+			$.each(newLinks2, function( index, value ) {
+
+				if(value.destination==lastSelectedId){
+					value.arrowhead = arrowheadAtthisObject;
+					value.width = lineWidth;
+					value.style = lineStyle;
+					
+					exists = true;
+				}
+			});
+			
+			if(!exists){ //no link between the selected and the lastclicked-->create new link
+				var link1 = {};
+				var link2 = {};
+
+				link1 = {
+					destination: selectedId,
+					arrowhead: arrowheadAtotherObject,
+					width: lineWidth,
+					style: lineStyle
+				};
+				link2 = {
+					destination: lastSelectedId,
+					arrowhead: arrowheadAtthisObject,
+					width: lineWidth,
+					style: lineStyle
+				};	
+	
+				newLinks1.push(link1);
+				newLinks2.push(link2);
+			}
+			
+			selectedObject.setAttribute("link", newLinks2);
+		}
+	});
+
+	lastClicked.setAttribute("link", newLinks1);
+	
+	_.each(selected, function(current) {
+	  current.deselect();
+	  //current.select()
+	});
+	
+	lastClicked.select();
+	
+	//show all links (if 'showLinks' is deactivated, activate it)
+	var room = lastClicked.getRoom();
+	room.setAttribute('showLinks', true);
+	
+	GUI.createLinks(lastClicked);
 }
 
 GeneralObject.deleteIt=GeneralObject.remove;

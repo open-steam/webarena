@@ -36,11 +36,17 @@ GeneralObject.setTranslations('de',{
 	'Copy' : 'Kopieren',
 	'Cut' : 'Ausschneiden',
 	'Completely transparent objects are not allowed.':'Komplett transparente Objekte sind nicht erlaubt.',
-	'link direction:' : 'Richtung der Verknüpfung:',
+	'select properties' : 'Eigenschaften auswählen',
 	'undirected' : 'ungerichtet',
 	'object as target' : 'Objekt als Ziel',
 	'object as source' : 'Objekt als Quelle',
 	'bidirectional' : 'bidirektional',
-	'change direction' : 'Richtung ändern'
+	'change properties' : 'Eigenschaften ändern',
+	'direction' : 'Richtung',
+	'stroke' : 'Linie',
+	'dotted' : 'gepunktet',
+	'dashed' : 'gestrichelt',
+	'style' : 'Stil',
+	'save' : 'speichern'
 }
 );
