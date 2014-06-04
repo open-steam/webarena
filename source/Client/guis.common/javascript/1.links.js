@@ -38,12 +38,14 @@ GUI.removeLinksfromObject = function(object){
 	
 		var targetID = value.destination;
 		var target = ObjectManager.getObject(targetID);
-				
-		//destroy the links
-		$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
-		$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
 						
-		//remove the object ids from the attribute lists
+		//destroy the links
+		$(".webarenaLink_between_"+object.id+"_and_"+targetID).remove();
+		$(".webarenaLink_between_"+targetID+"_and_"+object.id).remove();
+				
+		if(!target) return;
+				
+		//remove the object id from the attribute list of the target
         target.removeLinkedObjectById(object.id);
 		
 	});
@@ -60,6 +62,13 @@ GUI.moveLinks = function(object){
 		var target = ObjectManager.getObject(targetId);
 			
 		if (!target) return;
+		
+		if(object.intersectsWith(target)){ //the objects intersects each other--->do not show any links
+			GUI.showLink(object.id, target.id, false); 
+			return;
+		}
+		
+		GUI.showLink(object.id, target.id, true); 
 		
 		var arrowheadToTarget1 = $(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("marker-start");
 		var arrowheadToTarget2 = $(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("marker-end");
@@ -81,20 +90,13 @@ GUI.moveLinks = function(object){
 		if(arrowheadToTarget1 == "url(#svgMarker_arrow_black_0)" || arrowheadToTarget2 == "url(#svgMarker_arrow_black_1)"){ //arrowhead to target 
 		
 			var Intersection = target.IntersectionObjectLine(a1, a2);
+				
+			if(typeof Intersection == 'undefined'){ //there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
 			
-			//there is no Intersection between the target and the line --> the center of the object is inside the target --> let the line end in the center of target and object
-			if(typeof Intersection == 'undefined'){ 
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',objectCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',objectCenterY);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',targetCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',targetCenterY);
-		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',objectCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',objectCenterY);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',targetCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',targetCenterY);
+				GUI.showLink(object.id, target.id, false); 
 			}
 			else{	//Intersection
+				
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',Intersection.x);
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',Intersection.y);
 		
@@ -106,19 +108,12 @@ GUI.moveLinks = function(object){
 		
 			var Intersection = object.IntersectionObjectLine(a1, a2);
 				
-			//there is no Intersection between the object and the line --> the center of the target is inside the target --> let the line end in the center of object and target	
-			if(typeof Intersection == 'undefined'){ 
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',objectCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',objectCenterY);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',targetCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',targetCenterY);
-		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',objectCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',objectCenterY);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',targetCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',targetCenterY);
+			if(typeof Intersection == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link	
+			
+				GUI.showLink(object.id, target.id, false); 	
 			}	
 			else{   //Intersection
+						
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',Intersection.x);
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',Intersection.y);
 		
@@ -255,6 +250,8 @@ GUI.createLinks = function(object) {
 			case 'dashed':var dasharray='10,5';break;
 			default:var dasharray='1,0';break;
 		}
+		
+		$(line).attr("layer", 0);
 		
 		$(line).attr("stroke-dasharray", dasharray);
 
