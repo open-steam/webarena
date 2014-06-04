@@ -32,6 +32,10 @@ body {
 	border-right: 1px solid #000000;
 }
 
+#header.bgmode {
+	background:#3d74bc;
+}
+
 #header img {
 	opacity: 0.6;
 	cursor: pointer;
@@ -266,6 +270,10 @@ body {
 	background-color: #DDE0E5;
 	z-index: 11002;
 	padding-top: 0px;
+}
+
+#sidebar.bgmode {
+	background:#4c7cc0;
 }
 
 #sidebar_title {

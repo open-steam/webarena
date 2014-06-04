@@ -114,6 +114,7 @@ GUI.loadGUI = function(step) {
 		GUI.hideLogin();
 		ObjectManager.paintingUpdate();
 		GUI.createLinkRepresentations(); //create the representations of the existing links in the new room
+		GUI.setMode(ObjectManager.getCurrentRoom().getAttribute('mode'));
 	
 	} else {
 		console.error("unknown load step");

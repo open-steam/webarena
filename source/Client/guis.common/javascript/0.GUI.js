@@ -728,3 +728,16 @@ GUI.startNoAnimationTimer = function() {
 GUI.confirm = function(message) {
 	return confirm(message);
 }
+
+GUI.setMode=function(mode){
+	var className='normal';
+	if (mode=='background'){
+		className='bgmode';
+	}
+	
+	var header=document.getElementById('header');
+	var sidebar=document.getElementById('sidebar');
+	
+	if (header) header.className=className;
+	if (sidebar) sidebar.className=className;
+}
