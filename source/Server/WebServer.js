@@ -15,7 +15,7 @@ var mime = require('mime');
 mime.default_type = 'text/plain';
 var Q = require('q');
 
-WebServer.userGUI = 'desktop';
+WebServer.guiType = 'desktop';
 
 /*
  *	init
@@ -46,13 +46,12 @@ WebServer.init = function (theModules) {
 			return;
 		}
 		
+		/* Check if the client is on a mobile phone or not. */
 		if (agent && agent.indexOf('iPhone') > 0 ||
 			(agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0)) {
-			WebServer.userGUI = 'mobilephone';
-			this.userGUI = 'mobilephone';
+			WebServer.guiType = 'mobilephone';
 		} else {
-			WebServer.userGUI = 'desktop';
-			this.userGUI = 'desktop';
+			WebServer.guiType = 'desktop';
 		}
 
 		/* get userHash */
@@ -81,9 +80,9 @@ WebServer.init = function (theModules) {
 
 				var roomId = url.substr(6);
 
-				/* Get the most suitable index file in dependency to the given user agent. */
+				/* Get the most suitable index file in dependency to the given gui type. */
 				var indexFilename = '';
-				if (this.userGUI == 'mobilephone') {
+				if (WebServer.guiType == 'mobilephone') {
 					indexFilename = '/../Client/guis/mobilephone/index.html';
 				} else {
 					indexFilename = '/../Client/guis/desktop/index.html';
@@ -517,7 +516,6 @@ WebServer.init = function (theModules) {
 
 		else if (url == '/objects') {
 
-		console.log(WebServer.userGUI);
 			try {
 				var code = Modules.BuildTool.getClientCode();
 

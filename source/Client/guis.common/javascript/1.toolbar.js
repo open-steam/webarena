@@ -452,7 +452,7 @@ GUI.initToolbarMobilePhone = function() {
 	/* get types of objects */
 	$.each(ObjectManager.getTypes(), function(key, object) { 
 	
-		if (object.isCreatable && object.onMobile) {
+		if (object.isCreatableOnMobile && object.onMobile) {
 			
 			if (object.category == undefined) {
 				object.category = "default";
@@ -470,199 +470,32 @@ GUI.initToolbarMobilePhone = function() {
 	
 	var toolbar_locked_elements = {};
 	
-	/* build categories for each type */
-	$.each(types, function(key, object) {
-		var newCategoryIcon = document.createElement("img");
-		$(newCategoryIcon).attr("src", "../../guis.common/images/categories/"+object[0].category+".png").attr("alt", "");
-		$(newCategoryIcon).attr("width", "24").attr("height", "24");
+	var menu = document.createElement("img");
+	$(menu).attr("src", "../../guis/mobilephone/images/menu.png");
+	$(menu).attr("width", "24").attr("height", "24");
+	$(menu).attr("style", "margin-left: 4px; margin-right: 4px; padding-left: 0px");
+	$("#header>div.header_left").append(menu);
 	
-		$("#header>div.header_left").append(newCategoryIcon);
+	GUI.buildMenu();
 	
-		if (object.length > 1) {
-			$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
-			
-			/* add Popover */
-			$(newCategoryIcon).jPopover({
-				positionOffsetY : $("#header").height()-7,
-				onSetup : function(domEl, popover) {
-					
-					var page = popover.addPage(GUI.translate(key));
-					var section = page.addSection();
-			
-					$.each(object, function(key, object) {
-						if (!object.onMobile) {
-							return true;
-						}
-			
-						var name = object.translate(GUI.currentLanguage,object.type);
-			
-						var element = section.addElement('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" /> '+name);
-			
-						var click = function(attributes) {
-			
-							popover.hide();
-			
-							var proto = ObjectManager.getPrototype(object.type);
-							
-							if (!Modules.Config.presentationMode) {
-			
-								proto.create(attributes);
-								/*
-								window.setTimeout(function() {
-									GUI.updateContainer(object.getCategory());
-								}, 500);
-								*/
-								
-							} else {
-								alert(GUI.translate("You cannot create objects in presentation mode"));	
-							}
-							
-						}
-			
-						if (GUI.isTouchDevice) {
-							$(element.getDOM()).bind("touchstart", function() {
-								click({
-									"x" : window.pageXOffset + 40, 
-									"y" : window.pageYOffset + 40
-								}); 
-							});
-						} else {
-							$(element.getDOM()).bind("click", function() { 
-								click({
-									"x" : window.pageXOffset + 40, 
-									"y" : window.pageYOffset + 40
-								}); 
-							});
-						}
-						
-						
-						/* make draggable */
-						var helper = $('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" />');
-						helper.get(0).callback = function(offsetX,offsetY) {
-							
-							var svgpos = $("#content").offset();
-							
-							var top = offsetY-svgpos.top;
-							var left = offsetX;
-			
-							click({
-								"x" : left,
-								"y" : top
-							});
-						
-						}
-						
-						$(element.getDOM()).addClass("toolbar_draggable");
-						$(element.getDOM()).draggable({
-							revert: true,
-							distance : 20,
-							cursor: "move",
-							helper: function(event) {
-								return helper;
-							}
-						});
-			
-					});
-					
-				}
-			});
+	$(menu).bind("click", function toggleCreateMenu(event) {
+		if (toggleCreateMenu.isVisible == undefined) {
+			toggleCreateMenu.isVisible = false;
+		}
 		
+		if (toggleCreateMenu.isVisible) {
+			$("#objectlist").fadeIn("slow");
+			$("#createmenu").fadeOut("slow");
 		} else {
-			
-			/* add link to icon (no Popover) */
-			
-			$(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
-			
-			var click = function(attributes) {
-			
-				if (toolbar_locked_elements[object[0].type] === true) return; //element is locked
-			
-				if (object[0].type == "Paint" || object[0].type == "Highlighter") {
-					
-					toolbar_locked_elements[object[0].type] = true;
-					
-					/* create unlock timer */
-					window.setTimeout(function() {
-						toolbar_locked_elements[object[0].type] = undefined;
-					}, 2000);
-					
-				}
-			
-				//jPopoverManager.hideAll();
-			
-				var proto = ObjectManager.getPrototype(object[0].type);
-				
-				if (!Modules.Config.presentationMode) {
-					proto.create(attributes);
-				} else {
-					alert(GUI.translate("You cannot create objects in presentation mode"));	
-				}
-				
-			}
-			
-			if (GUI.isTouchDevice) {
-				$(newCategoryIcon).bind("touchstart", function() { 
-					click({
-						"x" : window.pageXOffset + 40, 
-						"y" : window.pageYOffset + 40
-					}); 
-				});
-			} else {
-				$(newCategoryIcon).bind("click", function() {
-					click({
-						"x" : window.pageXOffset + 40, 
-						"y" : window.pageYOffset + 40
-					}); 
-				});
-			}
-			
-			/* All objects (except for Paint and Highlighter) can be created by dragging them to the svg area */
-			/*
-			if (object[0].type != "Paint" && object[0].type != "Highlighter") {*/
-				
-				/* make draggable *//*
-				var helper = $('<img src="../../guis.common/images/categories/'+object[0].category+'.png" alt="" width="24" height="24" />');
-				helper.get(0).callback = function(offsetX,offsetY) {
-			
-					var svgpos = $("#content").offset();
-			
-					var top = offsetY-svgpos.top;
-					var left = offsetX;
-			
-					click({
-						"x" : left,
-						"y" : top
-					});
-			
-				}
-			
-				$(newCategoryIcon).addClass("toolbar_draggable");
-				$(newCategoryIcon).draggable({
-					revert: true,
-					distance : 20,
-					cursor: "move",
-					helper: function(event) {
-						return helper;
-					}
-				});
-				
-			}
-			*/
+			$("#objectlist").fadeOut("slow");
+			$("#createmenu").fadeIn("slow");
 		}
 		
-		var effect = function() {
-			$(this).animate({ opacity: 1 }, 500, function() {
-				$(this).animate({ opacity: 0.6 }, 500);
-			});
-		}
-		
-		if (GUI.isTouchDevice) {
-			$(newCategoryIcon).bind("touchstart", effect);
-		} else {
-			$(newCategoryIcon).bind("mousedown", effect);
-		}
-	
+		toggleCreateMenu.isVisible = !toggleCreateMenu.isVisible;
+		event.stopImmediatePropagation();
 	});
+	
+	$("#createmenu").hide();
 	
 	/*add parent button*/
 	var parentButton = document.createElement("img");
@@ -707,4 +540,103 @@ GUI.initToolbarMobilePhone = function() {
 	} else {
 		$(homeButton).bind("mousedown", click);
 	}
+}
+
+GUI.buildMenu = function() {
+	var types = {};
+	
+	/* Get types of objects for the creation menu. */
+	$.each(ObjectManager.getTypes(), function(key, object) {
+		// Store only types which are creatable and accessible on the mobile phone.
+		if (object.isCreatableOnMobile && object.onMobile) {
+			
+			if (object.category == undefined) {
+				object.category = "default";
+			}
+			
+			if (types[object.category] == undefined) {
+				types[object.category] = [];
+			}
+			
+			// Add the object to the list.
+			types[object.category].push(object);
+		}
+	});
+    
+    // Build the menu.
+	$.each(types, function(key, object) {
+		// Build the category icon for this type.
+		var newCategoryIcon = document.createElement("img");
+		$(newCategoryIcon).addClass("menuImg");
+		$(newCategoryIcon).attr("src", "../../guis.common/images/categories/"+object[0].category+".png").attr("alt", "");
+		$(newCategoryIcon).attr("width", "24").attr("height", "24");
+		
+		// Build the menu header for this type.
+		var categoryName = document.createTextNode(GUI.translate(object[0].category));
+		var containerHeader = document.createElement("h3");
+		$(containerHeader).addClass("menu");
+		$(containerHeader).append(newCategoryIcon);
+		$(containerHeader).append(categoryName);
+		
+		// Append the menu header to the create menu.
+		$("#createmenu").append(containerHeader);
+		
+		/* Add all object types which can created by the given category on the mobile phone. */
+		if (object.length > 0) {
+			$.each(object, function(key, object) {
+				// Build and add a container for the entries to the submenu.
+				var entryContainer = document.createElement("div");
+				$(entryContainer).addClass("menuEntry");
+				$("#createmenu").append(entryContainer);
+				
+				var typeName = document.createTextNode(object.translate(GUI.currentLanguage, object.type));
+				var typeImg = document.createElement("img");
+				$(typeImg).addClass("menuImg");
+				$(typeImg).attr("src", "/objectIcons/" + object.type);
+				$(typeImg).attr("width", 24);
+				$(typeImg).attr("height", 24);
+				
+				$(entryContainer).append(typeImg);
+				$(entryContainer).append(typeName);
+				
+				var create = function(attributes) {
+					$("#createmenu").hide();
+					$("#objectlist").show();
+			
+					var proto = ObjectManager.getPrototype(object.type);
+							
+					if (!Modules.Config.presentationMode) {
+						proto.create(attributes);
+						/*
+						window.setTimeout(function() {
+							GUI.updateContainer(object.getCategory());
+						}, 500);
+						*/
+					} else {
+						alert(GUI.translate("You cannot create objects in presentation mode"));	
+					}
+				}
+			
+				if (GUI.isTouchDevice) {
+					$(entryContainer).bind("touchstart", function() {
+						create({
+							"x" : window.pageXOffset + 40, 
+							"y" : window.pageYOffset + 40,
+							"onMobile" : true
+						});
+						event.stopImmediatePropagation();
+					});
+				} else {
+					$(entryContainer).bind("click", function() { 
+						create({
+							"x" : window.pageXOffset + 40, 
+							"y" : window.pageYOffset + 40,
+									"onMobile" : true
+						});
+						event.stopImmediatePropagation();
+					});
+				}
+			});
+		}
+	});
 }

@@ -49,11 +49,8 @@ BuildTool.buildClientCode = function(){
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
 		
-		/* We take the view of the GeneralObject as the base prototype.
-		 * Objects which has a mobile representation must have a file named mobileView.js.
-		 */
-		console.log(Modules.WebServer.userGUI);
-		if (Modules.WebServer.userGUI == "desktop" || objName == "GeneralObject") {
+		/* Objects which has a mobile representation must have a file named mobileView.js. */
+		if (Modules.WebServer.guiType == "desktop") {
 			that.addToClientCode(filebase + '/view.js');
 		} else {
 			that.addToClientCode(filebase + '/mobileView.js');

@@ -2,8 +2,9 @@ body {
 	margin: 0px;
 	padding: 0px;
 	font-family: 'Open Sans', sans-serif;
-	font-size: 12px;
+	font-size: 16px;
 	height: 100%;
+	background-color: #DDE0E5;
 }
 
 
@@ -11,7 +12,7 @@ body {
 	margin: 0px;
 	padding: 0px;
 	height: 33px;
-	width: auto;
+	width: 100%;
 	background: -moz-linear-gradient(
 		center top,
 		#3E3E3E 0%,
@@ -25,6 +26,8 @@ body {
 		);
 	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
 	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+	position: fixed;
+	z-index: 9999;
 	/*text-align: center;*/
 	/*color: #AEAEAE;*/
 	/*font-size: 14px;*/
@@ -33,7 +36,6 @@ body {
 	/*
 	z-index: 11001;
 	height: 33px;
-	position: fixed;
 	top: 0px;
 	left: 0px;
 	right: 0px;
@@ -70,6 +72,7 @@ body {
 	margin-left: 0px;
 	position: relative;
 	top: -4px;
+	position: fixed;
 }
 
 
@@ -145,7 +148,7 @@ body {
 */
 
 #objectlist {
-	z-index: 11002;
+	/*z-index: 11002;*/
 	width: auto;
 	margin: 0px auto;
 	padding: 0px;
@@ -168,7 +171,12 @@ body {
 	background-color: #DDE0E5;
 	/*border: 1px solid #000000;*/
 	padding-top: 33px;
-	padding-bottom: 33px;
+}
+
+#objectview>div
+{
+	margin: 0px;
+	padding: 0px;
 }
 
 #objectlist>div.category
@@ -192,7 +200,7 @@ body {
 	border-top: 1px solid #AEAEAE;
 	text-align: center;
 	color: #AEAEAE;
-	font-size: 14px;
+	font-size: 16px;
 	cursor: pointer;
 }
 
@@ -216,7 +224,7 @@ body {
 	border-top: 1px solid #AEAEAE;
 	text-align: center;
 	color: #AEAEAE;
-	font-size: 14px;
+	font-size: 16px;
 	cursor: pointer;
 }
 
@@ -253,7 +261,7 @@ input.login_input:focus {
 	vertical-align: middle;
 	text-align: left;
 	color: #AEAEAE;
-	font-size: 14px;
+	font-size: 16px;
 	padding: 4px 0px 4px 4px;
 	
 	background: -moz-linear-gradient(
@@ -276,7 +284,7 @@ input.login_input:focus {
 	margin: 0px;
 	padding: 0px;
 	width: 100%;
-	border-top: 1px solid #AEAEAE;
+	/*border-top: 1px solid #AEAEAE;*/
 	/*border-collapse: collapse;*/
 }
 
@@ -288,17 +296,17 @@ input.login_input:focus {
 
 .leftCell
 {
-	margin: 10px;
-	padding: 10px;
+	margin: 5px;
+	padding: 5px;
 }
 
 .rightCell
 {
-	margin: 10px;
-	padding: 10px;
-	background-color: #AEAEAE;
-	border: 1px solid #AEAEAE;
-	border-radius: 5px;
+	margin: 5px;
+	padding: 5px;
+	/*background-color: #AEAEAE;*/
+	/*border: 1px solid #AEAEAE;*/
+	/*border-radius: 5px;*/
 }
 
 .closeButton
@@ -343,14 +351,17 @@ p.attribute
 
 div.object
 {
+	position: relative;
 	margin: 0px;
 	padding: 0px;
-	height: 48px;
+	padding-left: 2em;
+	/*padding-top: 0.2em;
+	height: 3em;*/
 	background-color: #DDE0E5;
-	border-top: 1px solid #AEAEAE;
-	text-align: center;
+	border-bottom: 1px solid #AEAEAE;
+	text-align: left;
 	color: #1E1E1E;
-	font-size: 12px;
+	font-size: 16px;
 	cursor: pointer;
 }
 
@@ -763,7 +774,7 @@ z-index: -1;
 
 
 input {
-	font-size: 12px;
+	font-size: 16px;
 }
 
 
@@ -798,9 +809,10 @@ input {
 	font-size: 11px;
 }
 
-.overfloating-y{
+.overfloating{
     overflow-y: auto;
-}�
+	overflow-x: auto;
+}
 
 /*   TOAST MESSAGE */
 .toast-container {
@@ -1032,4 +1044,160 @@ svg text.font-icon{
 .grid {
 	stroke: lightgray;
 	opacity: 0.7;
+}
+
+.input {
+	border: 1px solid #000000;
+	background-color: #FFFFFF;
+	padding: 5px;
+	font-size: 16px;
+	color: #000000;
+	border-radius: 5px;
+	width: auto;
+	margin-top: 3px;
+	padding-left: 5px;
+	/*margin-left: 5px;*/
+	text-align: left;
+	-webkit-box-sizing: border-box;‌​
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.input:focus {
+	border: 1px solid #000000;
+	box-shadow: 0px 0px 5px #003E7E;
+	-webkit-box-shadow: 0px 0px 5px #003E7E;
+	-moz-box-shadow: #003E7E 0px 0px 5px;
+	outline: 0;
+	color: #262626;
+}
+
+.inputButton {
+	border: 1px solid #000000;
+	background: -moz-linear-gradient(
+		center top,
+		#5E5E5E 0%,
+		#8E8E8E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #5E5E5E),
+		color-stop(1, #8E8E8E)
+		);
+	padding: 5px;
+	font-size: 16px;
+	color: #000000;
+	border-radius: 5px;
+	width: auto;
+	margin-top: 3px;
+	padding-left: 5px;
+	/*margin-left: 5px;*/
+	text-align: left;
+	-webkit-box-sizing: border-box;‌​
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.inputButton:focus {
+	border: 1px solid #000000;
+	background: -moz-linear-gradient(
+		center top,
+		#8E8E8E 0%,
+		#5E5E5E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #8E8E8E),
+		color-stop(1, #5E5E5E)
+		);
+	box-shadow: 0px 0px 5px #003E7E;
+	-webkit-box-shadow: 0px 0px 5px #003E7E;
+	-moz-box-shadow: #003E7E 0px 0px 5px;
+	outline: 0;
+	color: #262626;
+}
+
+.deleteObject {
+    background-image: url(images/deleteObject.png);
+    background-color: transparent;
+    background-repeat: no-repeat;
+    background-position: 0px 0px;
+    border: 1px #5E5E5E solid;
+	border-radius: 5px;
+    cursor: pointer;
+	width: 24px;
+    height: 24px;
+	text-align: right;
+    vertical-align: middle;
+	background: -moz-linear-gradient(
+		center top,
+		#5E5E5E 0%,
+		#8E8E8E 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #5E5E5E),
+		color-stop(1, #8E8E8E)
+		);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+}
+
+#createmenu {
+	margin: 0px;
+	padding: 0px;
+	padding-top: 33px;
+}
+
+.menu {
+    height: 2.5em;
+	background: -moz-linear-gradient(
+		top,
+		#6C6C6C 0%,
+		#545454 100%) repeat scroll 0 0 transparent;
+	background: -webkit-gradient(
+		linear,
+		left top,
+		left bottom,
+		color-stop(0, #6C6C6C),
+		color-stop(1, #545454)
+		);
+	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
+	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
+	color: #AEAEAE;
+	border: 0px;
+	border-top: 1px #000000 solid;
+	border-radius: 0px;
+	cursor: pointer;
+	position: relative;
+	/*padding-left: 2em;*/
+	font-size: 14px;
+	font-style: normal;
+	margin: 0px;
+	padding-top: 0.8em;
+}
+
+.menuEntry {
+	width: 100%;
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	padding-left: 2em;
+	padding-top: 0.8em;
+	height: 2.5em;
+	background-color: #DDE0E5;
+	border-bottom: 1px solid #AEAEAE;
+	text-align: left;
+	color: #1E1E1E;
+	font-size: 14px;
+	cursor: pointer;
+}
+
+.menuImg {
+	padding-left: 5px;
+	padding-right: 12px;
+	vertical-align: middle;
 }

@@ -39,8 +39,9 @@ Plotter.contentURLOnly = false;
 
 /* The content describes a chart which can be drawn by the plotter. */
 Plotter.content = JSON.stringify({
-	xAxis: {
-		label: "Strecke [m]",
+	caption: "Title",	// Title of the plotter
+	xAxis: {			// Description of the x-Axis
+		label: "x",
 		scale: {
 			min: 0,
 			max: 100
@@ -50,8 +51,8 @@ Plotter.content = JSON.stringify({
 			minor: 0
 		}
 	},
-	yAxis: {
-		label: "Zeit [s]",
+	yAxis: {			// Description of the y-Axis
+		label: "y",
 		scale: {
 			min: 0,
 			max: 100
@@ -61,16 +62,50 @@ Plotter.content = JSON.stringify({
 			minor: 0
 		}
 	},
-	values: [
-		[0, 10], [10, 0], [20, 10], [30, 0], [40, 10],
-		[50, 0], [60, 10], [70, 0], [80, 10], [90, 0],
-		[100, 10]
+	users: [			// user data
+		{
+			name: "",
+			color: "",
+			values: []
+		}
 	]
 });
+
+Plotter.category = "Functional";
+
+Plotter.findUserData = function(users) {
+	for (var i = 0; i < users.length; ++i) {
+		if (users[i].name == ObjectManager.getUser().username) {
+			return users[i];
+		}
+	}
+	
+	return null;
+}
 
 /* Sets the default content on creation. */
 Plotter.justCreated=function(){
 	this.setContent(this.content);
+	var plotterNames = [];
+	$.each(ObjectManager.getObjects(), function(key, object) {
+		if (object.getType() == "Plotter") {
+			plotterNames.push(object.getName());
+		}
+	});
+	
+	var nameCreated = false;
+	var id = 1;
+	while (!nameCreated) {
+		var name = "Plotter " + id;
+		var i;
+		for (i = 0; i < plotterNames.length && plotterNames[i] != name; ++i);
+		if (i == plotterNames.length) {
+			this.setAttribute("name", name);
+			nameCreated = true;
+		}
+		
+		++id;
+	}
 }
 
 /* Returns the content as an object. */

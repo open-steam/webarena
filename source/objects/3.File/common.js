@@ -20,7 +20,7 @@ File.register=function(type){
 		object.updateIcon(); 
 	}, checkFunction: function(object, value) {
 		if (object.getAttribute("preview")) return "icon size not changeable when preview is shown";
-	}});
+	}, mobile: false});
 
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
 
@@ -46,7 +46,7 @@ File.register=function(type){
 			return "this file is not previewable";
 		}
 		
-	}});
+	}, mobile: false});
 	
 	this.registerAction('to front',function(){
 	
@@ -167,6 +167,7 @@ File.isResizable=function(){
 
 File.register('File');
 File.isCreatable=true;
+File.isCreatableOnMobile = true;
 File.onMobile = true;
 
 File.moveByTransform = function(){return true;};

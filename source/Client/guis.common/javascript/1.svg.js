@@ -200,22 +200,9 @@ GUI.initSVGMobilePhone = function() {
 
 GUI.updateMobileGUI = function(object, key, newValue, local) {
 	// Update mobile gui content on changes.
-    GUI.updateObjectList(object, key, newValue, local);
-	GUI.updateObjectView(object, key, newValue, local);
+    ObjectList.update(object, key, newValue, local);
+	ObjectView.update(object, key, newValue, local);
 }
-
-$(function() {
-	/*
-	d3.select("svg")
-		.attr("width", 100)
-		.attr("height", 100)
-		.append("g").call(d3.svg
-		.axis()
-		.scale(d3.time.scale().range([0, 100]))
-		.orient("bottom"));
-	return;
-	*/
-});
 
 
 

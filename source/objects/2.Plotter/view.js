@@ -75,7 +75,7 @@ Plotter.redraw = function(rep) {
 	// Draw the x-axis.
 	chart.append("g")
 		.attr("class", "x axis")
-		.attr("transform", "translate(0," + height + ")")
+		.attr("transform", "translate(0, " + y(0) + ")")
 		.call(xAxis);
 	
 	chart.append("g")
@@ -86,13 +86,15 @@ Plotter.redraw = function(rep) {
 	// Draw the label for the x-axis.
 	chart.append("text")
         .attr("x", width / 2)
-        .attr("y", height + 30)
+        .attr("y", y(0) + 30)
         .style("text-anchor", "middle")
         .text(content.xAxis.label);
 	
+	var x0 = x(0);
 	// Draw the y-axis.
 	chart.append("g")
 		.attr("class", "y axis")
+		.attr("transform", "translate(" + x(0) + ", 0)")
 		.call(yAxis);
 	
 	chart.append("g")
@@ -103,22 +105,32 @@ Plotter.redraw = function(rep) {
 	chart.append("text")
 		.attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -30)
+        .attr("y", x(0) - 30)
         .style("text-anchor", "middle")
         .text(content.yAxis.label);
 	
-	var data = content.values.map(function(d) {
-		return {
-			x: d[0],
-			y: d[1]
-		};
-	});
+	// Draw the title of the plotter object.
+	chart.append("text")
+		.attr("x", width / 2)
+		.attr("y", -5)
+		.style("text-anchor", "middle")
+		.text(content.title);
 	
-	// Draw the path which represents the chart.
-	chart.append("path")
-		.datum(data)
-		.attr("class", "line")
-		.attr("d", line);
+	for (var i = 0; i < content.users.length; ++i) {
+		var data = content.users[i].values.map(function(d) {
+			return {
+				x: d[0],
+				y: d[1]
+			};
+		});
+	
+		// Draw the path which represents the chart.
+		chart.append("path")
+			.datum(data)
+			.attr("class", "line")
+			.attr("style", "stroke: " + content.users[i].color + ";")
+			.attr("d", line);
+	}
 }
 
 Plotter.drawInternal = function(rep, svg, scaleX, scaleY) {
@@ -255,7 +267,7 @@ Plotter.plotPoints = function(svg, rep, points, xOffset, yOffset, scaleX, scaleY
 
 /* Creates the representation for the desktop version of the plotter. */
 Plotter.createRepresentation = function(parent) {	
-	var margin = { top: 20, right: 20, bottom: 30, left: 50},
+	var margin = { top: 20, right: 20, bottom: 50, left: 50},
 		width = 500 - margin.left - margin.right,
 		height = 400 - margin.top - margin.bottom;
 	
@@ -272,13 +284,13 @@ Plotter.createRepresentation = function(parent) {
 	rep.append("rect")
 		.attr("x", 0)
 		.attr("y", 0)
-		.attr("width", 10)
-		.attr("height", 10)
+		.attr("width", width)
+		.attr("height", height)
 		.attr("fill", "transparent")
 		.attr("class", "borderrect");
 	
-	this.initGUI(rep);
-	return rep;
+	this.initGUI(rep.node());
+	return rep.node();
 }
 
 Plotter.buildMobileRep = function(svg) {

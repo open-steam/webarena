@@ -111,7 +111,7 @@ GUI.loadGUI = function(step) {
 		
 		if (GUI.guiType == 'mobilephone') {
 			/* create object list for mobile view */
-			if (!GUI.loaded) GUI.initObjectList();	// create a categorized list of objects in the current room
+			if (!GUI.loaded) ObjectList.init();	// create a categorized list of objects in the current room
 		}
 
 		window.setTimeout(function() {

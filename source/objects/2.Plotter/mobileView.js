@@ -1,10 +1,12 @@
 Plotter.draw = function(external) {
+	if (!this.isVisible()) {
+		return;
+	}
 	var rep = this.getRepresentation();
 	
 	// GeneralObject.draw.call(this, external);
 	
-	d3.select(rep)
-		.attr("transform", "translate(0, 0)");
+	d3.select(rep).attr("transform", "translate(0, 0)");
 	
 	this.redraw(rep);
 	return;
@@ -38,10 +40,6 @@ Plotter.redraw = function(rep) {
 	chart.selectAll("text").remove();
 	chart.selectAll("path").remove();
 	
-	if (!this.isSelectedOnMobile) {
-		return;
-	}
-	
 	if (!$(rep).hasClass("selected")) {
 		chart
 			.attr("stroke", this.getAttribute("linecolor"))
@@ -52,7 +50,7 @@ Plotter.redraw = function(rep) {
 	var content = this.getContentAsObject();
 	
 	var width = $(window).width() - 70;
-	var height = $(window).width() - 50;
+	var height = $(window).width() - 70;
 	
 	// Declare the x-axis.
 	var x = d3.scale.linear()
@@ -80,7 +78,7 @@ Plotter.redraw = function(rep) {
 	// Draw the x-axis.
 	chart.append("g")
 		.attr("class", "x axis")
-		.attr("transform", "translate(0," + height + ")")
+		.attr("transform", "translate(0, " + y(0) + ")")
 		.call(xAxis);
 	
 	chart.append("g")
@@ -91,13 +89,14 @@ Plotter.redraw = function(rep) {
 	// Draw the label for the x-axis.
 	chart.append("text")
         .attr("x", width / 2)
-        .attr("y", height + 30)
+        .attr("y", y(0) + 30)
         .style("text-anchor", "middle")
         .text(content.xAxis.label);
 	
 	// Draw the y-axis.
 	chart.append("g")
 		.attr("class", "y axis")
+		.attr("transform", "translate(" + x(0) + ", 0)")
 		.call(yAxis);
 	
 	chart.append("g")
@@ -108,11 +107,27 @@ Plotter.redraw = function(rep) {
 	chart.append("text")
 		.attr("transform", "rotate(-90)")
         .attr("x", -height / 2)
-        .attr("y", -30)
+        .attr("y", x(0) - 30)
         .style("text-anchor", "middle")
         .text(content.yAxis.label);
 	
-	var data = content.values.map(function(d) {
+	// Draw the title of the plotter object.
+	chart.append("text")
+		.attr("x", width / 2)
+		.attr("y", -5)
+		.style("text-anchor", "middle")
+		.text(content.title);
+	
+	var userData = this.findUserData(content.users);
+	if (userData == null) {
+		var user = ObjectManager.getUser();
+		var userData = {name: user.username, color: user.color, values: []};
+		content.users.push(userData);
+		this.setContentAsJSON(content);
+		content = this.getContentAsObject();
+	}
+	
+	var data = userData.values.map(function(d) {
 		return {
 			x: d[0],
 			y: d[1]
@@ -123,12 +138,16 @@ Plotter.redraw = function(rep) {
 	chart.append("path")
 		.datum(data)
 		.attr("class", "line")
+		.attr("style", "stroke: " + userData.color + ";")
 		.attr("d", line);
 }
 
 /* Creates the representation for the desktop version of the plotter. */
 Plotter.createRepresentation = function(parent) {
-	var margin = { top: 20, right: 20, bottom: 30, left: 50},
+	if (!this.isVisible()) {
+		return;
+	}
+	var margin = { top: 20, right: 20, bottom: 50, left: 50},
 		width = $(window).width() - margin.left - margin.right,
 		height = $(window).width() - margin.top - margin.bottom;
 	
@@ -150,94 +169,8 @@ Plotter.createRepresentation = function(parent) {
 		.attr("fill", "transparent")
 		.attr("class", "borderrect");
 	
-	this.initGUI(rep);
-	return rep;
-}
-
-GeneralObject.setViewX = function(value) {
-	return;
-
-	var self = this;
-	
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
-		var x = 0;
-		/*
-		if (isNaN(self.getViewY())) {
-			var y = 0;
-		} else {
-			var y = self.getViewY();
-		}
-		*/
-		
-		$(rep).attr("transform", "translate("+value+","+x+")");	
-	}
-	
-	$(rep).attr("x", value);
-	
-	GUI.adjustContent(this);
-	
-}
-
-Plotter.setViewHeight = function(value) {
-	return;
-	var rep = this.getRepresentation();
-	var content = this.getContentAsObject();
-	
-	// var x = this.getAttribute("x");
-	// var y = this.getAttribute("y");
-	var x = 0;
-	var y = 0;
-	
-	d3.select(rep).attr("height", value);
-	d3.select(rep).attr("transform", "translate(" + x + "," + y + ")");
-	
-	GUI.adjustContent(this);
-	
-	this.redraw(rep);
-	/*
-	var svg;
-	if (GUI.guiType == 'mobilephone') {
-		svg = GUI.mobileSVG;
-	} else {
-		svg = GUI.svg;
-	}
-	
-	this.drawInternal(rep, svg);
-	*/
-}
-
-Plotter.getViewBoundingBoxX = function() {
-	return this.getViewX();
-
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
-		return this.getViewX();
-	} else {
-		return this.getRepresentation().getBBox().x;
-	}
-}
-
-Plotter.getViewBoundingBoxY = function() {
-	return this.getViewY();
-	
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
-		return this.getViewY();
-	} else {
-		return this.getRepresentation().getBBox().y;
-	}
-}
-
-Plotter.getViewBoundingBoxWidth = function() {
-	return this.getViewWidth();
-}
-
-Plotter.getViewBoundingBoxHeight = function() {
-	return this.getViewHeight();
+	this.initGUI(rep.node());
+	return rep.node();
 }
 
 Plotter.checkTransparency = function(attribute, value) {
@@ -254,22 +187,33 @@ Plotter.checkTransparency = function(attribute, value) {
 Plotter.buildFormForEditableContent = function() {
 	var content = this.getContentAsObject();
     
-    var dom = $('<table style="width: 100%; text-align: center"></table>');
+    var dom = $('<table style="width: 100%; font-size: 12px; text-align: center"></table>');
     var xValues = $('<tr></tr>');
     var yValues = $('<tr></tr>');
 	
 	var that = this;
+	
+	var userData = this.findUserData(content.users);
+	if (userData == null) {
+		var user = ObjectManager.getUser();
+		var userData = {name: user.username, color: user.color, values: []};
+		content.users.push(userData);
+		this.setContentAsJSON(content);
+		content = this.getContentAsObject();
+	}
     
-    for (var i = 0; i < content.values.length; ++i) {
+    for (var i = 0; i < userData.values.length; ++i) {
         var valuePair = $('<tr></tr>');
-        var valueX = $('<td>x' + i + '</td><td><input type="text" size="8" name="x' + i + '" value="' + content.values[i][0] + '" /></td>');
-		var valueY = $('<td>y' + i + '</td><td><input type="text" size="8" name="y' + i + '" value="' + content.values[i][1] + '" /></td>');
+        var valueX = $('<td style="text-align: right"><span style="display: table-cell; vertical-align: middle; text-align: right">x<sub>' + i + '</sub></span></td><td style="text-align: left"><input class="input" style="width: 100%; text-align: right" type="text" size="8" name="x' + i + '" value="' + userData.values[i][0] + '" /></td>');
+		var valueY = $('<td style="text-align: right"><span style="display: table-cell; vertical-align: middle; text-align: right">y<sub>' + i + '</sub></span></td><td style="text-align: left"><input class="input" style="width: 100%; text-align: right" type="text" size="8" name="y' + i + '" value="' + userData.values[i][1] + '" /></td>');
         $(valuePair).append(valueX);
+		$(valuePair).append('<td style="width: 10%"></td>');
         $(valuePair).append(valueY);
         
         $(valueX).bind('keyup', {pos: i, val: valueX}, function(event) {
             var content = that.getContentAsObject();
-            content.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
+			var userData = that.findUserData(content.users);
+            userData.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
             if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}
@@ -280,7 +224,8 @@ Plotter.buildFormForEditableContent = function() {
         });
         $(valueY).bind('keyup', {pos: i, val: valueY}, function(event) {
             var content = that.getContentAsObject();
-            content.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
+			var userData = that.findUserData(content.users);
+            userData.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
             if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}
@@ -293,18 +238,24 @@ Plotter.buildFormForEditableContent = function() {
         $(dom).append(valuePair);
     }
     
-    var addEntry = $('<input type="button" value="Eintrag hinzufuegen" />');
+    var addEntry = $('<input class="inputButton" style="margin-top: 10px; margin-bottom: 10px" type="button" value="Eintrag hinzufuegen" />');
     var row = $('<tr></tr>');
-    var col = $('<td colspan="4"></td>');
+    var col = $('<td colspan="5"></td>');
     $(col).append(addEntry);
     $(row).append(col);
     $(dom).append(row);
     $(addEntry).bind('click', function() {
         var content = that.getContentAsObject();
 		
-		var newIndex = content.values.length;
-		var lastEntry = content.values[newIndex - 1];
-        content.values.push(lastEntry);
+		var userData = that.findUserData(content.users);
+		var newIndex = userData.values.length;
+		var lastEntry;
+		if (newIndex == 0) {
+			lastEntry = [0, 0];
+		} else {
+			lastEntry = userData.values[newIndex - 1];
+		}
+        userData.values.push(lastEntry);
         that.setContentAsJSON(content);
         
         var rep = that.buildMobileRep(GUI.mobileSVG/*$(canvas).svg('get')*/);
@@ -312,14 +263,16 @@ Plotter.buildFormForEditableContent = function() {
         $(rep).attr("width", $(window).width());
 		
 		var valuePair = $('<tr></tr>');
-        var valueX = $('<td>x' + newIndex + '</td><td><input type="text" size="8" name="x' + newIndex + '" value="' + content.values[newIndex][0] + '" /></td>');
-		var valueY = $('<td>y' + newIndex + '</td><td><input type="text" size="8" name="y' + newIndex + '" value="' + content.values[newIndex][1] + '" /></td>');
+        var valueX = $('<td align="center">x' + newIndex + '</td><td><input class="input" type="text" size="8" style="width: 100%; text-align: right" name="x' + newIndex + '" value="' + userData.values[newIndex][0] + '" /></td>');
+		var valueY = $('<td align="center">y' + newIndex + '</td><td><input class="input" type="text" size="8" style="width: 100%; text-align: right" name="y' + newIndex + '" value="' + userData.values[newIndex][1] + '" /></td>');
         $(valuePair).append(valueX);
+		$(valuePair).append('<td style="width: 10%"></td>');
         $(valuePair).append(valueY);
         
         $(valueX).bind('keyup', {pos: newIndex, val: valueX}, function(event) {
             var content = that.getContentAsObject();
-            content.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
+			var userData = that.findUserData(content.users);
+            userData.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
 			if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}
@@ -331,7 +284,8 @@ Plotter.buildFormForEditableContent = function() {
         });
         $(valueY).bind('keyup', {pos: newIndex, val: valueY}, function(event) {
             var content = that.getContentAsObject();
-            content.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
+			var userData = that.findUserData(content.users);
+            userData.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
             if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}

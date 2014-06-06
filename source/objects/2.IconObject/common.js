@@ -11,6 +11,9 @@ var IconObject=Object.create(Modules.ObjectManager.getPrototype('GeneralObject')
 
 IconObject.isCreatable=false;
 
+IconObject.onMobile = true;
+IconObject.hasMobileRep = true;
+
 IconObject.category='Objects';
 
 IconObject.register=function(type){
@@ -20,7 +23,7 @@ IconObject.register=function(type){
 	GeneralObject.register.call(this,type); //super call
 	
 	this.attributeManager.registerAttribute('layer',{hidden: true});
-	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { object.updateIcon(); }});
+	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { object.updateIcon(); }, mobile: false});
 	this.registerAttribute('width',{hidden:true});
 	this.registerAttribute('height',{hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});

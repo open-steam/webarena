@@ -46,7 +46,7 @@
 	<script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
-	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis/mobilephone/jquery-ui.css" rel="Stylesheet" />
 
 	<!-- <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script> -->
 
@@ -104,6 +104,8 @@
 
 
 
+	<script type="text/javascript" src="/guis/mobilephone/objectList.js"></script>
+	<script type="text/javascript" src="/guis/mobilephone/objectView.js"></script>
 	<script type="text/javascript" src="/defaultJavascripts"></script>
 
 
@@ -159,18 +161,6 @@
 	</script>
 </head>
 <body>
-	
-	<!-- <div id="header">
-		
-		<div class="header_right">
-			
-		</div>
-		
-		<div class="header_left">
-		
-		</div>
-		
-	</div> -->
 
 	<!-- <div id="couplingNavigation"></div> -->
 	
@@ -178,66 +168,12 @@
 	
 	<!-- For representation on mobile phones. -->
 	<div id="header">
-			<div class="header_left"></div>
-			<div class="header_right"></div>
-		</div>
+		<div class="header_left"></div>
+		<div class="header_right"></div>
+	</div>
+	<div id="createmenu"></div>
 	<div id="objectlist"></div>
 	<div id="objectview"></div>
-	
-	<!--
-	<div id="sidebar">
-		<div id="sidebar_title"><span></span></div>
-		<div id="sidebar_content">
-			<div>
-				<div id="inspector"></div>
-				<div id="chat"></div>
-				<div id="bug">
-					
-					<div>
-						Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />
-						Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.
-						<span><br />
-						<br />
-							Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.
-						</span>
-					</div>
-					
-					<div id="bug_report">
-						
-						<span>Was wollten Sie tun?</span>
-						<textarea id="bug_task"></textarea>
-					
-						<span>Welches Problem ist aufgetreten?</span>
-						<textarea id="bug_problem"></textarea>
-						
-						<span>Ihre Email-Adresse:</span>
-						<input type="email" id="bug_email" />
-						
-						<p><input type="submit" value="Senden" id="bug_submit" /></p>
-					
-					</div>
-					
-					<div id="bug_result"></div>
-					
-				</div>
-			</div>
-		</div>
-	</div>
-	-->
-	
-	<!--
-	<div id="actionsheet"></div>
-	
-	<div id="error_bg"></div>
-	<div id="error_box">
-		
-		<div id="error_box_heading"></div>
-		<div id="error_box_message"></div>
-		<div id="error_box_button"></div>
-		
-	</div>
-	-->
-
 
 	<div id="login_background" style="display: none">&nbsp;</div>
 	<div id="login" style="display: none;">
@@ -260,77 +196,6 @@
 	
 	
 	<div id="progressBar"><div class="progressBar_container"></div></div>
-
-  <!-- BEGIN: Underscore Template Definition. -->
-  <!--
-  <script type="text/template" id="proceeding-statusdialog">
-    <div>
-      <table>
-        <tr>
-          <th></th>
-          <th>Name</th>
-          <th>Startdatum</th>
-          <th>Enddatum</th>
-        </tr>
-      <% _.each(milestones, function(mileStone, index) { %>
-        <tr>
-          <td>
-        <input type="checkbox" name="" value="" <%= mileStone.done ? 'checked disabled' : ''%> >
-          </td>
-          <td>
-            <%- mileStone.name %>
-          </td>
-          <td>
-            <%- mileStone.startdate || "Nicht gesetzt" %>
-          </td>
-          <td>
-            <% if( editable == index){ %>
-            <input readonly='true' class="datepicker-trigger" type="text" value="<%- mileStone.enddate %>">
-            <% } else { %>
-            <%- mileStone.enddate || "Nicht gesetzt" %>
-            <% } %>
-          </td>
-        <tr>
-      <% }); %>
-      </table>
-    </div>
-  </script>
-  <script type="text/template" id="process-log-entry-template">
-    <div>
-      <% _.each(logEntries, function(logEntry) { %>
-      <p class="<%= logEntry.cssclass %>"> <%= moment(logEntry.timestamp).format("DD.MM.YY, HH:mm:ss") %> <br/>
-        <%= logEntry.message %></p>
-      <% }); %>
-    </div>
-  </script>
-  <script type="text/template" id="discussion-message-template">
-
-    <div class='discussion-statement <%- additionalClasses %>' data-message-id='<%- message.timestamp %>'>
-      <div class='discussion-statement-heading'>
-        <span class='message-author'> <%- message.author %> </span>
-        <span class='message-timestamp'>( <%- message.formattedTimestamp %> )</span>
-      </div>
-      <p class='discussion-statement-text'> <%- message.text %> </p>
-
-      <div class='statement-delete'>löschen</div>
-      <div class='statement-edit'>bearbeiten</div>
-    </div>
-  </script>
-  <script type="text/template" id="discussion-container-template">
-    <div class="discussion">
-      <div class="embedded-toolbar moveArea">
-        <span class="minimize-button"></span>
-      </div>
-      <div class="discussion-content">
-        <div class="discussion-heading"> <%- heading %>
-        </div>
-        <div class="discussion-text"></div>
-      </div>
-      <input class="discussion-input" placeholder=Texteingabe>
-    </div>
-  </script>
-  -->
-  <!-- END: Underscore Template Definition. -->
 
 </body>
 </html>

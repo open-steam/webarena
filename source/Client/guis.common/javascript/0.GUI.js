@@ -53,12 +53,14 @@ GUI.isTouchDevice = false;
  */
 GUI.guiType = 'desktop';
 
-
+/**
+ * Sets the gui type on startup.
+ */
 $(function() {
     var userAgent = navigator.userAgent;
     if (userAgent.indexOf('iPhone') > 0 ||
 		(userAgent.indexOf('Android') > 0 && userAgent.indexOf('Mobile') > 0)) {
-      GUI.guiType = 'mobilephone';
+		GUI.guiType = 'mobilephone';
     }
 });
 
@@ -88,7 +90,9 @@ GUI.initResizeHandler = function() {
  * @param {webarenaObject} [webarenaObject] concrete object to check for
  */
 GUI.adjustContent = function(webarenaObject) {
-	
+	if (GUI.guiType != 'desktop') {
+	  return;
+	}
 	if (webarenaObject != undefined) {
 
 		if (!webarenaObject.isGraphical) return;

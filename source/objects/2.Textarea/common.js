@@ -61,6 +61,9 @@ Textarea.intelligentRename=function(newValue){
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
 Textarea.onMobile = true;
+Textarea.isCreatableOnMobile = true;
+//Textarea.hasMobileRep = true;
+Textarea.hasEditableMobileContent = true;
 
 Textarea.contentURLOnly = false; //content is only accessible via URL
 

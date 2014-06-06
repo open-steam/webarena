@@ -218,7 +218,9 @@ ObjectManager.objectUpdate=function(data){
         }
     }
 	
-	this.informGUI(object);
+	if (this.informGUI) {
+		this.informGUI(object);
+	}
 }
 
 ObjectManager.attributeChanged=function(object,key,newValue,local){
