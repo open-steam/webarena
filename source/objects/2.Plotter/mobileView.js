@@ -9,32 +9,10 @@ Plotter.draw = function(external) {
 	d3.select(rep).attr("transform", "translate(0, 0)");
 	
 	this.redraw(rep);
-	return;
-	
-	// We need the svg here, because we have some dynamic tags.
-	var svg;
-	if (GUI.guiType == 'mobilephone') {
-		svg = GUI.mobileSVG;
-	} else {
-		svg = GUI.svg;
-	}
-	
-	GeneralObject.draw.call(this, external);
-	
-	var content = this.getContentAsObject();
-	var scaleX = this.getAttribute('width') / (content.xAxis.scale.max - content.xAxis.scale.min);
-	var scaleY = this.getAttribute('height') / (content.yAxis.scale.max - content.yAxis.scale.min);
-	
-	this.drawInternal(rep, svg, scaleX, scaleY);
 }
 
 /* Draws the content of the plotter. */
-Plotter.redraw = function(rep) {
-	// TODO: Draw content here.
-	//d3.select(rep).select("rect")
-	//	.attr("width", this.getAttribute("width"))
-	//	.attr("height", this.getAttribute("height"));
-	
+Plotter.redraw = function(rep) {	
 	var chart = d3.select(rep).select("g");
 	chart.selectAll("g").remove();
 	chart.selectAll("text").remove();
@@ -184,6 +162,7 @@ Plotter.checkTransparency = function(attribute, value) {
 	} else return true;
 }
 
+/* Very ugly, but works for the prototype. DRY!!! */
 Plotter.buildFormForEditableContent = function() {
 	var content = this.getContentAsObject();
     
@@ -217,10 +196,6 @@ Plotter.buildFormForEditableContent = function() {
             if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}
-            
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
         });
         $(valueY).bind('keyup', {pos: i, val: valueY}, function(event) {
             var content = that.getContentAsObject();
@@ -229,10 +204,6 @@ Plotter.buildFormForEditableContent = function() {
             if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}
-            
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
         });
         
         $(dom).append(valuePair);
@@ -257,10 +228,6 @@ Plotter.buildFormForEditableContent = function() {
 		}
         userData.values.push(lastEntry);
         that.setContentAsJSON(content);
-        
-        var rep = that.buildMobileRep(GUI.mobileSVG/*$(canvas).svg('get')*/);
-        $(rep).attr("width", $(window).width());
-        $(rep).attr("width", $(window).width());
 		
 		var valuePair = $('<tr></tr>');
         var valueX = $('<td align="center">x' + newIndex + '</td><td><input class="input" type="text" size="8" style="width: 100%; text-align: right" name="x' + newIndex + '" value="' + userData.values[newIndex][0] + '" /></td>');
@@ -276,11 +243,6 @@ Plotter.buildFormForEditableContent = function() {
 			if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}
-            /*
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
-            */
         });
         $(valueY).bind('keyup', {pos: newIndex, val: valueY}, function(event) {
             var content = that.getContentAsObject();
@@ -289,11 +251,6 @@ Plotter.buildFormForEditableContent = function() {
             if (event.keyCode == 13) {
 				that.setContentAsJSON(content);
 			}
-            /*
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
-            */
         });
         
         $(row).before(valuePair);

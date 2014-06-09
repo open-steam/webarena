@@ -38,7 +38,6 @@ ObjectList.init = function() {
     
     // Display all categories which are accessible on mobile phone.
 	for (var i = 0; i < keys.length; ++i) {
-    //$.each(types , function(key, objects) {
 		var objects = types[keys[i]];
 		
 		objects.sort(function(obj1, obj2) {
@@ -60,17 +59,28 @@ ObjectList.init = function() {
                 ObjectList.buildObjectEntry(object, categoryID);
             });
         }
-    }//);
+    }
     
     // Generate accordion widget from jquery ui.
-    $(function() {
-        $("#objectlist").accordion({
-            collapsible: true,
-            active: false,
-            autoHeight: false,
-            heightStyle: "content"
-        });
-    });
+	if (!ObjectList.initialized) {
+		$(function() {
+			$("#objectlist").accordion({
+				collapsible: true,
+				active: false,
+				autoHeight: false,
+				heightStyle: "content"
+			});
+		});
+	} else {
+		$(function() {
+			$("#objectlist").accordion({
+				collapsible: true,
+				active: true,
+				autoHeight: false,
+				heightStyle: "content"
+			});
+		});
+	}
     
     ObjectList.initialized = true;
 }
@@ -103,11 +113,6 @@ ObjectList.update = function(object, key, newValue, local) {
         if (ObjectList.initialized) {
 			$("#objectlist").accordion("destroy").empty();
 			ObjectList.init();
-			// Clear the objectlist on room change.
-			//if (object.getType() == "Subroom") {
-			//} else {
-				//ObjectList.addNew(object, object.category);
-			//}
         }
     }
 }
@@ -168,13 +173,6 @@ ObjectList.buildObjectEntry = function(object, categoryID) {
     
     $(deleteButton).bind("click", function(event) {
 		ObjectList.deleteObject(object);
-        //var result = confirm(GUI.translate('Do you really want to delete the object "' + object.getName() + '"?'));
-
-        //if (result) {
-        //    /* delete object */
-        //    object.deleteIt();
-        //}
-		
 		event.stopImmediatePropagation();
     });
      

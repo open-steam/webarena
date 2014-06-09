@@ -30,7 +30,7 @@ GUI.loadGUI = function(step) {
 		
 		/* setup svg area */
 		if (GUI.guiType == 'mobilephone') {
-			GUI.initSVGMobilePhone();
+			Canvas.init();
 		} else {
 			//build svg area using div #content //needs: nothing
 			GUI.initSVG();
@@ -92,7 +92,7 @@ GUI.loadGUI = function(step) {
 		if (!GUI.loaded) {
 			//needs: ObjectManager
 			if (GUI.guiType == 'mobilephone') {
-				GUI.initToolbarMobilePhone();
+				Toolbar.init();
 			} else {
 				GUI.initToolbar();
 			}

@@ -13,6 +13,7 @@ Plotter.register = function(type) {
 	this.attributeManager.registerAttribute('linecolor',{standard:'black'});
 	this.attributeManager.registerAttribute('fill',{type:'text',standard:'none',hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});
+	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	this.registerAction('Edit',function(){
 		$.each(ObjectManager.getSelected(), function(key, object) {
@@ -34,6 +35,7 @@ Plotter.hasEditableMobileContent = true;
 Plotter.moveByTransform = function() {
 	return true;
 }
+Plotter.updatetUsers = {};
 
 Plotter.contentURLOnly = false;
 

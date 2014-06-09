@@ -15,6 +15,7 @@ Subroom.register=function(type){
 	
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
+	IconObject.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	var self=this;
 	

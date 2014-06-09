@@ -101,10 +101,6 @@ ObjectView.refreshMobileRepresentation = function() {
 		{width: $(window).width(), height: $(window).width()}, true);
 	$("#objectview svg").attr("style", "background-color: white");
 	ObjectView.current.refresh();
-	//GUI.currentObject.draw();
-	//$("#objectview svg").children().attr("style", "visibility: hidden");
-	//$("#objectview svg").find("#" + GUI.currentObject.getID()).attr("style", "visibility: visible");
-	//$("#objectview svg").find("#" + GUI.currentObject.getID()).children().attr("style", "visibility: visible");
 }
 
 ObjectView.updateContent = function(object) {

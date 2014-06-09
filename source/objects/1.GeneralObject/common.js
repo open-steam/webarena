@@ -234,7 +234,7 @@ GeneralObject.register=function(type){
 	
 	this.registerAttribute('group',{type:'group',readonly:false,category:'Basic',standard:0});
 	
-	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
+	//this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	this.registerAction('Delete',function(){
 		

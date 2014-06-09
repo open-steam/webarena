@@ -28,34 +28,6 @@ body {
 	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
 	position: fixed;
 	z-index: 9999;
-	/*text-align: center;*/
-	/*color: #AEAEAE;*/
-	/*font-size: 14px;*/
-	/*cursor: pointer;*/
-	/* old */
-	/*
-	z-index: 11001;
-	height: 33px;
-	top: 0px;
-	left: 0px;
-	right: 0px;
-	background: -moz-linear-gradient(
-		center top ,
-		#3E3E3E 0%,
-		#1E1E1E 100%) repeat scroll 0 0 transparent;	
-	background: -webkit-gradient(
-		linear,
-		left top,
-		left bottom,
-		color-stop(0, #3E3E3E),
-		color-stop(1, #1E1E1E)
-		);
-	color: #eaecf0;
-	box-shadow: 0px 1px 3px rgba(0,0,0,0.3);
-	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
-	-moz-box-shadow: rgba(0,0,0,0.3) 0px 1px 3px;
-	border-right: 1px solid #000000;
-	*/
 }
 
 #header img {

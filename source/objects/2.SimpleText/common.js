@@ -31,6 +31,7 @@ SimpleText.register=function(type){
 	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
 
     this.registerAttribute('rotation', {type:'number', category: 'Dimensions', mobile: false});
+	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	this.registerAction('Edit',function(){
 		$.each(ObjectManager.getSelected(), function(key, object) {

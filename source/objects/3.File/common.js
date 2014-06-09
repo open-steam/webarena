@@ -48,6 +48,8 @@ File.register=function(type){
 		
 	}, mobile: false});
 	
+	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
+	
 	this.registerAction('to front',function(){
 	
 		/* set a very high layer for all selected objects (keeping their order) */

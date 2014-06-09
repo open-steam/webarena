@@ -27,6 +27,7 @@ IconObject.register=function(type){
 	this.registerAttribute('width',{hidden:true});
 	this.registerAttribute('height',{hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});
+	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	//this.registerAttribute('linecolor',{hidden:true});
 	//this.registerAttribute('linesize',{hidden:true});
 	this.unregisterAction('to back');

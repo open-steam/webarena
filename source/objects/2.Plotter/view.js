@@ -4,28 +4,10 @@ Plotter.draw = function(external) {
 	GeneralObject.draw.call(this, external);
 	
 	this.redraw(rep);
-	return;
-	
-	// We need the svg here, because we have some dynamic tags.
-	var svg;
-	if (GUI.guiType == 'mobilephone') {
-		svg = GUI.mobileSVG;
-	} else {
-		svg = GUI.svg;
-	}
-	
-	GeneralObject.draw.call(this, external);
-	
-	var content = this.getContentAsObject();
-	var scaleX = this.getAttribute('width') / (content.xAxis.scale.max - content.xAxis.scale.min);
-	var scaleY = this.getAttribute('height') / (content.yAxis.scale.max - content.yAxis.scale.min);
-	
-	this.drawInternal(rep, svg, scaleX, scaleY);
 }
 
 /* Draws the content of the plotter. */
 Plotter.redraw = function(rep) {
-	// TODO: Draw content here.
 	d3.select(rep).select("rect")
 		.attr("width", this.getAttribute("width"))
 		.attr("height", this.getAttribute("height"));
@@ -133,140 +115,10 @@ Plotter.redraw = function(rep) {
 	}
 }
 
-Plotter.drawInternal = function(rep, svg, scaleX, scaleY) {
-	return;
-	// The content is a JSON string, so we must parse it.
-	var content = this.getContentAsObject();
-	
-	var borderRect = $(rep).find(".borderRect");
-	$(borderRect).attr("width", this.getAttribute('width'));
-	$(borderRect).attr("height", this.getAttribute('height'));
-	
-	// Get the plot group.
-	var plot = $(rep).find(".plot");
-	// Delete the old plot.
-	$(plot).empty();
-	
-	/*
-	if (!$(rep).hasClass("selected")) {
-		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
-	}
-	*/
-	
-	// Check if we have a visible x-axis.
-	if (content.yAxis.scale.min <= 0 && content.yAxis.scale.max >= 0) {
-		this.plotXAxis(svg, plot,
-			content.xAxis.scale.min, content.xAxis.scale.max,
-			content.xAxis.ticks.major, content.xAxis.ticks.minor,
-			content.yAxis.scale.max, scaleX, scaleY);
-	}
-	
-	// Check if we have a visible y-axis.
-	if (content.xAxis.scale.min <= 0 && content.xAxis.scale.max >= 0) {
-		this.plotYAxis(svg, plot,
-		content.yAxis.scale.min, content.yAxis.scale.max,
-		content.yAxis.ticks.major, content.yAxis.ticks.minor,
-		content.xAxis.scale.min, scaleX, scaleY);
-	}
-	
-	// Plot the points.
-	this.plotPoints(svg, plot,
-		content.points,
-		content.xAxis.scale.min, content.yAxis.scale.max,
-		scaleX, scaleY);
-}
-
-Plotter.plotXAxis = function (svg, parent, scaleMin, scaleMax, major, minor, yOffset, scaleX, scaleY) {
-	// Create a group which represents the x-axis.
-	var xAxis = svg.group(parent);
-	
-	// Create the x-axis.
-	$(xAxis).attr("stroke", "black");
-	$(xAxis).attr("stroke-width", "1");
-	svg.line(xAxis, scaleMin*scaleX, yOffset*scaleY, scaleMax*scaleX, yOffset*scaleY);
-	
-	// Draw minor and major indicators on the x-axis.
-	var step = minor;
-	if (minor < Number.MIN_VALUE) {
-		step = major;
-		if (major < Number.MIN_VALUE) {
-			return;
-		}
-	}
-	
-	if (major < Number.MIN_VALUE) {
-		for (var x = scaleMin; x <= scaleMax; x += step) {
-			svg.line(xAxis, x*scaleX, (-2.5 + yOffset)*scaleY, x*scaleX, (2.5 + yOffset)*scaleY);
-		}
-		return;
-	}
-	
-	for (var x = scaleMin; x <= scaleMax; x += step) {
-		if ((x - scaleMin) / major < Number.MIN_VALUE) {
-			svg.line(xAxis, x*scaleX, (-5 + yOffset)*scaleY, x*scaleX, (5 + yOffset)*scaleY);
-		} else {
-			svg.line(xAxis, x*scaleX, (-2.5 + yOffset)*scaleY, x*scaleX, (2.5 + yOffset)*scaleY);
-		}
-	}
-}
-
-Plotter.plotYAxis = function (svg, parent, scaleMin, scaleMax, major, minor, xOffset, scaleX, scaleY) {
-	// Create a group which represents the y-axis.
-	var yAxis = svg.group(parent);
-	
-	// Create the y-axis.
-	$(yAxis).attr("stroke", "black");
-	$(yAxis).attr("stroke-width", "1");
-	svg.line(yAxis, xOffset*scaleX, scaleMin*scaleY, xOffset*scaleX, scaleMax*scaleY);
-	
-	// Draw minor and major indicators on the y-axis.
-	var step = minor;
-	if (minor < Number.MIN_VALUE) {
-		step = major;
-		if (major < Number.MIN_VALUE) {
-			return;
-		}
-	}
-	
-	if (major < Number.MIN_VALUE) {
-		for (var y = scaleMax; y >= scaleMin; y -= step) {
-			svg.line(yAxis, (-2.5 + xOffset)*scaleX, y*scaleY, (2.5 + xOffset)*scaleX, y*scaleY);
-		}
-		return;
-	}
-	
-	for (var y = scaleMax; y >= scaleMin; y -= step) {
-		if ((scaleMax - y) / major < Number.MIN_VALUE) {
-			svg.line(yAxis, (-5 + xOffset)*scaleX, y*scaleY, (5 + xOffset)*scaleX, y*scaleY);
-		} else {
-			svg.line(yAxis, (-2.5 + xOffset)*scaleX, y*scaleY, (2.5 + xOffset)*scaleX, y*scaleY);
-		}
-	}
-}
-
-Plotter.plotPoints = function(svg, rep, points, xOffset, yOffset, scaleX, scaleY) {
-	// Compute the points with the right offset.
-	var pointsWithOffset = [];
-	
-	for (var i = 0; i < points.length; ++i) {
-		var x = (points[i][0] - xOffset)*scaleX;
-		var y = (yOffset - points[i][1])*scaleY;
-		
-		pointsWithOffset.push([x, y]);
-	}
-	
-	// Create the polyline with the computed points.
-	var polyline = svg.polyline(rep, pointsWithOffset);
-	
-	// Set attributes for the polyline.
-	$(polyline).attr("stroke", this.getAttribute('linecolor'));
-	$(polyline).css("fill", this.getAttribute('fill'));
-	$(polyline).attr("stroke-width", this.getAttribute('linesize'));
-}
-
 /* Creates the representation for the desktop version of the plotter. */
-Plotter.createRepresentation = function(parent) {	
+Plotter.createRepresentation = function(parent) {
+	this.setAttribute("width", 500);
+	this.setAttribute("height", 400);
 	var margin = { top: 20, right: 20, bottom: 50, left: 50},
 		width = 500 - margin.left - margin.right,
 		height = 400 - margin.top - margin.bottom;
@@ -293,118 +145,57 @@ Plotter.createRepresentation = function(parent) {
 	return rep.node();
 }
 
-Plotter.buildMobileRep = function(svg) {
-	var width = $(window).width();
-	var height = $(window).width();
-	
-	svg.clear(false);
-	
-	var rep = svg.group();
-	var plot = svg.group(rep);
-	var polyline = svg.polyline(plot, [], {});
-	
-	$(plot).addClass("plot");
-	
+Plotter.editValueTable = function() {
 	var content = this.getContentAsObject();
-	var scaleX = $(window).width() / (content.xAxis.scale.max - content.xAxis.scale.min);
-	var scaleY = $(window).height()/2 / (content.yAxis.scale.max - content.yAxis.scale.min);
+	var dom = $('<table></table>');
+	var titleSettings = $("<tr></tr>");
+	var xAxisSettings = $("<tr></tr>");
+	var yAxisSettings = $("<tr></tr>");
 	
-	$(rep).attr("id", this.getAttribute('id'));
+	var title  = $('<td>Titel:</td><td><input type="text" name="title" value="' + content.title + '" /></td>');
+	var xLabel = $('<td>Label X-Achse:</td><td><input type="text" name="xLabel" value="' + content.xAxis.label + '" /></td>');
+	var xMin   = $('<td>Minimum X-Achse:</td><td><input type="text" name="xMin" value="' + content.xAxis.scale.min + '" /></td>');
+	var xMax   = $('<td>Maximum X-Achse:</td><td><input type="text" name="xMax" value="' + content.xAxis.scale.max + '" /></td>');
+	var yLabel = $('<td>Label Y-Achse:</td><td><input type="text" name="yLabel" value="' + content.yAxis.label + '" /></td>');
+	var yMin   = $('<td>Minimum Y-Achse:</td><td><input type="text" name="yMin" value="' + content.yAxis.scale.min + '" /></td>');
+	var yMax   = $('<td>Maximum Y-Achse:</td><td><input type="text" name="yMax" value="' + content.yAxis.scale.max + '" /></td>');
 	
-	this.drawInternal(rep, svg, scaleX, scaleY);
+	$(titleSettings).append(title);
+	$(xAxisSettings).append(xLabel);
+	$(xAxisSettings).append(xMin);
+	$(xAxisSettings).append(xMax);
+	$(yAxisSettings).append(yLabel);
+	$(yAxisSettings).append(yMin);
+	$(yAxisSettings).append(yMax);
+	$(dom).append(titleSettings);
+	$(dom).append(xAxisSettings);
+	$(dom).append(yAxisSettings);
 	
-	return rep;
-}
-
-Plotter.buildFormForEditableContent = function() {
-	var content = this.getContentAsObject();
-    
-    var dom = $('<table style="width: 100%; text-align: center"></table>');
-    var xValues = $('<tr></tr>');
-    var yValues = $('<tr></tr>');
+	var buttons = {};
 	
 	var that = this;
-    
-    for (var i = 0; i < content.points.length; ++i) {
-        var valuePair = $('<tr></tr>');
-        var valueX = $('<td>x' + i + '</td><td><input type="text" size="8" name="x' + i + '" value="' + content.points[i][0] + '" /></td>');
-		var valueY = $('<td>y' + i + '</td><td><input type="text" size="8" name="y' + i + '" value="' + content.points[i][1] + '" /></td>');
-        $(valuePair).append(valueX);
-        $(valuePair).append(valueY);
-        
-        $(valueX).bind('keyup', {pos: i, val: valueX}, function(event) {
-            var content = that.getContentAsObject();
-            content.points[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
-            
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
-        });
-        $(valueY).bind('keyup', {pos: i, val: valueY}, function(event) {
-            var content = that.getContentAsObject();
-            content.points[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
-            
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
-        });
-        
-        $(dom).append(valuePair);
-    }
-    
-    var addEntry = $('<input type="button" value="Eintrag hinzufuegen" />');
-    var row = $('<tr></tr>');
-    var col = $('<td colspan="4"></td>');
-    $(col).append(addEntry);
-    $(row).append(col);
-    $(dom).append(row);
-    $(addEntry).bind('click', function() {
-        var content = that.getContentAsObject();
+	
+	buttons[GUI.translate("save")] = function(domContent){
+		var title = $(domContent).find('input[name=title]').val();
+		var xLabel = $(domContent).find('input[name=xLabel]').val();
+		var xMin = $(domContent).find('input[name=xMin]').val();
+		var xMax = $(domContent).find('input[name=xMax]').val();
+		var yLabel = $(domContent).find('input[name=yLabel]').val();
+		var yMin = $(domContent).find('input[name=yMin]').val();
+		var yMax = $(domContent).find('input[name=yMax]').val();
 		
-		var newIndex = content.points.length;
-		var lastEntry = content.points[newIndex - 1];
-        content.points.push(lastEntry);
-        that.setContentAsJSON(content);
-        
-        var rep = that.buildMobileRep(GUI.mobileSVG/*$(canvas).svg('get')*/);
-        $(rep).attr("width", $(window).width());
-        $(rep).attr("width", $(window).width());
+		content.title = title;
+		content.xAxis.label = xLabel;
+		content.xAxis.scale.min = xMin;
+		content.xAxis.scale.max = xMax;
+		content.yAxis.label = yLabel;
+		content.yAxis.scale.min = yMin;
+		content.yAxis.scale.max = yMax;
 		
-		var valuePair = $('<tr></tr>');
-        var valueX = $('<td>x' + newIndex + '</td><td><input type="text" size="8" name="x' + newIndex + '" value="' + content.points[newIndex][0] + '" /></td>');
-		var valueY = $('<td>y' + newIndex + '</td><td><input type="text" size="8" name="y' + newIndex + '" value="' + content.points[newIndex][1] + '" /></td>');
-        $(valuePair).append(valueX);
-        $(valuePair).append(valueY);
-        
-        $(valueX).bind('keyup', {pos: newIndex, val: valueX}, function(event) {
-            var content = that.getContentAsObject();
-            content.points[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
-            
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
-        });
-        $(valueY).bind('keyup', {pos: newIndex, val: valueY}, function(event) {
-            var content = that.getContentAsObject();
-            content.points[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
-            that.setContentAsJSON(content);
-            
-            var rep = that.buildMobileRep(GUI.mobileSVG);
-            $(rep).attr("width", $(window).width());
-            $(rep).attr("width", $(window).width());
-        });
-        
-        $(row).before(valuePair);
-    });
-    
-    return dom;
-}
-
-Plotter.editValueTable = function() {
-	GUI.editValueTable(this);
+		that.setContentAsJSON(content);
+	};
+	
+	GUI.dialog("Plotter Configuration", dom, buttons)
 }
 
 Plotter.setViewWidth = function(value) {
@@ -420,16 +211,6 @@ Plotter.setViewWidth = function(value) {
 	GUI.adjustContent(this);
 	
 	this.redraw(rep);
-	/*
-	var svg;
-	if (GUI.guiType == 'mobilephone') {
-		svg = GUI.mobileSVG;
-	} else {
-		svg = GUI.svg;
-	}
-	
-	this.drawInternal(rep, svg);
-	*/
 }
 
 Plotter.setViewHeight = function(value) {
@@ -445,16 +226,6 @@ Plotter.setViewHeight = function(value) {
 	GUI.adjustContent(this);
 	
 	this.redraw(rep);
-	/*
-	var svg;
-	if (GUI.guiType == 'mobilephone') {
-		svg = GUI.mobileSVG;
-	} else {
-		svg = GUI.svg;
-	}
-	
-	this.drawInternal(rep, svg);
-	*/
 }
 
 Plotter.getViewBoundingBoxX = function() {
