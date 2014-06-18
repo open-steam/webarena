@@ -63,11 +63,12 @@ GUI.moveLinks = function(object){
 			
 		if (!target) return;
 		
+		
 		if(object.intersectsWith(target)){ //the objects intersects each other--->do not show any links
 			GUI.showLink(object.id, target.id, false); 
 			return;
 		}
-		
+
 		GUI.showLink(object.id, target.id, true); 
 		
 		var arrowheadToTarget1 = $(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("marker-start");
@@ -112,7 +113,7 @@ GUI.moveLinks = function(object){
 			
 				GUI.showLink(object.id, target.id, false); 	
 			}	
-			else{   //Intersection
+			else{   //Intersection	
 						
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',Intersection.x);
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',Intersection.y);
@@ -122,7 +123,7 @@ GUI.moveLinks = function(object){
 			}
 		}
 		else{ //no arrowhead to object, the line can end in the center of the object
-						
+				
 			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',objectCenterX);
 			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',objectCenterY);
 		
@@ -150,8 +151,16 @@ GUI.showLinks = function(value) {
 
 //show or hide a link
 GUI.showLink = function(id1, id2, value) {
-
-	if(value){ //show
+	
+	var object1 = ObjectManager.getObject(id1);
+	var object2 = ObjectManager.getObject(id2);
+	var room = object1.getRoom();
+	
+	var rep1 = object1.getRepresentation();
+	
+	var rep2 = object2.getRepresentation();
+	
+	if(value && room.getAttribute('showLinks') && $(rep1).css('opacity') > 0 && $(rep2).css('opacity') > 0){ //show
 		$(".webarenaLink_between_"+id1+"_and_"+id2).show();
 		$(".webarenaLink_between_"+id2+"_and_"+id1).show();
 	}
