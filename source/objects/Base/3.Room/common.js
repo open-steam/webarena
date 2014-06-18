@@ -40,7 +40,7 @@ Room.register=function(type){
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
     
     if (Modules.Config.structuringMode){
-	    this.attributeManager.registerAttribute('mode',{type:'selection',standard:'foreground',options:['background','foreground'],category:'Structure',changedFunction:function(room){
+	    this.attributeManager.registerAttribute('mode',{type:'selection',standard:'foreground',options:['background','foreground'],category:'Structure',hidden:true,changedFunction:function(room){
 	    	room.redraw();
 	    	GUI.setMode(room.getAttribute('mode'));
 	    }});

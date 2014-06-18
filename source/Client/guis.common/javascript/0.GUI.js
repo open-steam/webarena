@@ -730,14 +730,37 @@ GUI.confirm = function(message) {
 }
 
 GUI.setMode=function(mode){
-	var className='normal';
+	
+	var className='fgmode';
+	var text='Edit background';
+	var toMode='background';
+	
 	if (mode=='background'){
 		className='bgmode';
+		text='Exit';
+		toMode='foreground';
 	}
 	
 	var header=document.getElementById('header');
 	var sidebar=document.getElementById('sidebar');
+	var sidebar_title=document.getElementById('sidebar_title');
 	
 	if (header) header.className=className;
 	if (sidebar) sidebar.className=className;
+	if (sidebar_title) sidebar_title.className=className;
+	
+	//TODO do this with a class
+	var sidebarContent=document.getElementById('sidebar_content');
+	sidebarContent.className=className;
+	
+	$( "#switchbutton" ).remove();
+	
+	$( "<button id=\"switchbutton\">"+text+"</button>" ).appendTo(sidebar);
+	
+	var switchbutton=document.getElementById('switchbutton');
+	
+	switchbutton.onclick=function(){
+		GUI.setMode(toMode);
+	}
+	
 }

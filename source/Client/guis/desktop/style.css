@@ -32,8 +32,8 @@ body {
 	border-right: 1px solid #000000;
 }
 
-#header.bgmode {
-	background:#3d74bc;
+#header.bgmode, #sidebar_title.bgmode {
+	background:#254773;
 }
 
 #header img {
@@ -273,7 +273,20 @@ body {
 }
 
 #sidebar.bgmode {
-	background:#4c7cc0;
+	background:#91bbf2;
+}
+
+
+#sidebar_content.bgmode, #sidebar_content.fgmode {
+	bottom:40px;
+}
+
+#sidebar #switchbutton {
+	position:fixed;
+	bottom:7px;
+	left:8px;
+	width:215px;
+	height:24px;
 }
 
 #sidebar_title {
