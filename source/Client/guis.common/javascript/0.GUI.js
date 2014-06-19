@@ -315,29 +315,60 @@ GUI.initObjectDeletionByKeyboard = function() {
 			if (event.which == 8 || event.which == 46) {
 
 				event.preventDefault();
+				
+				//the cursor shows an object --> change the cursor to the default one	
+				var cursor = $("body").css('cursor');
+				if(cursor != "auto"){ 
+						
+					$("body").css( 'cursor', 'auto' );
+				}
+				else{
+					var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
 
-				var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
+					if (result) {
+						/* delete selected objects */
+						$.each(ObjectManager.getSelected(), function(key, object) {
 
-				if (result) {
-					/* delete selected objects */
-					$.each(ObjectManager.getSelected(), function(key, object) {
+							if ($(object.getRepresentation()).data("jActionsheet")) {
+								$(object.getRepresentation()).data("jActionsheet").remove();
+							}
 
-						if ($(object.getRepresentation()).data("jActionsheet")) {
-							$(object.getRepresentation()).data("jActionsheet").remove();
-						}
+							object.deleteIt();
 
-						object.deleteIt();
-
-					});
+						});
+					}
 				}
 			}
-			
 		}
 		
 	});
 	
 }
 
+
+/**
+ * add event handler for removing the cursor which represents an object by pressing the Escape-key
+ */
+GUI.initCursorDeletionByKeyboard = function() {
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.which == 27) {
+
+				event.preventDefault();
+				
+				//remove objects from cursor 
+				var cursor = $("body").css('cursor');
+				if(cursor != "auto"){ 
+						
+					$("body").css( 'cursor', 'auto' );
+				}
+			}
+		}
+	});
+}
 
 
 /**
@@ -418,6 +449,32 @@ GUI.initMouseHandler = function() {
 			var contentPosition = $("#content").offset();
 			
 			var temp=event.target;
+				
+			//the cursor shows an object --> create that object		
+			var cursor = $("body").css('cursor');	
+			if(cursor != "auto"){
+				
+				var t = cursor.split("/");
+				var s = t[4].split(")");
+				var r = s[0];
+				
+				//special case for Firefox
+				if(r.charCodeAt(r.length-1)==34){
+					r = r.slice(0,r.length-1);
+				}
+				
+				var proto = ObjectManager.getPrototype(r);
+			
+				GUI.startNoAnimationTimer();
+						
+				proto.create({
+						"x" : event.clientX-30, 
+						"y" : event.clientY-65
+				});
+			
+				$("body").css( 'cursor', 'auto' );			
+			}
+			
 			
 			while (temp && !temp.dataObject) {
 				temp=$(temp).parent()[0];
