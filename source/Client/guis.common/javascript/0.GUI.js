@@ -468,8 +468,8 @@ GUI.initMouseHandler = function() {
 				GUI.startNoAnimationTimer();
 						
 				proto.create({
-						"x" : event.clientX-30, 
-						"y" : event.clientY-65
+						"x" : event.pageX-30, 
+						"y" : event.pageY-65
 				});
 			
 				$("body").css( 'cursor', 'auto' );			

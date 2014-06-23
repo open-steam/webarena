@@ -137,7 +137,7 @@ GUI.initToolbar = function() {
 			
 			$(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
 			
-			var click = function(attributes) {
+			var click = function(attributes, drag) {
 
 				if (toolbar_locked_elements[object[0].type] === true) return; //element is locked
 
@@ -158,7 +158,13 @@ GUI.initToolbar = function() {
 				
 				if (!Modules.Config.presentationMode) {
 			
-					proto.create(attributes);
+					if(drag){
+						GUI.startNoAnimationTimer();
+						proto.create(attributes);
+					}
+					else{
+						$("body").css( 'cursor', 'url(/objectIcons/'+object[0].type+'), auto' );
+					}
 					
 				} 
 				else {
@@ -172,14 +178,14 @@ GUI.initToolbar = function() {
 					click({
 						"x" : window.pageXOffset + 40, 
 						"y" : window.pageYOffset + 40
-					}); 
+					}, false); 
 				});
 			} else {
 				$(newCategoryIcon).bind("click", function() {
 					click({
 						"x" : window.pageXOffset + 40, 
 						"y" : window.pageYOffset + 40
-					}); 
+					}, false); 
 				});
 			}
 			
@@ -198,7 +204,7 @@ GUI.initToolbar = function() {
 					click({
 						"x" : left,
 						"y" : top
-					});
+					}, true);
 
 				}
 
