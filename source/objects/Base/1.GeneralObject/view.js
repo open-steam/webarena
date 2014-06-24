@@ -24,7 +24,17 @@ GeneralObject.draw=function(external){
 			
 	$(rep).attr("layer", this.getAttribute('layer'));
 	
-	if (!$(rep).hasClass("webarena_ghost")) {
+	this.showOrHide();
+	
+	this.adjustControls();
+	
+}
+
+GeneralObject.showOrHide=function(){
+	
+		var rep=this.getRepresentation();
+	
+		if (!$(rep).hasClass("webarena_ghost")) {
 		
 		if (this.selected) {
 			$(rep).css("visibility", "visible");
@@ -68,12 +78,7 @@ GeneralObject.draw=function(external){
 			}
 			
 		}
-
-		
 	}
-	
-	this.adjustControls();
-	
 }
 
 /**

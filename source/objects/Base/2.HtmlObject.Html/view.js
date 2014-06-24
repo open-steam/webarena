@@ -16,7 +16,7 @@ HtmlObject.draw=function(external){
 
 	$(rep).attr("layer", this.getAttribute('layer'));
 
-	var that=this;
+	this.showOrHide();
 	
 	this.updateContent();
 	

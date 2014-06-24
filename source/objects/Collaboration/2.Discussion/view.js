@@ -67,6 +67,8 @@ Discussion.drawIcon = function () {
 Discussion.draw = function (external) {
 
     //GeneralObject.draw.call(this,external);
+    
+    this.showOrHide();
 
     var embedded = this.getAttribute("show_embedded");
     if (embedded) {
