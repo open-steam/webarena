@@ -43,6 +43,7 @@ GeneralObject.draw=function(external){
 					}
 				} else {
 					$(rep).css("visibility", "visible");
+					$(rep).css("opacity", 1);
 				}
 				
 			} else {
@@ -56,6 +57,7 @@ GeneralObject.draw=function(external){
 						}, {queue:false, 
 							complete:function() {
 								$(rep).css("visibility", "hidden");
+								$(rep).css("opacity", 1);
 							}
 							});
 					}

@@ -41,6 +41,7 @@ Room.register=function(type){
     
     if (Modules.Config.structuringMode){
 	    this.attributeManager.registerAttribute('mode',{type:'selection',standard:'foreground',options:['background','foreground'],category:'Structure',hidden:true,changedFunction:function(room){
+	    	GUI.deselectAllObjects();
 	    	room.redraw();
 	    	GUI.setMode(room.getAttribute('mode'));
 	    }});

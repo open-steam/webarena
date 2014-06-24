@@ -763,4 +763,6 @@ GUI.setMode=function(mode){
 		GUI.setMode(toMode);
 	}
 	
+	ObjectManager.getCurrentRoom().setAttribute('mode',mode);
+	
 }
