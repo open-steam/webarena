@@ -91,10 +91,12 @@ GeneralObject.drawPosition = function(external) {
 	if (external === true && !this.selected && this.noAnimation == undefined && GUI.noAnimation == undefined) {
 		/* set position animated when not called locally */
 		this.setViewXYAnimated(this.getAttribute('x'), this.getAttribute('y'));
+		GUI.moveLinks(this);
 	} else {
 		/* set position without animation */
 		this.setViewX(this.getAttribute('x'));
 		this.setViewY(this.getAttribute('y'));
+		GUI.moveLinks(this);
 	}
 	
 }

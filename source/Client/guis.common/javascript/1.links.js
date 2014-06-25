@@ -38,13 +38,14 @@ GUI.removeLinksfromObject = function(object){
 	
 		var targetID = value.destination;
 		var target = ObjectManager.getObject(targetID);
-				
-		//destroy the links
-		$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
-		$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
 						
-		//remove the object ids from the attribute lists
-        object.removeLinkedObjectById(target.id);
+		//destroy the links
+		$(".webarenaLink_between_"+object.id+"_and_"+targetID).remove();
+		$(".webarenaLink_between_"+targetID+"_and_"+object.id).remove();
+				
+		if(!target) return;
+				
+		//remove the object id from the attribute list of the target
         target.removeLinkedObjectById(object.id);
 		
 	});
@@ -61,6 +62,14 @@ GUI.moveLinks = function(object){
 		var target = ObjectManager.getObject(targetId);
 			
 		if (!target) return;
+		
+		
+		if(object.intersectsWith(target)){ //the objects intersects each other--->do not show any links
+			GUI.showLink(object.id, target.id, false); 
+			return;
+		}
+
+		GUI.showLink(object.id, target.id, true); 
 		
 		var arrowheadToTarget1 = $(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("marker-start");
 		var arrowheadToTarget2 = $(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("marker-end");
@@ -82,20 +91,13 @@ GUI.moveLinks = function(object){
 		if(arrowheadToTarget1 == "url(#svgMarker_arrow_black_0)" || arrowheadToTarget2 == "url(#svgMarker_arrow_black_1)"){ //arrowhead to target 
 		
 			var Intersection = target.IntersectionObjectLine(a1, a2);
+				
+			if(typeof Intersection == 'undefined'){ //there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
 			
-			//there is no Intersection between the target and the line --> the center of the object is inside the target --> let the line end in the center of target and object
-			if(typeof Intersection == 'undefined'){ 
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',objectCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',objectCenterY);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',targetCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',targetCenterY);
-		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',objectCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',objectCenterY);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',targetCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',targetCenterY);
+				GUI.showLink(object.id, target.id, false); 
 			}
 			else{	//Intersection
+				
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',Intersection.x);
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',Intersection.y);
 		
@@ -107,19 +109,12 @@ GUI.moveLinks = function(object){
 		
 			var Intersection = object.IntersectionObjectLine(a1, a2);
 				
-			//there is no Intersection between the object and the line --> the center of the target is inside the target --> let the line end in the center of object and target	
-			if(typeof Intersection == 'undefined'){ 
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',objectCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',objectCenterY);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',targetCenterX);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',targetCenterY);
-		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',objectCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',objectCenterY);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',targetCenterX);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',targetCenterY);
+			if(typeof Intersection == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link	
+			
+				GUI.showLink(object.id, target.id, false); 	
 			}	
-			else{   //Intersection
+			else{   //Intersection	
+						
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',Intersection.x);
 				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',Intersection.y);
 		
@@ -128,7 +123,7 @@ GUI.moveLinks = function(object){
 			}
 		}
 		else{ //no arrowhead to object, the line can end in the center of the object
-						
+				
 			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',objectCenterX);
 			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',objectCenterY);
 		
@@ -156,8 +151,16 @@ GUI.showLinks = function(value) {
 
 //show or hide a link
 GUI.showLink = function(id1, id2, value) {
-
-	if(value){ //show
+	
+	var object1 = ObjectManager.getObject(id1);
+	var object2 = ObjectManager.getObject(id2);
+	var room = object1.getRoom();
+	
+	var rep1 = object1.getRepresentation();
+	
+	var rep2 = object2.getRepresentation();
+	
+	if(value && room.getAttribute('showLinks') && $(rep1).css('opacity') > 0 && $(rep2).css('opacity') > 0){ //show
 		$(".webarenaLink_between_"+id1+"_and_"+id2).show();
 		$(".webarenaLink_between_"+id2+"_and_"+id1).show();
 	}
@@ -243,13 +246,23 @@ GUI.createLinks = function(object) {
 		/* draw link line */
 		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId()));
 		var line = GUI.svg.line(parent, objectCenterX, objectCenterY, targetCenterX, targetCenterY, {
-			strokeWidth: 6,
+			strokeWidth: value.width,
 			stroke: "#000000"
 		});
 		
 		$(line).addClass("webarenaLink_between_"+object.id+"_and_"+target.id);
 
 		$(line).css("opacity", 0);
+		
+		switch (value.style){
+			case 'dotted':var dasharray='5,5';break;
+			case 'dashed':var dasharray='10,5';break;
+			default:var dasharray='1,0';break;
+		}
+		
+		$(line).attr("layer", 0);
+		
+		$(line).attr("stroke-dasharray", dasharray);
 
         $(line).bind("mousedown",function(event){
             event.preventDefault();
@@ -283,7 +296,7 @@ GUI.createLinks = function(object) {
 			}
 			
 			var deletion = object.translate(GUI.currentLanguage, "Delete");
-			var changeDirection = object.translate(GUI.currentLanguage, "change direction");
+			var changeProperties = object.translate(GUI.currentLanguage, "change properties");
 
             GUI.showActionsheet(x,y, {
                 "actions" : [
@@ -301,7 +314,7 @@ GUI.createLinks = function(object) {
                         }
 					},
 					{
-						"actionName" : changeDirection,
+						"actionName" : changeProperties,
                         "actionFunction" : function(){
 						
 							_.each(ObjectManager.getObjects(), function(current) {
@@ -309,92 +322,9 @@ GUI.createLinks = function(object) {
 							});
 				
 							object.select();
-						
-							var arrowheadAtotherObject;
-							var arrowheadAtthisObject;
-												
-							var undirected = object.translate(GUI.currentLanguage, "undirected");
-							var objectAsTarget = object.translate(GUI.currentLanguage, "object as target");
-							var objectAsSource = object.translate(GUI.currentLanguage, "object as source");
-							var bidirectional = object.translate(GUI.currentLanguage, "bidirectional");
-							var linkDirection = object.translate(GUI.currentLanguage, "link direction:");
-							
-							//Dialog for changing the link direction
-							var DirectionDialog = document.createElement("div");
-							$(DirectionDialog).attr("title", linkDirection);
-
-							var dialogButtons = {};
-							dialogButtons[undirected] = function() {
-								arrowheadAtotherObject = false;
-								arrowheadAtthisObject = false;
-								buildLinks();
-								$(this).dialog("close");
-							}
-							dialogButtons[objectAsTarget] = function() {
-								arrowheadAtotherObject = false;
-								arrowheadAtthisObject = true;
-								buildLinks();
-								$(this).dialog("close");
-							}
-							dialogButtons[objectAsSource] = function() {
-								arrowheadAtotherObject = true;
-								arrowheadAtthisObject = false;
-								buildLinks();
-								$(this).dialog("close");
-							}
-							dialogButtons[bidirectional] = function() {
-								arrowheadAtotherObject = true;
-								arrowheadAtthisObject = true;
-								buildLinks();
-								$(this).dialog("close");
-							}
-
-							$(DirectionDialog).dialog("option", "buttons", dialogButtons);
-						
-							$(DirectionDialog).dialog({
-								modal: true,
-								resizable: false,
-								buttons: dialogButtons
-							});
-							
-							var buildLinks = function(){
-
-								var newLinks3 = [];
-								var oldLinks3 = object.getAttribute("link");
-								if (_.isArray(oldLinks3)){
-									newLinks3 = newLinks3.concat(oldLinks3);
-								}else if (oldLinks3){
-								newLinks3.push(oldLinks3);
-								}
 								
-								var newLinks4 = [];
-								var oldLinks4 = target.getAttribute("link");
-								if (_.isArray(oldLinks4)){
-									newLinks4 = newLinks4.concat(oldLinks4);
-								}else if (oldLinks4){
-								newLinks4.push(oldLinks4);
-								}
+							GUI.createDialog(object, target, changeProperties, false);	
 							
-								$.each(newLinks3, function( index, value ) {
-							
-									if(value.destination==target.id){
-										value.arrowhead = arrowheadAtotherObject;
-									}
-								});
-											
-								$.each(newLinks4, function( index, value ) {
-							
-									if(value.destination==object.id){
-										value.arrowhead = arrowheadAtthisObject;
-									}
-								});
-													
-								target.setAttribute("link", newLinks4);
-								object.setAttribute("link", newLinks3);
-																
-								GUI.createLinks(object);
-							
-							}
                         }
                     }
                 ]
@@ -403,10 +333,10 @@ GUI.createLinks = function(object) {
 
         $(line).hover(
             function(event){
-                $(this).attr("stroke-width", 10)
+                $(this).attr("stroke-width", parseInt(value.width)+4)
             },
             function(event){
-                $(this).attr("stroke-width", 6)
+                $(this).attr("stroke-width", value.width)
             }
         );
 		
@@ -431,4 +361,131 @@ GUI.createLinks = function(object) {
 		}
 		
 	});
+	
+}
+	
+//Dialog for setting/changing the link properties
+GUI.createDialog = function(object, target, title, justcreated){
+	
+	var arrowheadAtotherObject;
+	var arrowheadAtthisObject;
+										
+	var undirected = object.translate(GUI.currentLanguage, "undirected");
+	var objectAsTarget = object.translate(GUI.currentLanguage, "object as target");
+	var objectAsSource = object.translate(GUI.currentLanguage, "object as source");
+	var bidirectional = object.translate(GUI.currentLanguage, "bidirectional");
+	var linkProperties = object.translate(GUI.currentLanguage, "select properties");
+	var direction = object.translate(GUI.currentLanguage, "direction");
+	var stroke = object.translate(GUI.currentLanguage, "stroke");
+	var dotted = object.translate(GUI.currentLanguage, "dotted");
+	var dashed = object.translate(GUI.currentLanguage, "dashed");
+	var style = object.translate(GUI.currentLanguage, "style");
+	var width = object.translate(GUI.currentLanguage, "width");
+							
+	var PropertyDialog = document.createElement("div");
+	$(PropertyDialog).attr("title", title);
+							
+	var content = '<p>'+direction+'<br>';
+		content += 		'<select id="direction">';
+		content += 			'<option value="undirected">'+undirected+'</option>';
+		content += 			'<option value="toObject">'+objectAsTarget+'</option>';
+		content += 			'<option value="fromObject">'+objectAsSource+'</option>';
+		content += 			'<option value="bidirectional">'+bidirectional+'</option>';
+		content += 		'</select>';
+		content += '</p>';
+		content += '<p>'+style+'<br>';
+		content += 		'<select id="style">';
+		content += 			'<option value="stroke">'+stroke+'</option>';
+		content += 			'<option value="dotted">'+dotted+'</option>';
+		content += 			'<option value="dashed">'+dashed+'</option>';
+		content += 		'</select>';
+		content += '</p>';
+		content += '<p>';
+		content += 		'<label for="lineWidth">'+width+'</label>';
+		content += 		'<input type="number" id="lineWidth" name="value" value="5" min="1">';
+		content += '</p>';
+					
+	var buttons = {};
+	var lineWidth;
+	var direction;
+	var lineStyle;
+
+	buttons[object.translate(GUI.currentLanguage, "save")] = function(domContent){
+	
+		lineWidth = $('#lineWidth').attr("value");
+		direction = $('#direction').val();
+		lineStyle = $('#style').val();
+		
+		if(direction=="undirected"){
+			arrowheadAtotherObject = false;
+			arrowheadAtthisObject = false;
+		}
+		if(direction=="toObject"){
+			arrowheadAtotherObject = false;
+			arrowheadAtthisObject = true;
+		}
+		if(direction=="fromObject"){
+			arrowheadAtotherObject = true;
+			arrowheadAtthisObject = false;
+		}
+		if(direction=="bidirectional"){
+			arrowheadAtotherObject = true;
+			arrowheadAtthisObject = true;
+		}
+
+		if(justcreated){
+			object.buildLinks(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle);
+		}
+		else{
+			GUI.changeLinks(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle);
+		}	
+	};
+
+	GUI.dialog(title, $(content), buttons, 300, false);
+		
+}	
+
+//handle the desired changes which was made in the change-properties-dialog
+//especially: changing the link attribute
+GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle){
+
+	var newLinks3 = [];
+	var oldLinks3 = object.getAttribute("link");
+	if (_.isArray(oldLinks3)){
+		newLinks3 = newLinks3.concat(oldLinks3);
+	}else if (oldLinks3){
+	newLinks3.push(oldLinks3);
+	}
+	
+	var newLinks4 = [];
+	var oldLinks4 = target.getAttribute("link");
+	if (_.isArray(oldLinks4)){
+		newLinks4 = newLinks4.concat(oldLinks4);
+	}else if (oldLinks4){
+	newLinks4.push(oldLinks4);
+	}
+
+	$.each(newLinks3, function( index, value ) {
+
+		if(value.destination==target.id){
+			value.arrowhead = arrowheadAtotherObject;
+			value.width = lineWidth;
+			value.style = lineStyle;
+		}
+	});
+				
+	$.each(newLinks4, function( index, value ) {
+
+		if(value.destination==object.id){
+			value.arrowhead = arrowheadAtthisObject;
+			value.width = lineWidth;
+			value.style = lineStyle;
+		}
+	});
+						
+	target.setAttribute("link", newLinks4);
+	object.setAttribute("link", newLinks3);
+									
+	GUI.createLinks(object);
+
 }

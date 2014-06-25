@@ -121,6 +121,10 @@ Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2){
 	P.x = rx * Math.cos(t);
 	P.y = ry * Math.sin(t);
 				
+	if(dy==0 && dx<0){ //special case (because t can be null on the left side and on the right side if the ellipse) 
+		P.x = P.x-2*rx;
+	}	
+				
 	return P;
 
 }

@@ -71,6 +71,8 @@ GUI.loadGUI = function(step) {
 		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
 	    if (!GUI.loaded) GUI.initUndoByKeyboard();
 		
+		if (!GUI.loaded) GUI.initCursorDeletionByKeyboard(); //handle Escape-Key events, currently only deletion of cursors which represents objects
+		
 		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
 
 

@@ -58,36 +58,44 @@ GUI.initToolbar = function() {
 						var name = object.translate(GUI.currentLanguage,object.type);
 
 						var element = section.addElement('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" /> '+name);
-
-						var click = function(attributes) {
-
+						
+						var click = function(attributes, drag) {
+						
 							popover.hide();
 
 							var proto = ObjectManager.getPrototype(object.type);
 							
 							if (!Modules.Config.presentationMode) {
 
-								proto.create(attributes);
-								
-							} else {
+								if(drag){
+									GUI.startNoAnimationTimer();
+									proto.create(attributes);
+								}
+								else{
+									$("body").css( 'cursor', 'url(/objectIcons/'+object.type+'), auto' );
+								}
+							
+							} 
+							else {
 								alert(GUI.translate("You cannot create objects in presentation mode"));	
 							}
 							
 						}
+						
 
 						if (GUI.isTouchDevice) {
 							$(element.getDOM()).bind("touchstart", function() {
 								click({
 									"x" : window.pageXOffset + 40, 
 									"y" : window.pageYOffset + 40
-								}); 
+								}, false); 
 							});
 						} else {
 							$(element.getDOM()).bind("click", function() { 
 								click({
 									"x" : window.pageXOffset + 40, 
 									"y" : window.pageYOffset + 40
-								}); 
+								}, false); 
 							});
 						}
 						
@@ -104,7 +112,7 @@ GUI.initToolbar = function() {
 							click({
 								"x" : left,
 								"y" : top
-							});
+							}, true);
 						
 						}
 						
@@ -129,7 +137,7 @@ GUI.initToolbar = function() {
 			
 			$(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
 			
-			var click = function(attributes) {
+			var click = function(attributes, drag) {
 
 				if (toolbar_locked_elements[object[0].type] === true) return; //element is locked
 
@@ -149,8 +157,17 @@ GUI.initToolbar = function() {
 				var proto = ObjectManager.getPrototype(object[0].type);
 				
 				if (!Modules.Config.presentationMode) {
-					proto.create(attributes);
-				} else {
+			
+					if(drag){
+						GUI.startNoAnimationTimer();
+						proto.create(attributes);
+					}
+					else{
+						$("body").css( 'cursor', 'url(/objectIcons/'+object[0].type+'), auto' );
+					}
+					
+				} 
+				else {
 					alert(GUI.translate("You cannot create objects in presentation mode"));	
 				}
 				
@@ -161,14 +178,14 @@ GUI.initToolbar = function() {
 					click({
 						"x" : window.pageXOffset + 40, 
 						"y" : window.pageYOffset + 40
-					}); 
+					}, false); 
 				});
 			} else {
 				$(newCategoryIcon).bind("click", function() {
 					click({
 						"x" : window.pageXOffset + 40, 
 						"y" : window.pageYOffset + 40
-					}); 
+					}, false); 
 				});
 			}
 			
@@ -187,7 +204,7 @@ GUI.initToolbar = function() {
 					click({
 						"x" : left,
 						"y" : top
-					});
+					}, true);
 
 				}
 
@@ -203,7 +220,6 @@ GUI.initToolbar = function() {
 				
 			}
 			
-	
 		}
 		
 		var effect = function() {

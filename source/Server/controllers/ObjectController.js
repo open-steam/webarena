@@ -76,7 +76,9 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 	var fn = object[serverFunction];
 	
 	if (!fn){
-		Modules.Log.warn("Client called a nonexisting function ("+serverFunction+","+object+"). Request will be aborted.");
+		if(serverFunction!="setAttribute"){
+			Modules.Log.warn("Client called a nonexisting function ("+serverFunction+","+object+"). Request will be aborted.");
+		}
 		return;
 	}
 
