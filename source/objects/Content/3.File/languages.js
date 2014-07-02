@@ -1,5 +1,5 @@
 
-File.setTranslations('de',{
+WAFile.setTranslations('de',{
 	'Please select a file':'Bitte wählen Sie eine Datei',
 	'Download' : 'Herunterladen',
 	'Upload file' : 'Datei hochladen',

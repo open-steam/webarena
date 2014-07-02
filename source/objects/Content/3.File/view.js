@@ -5,7 +5,7 @@
 *
 */
 
-File.draw = function(external) {
+WAFile.draw = function(external) {
 	
 	GeneralObject.draw.call(this,external);
 	
@@ -38,7 +38,7 @@ File.draw = function(external) {
 }
 
 /* get the width of the objects bounding box */
-File.getViewBoundingBoxWidth = function() {
+WAFile.getViewBoundingBoxWidth = function() {
 	if (this.hasContent() == false || this.getAttribute("preview") == false) {
 		if (this.getAttribute("bigIcon")) {
 			return 64;
@@ -49,7 +49,7 @@ File.getViewBoundingBoxWidth = function() {
 }
 
 /* get the height of the objects bounding box */
-File.getViewBoundingBoxHeight = function() {
+WAFile.getViewBoundingBoxHeight = function() {
 	if (this.hasContent() == false || this.getAttribute("preview") == false) {
 		if (this.getAttribute("bigIcon")) {
 			return 64;
@@ -59,7 +59,7 @@ File.getViewBoundingBoxHeight = function() {
 	}
 }
 
-File.getStatusIcon = function() {
+WAFile.getStatusIcon = function() {
 	if (this.hasContent() == false) {
 		return this.getIconPath() + "/upload";
 	} else if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
@@ -83,7 +83,7 @@ File.getStatusIcon = function() {
 	}
 }
 
-File.getIconText = function() {
+WAFile.getIconText = function() {
     if ((this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) && this.hasContent()) {
         return this.getAttribute("name");
     } else return false;
