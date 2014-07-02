@@ -6,5 +6,8 @@ Exit.setTranslations('de',{
 	'Object Selection' : 'Objektauswahl',
 	'Open Object Selection' : 'Objektauswahl öffnen',
 	'ObjectBrowser' : 'Verknüpfung (Browser)',
-	'filterObjects' : 'Nur Räume in Objektauswahl'
+	'filterObjects' : 'Nur Räume in Objektauswahl',
+	'Cancel' : 'Abbrechen', 
+	'Okay' : 'Auswählen',
+	'Show objects' : 'Objekte anzeigen'
 });

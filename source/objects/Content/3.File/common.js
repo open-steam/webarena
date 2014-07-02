@@ -7,9 +7,9 @@
 
 var Modules=require('../../../server.js');
 
-var File=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
+var WAFile=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
-File.register=function(type){
+WAFile.register=function(type){
 	
 	// Registering the object
 	
@@ -137,7 +137,7 @@ File.register=function(type){
 	
 }
 
-File.execute=function(){
+WAFile.execute=function(){
 
 	if (this.hasContent() == true) {
 		
@@ -151,29 +151,29 @@ File.execute=function(){
 
 }
 
-File.isProportional=function(){
+WAFile.isProportional=function(){
 	return true;
 }
 
-File.resizeProportional=function(){
+WAFile.resizeProportional=function(){
 	return true;
 }
 
-File.isResizable=function(){
+WAFile.isResizable=function(){
 	if (this.hasContent() == true && this.getAttribute("preview") == true) {
 		return GeneralObject.isResizable.call(this);
 	} else return false; 
 }
 
-File.register('File');
-File.isCreatable=true;
+WAFile.register('File');
+WAFile.isCreatable=true;
 
-File.moveByTransform = function(){return true;};
+WAFile.moveByTransform = function(){return true;};
 
-File.alwaysOnTop = function () {
+WAFile.alwaysOnTop = function () {
 	if (this.hasContent() == true && this.getAttribute("preview") == true) {
 		return false;
 	} else return true;
 };
 
-module.exports=File;
+module.exports=WAFile;

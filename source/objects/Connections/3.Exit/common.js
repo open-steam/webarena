@@ -14,10 +14,10 @@ Exit.register=function(type){
 	// Registering the object
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
-	
-	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality',changedFunction: function(object) { object.updateIcon(); }});
-	this.registerAttribute('destinationObject',{type:'text',standard:'',category:'Functionality'});
-	this.registerAttribute('filterObjects',{type:'boolean',standard:true,category:'Functionality'});
+		
+	this.registerAttribute('destination',{type:'Hyperlink', standard: "choose", linkFunction: function(object){object.showDialog()}, category:'Functionality', changedFunction: function(object) { object.updateIcon(); }});
+	this.registerAttribute('destinationObject',{type:'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object){object.showDialog()}, category:'Functionality'});
+	this.registerAttribute('filterObjects',{type:'boolean',standard:false, hidden:true});
 
 	this.registerAction('Follow',function(object){
 		object.execute();
@@ -25,10 +25,6 @@ Exit.register=function(type){
 	
 	this.registerAction('Open in new window',function(object){	
 		object.execute(true);
-	},true);
-
-	this.registerAction(this.translate(this.currentLanguage, "Open Object Selection"), function(object) { 
-		object.showDialog(); 
 	},true);
 
 }

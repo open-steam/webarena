@@ -60,6 +60,7 @@ GUI.setTranslations('de',{
 	'objects' : 'Objekte',
 	'Do you want to continue?' : 'Wollen Sie fortsetzen?',
 	'Do you really want to delete the selected objects?' : 'Ausgewählte Objekte wirklich löschen?',
-	'Enter room' : 'Betrete Raum'
+	'Enter room' : 'Betrete Raum',
+	'choose' : 'wählen'
 	}
 );

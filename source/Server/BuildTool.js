@@ -47,13 +47,17 @@ BuildTool.buildClientCode = function(){
 		var objName = fileinfo[1];
 		if (!index) return;
 		if (!objName) return;
+		
+		if (objName=='File') {
+			var temp='WAFile'; //TODO This is a hot fix. Implement proper namespaces instead
+		} else temp=objName;
 
 		var filebase = __dirname + '/../objects/' + category + '/' + filename;
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
 		that.addToClientCode(filebase + '/view.js');
-		that.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
-		that.clientCode += enter + objName + '.category="' + category +'";' + enter + enter;
+		that.clientCode += enter + temp + '.register("' + objName + '");' + enter + enter;
+		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
 		that.addToClientCode(filebase + '/languages.js');
 
 	});
