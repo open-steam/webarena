@@ -93,6 +93,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		
 	}
 	
+
+	
 	
 	/* point widget */
 	/*
@@ -954,8 +956,16 @@ $(function() { });
 					
 				}
 				
-				this.setInactive = function() {
+				this.setVal = function(value) {
+					
+					var val = GUI.translate('choose');
 
+					$(newElement).children().text(val);
+					
+				}
+				
+				this.setInactive = function() {
+				
 					$(newElement).children("div.jDesktopInspector_button_right").addClass("jDesktopInspector_button_inactive");
 					
 				}
