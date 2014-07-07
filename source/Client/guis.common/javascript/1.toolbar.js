@@ -72,9 +72,15 @@ GUI.initToolbar = function() {
 									proto.create(attributes);
 								}
 								else{
-									$("body").css( 'cursor', 'url(/objectIcons/'+object.type+'), auto' );
+									if(object.type=='Arrow' || object.type=='Line'){
+
+										GUI.setCursorText(GUI.translate("Choose "+object.type+"-Startpoint"));
+						
+									}
+									else{
+										$("body").css( 'cursor', 'url(/objectIcons/'+object.type+'), auto' );
+									}	
 								}
-							
 							} 
 							else {
 								alert(GUI.translate("You cannot create objects in presentation mode"));	

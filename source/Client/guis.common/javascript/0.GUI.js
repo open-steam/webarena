@@ -450,7 +450,7 @@ GUI.initMouseHandler = function() {
 			
 			var temp=event.target;
 				
-			//the cursor shows an object --> create that object		
+			//object creation via object symbols
 			var cursor = $("body").css('cursor');	
 			if(cursor != "auto"){
 				
@@ -473,6 +473,65 @@ GUI.initMouseHandler = function() {
 				});
 			
 				$("body").css( 'cursor', 'auto' );			
+			}
+			
+			//after selecting the arrow startpoint change the cursor text to arrow endpoint
+			if(GUI.getCursorText()==GUI.translate('Choose Arrow-Startpoint')){
+				GUI.setCursorText(GUI.translate("Choose Arrow-Endpoint"));
+							
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', position.left+','+position.top);
+				
+			}
+			
+			//after selecting the line startpoint change the cursor text to line endpoint
+			if(GUI.getCursorText()==GUI.translate('Choose Line-Startpoint')){
+				GUI.setCursorText(GUI.translate("Choose Line-Endpoint"));
+
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', position.left+','+position.top);	
+			}
+			
+			//after selecting the arrow endpoint create the arrow and set the position with GUI.setFinalPosition
+			if(GUI.getCursorText()==GUI.translate('Choose Arrow-Endpoint')){
+				GUI.setCursorText("");
+
+				var proto = ObjectManager.getPrototype('Arrow');
+			
+				GUI.startNoAnimationTimer();
+				
+				var title = $('#besideMouse').attr('title');
+				
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', title+','+position.left+','+position.top);
+										
+				var attributes;
+				var content;			
+					
+				ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);	
+			}
+			
+			//after selecting the line endpoint create the line and set the position with GUI.setFinalPosition
+			if(GUI.getCursorText()==GUI.translate('Choose Line-Endpoint')){
+				GUI.setCursorText("");
+
+				var proto = ObjectManager.getPrototype('Line');
+			
+				GUI.startNoAnimationTimer();
+				
+				var title = $('#besideMouse').attr('title');
+				
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', title+','+position.left+','+position.top);
+										
+				var attributes;
+				var content;			
+					
+				ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);
 			}
 			
 			
@@ -550,6 +609,85 @@ GUI.initMouseHandler = function() {
 }
 
 
+
+
+/**
+ * set the final position of an arrow or line after creation via the selecting-points-method
+ */
+GUI.setFinalPosition = function(object){
+	
+	var title = $('#besideMouse').attr('title');
+	
+	var point = title.split(',');
+	
+	var x1 = parseInt(point[0])-15;
+	var y1 = parseInt(point[1])-35; 
+	var x2 = parseInt(point[2])-15;
+	var y2 = parseInt(point[3])-35; 
+		
+	var direction1;
+	var direction2;	
+	
+	var x;
+	var y;
+	var width;
+	var height;
+	
+	//calculate x,y, width and height
+	if(x1>x2){
+		x = x2;
+		width = x1-x2;
+		direction1 = false;
+	}
+	else{
+		x = x1;
+		width = x2-x1
+		direction1 = true;
+	}
+	if(y1>y2){
+		y = y2;
+		height = y1-y2;
+		direction2 = false;
+	}
+	else{
+		y = y1;
+		height = y2-y1;
+		direction2 = true;
+	}
+	
+	//calculate and set direction
+	if(direction1){
+		if(direction2){
+			object.setAttribute("direction", 1);
+		}
+		else{
+			object.setAttribute("direction", 4);
+		}
+	}
+	else{
+		if(direction2){
+			object.setAttribute("direction", 2);
+		}
+		else{
+			object.setAttribute("direction", 3);
+		}
+	}
+	
+	//set x,y, width and height
+	object.setAttribute('x', x);
+	object.setAttribute('y', y);
+	object.setAttribute('width', width);
+	object.setAttribute('height', height);
+	object.setViewWidth(width);
+	object.setViewHeight(height); 
+	
+	$('#besideMouse').attr('title', "");
+	
+}
+
+
+
+
 /**
  * get the topmost object at point x,y which is visible
  * @param {int} x x position
@@ -575,10 +713,6 @@ GUI.getObjectAt = function(x,y) {
 	return clickedObject;
 	
 }
-
-
-
-
 
 
 /**
@@ -784,4 +918,22 @@ GUI.startNoAnimationTimer = function() {
  */
 GUI.confirm = function(message) {
 	return confirm(message);
+}
+
+/**
+ * set text which is displayed near to the cursor
+ */
+GUI.setCursorText = function(text){
+	$(document).mousemove(function(e){
+		var cpos = { top: e.pageY + 15, left: e.pageX + 15 };
+		$('#besideMouse').offset(cpos);
+		$('#besideMouse').html(text);	
+	});
+}
+
+/**
+ * get text which is displayed near to the cursor
+ */
+GUI.getCursorText = function(){
+	return $('#besideMouse').html();	
 }
