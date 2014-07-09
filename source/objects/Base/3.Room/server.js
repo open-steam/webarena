@@ -13,15 +13,22 @@ var Modules=require('../../../server.js');
 
 //is called when ANY object is repositioned within a room
 theObject.evaluatePositionFor=function(object,data){
+
+	//when the object is structuring, its onObjectMove function is called
 	
-	//let the moved object be evaluated by every structuring object in the room
+	if (object.onObjectMove) {
+		return object.onObjectMove(data);
+	} else {
 	
-	var inventory=this.getInventory();
-	
-	for (var i in inventory){
-		var obj=inventory[i];
-		if (obj.isStructuring()) {
-			obj.evaluateObject(object,data);
+		//let the moved object be evaluated by every structuring object in the room
+		
+		var inventory=this.getInventory();
+		
+		for (var i in inventory){
+			var obj=inventory[i];
+			if (obj.isStructuring()) {
+				obj.evaluateObject(object,data);
+			}
 		}
 	}
 	

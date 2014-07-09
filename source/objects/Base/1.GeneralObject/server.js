@@ -43,11 +43,7 @@ theObject.makeStructuring=function(){
 	
 	this.onObjectMove=function(changeData){
 		
-		//when a structuring object is moved, every active object may be in need of repositioning
-		
-		console.log('needs to be changed... States need to change to placed here');
-		console.log(this.getRoom());
-		console.trace();
+		this.getRoom().setAttribute('repositionNeeded',true);
 				
 	}
 	
