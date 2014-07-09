@@ -119,7 +119,7 @@ theObject.makeStructuring=function(){
 	
 	
 	/**
-	*	SensitiveObjects evaluate other objects in respect to themselves.
+	*	Structuring Objects evaluate other objects in respect to themselves.
 	*
 	*	object the object that shall be evaluated
 	*	changeData old and new values of positioning (e.g. changeData.old.x) 
