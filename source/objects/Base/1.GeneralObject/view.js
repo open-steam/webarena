@@ -170,8 +170,6 @@ GeneralObject.representationCreated = function() {
 		GUI.updateLayers();
 	}
 	
-	if (!this.isSensitive()) return;
-	
 	var that = this;
 
     var intersectMode = false;
@@ -1299,7 +1297,7 @@ GeneralObject.makeMovable = function() {
  * @param {int} dy Moved x distance
  */
 GeneralObject.moveRelative = function(dx, dy) {
-	if (this.getAttribute("locked")) return;
+	if (!this.mayMove()) return;
 
 	this.setViewX(this.moveObjectStartX+dx);
 	this.setViewY(this.moveObjectStartY+dy);

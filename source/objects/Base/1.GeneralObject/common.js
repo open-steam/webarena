@@ -28,9 +28,6 @@ GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
 GeneralObject.alwaysOnTop = function() {return false;};
 
-GeneralObject.makeSensitive=function(){
-	this.isSensitiveFlag=true;
-}
 
 GeneralObject.makeStructuring=function(){
 	this.isStructuringFlag=true;
@@ -46,10 +43,6 @@ GeneralObject.isActive=function(){
 
 GeneralObject.isIllustrating=function(){
 	return !(this.isActive());
-}
-
-GeneralObject.isSensitive=function(){
-	return this.isSensitiveFlag||false;
 }
 
 GeneralObject.isStructuring=function(){
@@ -200,7 +193,7 @@ GeneralObject.register=function(type){
 	
 	this.registerAttribute('linesize',{type:'number',min:1,standard:1,max:30,category:'Appearance'});
 
-	this.registerAttribute('locked',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
+	this.registerAttribute('fixed',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
 		
 		window.setTimeout(function() {
 			object.deselect();
@@ -630,7 +623,7 @@ GeneralObject.resizeProportional=function(){
 
 /* following functions are used by the GUI. (because the three functions above will be overwritten) */
 GeneralObject.mayMove=function() {
-	if (this.getAttribute('locked')) {
+	if (!Modules.config.structuringMode && this.getAttribute('fixed')) {
 		return false;
 	} else {
 		return this.isMovable();
@@ -638,7 +631,7 @@ GeneralObject.mayMove=function() {
 }
 
 GeneralObject.mayResize=function() {
-	if (this.getAttribute('locked')) {
+	if (!Modules.config.structuringMode && this.getAttribute('fixed')) {
 		return false;
 	} else {
 		return this.isResizable();
@@ -646,7 +639,7 @@ GeneralObject.mayResize=function() {
 }
 
 GeneralObject.mayResizeProportional=function() {
-	if (this.getAttribute('locked')) {
+	if (!Modules.config.structuringMode && this.getAttribute('fixed')) {
 		return false;
 	} else {
 		return this.resizeProportional();

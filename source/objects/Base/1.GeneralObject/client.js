@@ -234,8 +234,7 @@ GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
 
 GeneralObject.isBackgroundObject = function(){
 	if (this.isStructuring()) return true;
-	if (this.isSensitive()) return true;
-	if (this.getAttribute('inBackground')) return true; 
+	if (this.getAttribute('fixed')) return true; 
 	
 	return false;
 }

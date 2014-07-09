@@ -5,7 +5,6 @@ ObjectTransport.register=function(type){
 
 	// Registering the object
 	Modules.ObjectManager.getPrototype('GeneralObject').register.call(this,type);
-	this.makeSensitive();
 	this.registerAttribute('target',{type:'text',standard:'',category:'Selection'});
 	this.registerAttribute('cut',{type:'boolean',standard:false, category:'Selection'});
 

@@ -18,7 +18,7 @@ GeneralObject.setTranslations('de',{
 	'Link':'Verknüpfen',
 	'to front':'Nach vorne',
 	'to back':'Nach hinten',
-	'locked':'Angeheftet',
+	'fixed':'Fixiert',
 	'visible':'Sichtbar',
 	'group':'Gruppe',
 	'Group':'Gruppieren',

@@ -23,27 +23,6 @@ var _ = require('lodash');
 module.exports=theObject;
 
 
-// ****************************************************************
-// * MAKE SENSITIVE ***********************************************
-// ****************************************************************
-
-theObject.makeSensitive=function(){
-	this.isSensitiveFlag=true;
-		
-	// if there is no drop handling on the client side, an event is
-	// sent to the server. This is the default event handling for
-	// the drop event. Overwrite this if you want serverside drop
-	// handling. Leave it unchanged if you want an application to
-	// handle the drop event.
-		
-	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
-		
-		this.fireEvent('object::'+this.id+'::drop',objectId);
-	};
-
-	theObject.onDrop.public=true;
-
-}
 
 
 // ****************************************************************
@@ -217,7 +196,10 @@ theObject.makeStructuring=function(){
 
 }
 
-
+theObject.onDrop=function(objectId,data){
+	this.fireEvent('object::'+this.id+'::drop',objectId);
+};
+theObject.onDrop.public=true;
 
 /**
 *	getAttributeSet

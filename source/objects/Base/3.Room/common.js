@@ -16,18 +16,12 @@ Room.register=function(type){
     // Registering the object
     IconObject=Modules.ObjectManager.getPrototype('IconObject');
     IconObject.register.call(this,type);
-    
-	this.registerAttribute('locked',{hidden:true});
-	this.registerAttribute('visible',{hidden:true});
-	this.registerAttribute('x',{hidden:true});
-	this.registerAttribute('y',{hidden:true});
-	this.registerAttribute('group',{hidden:true});
 
 	this.registerAttribute('chatMessages',{hidden: true, readonly:true, standard: []});
     
 	//Hide unnecessary attributes (at least for now)
     
-    this.registerAttribute('locked',{hidden:true});
+    this.registerAttribute('fixed',{hidden:true});
 	this.registerAttribute('visible',{hidden:true});
     this.registerAttribute('x',{hidden:true});
 	this.registerAttribute('y',{hidden:true});
