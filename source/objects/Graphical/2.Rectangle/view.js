@@ -21,11 +21,11 @@ Rectangle.draw=function(external){
 	var label=this.getAttribute('label');
 	if (!label) label='';
 	
-	rep.text.textContent=''+label;
+	rep.text.innerHTML='<table style="width:100%;"><tr><td style="height:'+this.getAttribute('height')+'px;vertical-align:'+this.getAttribute('vertical-align')+';text-align:'+this.getAttribute('horizontal-align')+'">'+label+'</td></tr></table>';
 	
-	$(rep.text).attr("font-size", this.getAttribute('font-size'));
-	$(rep.text).attr("font-family", this.getAttribute('font-family'));
-	$(rep.text).attr("fill", this.getAttribute('font-color'));
+	rep.text.style.fontSize=this.getAttribute('font-size')+'px';
+	rep.text.style.fontFamily=this.getAttribute('font-family');
+	rep.text.style.color=this.getAttribute('font-color');
 
 }
 
@@ -37,21 +37,14 @@ Rectangle.setViewWidth = function(value) {
 	var rep=this.getRepresentation();
 	$(rep).attr("width", value);
 	$(rep.rect).attr("width",value);
+	$(rep.text).attr("width",value);	
+	var table=rep.text.getElementsByTagName('td')[0];
 	
-	var textX=0;
-	var padding=5;
-	var textWidth=rep.text.getBoundingClientRect().width;
-	console.log(textWidth);
+	if (table){
 	
-	switch (this.getAttribute('horizontal-align')){
-		case 'left':textX=padding;break;
-		case 'center':textX=(value-textWidth)/2;break;
-		case 'right':textX=value-textWidth-padding;break;
+		table.style.textAlign=this.getAttribute('horizontal-align');
 	}
-	
-	console.log(textX);
-	$(rep.text).attr("x",textX);
-	
+		
 	GUI.adjustContent(this);
 }
 
@@ -63,22 +56,15 @@ Rectangle.setViewHeight = function(value) {
 	var rep=this.getRepresentation();
 	$(rep).attr("height", value);
 	$(rep.rect).attr("height",value);
+	$(rep.text).attr("height",value);
+	var table=rep.text.getElementsByTagName('td')[0];
 	
-	var textY=0;
-	var padding=5;
+	if (table){
 	
-	switch (this.getAttribute('vertical-align')){
-		
-		case 'above': textY=-padding;break;
-		case 'top': textY=this.getAttribute('font-size')+padding;break;
-		case 'middle': textY=(value)/2;break;
-		case 'bottom': textY=value-padding;break;
-		case 'under': textY=value+this.getAttribute('font-size');break;
-		
+		table.style.height=value+'px';
+		table.style.verticalAlign=this.getAttribute('vertical-align');
 	}
-	
-	$(rep.text).attr("y",textY);
-	
+		
 	GUI.adjustContent(this);
 }
 
@@ -94,7 +80,11 @@ Rectangle.createRepresentation = function(parent) {
 		10 //height
 	);
 	
-	rep.text=GUI.svg.text(rep, 0, 0, "Text");
+	rep.text=GUI.svg.other(rep,"foreignObject");
+	
+	var body = document.createElement("body");
+
+	$(rep.text).append(body);
 
 	rep.dataObject=this;
 
