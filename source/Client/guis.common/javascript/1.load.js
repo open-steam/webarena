@@ -155,7 +155,7 @@ GUI.loadGUI = function(step) {
  * start loading with step 1 when the document is ready
  */
 $(function() {
-	
+
 	GUI.loadGUI(1);
 	
 });

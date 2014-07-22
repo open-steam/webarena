@@ -41,6 +41,7 @@ GUI.showLogin = function(err) {
 			GUI.login();
 		}
 	});
+	
 }
 
 /**

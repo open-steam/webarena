@@ -171,6 +171,7 @@ ObjectManager.hasObject=function(obj){
 }
 
 ObjectManager.objectUpdate=function(data){
+	
     var object=ObjectManager.getObject(data.id);
 
     if (object){
@@ -251,24 +252,10 @@ ObjectManager.registerAttributeChangedFunction=function(theFunction){
     this.informGUI=theFunction;
 }
 
-ObjectManager.onContentUpdateListeners = [];
-ObjectManager.registerOnContentUpdateListener = function(listener) {
-	this.onContentUpdateListeners.push(listener);
-}
-
-ObjectManager.onContentUpdate = function(object) {
-	for (var i = 0; i < this.onContentUpdateListeners.length; ++i) {
-		this.onContentUpdateListeners[i](object);
-	}
-}
-
 ObjectManager.contentUpdate=function(data){
     var object=ObjectManager.getObject(data.id);
     object.contentUpdated();
 	var that = this;
-	window.setTimeout(function() {
-		that.onContentUpdate(object);
-	}, 500);
 }
 
 ObjectManager.remove=function(object){
@@ -293,6 +280,7 @@ ObjectManager.remove=function(object){
 
 ObjectManager.removeLocally=function(data){
     var object=ObjectManager.getObject(data.id);
+		
 	this.onObjectRemove(object);
 	
     //remove representation
@@ -370,37 +358,37 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 				if (GUI.couplingModeActive) {
 		    		GUI.defaultZoomPanState(index, true);
 		    	}
-
+					
 				if (callback) setTimeout(callback, 1200);
 			}
 		});
 	} else {
 		alert(GUI.translate("Room already displayed"));
 	}
-
 }
 
 ObjectManager.leaveRoom=function(roomid,index,serverCall) {
+	
 	var self = this;
 
 	if (!index) var index = 'right';
 	
 	if (serverCall) {
 		Modules.Dispatcher.query('leave',{'roomID':roomid,'index':index,'user':self.getUser()},function(error){
-
+		
 			if (error !== true) {
-
+		
 			    var objects = self.getObjects(index);
 			    for (var i in objects) {
 			        var obj = objects[i];
 			        ObjectManager.removeLocally(obj);
 			    }
-
-			    self.currentRoomID[index] = false;
-			    self.currentRoom[index] = false;
+				
+				self.currentRoomID[index] = false;
+				self.currentRoom[index] = false;
 			
 			}
-			
+				
 	    });
 	} else {
 		var objects = self.getObjects(index);

@@ -197,7 +197,7 @@ GUI.setupInspectorContent = function(inspector) {
 						widget.setMultipleValues(info.multipleValues);
 
 						GUI.inspectorElementsSetter[attribute] = widget.setValue;
-
+						
 				} else if (info.type == "list") {
 
 					var widget = element.addWidget("list");
@@ -252,6 +252,7 @@ GUI.setupInspectorContent = function(inspector) {
 				*/
 				
 				} else if (info.type == "metadata"){
+				
 					element.setValue(info.value);
 					element.setInactive();
 					

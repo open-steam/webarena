@@ -90,6 +90,7 @@ GUI.initResizeHandler = function() {
  * @param {webarenaObject} [webarenaObject] concrete object to check for
  */
 GUI.adjustContent = function(webarenaObject) {
+	
 	if (GUI.guiType != 'desktop') {
 	  return;
 	}

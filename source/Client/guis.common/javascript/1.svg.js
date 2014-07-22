@@ -183,3 +183,8 @@ GUI.getSvgMarkerId = function(type, color, up) {
 
 	
 }
+
+
+
+
+
