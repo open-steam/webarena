@@ -12,6 +12,9 @@ SimpleText.draw=function(external){
 	}
 	var rep=this.getRepresentation();
 	
+	this.drawPreview($(rep).find('.preview'));
+	this.drawContentPane($(rep).find('.objectcontent'));
+	/*
 	this.drawDimensions(external);
 
 	//$(rep).attr("fill", this.getAttribute('fillcolor'));
@@ -57,15 +60,99 @@ SimpleText.draw=function(external){
 		$(rep).find("text").attr("y", rep.getBBox().y*(-1));
 		
 	});
+	*/
 }
 
+SimpleText.drawPreview = function(previewContainer) {
+	var style =
+		'font-family: ' + this.getAttribute('font-family') + '; ' +
+		'font-size: ' + this.getAttribute("font-size") + 'px; ' +
+		'color: ' + this.getAttribute("font-color") + '; ' +
+		'text-align: left; ' +
+		'border: 1px solid #3E3E3E; ' +
+		'border-radius: 5px;';
+	
+	var content = this.getContentAsString();
+	
+	if (content == this.translate(this.currentLanguage, 'No text yet!')) {
+		content = "";
+	}
+	
+	previewContainer.find('#showroom')
+		.attr('style', style)
+		.html(content.replace(/"/g, "&quot;"));
+}
 
+SimpleText.drawContentPane = function(pane) {
+	var content = this.getContentAsString();
+	var placeholder = this.translate(this.currentLanguage, 'No text yet!');
+	
+	if (content == placeholder) {
+		content = "";
+	} else {
+		placeholder = "";
+	}
+	
+	pane.find('#simpleTextInput')
+		.attr('value', content.replace(/"/g, "&quot;"))
+		.attr('placeholder', placeholder);
+}
 
 SimpleText.createRepresentation = function(parent) {
 	
 	if (!this.isVisible()) {
 		return;
 	}
+	
+	var rep = document.createElement('div');
+	rep.setAttribute('id', this.getAttribute('id'));
+	$(parent).append(rep);
+	
+	$(rep).append(
+		'<div class="preview">' +
+			'<table style="width: 100%; font-size: 16px; text-align: center">' +
+				'<tr><td>Preview</td></tr>' +
+				'<tr><td id="showroom"></td></tr>' +
+			'</table>' +
+		'</div>'
+	);
+	
+	$(rep).append(
+		'<div class="objectcontent">' +
+			'<table style="width: 100%; font-size: 16px; text-align: center">' +
+				'<tr><td>' +
+					'<input id="simpleTextInput" type="text" class="input" name="textedit" value="" placeholder="" style="width: 100%; margin-top: 25px" />' +
+				'</td></tr>' +
+				'<tr><td>' +
+					'<input id="simpleTextSave" class="inputButton" style="margin-top: 10px; margin-bottom: 10px" type="button" value="Save Text" />' +
+				'</td></tr>' +
+			'</table>' +
+		'</div>'
+	);
+	
+	var that = this;
+	
+	var changeText = function() {
+		var value = $(rep).find('#simpleTextInput').val();
+		if (that.intelligentRename) {
+			that.intelligentRename(value);
+		}
+		that.setContent(value);
+	}
+	
+	$(rep).find('#simpleTextInput').bind("keyup", function() {
+		if (event.keyCode == 13) {
+			changeText();
+		}
+	});
+    $(rep).find('#simpleTextSave').bind('click', changeText);
+	
+	rep.dataObject = this;
+	
+	this.initGUI(rep);
+	return rep;
+	
+	/*
 	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
 	GUI.svg.text(rep, 0, 0, "Text");
@@ -78,7 +165,7 @@ SimpleText.createRepresentation = function(parent) {
 	this.initGUI(rep);
 	
 	return rep;
-	
+	*/
 }
 
 SimpleText.buildFormForEditableContent = function() {

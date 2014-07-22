@@ -1,16 +1,26 @@
 IconObject.createRepresentation = function(parent) {
+	if (!this.isVisible()) {
+		return;
+	}
+	var rep = document.createElement('div');
+	rep.setAttribute('id', this.getAttribute('id'));
+	$(parent).append(rep);
 	
-	var rep = GUI.svg.group(parent,this.getAttribute('id'));
+	$(rep).svg({settings: {width: '0px', height: '0px'}});
+	var svg = $(rep).svg('get');
+	var group = svg.group();
+	
+	// var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
 	var size = 32;
 	if (this.getAttribute("bigIcon")) {
 		size = 64;
 	} 
-	var rect = GUI.svg.rect(rep, 0, 0, size, size);
+	var rect = svg.rect(group, 0, 0, size, size);
 	$(rect).attr("fill", "transparent");
 	$(rect).addClass("borderRect");
 
-	var SVGImage=GUI.svg.image(rep, 0, 0, size, size, this.getStatusIcon());
+	var SVGImage = svg.image(group, 0, 0, size, size, this.getStatusIcon());
 
 	if (this.getIconText()) this.renderText(this.getIconText());
 	
@@ -26,8 +36,8 @@ IconObject.createRepresentation = function(parent) {
 
 
 IconObject.draw=function(external){
-	
-	var rep=this.getRepresentation();
+	var rep = this.getRepresentation();
+	var group = $(rep).find('g');
 
 	this.drawDimensions(external);
 
@@ -43,43 +53,43 @@ IconObject.draw=function(external){
 		//this.setViewHeight(32);
 	}
 
-	$(rep).attr("layer", this.getAttribute('layer'));
+	group.attr("layer", this.getAttribute('layer'));
 	
 	if (this.getIconText()) this.renderText(this.getIconText());
 
-	if (!$(rep).hasClass("selected")) {
-		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+	if (!group.hasClass("selected")) {
+		group.find("rect").attr("stroke", this.getAttribute('linecolor'));
+		group.find("rect").attr("stroke-width", this.getAttribute('linesize'));
 	}
 
-	if (!$(rep).hasClass("webarena_ghost")) {
+	if (!group.hasClass("webarena_ghost")) {
 		
 		if (this.selected) {
-			$(rep).css("visibility", "visible");
+			group.css("visibility", "visible");
 		} else {
 			
 			if (this.getAttribute("visible")) {
 				
 				if (external) {
-					if ($(rep).css("visibility") == "hidden") {
+					if (group.css("visibility") == "hidden") {
 						/* fade in */
-						$(rep).css("opacity", 0);
-						$(rep).css("visibility", "visible");
-						$(rep).animate({
+						group.css("opacity", 0);
+						group.css("visibility", "visible");
+						group.animate({
 							"opacity" : 1
 						}, {queue:false, duration:500});
 					}
 				} else {
-					$(rep).css("visibility", "visible");
+					group.css("visibility", "visible");
 				}
 				
 			} else {
 				
 				if (external) {
-					if ($(rep).css("visibility") == "visible") {
+					if (group.css("visibility") == "visible") {
 						/* fade out */
-						$(rep).css("opacity", 1);
-						$(rep).animate({
+						group.css("opacity", 1);
+						group.animate({
 							"opacity" : 0
 						}, {queue:false, 
 							complete:function() {
@@ -88,7 +98,7 @@ IconObject.draw=function(external){
 							});
 					}
 				} else {
-					$(rep).css("visibility", "hidden");
+					group.css("visibility", "hidden");
 				}
 				
 			}

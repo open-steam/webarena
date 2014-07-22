@@ -6,23 +6,28 @@ Plotter.draw = function(external) {
 	
 	// GeneralObject.draw.call(this, external);
 	
-	d3.select(rep).attr("transform", "translate(0, 0)");
+	// We need the group representing the svg plot.
+	var group = d3.select(rep).select('g');
+	group.attr('transform', 'translate(0, 0)');
+	// d3.select(rep).attr("transform", "translate(0, 0)");
 	
-	this.redraw(rep);
+	this.drawPlotter(group.select('g'));
+	this.drawContentPane($(rep).find('.objectcontent'));
 }
 
-/* Draws the content of the plotter. */
-Plotter.redraw = function(rep) {	
-	var chart = d3.select(rep).select("g");
+/* Draws the plotter. */
+Plotter.drawPlotter = function(chart) {
 	chart.selectAll("g").remove();
 	chart.selectAll("text").remove();
 	chart.selectAll("path").remove();
 	
-	if (!$(rep).hasClass("selected")) {
+	/*
+	if (!$(group).hasClass("selected")) {
 		chart
 			.attr("stroke", this.getAttribute("linecolor"))
 			.attr("stroke-width", this.getAttribute("linesize"));
 	}
+	*/
 	
 	// Get the content.
 	var content = this.getContentAsObject();
@@ -120,6 +125,109 @@ Plotter.redraw = function(rep) {
 		.attr("d", line);
 }
 
+Plotter.drawContentPane = function(pane) {
+	var content = this.getContentAsObject();
+    
+	var form = pane.find('#plotterForm');
+	if (form.length > 0) {
+		// Update the content pane.
+	} else {
+		// Create the content pane.
+		var form = $('<table id="plotterForm" style="width: 100%; font-size: 12px; text-align: center"></table>');
+		var xValues = $('<tr></tr>');
+		var yValues = $('<tr></tr>');
+		
+		var that = this;
+		
+		var userData = this.findUserData(content.users);
+		if (userData == null) {
+			var user = ObjectManager.getUser();
+			var userData = {name: user.username, color: user.color, values: []};
+			content.users.push(userData);
+			this.setContentAsJSON(content);
+			content = this.getContentAsObject();
+		}
+		
+		for (var i = 0; i < userData.values.length; ++i) {
+			var valuePair = $('<tr></tr>');
+			var valueX = $('<td style="text-align: right"><span style="display: table-cell; vertical-align: middle; text-align: right">x<sub>' + i + '</sub></span></td><td style="text-align: left"><input class="input" style="width: 100%; text-align: right" type="text" size="8" name="x' + i + '" value="' + userData.values[i][0] + '" /></td>');
+			var valueY = $('<td style="text-align: right"><span style="display: table-cell; vertical-align: middle; text-align: right">y<sub>' + i + '</sub></span></td><td style="text-align: left"><input class="input" style="width: 100%; text-align: right" type="text" size="8" name="y' + i + '" value="' + userData.values[i][1] + '" /></td>');
+			$(valuePair).append(valueX);
+			$(valuePair).append('<td style="width: 10%"></td>');
+			$(valuePair).append(valueY);
+			
+			$(valueX).bind('keyup', {pos: i, val: valueX}, function(event) {
+				var content = that.getContentAsObject();
+				var userData = that.findUserData(content.users);
+				userData.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
+				if (event.keyCode == 13) {
+					that.setContentAsJSON(content);
+				}
+			});
+			$(valueY).bind('keyup', {pos: i, val: valueY}, function(event) {
+				var content = that.getContentAsObject();
+				var userData = that.findUserData(content.users);
+				userData.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
+				if (event.keyCode == 13) {
+					that.setContentAsJSON(content);
+				}
+			});
+			
+			$(form).append(valuePair);
+		}
+		
+		var addEntry = $('<input class="inputButton" style="margin-top: 10px; margin-bottom: 10px" type="button" value="Eintrag hinzufuegen" />');
+		var row = $('<tr></tr>');
+		var col = $('<td colspan="5"></td>');
+		$(col).append(addEntry);
+		$(row).append(col);
+		$(form).append(row);
+		$(addEntry).bind('click', function() {
+			var content = that.getContentAsObject();
+			
+			var userData = that.findUserData(content.users);
+			var newIndex = userData.values.length;
+			var lastEntry;
+			if (newIndex == 0) {
+				lastEntry = [0, 0];
+			} else {
+				lastEntry = userData.values[newIndex - 1];
+			}
+			userData.values.push(lastEntry);
+			that.setContentAsJSON(content);
+			
+			var valuePair = $('<tr></tr>');
+			var valueX = $('<td align="center">x' + newIndex + '</td><td><input class="input" type="text" size="8" style="width: 100%; text-align: right" name="x' + newIndex + '" value="' + userData.values[newIndex][0] + '" /></td>');
+			var valueY = $('<td align="center">y' + newIndex + '</td><td><input class="input" type="text" size="8" style="width: 100%; text-align: right" name="y' + newIndex + '" value="' + userData.values[newIndex][1] + '" /></td>');
+			$(valuePair).append(valueX);
+			$(valuePair).append('<td style="width: 10%"></td>');
+			$(valuePair).append(valueY);
+			
+			$(valueX).bind('keyup', {pos: newIndex, val: valueX}, function(event) {
+				var content = that.getContentAsObject();
+				var userData = that.findUserData(content.users);
+				userData.values[event.data.pos][0] = parseFloat($(event.data.val).find('input[name=x' + event.data.pos + ']').val());
+				if (event.keyCode == 13) {
+					that.setContentAsJSON(content);
+				}
+			});
+			$(valueY).bind('keyup', {pos: newIndex, val: valueY}, function(event) {
+				var content = that.getContentAsObject();
+				var userData = that.findUserData(content.users);
+				userData.values[event.data.pos][1] = parseFloat($(event.data.val).find('input[name=y' + event.data.pos + ']').val());
+				if (event.keyCode == 13) {
+					that.setContentAsJSON(content);
+				}
+			});
+			
+			$(row).before(valuePair);
+		});
+		
+		pane.append(form);
+	}
+    
+}
+
 /* Creates the representation for the desktop version of the plotter. */
 Plotter.createRepresentation = function(parent) {
 	if (!this.isVisible()) {
@@ -129,6 +237,35 @@ Plotter.createRepresentation = function(parent) {
 		width = $(window).width() - margin.left - margin.right,
 		height = $(window).width() - margin.top - margin.bottom;
 	
+	var rep = document.createElement('div');
+	rep.setAttribute('id', this.getAttribute('id'));
+	//var rep = $('<div id="' + this.getAttribute('id') + '"></div>');
+	$(parent).append(rep);
+	
+	var group = d3.select(rep).append('svg')
+		.attr('width', $(window).width())
+		.attr('height', $(window).width())
+		.attr('style', 'background-color: white')
+		.append('g')
+		.attr('width', width + margin.left + margin.right)
+		.attr('height', height + margin.top + margin.bottom);
+	
+	var chart = group.append('g')
+		.attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+	
+	group.append('rect')
+		.attr('x', 0)
+		.attr('y', 0)
+		.attr('width', 10)
+		.attr('height', 10)
+		.attr('fill', 'transparent')
+		.attr('class', 'borderrect');
+	
+	$(rep).append('<div class="objectcontent"></div>');
+	
+	this.initGUI(rep);
+	return rep;
+	/*
 	var rep = d3.select("svg").append("g")
 		.attr("width", width + margin.left + margin.right)
 		.attr("height", height + margin.top + margin.bottom)
@@ -149,6 +286,7 @@ Plotter.createRepresentation = function(parent) {
 	
 	this.initGUI(rep.node());
 	return rep.node();
+	*/
 }
 
 Plotter.checkTransparency = function(attribute, value) {

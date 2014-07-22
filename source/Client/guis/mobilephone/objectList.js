@@ -6,7 +6,7 @@ ObjectList.initialized = false;
 
 ObjectList.settings = {
     visible: true,
-    openedCategories: []
+    openedCategory: null
 }
 
 ObjectList.init = function() {
@@ -114,17 +114,6 @@ ObjectList.update = function(object, key, newValue, local) {
 			$("#objectlist").accordion("destroy").empty();
 			ObjectList.init();
         }
-    }
-}
-
-ObjectList.addNew = function(object, category) {
-    if (object.onMobile && object.getAttribute('onMobile')) {
-        var categoryID = object.getCategory().replace(/\s/g, "");
-        var containerHeader = $("#objectlist").find("#" + categoryID);
-        if (containerHeader.length == 0) {
-            ObjectList.buildObjectContainer(category, categoryID);
-        }
-        ObjectList.buildObjectEntry(object, categoryID);
     }
 }
 

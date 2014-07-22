@@ -139,17 +139,17 @@ GeneralObject.getRepresentation=function(){
 		return;
 	}
 	if (!this.isGraphical) return;
+
+	var rep = document.getElementById(this.getAttribute('id'));
 	
-	var rep=document.getElementById(this.getAttribute('id'));
-	
-	if (!rep){
-		var parent = $('#room_'+ObjectManager.getIndexOfObject(this.getAttribute("inRoom")));
+	// Do we have no representation?
+	if (!rep) {
+		var parent = $('#objectview');
 		var rep = this.createRepresentation(parent);
 		this.representationCreated();
-		
 	}
 	
-	rep.dataObject=this;
+	rep.dataObject = this;
 	return rep;
 }
 

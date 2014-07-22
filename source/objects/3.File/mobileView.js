@@ -22,16 +22,17 @@ File.draw = function(external) {
 	}
 	
 	var rep = this.getRepresentation();
+	var group = $(rep).find('g');
 
     if (this.getIconText()) {
         this.renderText(this.getIconText());
     } else {
-        $(rep).find("text").remove();
+        group.find("text").remove();
     }
 	
-	if (!$(rep).hasClass("selected")) {
-		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+	if (!group.hasClass("selected")) {
+		group.find("rect").attr("stroke", this.getAttribute('linecolor'));
+		group.find("rect").attr("stroke-width", this.getAttribute('linesize'));
 	}
 	
 	this.createPixelMap();
@@ -54,13 +55,13 @@ File.draw = function(external) {
 	
 	var scaledWidth = this.getAttribute("width") * scale;
 	var scaledHeight = this.getAttribute("height") * scale;
-	$("svg").attr("width", scaledWidth);
-	$("svg").attr("height", scaledHeight);
-	$(rep).attr("width", scaledWidth);
-	$(rep).attr("height", scaledHeight);
-	$(rep).find("image").attr("width", scaledWidth);
-	$(rep).find("image").attr("height", scaledHeight);
-	$(rep).attr("transform", "translate(0, 0)");// + ($(window).width() / 2 - scaledWidth / 2) + ", " + ($(window).width() / 2 - scaledHeight / 2) + ")");
+	$(rep).find('svg').attr("width", scaledWidth);
+	$(rep).find('svg').attr("height", scaledHeight);
+	group.attr("width", scaledWidth);
+	group.attr("height", scaledHeight);
+	group.find("image").attr("width", scaledWidth);
+	group.find("image").attr("height", scaledHeight);
+	group.attr("transform", "translate(0, 0)");// + ($(window).width() / 2 - scaledWidth / 2) + ", " + ($(window).width() / 2 - scaledHeight / 2) + ")");
 	//$(rep).attr("height", this.getViewHeight() / 2);
 	//$(rep).attr("height", this.getViewHeight() / 2);
 }

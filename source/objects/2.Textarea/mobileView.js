@@ -12,6 +12,9 @@ Textarea.draw=function(external){
 	}
 	var rep=this.getRepresentation();
 	
+	this.drawPreview($(rep).find('.preview'));
+	this.drawContentPane($(rep).find('.objectcontent'));
+	/*
 	this.drawDimensions(external);
 	
 	
@@ -68,8 +71,46 @@ Textarea.draw=function(external){
 	});
 	
 	this.updateInnerHeight();
+	*/
 }
 
+Textarea.drawPreview = function(previewContainer) {
+	var style =
+		'font-family: ' + this.getAttribute("font-family") + '; ' +
+		'font-size: ' + this.getAttribute("font-size") + 'px; ' +
+		'color: ' + this.getAttribute("font-color") + '; ' +
+		'text-align: left; ' +
+		'border: 1px solid #3E3E3E; ' +
+		'border-radius: 5px;';
+	
+	var content = this.getContentAsString();
+	
+	if (content == this.translate(this.currentLanguage, 'No text yet!')) {
+		content = "";
+	}
+	
+	var showroom = previewContainer.find('#showroom');
+	showroom.attr('style', style);
+	
+	showroom
+		.find('div > div')
+		.html(htmlEncode(content.replace(/"/g, "&quot;")));
+}
+
+Textarea.drawContentPane = function(pane) {
+	var content = this.getContentAsString();
+	var placeholder = this.translate(this.currentLanguage, 'No text yet!');
+	
+	if (content == placeholder) {
+		content = "";
+	} else {
+		placeholder = "";
+	}
+	
+	pane.find('#textareaInput')
+		.attr('placeholder', placeholder)
+		.html(content);
+}
 
 Textarea.updateInnerHeight = function() {
 	
@@ -83,6 +124,53 @@ Textarea.updateInnerHeight = function() {
 
 Textarea.createRepresentation = function(parent) {
 	
+	if (!this.isVisible()) {
+		return;
+	}
+	
+	var rep = document.createElement('div');
+	rep.setAttribute('id', this.getAttribute('id'));
+	$(parent).append(rep);
+	
+	$(rep).append(
+		'<div class="preview">' +
+			'<table style="width: 100%; font-size: 16px; text-align: center">' +
+				'<tr><td>Preview</td></tr>' +
+				'<tr><td id="showroom"><div class="overfloating" style="height: 100px"><div></div></div></td></tr>' +
+			'</table>' +
+		'</div>'
+	);
+	
+	$(rep).append(
+		'<div class="objectcontent">' +
+			'<table style="width: 100%; font-size: 16px; text-align: center">' +
+				'<tr><td>' +
+					'<textarea id="textareaInput" class="input" name="textedit" rows="6" placeholder="" style="width: 100%; margin-top: 25px"></textarea>' +
+				'</td></tr>' +
+				'<tr><td>' +
+					'<input id="textareaSave" class="inputButton" style="margin-top: 10px; margin-bottom: 10px" type="button" value="Save Text" />' +
+				'</td></tr>' +
+			'</table>' +
+		'</div>'
+	);
+	
+	var that = this;
+	
+	var changeText = function() {
+		var value = $(rep).find('#textareaInput').val();
+		if (that.intelligentRename) {
+			that.intelligentRename(value);
+		}
+		that.setContent(value);
+	}
+	
+	$(rep).find('#textareaSave').bind('click', changeText);
+	
+	rep.dataObject = this;
+	
+	this.initGUI(rep);
+	return rep;
+	/*
 	var rep = GUI.svg.other(parent,"foreignObject");
 
 	rep.dataObject=this;
@@ -97,7 +185,7 @@ Textarea.createRepresentation = function(parent) {
 	this.initGUI(rep);
 	
 	return rep;
-	
+	*/
 }
 
 Textarea.buildFormForEditableContent = function() {
