@@ -79,8 +79,9 @@ GUI.loadGUI = function(step) {
 			if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
 			if (!GUI.loaded) GUI.initUndoByKeyboard();
 		
-			if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
-
+		if (!GUI.loaded) GUI.initCursorDeletionByKeyboard(); //handle Escape-Key events, currently only deletion of cursors which represents objects
+		
+		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
 
 			if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown		
 		
@@ -143,6 +144,7 @@ GUI.loadGUI = function(step) {
 		
 		if (GUI.guiType == 'desktop') {
 			ObjectManager.paintingUpdate();
+			GUI.createLinkRepresentations(); //create the representations of the existing links in the new room
 		}
 	
 	} else {

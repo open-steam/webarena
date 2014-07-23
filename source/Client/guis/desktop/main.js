@@ -29,44 +29,52 @@ GUI.uploadFile=function(object,message){
         var filename = $(this).val().replace("C:\\fakepath\\", "");
         object.setAttribute('name', filename, true);
 
+		/* Restrict the uploaded file size, the maximum filesize is spezified in config.default */
+		var filesize = form.files[0].size;  
+		if(Modules.Config.maxFilesizeInMB*1000000<filesize){
+			alert('This file is too large. You can only upload files with a maximum size of '+Modules.Config.maxFilesizeInMB+' megabyte!'); 
+		}
+		else{
+	
+			var xhr = new XMLHttpRequest();
+			xhr.upload.addEventListener("progress", function(evt) {
 
-        var xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener("progress", function(evt) {
+				if (evt.lengthComputable) {
+					var percentComplete = Math.round(evt.loaded * 100 / evt.total);
+					$(progress).progressbar("value", percentComplete);
+				} else {
+					$(progress).progressbar("destroy");
+					$(progress).html("unable to compute progress");
+				}
 
-            if (evt.lengthComputable) {
-                var percentComplete = Math.round(evt.loaded * 100 / evt.total);
-                $(progress).progressbar("value", percentComplete);
-            } else {
-                $(progress).progressbar("destroy");
-                $(progress).html("unable to compute progress");
-            }
+			}, false);
 
-        }, false);
+			xhr.addEventListener("load", function() {
+				//upload complete
+				$(uploadDialog).dialog("close");
+			}, false);
+			xhr.addEventListener("error", function() {
+				//failed
+				alert("failed");
+			}, false);
+			xhr.addEventListener("abort", function() {
+				//canceled
+				alert("cancel");
+			}, false);
+			xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
+			xhr.send(fd);
 
-        xhr.addEventListener("load", function() {
-            //upload complete
-            $(uploadDialog).dialog("close");
-        }, false);
-        xhr.addEventListener("error", function() {
-            //failed
-            alert("failed");
-        }, false);
-        xhr.addEventListener("abort", function() {
-            //canceled
-            alert("cancel");
-        }, false);
-        xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
-        xhr.send(fd);
+			var dialogButtons = {};
+			dialogButtons[GUI.translate("cancel")] = function() {
+				xhr.abort();
+				$(this).dialog("close");
+			}
 
-        var dialogButtons = {};
-        dialogButtons[GUI.translate("cancel")] = function() {
-            xhr.abort();
-            $(this).dialog("close");
-        }
+			$(uploadDialog).dialog("option", "buttons", dialogButtons);
+		
+		}
 
-        $(uploadDialog).dialog("option", "buttons", dialogButtons);
-
-    });
+	});
 
     $(uploadDialog).append(form);
 

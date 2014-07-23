@@ -17,7 +17,6 @@ SocketServer.init = function (theModules) {
 	var Dispatcher = Modules.Dispatcher;
 	var UserManager = Modules.UserManager;
 	var io = require('socket.io').listen(Modules.WebServer.server);
-	io.set('log level', 1);
 
 	io.sockets.on('connection', function (socket) {
 		UserManager.socketConnect(socket);

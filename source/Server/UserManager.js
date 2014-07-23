@@ -125,7 +125,7 @@ UserManager.login=function(socketOrUser,data){
 				"#c46b1d",
 			];
 			
-			var userColor = colors[Math.floor(Math.random() * colors.length+1)];
+			var userColor = colors[Math.floor(Math.random() * colors.length)];
 		
 			var userObject=require('./User.js');
 			connection.user=new userObject(this);

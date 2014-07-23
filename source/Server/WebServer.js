@@ -33,7 +33,7 @@ WebServer.init = function (theModules) {
 
 
 
-	app.listen(global.config.port);  // start server (port set in config)
+	app.listen(Modules.config.port);  // start server (port set in config)
 
 	function handler(req, res) {
 		var url = req.url.replace('%20', ' ');
@@ -196,6 +196,43 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
+		// Category Icons
+		if (url.substr(0, 14) == '/categoryIcons') {
+
+			try {
+
+				var category = url.substr(15);
+
+				var path = __dirname + '/../objects/' + category + '/icon.png';
+				
+				if (!fs.existsSync(path)) {
+					res.writeHead(404);
+					return res.end('Object not found ' + category);
+				}
+
+				fs.readFile(path,
+						function (err, data) {
+							if (err) {
+								res.writeHead(404);
+								Modules.Log.warn('Icon file is missing for ' + objectType + " (" + url + ")");
+								return res.end('Icon file is missing for ' + objectType);
+							}
+
+							res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+							res.end(data);
+						});
+
+			} catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
+
+			return;
+		}
+
+
 		// setContent
 
 		else if (url.substr(0, 11) == '/setContent' && req.method.toLowerCase() == 'post') {
@@ -227,15 +264,15 @@ WebServer.init = function (theModules) {
 				var util = require('util');
 
 				var form = new formidable.IncomingForm();
-
+					
 				form.parse(req, function (err, fields, files) {
-
-					object.copyContentFromFile(files.file.path, function () {
-
+													
+					object.copyContentFromFile(files.file.path, function() {
+														
 						object.set('hasContent', true);
 						object.set('contentAge', new Date().getTime());
 						object.set('mimeType', files.file.type);
-
+								
 						/* check if content is inline displayable */
 						if (Modules.Connector.isInlineDisplayable(files.file.type)) {
 
@@ -267,19 +304,28 @@ WebServer.init = function (theModules) {
 							res.writeHead(200);
 							res.end();
 						}
-
-
+						
+						
+						/* Restrict the uploaded file size, the maximum filesize is spezified in the config */
+						var filesize = files.file.size; 
+						if(Modules.Config.maxFilesizeInMB*1000000<filesize){
+							fs.unlinkSync(files.file.path);
+							
+							//delete the object after waiting for a couple of time to avoid deleting an unfinished object
+							setTimeout(function(){Modules.ObjectManager.remove(object)},3000);		
+						}	
+														
 					});
-
+												
 				});
-
+				
 			} catch (err) {
 				res.writeHead(500, {"Content-Type": "text/plain"});
 				res.write("500 Internal Server Error");
 				res.end();
 				Modules.Log.error(err);
 			}
-
+	
 			return;
 		}
 
@@ -295,15 +341,27 @@ WebServer.init = function (theModules) {
 				var mimeType = 'image/png';
 				
 				if(Modules.Connector.getPaintingStream !== undefined){
+					
+
 					var objStream = Modules.Connector.getPaintingStream(roomID, user, context);
-					objStream.pipe(res);
-					objStream.on("end", function(){
-						res.writeHead(200, {
-							'Content-Type': mimeType,
-							'Content-Disposition': 'inline; filename="' + user + '.png"'
-						});
+					
+					if ( objStream == undefined )
+					{
+						res.writeHead(404, {"Content-Type": "text/plain"});
+						res.write("404 Image not found");
 						res.end();
-					})
+					}
+					else
+					{
+						objStream.pipe(res);
+						objStream.on("end", function(){
+							res.writeHead(200, {
+								'Content-Type': mimeType,
+								'Content-Disposition': 'inline; filename="' + user + '.png"'
+							});
+							res.end();
+						})
+					}
 				} else {
 					res.writeHead(200, {
 							'Content-Type':'text/plain'
@@ -329,7 +387,7 @@ WebServer.init = function (theModules) {
 		else if (url.substr(0, 11) == '/getContent') {
 
 			try {
-
+			
 				var ids = url.substr(12).split('/');
 				var roomID = ids[0];
 				var objectID = ids[1];
@@ -512,6 +570,32 @@ WebServer.init = function (theModules) {
 
 		}
 
+		else if (url == '/time'){
+			var currentdate = new Date(); 
+			var etag=currentdate.getTime();
+			if (req.headers['if-none-match'] === etag) {
+					res.statusCode = 304;
+					res.end();
+			} else {
+				var datetime = "Time: " + currentdate.getDate() + "/"
+				                + (currentdate.getMonth()+1)  + "/" 
+				                + currentdate.getFullYear() + " @ "  
+				                + currentdate.getHours() + ":"  
+				                + currentdate.getMinutes() + ":" 
+				                + currentdate.getSeconds();
+				res.writeHead(200, {'ETag': etag});
+				res.end(datetime);
+			}
+		}
+		
+		else if (url == '/config.js'){
+			var obj = JSON.stringify(Modules.ConfigClient);
+									
+			data="\"use strict\";"+"\n"+"\n"+"var Config="+obj+';';	
+			
+			res.end(data);
+		}
+
 		// objects
 
 		else if (url == '/objects') {
@@ -536,12 +620,15 @@ WebServer.init = function (theModules) {
 			// plain files
 
 			try {
-
+			
 				var urlParts = url.split('/');
-
-				var filebase = __dirname + '/../Client';
+				
+				var filebase;
+				
+				filebase = __dirname + '/../Client';
+				
 				var filePath = filebase + url;
-
+				
 				if (urlParts.length > 2) {
 					switch (urlParts[1]) {
 						case 'Common':
@@ -569,6 +656,7 @@ WebServer.init = function (theModules) {
 
 									if (req.headers['if-none-match'] === etag) {
 										res.statusCode = 304;
+										
 										res.end();
 									} else {
 										var contentType = false;
@@ -592,8 +680,7 @@ WebServer.init = function (theModules) {
 											head['Content-Length'] =  data.length
 										}
 										res.writeHead(200, head);
-
-
+										
 										if (url.search(".html") !== -1) {
 											data = data.toString('utf8');
 											var position1 = data.search('<serverscript');

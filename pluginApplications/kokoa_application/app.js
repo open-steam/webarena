@@ -17,7 +17,8 @@ var VerwaltungsApp = {
 };
 
 
-var ContextObject = config.application_context_user;
+var ContextObject = {};
+ContextObject.user = config.application_context_user;
 
 
 /**
@@ -41,24 +42,33 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
         var transformTransportTargets = function (items) {
             if(items){
                 items.forEach(function (item) {
-                    var regex = /(^[a-zA-Z0-9]+)_/;
                     var toTransfrom;
 
                     if(item.getType() == "TunnelEndpoint"){
                         toTransfrom = item.getAttribute("source");
                     } else if(item.getType() == "ObjectTransport"){
                         toTransfrom = item.getAttribute("target");
+                    } else {
+                        //only "TunnelEndpoint" and "ObjectTransport" need transformation
+                        return;
                     }
 
-                    var match = regex.exec( toTransfrom ) ;
-
-                    //links to overview rooms don't need to be rewired
-                    if(match[1] == "Overview") return;
-
-                    if(match[1] == "Fakultaet"){
+                    //check if connection to overview-room
+                    if(toTransfrom.indexOf("Overview") !== -1){
+                      if(toTransfrom.indexOf("Fakultaet")!== -1){
+                          var rewiredTarget = "Overview_Instance_Fakultaet" + faculty;
+                      } else{
+                          //do nothing
+                          var rewiredTarget = toTransfrom;
+                      }
+                    }
+                    //if link to faculty, we have to specify the faculty
+                    else if(toTransfrom == "Fakultaet"){
                         var rewiredTarget = "Fakultaet" + faculty + that.proceedingRoomInstanceInfix + proceedingID;
-                    } else {
-                        var rewiredTarget = match[1] + that.proceedingRoomInstanceInfix + proceedingID;
+                    }
+                    //e.g. Dezernat1 -> Dezernat1_Berunfungsverfahren_SOMEID
+                    else {
+                        var rewiredTarget = toTransfrom + that.proceedingRoomInstanceInfix + proceedingID;
                     }
 
 
@@ -79,7 +89,7 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
         //send command to copy the room
         var groupId = new Date().getTime();
 
-        that.eventBus.emit("copyRoom", {
+        var copyEventData = {
             fromRoom: part + that.proceedingRoomTemplateSuffix,
             toRoom: part + that.proceedingRoomInstanceInfix + instanceId,
             parentRoom: that.overviewRoomInstancePrefix + part,
@@ -88,7 +98,14 @@ VerwaltungsApp.initProceedingInstance = function (faculty) {
                 rewireObjectTransports( part + that.proceedingRoomInstanceInfix + instanceId , instanceId );
             },
             context: ContextObject
-        });
+        }
+
+        //All faculties share the same template-room
+        if(part.indexOf("Fakultaet") !== -1 ){
+            copyEventData.fromRoom = "Fakultaet" + that.proceedingRoomTemplateSuffix;
+        }
+
+        that.eventBus.emit("copyRoom", copyEventData);
 
         var objectDefaults = {
             roomID: that.overviewRoomInstancePrefix + part,
@@ -182,8 +199,7 @@ VerwaltungsApp.initTemplates = function () {
     var proceedingRoomTemplateSuffix = that.proceedingRoomTemplateSuffix;
 
     //all faculties + Dezernat 1/4
-    var participants = this.getFacultiesWithPrefix();
-    participants = participants.concat(["Dezernat1", "Dezernat4"]);
+    var participants = ["Dezernat1", "Dezernat4", "Fakultaet"];
     var proceedingRoomTemplates = participants.map(function (participant) {
         return participant + proceedingRoomTemplateSuffix;
     });

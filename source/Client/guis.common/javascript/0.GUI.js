@@ -335,29 +335,60 @@ GUI.initObjectDeletionByKeyboard = function() {
 			if (event.which == 8 || event.which == 46) {
 
 				event.preventDefault();
+				
+				//the cursor shows an object --> change the cursor to the default one	
+				var cursor = $("body").css('cursor');
+				if(cursor != "auto"){ 
+						
+					$("body").css( 'cursor', 'auto' );
+				}
+				else{
+					var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
 
-				var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
+					if (result) {
+						/* delete selected objects */
+						$.each(ObjectManager.getSelected(), function(key, object) {
 
-				if (result) {
-					/* delete selected objects */
-					$.each(ObjectManager.getSelected(), function(key, object) {
+							if ($(object.getRepresentation()).data("jActionsheet")) {
+								$(object.getRepresentation()).data("jActionsheet").remove();
+							}
 
-						if ($(object.getRepresentation()).data("jActionsheet")) {
-							$(object.getRepresentation()).data("jActionsheet").remove();
-						}
+							object.deleteIt();
 
-						object.deleteIt();
-
-					});
+						});
+					}
 				}
 			}
-			
 		}
 		
 	});
 	
 }
 
+
+/**
+ * add event handler for removing the cursor which represents an object by pressing the Escape-key
+ */
+GUI.initCursorDeletionByKeyboard = function() {
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.which == 27) {
+
+				event.preventDefault();
+				
+				//remove objects from cursor 
+				var cursor = $("body").css('cursor');
+				if(cursor != "auto"){ 
+						
+					$("body").css( 'cursor', 'auto' );
+				}
+			}
+		}
+	});
+}
 
 
 /**
@@ -438,6 +469,91 @@ GUI.initMouseHandler = function() {
 			var contentPosition = $("#content").offset();
 			
 			var temp=event.target;
+				
+			//object creation via object symbols
+			var cursor = $("body").css('cursor');	
+			if(cursor != "auto"){
+				
+				var t = cursor.split("/");
+				var s = t[4].split(")");
+				var r = s[0];
+				
+				//special case for Firefox
+				if(r.charCodeAt(r.length-1)==34){
+					r = r.slice(0,r.length-1);
+				}
+				
+				var proto = ObjectManager.getPrototype(r);
+			
+				GUI.startNoAnimationTimer();
+						
+				proto.create({
+						"x" : event.pageX-30, 
+						"y" : event.pageY-65
+				});
+			
+				$("body").css( 'cursor', 'auto' );			
+			}
+			
+			//after selecting the arrow startpoint change the cursor text to arrow endpoint
+			if(GUI.getCursorText()==GUI.translate('Choose Arrow-Startpoint')){
+				GUI.setCursorText(GUI.translate("Choose Arrow-Endpoint"));
+							
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', position.left+','+position.top);
+				
+			}
+			
+			//after selecting the line startpoint change the cursor text to line endpoint
+			if(GUI.getCursorText()==GUI.translate('Choose Line-Startpoint')){
+				GUI.setCursorText(GUI.translate("Choose Line-Endpoint"));
+
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', position.left+','+position.top);	
+			}
+			
+			//after selecting the arrow endpoint create the arrow and set the position with GUI.setFinalPosition
+			if(GUI.getCursorText()==GUI.translate('Choose Arrow-Endpoint')){
+				GUI.setCursorText("");
+
+				var proto = ObjectManager.getPrototype('Arrow');
+			
+				GUI.startNoAnimationTimer();
+				
+				var title = $('#besideMouse').attr('title');
+				
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', title+','+position.left+','+position.top);
+										
+				var attributes;
+				var content;			
+					
+				ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);	
+			}
+			
+			//after selecting the line endpoint create the line and set the position with GUI.setFinalPosition
+			if(GUI.getCursorText()==GUI.translate('Choose Line-Endpoint')){
+				GUI.setCursorText("");
+
+				var proto = ObjectManager.getPrototype('Line');
+			
+				GUI.startNoAnimationTimer();
+				
+				var title = $('#besideMouse').attr('title');
+				
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', title+','+position.left+','+position.top);
+										
+				var attributes;
+				var content;			
+					
+				ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);
+			}
+			
 			
 			while (temp && !temp.dataObject) {
 				temp=$(temp).parent()[0];
@@ -513,6 +629,85 @@ GUI.initMouseHandler = function() {
 }
 
 
+
+
+/**
+ * set the final position of an arrow or line after creation via the selecting-points-method
+ */
+GUI.setFinalPosition = function(object){
+	
+	var title = $('#besideMouse').attr('title');
+	
+	var point = title.split(',');
+	
+	var x1 = parseInt(point[0])-15;
+	var y1 = parseInt(point[1])-35; 
+	var x2 = parseInt(point[2])-15;
+	var y2 = parseInt(point[3])-35; 
+		
+	var direction1;
+	var direction2;	
+	
+	var x;
+	var y;
+	var width;
+	var height;
+	
+	//calculate x,y, width and height
+	if(x1>x2){
+		x = x2;
+		width = x1-x2;
+		direction1 = false;
+	}
+	else{
+		x = x1;
+		width = x2-x1
+		direction1 = true;
+	}
+	if(y1>y2){
+		y = y2;
+		height = y1-y2;
+		direction2 = false;
+	}
+	else{
+		y = y1;
+		height = y2-y1;
+		direction2 = true;
+	}
+	
+	//calculate and set direction
+	if(direction1){
+		if(direction2){
+			object.setAttribute("direction", 1);
+		}
+		else{
+			object.setAttribute("direction", 4);
+		}
+	}
+	else{
+		if(direction2){
+			object.setAttribute("direction", 2);
+		}
+		else{
+			object.setAttribute("direction", 3);
+		}
+	}
+	
+	//set x,y, width and height
+	object.setAttribute('x', x);
+	object.setAttribute('y', y);
+	object.setAttribute('width', width);
+	object.setAttribute('height', height);
+	object.setViewWidth(width);
+	object.setViewHeight(height); 
+	
+	$('#besideMouse').attr('title', "");
+	
+}
+
+
+
+
 /**
  * get the topmost object at point x,y which is visible
  * @param {int} x x position
@@ -538,10 +733,6 @@ GUI.getObjectAt = function(x,y) {
 	return clickedObject;
 	
 }
-
-
-
-
 
 
 /**
@@ -747,4 +938,22 @@ GUI.startNoAnimationTimer = function() {
  */
 GUI.confirm = function(message) {
 	return confirm(message);
+}
+
+/**
+ * set text which is displayed near to the cursor
+ */
+GUI.setCursorText = function(text){
+	$(document).mousemove(function(e){
+		var cpos = { top: e.pageY + 15, left: e.pageX + 15 };
+		$('#besideMouse').offset(cpos);
+		$('#besideMouse').html(text);	
+	});
+}
+
+/**
+ * get text which is displayed near to the cursor
+ */
+GUI.getCursorText = function(){
+	return $('#besideMouse').html();	
 }

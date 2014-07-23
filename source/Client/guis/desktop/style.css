@@ -88,6 +88,18 @@ body {
 	padding-right: 10px;
 }
 
+#header>div.header_right>span.header_label {
+	display: block;
+	margin-right: 20px;
+	float: left;
+	padding: 6px;
+	position: relative;
+	font-size: 10px;
+	top: 8px;
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
 #header>div.header_right>span.button_save {
 	background-color: #e5e31f;
 	color:black;
@@ -748,6 +760,11 @@ input {
 .couplingPlusMinus {
 	fill:  #fff;
 	pointer-events: none;
+}
+
+#header>div.header_left>span.button_save {
+	background-color: #e5e31f;
+	color:black;
 }
 /* end coupling */
 

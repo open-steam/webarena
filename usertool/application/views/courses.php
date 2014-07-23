@@ -2,10 +2,10 @@
     <br></br>
     <br></br>
     <ul class="nav nav-tabs">
-        <li class="active"><a href="<?php echo $this->config->site_url("courses"); ?>">Meine Kurse</a></li>
-        <li><a href="<?php echo $this->config->site_url("courses/all"); ?>">Aktive Kurse</a></li>
+        <li class="active"><a href="<?php echo $this->config->site_url("courses"); ?>"><?php echo $this->gettext->getText("Meine Kurse"); ?></a></li>
+        <li><a href="<?php echo $this->config->site_url("courses/all"); ?>"><?php echo $this->gettext->getText("Aktive Kurse"); ?></a></li>
         <?php if ($is_admin) { ?>
-            <li><a href="<?php echo $this->config->site_url("courses/create"); ?>">Kurs erstellen</a></li>
+            <li><a href="<?php echo $this->config->site_url("courses/create"); ?>"><?php echo $this->gettext->getText("Kurs erstellen"); ?></a></li>
         <?php } ?>
     </ul>
     <input type="hidden" id="baseURL" value="<?php echo $this->config->base_url(); ?>">
@@ -19,7 +19,7 @@
                 <table id="verifiedTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:27%;">Kursname</th>
+                            <th style="width:27%;"><?php echo $this->gettext->getText("Kursname"); ?></th>
                             <th style="width:27%;">Beschreibung</th>
                             <th style="width:27%;">Rechte</th>
                             <th style="width:19%;"></th>
@@ -66,7 +66,7 @@
                 <table id="appliedTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:40%;">Kursname</th>
+                            <th style="width:40%;"><?php echo $this->gettext->getText("Kursname"); ?></th>
                             <th style="width:60%;">Beschreibung</th>
                         </tr>
                     </thead>
@@ -99,11 +99,11 @@
             }
             if (count($user->getCoursesFrozen()) > 0) {
                 ?>
-                <b>Eingefrorene Kurse</b>
+                <b> <?php echo $this->gettext->getText("Eingefrorene Kurse"); ?></b>
                 <table id="verifiedTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
                     <thead>
                         <tr>
-                            <th style="width:27%;">Kursname</th>
+                            <th style="width:27%;"><?php echo $this->gettext->getText("Kursname"); ?></th>
                             <th style="width:27%;">Beschreibung</th>
                             <th style="width:27%;">Rechte</th>
                             <th style="width:19%;"></th>
@@ -147,11 +147,11 @@
     if ($is_admin && $hasApplied) {
         ?>
         <hr>
-        <b>Schwebende Anmeldungen in verwalteten Kursen</b>
+        <b>Schwebende Anmeldungen in verwalteten <?php echo $this->gettext->getText("Kursen"); ?></b>
         <table id="appliedAdminTable" class="table table-striped table-bordered tablesorter" style="width:100%;">
             <thead>
                 <tr>
-                    <th style="width:50%;">Kurs</th>
+                    <th style="width:50%;"><?php echo $this->gettext->getText("Kurs"); ?></th>
                     <th style="width:50%;">Benutzer</th>
                     <th></th>
                     <th></th>

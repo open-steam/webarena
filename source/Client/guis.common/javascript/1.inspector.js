@@ -268,6 +268,28 @@ GUI.setupInspectorContent = function(inspector) {
 					var widget = false;
 					
 					GUI.inspectorElementsSetter[attribute] = element.setValue;
+				}else if(info.type == "Hyperlink"){
+			
+					element.setValue(GUI.translate('choose'));
+					
+					element.setInactive();
+					
+					$(element.getDOM()).children("div").css({
+						"overflow": "hidden",
+						"display": "block",
+						"height": "18px",
+						"width": "110px",
+						"text-decoration": "underline",
+						"cursor": "pointer"
+
+					}).attr("title", "choose").bind( "click", function() {
+						info.linkFunction(object);
+					});
+					
+					var widget = false;
+					
+					GUI.inspectorElementsSetter[attribute] = element.setVal;
+			
 				}else {
 			
 					element.setValue(info.value);

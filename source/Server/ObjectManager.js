@@ -253,55 +253,67 @@ ObjectManager.createObject = function (roomID, type, attributes, content, contex
  * @returns {Array} - filenames of enabled object types
  */
 ObjectManager.getEnabledObjectTypes = function () {
-	var files = fs.readdirSync(__dirname + '/../objects');
-
-	files.sort(function (a, b) {
-		return parseInt(a) - parseInt(b);
-	});
-
-	var whiteList = {};
-	var blackList = {};
-	var hasWhiteList = false;
-
-	for (var i in Modules.config.objectWhitelist) {
-		hasWhiteList = true;
-		whiteList[Modules.config.objectWhitelist[i]] = true;
+	
+	
+	if (this.enabledObjectTypeCache) return this.enabledObjectTypeCache;
+		
+	var configCategories=Modules.config.enabledCategories;
+	var categories=[];
+	
+	if (!configCategories){
+		console.log ('No object categories enabled in configuration file!');
 	}
-
-	for (var i in Modules.config.objectBlacklist) {
-		blackList[Modules.config.objectBlacklist[i]] = true;
+	categories.push('Base');
+	
+	for (var i in configCategories){
+		var temp=configCategories[i];
+		if (temp!=='Base') categories.push(temp);
 	}
-
-	if (hasWhiteList) {
-		whiteList.GeneralObject = true;
-		whiteList.Room = true;
-		whiteList.IconObject = true;
-		whiteList.UnknownObject = true;
-		whiteList.ImageObject = true;
-	}
-
-	var result = [];
-
-	files.forEach(function (filename) {
-		var fileinfo = filename.split('.');
-		var index = fileinfo[0];
-		var objName = fileinfo[1];
-
-		if (!index) return;
-		if (!objName) return;
-
-		if (hasWhiteList && !whiteList[objName]) {
-			console.log('Type ' + objName + ' not whitelisted.');
-			return;
+	
+	var result=[];
+	
+	for (var i in categories){
+		var category=categories[i];
+		var path=__dirname + '/../objects/'+category;
+		if (!fs.existsSync(path) || !fs.lstatSync(path).isDirectory()) {
+			console.log('Config error: Category '+category+' not found!');
+			continue;
+		} else {
+			var files = fs.readdirSync(__dirname + '/../objects/'+category);
+	
+			files.sort(function (a, b) {
+				return parseInt(a) - parseInt(b);
+			});
+			
+			var blackList = {};
+			
+			for (var i in Modules.config.objectBlacklist) {
+				blackList[Modules.config.objectBlacklist[i]] = true;
+			}
+			
+			files.forEach(function (filename) {
+				
+				var path=__dirname + '/../objects/'+category+'/'+filename;
+		        if (!fs.lstatSync(path).isDirectory()) return;
+				
+				var fileinfo = filename.split('.');
+				var index = fileinfo[0];
+				var objName = fileinfo[1];
+		
+				if (!index) return;
+				if (!objName) return;
+		
+				if (blackList[objName]) {
+					console.log('Object type ' + objName + ' is blacklisted.');
+					return;
+				}
+				result.push({'category':category,'filename':filename});
+			});
+			
 		}
+	}
 
-		if (blackList[objName]) {
-			console.log('Type ' + objName + ' is blacklisted.');
-			return;
-		}
-
-		result.push(filename);
-	});
+	this.enabledObjectTypeCache=result;
 
 	return result;
 }
@@ -318,11 +330,14 @@ ObjectManager.init = function (theModules) {
 	//go through all objects, build its client code (the code for the client side)
 	//register the object types.
 
-	var objName;
-    var processFunction = function(filename){
+    var processFunction = function(data){
+    	
+    	var filename=data.filename;
+    	var category=data.category;
+    	
         var fileinfo = filename.split('.');
         var objName = fileinfo[1];
-        var filebase = __dirname + '/../objects/' + filename;
+        var filebase = __dirname + '/../objects/' + category + '/' + filename;
 
         var obj = require(filebase + '/server.js');
         obj.ObjectManager = Modules.ObjectManager;
@@ -335,14 +350,14 @@ ObjectManager.init = function (theModules) {
     }
 
 	var files = this.getEnabledObjectTypes();
-	files.forEach(function (filename) {
+	files.forEach(function (data) {
 
 
         if(Modules.Config.debugMode){
-            processFunction(filename);
+            processFunction(data);
         } else {
             try {
-                processFunction(filename)
+                processFunction(data)
             } catch (e) {
                 Modules.Log.warn('Could not register ' + objName);
                 Modules.Log.warn(e.stack);
@@ -463,7 +478,7 @@ var mayReadMultiple = function (fromRoom, files, context, cb) {
 	var checks = [];
 	files.forEach(function (file) {
 		checks.push(function (cb2) {
-			Modules.Connector.mayRead(fromRoom,file, null, falseToError("Can't read file: " + file, cb2))
+			Modules.Connector.mayRead(fromRoom,file, context, falseToError("Can't read file: " + file, cb2))
 		});
 	});
 

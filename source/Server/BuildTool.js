@@ -38,14 +38,22 @@ BuildTool.buildClientCode = function(){
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
 	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
 
-	files.forEach(function (filename) {
+	files.forEach(function (data) {
+		
+		var filename=data.filename;
+		var category=data.category;
+		
 		var fileinfo = filename.split('.');
 		var index = fileinfo[0];
 		var objName = fileinfo[1];
 		if (!index) return;
 		if (!objName) return;
+		
+		if (objName=='File') {
+			var temp='WAFile'; //TODO This is a hot fix. Implement proper namespaces instead
+		} else temp=objName;
 
-		var filebase = __dirname + '/../objects/' + filename;
+		var filebase = __dirname + '/../objects/' + category + '/' + filename;
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
 		
@@ -56,7 +64,9 @@ BuildTool.buildClientCode = function(){
 			that.addToClientCode(filebase + '/mobileView.js');
 		}
 		
-		that.clientCode += enter + objName + '.register("' + objName + '");' + enter + enter;
+		that.clientCode += enter + temp + '.register("' + objName + '");' + enter + enter;
+		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
+
 		that.addToClientCode(filebase + '/languages.js');
 
 	});

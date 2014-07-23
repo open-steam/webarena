@@ -247,6 +247,8 @@ ObjectManager.onObjectRemove = function(object) {
 	}
 }
 
+
+
 ObjectManager.informGUI=false;
 ObjectManager.registerAttributeChangedFunction=function(theFunction){
     this.informGUI=theFunction;
@@ -255,7 +257,6 @@ ObjectManager.registerAttributeChangedFunction=function(theFunction){
 ObjectManager.contentUpdate=function(data){
     var object=ObjectManager.getObject(data.id);
     object.contentUpdated();
-	var that = this;
 }
 
 ObjectManager.remove=function(object){
@@ -280,9 +281,9 @@ ObjectManager.remove=function(object){
 
 ObjectManager.removeLocally=function(data){
     var object=ObjectManager.getObject(data.id);
-		
-	this.onObjectRemove(object);
 	
+	this.onObjectRemove(object);
+		
     //remove representation
     if (object.removeRepresentation){
         object.removeRepresentation();
@@ -326,13 +327,17 @@ ObjectManager.executeRoomChangeCallbacks = function(){
 }
 
 ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
-	var self = this;
 
+	var self = this;
+	
+	GUI.deleteLinkRepresentations(); //delete the existing link representations in the old room
+	
     this.executeRoomChangeCallbacks();
 
+
 	if (!index) var index = 'left';
-		
-	// in coupling mode: do not load room on both sides
+			
+	// in coupling mode: do not load room if it is already displayed
 	var proceed = true;
 	if (GUI.couplingModeActive && (ObjectManager.getRoomID('left') == roomid || ObjectManager.getRoomID('right') == roomid)) {
 		proceed = false;
@@ -358,7 +363,7 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 				if (GUI.couplingModeActive) {
 		    		GUI.defaultZoomPanState(index, true);
 		    	}
-					
+								
 				if (callback) setTimeout(callback, 1200);
 			}
 		});
@@ -371,7 +376,7 @@ ObjectManager.leaveRoom=function(roomid,index,serverCall) {
 	
 	var self = this;
 
-	if (!index) var index = 'right';
+	if (!index) var index = 'right'; 
 	
 	if (serverCall) {
 		Modules.Dispatcher.query('leave',{'roomID':roomid,'index':index,'user':self.getUser()},function(error){
@@ -388,7 +393,7 @@ ObjectManager.leaveRoom=function(roomid,index,serverCall) {
 				self.currentRoom[index] = false;
 			
 			}
-				
+			
 	    });
 	} else {
 		var objects = self.getObjects(index);
@@ -399,7 +404,8 @@ ObjectManager.leaveRoom=function(roomid,index,serverCall) {
 
 		self.currentRoomID[index] = false;
 		self.currentRoom[index] = false;
-	}
+
+	}	
 }
 
 ObjectManager.createObject=function(type,attributes,content,callback,index) {
@@ -488,6 +494,7 @@ ObjectManager.init=function(){
     })
 	
     Modules.Dispatcher.registerCall('objectDelete',function(data){
+		GUI.removeLinksfromObject(ObjectManager.getObject(data.id)); //delete all links which ends or starts in this object
         ObjectManager.removeLocally(data);
     });
 	
