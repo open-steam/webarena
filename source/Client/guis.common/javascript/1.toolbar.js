@@ -474,4 +474,33 @@ GUI.initToolbar = function() {
 
 	}
 	
+	/* add pad toggle */
+	
+	if (!Modules.Config.presentationMode && Modules.config.collaborativeEditor) {
+	
+		var padButton = document.createElement("img");
+		$(padButton).attr("src", "../../guis.common/images/categories/Texts.png").attr("alt", "");
+		$(padButton).attr("width", "24").attr("height", "24");
+
+		$(padButton).attr("id", "pad_button");
+		$(padButton).addClass("sidebar_button");
+
+		$(padButton).attr("title", GUI.translate("Description"));
+
+		var click = function() {
+			GUI.sidebar.openPage("pad", padButton);
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(padButton).bind("touchstart", click);
+		} else {
+			$(padButton).bind("mousedown", click);
+		}
+
+		$("#header > .header_right").append(padButton);
+
+		GUI.sidebar.openPage("pad", padButton);
+	
+	}
+	
 }

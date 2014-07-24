@@ -5,7 +5,7 @@
 *
 */
 
-var Modules = require('../../server.js');
+var Modules = require('../../../server.js');
 
 var CollText = Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 

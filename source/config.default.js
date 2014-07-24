@@ -28,11 +28,13 @@ module.exports={
 	
 	enabledCategories: ['graphical','texts','collaboration','connections','content'],
 	
-	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
+	objectBlacklist: ['HtmlTest','CollText'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
 	
 // Functional restrictions
 	
 	couplingMode:true,
+	
+	collaborativeEditor:false,
 	
 	paintIcon:true,
 	
