@@ -24,7 +24,7 @@
                         <ul class="nav">
                             <?php if ($logged_in) { ?>
                                 <li class="<?php echo($navbar[0]); ?>"><a href="<?php echo $this->config->site_url("home"); ?>">Mein Profil</a></li>
-                                <li class="<?php echo($navbar[1]); ?>"><a href="<?php echo $this->config->site_url("courses"); ?>">Kurse</a></li>
+                                <li class="<?php echo($navbar[1]); ?>"><a href="<?php echo $this->config->site_url("courses"); ?>"><?php echo $this->gettext->getText("Kurse"); ?></a></li>
                                 <li><a href="<?php echo $this->config->site_url("logout"); ?>">Logout</a></li>
                             <?php } else { ?>
                                 <li class="<?php echo($navbar[0]); ?>"><a href="<?php echo $this->config->site_url("login"); ?>">Anmeldung</a></li>

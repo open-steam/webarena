@@ -10,13 +10,15 @@ var Modules=false;
 var ObjectManager={};
 
 ObjectManager.isServer=false;
-ObjectManager.objects={};
-ObjectManager.currentRoomID=undefined;
-ObjectManager.currentRoom=false;
+ObjectManager.objects={'left':{},'right':{}};
+ObjectManager.objectsRight={'left':{},'right':{}};
+ObjectManager.currentRoomID={'left':false,'right':false};
+ObjectManager.currentRoom={'left':false,'right':false};
 ObjectManager.clientID = new Date().getTime()-1296055327011;
 ObjectManager.prototypes={};
 ObjectManager.user={};
 ObjectManager.clipBoard={};
+ObjectManager.roomChangeCallbacks = [];
 
 ObjectManager.registerType=function(type,constr){
     this.prototypes[type]=constr;
@@ -34,14 +36,35 @@ ObjectManager.getPrototype=function(objType){
     return;
 }
 
-ObjectManager.getObject=function(objectID){
-	
-	//room?
-	if (objectID==this.currentRoomID){
-		return this.currentRoom;
+ObjectManager.getIndexOfObject=function(objectID) {
+	// room?
+	for (var index in this.currentRoomID) {
+		if (this.currentRoomID[index] === objectID) {
+			return index;
+		}
 	}
-	
-    return ObjectManager.objects[objectID];
+
+	for (var index in this.currentRoomID) {
+    	if (ObjectManager.objects[index][objectID] != undefined) {
+    		return index;
+    	}
+    }
+    return false;
+}
+
+ObjectManager.getObject=function(objectID){
+	//room?
+	for (var index in this.currentRoomID) {
+    	if (objectID==this.currentRoomID[index]) {
+    		return this.currentRoom[index];
+    	}
+    }
+
+    for (var index in this.currentRoomID) {
+    	if (ObjectManager.objects[index][objectID] != undefined) {
+    		return ObjectManager.objects[index][objectID];
+    	}
+    }
 }
 
 ObjectManager.buildObject=function(type, attributes){
@@ -59,15 +82,23 @@ ObjectManager.buildObject=function(type, attributes){
     object.type=proto.type;
     object.set('type',proto.type);
 
-    if (object.get('id') != this.currentRoomID) {
-        this.objects[object.id]=object;
-    } else {
-
-        this.currentRoom=object;
-        
-        this.currentRoom.isGraphical=false; // the current room cannot be positioned
-		
+    var isRoom = false;
+    for (var currentRoomIndex in this.currentRoomID) {
+    	if (object.get('id') == this.currentRoomID[currentRoomIndex]) {
+    		isRoom = true;
+    		this.currentRoom[currentRoomIndex]=object;
+        	this.currentRoom[currentRoomIndex].isGraphical=false; // the current room cannot be positioned
+    	}
     }
+    if (!isRoom) {
+    	var index = ObjectManager.getIndexOfObject(attributes.inRoom);
+    	this.objects[index][object.id]=object;
+    }
+
+    if(typeof object.afterCreation == "function"){
+        object.afterCreation();
+    }
+
 
     return object;
 
@@ -76,17 +107,18 @@ ObjectManager.buildObject=function(type, attributes){
 /**
  * getObjects - get an array of all objects including the room
  */
-ObjectManager.getObjects=function(){
-    return this.objects;
+ObjectManager.getObjects=function(index){
+	if (!index) index = 'left';
+    return this.objects[index];
 }
 ObjectManager.getInventory=ObjectManager.getObjects;
 
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (highest layer first)
  */
-ObjectManager.getObjectsByLayer=function() {
+ObjectManager.getObjectsByLayer=function(index) {
 	
-    var objects = this.getObjects();
+    var objects = this.getObjects(index);
 	
     var objectsArray = [];
 	
@@ -121,9 +153,9 @@ ObjectManager.getObjectsByLayer=function() {
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (lowest layer first)
  */
-ObjectManager.getObjectsByLayerInverted=function() {
+ObjectManager.getObjectsByLayerInverted=function(index) {
 	
-    var objects = ObjectManager.getObjectsByLayer();
+    var objects = ObjectManager.getObjectsByLayer(index);
 	objects.reverse();
 	
     return objects;
@@ -141,7 +173,7 @@ ObjectManager.hasObject=function(obj){
 ObjectManager.objectUpdate=function(data){
 	
     var object=ObjectManager.getObject(data.id);
-	
+
     if (object){
 		
         if (object.moving) return;
@@ -169,14 +201,27 @@ ObjectManager.objectUpdate=function(data){
                 this.attributeChanged(object,key,newValue);
             }
         }
-		
+
+        object.refreshDelayed();
     } else {
-    	
         object = ObjectManager.buildObject(data.type,data);
+
+        if (GUI.couplingModeActive) {
+        	// to enable smooth dragging of objects between rooms display new objects immediately 
+        	// exceptions: SimpleText and Textarea need to load their content first else they are invisible or empty
+        	if (data.type !== "SimpleText" && data.type !== "Textarea") {
+        		object.refresh();
+        	} else {
+        		object.refreshDelayed();
+        	}
+        } else {
+        	object.refreshDelayed();
+        }
     }
 	
-    object.refreshDelayed();
-	
+	if (this.informGUI) {
+		this.informGUI(object);
+	}
 }
 
 ObjectManager.attributeChanged=function(object,key,newValue,local){
@@ -191,6 +236,18 @@ ObjectManager.attributeChanged=function(object,key,newValue,local){
     else console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
 	
 }
+
+ObjectManager.onObjectRemoveListeners = [];
+ObjectManager.registerOnObjectRemoveListener = function(listener) {
+	this.onObjectRemoveListeners.push(listener);
+}
+ObjectManager.onObjectRemove = function(object) {
+	for (var i = 0; i < this.onObjectRemoveListeners.length; ++i) {
+		this.onObjectRemoveListeners[i](object);
+	}
+}
+
+
 
 ObjectManager.informGUI=false;
 ObjectManager.registerAttributeChangedFunction=function(theFunction){
@@ -225,17 +282,14 @@ ObjectManager.remove=function(object){
 ObjectManager.removeLocally=function(data){
     var object=ObjectManager.getObject(data.id);
 	
+	this.onObjectRemove(object);
+		
     //remove representation
-	
     if (object.removeRepresentation){
         object.removeRepresentation();
     }
 	
-    //remove from local structure
-    delete(ObjectManager.objects[data.id]);
-
-    // delete associated pad
-    ObjectManager.Pads.deletePadFor(data.id);
+    delete(ObjectManager.objects[ObjectManager.getIndexOfObject(data.id)][data.id]);
 }
 
 ObjectManager.login=function(username, password, externalSession){
@@ -262,42 +316,103 @@ ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
 }
 
-ObjectManager.loadRoom=function(roomid,byBrowserNav,callback){
-	
-	var self = this;
-	
-	Modules.Dispatcher.query('enter',roomid,function(error){
-
-		if (error !== true) {
-
-			var objects = self.getObjects();
-
-		    for (var i in objects) {
-		        var obj = objects[i];
-		        ObjectManager.removeLocally(obj);
-		    }
-
-		    if(!roomid) roomid='public';
-		    self.currentRoomID=roomid;
-		   
-		    if (!byBrowserNav){
-				history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
-		    }
-
-		    if (callback) setTimeout(callback, 1200);
-
-            // Create and display an annotation pad for the room
-            ObjectManager.Pads.createRoomPad(ObjectManager.getRoomID());
-		}
-		
-    });
-
+ObjectManager.registerRoomChangeCallbacks = function(doOnChange){
+    this.roomChangeCallbacks.push(doOnChange);
 }
 
-ObjectManager.createObject=function(type,attributes,content,callback) {
+ObjectManager.executeRoomChangeCallbacks = function(){
+    while(this.roomChangeCallbacks.length > 0){
+        this.roomChangeCallbacks.pop().call(this);
+    }
+}
+
+ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
+
+	var self = this;
+	
+	GUI.deleteLinkRepresentations(); //delete the existing link representations in the old room
+	
+    this.executeRoomChangeCallbacks();
+
+
+	if (!index) var index = 'left';
+			
+	// in coupling mode: do not load room if it is already displayed
+	var proceed = true;
+	if (GUI.couplingModeActive && (ObjectManager.getRoomID('left') == roomid || ObjectManager.getRoomID('right') == roomid)) {
+		proceed = false;
+	}
+
+	if (proceed) {
+		Modules.Dispatcher.query('enter',{'roomID':roomid,'index':index},function(error){
+
+			if (error !== true) {
+				var objects = self.getObjects(index);
+				for (var i in objects) {
+					var obj = objects[i];
+				    ObjectManager.removeLocally(obj);
+				}
+
+				if(!roomid) roomid='public';
+				self.currentRoomID[index]=roomid;
+				   
+				if (!byBrowserNav && index === 'left'){
+					history.pushState({ 'room':roomid }, roomid, '/room/'+roomid);
+				}
+				    
+				if (GUI.couplingModeActive) {
+		    		GUI.defaultZoomPanState(index, true);
+		    	}
+								
+				if (callback) setTimeout(callback, 1200);
+			}
+		});
+	} else {
+		alert(GUI.translate("Room already displayed"));
+	}
+}
+
+ObjectManager.leaveRoom=function(roomid,index,serverCall) {
+	
+	var self = this;
+
+	if (!index) var index = 'right'; 
+	
+	if (serverCall) {
+		Modules.Dispatcher.query('leave',{'roomID':roomid,'index':index,'user':self.getUser()},function(error){
+		
+			if (error !== true) {
+		
+			    var objects = self.getObjects(index);
+			    for (var i in objects) {
+			        var obj = objects[i];
+			        ObjectManager.removeLocally(obj);
+			    }
+				
+				self.currentRoomID[index] = false;
+				self.currentRoom[index] = false;
+			
+			}
+			
+	    });
+	} else {
+		var objects = self.getObjects(index);
+		for (var i in objects) {
+			var obj = objects[i];
+			ObjectManager.removeLocally(obj);
+		}
+
+		self.currentRoomID[index] = false;
+		self.currentRoom[index] = false;
+
+	}	
+}
+
+ObjectManager.createObject=function(type,attributes,content,callback,index) {
+	if (!index) var index = 'left';
 	
     var data={
-        'roomID':this.currentRoomID,
+        'roomID':this.currentRoomID[index],
         'type':type,
         'attributes':attributes,
         'content':content
@@ -334,6 +449,7 @@ ObjectManager.createObject=function(type,attributes,content,callback) {
 ObjectManager.init=function(){
     this.transactionId = false;
     this.transactionTimeout = 500;
+    var that = this;
 	
 	Modules.Dispatcher.registerCall('infotext', function(text){
         var translatedText = GUI.translate(text);
@@ -373,7 +489,12 @@ ObjectManager.init=function(){
         ObjectManager.objectUpdate(data);
     })
 	
+	Modules.Dispatcher.registerCall('paintingsUpdate',function(data){ 	
+        ObjectManager.paintingUpdate(data);
+    })
+	
     Modules.Dispatcher.registerCall('objectDelete',function(data){
+		GUI.removeLinksfromObject(ObjectManager.getObject(data.id)); //delete all links which ends or starts in this object
         ObjectManager.removeLocally(data);
     });
 	
@@ -407,7 +528,6 @@ ObjectManager.init=function(){
 		}
 		
 		if (data.message.selection) {
-			
 			if (data.userId != ObjectManager.user.id) { //do not display own selections
 				
 				GUI.userMarker.select({
@@ -435,30 +555,65 @@ ObjectManager.init=function(){
 		}
 
     });
-	
+
+
+    Modules.Dispatcher.registerCall('askForChoice', function(data){
+
+        var dialogTitle = data.title;
+        var choices = data.choices;
+
+        var onSave = function(){
+            var responseEvent = 'response::askForChoice::' + data.responseID
+            var choice = $(dialog).find('input:radio:checked').val();
+            console.log(choice);
+            Modules.Socket.emit(responseEvent, {choice : choice});
+        }
+        var onExit = function(){return false;};
+
+        var dialogButtons = {
+            "Antworten" : onSave,
+            "Abbrechen" : onExit
+        };
+
+        var content = '<form>';
+        content = _(choices).reduce(function(accum, choice){
+            //TODO perhaps need to escape whitesapces in choice
+            return accum + "<input type='radio' name='some-choice' value='" + choice + "'>" + choice + "<br/>";
+        }, content)
+        content += "</form>";
+        console.log(content);
+        console.log(data);
+
+        var dialog = GUI.dialog(dialogTitle, content, dialogButtons);
+
+
+    });
 }
 
-ObjectManager.getRoomID=function(){
-    return this.currentRoomID;
+ObjectManager.getRoomID=function(index){
+	if (!index) var index = 'left';
+    return this.currentRoomID[index];
 }
 
-ObjectManager.getCurrentRoom=function(){
-	return this.currentRoom;
+ObjectManager.getCurrentRoom=function(index){
+	if (!index) var index = 'left';
+	return this.currentRoom[index];
 }
 
 
 ObjectManager.getSelected=function(){
-		
-    var result=[];
+	var result=[];
 	
-    for (var i in this.objects) {
-        var obj = this.objects[i];
-		
-        if (obj.isSelected()) {
-            result.push(obj);
-        }
-		
-    }
+	for (var index in this.objects) {
+	    for (var i in this.objects[index]) {
+	        var obj = this.objects[index][i];
+			
+	        if (obj.isSelected()) {
+	            result.push(obj);
+	        }
+			
+	    }
+	}
     return result;
 }
 
@@ -552,11 +707,11 @@ ObjectManager.serverMemoryInfo=function(){
 	ObjectManager.Modules.Dispatcher.query('memoryUsage','',console.log);
 }
 
-ObjectManager.inform=function(type,content){
+ObjectManager.inform=function(type,content,index){
 	var data={};
 	data.message={};
 	data.message[type]=content;
-	data.room=this.getRoomID();
+	data.room=this.getRoomID(index);
 	data.user=this.getUser().username;
 	data.color=this.getUser().color;
 	data.userId=this.getUser().id;
@@ -567,22 +722,16 @@ ObjectManager.tell=function(text){
 	ObjectManager.inform('text',text);
 }
 
-ObjectManager.informAboutSelection = function(id) {
-    // show the annotation pad for the selected object
-    ObjectManager.Pads.showPadFor(id);
-
-	ObjectManager.inform('selection',id);
+ObjectManager.informAboutSelection=function(id){
+	ObjectManager.inform('selection',id,ObjectManager.getIndexOfObject(id));
 }
 
-ObjectManager.informAboutDeselection = function(id) {
-    // show room's annotation if nothing is selected
-    ObjectManager.Pads.showDefault();
-
-	ObjectManager.inform('deselection',id);
+ObjectManager.informAboutDeselection=function(id){
+	ObjectManager.inform('deselection',id,ObjectManager.getIndexOfObject(id));
 }
 
 ObjectManager.requestAttentionToObject=function(id){
-	ObjectManager.inform('requestAttention',id);
+	ObjectManager.inform('requestAttention',id,ObjectManager.getIndexOfObject(id));
 }
 
 ObjectManager.reportBug=function(data, callback){
@@ -651,6 +800,7 @@ ObjectManager.pasteObjects=function() {
 			requestData.toRoom=this.getRoomID();
 		    requestData.objects=ObjectManager.clipBoard.objects;
 		    requestData.cut=ObjectManager.clipBoard.cut;
+		    requestData.attributes={};
 
 			// select new objects after duplication
 		    var newIDs=[];
@@ -672,16 +822,18 @@ ObjectManager.pasteObjects=function() {
 
 				// if objects were moved between rooms scroll to position of pasted objects
 				if (requestData.fromRoom != requestData.toRoom) {
-					if (minX - 30 < 0) minX = 30;
-					if (minY - 30 < 0) minY = 30;
-					
-					$(document).scrollTo(
-						{ 
-							top: minY - 30, 
-							left: minX - 30
-						},
-						1000
-					);
+					if (!GUI.couplingModeActive) {
+						if (minX - 30 < 0) minX = 30;
+						if (minY - 30 < 0) minY = 30;
+						
+						$(document).scrollTo(
+							{ 
+								top: minY - 30, 
+								left: minX - 30
+							},
+							1000
+						);
+					}
 				}
 			};
 
@@ -718,10 +870,11 @@ ObjectManager.duplicateObjects=function(objects) {
 		    }
 		    
 		    var requestData={};
-			requestData.fromRoom=this.getRoomID();
-			requestData.toRoom=this.getRoomID();
+			requestData.fromRoom=objects[0].getCurrentRoom();
+			requestData.toRoom=objects[0].getCurrentRoom();
 		    requestData.objects=array;
 		    requestData.cut=false;
+		    requestData.attributes={};
 
 		    // select new objects after duplication
 		    var newIDs=[];
@@ -741,178 +894,69 @@ ObjectManager.duplicateObjects=function(objects) {
 	}
 }
 
-//************************************
-//****** ETHERPAD FUNCTIONALITY ******
-//************************************
-ObjectManager.Pads = {};
+ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
+	var objects = ObjectManager.getSelected();
+	
+	if (objects != undefined && objects.length > 0) {
 
+		var array = new Array();
 
-// Access token required to use Etherpad Lite's HTTP API
-ObjectManager.Pads.apikey = '';
+		var positions = {};
+		for (var key in objects) {
+		    var object = objects[key];
+			array.push(object.getId());
 
-// Etherpad Lite server address
-ObjectManager.Pads.server = 'http://localhost:9001';
+			positions[object.getId()] = {};
+			positions[object.getId()]['x'] = object.getViewX();
+			positions[object.getId()]['y'] = object.getViewY(); 
+		}
 
+		var requestData={};
+		requestData.fromRoom=fromRoom;
+		requestData.toRoom=toRoom;
+		requestData.objects=array;
+		requestData.cut=cut;
+		requestData.attributes=positions;
 
-// Displays the pad containing the annotation for the currently
-// selected object or creates one if it doesn't exist.
-ObjectManager.Pads.showPadFor = function(id) {
-    top.frames['padframe'].location.href =
-        this.server + '/p/' +              // base address for pads
-        ObjectManager.getRoomID() + id +   // this will be the pad name
-        '?showLineNumbers=false' +
-        '&showChat=false';
+		var newIDs=[];
+		var selectNewObjects = function() {
+			for (var key in newIDs) {
+				var newObject = ObjectManager.getObject(newIDs[key]);
+				newObject.select(true);
+			}
+		};
+
+		Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
+			newIDs = idList;
+			GUI.deselectAllObjects();
+			setTimeout(selectNewObjects, 200);
+		});
+	}
 }
 
-
-// Creates an annotation pad for the specified room and displays it.
-ObjectManager.Pads.createRoomPad = function(roomID) {
-    var defaultText = 'Sie können diesen Raum hier beschreiben.';
-
-    $.get( this.server + '/api/1.2.7/createPad' +
-           '?apikey=' + this.apikey +
-           '&padID=' + roomID +
-           '&text=' + encodeURIComponent(defaultText) )
-    .always( this.showDefault() );
-}
-
-
-// Reverts the pad panel to default state,
-// i.e., shows the current room's annotation.
-ObjectManager.Pads.showDefault = function() {
-    top.frames['padframe'].location.href =  this.server + '/p/' +
-                                            ObjectManager.getRoomID() +
-                                            '?showLineNumbers=false' +
-                                            '&showChat=false' +
-                                            '&noColors=true';
-}
-
-
-// Deletes the pad associated with the specified object ID.
-ObjectManager.Pads.deletePadFor = function(id) {
-    $.get(  this.server + '/api/1.2.7/deletePad' +
-            '?apikey=' + this.apikey +
-            '&padID=' + ObjectManager.getRoomID() + id);
-
-    // also delete the content pad of a CollText object
-    $.get(  this.server + '/api/1.2.7/deletePad' +
-            '?apikey=' + this.apikey +
-            '&padID=' + ObjectManager.getRoomID() + id + 'content');
-}
-
-
-// Updates the specified CollText object with current contents of its content pad.
-// Also updates the linked master document if it exists.
-ObjectManager.Pads.updateRepresentation = function(id) {
-    var cText = ObjectManager.getObject(id);
-
-    if (cText.getType() !== 'CollText') return;
-
-    // update the object with current pad content
-    $.ajax({
-        url: this.server + '/api/1.2.7/getText' +
-             '?apikey=' + this.apikey +
-             '&padID=' + ObjectManager.getRoomID() + id + 'content',
-        dataType: 'jsonp',
-        jsonp: 'jsonp',
-        success: function(response) {
-            cText.setContent(response.data.text);
-        }
-    });
-
-    // check if text is a part of a master document
-    if (cText.hasLinkedObjects()) {
-        var links = cText.getLinkedObjects(),
-            count = 0,
-            targetID = '',
-            target = null;
-
-        // count the CollTexts this object is linked to
-        // subdocuments must be linked to exactly 1 CollText - the master document
-        for (var lid in links) {
-            if (links[lid].object && links[lid].object.getType() === 'CollText') {
-                count++;
-                targetID = lid;
-                target = links[lid].object;
-            }
-        }
-
-        if (count === 1) {
-            // check if the target of connection is really the master document,
-            // i.e., is connected to more than 1 CollText. Not checking for this
-            // can result in an infinite loop
-            var targetCount = 0,
-                targetLinks = target.getLinkedObjects();
-
-            for (var lid in targetLinks) {
-                if (targetLinks[lid].object && targetLinks[lid].object.getType() === 'CollText') {
-                    targetCount++;
-                }
-            }
-
-            if (targetCount > 1) this.merge(target, targetID);
-        }
-
-    }
-}
-
-// Merges the content of all linked CollTexts into the master document.
-ObjectManager.Pads.merge = function(master, masterID) {
-    var links = master.getLinkedObjects(),
-        subs = [],
-        content = [];
-
-    // discard any linked non-CollText objects
-    for (var id in links) {
-        if (links[id].object && links[id].object.getType() !== 'CollText') delete links[id];
-    }
-
-    // sort connected subdocuments by Y coordinate
-    while (!$.isEmptyObject(links)) {
-        var min = 1000000, topmost = '';
-
-        for (var id in links) {
-            if (links[id].object) {
-                var yPos = links[id].object.get('y');
-
-                if (yPos < min) {
-                    min = yPos;
-                    topmost = id;
-                }
-            }
-        }
-        subs.push(topmost);
-        delete links[topmost];
-    }
-        
-    // retrieve content from subdocuments and merge into master
-    for (var i = 0; i < subs.length; i++) {
-        $.ajax({
-            url:    this.server + '/api/1.2.7/getText' +
-                    '?apikey=' + this.apikey +
-                    '&padID=' + ObjectManager.getRoomID() + subs[i] + 'content',
-            dataType: 'jsonp',
-            jsonp: 'jsonp',
-            success: function(index) {
-                return function(response) {
-                    content[index] = response.data.text;
-
-                    // check if all parts retrieved
-                    var fetched = 0;
-                    for (var idx in content) {
-                        if (!isNaN(idx) && content[idx] !== undefined) fetched++;
-                    }
-
-                    if (fetched === subs.length) {
-                        // all parts there, merge into master
-                        $.get(  ObjectManager.Pads.server + '/api/1.2.7/setText' +
-                                '?apikey=' + ObjectManager.Pads.apikey +
-                                '&padID=' + ObjectManager.getRoomID() + masterID + 'content' +
-                                '&text=' + encodeURIComponent(content.join('\n')) )
-                        .done(ObjectManager.Pads.updateRepresentation(masterID));
-                    }
-                }
-            }(i)
-        });
-    }
+ObjectManager.paintingUpdate = function(data)
+{
+	if ( !ObjectManager.getCurrentRoom().getAttribute("showUserPaintings") ) return;
+	
+	ObjectManager.getCurrentRoom().getUserPaintings(function(paintings)
+	{
+		for ( var n = 0 ; n < paintings.length ; n++ )
+		{
+			if ( $("#userPainting_" + paintings[n]).length == 0 )
+			{
+				var img = document.createElement("img");
+				
+				img.setAttribute("id", "userPainting_" + paintings[n]);
+				img.style.pointerEvents = "none";
+				img.style.position = "absolute";
+				img.style.left = 0;
+				img.style.top = 0;
+				img.style.zIndex = n + 1;
+				
+				document.getElementById("content").appendChild(img);
+			}
+			
+			$("#userPainting_" + paintings[n]).attr("src", ObjectManager.getCurrentRoom().getUserPaintingURL(paintings[n]));
+		}
+	});	
 }

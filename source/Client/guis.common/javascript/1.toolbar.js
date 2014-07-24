@@ -35,12 +35,12 @@ GUI.initToolbar = function() {
 	$.each(types, function(key, object) { 
 
 		var newCategoryIcon = document.createElement("img");
-		$(newCategoryIcon).attr("src", "../../guis.common/images/categories/"+object[0].category+".png").attr("alt", "");
+		$(newCategoryIcon).attr("src", "/categoryIcons/"+object[0].category).attr("alt", "");
 		$(newCategoryIcon).attr("width", "24").attr("height", "24");
 
 		$("#header>div.header_left").append(newCategoryIcon);
 
-		if (object.length > 1) {
+		if (object.length > 1) { //more than one object in the category
 			
 			$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
 			
@@ -58,36 +58,50 @@ GUI.initToolbar = function() {
 						var name = object.translate(GUI.currentLanguage,object.type);
 
 						var element = section.addElement('<img src="/objectIcons/'+object.type+'" alt="" width="24" height="24" /> '+name);
-
-						var click = function(attributes) {
-
+						
+						var click = function(attributes, drag) {
+						
 							popover.hide();
 
 							var proto = ObjectManager.getPrototype(object.type);
 							
 							if (!Modules.Config.presentationMode) {
 
-								proto.create(attributes);
-								
-							} else {
+								if(drag){
+									GUI.startNoAnimationTimer();
+									proto.create(attributes);
+								}
+								else{
+									if(object.type=='Arrow' || object.type=='Line'){
+
+										GUI.setCursorText(GUI.translate("Choose "+object.type+"-Startpoint"));
+						
+									}
+									else{
+										$("body").css( 'cursor', 'url(/objectIcons/'+object.type+'), auto' );
+									}	
+								}
+							} 
+							else {
 								alert(GUI.translate("You cannot create objects in presentation mode"));	
 							}
 							
 						}
+						
 
 						if (GUI.isTouchDevice) {
 							$(element.getDOM()).bind("touchstart", function() {
 								click({
 									"x" : window.pageXOffset + 40, 
 									"y" : window.pageYOffset + 40
-								}); 
+								}, false); 
 							});
 						} else {
 							$(element.getDOM()).bind("click", function() { 
 								click({
 									"x" : window.pageXOffset + 40, 
 									"y" : window.pageYOffset + 40
-								}); 
+								}, false); 
 							});
 						}
 						
@@ -104,7 +118,7 @@ GUI.initToolbar = function() {
 							click({
 								"x" : left,
 								"y" : top
-							});
+							}, true);
 						
 						}
 						
@@ -123,13 +137,13 @@ GUI.initToolbar = function() {
 				}
 			});
 		
-		} else {
+		} else { //one object in the category
 			
 			/* add link to icon (no Popover) */
 			
 			$(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
 			
-			var click = function(attributes) {
+			var click = function(attributes, drag) {
 
 				if (toolbar_locked_elements[object[0].type] === true) return; //element is locked
 
@@ -149,8 +163,17 @@ GUI.initToolbar = function() {
 				var proto = ObjectManager.getPrototype(object[0].type);
 				
 				if (!Modules.Config.presentationMode) {
-					proto.create(attributes);
-				} else {
+			
+					if(drag){
+						GUI.startNoAnimationTimer();
+						proto.create(attributes);
+					}
+					else{
+						$("body").css( 'cursor', 'url(/objectIcons/'+object[0].type+'), auto' );
+					}
+					
+				} 
+				else {
 					alert(GUI.translate("You cannot create objects in presentation mode"));	
 				}
 				
@@ -161,14 +184,14 @@ GUI.initToolbar = function() {
 					click({
 						"x" : window.pageXOffset + 40, 
 						"y" : window.pageYOffset + 40
-					}); 
+					}, false); 
 				});
 			} else {
 				$(newCategoryIcon).bind("click", function() {
 					click({
 						"x" : window.pageXOffset + 40, 
 						"y" : window.pageYOffset + 40
-					}); 
+					}, false); 
 				});
 			}
 			
@@ -176,7 +199,7 @@ GUI.initToolbar = function() {
 			if (object[0].type != "Paint" && object[0].type != "Highlighter") {
 				
 				/* make draggable */
-				var helper = $('<img src="../../guis.common/images/categories/'+object[0].category+'.png" alt="" width="24" height="24" />');
+				var helper = $('<img src="categoryIcons/'+object[0].category+'" alt="" width="24" height="24" />');
 				helper.get(0).callback = function(offsetX,offsetY) {
 
 					var svgpos = $("#content").offset();
@@ -187,7 +210,7 @@ GUI.initToolbar = function() {
 					click({
 						"x" : left,
 						"y" : top
-					});
+					}, true);
 
 				}
 
@@ -203,7 +226,6 @@ GUI.initToolbar = function() {
 				
 			}
 			
-	
 		}
 		
 		var effect = function() {
@@ -219,6 +241,36 @@ GUI.initToolbar = function() {
 		}
 	
 	});
+
+	/*add coupling button*/
+	if (Modules.Config.couplingMode) {
+		var couplingButton = document.createElement("img");
+		$(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");
+		$(couplingButton).attr("width", "24").attr("height", "24");
+
+		$(couplingButton).attr("id", "paste_button");
+		$(couplingButton).addClass("sidebar_button");
+
+		$(couplingButton).css("padding-left", "20px");
+		$(couplingButton).css("padding-right", "20px");
+		$(couplingButton).css("margin-right", "20px");
+		$(couplingButton).css("border-right", "1px solid #636363");
+		
+		$(couplingButton).attr("title", GUI.translate("Coupling"));
+
+		$("#header > .header_right").append(couplingButton);
+		
+		var click = function() {
+			GUI.enterCouplingMode();
+		}
+		
+		if (GUI.isTouchDevice) {
+			$(couplingButton).bind("touchstart", click);
+		} else {
+			$(couplingButton).bind("mousedown", click);
+		}
+	}
+
 		
 	/*add parent button*/
 	
@@ -229,7 +281,7 @@ GUI.initToolbar = function() {
 	$(parentButton).attr("id", "bug_button");
 	$(parentButton).addClass("sidebar_button");
 	
-	$(parentButton).attr("title", GUI.translate("Home"));
+	$(parentButton).attr("title", GUI.translate("Parent"));
 
 	$("#header > .header_right").append(parentButton);
 	
@@ -264,6 +316,30 @@ GUI.initToolbar = function() {
 	} else {
 		$(homeButton).bind("mousedown", click);
 	}
+	
+	/*add paint button*/
+	if (Modules.Config.paintIcon) {
+		var homeButton = document.createElement("img");
+		$(homeButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
+		$(homeButton).attr("width", "24").attr("height", "24");
+
+		$(homeButton).attr("id", "bug_button");
+		$(homeButton).addClass("sidebar_button");
+	
+		$(homeButton).attr("title", GUI.translate("Paint"));
+
+		$("#header > .header_right").append(homeButton);
+	
+		var click = function() {
+			GUI.editPaint();
+		}
+	
+		if (GUI.isTouchDevice) {
+			$(homeButton).bind("touchstart", click);
+		} else {
+			$(homeButton).bind("mousedown", click);
+		}
+	}
 
 	/*add paste button*/
 	var pasteButton = document.createElement("img");
@@ -295,72 +371,74 @@ GUI.initToolbar = function() {
 	
 	/* add bug report toggle */
 	if (!Modules.Config.presentationMode) {
-		
-		var bugButton = document.createElement("img");
-		$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
-		$(bugButton).attr("width", "24").attr("height", "24");
+		if (Modules.Config.bugreportIcon) {
+	
+			var bugButton = document.createElement("img");
+			$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
+			$(bugButton).attr("width", "24").attr("height", "24");
 
-		$(bugButton).attr("id", "bug_button");
-		$(bugButton).addClass("sidebar_button");
+			$(bugButton).attr("id", "bug_button");
+			$(bugButton).addClass("sidebar_button");
 		
-		$(bugButton).attr("title", GUI.translate("Bugreport"));
+			$(bugButton).attr("title", GUI.translate("Bugreport"));
 
-		$("#header > .header_right").append(bugButton);
+			$("#header > .header_right").append(bugButton);
 		
-		var click = function() {
-			GUI.sidebar.openPage("bug", bugButton);
+			var click = function() {
+				GUI.sidebar.openPage("bug", bugButton);
+			}
+		
+			if (GUI.isTouchDevice) {
+				$(bugButton).bind("touchstart", click);
+			} else {
+				$(bugButton).bind("mousedown", click);
+			}
+		
 		}
-		
-		if (GUI.isTouchDevice) {
-			$(bugButton).bind("touchstart", click);
-		} else {
-			$(bugButton).bind("mousedown", click);
-		}
-		
 	}
 	
 	
 	/* add chat toggle */
 	
 	if (!Modules.Config.presentationMode) {
+		if (Modules.Config.chatIcon) {
+			var chatButton = document.createElement("img");
+			$(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
+			$(chatButton).attr("width", "24").attr("height", "24");
 
-		var chatButton = document.createElement("img");
-		$(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
-		$(chatButton).attr("width", "24").attr("height", "24");
-
-		$(chatButton).attr("id", "chat_button");
-		$(chatButton).addClass("sidebar_button");
+			$(chatButton).attr("id", "chat_button");
+			$(chatButton).addClass("sidebar_button");
 		
-		$(chatButton).attr("title", GUI.translate("Chat"));
+			$(chatButton).attr("title", GUI.translate("Chat"));
 
-		$("#header > .header_right").append(chatButton);
+			$("#header > .header_right").append(chatButton);
 
 
-		var chatNotifier = document.createElement("span");
-		$(chatNotifier).attr("id", "chat_notifier");
-		$(chatNotifier).html("");
+			var chatNotifier = document.createElement("span");
+			$(chatNotifier).attr("id", "chat_notifier");
+			$(chatNotifier).html("");
 
-		$(chatNotifier).css("opacity", 0);
+			$(chatNotifier).css("opacity", 0);
 
-		var buttonPos = $(chatButton).position();
+			var buttonPos = $(chatButton).position();
 
-		$(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
+			$(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
 
-		$("#header > .header_right").append(chatNotifier);
+			$("#header > .header_right").append(chatNotifier);
 		
 		
-		var click = function() {
-			GUI.sidebar.openPage("chat", chatButton);
+			var click = function() {
+				GUI.sidebar.openPage("chat", chatButton);
+			}
+		
+			if (GUI.isTouchDevice) {
+				$(chatButton).bind("touchstart", click);
+				$(chatNotifier).bind("touchstart", click);
+			} else {
+				$(chatButton).bind("mousedown", click);
+				$(chatNotifier).bind("mousedown", click);
+			}
 		}
-		
-		if (GUI.isTouchDevice) {
-			$(chatButton).bind("touchstart", click);
-			$(chatNotifier).bind("touchstart", click);
-		} else {
-			$(chatButton).bind("mousedown", click);
-			$(chatNotifier).bind("mousedown", click);
-		}
-	
 	}
 	
 	/* add inspector toggle */
@@ -379,7 +457,7 @@ GUI.initToolbar = function() {
 		var click = function() {
 			GUI.sidebar.openPage("inspector", inspectorButton);
 		}
-		
+				
 		if (GUI.isTouchDevice) {
 			$(inspectorButton).bind("touchstart", click);
 		} else {
@@ -389,40 +467,11 @@ GUI.initToolbar = function() {
 		$("#header > .header_right").append(inspectorButton);
 
 		GUI.sidebar.openPage("inspector", inspectorButton);
-	
-	}
-
-	/* add pad toggle */
-	
-	if (!Modules.Config.presentationMode) {
-	
-		var padButton = document.createElement("img");
-		$(padButton).attr("src", "../../guis.common/images/categories/Texts.png").attr("alt", "");
-		$(padButton).attr("width", "24").attr("height", "24");
-
-		$(padButton).attr("id", "pad_button");
-		$(padButton).addClass("sidebar_button");
-
-		$(padButton).attr("title", GUI.translate("Description"));
-
-		var click = function() {
-			GUI.sidebar.openPage("pad", padButton);
-		}
 		
-		if (GUI.isTouchDevice) {
-			$(padButton).bind("touchstart", click);
-		} else {
-			$(padButton).bind("mousedown", click);
+		if (!Modules.Config.showSidebarbydefault){
+			GUI.sidebar.closeSidebar(false);
 		}
 
-		$("#header > .header_right").append(padButton);
-
-		GUI.sidebar.openPage("pad", padButton);
-	
 	}
-	
-
-	
-	
 	
 }

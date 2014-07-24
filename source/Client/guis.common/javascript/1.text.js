@@ -43,15 +43,13 @@ GUI.editText = function(webarenaObject, multiLine, width, height, passThrough) {
 	buttons[GUI.translate("save")] = function(domContent){
 		
 		if (multiLine) {
-		
 			var value = $(domContent).find("textarea").val();
+			if (webarenaObject.intelligentRename) webarenaObject.intelligentRename(value);
 			webarenaObject.setContent(value);
-		
 		} else {
-		
 			var value = $(domContent).find("input").val();
+			if (webarenaObject.intelligentRename) webarenaObject.intelligentRename(value);
 			webarenaObject.setContent(value);
-		
 		}
 		
 	};

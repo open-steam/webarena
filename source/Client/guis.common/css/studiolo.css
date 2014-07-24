@@ -98,9 +98,10 @@
   font-size: 12px;
 }
 
+
 /** Speech Bubble **/
 .triangle-border {
-  position: relative;
+  /*position: relative;*/  /* deactivated due to Chrome rendering anomaly */
   padding: 5px;
   margin: 1em 0 3em;
   border: 5px solid RGBA(68, 78, 91, 1);
@@ -111,10 +112,12 @@
   -ms-border-radius: 10px;
   -o-border-radius: 10px;
   border-radius: 10px;
+  width: 160;
 }
+*/
 
 .triangle-border:before {
-  content: "";
+  /*content: ""; */   /* deactivated due to Chrome rendering anomaly */
   position: absolute;
   bottom: -20px;
   left: 40px;
