@@ -36,6 +36,7 @@ GeneralObject.setTranslations('de',{
 	'Copy' : 'Kopieren',
 	'Cut' : 'Ausschneiden',
 	'Completely transparent objects are not allowed.':'Komplett transparente Objekte sind nicht erlaubt.',
+	'onMobile' : 'Zugriff Smartphone',
 	'select properties' : 'Eigenschaften auswählen',
 	'undirected' : 'ungerichtet',
 	'object as target' : 'Objekt als Ziel',

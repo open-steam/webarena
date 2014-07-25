@@ -25,6 +25,7 @@ Textarea.register=function(type){
 		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
 
 	}});;
+	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	this.standardData.fillcolor='rgb(255,255,255)';
 	this.standardData.linecolor='rgb(0,0,0)';
@@ -58,8 +59,15 @@ Textarea.intelligentRename=function(newValue){
 	});
 }
 
+Textarea.justCreated = function() {
+	this.setContent('');
+}
+
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
+Textarea.onMobile = true;
+Textarea.isCreatableOnMobile = true;
+Textarea.hasEditableMobileContent = true;
 
 Textarea.contentURLOnly = false; //content is only accessible via URL
 

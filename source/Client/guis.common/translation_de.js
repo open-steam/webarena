@@ -60,7 +60,15 @@ GUI.setTranslations('de',{
 	'objects' : 'Objekte',
 	'Do you want to continue?' : 'Wollen Sie fortsetzen?',
 	'Do you really want to delete the selected objects?' : 'Ausgewählte Objekte wirklich löschen?',
+	'Functional':'Funktionale Objekte',
+	'Delete Object' : 'Objekt löschen',
+	'Cancel Deletion' : 'Löschvorgang abbrechen',
+	'Do you really want to delete the object?' : 'Möchsten Sie das ausgewählte Objekt wirklich löschen?',
 	'Enter room' : 'Betrete Raum',
-	'choose' : 'wählen'
+	'choose' : 'wählen',
+	'Choose Arrow-Startpoint' : 'Pfeil-Startpunkt festlegen',
+	'Choose Line-Startpoint' : 'Linien-Startpunkt festlegen',
+	'Choose Arrow-Endpoint' : 'Pfeil-Endpunkt festlegen',
+	'Choose Line-Endpoint' : 'Linien-Endpunkt festlegen'
 	}
 );

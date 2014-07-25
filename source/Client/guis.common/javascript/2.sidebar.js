@@ -35,6 +35,10 @@ GUI.sidebar.elementConfig = {
         order : 2,
         title : GUI.translate("Bugreport"),
     },
+    "pad" : {
+        order : 3,
+        title : GUI.translate("Annotation"),
+    },
 };
 
 /**

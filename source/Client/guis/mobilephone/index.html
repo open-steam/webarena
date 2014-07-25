@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+
+	<title>Webarena 1.0</title>
+	
+	<meta content="minimum-scale=1.0, initial-scale=1.0, width=device-width, maximum-scale=1, user-scalable=no" name="viewport" />
+	<meta content="yes" name="apple-mobile-web-app-capable" />
+	<link rel="apple-touch-icon" sizes="72x72" href="/guis.common/images/ipad_icon.png" />
+
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+
+	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+
+	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
+	
+    <script type="text/javascript" src="/guis.common/libraries/lodash.min.js"></script>
+
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svg.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
+	
+	<!-- Library for creating data driven complex svg graphs. -->
+	<script type="text/javascript" src="/guis.common/libraries/d3/d3.min.js"></script>
+
+	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
+	<link type="text/css" href="/guis/mobilephone/jquery-ui.css" rel="Stylesheet" />
+
+	<script src="/config.js"></script>
+	<script src="/Helper.js"></script>
+	<script src="/Dispatcher.js"></script>
+	<script src="/ObjectManager.js"></script>
+	<script src="/SocketClient.js"></script>
+
+	<script src="/Common/Log.js"></script>
+	<script src="/Common/DataSet.js"></script>
+	<script src="/Common/ActionManager.js"></script>
+	<script src="/Common/AttributeManager.js"></script>
+	<script src="/Common/TranslationManager.js"></script>
+
+	<script>
+	var  Modules={
+		'Log':Log,
+		'config':Config,
+		'Config':Config,
+		'SocketClient':SocketClient,
+		'Dispatcher':Dispatcher,
+		'ObjectManager':ObjectManager,
+		'Helper':Helper,
+
+		//Object specific
+
+		'DataSet':DataSet,
+		'AttributeManager':AttributeManager,
+		'TranslationManager':TranslationManager,
+		'ActionManager':ActionManager,
+	};
+
+	
+	$(document).ready(function() {
+		for (var name in Modules){
+			var module=Modules[name];
+			if (module.init) {
+				module.init(Modules);
+				module.Modules=Modules;
+			}
+		}
+		
+		document.title=Modules.Config.projectTitle||'WebArena';
+		
+	});
+
+	</script>
+
+	<script src="/objects"></script>
+
+
+
+
+
+	<script type="text/javascript" src="/guis/mobilephone/canvas.js"></script>
+	<script type="text/javascript" src="/guis/mobilephone/objectList.js"></script>
+	<script type="text/javascript" src="/guis/mobilephone/toolbar.js"></script>
+	<script type="text/javascript" src="/guis/mobilephone/objectView.js"></script>
+	<script type="text/javascript" src="/defaultJavascripts"></script>
+
+
+
+	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
+
+    <link type="text/css" href="/guis/mobilephone/style.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis.common/css/progressBar.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis.common/css/studiolo.css" rel="Stylesheet" />
+
+  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
+	
+
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jDesktopInspector.js"></script>
+	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
+
+    <script type="text/javascript" src="/guis/mobilephone/main.js"></script>
+	<script>
+
+        /**
+         * Define room which will be loaded (value will be replaced by node.js Webserver)
+         */
+        GUI.startRoom = '##START_ROOM##';
+
+        /**
+         * check if device is touch-device
+         */
+        if (!!('ontouchstart' in window)) {
+            GUI.isTouchDevice = true;
+        }
+
+        /**
+         * jQuery extension used to prevent scrolling of sidebar/body when scrolling of sidebar contents hits top/bottom (e.g. for chat messages container)
+         */
+        $.fn.dontScrollParent = function()
+        {
+            this.bind('mousewheel DOMMouseScroll',function(e)
+            {
+                var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+
+                if (delta > 0 && $(this).scrollTop() <= 0)
+                    return false;
+                if (delta < 0 && $(this).scrollTop() >= this.scrollHeight - $(this).height())
+                    return false;
+
+                return true;
+            });
+        }
+
+	</script>
+</head>
+<body>
+
+	<!-- <div id="couplingNavigation"></div> -->
+	
+	<div id="content"></div>
+	
+	<!-- For representation on mobile phones. -->
+	<div id="header">
+		<div class="header_left"></div>
+		<div class="header_right"></div>
+	</div>
+	<div id="createmenu"></div>
+	<div id="objectlist"></div>
+	<div id="objectview"></div>
+
+	<div id="login_background" style="display: none">&nbsp;</div>
+	<div id="login" style="display: none;">
+		
+		<div class="login_title" id="login_title">Webarena 1.0</div>
+		
+		<div class="login_error"></div>
+		
+		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
+		
+		<br />
+		
+		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="" id="login_password" class="login_input" autocomplete="off" />
+		
+		<br />
+		
+		<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
+		
+	</div>
+	
+	
+	<div id="progressBar"><div class="progressBar_container"></div></div>
+
+</body>
+</html>

@@ -27,6 +27,7 @@ Rectangle.register=function(type){
 
 Rectangle.register('Rectangle');
 Rectangle.isCreatable=true;
+Rectangle.onMobile = true;
 
 GeneralObject.moveByTransform = function(){return true;}
 

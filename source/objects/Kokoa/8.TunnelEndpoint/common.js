@@ -12,5 +12,7 @@ TunnelEndpoint.register=function(type){
 
 
 TunnelEndpoint.isCreatable=true;
+TunnelEndpoint.category = 'Active';
+TunnelEndpoint.onMobile = false;
 
 module.exports=TunnelEndpoint;

@@ -15,6 +15,7 @@ Subroom.register=function(type){
 	
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
+	IconObject.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	var self=this;
 	
@@ -49,5 +50,7 @@ Subroom.execute=function(openInNewWindow){
 
 Subroom.register('Subroom');
 Subroom.isCreatable=true;
+Subroom.onMobile = true;
+Subroom.isCreatableOnMobile = true;
 
 module.exports=Subroom;

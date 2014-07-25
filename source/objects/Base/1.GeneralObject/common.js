@@ -27,6 +27,11 @@ GeneralObject.selected=false;
 GeneralObject.category = 'Graphical Elements';
 GeneralObject.ObjectManager=Modules.ObjectManager;
 GeneralObject.alwaysOnTop = function() {return false;};
+GeneralObject.onMobile = false;
+GeneralObject.isSelectedOnMobile = false;
+GeneralObject.hasMobileRep = false;
+GeneralObject.hasEditableMobileContent = false;
+GeneralObject.isCreatableOnMobile = false;
 
 
 GeneralObject.makeStructuring=function(){
@@ -137,24 +142,23 @@ GeneralObject.register=function(type){
 	this.registerAttribute('name',{type:'text'});
 	   
 	this.registerAttribute('hasContent',{type:'boolean',hidden:true,standard:false});
-	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {GUI.updateLayers();}});
+	this.registerAttribute('layer',{type:'layer',readonly:false,category:'Dimensions', changedFunction: function(object, value) {GUI.updateLayers();}, mobile: false});
 	
-	this.registerAttribute('x',{type:'number',min:0,category:'Dimensions'});
-	this.registerAttribute('y',{type:'number',min:0,category:'Dimensions'});
+	this.registerAttribute('x',{type:'number',min:0,category:'Dimensions', mobile: false});
+	this.registerAttribute('y',{type:'number',min:0,category:'Dimensions', mobile: false});
 	
-	this.registerAttribute('cx',{hidden:true,getFunction:function(object){
+	this.registerAttribute('cx',{hidden:true, mobile: false,getFunction:function(object){
 		return Math.floor(object.getAttribute('x')+object.getAttribute('width')/2);
 	},setFunction:function(object,value){
 		object.setAttribute('x',Math.floor(value-object.getAttribute('width')/2));
 	}});
-	this.registerAttribute('cy',{hidden:true,getFunction:function(object){
+	this.registerAttribute('cy',{hidden:true, mobile: false,getFunction:function(object){
 		return Math.floor(object.getAttribute('y')+object.getAttribute('height')/2);
 	},setFunction:function(object,value){
 		object.setAttribute('y',Math.floor(value-object.getAttribute('height')/2));
 	}});
 
 
-	
 	this.registerAttribute('width',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
 		if (object.resizeProportional()) {
@@ -163,7 +167,7 @@ GeneralObject.register=function(type){
 
 		return true;
 		
-	}});
+	}, mobile: false});
 	
 	this.registerAttribute('height',{type:'number',min:5,standard:100,unit:'px',category:'Dimensions', checkFunction: function(object, value) {
 		
@@ -173,7 +177,7 @@ GeneralObject.register=function(type){
 
 		return true;
 		
-	}});
+	}, mobile: false});
 
 	this.registerAttribute('fillcolor',{type:'color',standard:'transparent',category:'Appearance',checkFunction: function(object,value) {
 
@@ -202,7 +206,7 @@ GeneralObject.register=function(type){
 
 		return true;
 		
-	}});
+	}, mobile: false});
 	
 	this.registerAttribute('visible',{type:'boolean',standard:true,category:'Basic',checkFunction: function(object, value) {
 		
@@ -228,8 +232,7 @@ GeneralObject.register=function(type){
 			return true;
 		}
 		
-	}	
-	});
+	}, mobile: false});
 	
 	this.registerAttribute('link',{multiple: true, hidden: true, standard:[],category:'Functionality',changedFunction: function(object, value) {
 		
@@ -249,6 +252,8 @@ GeneralObject.register=function(type){
 	}});
 	
 	this.registerAttribute('group',{type:'group',readonly:false,category:'Basic',standard:0});
+	
+	//this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	this.registerAction('Delete',function(){
 		
