@@ -42,6 +42,8 @@ module.exports={
 	
 	bugreportIcon:true,
 	
+	WebRTC: true,
+	
 // Development
 	
 	debugMode: false,

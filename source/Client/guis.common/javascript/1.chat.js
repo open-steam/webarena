@@ -11,6 +11,11 @@ GUI.chat = {};
 GUI.chat.newMessages = 0;
 
 /**
+ * list of all current users in the room
+ */
+GUI.chat.users = [];
+
+/**
  * adds components for chat and event handlers for sending chat messages
  */
 GUI.chat.init = function() {
@@ -49,11 +54,30 @@ GUI.chat.init = function() {
  * @param {UserInfo[]} users Array of active users information
  */
 GUI.chat.setUsers = function(users) {
-	$("#chat_users").html("");
-	for (var i = 0; i < users.length; i++) {
-		var user = users[i];
-		$("#chat_users").append('<div><span style="background-color: '+user.color+'"></span>'+user.username+'</div>');
+	
+	var userIds = [];
+	
+	for(var j = 0; j<users.length; j++){   //new user: add in GUI.chat.users and create a representation
+		userIds.push(users[j].id);
+		if(GUI.chat.users.indexOf(users[j].id) == -1){
+			GUI.chat.users.push(users[j].id);
+			
+			var user = users[j];
+			
+			$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'</div>');
+			
+		}
 	}
+	
+	for(var i = 0; i<GUI.chat.users.length; i++){ 	//user left: remove from GUI.chat.users and remove the representation
+		if(userIds.indexOf(GUI.chat.users[i]) == -1){
+			var userid = GUI.chat.users[i];
+			
+			$("#"+userid).parent().remove();
+			GUI.chat.users.splice(i, 1);
+		}
+	}
+	
 }
 
 
