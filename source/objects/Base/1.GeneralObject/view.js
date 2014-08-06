@@ -587,11 +587,11 @@ GeneralObject.addControls = function() {
 			var width = startWidth+dx;
 			var height = startHeight*(width/startWidth);
 
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 			}
 			
@@ -599,7 +599,7 @@ GeneralObject.addControls = function() {
 			
 			var width = startWidth+dx;
 			
-			if (width < 10) return;
+			if (width < 20) return;
 			self.setViewWidth(width);
 			
 		}
@@ -616,12 +616,12 @@ GeneralObject.addControls = function() {
 
 			var x =  startX+dx;
 
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 				self.setViewX(x);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 			}
 			
@@ -630,7 +630,7 @@ GeneralObject.addControls = function() {
 			var width = startWidth-dx;
 			var x =  startX+dx;
 			
-			if (width < 10) return;
+			if (width < 20) return;
 			self.setViewWidth(width);
 			self.setViewX(x);
 			
@@ -646,11 +646,11 @@ GeneralObject.addControls = function() {
 			var height = startHeight+dy;
 			var width = startWidth*(height/startHeight);
 			
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 			}
 			
@@ -658,7 +658,7 @@ GeneralObject.addControls = function() {
 			
 			var height = startHeight+dy;
 			
-			if (height < 10) return;
+			if (height < 20) return;
 			self.setViewHeight(height);
 			
 		}
@@ -675,11 +675,11 @@ GeneralObject.addControls = function() {
 			
 			var y =  startY+dy;
 			
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 				self.setViewY(y);
 			}
@@ -689,7 +689,7 @@ GeneralObject.addControls = function() {
 			var height = startHeight-dy;
 			var y =  startY+dy;
 			
-			if (height < 10) return;
+			if (height < 20) return;
 			self.setViewHeight(height);
 			self.setViewY(y);
 			
@@ -710,12 +710,12 @@ GeneralObject.addControls = function() {
 			var x =  startX+dx;
 			var y =  startY+dy;
 			
-			if (width >= 10 || self.ignoreMinDimensions === true) {
+			if (width >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 				self.setViewX(x);
 			}
 
-			if (height >= 10 || self.ignoreMinDimensions === true) {
+			if (height >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 				self.setViewY(y);
 			}
@@ -735,11 +735,11 @@ GeneralObject.addControls = function() {
 
 			var y =  startY+dy;
 			
-			if (width >= 10 || self.ignoreMinDimensions === true) {
+			if (width >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10 || self.ignoreMinDimensions === true) {
+			if (height >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 				self.setViewY(y);
 			}
@@ -766,7 +766,7 @@ GeneralObject.addControls = function() {
 				
 			}
 			
-			if (width >= 10 && height >= 10) {
+			if (width >= 20 && height >= 20) {
 				self.setViewWidth(width);
 				self.setViewHeight(height);
 			}
@@ -776,11 +776,11 @@ GeneralObject.addControls = function() {
 			var width = startWidth+dx;
 			var height = startHeight+dy;
 			
-			if (width >= 10 | self.ignoreMinDimensions === true) {
+			if (width >= 20 | self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10 | self.ignoreMinDimensions === true) {
+			if (height >= 20 | self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 			}
 			
@@ -799,12 +799,12 @@ GeneralObject.addControls = function() {
 			
 			var x =  startX+dx;
 			
-			if (width >= 10 || self.ignoreMinDimensions === true) {
+			if (width >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 				self.setViewX(x);
 			}
 
-			if (height >= 10 || self.ignoreMinDimensions === true) {
+			if (height >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 			}
 			
@@ -1638,19 +1638,7 @@ GeneralObject.moveHandler = function() {
  * Called after an object resizing
  */
 GeneralObject.resizeHandler = function() {
-	
-	var width = this.getViewWidth();
-	var height = this.getViewHeight();
-	
-	//if an object gets too small by resizing (cannot be moved anymore), set the minimal width and height to 20 px
-	if(width < 20){
-		width = 20;
-	}
-	if(height < 20){
-		height = 20;
-	}
-	
-	this.setDimensions(width, height);
+	this.setDimensions(this.getViewWidth(), this.getViewHeight());
 	this.setPosition(this.getViewX(), this.getViewY());
 }
 
