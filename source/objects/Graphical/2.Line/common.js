@@ -21,7 +21,7 @@ Line.register=function(type){
 	
 	this.registerAttribute('direction',{type:'number',standard:4,readonly:false,hidden:true});
 	
-    this.attributeManager.registerAttribute('linesize',{type:'number',min:4,standard:4,category:'Appearance'});
+    this.attributeManager.registerAttribute('linesize',{type:'number',min:1,standard:4,category:'Appearance'});
     this.attributeManager.registerAttribute('linestyle',{type:'selection',standard:'stroke',options:['stroke','dotted','dashed'],category:'Appearance'});
 	this.attributeManager.registerAttribute('linecolor',{standard:'black'});
 	
