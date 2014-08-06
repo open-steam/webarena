@@ -1254,8 +1254,8 @@ GeneralObject.moveStart = function(event) {
 		$("#content").bind("mouseup.webarenaMove", end);
 	}
 
-	
 }
+
 
 /**
  * Sets event handlers to make the objects representation movable
@@ -1278,10 +1278,9 @@ GeneralObject.makeMovable = function() {
 		/* mouse */
 		$(rep).bind("mousedown", self.moveStart);
 	}
-	
 
-	
 }
+
 
 /**
  * Moves the object relative to the saved position of GeneralObject.saveMoveStartPosition
@@ -1639,7 +1638,19 @@ GeneralObject.moveHandler = function() {
  * Called after an object resizing
  */
 GeneralObject.resizeHandler = function() {
-	this.setDimensions(this.getViewWidth(), this.getViewHeight());
+	
+	var width = this.getViewWidth();
+	var height = this.getViewHeight();
+	
+	//if an object gets too small by resizing (cannot be moved anymore), set the minimal width and height to 20 px
+	if(width < 20){
+		width = 20;
+	}
+	if(height < 20){
+		height = 20;
+	}
+	
+	this.setDimensions(width, height);
 	this.setPosition(this.getViewX(), this.getViewY());
 }
 
