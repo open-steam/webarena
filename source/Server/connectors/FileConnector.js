@@ -821,7 +821,9 @@ fileConnector.trimImage=function(roomID, objectID, context, callback) {
 
 	/* save content to temp. file */
 
-	var filename = __dirname+"/tmp/trim_"+roomID+"_"+objectID;
+	var dir = __dirname.substring(0, __dirname.length - 11);
+	
+	var filename = dir+"/tmp/trim_"+roomID+"_"+objectID;
 
 	this.getContent(roomID,objectID,context,function(content) {
 
@@ -1052,13 +1054,15 @@ fileConnector.inlinePreviewProviders = {
 			
 			if (!context) throw new Error('Missing context in dimensions for image');
 
+			var dir = __dirname.substring(0, __dirname.length - 11);
 			
-			var filename = __dirname+"/tmp/image_preview_dimensions_"+roomID+"_"+objectID;
+			var filename = dir+"/tmp/image_preview_dimensions_"+roomID+"_"+objectID;
 
 			fileConnector.getContent(roomID,objectID,context,function(content) {
 				fs.writeFile(filename, Buffer(content), function (err) {
 				 	if (err) throw err;
-					/* temp. file saved */
+						
+						/* temp. file saved */
 
 					var im = require('imagemagick');
 
