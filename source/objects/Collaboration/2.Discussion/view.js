@@ -60,7 +60,7 @@ Discussion.drawIcon = function () {
     $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
     $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
     $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
-
+	
     $(rep).attr("layer", this.getAttribute('layer'));
 }
 
@@ -247,8 +247,8 @@ Discussion.createRepresentationIcon = function (parent) {
     var body = document.createElement("body");
     var title = this.getAttribute('discussionTitle') || this.translate(GUI.currentLanguage, "Discussion without title");
 
-    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text moveArea'>" + title + "</div></div>");
-
+    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text moveArea'>"+title+"</div></div>");
+	
     $(rep).append(body);
     $(rep).attr("id", this.getAttribute('id'));
     $(rep).find('.wrapped-text').dotdotdot();
@@ -327,7 +327,9 @@ Discussion.updateInnerHeightIcon = function (value) {
 
     $(rep).find("body").css("height", value + "px");
 
-    $(rep).find(".wrapped-text").css("height", (value - 47) + "px");
+    $(rep).find(".wrapped-text").css("height", "76px");
+	$(rep).find(".wrapped-text").css("line-height", "76px");
+	$(rep).find(".wrapped-text").css("text-align", "center");
     $(rep).find(".wrapped-text").dotdotdot();
 }
 
