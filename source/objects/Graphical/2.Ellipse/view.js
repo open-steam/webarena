@@ -72,7 +72,7 @@ Ellipse.setViewHeight = function(value) {
 }
 
 //calculate the Intersection point between an ellipse object and a line (which ends in the middle of the ellipse, described by a1 and a2)
-Ellipse.IntersectionObjectLine = function(a1, a2){
+Ellipse.IntersectionObjectLine = function(a1, a2, pad){
 
 	var rep = this.getRepresentation();
 	
@@ -82,23 +82,24 @@ Ellipse.IntersectionObjectLine = function(a1, a2){
 	var P;
 		
 	if(a1.x == (this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()/2)) && a1.y == (this.getViewBoundingBoxY()+(this.getViewBoundingBoxHeight()/2))){ //a1 is center of ellipse
-		P = this.IntersectionLineEllipse(rx, ry, a1, a2);
+		P = this.IntersectionLineEllipse(rx, ry, a1, a2, pad);
 			
 		P.x = P.x + a1.x;
 		P.y = P.y + a1.y;
 	}
 	else{ //a2 is center of ellipse
-		P = this.IntersectionLineEllipse(rx, ry, a2, a1);
+		P = this.IntersectionLineEllipse(rx, ry, a2, a1, pad);
 			
 		P.x = P.x + a2.x;
 		P.y = P.y + a2.y;
 	}
-												
+			
 	return P;
+	
 }
 
 //calculate the Intersection point between an ellipse (described by rx, ry and a1) and a line (which ends in the middle of the ellipse, described by a1 and a2)
-Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2){
+Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2, pad){
 
 	//a1 is center of ellipse
 	
@@ -106,8 +107,8 @@ Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2){
 	var dx = a2.x-a1.x;
 		
 	//padding	
-	rx = rx+20;
-	ry = ry+20;
+	rx = rx+pad;
+	ry = ry+pad;
 		
 	var phi = Math.atan(dy/dx);
 
@@ -121,7 +122,7 @@ Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2){
 	P.x = rx * Math.cos(t);
 	P.y = ry * Math.sin(t);
 				
-	if(dy==0 && dx<0){ //special case (because t can be null on the left side and on the right side if the ellipse) 
+	if(dy==0 && dx<0){ //special case (because t can be null on the left side and on the right side of the ellipse) 
 		P.x = P.x-2*rx;
 	}	
 				

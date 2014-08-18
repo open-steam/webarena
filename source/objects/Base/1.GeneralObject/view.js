@@ -1726,15 +1726,16 @@ GeneralObject.setDisplayGhost = function(s) {
 	this.draw();
 }
 
-//calculate the Intersection point between an object and a line (which ends in the middle of the object, described by a1 and a2).
+//calculate the Intersection point between an object and a line (described by a1 and a2).
 //The object shape has to be similar to an rectangle!
 //If another shape is desired, please define on own IntersectionObjectLine-function for this object (as seen for the ellipse and polygon).
-GeneralObject.IntersectionObjectLine = function(a1, a2){
+//this method will only return the first intersection point or "no intersection" or "coincident"
+GeneralObject.IntersectionObjectLine = function(a1, a2, p){
+				
+	//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
+	var padding = p;
 		
-	//calculate the corner points to build the bounding box lines:
-		
-	var padding = 20;
-		
+	//calculate the corner points to build the bounding box lines:	
 	var objectLeftTop = new Object();
 	objectLeftTop.x = this.getViewBoundingBoxX()-padding;
 	objectLeftTop.y = this.getViewBoundingBoxY()-padding;
@@ -1756,7 +1757,7 @@ GeneralObject.IntersectionObjectLine = function(a1, a2){
 	var Intersection2 = this.IntersectionLineLine(a1, a2, objectLeftTop, objectLeftBottom);
 	var Intersection3 = this.IntersectionLineLine(a1, a2, objectLeftBottom, objectRightBottom);
 	var Intersection4 = this.IntersectionLineLine(a1, a2, objectRightBottom, objectRightTop);
-		
+	
 	if(typeof Intersection1.x != 'undefined' || typeof Intersection1.y != 'undefined'){ //Intersection on top
 		return Intersection1;
 	}
@@ -1769,6 +1770,14 @@ GeneralObject.IntersectionObjectLine = function(a1, a2){
 	if(typeof Intersection4.x != 'undefined' || typeof Intersection4.y != 'undefined'){ //Intersection on the right
 		return Intersection4;
 	}
+	
+	if(Intersection1 == "coincident" || Intersection2 == "coincident" || Intersection3 == "coincident" || Intersection4 == "coincident"){
+		return "coincident";
+	}
+	else{
+		return "no intersection"
+	}
+
 }
 
 //calculate the Intersection Point between two lines (endpoints are defined by a1, a2 and b1, b2)
@@ -1788,7 +1797,15 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
             result.x = a1.x + t4 * (a2.x - a1.x);
 			result.y = a1.y + t4 * (a2.y - a1.y);
         } 
+		else{
+			result = "no intersection";
+		}
     }
+	else{
+		if ( t1 == 0 || t2 == 0 ) {
+            result = "coincident";
+        }
+	}
 
     return result;
 };

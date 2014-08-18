@@ -90,7 +90,7 @@ GUI.moveLinks = function(object){
 		
 		if(arrowheadToTarget1 == "url(#svgMarker_arrow_black_0)" || arrowheadToTarget2 == "url(#svgMarker_arrow_black_1)"){ //arrowhead to target 
 		
-			var Intersection = target.IntersectionObjectLine(a1, a2);
+			var Intersection = target.IntersectionObjectLine(a1, a2, 20);
 				
 			if(typeof Intersection == 'undefined'){ //there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
 			
@@ -107,7 +107,7 @@ GUI.moveLinks = function(object){
 		}
 		if(arrowheadToObject1 == "url(#svgMarker_arrow_black_1)"|| arrowheadToObject2 == "url(#svgMarker_arrow_black_0)"){ //arrowhead to object
 		
-			var Intersection = object.IntersectionObjectLine(a1, a2);
+			var Intersection = object.IntersectionObjectLine(a1, a2, 20);
 				
 			if(typeof Intersection == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link	
 			

@@ -117,13 +117,15 @@ Polygon.setViewHeight = function(value) {
 	this.drawPolygon();
 }
 
-//calculate the Intersection point between a polygon object and a line (which ends in the middle of the polygon, described by a1 and a2)
-Polygon.IntersectionObjectLine = function(a1, a2){
+//calculate the Intersection point between a polygon object and a line (described by a1 and a2)
+//this method will only return the first intersection point or "no intersection" or "coincident"
+Polygon.IntersectionObjectLine = function(a1, a2, p){
 				
-	//calculate the corner points to build the bounding box lines:
-	var padding1 = 10;
-	var padding2 = 30;
+	//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
+	var padding1 = p-10;
+	var padding2 = p+10;
 			
+	//calculate the corner points to build the bounding box lines:		
 	var CenterLeft = new Object();
 	CenterLeft.x = this.getViewBoundingBoxX()-padding2;
 	CenterLeft.y = this.getViewBoundingBoxY()+(this.getViewBoundingBoxHeight()/2);
@@ -173,5 +175,13 @@ Polygon.IntersectionObjectLine = function(a1, a2){
 	}
 	if(typeof Intersection6.x != 'undefined' && typeof Intersection6.y != 'undefined'){ //Intersection left top
 		return Intersection6;
-	}		
+	}	
+
+	if(Intersection1 == "coincident" || Intersection2 == "coincident" || Intersection3 == "coincident" || Intersection4 == "coincident" || Intersection5 == "coincident" || Intersection6 == "coincident"){
+		return "coincident";
+	}
+	else{
+		return "no intersection"
+	}
+	
 }
