@@ -146,7 +146,7 @@ Polygon.IntersectionObjectLine = function(a1, a2, p){
 			
 	var P = this.getPoints();
 			
-	for(var j = 0; j< P.length-1; j++){
+	for(var j = 0; j< P.length-2; j++){
 		var Int = this.IntersectionLineLine(a1, a2, P[j], P[j+1]);
 		if(typeof Int.x != 'undefined' && typeof Int.y != 'undefined'){
 

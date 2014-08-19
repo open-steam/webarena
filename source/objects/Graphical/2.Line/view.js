@@ -202,3 +202,110 @@ Line.checkTransparency = function(attribute, value) {
 		return false;
 	} else return true;
 }
+
+
+Line.getPoints = function(){
+
+	var dir = this.getAttribute("direction");
+	var P1;
+	var P2;
+	
+	if(dir == 1 || dir == 3){
+	
+		P1 = {
+			x : this.getAttribute("x"),
+			y : this.getAttribute("y")
+		}
+		
+		P2 = {
+			x : (this.getAttribute("x")+this.getAttribute("width")),
+			y : (this.getAttribute("y")+this.getAttribute("height"))
+		}
+		
+	}
+	if(dir == 2 || dir == 4){
+	
+		P1 = {
+			x : (this.getAttribute("x")+this.getAttribute("width")),
+			y : this.getAttribute("y")
+		}
+		
+		P2 = {
+			x : this.getAttribute("x"),
+			y : (this.getAttribute("y")+this.getAttribute("height"))
+		}
+	
+	}
+	
+	var LS = this.getAttribute('linesize');
+	
+	if(LS == 1){	
+		return [P1, P2]
+	}
+
+	var dx = P1.x - P2.x;
+	var dy = P1.y - P2.y;
+					
+	var absval = Math.sqrt(Math.pow(dy, 2) + Math.pow(dx, 2));
+			
+	dy = dy/absval;
+	dx = dx/absval;
+	
+	var C1 = {
+		x : P1.x + (dy)*LS/2,
+		y : P1.y + (-dx)*LS/2
+	}
+	
+	var C2 = {
+		x : P1.x + (-dy)*LS/2,
+		y : P1.y + (dx)*LS/2
+	}
+	
+	var C3 = {
+		x : P2.x + (-dy)*LS/2,
+		y : P2.y + (dx)*LS/2
+	}
+	
+	var C4 = {
+		x : P2.x + (dy)*LS/2,
+		y : P2.y + (-dx)*LS/2
+	}
+	
+	return [C1, C2, C3, C4];
+
+}
+
+
+//calculate the Intersection point between a line object and a line (described by a1 and a2)
+//this method will only return the first intersection point
+Line.IntersectionObjectLine = function(a1, a2, p){
+
+	var P = this.getPoints();
+			
+	var t;		
+	for(var j = 0; j< P.length; j++){
+		t = j+1;
+		if(t == P.length) t = 0;
+		var Int = this.IntersectionLineLine(a1, a2, P[j], P[t]);
+		if(typeof Int.x != 'undefined' && typeof Int.y != 'undefined'){
+
+			var dx = P[t].x - P[j].x;
+			var dy = P[t].y - P[j].y;
+					
+			var absval = Math.sqrt(Math.pow(dy, 2) + Math.pow(dx, 2));
+			
+			dy = dy/absval;
+			dx = dx/absval;
+			
+			//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)	
+			Int.x = Int.x + (dy)*p;
+			Int.y = Int.y + (-dx)*p;
+			
+			return Int;
+		}
+		if(Int == "coincident") return Int;
+	}
+	
+	return "no intersection";
+	
+}

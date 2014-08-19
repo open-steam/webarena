@@ -25,16 +25,19 @@ Polygon.boxIntersectsWith = function(ox,oy,ow,oh){
 	
 	//check if the square surrounds the Polygon completely (by checking if the square contains all points of the Polygon)
 	var P = this.getPoints();
+	var counter = 0;
 	for(var j = 0; j< P.length-1; j++){
-		if(P[j].x > ox && P[j].x < (ox+ow) && P[j].y > oy && P[j].y < (oy+oh)) return true;
+		if(P[j].x > ox && P[j].x < (ox+ow) && P[j].y > oy && P[j].y < (oy+oh)) counter++;	
 	}
+	
+	if(counter == P.length-1) return true;
 	
 	var cornerpoints = [{ x:ox, y:oy}, { x:(ox+ow), y:oy}, { x:(ox+ow), y:(oy+oh)}, { x:ox, y:(oy+oh)}];
 	
 	var c;
 	for(var i = 0; i<cornerpoints.length; i++){
 		c = i+1;
-		if(c == 4) c = 0;
+		if(c == cornerpoints.length) c = 0;
 		var Int = this.IntersectionObjectLine(cornerpoints[i], cornerpoints[c], 0);
 		if(Int != "no intersection") return true;
 	}
