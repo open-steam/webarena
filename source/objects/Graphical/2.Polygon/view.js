@@ -117,71 +117,56 @@ Polygon.setViewHeight = function(value) {
 	this.drawPolygon();
 }
 
-//calculate the Intersection point between a polygon object and a line (described by a1 and a2)
-//this method will only return the first intersection point or "no intersection" or "coincident"
-Polygon.IntersectionObjectLine = function(a1, a2, p){
-				
-	//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
-	var padding1 = p-10;
-	var padding2 = p+10;
-			
-	//calculate the corner points to build the bounding box lines:		
-	var CenterLeft = new Object();
-	CenterLeft.x = this.getViewBoundingBoxX()-padding2;
-	CenterLeft.y = this.getViewBoundingBoxY()+(this.getViewBoundingBoxHeight()/2);
-		
-	var CenterRight = new Object();
-	CenterRight.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()+padding2;
-	CenterRight.y = this.getViewBoundingBoxY()+(this.getViewBoundingBoxHeight()/2);
-		
-	var LeftTop = new Object();
-	LeftTop.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()/4)-padding1;
-	LeftTop.y = this.getViewBoundingBoxY()-padding1;
-		
-	var LeftBottom = new Object();
-	LeftBottom.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()/4)-padding1;
-	LeftBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding1;
-		
-	var RightBottom = new Object();
-	RightBottom.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()*0.75)+padding1;
-	RightBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding1;
-		
-	var RightTop = new Object();
-	RightTop.x = this.getViewBoundingBoxX()+(this.getViewBoundingBoxWidth()*0.75)+padding1;
-	RightTop.y = this.getViewBoundingBoxY()-padding1;
-		
-	//calculate the Intersection Points between the line and each bounding box line	
-	var Intersection1 = this.IntersectionLineLine(a1, a2, CenterLeft, LeftBottom);
-	var Intersection2 = this.IntersectionLineLine(a1, a2, LeftBottom, RightBottom);
-	var Intersection3 = this.IntersectionLineLine(a1, a2, RightBottom, CenterRight);
-	var Intersection4 = this.IntersectionLineLine(a1, a2, CenterRight, RightTop);
-	var Intersection5 = this.IntersectionLineLine(a1, a2, RightTop, LeftTop);
-	var Intersection6 = this.IntersectionLineLine(a1, a2, LeftTop, CenterLeft);
-		
-	if(typeof Intersection1.x != 'undefined' && typeof Intersection1.y != 'undefined'){ //Intersection left bottom
-		return Intersection1;
-	}
-	if(typeof Intersection2.x != 'undefined' && typeof Intersection2.y != 'undefined'){ //Intersection bottom
-		return Intersection2;
-	}
-	if(typeof Intersection3.x != 'undefined' && typeof Intersection3.y != 'undefined'){ //Intersection right bottom
-		return Intersection3;
-	}
-	if(typeof Intersection4.x != 'undefined' && typeof Intersection4.y != 'undefined'){ //Intersection right top
-		return Intersection4;
-	}
-	if(typeof Intersection5.x != 'undefined' && typeof Intersection5.y != 'undefined'){ //Intersection on top
-		return Intersection5;
-	}
-	if(typeof Intersection6.x != 'undefined' && typeof Intersection6.y != 'undefined'){ //Intersection left top
-		return Intersection6;
-	}	
+Polygon.getPoints = function(){
 
-	if(Intersection1 == "coincident" || Intersection2 == "coincident" || Intersection3 == "coincident" || Intersection4 == "coincident" || Intersection5 == "coincident" || Intersection6 == "coincident"){
-		return "coincident";
+	var rep = this.getRepresentation();
+
+	var pointsString = $(rep).attr("points");	
+	var pointsArr = pointsString.split(" ");
+	
+	var P = new Array();
+	var x = parseInt($(rep).attr("x"));	
+	var y = parseInt($(rep).attr("y"));	
+	
+	for(var i = 0; i< pointsArr.length; i++){
+		var values = pointsArr[i].split(",");
+		P[i] = {
+			x : (parseInt(values[0])+x),
+			y : (parseInt(values[1])+y)
+		}
 	}
-	else{
-		return "no intersection"
+
+	return P;
+	
+}
+
+//calculate the Intersection point between a polygon object and a line (described by a1 and a2)
+//this method will only return the first intersection point
+Polygon.IntersectionObjectLine = function(a1, a2, p){
+			
+	var P = this.getPoints();
+			
+	for(var j = 0; j< P.length-1; j++){
+		var Int = this.IntersectionLineLine(a1, a2, P[j], P[j+1]);
+		if(typeof Int.x != 'undefined' && typeof Int.y != 'undefined'){
+
+			var dx = P[j+1].x - P[j].x;
+			var dy = P[j+1].y - P[j].y;
+					
+			var absval = Math.sqrt(Math.pow(dy, 2) + Math.pow(dx, 2));
+			
+			dy = dy/absval;
+			dx = dx/absval;
+			
+			//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)	
+			Int.x = Int.x + (dy)*p;
+			Int.y = Int.y + (-dx)*p;
+			
+			return Int;
+		}
+		if(Int == "coincident") return Int;
 	}
+	
+	return "no intersection";
 	
 }
