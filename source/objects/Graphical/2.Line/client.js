@@ -27,7 +27,7 @@ Line.hasPixelAt=function(x,y){
 /**
 *	determine if the Line (not only the bounding box) intersects with the square x,y,width,height
 */
-Line.boxIntersectsWith = function(ox, oy, ow, oh){
+Line.objectIntersectsWith = function(ox, oy, ow, oh){
 
 	if (!this.isGraphical) return false;
 

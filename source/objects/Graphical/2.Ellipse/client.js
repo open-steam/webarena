@@ -9,7 +9,7 @@
 /**
 *	determine if the Ellipse (not only the bounding box) intersects with the square x,y,width,height
 */
-Ellipse.boxIntersectsWith = function(otherx,othery,otherwidth,otherheight){
+Ellipse.objectIntersectsWith = function(otherx,othery,otherwidth,otherheight){
 	if (!this.isGraphical) return false;
 
 	//check if the square intersects the bounding box

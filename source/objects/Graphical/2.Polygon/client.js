@@ -9,7 +9,7 @@
 /**
 *	determine if the Poylgon (not only the bounding box) intersects with the square x,y,width,height
 */
-Polygon.boxIntersectsWith = function(ox,oy,ow,oh){
+Polygon.objectIntersectsWith = function(ox,oy,ow,oh){
 	if (!this.isGraphical) return false;
 
 	//check if the square intersects the bounding box

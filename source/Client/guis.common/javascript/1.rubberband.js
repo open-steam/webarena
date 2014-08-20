@@ -148,7 +148,15 @@ GUI.rubberbandStart = function(event) {
 			
 				if (!object.getAttribute("visible")) return;
 				
-				if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
+				var val;
+				if(typeof object.objectIntersectsWith == 'function'){ 
+					val = object.objectIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight); 
+				}
+				else{
+					val = object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight);
+				}
+				
+				if (val) {
 					if (object.isGraphical) {
 						object.select(true);
 						count++;
