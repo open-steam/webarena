@@ -195,7 +195,7 @@ GeneralObject.register=function(type){
 
 	}});
 	
-	this.registerAttribute('linesize',{type:'number',min:1,standard:1,max:30,category:'Appearance'});
+	this.registerAttribute('linesize',{type:'number',min:1,standard:1,category:'Appearance'});
 
 	this.registerAttribute('fixed',{type:'boolean',standard:false,category:'Basic',checkFunction: function(object, value) {
 		

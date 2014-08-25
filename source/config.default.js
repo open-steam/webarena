@@ -44,6 +44,8 @@ module.exports={
 	
 	structuringMode: true,
 	
+	WebRTC: true,
+	
 // Development
 	
 	debugMode: false,

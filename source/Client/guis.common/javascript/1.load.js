@@ -141,6 +141,7 @@ GUI.loadGUI = function(step) {
 		
 		GUI.loaded = true;
 		GUI.hideLogin();
+		WebRTCManager.init();
 		
 		if (GUI.guiType == 'desktop') {
 			ObjectManager.paintingUpdate();

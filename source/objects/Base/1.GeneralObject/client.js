@@ -178,7 +178,7 @@ GeneralObject.getCurrentUserName=function(){
 }
 
 /**
-*	determine if the current object intersects with the square x,y,width,height
+*	determine if the object's bounding box intersects with the square x,y,width,height
 */
 GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 	if (!this.isGraphical) return false;
@@ -198,7 +198,7 @@ GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 }
 
 /**
-*	determine if the current object intersects with another object
+*	determine if the object's bounding box intersects with another object's bounding box
 */
 GeneralObject.intersectsWith=function(other){
 	var otherx=other.getViewBoundingBoxX();

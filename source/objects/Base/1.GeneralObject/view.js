@@ -594,11 +594,11 @@ GeneralObject.addControls = function() {
 			var width = startWidth+dx;
 			var height = startHeight*(width/startWidth);
 
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 			}
 			
@@ -606,7 +606,7 @@ GeneralObject.addControls = function() {
 			
 			var width = startWidth+dx;
 			
-			if (width < 10) return;
+			if (width < 20) return;
 			self.setViewWidth(width);
 			
 		}
@@ -623,12 +623,12 @@ GeneralObject.addControls = function() {
 
 			var x =  startX+dx;
 
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 				self.setViewX(x);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 			}
 			
@@ -637,7 +637,7 @@ GeneralObject.addControls = function() {
 			var width = startWidth-dx;
 			var x =  startX+dx;
 			
-			if (width < 10) return;
+			if (width < 20) return;
 			self.setViewWidth(width);
 			self.setViewX(x);
 			
@@ -653,11 +653,11 @@ GeneralObject.addControls = function() {
 			var height = startHeight+dy;
 			var width = startWidth*(height/startHeight);
 			
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 			}
 			
@@ -665,7 +665,7 @@ GeneralObject.addControls = function() {
 			
 			var height = startHeight+dy;
 			
-			if (height < 10) return;
+			if (height < 20) return;
 			self.setViewHeight(height);
 			
 		}
@@ -682,11 +682,11 @@ GeneralObject.addControls = function() {
 			
 			var y =  startY+dy;
 			
-			if (width >= 10) {
+			if (width >= 20) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10) {
+			if (height >= 20) {
 				self.setViewHeight(height);
 				self.setViewY(y);
 			}
@@ -696,7 +696,7 @@ GeneralObject.addControls = function() {
 			var height = startHeight-dy;
 			var y =  startY+dy;
 			
-			if (height < 10) return;
+			if (height < 20) return;
 			self.setViewHeight(height);
 			self.setViewY(y);
 			
@@ -717,12 +717,12 @@ GeneralObject.addControls = function() {
 			var x =  startX+dx;
 			var y =  startY+dy;
 			
-			if (width >= 10 || self.ignoreMinDimensions === true) {
+			if (width >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 				self.setViewX(x);
 			}
 
-			if (height >= 10 || self.ignoreMinDimensions === true) {
+			if (height >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 				self.setViewY(y);
 			}
@@ -742,11 +742,11 @@ GeneralObject.addControls = function() {
 
 			var y =  startY+dy;
 			
-			if (width >= 10 || self.ignoreMinDimensions === true) {
+			if (width >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10 || self.ignoreMinDimensions === true) {
+			if (height >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 				self.setViewY(y);
 			}
@@ -773,7 +773,7 @@ GeneralObject.addControls = function() {
 				
 			}
 			
-			if (width >= 10 && height >= 10) {
+			if (width >= 20 && height >= 20) {
 				self.setViewWidth(width);
 				self.setViewHeight(height);
 			}
@@ -783,11 +783,11 @@ GeneralObject.addControls = function() {
 			var width = startWidth+dx;
 			var height = startHeight+dy;
 			
-			if (width >= 10 | self.ignoreMinDimensions === true) {
+			if (width >= 20 | self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 			}
 
-			if (height >= 10 | self.ignoreMinDimensions === true) {
+			if (height >= 20 | self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 			}
 			
@@ -806,12 +806,12 @@ GeneralObject.addControls = function() {
 			
 			var x =  startX+dx;
 			
-			if (width >= 10 || self.ignoreMinDimensions === true) {
+			if (width >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewWidth(width);
 				self.setViewX(x);
 			}
 
-			if (height >= 10 || self.ignoreMinDimensions === true) {
+			if (height >= 20 || self.ignoreMinDimensions === true) {
 				self.setViewHeight(height);
 			}
 			
@@ -1261,8 +1261,8 @@ GeneralObject.moveStart = function(event) {
 		$("#content").bind("mouseup.webarenaMove", end);
 	}
 
-	
 }
+
 
 /**
  * Sets event handlers to make the objects representation movable
@@ -1285,10 +1285,9 @@ GeneralObject.makeMovable = function() {
 		/* mouse */
 		$(rep).bind("mousedown", self.moveStart);
 	}
-	
 
-	
 }
+
 
 /**
  * Moves the object relative to the saved position of GeneralObject.saveMoveStartPosition
@@ -1734,15 +1733,16 @@ GeneralObject.setDisplayGhost = function(s) {
 	this.draw();
 }
 
-//calculate the Intersection point between an object and a line (which ends in the middle of the object, described by a1 and a2).
+//calculate the Intersection point between an object and a line (described by a1 and a2).
 //The object shape has to be similar to an rectangle!
 //If another shape is desired, please define on own IntersectionObjectLine-function for this object (as seen for the ellipse and polygon).
-GeneralObject.IntersectionObjectLine = function(a1, a2){
+//this method will only return the first intersection point or "no intersection" or "coincident"
+GeneralObject.IntersectionObjectLine = function(a1, a2, p){
+				
+	//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
+	var padding = p;
 		
-	//calculate the corner points to build the bounding box lines:
-		
-	var padding = 20;
-		
+	//calculate the corner points to build the bounding box lines:	
 	var objectLeftTop = new Object();
 	objectLeftTop.x = this.getViewBoundingBoxX()-padding;
 	objectLeftTop.y = this.getViewBoundingBoxY()-padding;
@@ -1764,7 +1764,7 @@ GeneralObject.IntersectionObjectLine = function(a1, a2){
 	var Intersection2 = this.IntersectionLineLine(a1, a2, objectLeftTop, objectLeftBottom);
 	var Intersection3 = this.IntersectionLineLine(a1, a2, objectLeftBottom, objectRightBottom);
 	var Intersection4 = this.IntersectionLineLine(a1, a2, objectRightBottom, objectRightTop);
-		
+	
 	if(typeof Intersection1.x != 'undefined' || typeof Intersection1.y != 'undefined'){ //Intersection on top
 		return Intersection1;
 	}
@@ -1777,6 +1777,14 @@ GeneralObject.IntersectionObjectLine = function(a1, a2){
 	if(typeof Intersection4.x != 'undefined' || typeof Intersection4.y != 'undefined'){ //Intersection on the right
 		return Intersection4;
 	}
+	
+	if(Intersection1 == "coincident" || Intersection2 == "coincident" || Intersection3 == "coincident" || Intersection4 == "coincident"){
+		return "coincident";
+	}
+	else{
+		return "no intersection"
+	}
+
 }
 
 //calculate the Intersection Point between two lines (endpoints are defined by a1, a2 and b1, b2)
@@ -1796,7 +1804,15 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
             result.x = a1.x + t4 * (a2.x - a1.x);
 			result.y = a1.y + t4 * (a2.y - a1.y);
         } 
+		else{
+			result = "no intersection";
+		}
     }
+	else{
+		if ( t1 == 0 || t2 == 0 ) {
+            result = "coincident";
+        }
+	}
 
     return result;
 };

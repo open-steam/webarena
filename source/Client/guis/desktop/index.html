@@ -42,13 +42,21 @@
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
 
-
+	<!-- scripts used for video-conferencing with WebRTC-->
+    <script type="text/javascript" src="/guis.common/libraries/WebRTC/RTCPeerConnection.js"> </script>
+    <script type="text/javascript" src="/guis.common/libraries/WebRTC/conference.js"> </script>
+    <script type="text/javascript" src="/guis.common/libraries/WebRTC/getMediaElement.min.js"> </script>
+    <!-- script used to display custom notification bar! -->
+    <script type="text/javascript" src="/guis.common/libraries/WebRTC/navigator.customGetUserMediaBar.js"> </script>
+	
 	<script src="/config.js"></script>
 	<script src="/Helper.js"></script>
 	<script src="/Dispatcher.js"></script>
 	<script src="/ObjectManager.js"></script>
 	<script src="/SocketClient.js"></script>
 
+	<script src="/WebRTCManager.js"></script>
+	
 	<script src="/Common/Log.js"></script>
 	<script src="/Common/DataSet.js"></script>
 	<script src="/Common/ActionManager.js"></script>
@@ -167,6 +175,8 @@
 	
 	<div id="content">
 		<p style="z-index:10; position:fixed;" id="besideMouse"></p>
+		    <!-- local/remote videos container -->
+            <div id="videos-container"></div> 
 	</div>
 	
 	<div id="sidebar">

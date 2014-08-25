@@ -60,7 +60,7 @@ Discussion.drawIcon = function () {
     $(rep).find(".discussion-blob").css("font-size", this.getAttribute('font-size'));
     $(rep).find(".discussion-blob").css("font-family", this.getAttribute('font-family'));
     $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
-
+	
     $(rep).attr("layer", this.getAttribute('layer'));
 }
 
@@ -249,8 +249,8 @@ Discussion.createRepresentationIcon = function (parent) {
     var body = document.createElement("body");
     var title = this.getAttribute('discussionTitle') || this.translate(GUI.currentLanguage, "Discussion without title");
 
-    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text moveArea'>" + title + "</div></div>");
-
+    $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text moveArea'>"+title+"</div></div>");
+	
     $(rep).append(body);
     $(rep).attr("id", this.getAttribute('id'));
     $(rep).find('.wrapped-text').dotdotdot();
@@ -303,7 +303,8 @@ Discussion.setViewHeight = function (value) {
 }
 
 Discussion.updateInnerHeight = function (value) {
-    var embedded = this.getAttribute("show_embedded");
+    
+	var embedded = this.getAttribute("show_embedded");
 
     if (embedded) {
         this.updateInnerHeightEmbedded(value);
@@ -313,7 +314,8 @@ Discussion.updateInnerHeight = function (value) {
 }
 
 Discussion.updateInnerHeightEmbedded = function (value) {
-    var rep = this.getRepresentation();
+	
+	var rep = this.getRepresentation();
 
     $(rep).find("body").css("height", value + "px");
     $(rep).find(".discussion").css("height", value + "px");
@@ -325,11 +327,15 @@ Discussion.updateInnerHeightEmbedded = function (value) {
 }
 
 Discussion.updateInnerHeightIcon = function (value) {
-    var rep = this.getRepresentation();
+	
+	var rep = this.getRepresentation();
 
     $(rep).find("body").css("height", value + "px");
+    $(rep).find(".discussion-blob").css("height", (value-20) + "px");
 
-    $(rep).find(".wrapped-text").css("height", (value - 47) + "px");
+    $(rep).find(".wrapped-text").css("height", (value-20) + "px");
+	$(rep).find(".wrapped-text").css("line-height", (value-20) + "px");
+	$(rep).find(".wrapped-text").css("text-align", "center");
     $(rep).find(".wrapped-text").dotdotdot();
 }
 
