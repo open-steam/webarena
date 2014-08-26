@@ -68,6 +68,7 @@ Textarea.isCreatable=true;
 Textarea.onMobile = true;
 Textarea.isCreatableOnMobile = true;
 Textarea.hasEditableMobileContent = true;
+Textarea.moveByTransform = function(){return false;}
 
 Textarea.contentURLOnly = false; //content is only accessible via URL
 
