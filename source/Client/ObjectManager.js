@@ -67,6 +67,16 @@ ObjectManager.getObject=function(objectID){
     }
 }
 
+ObjectManager.getObjectByName=function(name){
+	var objects=ObjectManager.getObjects();
+	
+	for (var i in objects){
+		var object=objects[i];
+		
+		if (object.getAttribute('name')==name) return object;
+	}
+}
+
 ObjectManager.buildObject=function(type, attributes){
 	
 	if (!type) console.trace();
