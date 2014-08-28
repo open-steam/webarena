@@ -128,7 +128,7 @@ theObject.makeStructuring=function(){
 		var newData={};
 		var fields=['x','y','cx','cy','width','height'];
 		
-		for (var i=0;i<4;i++){
+		for (var i in fields){
 			var field=fields[i];
 			oldData[field]=changeData['old'][field] || object.getAttribute(field);
 			newData[field]=changeData['new'][field] || object.getAttribute(field);
