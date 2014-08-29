@@ -66,29 +66,5 @@ theObject.checkData=function(){
 	return true;
 }
 
-theObject.getPositioningDataFor=function(activeObject){
-	
-		var gKey=this.getAttribute('attribute');
-		var gValue=this.getAttribute('value');
-		var oValue=activeObject.getAttribute(gKey);
-		
-		if (gValue===oValue){
-			var result={reference:'must'};
-			
-			result.minX=this.getAttribute('x');
-			result.maxX=this.getAttribute('x')+this.getAttribute('width');
-			result.minY=this.getAttribute('y');
-			result.maxY=this.getAttribute('y')+this.getAttribute('height');
-		} else {
-			var result={reference:'mustnot'};
-			
-			result.minX=this.getAttribute('x');
-			result.maxX=this.getAttribute('x')+this.getAttribute('width');
-			result.minY=this.getAttribute('y');
-			result.maxY=this.getAttribute('y')+this.getAttribute('height');
-		}
 
-		
-		return result;
-}
 	

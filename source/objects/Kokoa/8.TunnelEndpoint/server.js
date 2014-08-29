@@ -15,18 +15,6 @@ theObject.onLeave=function(object,oldData,newData){
 };
 
 
-theObject.getPositioningDataFor = function(object){
-	//TODO: should only return not set position...
-	object.setAttribute("x", this.getAttribute("x") + 30);
-	object.setAttribute("y", this.getAttribute("y") + 30);
-
-	var result = {
-		"x" : this.getAttribute("x") + 30,
-		"y" : this.getAttribute("y") + 30
-	};
-
-	return result;
-}
 
 theObject.decideIfActive = function(object){
 

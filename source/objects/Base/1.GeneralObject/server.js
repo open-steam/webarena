@@ -176,19 +176,7 @@ theObject.makeStructuring=function(){
 		return true;
 	} 
 	
-	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
-		
-		var result={reference:'ignore'};
-		
-		//reference: must, mustnot, ignore
-		//minX
-		//maxX
-		//minY
-		//maxY
-		
-		return result;
-		
-	}
+
 
 }
 
