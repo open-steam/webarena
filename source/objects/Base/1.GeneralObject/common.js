@@ -93,11 +93,13 @@ GeneralObject.restrictedMovingArea = false;
 
 /**
  * duplicate this object if a linked object gets duplicated
+ * TODO: remove, is not used any more
  */
 GeneralObject.duplicateWithLinkedObjects = false;
 
 /**
  * duplicate linked objects if this object gets duplicated
+  * TODO: remove, is not used any more
  */
 GeneralObject.duplicateLinkedObjects = false;
 
@@ -732,46 +734,6 @@ GeneralObject.hasLinkedObjects=function() {
 	
 }
 
-//return a list of all objects which have a link to this object
-GeneralObject.getLinkedObjects=function() {
-
-	var self = this;
-	
-	/* getObject (this is different on server and client) */
-	if (self.ObjectManager.isServer) {
-		/* server */
-		var getObject = function(id) {
-			return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
-		}
-		var getObjects = function() {
-			return Modules.ObjectManager.getObjects(self.get('inRoom'), self.context);
-		}
-	} else {
-		/* client */
-		var getObject = function(id) {
-			return ObjectManager.getObject(id);
-		}
-		var getObjects = function() {
-			return ObjectManager.getObjects(ObjectManager.getIndexOfObject(self.getId()));
-		}
-	}
-
-	var linkedObjects = this.getAttribute("link");
-	
-	var links = {};
-		
-	for(var i = 0; i<linkedObjects.length; i++){
-			
-		var targetID = linkedObjects[i].destination;
-		var target = getObject(targetID);
-
-		links[targetID] = {
-			object : target,
-		}
-	}
-	
-	return links;
-}
 
 GeneralObject.getGroupMembers = function() {
 	
@@ -792,45 +754,6 @@ GeneralObject.getGroupMembers = function() {
 	
 }
 
-
-GeneralObject.getObjectsToDuplicate = function(list) {
-	
-	var self = this;
-	
-	if (list == undefined) {
-		/* init new list */
-		
-		/* list of objects which will be duplicated */
-		var list = {};
-		
-	}
-	
-	list[self.get('id')] = true; //add this object to list
-	
-	var linkedObjects = this.getLinkedObjects();
-
-	for (var id in linkedObjects) {
-		var target = linkedObjects[id];
-		var targetObject = target.object;
-		
-		if (targetObject && targetObject && !list[targetObject.get('id')]) {
-			targetObject.getObjectsToDuplicate(list);
-		}
-		
-	}
-
-
-	var arrList = [];
-	
-	for (var objectId in list) {
-
-		arrList.push(objectId);
-		
-	}
-	
-	return arrList;
-	
-}
 
 GeneralObject.updateLinkIds = function(idTranslationList) {
 

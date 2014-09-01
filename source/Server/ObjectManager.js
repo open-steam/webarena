@@ -178,6 +178,8 @@ ObjectManager.getObjects = function (roomID, context, callback) {
 			inventory.push(object);
 		}
 
+		console.log('>>>> Synchronous return in getObjects');
+		
 		return inventory;
 
 	} else {
@@ -418,17 +420,16 @@ ObjectManager.undo = function (data, context, callback) {
  *
  *  returns the a room object for a given roomID
  *
- *  TODO: callback should be last parameter
  **/
-ObjectManager.getRoom = function (roomID, context, callback, oldRoomId) {
+ObjectManager.getRoom = function (roomID, context, oldRoomId, callback) {
 
 	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
 
-	Modules.Connector.getRoomData(roomID, context, function (data) {
+	Modules.Connector.getRoomData(roomID, context, oldRoomId, function (data) {
 		var obj = buildObjectFromObjectData(data, roomID, 'Room');
 		obj.context = context;
 		callback(obj);
-	}, oldRoomId);
+	});
 
 }
 
@@ -516,7 +517,7 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 			var filteredRooms = inventory.filter(function(e){return ((e.type ==="Subroom" || e.type === "Exit") && roomTranslationList[inventoryObject.attributes.destination] !== undefined)});
 			filteredRooms.forEach(function(inventoryObject){
 				inventoryObject.attributes.destination = roomTranslationList[inventoryObject.attributes.destination];
-				Modules.Connector.saveObjectData(inventoryObject.inRoom, inventoryObject.id, inventoryObject.attributes, undefined, context, false);
+				Modules.Connector.saveObjectData(inventoryObject.inRoom, inventoryObject.id, inventoryObject.attributes, context, false, undefined);
 			});
 		}
 		callback();
@@ -620,7 +621,7 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 
 						roomCopyTasks.push(function (callback) {
 							var uuid = require('node-uuid');
-							var newRoom = Modules.Connector.getRoomData(uuid.v4(), context, undefined, toRoom);
+							var newRoom = Modules.Connector.getRoomData(uuid.v4(), context, toRoom, undefined);
 							roomData.toRoom = newRoom.id;
 							roomTranslationList[roomData.fromRoom] = newRoom.id;
 

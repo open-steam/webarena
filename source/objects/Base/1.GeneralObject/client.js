@@ -220,3 +220,27 @@ GeneralObject.hasPixelAt=function(x,y){
 }
 
 GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
+
+GeneralObject.getLinkedObjects=function() {
+	var self = this;
+
+	var getObject = function(id) {
+		return ObjectManager.getObject(id);
+	}
+
+	var linkedObjects = this.getAttribute("link");
+	
+	var links = {};
+		
+	for(var i = 0; i<linkedObjects.length; i++){
+			
+		var targetID = linkedObjects[i].destination;
+		var target = getObject(targetID);
+
+		links[targetID] = {
+			object : target,
+		}
+	}
+	
+	return links;
+}

@@ -20,14 +20,14 @@ theObject.evaluatePositionFor=function(object,data){
 	
 	//let the moved object be evaluated by every structuring or sensitive object in the room
 	
-	var inventory=this.getInventory();
-	
-	for (var i in inventory){
-		var obj=inventory[i];
-		if (obj.isStructuring() || obj.isSensitive()) {
-			obj.evaluateObject(object,data);
+	this.getInventoryAsync(function(inventory){
+		for (var i in inventory){
+			var obj=inventory[i];
+			if (obj.isStructuring() || obj.isSensitive()) {
+				obj.evaluateObject(object,data);
+			}
 		}
-	}
+	});
 	
 }
 
@@ -159,12 +159,39 @@ theObject.placeActiveObjects=function(){
 }
 
 theObject.getInventory=function(){
+	console.log('>>>> Synchronous getInventory in Room');
 	return Modules.ObjectManager.getObjects(this.id,this.context);
 }
 
 theObject.getInventoryAsync = function(cb){
     return Modules.ObjectManager.getObjects(this.id, this.context, cb);
 }
+
+
+theObject.hasObject=function(obj){
+	console.log('>>>> Synchronous hasObject in Room');
+	
+	var inventory=this.getInventory();
+	for (var i in inventory){
+		if (inventory[i].id==obj.id) return true;
+	}
+	return false;
+}
+
+theObject.hasObjectAsync=function(obj,trueCB,falseCB){
+	
+	this.getInventoryAsync(function(inventory){
+		
+		if (trueCB){
+			for (var i in inventory){
+				if (inventory[i].id==obj.id) return trueCB();
+			}
+			if (falseCB) falseCB();
+		}
+		
+	});
+}
+
 
 theObject.createObject=function(type,callback){	
     return Modules.ObjectManager.createObject(this.id, type, false, false, this.context.socket, false, callback);
@@ -179,10 +206,10 @@ theObject.saveUserPaintingData=function(content,callback){
 		content = new Buffer(base64Data, 'base64');
 	}
 	
-	Modules.Connector.savePainting(this.inRoom, content, function() {
+	Modules.Connector.savePainting(this.inRoom, content, this.context, function() {
 		if (callback) callback();
 		self.updateClients('paintingsUpdate');
-	},this.context);
+	});
 	
 	
 }
@@ -209,9 +236,9 @@ theObject.getUserPaintings.neededRights = {
 theObject.deleteUserPainting=function(){
 	var self = this;
 	
-	Modules.Connector.deletePainting(this.inRoom, function() {
+	Modules.Connector.deletePainting(this.inRoom, this.context, function() {
 		self.updateClients('paintingsUpdate');
-	},this.context);
+	});
 	
 }
 theObject.deleteUserPainting.public = true;
