@@ -607,12 +607,12 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 			var targetObject = target.object;
 			
 			if (targetObject && !list[targetObject.get('id')]) {
-				temp.push(targetObject.getObjectsToDuplicate);
+				temp.push(targetObject.getObjectsToDuplicateAsync);
 			}
 		}
 		
 		temp.push=function(list,callback){
-			list[self.get('id')] = true; //add this object to list
+			list[self.getAttribute('id')] = true; //add this object to list
 		}
 		
 		async.applyEachSeries(temp, list, function(){
@@ -627,9 +627,7 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 			callback(arrList);
 		});
 		
-		
 	});
-
 	
 }
 
@@ -648,7 +646,7 @@ theObject.getObjectsToDuplicate = function(list) {
 		
 	}
 	
-	list[self.get('id')] = true; //add this object to list
+	list[self.getAttribute('id')] = true; //add this object to list
 	
 	var linkedObjects = this.getLinkedObjects();
 

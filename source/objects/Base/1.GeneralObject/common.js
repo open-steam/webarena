@@ -276,7 +276,7 @@ GeneralObject.register=function(type){
 		
 			var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
 		
-			GUI.createDialog(lastClicked, lastClicked, linkProperties, true);	
+			GUI.createLinkDialog(lastClicked, lastClicked, linkProperties, true);	
 				
         },
         false,
@@ -755,31 +755,46 @@ GeneralObject.getGroupMembers = function() {
 }
 
 
+//update the links after duplicate an object
 GeneralObject.updateLinkIds = function(idTranslationList) {
-
-	if (!this.get('link') || this.get('link') == "") {
-		return;
-	}
 	
-	var update = function(id) {
-
-		if (idTranslationList[id] != undefined) {
-			id = idTranslationList[id];
+	var links = this.getAttribute('link');
+	
+	var that = this; 
+	
+	links.forEach(function (link) {
+		if(typeof idTranslationList[link.destination] != 'undefined'){ // this destination was also copied
+			link.destination = idTranslationList[link.destination];
+			that.setAttribute('link', links);
+			that.persist();
 		}
-		return id;
-	}
-	
-	if (this.get('link') instanceof Array) {
-
-		for (var i in this.get('link')) {
-			this.setAttribute("link", update(this.get('link')[i]));
+		else{ //this destination was not copied		
+			var dest = Modules.ObjectManager.getObject(that.inRoom, link.destination, that.context); 
+			
+			if(typeof dest.inRoom === 'undefined'){ //the object and the destination are in different rooms now, so remove the links
+				links = links.filter(function (element) {
+                        return element.destination !== link.destination;
+                       });
+				that.setAttribute('link', links);
+			}
+			else{
+			
+				var newLink = {
+					destination: that.id,
+					arrowheadOtherEnd: link.arrowheadOtherEnd,
+					arrowheadThisEnd: link.arrowheadThisEnd,
+					width: link.width,
+					style: link.style
+				}
+				var destLinks = dest.getAttribute('link');
+				destLinks.push(newLink);
+				dest.setAttribute('link', destLinks);
+				dest.persist();
+			}
 		}
-		
-	} else {
-		this.setAttribute("link", update(this.get('link')));
-	}
-	
+	});
 }
+
 
 //handle the desired inputs which was made in the setting-properties-dialog
 //especially: creating/changing the link attribute
@@ -824,8 +839,9 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 			 //if a link already exists (between the selected and the lastclicked)-->update directions
 			$.each(newLinks1, function( index, value ) {
 
-				if(value.destination==selectedId){
-					value.arrowhead = arrowheadAtotherObject;
+				if(value.destination == selectedId){
+					value.arrowheadOtherEnd = arrowheadAtotherObject;
+					value.arrowheadThisEnd = arrowheadAtthisObject;
 					value.width = lineWidth;
 					value.style = lineStyle;
 					
@@ -835,8 +851,9 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 				
 			$.each(newLinks2, function( index, value ) {
 
-				if(value.destination==lastSelectedId){
-					value.arrowhead = arrowheadAtthisObject;
+				if(value.destination == lastSelectedId){
+					value.arrowheadOtherEnd = arrowheadAtthisObject;
+					value.arrowheadThisEnd = arrowheadAtotherObject;
 					value.width = lineWidth;
 					value.style = lineStyle;
 					
@@ -850,13 +867,15 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 
 				link1 = {
 					destination: selectedId,
-					arrowhead: arrowheadAtotherObject,
+					arrowheadOtherEnd: arrowheadAtotherObject,
+					arrowheadThisEnd: arrowheadAtthisObject,
 					width: lineWidth,
 					style: lineStyle
 				};
 				link2 = {
 					destination: lastSelectedId,
-					arrowhead: arrowheadAtthisObject,
+					arrowheadOtherEnd: arrowheadAtthisObject,
+					arrowheadThisEnd: arrowheadAtotherObject,
 					width: lineWidth,
 					style: lineStyle
 				};	
