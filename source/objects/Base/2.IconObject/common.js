@@ -24,10 +24,9 @@ IconObject.register=function(type){
 	
 	this.attributeManager.registerAttribute('layer',{hidden: true});
 	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { object.updateIcon(); }, mobile: false});
-	this.registerAttribute('width',{hidden:true,standard:65,min:65,max:65});
-	this.registerAttribute('height',{hidden:true,standard:65,min:65,max:65});
 	this.registerAttribute('fillcolor',{hidden:true});
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
+	this.registerAttribute('modeSensitive', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	//this.registerAttribute('linecolor',{hidden:true});
 	//this.registerAttribute('linesize',{hidden:true});
 	this.unregisterAction('to back');

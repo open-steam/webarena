@@ -201,7 +201,9 @@ GeneralObject.representationCreated = function() {
                 var selected = ObjectManager.getSelected();
                 _(selected).each(function (elem) {
                     if (elem !== that) {
-                        that.onDrop(elem);
+                        window.setTimeout(function(){
+                        	that.onDrop(elem);
+                        },500);
                     }
                 })
             }

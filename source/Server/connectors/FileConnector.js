@@ -825,7 +825,7 @@ fileConnector.trimImage=function(roomID, objectID, context, callback) {
 
 	var os = require('os');
 			
-	var filename = os.tmpdir()+"/image_preview_dimensions_"+roomID+"_"+objectID;
+	var filename = os.tmpDir()+"/image_preview_dimensions_"+roomID+"_"+objectID;
 	
 	this.getContent(roomID,objectID,context,function(content) {
 
@@ -1060,7 +1060,7 @@ fileConnector.inlinePreviewProviders = {
 					
 			var os = require('os');
 			
-			var filename = os.tmpdir()+"/image_preview_dimensions_"+roomID+"_"+objectID;
+			var filename = os.tmpDir()+"/image_preview_dimensions_"+roomID+"_"+objectID;
 
 			fileConnector.getContent(roomID,objectID,context,function(content) {
 				fs.writeFile(filename, Buffer(content), function (err) {
