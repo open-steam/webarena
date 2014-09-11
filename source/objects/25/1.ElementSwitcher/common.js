@@ -21,6 +21,7 @@ ElementSwitcher.register=function(type){
 	this.registerAttribute('hide2',{type:'text',standard:'',category:'Elements'});
 	this.registerAttribute('hide3',{type:'text',standard:'',category:'Elements'});
 	this.registerAttribute('hide4',{type:'text',standard:'',category:'Elements'});
+	this.registerAttribute('mode',{type:'text',standard:''});
 
 }
 
@@ -36,16 +37,33 @@ ElementSwitcher.onDrop=function(where){
 	var hide3=this.getAttribute('hide3');
 	var hide4=this.getAttribute('hide4');
 	
-	if (hide1) ObjectManager.getObject(hide1).setAttribute('visible',false);
-	if (hide2) ObjectManager.getObject(hide2).setAttribute('visible',false);
-	if (hide3) ObjectManager.getObject(hide3).setAttribute('visible',false);
-	if (hide4) ObjectManager.getObject(hide4).setAttribute('visible',false);
+	if (hide1 && ObjectManager.getObject(hide1)) ObjectManager.getObject(hide1).setAttribute('visible',false);
+	if (hide2 && ObjectManager.getObject(hide2)) ObjectManager.getObject(hide2).setAttribute('visible',false);
+	if (hide3 && ObjectManager.getObject(hide3)) ObjectManager.getObject(hide3).setAttribute('visible',false);
+	if (hide4 && ObjectManager.getObject(hide4)) ObjectManager.getObject(hide4).setAttribute('visible',false);
 	
-	if (show1) ObjectManager.getObject(show1).setAttribute('visible',true);
-	if (show2) ObjectManager.getObject(show2).setAttribute('visible',true);
-	if (show3) ObjectManager.getObject(show3).setAttribute('visible',true);
-	if (show4) ObjectManager.getObject(show4).setAttribute('visible',true);
+	if (show1 && ObjectManager.getObject(show1)) ObjectManager.getObject(show1).setAttribute('visible',true);
+	if (show2 && ObjectManager.getObject(show2)) ObjectManager.getObject(show2).setAttribute('visible',true);
+	if (show3 && ObjectManager.getObject(show3)) ObjectManager.getObject(show3).setAttribute('visible',true);
+	if (show4 && ObjectManager.getObject(show4)) ObjectManager.getObject(show4).setAttribute('visible',true);
 
+	var mode=this.getAttribute('mode');
+	var oldMode=this.getRoom().getAttribute('mode');
+	
+	if (mode){
+		this.getRoom().setAttribute('mode',mode);
+		var elements=this.getRoom().getInventory();
+		
+		for (var i in elements){
+			var element=elements[i];
+			if (!element.getAttribute('modeSensitive')) continue;
+			
+			element.setAttribute('mode_'+oldMode+'_x',element.getAttribute('x'));
+			element.setAttribute('mode_'+oldMode+'_y',element.getAttribute('y'));
+			element.setAttribute('x',element.getAttribute('mode_'+mode+'_x'));
+			element.setAttribute('y',element.getAttribute('mode_'+mode+'_y'));
+		}
+	}
 	
 }
 

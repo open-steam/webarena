@@ -15,7 +15,7 @@ PresentationWall.register=function(type){
 }
 
 PresentationWall.onDrop=function(where){
-	
+
 	var logger=ObjectManager.getObjectByName('logger');
 	
 	if (!logger) return;
@@ -23,7 +23,7 @@ PresentationWall.onDrop=function(where){
 	var enter = String.fromCharCode(10);
 	
 	logger.getContentAsString(function(text){
-		GUI.deselectAllObjects();
+		where.deselect();
 		text=where+enter+text;
 		logger.setContent(text);
 	});
