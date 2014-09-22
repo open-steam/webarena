@@ -326,7 +326,7 @@ GeneralObject.removeSelectedIndicator = function() {
 }
 
 GeneralObject.showActivationMarker=function(){
-	this.addSelectedIndicator('red',10,true);
+	this.addSelectedIndicator('blue',1,true);
 }
 
 GeneralObject.hideActivationMarker=function(){

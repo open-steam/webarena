@@ -14,6 +14,8 @@ module.exports=theObject;
 theObject.onDrop=function(objectID,data){
 	this.getRoom().getObject(objectID,function(object){
 		setTimeout(function(){
+			var type=(object.getAttribute('type'));
+			if (type!='VGA' && type!='Wacom') return;
 		    object.setAttribute('oldX',object.getAttribute('x'));
 		    object.setAttribute('oldY',object.getAttribute('y'));
 		    console.log('Saved position for '+object);
@@ -23,9 +25,12 @@ theObject.onDrop=function(objectID,data){
 theObject.onDrop.public=true;
 
 theObject.onLeave=function(object,data){
-	console.log('bringing back object');
 	var that=this;
 	setTimeout(function(){
+		var type=(object.getAttribute('type'));
+		
+		if (type!='VGA' && type!='Wacom') return;
+		
 		var oldX=object.getAttribute('oldX');
 		var oldY=object.getAttribute('oldY');
 		

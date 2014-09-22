@@ -880,6 +880,8 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 //especially: creating/changing the link attribute
 GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle){
 
+	console.log('build',arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle);
+
 	var lastClicked = this;
 	var selected = ObjectManager.getSelected();
 	var lastSelectedId = lastClicked.getId();

@@ -24,10 +24,11 @@ VolumeControl.onDrop=function(where){
 	if (!logger) return;
 	
 	var enter = String.fromCharCode(10);
+	var that=this;
 	
 	logger.getContentAsString(function(text){
 		where.deselect();
-		text=where+enter+text;
+		text='Sound set to level '+that.getAttribute('value')+' on '+that.getAttribute('source')+enter+text;
 		logger.setContent(text);
 	});
 

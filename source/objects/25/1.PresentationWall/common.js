@@ -12,6 +12,7 @@ PresentationWall.register=function(type){
 	
 	// Registering the object
 	Modules.ObjectManager.getPrototype('Rectangle').register.call(this,type);
+	this.registerAttribute('source',{type:'text',standard:'',category:'Elements'});
 }
 
 PresentationWall.onDrop=function(where){
@@ -21,11 +22,13 @@ PresentationWall.onDrop=function(where){
 	if (!logger) return;
 	
 	var enter = String.fromCharCode(10);
+	var that=this;
 	
 	logger.getContentAsString(function(text){
 		where.deselect();
-		text=where+enter+text;
+		text='Showing '+where.getAttribute('name')+' on '+that.getAttribute('source')+enter+text;
 		logger.setContent(text);
+		
 	});
 
 	
