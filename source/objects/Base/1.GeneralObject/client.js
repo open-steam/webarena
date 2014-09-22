@@ -96,10 +96,14 @@ GeneralObject.getContentAsString=function(callback){
 			alert('Synchronous content access before it has been fetched! Inform the programmer about this issue!');
 			return false;
 		}
+		if ((typeof this.content)=='string') return content;
 		return GeneralObject.utf8.parse(this.content);
 	} else {
 		this.fetchContent(function(content){
-			callback(GeneralObject.utf8.parse(content));
+			if ((typeof content)=='string') {
+				return callback(content);
+			}
+			return callback(GeneralObject.utf8.parse(content));
 		});
 	}
 }
