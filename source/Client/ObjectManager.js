@@ -303,6 +303,8 @@ ObjectManager.removeLocally=function(data){
     
     // delete associated pad
     if (Modules.config.collaborativeEditor) ObjectManager.Pads.deletePadFor(data.id);
+    
+    object.isDeleted=true;
 }
 
 ObjectManager.login=function(username, password, externalSession){

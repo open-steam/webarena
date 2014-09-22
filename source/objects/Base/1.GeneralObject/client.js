@@ -158,6 +158,8 @@ GeneralObject.removeRepresentation = function() {
 
 	$(rep).remove();
 	
+	console.log('TODO: Remove listeners etc in removeRepresentation');
+	
 }
 
 

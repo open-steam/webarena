@@ -175,7 +175,7 @@ GeneralObject.representationCreated = function() {
     var intersectMode = false;
 
     $("body").on("moveObject.wa", function (e) {
-        if (e.objectId !== that.getID()) {
+        if (e.objectId !== that.getID() && !that.isDeleted) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
             //new intersection
@@ -193,7 +193,7 @@ GeneralObject.representationCreated = function() {
     });
 
     $("body").on("moveend.wa", function (e) {
-        if (e.objectId !== that.getID()) {
+        if (e.objectId !== that.getID() && !that.isDeleted) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
             //execute onDrop
