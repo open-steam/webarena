@@ -11,6 +11,7 @@ var enter = String.fromCharCode(10);
 var Modules = false;
 var showDebugLineNumbers;
 
+
 /**
  *  addToClientCode (internal)
  **/
@@ -37,8 +38,10 @@ BuildTool.buildClientCode = function(){
 	var that = this;
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
 	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
-
-	files.forEach(function (data) {
+        //TODO: Insert code for the server sided transmission of client errors
+        this.clientCode += enter + "window.onerror = function(message, uri, line){var data={};\n\
+    data.message=message;data.uri=uri;data.line=line;ObjectManager.clientErrorMessage(data,function(){});}";
+    files.forEach(function (data) {
 		
 		var filename=data.filename;
 		var category=data.category;
@@ -68,9 +71,14 @@ BuildTool.buildClientCode = function(){
 		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
 
 		that.addToClientCode(filebase + '/languages.js');
+                
+              //that.clientCode += enter + "window.onError = function(){alert(1);}";
+                
+                
 
 	});
 }
+BuildTool.logErrorMesseage = function(){alert(1)};
 
 /**
  *  getClientCode

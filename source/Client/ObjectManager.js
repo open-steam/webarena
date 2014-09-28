@@ -761,6 +761,9 @@ ObjectManager.requestAttentionToObject=function(id){
 ObjectManager.reportBug=function(data, callback){
 	ObjectManager.Modules.Dispatcher.query('bugreport',data,callback);
 }
+ObjectManager.clientErrorMessage=function(data, callback){
+        ObjectManager.Modules.Dispatcher.query('clientErrorMessage', data, callback);
+}
 
 ObjectManager.showAll=function() {
 

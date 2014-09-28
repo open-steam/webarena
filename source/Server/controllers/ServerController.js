@@ -19,8 +19,8 @@ ServerController.getMemoryUsage =  function (data, context, callback) {
 }
 
 ServerController.bugreport = function (data, socket, responseID, callback) {
-
-	if (Modules.config.bugreport === undefined) {
+    
+    	if (Modules.config.bugreport === undefined) {
 		console.log("Bug report settings missing!");
 		return;
 	}
@@ -84,6 +84,10 @@ ServerController.bugreport = function (data, socket, responseID, callback) {
 		console.log("no recipients for bug report");
 	}
 
+};
+
+ServerController.clientErrorMessage = function (data, socket, responseID, callback) {
+    Modules.Logger.log('error','message: ' + data.message + ' uri: ' + data.uri + ' line: ' +data.line);
 };
 
 module.exports = ServerController;
