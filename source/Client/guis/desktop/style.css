@@ -635,7 +635,7 @@ input {
 }
 
 .toast-item-close {
-    background:url(../images/close.gif);
+    background:url(../../guis.common/images/toast/close.gif);
     width:22px;
     height:22px;
     position: absolute;
