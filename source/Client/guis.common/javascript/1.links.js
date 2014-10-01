@@ -208,6 +208,10 @@ GUI.createLinks = function(object) {
 		newLinks1.push(oldLinks1);
 	}
 		
+	//destroy old links	
+	$("[class^=webarenaLink_between_"+object.id+"]").remove();
+	$("[class$="+object.id+"]").remove();
+		
 	$.each(newLinks1, function( index, value ) {
 			
 		var targetID = value.destination;
@@ -215,9 +219,8 @@ GUI.createLinks = function(object) {
 	
 		if (!target) return;
 	
-		//destroy old links
-		$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
-		$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
+		//$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
+		//$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
 				
 		//calculate middle of objects		
 		var objectCenterX = object.getViewBoundingBoxX()+(object.getViewBoundingBoxWidth()/2);
