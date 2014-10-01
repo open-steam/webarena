@@ -68,7 +68,7 @@ WAFile.register=function(type){
 	
 	this.registerAction('to back',function(){
 		
-		/* set a very high layer for all selected objects (keeping their order) */
+		/* set a very low layer for all selected objects (keeping their order) */
 		var selected = ObjectManager.getSelected();
 		
 		for (var i in selected){
