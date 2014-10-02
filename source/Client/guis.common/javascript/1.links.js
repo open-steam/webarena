@@ -38,7 +38,7 @@ GUI.removeLinksfromObject = function(object){
 	
 		var targetID = value.destination;
 		var target = ObjectManager.getObject(targetID);
-						
+				
 		//destroy the links
 		$(".webarenaLink_between_"+object.id+"_and_"+targetID).remove();
 		$(".webarenaLink_between_"+targetID+"_and_"+object.id).remove();
@@ -189,16 +189,18 @@ GUI.createLinks = function(object) {
 	/* set current link object */
 	GUI.currentLinkObject = object;
 	
-	/* check if more than one object is selected */
+	/*
+	//check if more than one object is selected 
 	if (ObjectManager.getSelected().length > 1) {
 	
-		/* hide links for all selected objects */
+		//hide links for all selected objects
 		$.each(ObjectManager.getSelected(), function(index, obj) {
 			GUI.showLinks(false);
 		});
 	
 		return;
 	}
+	*/	
 		
 	var newLinks1 = [];
 	var oldLinks1 = object.getAttribute("link");
@@ -209,8 +211,7 @@ GUI.createLinks = function(object) {
 	}
 		
 	//destroy old links	
-	$("[class^=webarenaLink_between_"+object.id+"]").remove();
-	$("[class$="+object.id+"]").remove();
+	$( "line[class*='"+object.id+"']" ).remove();
 		
 	$.each(newLinks1, function( index, value ) {
 			
