@@ -956,8 +956,8 @@ ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
 	}
 }
 
-ObjectManager.paintingUpdate = function(data)
-{
+ObjectManager.paintingUpdate = function(data){
+
 	if ( !ObjectManager.getCurrentRoom().getAttribute("showUserPaintings") ) return;
 	
 	ObjectManager.getCurrentRoom().getUserPaintings(function(paintings)

@@ -499,11 +499,11 @@ GUI.initToolbar = function() {
 
 	}
 	
-	/* add pad toggle */
+	/* add etherpad toggle */
 	if (!Modules.Config.presentationMode && Modules.config.collaborativeEditor) {
 	
 		var padButton = document.createElement("img");
-		$(padButton).attr("src", "../../guis.common/images/categories/Texts.png").attr("alt", "");
+		$(padButton).attr("src", "../../guis.common/images/etherpad.png").attr("alt", "");
 		$(padButton).attr("width", "24").attr("height", "24");
 
 		$(padButton).attr("id", "pad_button");

@@ -37,7 +37,7 @@ GUI.sidebar.elementConfig = {
     },
     "pad" : {
         order : 3,
-        title : GUI.translate("Annotation"),
+        title : GUI.translate("Annotations"),
     },
 };
 
