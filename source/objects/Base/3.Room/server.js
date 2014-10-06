@@ -34,6 +34,8 @@ theObject.evaluatePositionFor=function(object,data){
 //sets active objects to their positions
 theObject.placeActiveObjects=function(){
 	
+	console.log('>>>> Synchronous placeActiveObjects in Room');
+	
 	var objects=this.getInventory();
 	
 	var positions={};

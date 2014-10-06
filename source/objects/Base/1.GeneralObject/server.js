@@ -102,6 +102,7 @@ theObject.makeSensitive=function(){
 		
 	}
 	
+	
 	/**
 	*	intersects
 	*
@@ -123,25 +124,61 @@ theObject.makeSensitive=function(){
 		return this.bBoxIntersects(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
 		
 	}
+	
+	
 	/**
-	*	getOverlappingObjcts
+	*	getOverlappingObjectsAsync
+	*
+	*	get an array of all overlapping objects
+	**/
+	theObject.getOverlappingObjectsAsync=function(callback){
+		
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			if (!room) return;
+			room.getInventoryAsync(function(inventory){
+			
+				var result=[];
+			
+				for (var i in inventory){
+		
+					var test=inventory[i];
+					if (test.id==this.id) continue;
+					if (this.intersects(test)){
+						result.push(test);
+					}
+				}
+			
+				callback(result);
+			});
+		});
+	}
+	
+	
+	/**
+	*	getOverlappingObjects
 	*
 	*	get an array of all overlapping objects
 	**/
 	theObject.getOverlappingObjects=function(){
+		
+		console.log('>>>> Synchronous getOverlappingObjects in GeneralObject');
+		
 		var result=[];
 		
 		var inventory=this.getRoom().getInventory();
-		
+	
 		for (var i in inventory){
-			 var test=inventory[i];
-			 if (test.id==this.id) continue;
-			 if (this.intersects(test)){
-			 	result.push(test);
-			 }
+			var test=inventory[i];
+			if (test.id==this.id) continue;
+			if (this.intersects(test)){
+				result.push(test);
+			}
 		}
 		
 		return result;
+	
 	}
 	
 	
