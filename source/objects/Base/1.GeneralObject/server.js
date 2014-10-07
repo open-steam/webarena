@@ -256,7 +256,13 @@ theObject.makeStructuring=function(){
 		
 		console.log('onObjectMove on structuring object '+this);
 		
-		this.getRoom().placeActiveObjects();
+		//this.getRoom().placeActiveObjects();
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			if(!room) return;
+			room.placeActiveObjectsAsync();
+		});
 	}
 	
 	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
