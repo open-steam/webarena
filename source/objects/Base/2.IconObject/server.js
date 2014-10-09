@@ -1,12 +1,18 @@
 /**
-*    Webarena - A web application for responsive graphical knowledge work
-*
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
-*
-*/
+ *    Webarena - A web application for responsive graphical knowledge work
+ *
+ *    @author Felix Winkelnkemper, University of Paderborn, 2012
+ *
+ */
 
 "use strict";
 
-var theObject=Object.create(require('./common.js'));
-var Modules=require('../../../server.js');
-module.exports=theObject;
+var theObject = Object.create(require('./common.js'));
+var Modules = require('../../../server.js');
+module.exports = theObject;
+
+
+theObject.exampleMethod = function() {
+    console.log("method call");
+};
+theObject.exampleMethod.public = true;
