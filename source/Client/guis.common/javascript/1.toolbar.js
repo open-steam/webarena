@@ -281,7 +281,7 @@ GUI.initToolbar = function() {
 	$(parentButton).attr("id", "bug_button");
 	$(parentButton).addClass("sidebar_button");
 	
-	$(parentButton).attr("title", GUI.translate("Parent"));
+	$(parentButton).attr("title", GUI.translate("Environment"));
 
 	$("#header > .header_right").append(parentButton);
 	

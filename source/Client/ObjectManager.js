@@ -777,6 +777,7 @@ ObjectManager.showAll=function() {
 }
 
 ObjectManager.copyObjects=function(objects) {
+    
 	if (objects != undefined && objects.length > 0) {
 		ObjectManager.clipBoard.cut = false;
 
@@ -833,9 +834,9 @@ ObjectManager.pasteObjects=function() {
 		    var newIDs=[];
 		    var minX = Number.MAX_VALUE;
 		    var minY = Number.MAX_VALUE;
-		    var selectNewObjects = function() {
-				for (var key in newIDs) {
-					var newObject = ObjectManager.getObject(newIDs[key]);
+		    var selectNewObjects = function(idList) {
+                        	for (var key in idList) {
+					var newObject = ObjectManager.getObject(idList[key]);
 					newObject.select(true);
 
 					// determine left most and top most coordinates of pasted objects in case of scrolling
@@ -845,11 +846,13 @@ ObjectManager.pasteObjects=function() {
 					if (newObject.getAttribute('y') < minY) {
 						minY = newObject.getAttribute('y');
 					}
+                                        
 				}
 
 				// if objects were moved between rooms scroll to position of pasted objects
 				if (requestData.fromRoom != requestData.toRoom) {
 					if (!GUI.couplingModeActive) {
+                                            console.log(1);
 						if (minX - 30 < 0) minX = 30;
 						if (minY - 30 < 0) minY = 30;
 						
@@ -862,14 +865,15 @@ ObjectManager.pasteObjects=function() {
 						);
 					}
 				}
+                                
 			};
 
 			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList){
 				newIDs = idList;
 				GUI.deselectAllObjects();
-				setTimeout(selectNewObjects, 200);
+				setTimeout(selectNewObjects(idList), 200);
 			});
-
+                        
 			if (ObjectManager.clipBoard.cut) {
 				ObjectManager.clipBoard={};
 			}
@@ -913,9 +917,9 @@ ObjectManager.duplicateObjects=function(objects) {
 			};
 
 			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
-				newIDs = idList;
+                                newIDs = idList;
 				GUI.deselectAllObjects();
-				setTimeout(selectNewObjects, 200);
+                                setTimeout(selectNewObjects, 200);
 			});
 		}
 	}
