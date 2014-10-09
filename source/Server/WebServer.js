@@ -446,7 +446,7 @@ WebServer.init = function (theModules) {
 
 				object.getInlinePreviewMimeType(function (mimeType) {
 
-					object.getInlinePreview(function (data) {
+					object.getInlinePreview(mimeType, function (data) {
 
 						if (!data) {
 
@@ -477,7 +477,7 @@ WebServer.init = function (theModules) {
 							res.end(new Buffer(data));
 						}
 
-					}, mimeType, true);
+					});
 
 				});
 

@@ -19,6 +19,7 @@ ObjectManager.prototypes={};
 ObjectManager.user={};
 ObjectManager.clipBoard={};
 ObjectManager.roomChangeCallbacks = [];
+ObjectManager.newIDs = [];
 
 ObjectManager.registerType=function(type,constr){
     this.prototypes[type]=constr;
@@ -108,8 +109,11 @@ ObjectManager.buildObject=function(type, attributes){
     if(typeof object.afterCreation == "function"){
         object.afterCreation();
     }
-
-
+	
+	if(this.newIDs.indexOf(attributes.id) != -1){ //object was duplicated
+		this.afterDuplicate(object);
+	}
+	
     return object;
 
 }
@@ -830,6 +834,7 @@ ObjectManager.pasteObjects=function() {
 		    requestData.cut=ObjectManager.clipBoard.cut;
 		    requestData.attributes={};
 
+<<<<<<< HEAD
 			// select new objects after duplication
 		    var newIDs=[];
 		    var minX = Number.MAX_VALUE;
@@ -872,6 +877,16 @@ ObjectManager.pasteObjects=function() {
 				newIDs = idList;
 				GUI.deselectAllObjects();
 				setTimeout(selectNewObjects(idList), 200);
+=======
+			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList){
+				
+				for(var key in idList){
+					if(ObjectManager.newIDs.indexOf(idList[key]) == -1){
+						ObjectManager.newIDs.push(idList[key]);
+					}
+				}
+				GUI.deselectAllObjects();
+>>>>>>> 827c315918a20d7098e9f307dc291488fffcd939
 			});
                         
 			if (ObjectManager.clipBoard.cut) {
@@ -880,6 +895,7 @@ ObjectManager.pasteObjects=function() {
 		}
 	}
 }
+
 
 ObjectManager.duplicateObjects=function(objects) {
 	if (objects != undefined && objects.length > 0) {
@@ -907,23 +923,63 @@ ObjectManager.duplicateObjects=function(objects) {
 		    requestData.cut=false;
 		    requestData.attributes={};
 
-		    // select new objects after duplication
-		    var newIDs=[];
-		    var selectNewObjects = function() {
-				for (var key in newIDs) {
-					var newObject = ObjectManager.getObject(newIDs[key]);
-					newObject.select(true);
-				}
-			};
-
 			Modules.Dispatcher.query('duplicateObjects',requestData, function(idList) {
+<<<<<<< HEAD
                                 newIDs = idList;
 				GUI.deselectAllObjects();
                                 setTimeout(selectNewObjects, 200);
+=======
+				for(var key in idList){
+					if(ObjectManager.newIDs.indexOf(idList[key]) == -1){
+						ObjectManager.newIDs.push(idList[key]);
+					}
+				}
+				GUI.deselectAllObjects();
+>>>>>>> 827c315918a20d7098e9f307dc291488fffcd939
 			});
 		}
 	}
 }
+
+
+// select new objects after duplication and build the links
+ObjectManager.afterDuplicate=function(newObject) {
+
+	var minX = Number.MAX_VALUE;
+	var minY = Number.MAX_VALUE;
+	
+	GUI.deselectAllObjects();
+	
+	newObject.select(true);
+	
+	GUI.createLinks(newObject);
+	
+	this.newIDs.splice(this.newIDs.indexOf(newObject.id), 1);
+	
+	// determine left most and top most coordinates of pasted objects in case of scrolling
+	if (newObject.getAttribute('x') < minX) {
+		minX = newObject.getAttribute('x');
+	}
+	if (newObject.getAttribute('y') < minY) {
+		minY = newObject.getAttribute('y');
+	}
+	
+	//scroll to position of pasted objects (TODO: only in new room...)
+	if (!GUI.couplingModeActive) {
+		if (minX - 30 < 0) minX = 30;
+		if (minY - 30 < 0) minY = 30;
+			
+		$(document).scrollTo(
+			{ 
+				top: minY - 30, 
+				left: minX - 30
+			},
+			1000
+		);
+	}
+}
+
+
 
 ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
 	var objects = ObjectManager.getSelected();
@@ -965,8 +1021,8 @@ ObjectManager.moveObjectBetweenRooms=function(fromRoom,toRoom,cut) {
 	}
 }
 
-ObjectManager.paintingUpdate = function(data)
-{
+ObjectManager.paintingUpdate = function(data){
+
 	if ( !ObjectManager.getCurrentRoom().getAttribute("showUserPaintings") ) return;
 	
 	ObjectManager.getCurrentRoom().getUserPaintings(function(paintings)
