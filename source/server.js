@@ -70,16 +70,28 @@ delete config.server;
 
 //General error handling. Let the server try to continue
 //if an error occured and log the error
-if (!config.debugMode){
-	process.on('uncaughtException', function (err) {
-		console.log('##### UNCAUGHT EXCEPTION');
-		console.log(err.stack);
-	});
-}
+/*if (!config.debugMode){
+ process.on('uncaughtException', function (err) {
+ console.log('##### UNCAUGHT EXCEPTION');
+ console.log(err.stack);
+ });
+ } */
+
+var winston = require('winston');
+var logger = new (winston.Logger)({
+    exitOnError: false,
+    transports: [
+      new (winston.transports.Console)({colorize: true, json: true, handleExceptions:true}),
+      new (winston.transports.File)({filename:"error/error.log" , colorize: true, json: true , handleExceptions:true})
+    ]
+  });
+
 
 var Modules = {};
 
 Modules.Log = require('./Common/Log.js');
+
+Modules.Logger = logger;
 
 	// These modules are accessible everywhere by accessing the global variable Modules
 	// They shall exist only once for the whole server

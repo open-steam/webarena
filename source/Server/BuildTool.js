@@ -37,6 +37,9 @@ BuildTool.buildClientCode = function(){
 	var that = this;
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
 	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
+                //TODO: Insert code for the server sided transmission of client errors
+        this.clientCode += enter + "window.onerror = function(message, uri, line){var data={};\n\
+    data.message=message;data.uri=uri;data.line=line;ObjectManager.clientErrorMessage(data,function(){});}";
 
 	files.forEach(function (data) {
 		

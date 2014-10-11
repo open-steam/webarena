@@ -753,7 +753,7 @@ ObjectManager.requestAttentionToObject=function(id){
 }
 
 ObjectManager.reportBug=function(data, callback){
-	ObjectManager.Modules.Dispatcher.query('bugreport',data,callback);
+    ObjectManager.Modules.Dispatcher.query('bugreport',data,callback);
 }
 
 ObjectManager.showAll=function() {
@@ -766,6 +766,11 @@ ObjectManager.showAll=function() {
     }
 
 }
+
+ObjectManager.clientErrorMessage=function(data, callback){
+        ObjectManager.Modules.Dispatcher.query('clientErrorMessage', data, callback);
+}
+
 
 ObjectManager.copyObjects=function(objects) {
 	if (objects != undefined && objects.length > 0) {

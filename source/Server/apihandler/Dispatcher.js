@@ -92,6 +92,10 @@ Dispatcher.registerCall('bugreport', function (socket, data, responseID) {
 	Modules.ServerController.bugreport(data, socket, responseID, resultCallbackWrapper(socket, responseID));
 });
 
+Dispatcher.registerCall('clientErrorMessage', function(socket,data, responseId){
+        Modules.ServerController.clientErrorMessage(data, socket, responseId, resultCallbackWrapper(socket, responseId));
+});
+
 Dispatcher.registerCall('undo', function(socket, data, responseID){
 	var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectManager.undo( data, context, infoCallbackWrapper(socket)  );
