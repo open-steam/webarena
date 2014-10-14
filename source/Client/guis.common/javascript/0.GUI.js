@@ -384,10 +384,6 @@ GUI.initObjectDeletionByKeyboard = function() {
 						/* delete selected objects */
 						$.each(ObjectManager.getSelected(), function(key, object) {
 
-							if ($(object.getRepresentation()).data("jActionsheet")) {
-								$(object.getRepresentation()).data("jActionsheet").remove();
-							}
-
 							object.deleteIt();
 
 						});

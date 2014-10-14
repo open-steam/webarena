@@ -284,6 +284,7 @@ ObjectManager.remove=function(object){
 }
 
 ObjectManager.removeLocally=function(data){
+	
     var object=ObjectManager.getObject(data.id);
 	
 	this.onObjectRemove(object);
@@ -297,6 +298,9 @@ ObjectManager.removeLocally=function(data){
     
     // delete associated pad
     if (Modules.config.collaborativeEditor) ObjectManager.Pads.deletePadFor(data.id);
+	
+	GUI.hideActionsheet();
+	
 }
 
 ObjectManager.login=function(username, password, externalSession){
