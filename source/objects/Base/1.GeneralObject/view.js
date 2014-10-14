@@ -1066,6 +1066,13 @@ GeneralObject.moveStart = function(event) {
 	self.hideControls();
 	
 	var move = function(event) {
+	
+		 //only move the object if the mouse key is pressed
+		if(event.which == 0){
+			end(event);
+			return;
+		}
+	
         $("body").trigger({
             type : "moveObject.wa",
             objectId : self.id
