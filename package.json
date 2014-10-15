@@ -14,8 +14,8 @@
     "async": "~0.2.9",
     "json-socket": "~0.1.2",
     "lodash": "~2.2.1",
-    "winston": "0.8.0",
-    "express-winston": "0.2.8"
+    "bcrypt": "~0.7.7",
+    "winston": "0.8.0"
   },
   "devDependencies": {
     "superagent": "~0.15.7",
