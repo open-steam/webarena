@@ -55,8 +55,7 @@ theObject.browse = function(data, callback) {
 
         return node;
     }
-	
-	
+
     if (roomId === -1) {
     	// get root rooms
         Modules.Connector.getRoomHierarchy(roomId, this.context, function(hierarchy) {
@@ -73,92 +72,78 @@ theObject.browse = function(data, callback) {
 
             callback(result);
         });
-    } 
-	else{
+    } else {
         Modules.Connector.mayEnter(roomId, this.context, function(err, mayEnter) {
             if (mayEnter) {
                 // get inventory of room with roomId
                 var room = Modules.ObjectManager.getObject(roomId, roomId, self.context);
-            	//var inventory = room.getInventory();
-				room.getInventoryAsync(function(inventory){
-				
-					var resultCounter = 0;
-					var returnResults = function() {
-						resultCounter++;
-						if (resultCounter === inventory.length) {
-							callback(result);
-						}
-					}
+            	var inventory = room.getInventory();
 
-					for (var key in inventory) {
-					
-						var node = {};
+                var resultCounter = 0;
+                var returnResults = function() {
+                    resultCounter++;
+                    if (resultCounter === inventory.length) {
+                        callback(result);
+                    }
+                }
 
-						if (self.filterObject(inventory[key])) {
-							returnResults();
-							continue;
-						}
+            	for (var key in inventory) {
+            		var node = {};
 
-						if (inventory[key].getAttribute("type") === "Subroom" && inventory[key].getAttribute("destination") !== undefined) {
-							Modules.Connector.mayEnter(inventory[key].getAttribute("destination"), self.context, function(err, mayEnter) {
-								if (mayEnter) {
-									var object = Modules.ObjectManager.getObject(inventory[key].getAttribute("destination"), inventory[key].getAttribute("destination"), self.context);
+                    if (self.filterObject(inventory[key])) {
+                        returnResults();
+                        continue;
+                    }
 
-									if (object) {
-										node = createSubroomNode({
-											id : object.getAttribute("id"),
-											title: object.getAttribute("name")
-										});
+                    if (inventory[key].getAttribute("type") === "Subroom" && inventory[key].getAttribute("destination") !== undefined) {
+                        Modules.Connector.mayEnter(inventory[key].getAttribute("destination"), self.context, function(err, mayEnter) {
+                            if (mayEnter) {
+                                var object = Modules.ObjectManager.getObject(inventory[key].getAttribute("destination"), inventory[key].getAttribute("destination"), self.context);
 
-										//var subInventory = object.getInventory();
-										object.getInventoryAsync(function(subInventory){
-										
-											for (var subKey in subInventory) {
-											
-												if (self.filterObject(subInventory[subKey])) {
-													continue;
-												} else {
-													// subroom: check if room object exists
-													if (subInventory[subKey].type === "Subroom") {
-														if (subInventory[subKey].getAttribute("destination") !== undefined) {
-															var subObject = Modules.ObjectManager.getObject(subInventory[subKey].getAttribute("destination"), subInventory[subKey].getAttribute("destination"), self.context);
-															if (subObject) {
-																node.state = "closed";
-																break;
-															}
-														}
-													} else {
-														node.state = "closed";
-														break;
-													}
-												}
-											}
-											result.push(node);
-											returnResults();
-										});
-									}
-									else{
-										returnResults();
-									}
-								}
-								else{
-									returnResults();
-								}
-							});
-						} else {
-							node = createNode({
-								"title" : "" + inventory[key].getAttribute("name"),
-								"id" : "" + inventory[key].getAttribute("id"),
-								"name" : "" + inventory[key].getAttribute("name"),
-								"type" : "" + inventory[key].getAttribute("type"),
-								"inRoom" : "" + inventory[key].getAttribute("inRoom")
-							})
+                                if (object) {
+                                    node = createSubroomNode({
+                                        id : object.getAttribute("id"),
+                                        title: object.getAttribute("name")
+                                    });
 
-							result.push(node);
-							returnResults();
-						}
-					}
-				});
+                		            var subInventory = object.getInventory();
+                                    for (var subKey in subInventory) {
+                                        if (self.filterObject(subInventory[subKey])) {
+                                            continue;
+                                        } else {
+                                            // subroom: check if room object exists
+                                            if (subInventory[subKey].type === "Subroom") {
+                                                if (subInventory[subKey].getAttribute("destination") !== undefined) {
+                                                    var subObject = Modules.ObjectManager.getObject(subInventory[subKey].getAttribute("destination"), subInventory[subKey].getAttribute("destination"), self.context);
+                                                    if (subObject) {
+                                                        node.state = "closed";
+                                                        break;
+                                                    }
+                                                }
+                                            } else {
+                                                node.state = "closed";
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    result.push(node);
+                                }
+                            }
+                            returnResults();
+                        });
+                    } else {
+                        node = createNode({
+                            "title" : "" + inventory[key].getAttribute("name"),
+                            "id" : "" + inventory[key].getAttribute("id"),
+                            "name" : "" + inventory[key].getAttribute("name"),
+                            "type" : "" + inventory[key].getAttribute("type"),
+                            "inRoom" : "" + inventory[key].getAttribute("inRoom")
+                        })
+
+                        result.push(node);
+                        returnResults();
+                    }
+            	}
             } else callback(result);
         });
     }

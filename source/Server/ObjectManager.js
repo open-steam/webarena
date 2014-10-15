@@ -178,8 +178,6 @@ ObjectManager.getObjects = function (roomID, context, callback) {
 			inventory.push(object);
 		}
 
-		console.log('>>>> Synchronous return in getObjects');
-		
 		return inventory;
 
 	} else {
@@ -420,16 +418,17 @@ ObjectManager.undo = function (data, context, callback) {
  *
  *  returns the a room object for a given roomID
  *
+ *  TODO: callback should be last parameter
  **/
-ObjectManager.getRoom = function (roomID, context, oldRoomId, callback) {
+ObjectManager.getRoom = function (roomID, context, callback, oldRoomId) {
 
 	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
 
-	Modules.Connector.getRoomData(roomID, context, oldRoomId, function (data) {
+	Modules.Connector.getRoomData(roomID, context, function (data) {
 		var obj = buildObjectFromObjectData(data, roomID, 'Room');
 		obj.context = context;
 		callback(obj);
-	});
+	}, oldRoomId);
 
 }
 
@@ -512,16 +511,12 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 	//go through all rooms with new room id
 	//  go through the subrooms and references of the room and update the room ids to the corresponding new ids.
 	var updateRoomIds = function (callback) {
-	
 		for (var key in roomTranslationList) {
-
-			Modules.Connector.getInventory(roomTranslationList[key], context, function(inventory){
-			
-				var filteredRooms = inventory.filter(function(e){return ((e.type ==="Subroom" || e.type === "Exit") && roomTranslationList[inventoryObject.attributes.destination] !== undefined)});
-				filteredRooms.forEach(function(inventoryObject){
-					inventoryObject.attributes.destination = roomTranslationList[inventoryObject.attributes.destination];
-					Modules.Connector.saveObjectData(inventoryObject.inRoom, inventoryObject.id, inventoryObject.attributes, context, false, undefined);
-				});
+			var inventory = Modules.Connector.getInventory(roomTranslationList[key], context);
+			var filteredRooms = inventory.filter(function(e){return ((e.type ==="Subroom" || e.type === "Exit") && roomTranslationList[inventoryObject.attributes.destination] !== undefined)});
+			filteredRooms.forEach(function(inventoryObject){
+				inventoryObject.attributes.destination = roomTranslationList[inventoryObject.attributes.destination];
+				Modules.Connector.saveObjectData(inventoryObject.inRoom, inventoryObject.id, inventoryObject.attributes, undefined, context, false);
 			});
 		}
 		callback();
@@ -533,53 +528,33 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 		var fromRoom = dataInner.fromRoom;
 		var toRoom = dataInner.toRoom;
 		var objectKeys = dataInner.objects;
-		var uniqueObjects = [];
-		
-		Modules.Connector.getInventory(fromRoom, context, function(inventoryObjects){
-		
-			if (objectKeys === "ALL") {
-				objectKeys = [];
-				for(var i = 0 ; i < inventoryObjects.length; i++){
-					if(inventoryObjects[i].id !== "undefined"){
-						objectKeys.push(inventoryObjects[i].id);
-					}
+		if (objectKeys === "ALL") {
+			var inventoryObjects = Modules.Connector.getInventory(fromRoom, context);
+			objectKeys = [];
+			for(var i = 0 ; i < inventoryObjects.length; i++){
+				if(inventoryObjects[i].id !== "undefined"){
+					objectKeys.push(inventoryObjects[i].id);
 				}
 			}
-		
-			if(objectKeys === undefined) objectKeys = [];
-		
-			for (var j = 0; j < objectKeys.length; j++) {
-				var id = objectKeys[j];
-				var o = ObjectManager.getObject(fromRoom, id, context);
-				uniqueObjects.push(o);
-			}
-			
-			copy();
-		});
+		}
+		if(objectKeys === undefined) objectKeys = [];
 
-		
-		/*
-		//find all unique objects - also traverse the linked objects
+		//find all unique objects - als traverse the linked objects
+		var uniqueObjects = {};
 		var findUniqueRelatedObjectsIds = function (objectId) {
 			var object = ObjectManager.getObject(fromRoom, objectId, context);
 			if (!object) return;
 			if (! (objectId in uniqueObjects)) {
 				uniqueObjects[objectId] = object;
-				object.getObjectsToDuplicateAsync(function(linkedObjects){
-				
-					return linkedObjects.forEach(findUniqueRelatedObjectsIds);
-				
-				});
-				
+				var linkedObjects = object.getObjectsToDuplicate();
+				linkedObjects.forEach(findUniqueRelatedObjectsIds);
 			}
 		}
-		//objectKeys.forEach(findUniqueRelatedObjectsIds);
-		*/
-		
+		objectKeys.forEach(findUniqueRelatedObjectsIds);
+
 		//is called after call object were copied
 		//updated some properties + visual arrangement
 		var updateObj = function (callback) {
-		
 			newObjects.forEach(function (object) {
 				object.updateLinkIds(idTranslationList); //update links
 				// update exits and subrooms if the corresponding rooms were copied
@@ -619,80 +594,70 @@ ObjectManager.duplicateNew = function (data, context, cbo) {
 
 
 		var innerReadCheck2 = function (cb) {
-			var arr = new Array();
-			uniqueObjects.forEach(function (object) {
-				arr.push(object.id);
-			});
-			mayReadMultiple(fromRoom, arr, context, cb);
+			mayReadMultiple(fromRoom, Object.keys(uniqueObjects), context, cb);
 		}
 
-		var copy = function(){
-		
-			var objectCopyTasks = [];
-			var roomCopyTasks = [];
 
-			//check permissions and if successful
-			//go on with further work
-			async.series([innerReadCheck2, toWriteCheck],  function (err) {
-				//TODO send error to cb
-				if (err) cbi(err, null);
-				else {
-					uniqueObjects.forEach(function (object) {
-						var someObject = object.id;
-					//for (var someObject in uniqueObjects) {
-						//var object = uniqueObjects[someObject];
-	
-						//if room we have to copy it recursively
-						if (object.getType() === "Subroom") {
-							var roomData = {};
-							roomData.fromRoom = object.getAttribute("destination");
-							roomData.toRoom = toRoom;
-							roomData.cut = cut;
-							roomData.objects = "ALL";
+		var objectCopyTasks = [];
+		var roomCopyTasks = [];
 
-							roomCopyTasks.push(function (callback) {
-								var uuid = require('node-uuid');
-								Modules.Connector.getRoomData(uuid.v4(), context, toRoom, function(newRoom){
-								
-									roomData.toRoom = newRoom.id;
-									roomTranslationList[roomData.fromRoom] = newRoom.id;
+		//check permissions and if successful
+		//go on with further work
+		async.series([innerReadCheck2, toWriteCheck],  function (err) {
+			//TODO send error to cb
+			if (err) cbi(err, null);
+			else {
+				for (var someObject in uniqueObjects) {
+					var object = uniqueObjects[someObject];
 
-									myInnerFunction(roomData, callback);
-								});
+					//if room we have to copy it recursively
+					if (object.getType() === "Subroom") {
+						var roomData = {};
+						roomData.fromRoom = object.getAttribute("destination");
+						roomData.toRoom = toRoom;
+						roomData.cut = cut;
+						roomData.objects = "ALL";
+
+						roomCopyTasks.push(function (callback) {
+							var uuid = require('node-uuid');
+							var newRoom = Modules.Connector.getRoomData(uuid.v4(), context, undefined, toRoom);
+							roomData.toRoom = newRoom.id;
+							roomTranslationList[roomData.fromRoom] = newRoom.id;
+
+							myInnerFunction(roomData, callback);
+						});
+					}
+					//need function scope because "looping problem" //TODO: link to example
+					(function(id){
+						objectCopyTasks.push(function (callback) {
+							Modules.Connector.duplicateObject(fromRoom,toRoom, id, context, function (err, newId, oldId) {
+								if (err) console.log("Error: " + err);
+
+								var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+
+								if (cut) {
+									var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
+									oldObject.remove();
+								}
+
+								newObjects.push(obj);
+								idTranslationList[oldId] = newId;
+								//TODO: remove reverseIdTranslationList can be constructed afterwards
+								reverseIdTranslationList[newId] = oldId;
+
+								callback();
 							});
-						}
-						//need function scope because "looping problem" //TODO: link to example
-						(function(id){
-							objectCopyTasks.push(function (callback) {
-								Modules.Connector.duplicateObject(fromRoom,toRoom, id, context, function (err, newId, oldId) {
-									if (err) console.log("Error: " + err);
-
-									var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
-
-									if (cut) {
-										var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
-										oldObject.remove();
-									}
-
-									newObjects.push(obj);
-									idTranslationList[oldId] = newId;
-									//TODO: remove reverseIdTranslationList can be constructed afterwards
-									reverseIdTranslationList[newId] = oldId;
-
-									callback();
-								});
-							});
-						})(someObject);
-					});
-
-					//execute the copy tasks
-					var tasks = roomCopyTasks.concat( objectCopyTasks);
-					async.series( tasks , function(err, res){
-						updateObj(cbi);
-					});
+						});
+					})(someObject);
 				}
-			});
-		}
+
+				//execute the copy tasks
+				var tasks = roomCopyTasks.concat( objectCopyTasks);
+				async.series( tasks , function(err, res){
+					updateObj(cbi);
+				});
+			}
+		});
 	}
 
 	//Do the recursive copies etc.

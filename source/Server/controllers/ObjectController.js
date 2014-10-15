@@ -131,5 +131,15 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 		fn.apply(object, serverFunctionParams);
 	});
 };
-
+ObjectController.evaluatePositions = function (data, context, cb) {
+    var roomID = data.room;
+    var objIDs = data.objects;
+    
+    
+    for(var key in objIDs){
+        var obj = ObjectManager.getObject(roomID, objIDs[key], context);
+        obj.evaluateCurrentPosition();
+    }
+    
+}
 module.exports = ObjectController;

@@ -42,7 +42,6 @@ Room.register=function(type){
     }
 }
 
-/*
 Room.hasObject=function(obj){
 	var inventory=this.getInventory();
 	for (var i in inventory){
@@ -50,7 +49,6 @@ Room.hasObject=function(obj){
 	}
 	return false;
 }
-*/
 
 Room.getPaintingURL = function(user) {
 	if (!user) user=this.getCurrentUserName();

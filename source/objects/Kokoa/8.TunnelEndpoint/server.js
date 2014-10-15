@@ -40,13 +40,7 @@ theObject.getObjectsFromCommunicationChannel = function(){
             var newObject = Modules.ObjectManager.getObject(that.getRoomID(), newObjectId, that.context);
             newObject.setAttribute("tunnel_inbox", that.getAttribute("source"));
         });
-        //that.getRoom().placeActiveObjects();
-		that.getRoomAsync(function(){
-			//error
-		}, function(room){
-			if(!room) return;
-			room.placeActiveObjectsAsync();
-		});
+        that.getRoom().placeActiveObjects();
     });
 }
 

@@ -263,86 +263,51 @@ GUI.initShiftKeyHandling = function() {
  */
 GUI.blockKeyEvents = false;
 
-
-/**
- * set to true if a client arrow key is pressed
- */
-GUI.arrowKeyDown = false;
-
 /**
  * add event handlers for object movement by arrow-keys
  */
 GUI.initMoveByKeyboard = function() {
 
-	var interval;
-
 	$(document).bind("keydown", function(event) {
-	
+		
 		if ($("input:focus,textarea:focus").get(0) != undefined) return;
 	
-		if (event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 38 || event.keyCode == 40) {
-			event.preventDefault();
+		if (GUI.shiftKeyDown) {
+			var d = 10;
 		} else {
-			return;
+			var d = 1;
 		}
 	
-		if(GUI.arrowKeyDown){
-			return;
-		}
-		else{
-			GUI.arrowKeyDown = true;
-	
-			if (GUI.shiftKeyDown) {
-				var d = 10;
+		$.each(ObjectManager.getSelected(), function(index, object) {
+			
+			if (event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 38 || event.keyCode == 40) {
+				event.preventDefault();
 			} else {
-				var d = 1;
+				return;
 			}
-	
+			
 			GUI.hideActionsheet();
-	
-			var x = 0;
-			var y = 0;
-	
+			
 			if (event.keyCode == 37) {
-				x = d*(-1);
+				object.moveBy(d*(-1), 0);
 			}
-				
+			
 			if (event.keyCode == 39) {
-				x = d;
+				object.moveBy(d, 0);
 			}
-				
+			
 			if (event.keyCode == 38) {
-				y = d*(-1);
+				object.moveBy(0, d*(-1));
 			}
-				
+			
 			if (event.keyCode == 40) {
-				y = d;
+				object.moveBy(0, d);
 			}
-	
-			interval = setInterval(function () {
-				$.each(ObjectManager.getSelected(), function(index, object) {
 			
-					object.moveBy(x, y);
-			
-				});
-			}, 30);
-			
-		}
+		});
 		
 	});
 	
-	
-	$(document).bind("keyup", function(event) {
-		
-		if (event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 38 || event.keyCode == 40) {
-			event.preventDefault();
-			GUI.arrowKeyDown = false;
-			clearInterval(interval);
-		} else {
-			return;
-		}
-		
-	});
 }
 
 GUI.initUndoByKeyboard = function(){

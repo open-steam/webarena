@@ -98,13 +98,11 @@ GeneralObject.restrictedMovingArea = false;
 
 /**
  * duplicate this object if a linked object gets duplicated
- * TODO: remove, is not used any more
  */
 GeneralObject.duplicateWithLinkedObjects = false;
 
 /**
  * duplicate linked objects if this object gets duplicated
-  * TODO: remove, is not used any more
  */
 GeneralObject.duplicateLinkedObjects = false;
 
@@ -240,8 +238,6 @@ GeneralObject.register=function(type){
 		
 		var objects = ObjectManager.getObjects();
 		
-		GUI.createLinks(object);
-		
 		for (var index in objects) {
 			var object = objects[index];
 
@@ -296,7 +292,7 @@ GeneralObject.register=function(type){
 		
 			var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
 		
-			GUI.createLinkDialog(lastClicked, lastClicked, linkProperties, true);	
+			GUI.createDialog(lastClicked, lastClicked, linkProperties, true);	
 				
         },
         false,
@@ -415,7 +411,7 @@ GeneralObject.register=function(type){
 	
 	this.registerAction('to back',function(){
 		
-		/* set a very low layer for all selected objects (keeping their order) */
+		/* set a very high layer for all selected objects (keeping their order) */
 		var selected = ObjectManager.getSelected();
 		
 		for (var i in selected){
@@ -754,6 +750,46 @@ GeneralObject.hasLinkedObjects=function() {
 	
 }
 
+//return a list of all objects which have a link to this object
+GeneralObject.getLinkedObjects=function() {
+
+	var self = this;
+	
+	/* getObject (this is different on server and client) */
+	if (self.ObjectManager.isServer) {
+		/* server */
+		var getObject = function(id) {
+			return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
+		}
+		var getObjects = function() {
+			return Modules.ObjectManager.getObjects(self.get('inRoom'), self.context);
+		}
+	} else {
+		/* client */
+		var getObject = function(id) {
+			return ObjectManager.getObject(id);
+		}
+		var getObjects = function() {
+			return ObjectManager.getObjects(ObjectManager.getIndexOfObject(self.getId()));
+		}
+	}
+
+	var linkedObjects = this.getAttribute("link");
+	
+	var links = {};
+		
+	for(var i = 0; i<linkedObjects.length; i++){
+			
+		var targetID = linkedObjects[i].destination;
+		var target = getObject(targetID);
+
+		links[targetID] = {
+			object : target,
+		}
+	}
+	
+	return links;
+}
 
 GeneralObject.getGroupMembers = function() {
 	
@@ -775,46 +811,70 @@ GeneralObject.getGroupMembers = function() {
 }
 
 
-//update the links after duplicate an object
-GeneralObject.updateLinkIds = function(idTranslationList) {
+GeneralObject.getObjectsToDuplicate = function(list) {
 	
-	var links = this.getAttribute('link');
+	var self = this;
 	
-	var that = this; 
+	if (list == undefined) {
+		/* init new list */
+		
+		/* list of objects which will be duplicated */
+		var list = {};
+		
+	}
 	
-	links.forEach(function (link) {
-		if(typeof idTranslationList[link.destination] != 'undefined'){ // this destination was also copied
-			link.destination = idTranslationList[link.destination];
-			that.setAttribute('link', links);
-			that.persist();
+	list[self.get('id')] = true; //add this object to list
+	
+	var linkedObjects = this.getLinkedObjects();
+
+	for (var id in linkedObjects) {
+		var target = linkedObjects[id];
+		var targetObject = target.object;
+		
+		if (targetObject && targetObject && !list[targetObject.get('id')]) {
+			targetObject.getObjectsToDuplicate(list);
 		}
-		else{ //this destination was not copied		
-			var dest = Modules.ObjectManager.getObject(that.inRoom, link.destination, that.context); 
-			
-			if(typeof dest.inRoom === 'undefined'){ //the object and the destination are in different rooms now, so remove the links
-				links = links.filter(function (element) {
-                        return element.destination !== link.destination;
-                       });
-				that.setAttribute('link', links);
-			}
-			else{
-			
-				var newLink = {
-					destination: that.id,
-					arrowheadOtherEnd: link.arrowheadOtherEnd,
-					arrowheadThisEnd: link.arrowheadThisEnd,
-					width: link.width,
-					style: link.style
-				}
-				var destLinks = dest.getAttribute('link');
-				destLinks.push(newLink);
-				dest.setAttribute('link', destLinks);
-				dest.persist();
-			}
-		}
-	});
+		
+	}
+
+
+	var arrList = [];
+	
+	for (var objectId in list) {
+
+		arrList.push(objectId);
+		
+	}
+	
+	return arrList;
+	
 }
 
+GeneralObject.updateLinkIds = function(idTranslationList) {
+
+	if (!this.get('link') || this.get('link') == "") {
+		return;
+	}
+	
+	var update = function(id) {
+
+		if (idTranslationList[id] != undefined) {
+			id = idTranslationList[id];
+		}
+		return id;
+	}
+	
+	if (this.get('link') instanceof Array) {
+
+		for (var i in this.get('link')) {
+			this.setAttribute("link", update(this.get('link')[i]));
+		}
+		
+	} else {
+		this.setAttribute("link", update(this.get('link')));
+	}
+	
+}
 
 //handle the desired inputs which was made in the setting-properties-dialog
 //especially: creating/changing the link attribute
@@ -859,9 +919,8 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 			 //if a link already exists (between the selected and the lastclicked)-->update directions
 			$.each(newLinks1, function( index, value ) {
 
-				if(value.destination == selectedId){
-					value.arrowheadOtherEnd = arrowheadAtotherObject;
-					value.arrowheadThisEnd = arrowheadAtthisObject;
+				if(value.destination==selectedId){
+					value.arrowhead = arrowheadAtotherObject;
 					value.width = lineWidth;
 					value.style = lineStyle;
 					
@@ -871,9 +930,8 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 				
 			$.each(newLinks2, function( index, value ) {
 
-				if(value.destination == lastSelectedId){
-					value.arrowheadOtherEnd = arrowheadAtthisObject;
-					value.arrowheadThisEnd = arrowheadAtotherObject;
+				if(value.destination==lastSelectedId){
+					value.arrowhead = arrowheadAtthisObject;
 					value.width = lineWidth;
 					value.style = lineStyle;
 					
@@ -887,15 +945,13 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 
 				link1 = {
 					destination: selectedId,
-					arrowheadOtherEnd: arrowheadAtotherObject,
-					arrowheadThisEnd: arrowheadAtthisObject,
+					arrowhead: arrowheadAtotherObject,
 					width: lineWidth,
 					style: lineStyle
 				};
 				link2 = {
 					destination: lastSelectedId,
-					arrowheadOtherEnd: arrowheadAtthisObject,
-					arrowheadThisEnd: arrowheadAtotherObject,
+					arrowhead: arrowheadAtthisObject,
 					width: lineWidth,
 					style: lineStyle
 				};	

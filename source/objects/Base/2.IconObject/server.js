@@ -16,3 +16,4 @@ theObject.exampleMethod = function() {
     console.log("method call");
 };
 theObject.exampleMethod.public = true;
+

@@ -248,7 +248,7 @@ GUI.initToolbar = function() {
 		$(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");
 		$(couplingButton).attr("width", "24").attr("height", "24");
 
-		$(couplingButton).attr("id", "coupling_button");
+		$(couplingButton).attr("id", "paste_button");
 		$(couplingButton).addClass("sidebar_button");
 
 		$(couplingButton).css("padding-left", "20px");
@@ -273,11 +273,12 @@ GUI.initToolbar = function() {
 
 		
 	/*add parent button*/
+	
 	var parentButton = document.createElement("img");
 	$(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
 	$(parentButton).attr("width", "24").attr("height", "24");
 
-	$(parentButton).attr("id", "parent_button");
+	$(parentButton).attr("id", "bug_button");
 	$(parentButton).addClass("sidebar_button");
 	
 	$(parentButton).attr("title", GUI.translate("Environment"));
@@ -299,7 +300,7 @@ GUI.initToolbar = function() {
 	$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
 	$(homeButton).attr("width", "24").attr("height", "24");
 
-	$(homeButton).attr("id", "home_button");
+	$(homeButton).attr("id", "bug_button");
 	$(homeButton).addClass("sidebar_button");
 	
 	$(homeButton).attr("title", GUI.translate("Home"));
@@ -318,25 +319,25 @@ GUI.initToolbar = function() {
 	
 	/*add paint button*/
 	if (Modules.Config.paintIcon) {
-		var paintButton = document.createElement("img");
-		$(paintButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
-		$(paintButton).attr("width", "24").attr("height", "24");
+		var homeButton = document.createElement("img");
+		$(homeButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
+		$(homeButton).attr("width", "24").attr("height", "24");
 
-		$(paintButton).attr("id", "paint_button");
-		$(paintButton).addClass("sidebar_button");
+		$(homeButton).attr("id", "bug_button");
+		$(homeButton).addClass("sidebar_button");
 	
-		$(paintButton).attr("title", GUI.translate("Paint"));
+		$(homeButton).attr("title", GUI.translate("Paint"));
 
-		$("#header > .header_right").append(paintButton);
+		$("#header > .header_right").append(homeButton);
 	
 		var click = function() {
 			GUI.editPaint();
 		}
 	
 		if (GUI.isTouchDevice) {
-			$(paintButton).bind("touchstart", click);
+			$(homeButton).bind("touchstart", click);
 		} else {
-			$(paintButton).bind("mousedown", click);
+			$(homeButton).bind("mousedown", click);
 		}
 	}
 
@@ -349,10 +350,10 @@ GUI.initToolbar = function() {
 	$(pasteButton).addClass("sidebar_button");
 
 	$(pasteButton).css("padding-left", "20px");
-	//$(pasteButton).css("padding-right", "20px");
+	$(pasteButton).css("padding-right", "20px");
 	$(pasteButton).css("margin-right", "20px");
 	$(pasteButton).css("border-left", "1px solid #636363");
-	//$(pasteButton).css("border-right", "1px solid #636363");
+	$(pasteButton).css("border-right", "1px solid #636363");
 	
 	$(pasteButton).attr("title", GUI.translate("Paste"));
 
@@ -366,34 +367,6 @@ GUI.initToolbar = function() {
 		$(pasteButton).bind("touchstart", click);
 	} else {
 		$(pasteButton).bind("mousedown", click);
-	}
-	
-	/*add undo button*/
-	var undoButton = document.createElement("img");
-	$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");
-	$(undoButton).attr("width", "24").attr("height", "24");
-
-	$(undoButton).attr("id", "undo_button");
-	$(undoButton).addClass("sidebar_button");
-
-	//$(undoButton).css("padding-left", "20px");
-	$(undoButton).css("padding-right", "20px");
-	$(undoButton).css("margin-right", "20px");
-	//$(undoButton).css("border-left", "1px solid #636363");
-	$(undoButton).css("border-right", "1px solid #636363");
-	
-	$(undoButton).attr("title", GUI.translate("undo"));
-
-	$("#header > .header_right").append(undoButton);
-	
-	var click = function() {
-		Modules.Dispatcher.query("undo", {"userID" : GUI.userid});
-	}
-	
-	if (GUI.isTouchDevice) {
-		$(undoButton).bind("touchstart", click);
-	} else {
-		$(undoButton).bind("mousedown", click);
 	}
 	
 	/* add bug report toggle */
@@ -426,6 +399,7 @@ GUI.initToolbar = function() {
 	
 	
 	/* add chat toggle */
+	
 	if (!Modules.Config.presentationMode) {
 		if (Modules.Config.chatIcon) {
 			var chatButton = document.createElement("img");
@@ -468,6 +442,7 @@ GUI.initToolbar = function() {
 	}
 	
 	/* add inspector toggle */
+	
 	if (!Modules.Config.presentationMode) {
 	
 		var inspectorButton = document.createElement("img");
@@ -499,11 +474,12 @@ GUI.initToolbar = function() {
 
 	}
 	
-	/* add etherpad toggle */
+	/* add pad toggle */
+	
 	if (!Modules.Config.presentationMode && Modules.config.collaborativeEditor) {
 	
 		var padButton = document.createElement("img");
-		$(padButton).attr("src", "../../guis.common/images/etherpad.png").attr("alt", "");
+		$(padButton).attr("src", "../../guis.common/images/categories/Texts.png").attr("alt", "");
 		$(padButton).attr("width", "24").attr("height", "24");
 
 		$(padButton).attr("id", "pad_button");
