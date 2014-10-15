@@ -30,7 +30,7 @@ GeneralObject.draw=function(external){
 	
 }
 
-GeneralObject.showOrHide=function(){
+GeneralObject.showOrHide=function(external){
 	
 		var rep=this.getRepresentation();
 	
