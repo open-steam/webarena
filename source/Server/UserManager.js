@@ -191,12 +191,12 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 
 		if (mayEnter) {
 			
-			ObjectManager.getRoom(roomID,connection,function(room){	
+			ObjectManager.getRoom(roomID,connection,oldRoomId,function(room){	
 				connection.rooms[index] = room;
 				Modules.RoomController.sendRoom(socket,room.id);
 				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
-			},oldRoomId);
+			});
 			
 			//ObjectManager.sendChatMessages(roomID,socket);
 			

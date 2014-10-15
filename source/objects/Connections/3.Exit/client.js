@@ -2,14 +2,22 @@ Exit.showDialog=function() {
 	var that = this;
 
 	var dialog_buttons = {};
-						
+			
+	dialog_buttons[that.translate(GUI.currentLanguage, "create new Subroom")] = function(){ 
+		
+		var random=new Date().getTime()-1296055327011;
+		
+		that.setAttribute('destination', random);
+		that.setAttribute("destinationObject", "choose");
+		GUI.updateInspector();
+	};
+			
 	dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function(){ return false; };
 	
 	dialog_buttons[that.translate(GUI.currentLanguage, "Okay")] = function(){
 		
         var jstree_selected_item = $('.js-tree').jstree('get_selected');
 		
-		that.setAttribute("name", jstree_selected_item.data('name'));
 		if (jstree_selected_item.data('type') === "Room") {
 			that.setAttribute("destination", jstree_selected_item.data('id'));
 			that.setAttribute("destinationObject", "choose");
@@ -17,10 +25,11 @@ Exit.showDialog=function() {
 			that.setAttribute("destination", jstree_selected_item.data('inRoom'));
 			that.setAttribute("destinationObject", jstree_selected_item.data('id'));
 		}
-					
+			
+		GUI.updateInspector();
     };
 	
-    var dialog_width = 500;
+    var dialog_width = 600;
     var additional_dialog_options = {
     	create : function() {
             var renderedTree = $("<div class='js-tree objectBrowserTree'></div>").jstree({
@@ -50,7 +59,7 @@ Exit.showDialog=function() {
             // bigger icons
             //$('<style>.objectBrowserTree a > ins {width: 36px; height: 36px;} .objectBrowserTree a { min-height:36px; line-height:36px; } </style>').appendTo("head");
         }, 
-        height: 600
+        height: 400
     } 
 
     var dialog = GUI.dialog(
@@ -87,12 +96,12 @@ Exit.showDialog=function() {
     });
 
         
-    dialog.on("dblclick", '.jstree-leaf', function() {
+    dialog.on("dblclick", '.jstree-clicked', function() {
 		$(':button:contains('+that.translate(GUI.currentLanguage, "Okay")+')').attr("disabled", false);
     	$(':button:contains('+that.translate(GUI.currentLanguage, "Okay")+')').click();
     });
 	
-	dialog.on("click", '.jstree-leaf', function() {
+	dialog.on("click", '.jstree-clicked', function() {
 		$(':button:contains('+that.translate(GUI.currentLanguage, "Okay")+')').attr("disabled", false);
 	});
 	

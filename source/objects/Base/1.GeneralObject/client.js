@@ -237,7 +237,6 @@ GeneralObject.onDrop=function(elem){
 
 GeneralObject.boxContainsPoint=GeneralObject.hasPixelAt;
 
-
 GeneralObject.isBackgroundObject = function(){
 	if (this.isStructuring()) return true;
 	if (this.getAttribute('fixed')) return true; 
@@ -266,4 +265,28 @@ GeneralObject.isVisible=function(){
 	
 	return true;
 	
+}
+
+GeneralObject.getLinkedObjects=function() {
+	var self = this;
+
+	var getObject = function(id) {
+		return ObjectManager.getObject(id);
+	}
+
+	var linkedObjects = this.getAttribute("link");
+	
+	var links = {};
+		
+	for(var i = 0; i<linkedObjects.length; i++){
+			
+		var targetID = linkedObjects[i].destination;
+		var target = getObject(targetID);
+
+		links[targetID] = {
+			object : target,
+		}
+	}
+	
+	return links;
 }

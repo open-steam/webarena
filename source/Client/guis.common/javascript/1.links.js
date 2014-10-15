@@ -38,7 +38,7 @@ GUI.removeLinksfromObject = function(object){
 	
 		var targetID = value.destination;
 		var target = ObjectManager.getObject(targetID);
-						
+				
 		//destroy the links
 		$(".webarenaLink_between_"+object.id+"_and_"+targetID).remove();
 		$(".webarenaLink_between_"+targetID+"_and_"+object.id).remove();
@@ -185,16 +185,18 @@ GUI.createLinks = function(object) {
 	/* set current link object */
 	GUI.currentLinkObject = object;
 	
-	/* check if more than one object is selected */
+	/*
+	//check if more than one object is selected 
 	if (ObjectManager.getSelected().length > 1) {
 	
-		/* hide links for all selected objects */
+		//hide links for all selected objects
 		$.each(ObjectManager.getSelected(), function(index, obj) {
 			GUI.showLinks(false);
 		});
 	
 		return;
 	}
+	*/	
 		
 	var newLinks1 = [];
 	var oldLinks1 = object.getAttribute("link");
@@ -204,34 +206,18 @@ GUI.createLinks = function(object) {
 		newLinks1.push(oldLinks1);
 	}
 		
+	//destroy old links	
+	$( "line[class*='"+object.id+"']" ).remove();
+		
 	$.each(newLinks1, function( index, value ) {
 			
 		var targetID = value.destination;
 		var target = ObjectManager.getObject(targetID);
 	
 		if (!target) return;
-					
-		var arrowheadAtotherObject = value.arrowhead;
-		var arrowheadAtthisObject;
-		
-		var newLinks2 = [];
-		var oldLinks2 = target.getAttribute("link");
-		if (_.isArray(oldLinks2)){
-			newLinks2 = newLinks2.concat(oldLinks2);
-		}else if (oldLinks2){
-			newLinks2.push(oldLinks2);
-		}
-		
-		$.each(newLinks2, function( i, val ) {
-			
-			if(val.destination==object.id){
-				arrowheadAtthisObject = val.arrowhead;
-			}
-		});
-						
-		//destroy old links
-		$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
-		$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
+	
+		//$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
+		//$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
 				
 		//calculate middle of objects		
 		var objectCenterX = object.getViewBoundingBoxX()+(object.getViewBoundingBoxWidth()/2);
@@ -240,7 +226,8 @@ GUI.createLinks = function(object) {
 		var targetCenterY = target.getViewBoundingBoxY()+(target.getViewBoundingBoxHeight()/2);
 				
 		/* draw link line */
-		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId()));
+		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId())).parent();
+		
 		var line = GUI.svg.line(parent, objectCenterX, objectCenterY, targetCenterX, targetCenterY, {
 			strokeWidth: value.width,
 			stroke: "#000000"
@@ -266,11 +253,11 @@ GUI.createLinks = function(object) {
         })
 		
 		//add arrowheads
-		if(arrowheadAtthisObject){
+		if(value.arrowheadThisEnd){
 			var markerId = GUI.getSvgMarkerId("arrow", "black", false);
 			$(line).attr("marker-start", "url(#"+markerId+")");
 		}
-		if(arrowheadAtotherObject){
+		if(value.arrowheadOtherEnd){
 			markerId = GUI.getSvgMarkerId("arrow", "black", true);
 			$(line).attr("marker-end", "url(#"+markerId+")");
 		}
@@ -319,7 +306,7 @@ GUI.createLinks = function(object) {
 				
 							object.select();
 								
-							GUI.createDialog(object, target, changeProperties, false);	
+							GUI.createLinkDialog(object, target, changeProperties, false);	
 							
                         }
                     }
@@ -361,7 +348,7 @@ GUI.createLinks = function(object) {
 }
 	
 //Dialog for setting/changing the link properties
-GUI.createDialog = function(object, target, title, justcreated){
+GUI.createLinkDialog = function(object, target, title, justcreated){
 	
 	var arrowheadAtotherObject;
 	var arrowheadAtthisObject;
@@ -463,8 +450,9 @@ GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtth
 
 	$.each(newLinks3, function( index, value ) {
 
-		if(value.destination==target.id){
-			value.arrowhead = arrowheadAtotherObject;
+		if(value.destination == target.id){
+			value.arrowheadOtherEnd = arrowheadAtotherObject;
+			value.arrowheadThisEnd = arrowheadAtthisObject;
 			value.width = lineWidth;
 			value.style = lineStyle;
 		}
@@ -472,8 +460,9 @@ GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtth
 				
 	$.each(newLinks4, function( index, value ) {
 
-		if(value.destination==object.id){
-			value.arrowhead = arrowheadAtthisObject;
+		if(value.destination == object.id){
+			value.arrowheadOtherEnd = arrowheadAtthisObject;
+			value.arrowheadThisEnd = arrowheadAtotherObject;
 			value.width = lineWidth;
 			value.style = lineStyle;
 		}

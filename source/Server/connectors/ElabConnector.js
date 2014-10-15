@@ -97,7 +97,7 @@ elabConnector.mayWrite=function(roomID,objectID,connection,callback) {
 		  		callback(null, false);
 		  	}
 		} else {
-			self.getRoomData(roomID, connection, function(obj) { 
+			self.getRoomData(roomID, connection, false, function(obj) { 
 				if (obj.attributes.parent !== undefined) {
 					self.mayWrite(obj.attributes.parent, null, connection, callback);
 		  		} else {

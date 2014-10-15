@@ -86,17 +86,15 @@ GeneralObject.showOrHide=function(){
  * @param {bool} external True if triggered externally (and not by the object itself)
  */
 GeneralObject.drawPosition = function(external) {
-
+	
 	/* animations can be prevented using the objects function "startNoAnimationTimer" and the clients global function "GUI.startNoAnimationTimer" */
 	if (external === true && !this.selected && this.noAnimation == undefined && GUI.noAnimation == undefined) {
 		/* set position animated when not called locally */
 		this.setViewXYAnimated(this.getAttribute('x'), this.getAttribute('y'));
-		GUI.moveLinks(this);
 	} else {
 		/* set position without animation */
 		this.setViewX(this.getAttribute('x'));
 		this.setViewY(this.getAttribute('y'));
-		GUI.moveLinks(this);
 	}
 	
 }
@@ -1077,6 +1075,13 @@ GeneralObject.moveStart = function(event) {
 	self.hideControls();
 	
 	var move = function(event) {
+	
+		 //only move the object if the mouse key is pressed
+		if(event.which == 0){
+			end(event);
+			return;
+		}
+	
         $("body").trigger({
             type : "moveObject.wa",
             objectId : self.id
@@ -1465,6 +1470,8 @@ GeneralObject.setViewX = function(value) {
 	
 	GUI.adjustContent(this);
 	
+	GUI.moveLinks(this);
+	
 }
 
 /**
@@ -1491,6 +1498,8 @@ GeneralObject.setViewY = function(value) {
 	$(rep).attr("y", value);
 	
 	GUI.adjustContent(this);
+	
+	GUI.moveLinks(this);
 
 }
 
@@ -1506,11 +1515,11 @@ GeneralObject.setViewXYAnimated = function(x,y) {
 	var rep = this.getRepresentation();
 	
 	if (this.moveByTransform()) {
-		$(rep).animate({svgTransform: "translate("+x+","+y+")"}, 1000);
+		$(rep).animate({svgTransform: "translate("+x+","+y+")"}, 1000, function() {GUI.moveLinks(self)});
 		$(rep).attr("x", x);
 		$(rep).attr("y", y);
 	} else {
-		$(rep).animate({svgX: x, svgY: y}, 1000);
+		$(rep).animate({svgX: x, svgY: y}, 1000, function() {GUI.moveLinks(self)});
 	}
 	
 	GUI.adjustContent(this);
@@ -1686,8 +1695,19 @@ GeneralObject.selectedClickHandler = function(event) {
 		this.deselect();
 	} else {
 
-		var x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()/2;
+		var x = this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth();
 		var y = this.getViewBoundingBoxY();
+	
+		//line/arrow: show the actionsheet on the right end of the line/arrow
+		if(this.type == 'Line' || this.type == 'Arrow'){
+			var direction = this.getAttribute('direction');
+			if(direction == 1 || direction == 3){
+				y += this.getViewBoundingBoxHeight();
+			}
+		}
+		else{ //show the actionsheet centered on the left side of the object
+			y += this.getViewBoundingBoxHeight()/2;
+		}
 
 		if (GUI.couplingModeActive) {
 			var index = ObjectManager.getIndexOfObject(this.getId());

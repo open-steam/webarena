@@ -43,6 +43,7 @@ GUI.setTranslations('de',{
 	'cut' : 'Ausschneiden',
 	'cancel' : 'Abbrechen',
 	'save' : 'Speichern',
+	'undo' : 'Rückgängig',
 	'Upload file' : 'Datei hochladen',
 	'Upload completed' : 'Datei wurde hochgeladen',
 	'Error while uploading file' : 'Fehler während des Hochladens',
