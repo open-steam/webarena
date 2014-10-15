@@ -33,7 +33,7 @@ Exit.execute=function(openInNewWindow){
 
     var destination=this.getAttribute('destination');
 	
-	if (!destination || destination == "choose") {
+	if (!destination) {
 		return this.showDialog();
 	} else {
 		var self=this;
@@ -59,10 +59,10 @@ Exit.execute=function(openInNewWindow){
 		}
 
 		if (openInNewWindow) {
-			//console.log("new window");
+			console.log("new window");
 			window.open(destination);
 		} else {
-			//console.log("follow");
+			console.log("follow");
 			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
 		}
 

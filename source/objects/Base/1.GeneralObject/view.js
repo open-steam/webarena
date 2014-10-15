@@ -1077,13 +1077,6 @@ GeneralObject.moveStart = function(event) {
 	self.hideControls();
 	
 	var move = function(event) {
-	
-		 //only move the object if the mouse key is pressed
-		if(event.which == 0){
-			end(event);
-			return;
-		}
-	
         $("body").trigger({
             type : "moveObject.wa",
             objectId : self.id
@@ -1693,19 +1686,8 @@ GeneralObject.selectedClickHandler = function(event) {
 		this.deselect();
 	} else {
 
-		var x = this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth();
+		var x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()/2;
 		var y = this.getViewBoundingBoxY();
-	
-		//line/arrow: show the actionsheet on the right end of the line/arrow
-		if(this.type == 'Line' || this.type == 'Arrow'){
-			var direction = this.getAttribute('direction');
-			if(direction == 1 || direction == 3){
-				y += this.getViewBoundingBoxHeight();
-			}
-		}
-		else{ //show the actionsheet centered on the left side of the object
-			y += this.getViewBoundingBoxHeight()/2;
-		}
 
 		if (GUI.couplingModeActive) {
 			var index = ObjectManager.getIndexOfObject(this.getId());

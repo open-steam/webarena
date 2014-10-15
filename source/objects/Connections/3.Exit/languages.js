@@ -9,6 +9,5 @@ Exit.setTranslations('de',{
 	'filterObjects' : 'Nur Räume in Objektauswahl',
 	'Cancel' : 'Abbrechen', 
 	'Okay' : 'Auswählen',
-	'Show objects' : 'Objekte anzeigen',
-	'create new Subroom' : 'neuen Unterraum erstellen'
+	'Show objects' : 'Objekte anzeigen'
 });

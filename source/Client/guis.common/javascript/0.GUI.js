@@ -349,6 +349,10 @@ GUI.initObjectDeletionByKeyboard = function() {
 						/* delete selected objects */
 						$.each(ObjectManager.getSelected(), function(key, object) {
 
+							if ($(object.getRepresentation()).data("jActionsheet")) {
+								$(object.getRepresentation()).data("jActionsheet").remove();
+							}
+
 							object.deleteIt();
 
 						});
@@ -491,14 +495,9 @@ GUI.initMouseHandler = function() {
 				$("body").css( 'cursor', 'auto' );			
 			}
 			
-			//arrow/line: after selecting the startpoint change the cursor text to choose endpoint
-			if(GUI.getCursorText().indexOf("Start") > -1){
-				if(GUI.getCursorText()==GUI.translate('Choose Arrow-Startpoint')){
-					GUI.setCursorText(GUI.translate("Choose Arrow-Endpoint"));
-				}
-				else{
-					GUI.setCursorText(GUI.translate("Choose Line-Endpoint"));
-				}
+			//after selecting the arrow startpoint change the cursor text to arrow endpoint
+			if(GUI.getCursorText()==GUI.translate('Choose Arrow-Startpoint')){
+				GUI.setCursorText(GUI.translate("Choose Arrow-Endpoint"));
 							
 				var position = $('#besideMouse').position();
 				
@@ -506,17 +505,20 @@ GUI.initMouseHandler = function() {
 				
 			}
 			
-			//arrow/line: after selecting the endpoint create the object and set the position with GUI.setFinalPosition
-			if(GUI.getCursorText().indexOf("End") > -1){
-				var proto;
-				if(GUI.getCursorText()==GUI.translate('Choose Arrow-Endpoint')){
-					proto = ObjectManager.getPrototype('Arrow');
-				}
-				else{
-					proto = ObjectManager.getPrototype('Line');
-				}
+			//after selecting the line startpoint change the cursor text to line endpoint
+			if(GUI.getCursorText()==GUI.translate('Choose Line-Startpoint')){
+				GUI.setCursorText(GUI.translate("Choose Line-Endpoint"));
+
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', position.left+','+position.top);	
+			}
 			
+			//after selecting the arrow endpoint create the arrow and set the position with GUI.setFinalPosition
+			if(GUI.getCursorText()==GUI.translate('Choose Arrow-Endpoint')){
 				GUI.setCursorText("");
+
+				var proto = ObjectManager.getPrototype('Arrow');
 			
 				GUI.startNoAnimationTimer();
 				
@@ -531,6 +533,27 @@ GUI.initMouseHandler = function() {
 					
 				ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);	
 			}
+			
+			//after selecting the line endpoint create the line and set the position with GUI.setFinalPosition
+			if(GUI.getCursorText()==GUI.translate('Choose Line-Endpoint')){
+				GUI.setCursorText("");
+
+				var proto = ObjectManager.getPrototype('Line');
+			
+				GUI.startNoAnimationTimer();
+				
+				var title = $('#besideMouse').attr('title');
+				
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', title+','+position.left+','+position.top);
+										
+				var attributes;
+				var content;			
+					
+				ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);
+			}
+			
 			
 			while (temp && !temp.dataObject) {
 				temp=$(temp).parent()[0];

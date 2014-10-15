@@ -306,7 +306,7 @@ ObjectManager.removeLocally=function(data){
     var object=ObjectManager.getObject(data.id);
 	
 	this.onObjectRemove(object);
-		
+
     //remove representation
     if (object.removeRepresentation) {
         object.removeRepresentation();
@@ -318,7 +318,7 @@ ObjectManager.removeLocally=function(data){
     if (Modules.config.collaborativeEditor) ObjectManager.Pads.deletePadFor(data.id);
 	
 	GUI.hideActionsheet();
-	
+
 }
 
 ObjectManager.login = function(username, password, externalSession) {
@@ -403,6 +403,7 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
 	} else {
 		alert(GUI.translate("Room already displayed"));
 	}
+
 }
 
 ObjectManager.leaveRoom = function(roomid, index, serverCall) {
@@ -789,7 +790,6 @@ ObjectManager.reportBug = function(data, callback) {
 }
 ObjectManager.clientErrorMessage = function(data, callback) {
     ObjectManager.Modules.Dispatcher.query('clientErrorMessage', data, callback);
-
 }
 
 ObjectManager.showAll = function() {
@@ -812,6 +812,8 @@ ObjectManager.clientErrorMessage=function(data, callback){
 ObjectManager.copyObjects=function(objects) {
 	if (objects != undefined && objects.length > 0) {
 		ObjectManager.clipBoard.cut = false;
+		
+		var array=[];
 
         for (var key in objects) {
             var object = objects[key];
@@ -1041,6 +1043,7 @@ ObjectManager.paintingUpdate = function(data)
         }
     });
 }
+
 
 ObjectManager.startEtherpad = function(){
 

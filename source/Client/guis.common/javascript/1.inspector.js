@@ -270,7 +270,7 @@ GUI.setupInspectorContent = function(inspector) {
 					GUI.inspectorElementsSetter[attribute] = element.setValue;
 				}else if(info.type == "Hyperlink"){
 			
-					element.setValue(GUI.translate(object.getAttribute('destination')));
+					element.setValue(GUI.translate('choose'));
 					
 					element.setInactive();
 					
