@@ -39,7 +39,9 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
 	$(document).unbind("click.actionsheetHide");
 
-	var offsetTop = 22;
+	//correct the values because of toolbar
+	var offsetTop = 13;
+	var offsetLeft = 21;
 	
 	var actionsheet = $("#actionsheet");
 	
@@ -54,7 +56,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
             var newButton = document.createElement("div");
             if(isWebarenaObject){
-                $(newButton).html(webarenaObject.translate('de', action));
+                $(newButton).html(webarenaObject.translate(GUI.currentLanguage, action));
             } else {
 
             }
@@ -93,8 +95,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
         $.each(webarenaObject.actions, function(key, action) {
             var newButton = document.createElement("div");
 
-            $(newButton).html(action.actionName );
-
+            $(newButton).html(GUI.translate(action.actionName));
 
             $(newButton).addClass("actionsheet_button");
 
@@ -139,13 +140,10 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
 		var actionsheetHeight = actionsheet.outerHeight();
 
-		var actionsheetLeft = x-actionsheetWidth/2;
-		var actionsheetTop = y+offsetTop-actionsheetHeight;
-
-		var arrowLeft = (actionsheetWidth/2)-15;
+		var actionsheetLeft = x+offsetLeft;
+		var actionsheetTop = y+offsetTop;
 
 		if (actionsheetLeft < 5) {
-			arrowLeft = arrowLeft+actionsheetLeft;
 			actionsheetLeft = 5;
 		}
 
@@ -153,18 +151,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 			actionsheetTop = 5;
 		}
 
-		if (arrowLeft < 10) {
-			arrowLeft = 10;
-		}
-
-		if ((arrowLeft+40) > actionsheetWidth) {
-			arrowLeft = actionsheetWidth-40;
-		}
-
-
 		actionsheet.css("left", actionsheetLeft).css("top", actionsheetTop);
-
-		actionsheet.find(".actionsheet_arrow").css("left", arrowLeft);
 		
 		actionsheet.css("opacity", 1);
 

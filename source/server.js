@@ -85,10 +85,6 @@ var logger = new (winston.Logger)({
       new (winston.transports.File)({filename:"error/error.log" , colorize: true, json: true , handleExceptions:true})
     ]
   });
-  
- 
-
-
 
 
 var Modules = {};
