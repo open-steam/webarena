@@ -49,7 +49,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 	
 	actionsheet.addClass("actionsheet");
 	
-	actionsheet.html('<div class="actionsheet_arrow"></div><div class="actionsheet_buttons"></div>'); //clear actionsheet
+	actionsheet.html('<div class="actionsheet_triangle"></div><div class="actionsheet_buttons"></div>'); //clear actionsheet
 
     if(isWebarenaObject){
         $.each(ObjectManager.getActionsForSelected(), function(key, action) {
