@@ -42,7 +42,7 @@ module.exports={
 	
 	bugreportIcon:true,
 	
-	WebRTC: true,
+	WebRTC: false,
 	
 // Development
 	
