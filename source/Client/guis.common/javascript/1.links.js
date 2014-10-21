@@ -354,8 +354,55 @@ GUI.createLinks = function(object) {
 //Dialog for setting/changing the link properties
 GUI.createLinkDialog = function(object, target, title, justcreated){
 	
-	var arrowheadAtotherObject;
-	var arrowheadAtthisObject;
+	var select1;
+	var select2;
+	var select3;
+	var select4;
+	
+	var select5;
+	var select6;
+	var select7;
+	
+	var linkWidth = 5;
+	
+	var links = object.getAttribute("link");
+	
+	//check the properties of the current link to select them in the dialog
+	links.forEach(function(link) {
+		if(link.destination == target.id){
+		
+			if(link.arrowheadOtherEnd){
+				if(link.arrowheadThisEnd){
+					select4 = 'selected="selected"';
+				}
+				else{
+					select3 = 'selected="selected"';
+				}
+			}
+			else{
+				if(link.arrowheadThisEnd){
+					select2 = 'selected="selected"';
+				}
+				else{
+					select1 = 'selected="selected"';
+				}
+			}
+			
+			switch (link.style) {
+				case "stroke":
+					select5 = 'selected="selected"';
+				break;
+				case "dotted":
+					select6 = 'selected="selected"';
+				break;
+				case "dashed":
+					select7 = 'selected="selected"';
+				break;
+			}
+			
+			linkWidth = link.width;
+		}
+	});
 										
 	var undirected = object.translate(GUI.currentLanguage, "undirected");
 	var objectAsTarget = object.translate(GUI.currentLanguage, "object as target");
@@ -374,28 +421,31 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 							
 	var content = '<p>'+direction+'<br>';
 		content += 		'<select id="direction">';
-		content += 			'<option value="undirected">'+undirected+'</option>';
-		content += 			'<option value="toObject">'+objectAsTarget+'</option>';
-		content += 			'<option value="fromObject">'+objectAsSource+'</option>';
-		content += 			'<option value="bidirectional">'+bidirectional+'</option>';
+		content += 			'<option value="undirected"'+select1+'>'+undirected+'</option>';
+		content += 			'<option value="toObject"'+select2+'>'+objectAsTarget+'</option>';
+		content += 			'<option value="fromObject"'+select3+'>'+objectAsSource+'</option>';
+		content += 			'<option value="bidirectional"'+select4+'>'+bidirectional+'</option>';
 		content += 		'</select>';
 		content += '</p>';
 		content += '<p>'+style+'<br>';
 		content += 		'<select id="style">';
-		content += 			'<option value="stroke">'+stroke+'</option>';
-		content += 			'<option value="dotted">'+dotted+'</option>';
-		content += 			'<option value="dashed">'+dashed+'</option>';
+		content += 			'<option value="stroke"'+select5+'>'+stroke+'</option>';
+		content += 			'<option value="dotted"'+select6+'>'+dotted+'</option>';
+		content += 			'<option value="dashed"'+select7+'>'+dashed+'</option>';
 		content += 		'</select>';
 		content += '</p>';
 		content += '<p>';
 		content += 		'<label for="lineWidth">'+width+'</label>';
-		content += 		'<input type="number" id="lineWidth" name="value" value="5" min="1">';
+		content += 		'<input type="number" id="lineWidth" name="value" value="'+linkWidth+'" min="1">';
 		content += '</p>';
 					
 	var buttons = {};
 	var lineWidth;
 	var direction;
 	var lineStyle;
+	
+	var arrowheadAtotherObject;
+	var arrowheadAtthisObject;
 
 	buttons[object.translate(GUI.currentLanguage, "save")] = function(domContent){
 	

@@ -377,10 +377,10 @@ GUI.initToolbar = function() {
 	$(undoButton).addClass("sidebar_button");
 
 	//$(undoButton).css("padding-left", "20px");
-	$(undoButton).css("padding-right", "20px");
+	//$(undoButton).css("padding-right", "20px");
 	$(undoButton).css("margin-right", "20px");
 	//$(undoButton).css("border-left", "1px solid #636363");
-	$(undoButton).css("border-right", "1px solid #636363");
+	//$(undoButton).css("border-right", "1px solid #636363");
 	
 	$(undoButton).attr("title", GUI.translate("undo"));
 
@@ -405,11 +405,11 @@ GUI.initToolbar = function() {
 			$(bugButton).attr("width", "24").attr("height", "24");
 
 			$(bugButton).attr("id", "bug_button");
-			$(bugButton).addClass("sidebar_button");
+			$(bugButton).addClass("sidebar_button header_tab");
 		
 			$(bugButton).attr("title", GUI.translate("Bugreport"));
 
-			$("#header > .header_right").append(bugButton);
+			$("#header > .header_tabs_sidebar").append(bugButton);
 		
 			var click = function() {
 				GUI.sidebar.openPage("bug", bugButton);
@@ -433,11 +433,11 @@ GUI.initToolbar = function() {
 			$(chatButton).attr("width", "24").attr("height", "24");
 
 			$(chatButton).attr("id", "chat_button");
-			$(chatButton).addClass("sidebar_button");
+			$(chatButton).addClass("sidebar_button header_tab");
 		
 			$(chatButton).attr("title", GUI.translate("Chat"));
 
-			$("#header > .header_right").append(chatButton);
+			$("#header > .header_tabs_sidebar").append(chatButton);
 
 
 			var chatNotifier = document.createElement("span");
@@ -450,7 +450,7 @@ GUI.initToolbar = function() {
 
 			$(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
 
-			$("#header > .header_right").append(chatNotifier);
+			$("#header > .header_tabs_sidebar").append(chatNotifier);
 		
 		
 			var click = function() {
@@ -475,7 +475,7 @@ GUI.initToolbar = function() {
 		$(inspectorButton).attr("width", "24").attr("height", "24");
 
 		$(inspectorButton).attr("id", "inspector_button");
-		$(inspectorButton).addClass("sidebar_button");
+		$(inspectorButton).addClass("sidebar_button header_tab");
 
 		$(inspectorButton).attr("title", GUI.translate("Object inspector"));
 
@@ -489,7 +489,7 @@ GUI.initToolbar = function() {
 			$(inspectorButton).bind("mousedown", click);
 		}
 
-		$("#header > .header_right").append(inspectorButton);
+		$("#header > .header_tabs_sidebar").append(inspectorButton);
 
 		GUI.sidebar.openPage("inspector", inspectorButton);
 		
@@ -499,6 +499,7 @@ GUI.initToolbar = function() {
 
 	}
 	
+	
 	/* add etherpad toggle */
 	if (!Modules.Config.presentationMode && Modules.config.collaborativeEditor) {
 	
@@ -507,7 +508,7 @@ GUI.initToolbar = function() {
 		$(padButton).attr("width", "24").attr("height", "24");
 
 		$(padButton).attr("id", "pad_button");
-		$(padButton).addClass("sidebar_button");
+		$(padButton).addClass("sidebar_button header_tab");
 
 		$(padButton).attr("title", GUI.translate("Description"));
 
@@ -521,10 +522,19 @@ GUI.initToolbar = function() {
 			$(padButton).bind("mousedown", click);
 		}
 
-		$("#header > .header_right").append(padButton);
+		$("#header > .header_tabs_sidebar").append(padButton);
 
 		GUI.sidebar.openPage("pad", padButton);
 	
 	}
+	
+	
+	$("#header_toggle_sidebar_hide").on("click", function() {
+		GUI.sidebar.closeSidebar(true);
+	});
+ 	
+	$("#header_toggle_sidebar_show").on("click", function() {
+		GUI.sidebar.openSidebar();
+	});
 	
 }

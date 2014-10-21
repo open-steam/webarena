@@ -71,7 +71,7 @@ GUI.sidebar.openPage = function(element, button) {
 
     /* check if the page is already open */
     if (GUI.sidebar.currentElement == element && GUI.sidebar.open) {
-        GUI.sidebar.closeSidebar();
+        //GUI.sidebar.closeSidebar();
         return;
     }
 
@@ -207,10 +207,16 @@ GUI.sidebar.setVideoChatIcon = function(status){
 GUI.sidebar.openSidebar = function() {
 
     GUI.sidebar.transformX($("#sidebar"), 0);
-    GUI.sidebar.transformX($("#header>.header_right"), -230);
-
+    GUI.sidebar.transformX($("#header>.header_right"), -250);
+	GUI.sidebar.transformX($("#header>.header_tabs_sidebar"), 0);
+	
+	$("#"+GUI.sidebar.currentElement+"_button").addClass("active");
+	
     GUI.sidebar.open = true;
 
+	$("#header_toggle_sidebar_hide").show();
+	$("#header_toggle_sidebar_show").hide();
+	
 }
 
 /**
@@ -220,7 +226,8 @@ GUI.sidebar.openSidebar = function() {
 GUI.sidebar.closeSidebar = function(noReset) {
 
     GUI.sidebar.transformX($("#sidebar"), 230);
-    GUI.sidebar.transformX($("#header>.header_right"), 0);
+    GUI.sidebar.transformX($("#header>.header_right"), -20);
+	GUI.sidebar.transformX($("#header>.header_tabs_sidebar"), 230);
 
     GUI.sidebar.open = false;
 
@@ -229,8 +236,31 @@ GUI.sidebar.closeSidebar = function(noReset) {
     }
 
     $(".sidebar_button").removeClass("active");
+	
+	$("#header_toggle_sidebar_hide").hide();
+	$("#header_toggle_sidebar_show").show();
 
 }
+
+
+/**
+ * Shows the sidebar
+ * @function show
+ */
+GUI.sidebar.show = function() {
+	$("#sidebar").show();
+	$('.header_tabs_sidebar').show();
+}
+
+/**
+ * Hide the sidebar
+ * @function show
+ */
+GUI.sidebar.hide = function() {
+	$("#sidebar").hide();
+	$('.header_tabs_sidebar').hide();
+}
+
 
 /**
  * saves the current sidebar state and hides it
