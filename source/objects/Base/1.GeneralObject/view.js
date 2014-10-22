@@ -1420,6 +1420,12 @@ GeneralObject.getViewBoundingBoxY = function() {
  * @deprecated Some kind of deprecated because the objects width should be equal
  */
 GeneralObject.getViewBoundingBoxWidth = function() {
+	
+	if (!this.getRepresentation().getBBox){
+		//return the saved with if no bounding box can be found (Internet Explorer)
+		return this.getAttribute('width');
+	}
+	
 	return parseInt(this.getRepresentation().getBBox().width);
 }
 
@@ -1428,6 +1434,12 @@ GeneralObject.getViewBoundingBoxWidth = function() {
  * @deprecated Some kind of deprecated because the objects width should be equal
  */
 GeneralObject.getViewBoundingBoxHeight = function() {
+	
+		if (!this.getRepresentation().getBBox){
+		//return the saved height if no bounding box can be found (Internet Explorer)
+		return this.getAttribute('heigth');
+	}
+	
 	return parseInt(this.getRepresentation().getBBox().height);
 }
 
