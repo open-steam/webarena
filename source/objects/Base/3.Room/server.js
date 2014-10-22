@@ -12,7 +12,7 @@ var Modules = require('../../../server.js');
 
 
 theObject.updateEvaluationStatus = function(object,data){
-    
+   /* 
     //TODO: CHECK IF THE SEMANTIC MEANING HAS CHANGED
     if(object.isActive()){
         var evalStatus = object.getAttribute("positionStatus");
@@ -20,7 +20,7 @@ theObject.updateEvaluationStatus = function(object,data){
             //TODO: Just change the evalStatus, if the semantic meaning has changed
             object.setAttribute("positionStatus", "placed");
         }
-    }
+    } */
     
 }
 theObject.evaluateCurrentPosition = function(object){
