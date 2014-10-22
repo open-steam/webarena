@@ -32,6 +32,13 @@ if (true) {
 
 var Helper = new function () {
 
+	/**
+ 	* @function capitalize
+ 	* @param {String} text
+ 	*/
+ 	this.capitalize = function(text) {
+ 		return text.replace(/\w\S*/g, function(txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase()});
+ 	};
 
 	//public method
 	this.getCloneOfObject = function (oldObject) {

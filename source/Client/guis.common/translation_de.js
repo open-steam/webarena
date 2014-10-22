@@ -70,6 +70,10 @@ GUI.setTranslations('de',{
 	'Choose Arrow-Startpoint' : 'Pfeil-Startpunkt festlegen',
 	'Choose Line-Startpoint' : 'Linien-Startpunkt festlegen',
 	'Choose Arrow-Endpoint' : 'Pfeil-Endpunkt festlegen',
-	'Choose Line-Endpoint' : 'Linien-Endpunkt festlegen'
+	'Choose Line-Endpoint' : 'Linien-Endpunkt festlegen',
+	'Welcome' : 'Willkommen',
+	'Environment' : 'Umgebung',
+	 'Logout': 'Ausloggen',
+	 'Paint' : 'Zeichnen'
 	}
 );
