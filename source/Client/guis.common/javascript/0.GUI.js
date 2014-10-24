@@ -42,13 +42,6 @@ GUI.translate=function(text){
 
 
 /**
- * variable to check if client is a touch device (to add suitable event handlers)
- */
-GUI.isTouchDevice = false;
-
-
-
-/**
  * @deprecated still needed?
  */
 GUI.updateGUI = function(webarenaObject) {
@@ -409,41 +402,42 @@ GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
  */
 GUI.initMouseHandler = function() {
 
-	if (GUI.isTouchDevice) {
-		
-		var touchHandler = function(event) {
+	// if(GUI.isTouchDevice) {
+		// var touchHandler = function(event) {
 			
-			jPopoverManager.hideAll();
+			// jPopoverManager.hideAll();
 			
-			var contentPosition = $("#content").offset();
+			// var contentPosition = $("#content").offset();
 
-			var x = event.pageX-contentPosition.left;
-			var y = event.pageY-contentPosition.top;
+			// var x = event.pageX-contentPosition.left;
+			// var y = event.pageY-contentPosition.top;
 			
-			if (event.touches.length >= 1) {
-				var x = event.touches[event.touches.length-1].pageX-contentPosition.left;
-				var y = event.touches[event.touches.length-1].pageY-contentPosition.top;
-			}
+			// if (event.touches.length >= 1) {
+				// var x = event.touches[event.touches.length-1].pageX-contentPosition.left;
+				// var y = event.touches[event.touches.length-1].pageY-contentPosition.top;
+			// }
 			
-			/* find objects at this position */
-			var clickedObject = GUI.getObjectAt(x, y);
+			// /* find objects at this position */
+			// var clickedObject = GUI.getObjectAt(x, y);
 
-			if (clickedObject && event.target != $("#content>svg").get(0)) {
-				event.preventDefault();
-				event.stopPropagation();
-				clickedObject.click(event);
-			} else {
-				GUI.deselectAllObjects();
-				GUI.updateInspector();
-			}
+			// if (clickedObject && event.target != $("#content>svg").get(0)) {
+				// event.preventDefault();
+				// event.stopPropagation();
+				// clickedObject.click(event);
+			// } else {
+				// GUI.deselectAllObjects();
+				// GUI.updateInspector();
+			// }
 			
-		}
+		// }
 		
-		$("#content>svg").get(0).addEventListener("touchstart", touchHandler, false);
-		
-	} else {
-		
-		var mousedown = function(event) {
+		// $("#content>svg").get(0).addEventListener("touchstart", touchHandler, false);
+	// }
+	
+	GUI.touch.init();
+	
+	var mousedown = function(event) {
+		if(!GUI.touch.ing) {
 			jPopoverManager.hideAll();
 
 			var contentPosition = $("#content").offset();
@@ -559,24 +553,24 @@ GUI.initMouseHandler = function() {
 				// Objects with restricted moving areas should get the "native" events
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
 				// should be prevented
-                if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
-                    event.preventDefault();
-                    event.stopPropagation();
-                }
+			 if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
+				event.preventDefault();
+				event.stopPropagation();
+			 }
 
 				clickedObject.click(event);
 			} else {
 				/* clicked on background */
-                event.preventDefault();
-                event.stopPropagation();
+			 event.preventDefault();
+			 event.stopPropagation();
 				GUI.rubberbandStart(event);
 				GUI.updateInspector(true);
 			}
-
 		}
-		
-		var mousemove = function(event) {
-			
+	}
+	
+	var mousemove = function(event) {
+		if(!GUI.touch.ing) {
 			var x=event.clientX;
 			var y=event.clientY;
 			
@@ -598,13 +592,11 @@ GUI.initMouseHandler = function() {
 				}
 				
 			});
-
-		}		
-		
-		$("#content>svg").bind("mousedown", mousedown);
-		$("#content>svg").bind("mousemove", mousemove);
-		
-	}
+		}
+	}		
+	
+	$("#content>svg").bind("mousedown", mousedown);
+	$("#content>svg").bind("mousemove", mousemove);
 	
 }
 
