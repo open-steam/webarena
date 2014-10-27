@@ -86,7 +86,8 @@ ServerController.bugreport = function (data, socket, responseID, callback) {
 
 };
 ServerController.clientErrorMessage = function (data, socket, responseID, callback) {
-    Modules.Logger.log('error','message: ' + data.message + ' uri: ' + data.uri + ' line: ' +data.line);
+    Modules.Logger.log('error','errortype: client ' + 'message: ' + data.message + ' uri: ' + data.uri + ' line: ' +data.line + " roomID: " +data.roomID + 
+            " userID: " + data.user);
 };
 
 module.exports = ServerController;
