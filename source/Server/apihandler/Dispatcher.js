@@ -110,6 +110,9 @@ Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
 	Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
 });
+Dispatcher.registerCall('writeOnServerConsole', function(socket,data, responseId){
+        Modules.ServerController.writeOnServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
+});
 
 /**
  * Creates a callback function that sends the result as an info message to the client.
