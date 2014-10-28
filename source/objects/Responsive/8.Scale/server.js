@@ -100,7 +100,7 @@ theObject.positionToValue = function(object) {
     var value = minVal + (Math.round(relativePositonX / distancePerStepInPixel));
     console.log("Value: " + value);
 
-    return 5;
+    return value;
 
 
 }
