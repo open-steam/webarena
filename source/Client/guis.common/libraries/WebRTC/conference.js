@@ -1,3 +1,5 @@
+var interval;
+
 var conference = function(config) {
     var self = {
         //userToken: uniqueToken()
@@ -21,7 +23,7 @@ var conference = function(config) {
     function onDefaultSocketResponse(response) {
 	
         if (response.userToken == self.userToken) return;
-
+		
         if (isGetNewRoom && response.roomToken && response.broadcaster  && response.roomName == ObjectManager.currentRoomID["left"]){
 			config.onRoomFound(response);
 		}
@@ -188,6 +190,8 @@ var conference = function(config) {
 
     function leave() {
 	
+		isGetNewRoom = true;
+	
         var length = sockets.length;
         for (var i = 0; i < length; i++) {
             var socket = sockets[i];
@@ -202,6 +206,9 @@ var conference = function(config) {
 
         // if owner leaves; try to remove his room from all other users side
         if (isbroadcaster) {
+		
+			clearInterval(interval);
+		
             defaultSocket.send({
                 left: true,
                 userToken: self.userToken,
@@ -227,7 +234,6 @@ var conference = function(config) {
             roomName: self.roomName,
             broadcaster: self.userToken
         });
-        setTimeout(startBroadcasting, 3000);
     }
 
     function onNewParticipant(channel) {
@@ -262,7 +268,7 @@ var conference = function(config) {
 
             isbroadcaster = true;
             isGetNewRoom = false;
-            startBroadcasting();
+            interval = setInterval(function(){ startBroadcasting() }, 3000);
         },
         joinRoom: function(_config) {
             self.roomToken = _config.roomToken;

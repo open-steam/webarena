@@ -37,7 +37,7 @@ GUI.chat.init = function() {
 		}
 		
 	});
-	
+		
 }
 
 /**
@@ -132,8 +132,6 @@ GUI.chat.addMessage = function(username, text, userColor, read) {
 		
 	}
 	
-
-	
 	text = replaceEmoticon(':)', 'emoticon_smile.png', text);
 	text = replaceEmoticon(':D', 'emoticon_grin.png', text);
 	text = replaceEmoticon(':P', 'emoticon_tongue.png', text);
@@ -149,7 +147,6 @@ GUI.chat.addMessage = function(username, text, userColor, read) {
 
 	$("#chat_messages").append('<div class="chat_message_'+type+'"><span style="color: '+userColor+'">'+username+' ('+timestamp+')</span>'+text+'</div>');
 	
-
 	$("#chat_messages").scrollTop(200000); //scroll down
 
 }
@@ -161,7 +158,22 @@ GUI.chat.addMessage = function(username, text, userColor, read) {
 GUI.chat.opened = function() {
 	GUI.chat.newMessages = 0;
 	GUI.chat.hideNotifier();
+	
+	if($('#videoChat').length == 0 && Modules.Config.WebRTC){
+		GUI.chat.addVideoChatIcon();
+	}
+	
 	//$("#chat_message_input").focus(); //TODO: chrome bug
+}
+
+
+/**
+ * called when chat is closed in GUI
+ */
+GUI.chat.closed = function() {
+
+	$('#videoChat').remove();
+	
 }
 
 
@@ -179,4 +191,99 @@ GUI.chat.showNotifier = function() {
  */
 GUI.chat.hideNotifier = function() {
 	$("#chat_notifier").css("opacity", 0);
+}
+
+/**
+ * add video chat icon
+ */
+GUI.chat.addVideoChatIcon = function(){	
+	
+	var videoChat = document.createElement("img");
+	
+	$(videoChat).attr("id", "videoChat");
+	
+	$(videoChat).attr("width", "24").attr("height", "24");
+	
+	$(videoChat).attr("align", "right");
+	
+	$("#sidebar_title").after(videoChat);
+
+	$(videoChat).hover( 
+		function () { 
+			$(this).css("opacity", 0.9);
+		}, 
+		function () { 
+			$(this).css("opacity", 0.6);
+		} 
+	); 
+	
+	GUI.chat.setVideoChatIcon();
+	
+	$(videoChat).css("position", "absolute");
+	
+	$(videoChat).css("padding", "2px");
+	
+	$(videoChat).css("margin-left", "202px");
+	
+	$(videoChat).css("z-index", 11001);
+	
+	$(videoChat).css("color", "#eaecf0");
+	
+	$(videoChat).css("cursor", "pointer");
+	
+	$(videoChat).css("opacity", 0.6);
+	
+	if (GUI.isTouchDevice) {
+		$(videoChat).bind("touchstart", function(ev) {
+			var title = $(this).attr("title");
+			
+			if(title == "create a room conference"){
+				WebRTCManager.setupNewRoomButtonClickHandler();
+			}
+			if(title == "join the room conference"){
+				WebRTCManager.joinRoomButtonClickHandler();
+			}
+			if(title == "leave the room conference"){
+				WebRTCManager.leaveRoomButtonClickHandler();
+			}
+			
+		});
+	} else {
+		$(videoChat).bind("mousedown", function(ev) {
+			var title = $(this).attr("title");
+			
+			if(title == "create a room conference"){
+				WebRTCManager.setupNewRoomButtonClickHandler();
+			}
+			if(title == "join the room conference"){
+				WebRTCManager.joinRoomButtonClickHandler();
+			}
+			if(title == "leave the room conference"){
+				WebRTCManager.leaveRoomButtonClickHandler();
+			}
+			
+		});
+	}
+}
+
+/**
+ * set the appearance and the title of the video chat icon
+ */
+GUI.chat.setVideoChatIcon = function(){
+
+	var state = WebRTCManager.state;
+	
+	if(state == "create"){
+		$("#videoChat").attr("src", "../../guis.common/images/createVideochat.png").attr("alt", "");
+		$("#videoChat").attr("title", "create a room conference");
+	}
+	if(state == "join"){
+		$("#videoChat").attr("src", "../../guis.common/images/joinVideochat.png").attr("alt", "");
+		$("#videoChat").attr("title", "join the room conference");
+	}
+	if(state == "leave"){
+		$("#videoChat").attr("src", "../../guis.common/images/leaveVideochat.png").attr("alt", "");
+		$("#videoChat").attr("title", "leave the room conference");
+	}
+
 }

@@ -25,6 +25,7 @@ GUI.sidebar.elementConfig = {
     "inspector" : {
         order : 0,
         title : GUI.translate("Object inspector"),
+		onOpen : GUI.chat.closed
     },
     "chat" : {
         order : 1,
@@ -34,10 +35,12 @@ GUI.sidebar.elementConfig = {
     "bug" : {
         order : 2,
         title : GUI.translate("Bugreport"),
+		onOpen : GUI.chat.closed
     },
     "pad" : {
         order : 3,
         title : GUI.translate("Annotations"),
+		onOpen : GUI.chat.closed
     },
 };
 
@@ -97,65 +100,7 @@ GUI.sidebar.openPage = function(element, button) {
 
     GUI.sidebar.transformX($("#sidebar_content").children("div"), left);
 
-
     $("#sidebar_title").children("span").html(GUI.sidebar.elementConfig[element]['title']);
-
-
-	/*add video chat button*/
-	if(document.getElementById("videoChat") == null && Modules.Config.WebRTC && element == "chat"){
-		var videoChat = document.createElement("img");
-		
-		$(videoChat).attr("id", "videoChat");
-		
-		$(videoChat).attr("width", "24").attr("height", "24");
-		
-		$(videoChat).attr("align", "right");
-		
-		$("#sidebar_title").after(videoChat);
-		
-		GUI.sidebar.setVideoChatIcon("create");
-		
-		$(videoChat).css("position", "absolute");
-		
-		$(videoChat).css("padding", "5px");
-		
-		$(videoChat).css("margin-left", "195px");
-		
-		$(videoChat).css("z-index", 11001);
-		
-		if (GUI.isTouchDevice) {
-			$(videoChat).bind("touchstart", function(ev) {
-				var title = $(this).attr("title");
-				
-				if(title == "create a room conference"){
-					WebRTCManager.setupNewRoomButtonClickHandler();
-				}
-				if(title == "join the room conference"){
-					WebRTCManager.joinRoomButtonClickHandler();
-				}
-				if(title == "leave the room conference"){
-					WebRTCManager.leaveRoomButtonClickHandler();
-				}
-				
-			});
-		} else {
-			$(videoChat).bind("mousedown", function(ev) {
-				var title = $(this).attr("title");
-				
-				if(title == "create a room conference"){
-					WebRTCManager.setupNewRoomButtonClickHandler();
-				}
-				if(title == "join the room conference"){
-					WebRTCManager.joinRoomButtonClickHandler();
-				}
-				if(title == "leave the room conference"){
-					WebRTCManager.leaveRoomButtonClickHandler();
-				}
-				
-			});
-		}
-	}
-	
 
     $(".sidebar_button").removeClass("active");
 
@@ -173,30 +118,6 @@ GUI.sidebar.openPage = function(element, button) {
     }
 
     $("#sidebar_content").scrollTop(0);
-
-}
-
-
-
-/**
- * set the appearance and the title of the video chat icon
- */
-GUI.sidebar.setVideoChatIcon = function(status){
-
-	var videoChat = document.getElementById("videoChat");
-
-	if(status == "create"){
-		$(videoChat).attr("src", "../../guis.common/images/createVideochat.png").attr("alt", "");
-		$(videoChat).attr("title", "create a room conference");
-	}
-	if(status == "join"){
-		$(videoChat).attr("src", "../../guis.common/images/joinVideochat.png").attr("alt", "");
-		$(videoChat).attr("title", "join the room conference");
-	}
-	if(status == "leave"){
-		$(videoChat).attr("src", "../../guis.common/images/leaveVideochat.png").attr("alt", "");
-		$(videoChat).attr("title", "leave the room conference");
-	}
 
 }
 

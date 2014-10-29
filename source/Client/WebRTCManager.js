@@ -1,5 +1,7 @@
 var WebRTCManager = {};
 
+WebRTCManager.state = "create";
+
 var config;
 var conferenceUI;
 var videosContainer;
@@ -29,6 +31,7 @@ WebRTCManager.init = function(){
 			});
 
 			socket.send = function(message) {
+				
 				socket.emit('WebRTC-message', {
 					sender: sender,
 					data: message
@@ -65,10 +68,14 @@ WebRTCManager.init = function(){
 			//if (typeof roomsList === 'undefined') roomsList = document.body;
 
 			myRoomData = room;
-			GUI.sidebar.setVideoChatIcon("join");
+			WebRTCManager.state = "join";
+			GUI.chat.setVideoChatIcon();
 					
 		},
 		onRoomClosed: function(room) {
+				
+			WebRTCManager.state = "create";
+			GUI.chat.setVideoChatIcon();	
 				
 			var joinButton = document.querySelector('button[data-roomToken="' + room.roomToken + '"]');
 			if (joinButton) {
@@ -134,8 +141,8 @@ WebRTCManager.joinRoomButtonClickHandler = function() {
 WebRTCManager.leaveRoomButtonClickHandler = function() {
 
 	conferenceUI.leaveRoom();
-		
-	GUI.sidebar.setVideoChatIcon("create");
+	WebRTCManager.state = "create";	
+	GUI.chat.setVideoChatIcon();
 	
 	$(".media-container").remove();
 
@@ -174,8 +181,8 @@ function captureUserMedia(callback, failure_callback, forceSkipCustomGetUserMedi
 			callback && callback();
 
 			video.setAttribute('muted', true);
-			
-			GUI.sidebar.setVideoChatIcon("leave");
+			WebRTCManager.state = "leave";
+			GUI.chat.setVideoChatIcon();
 			
 			var mediaElement = getMediaElement(video, {
 				//width: (videosContainer.clientWidth / 2) - 50,
