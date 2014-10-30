@@ -103,7 +103,7 @@
 .triangle-border {
   /*position: relative;*/  /* deactivated due to Chrome rendering anomaly */
   padding: 5px;
-  margin: 1em 0 3em;
+  /*margin: 1em 0 3em;*/ /* deactivated due to Firefox rendering anomaly */
   border: 5px solid RGBA(68, 78, 91, 1);
   color: #333;
   background: #fff;
