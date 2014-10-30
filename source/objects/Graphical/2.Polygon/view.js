@@ -149,18 +149,26 @@ Polygon.IntersectionObjectLine = function(a1, a2, p){
 	for(var j = 0; j< P.length-2; j++){
 		var Int = this.IntersectionLineLine(a1, a2, P[j], P[j+1]);
 		if(typeof Int.x != 'undefined' && typeof Int.y != 'undefined'){
-
-			var dx = P[j+1].x - P[j].x;
-			var dy = P[j+1].y - P[j].y;
-					
-			var absval = Math.sqrt(Math.pow(dy, 2) + Math.pow(dx, 2));
 			
-			dy = dy/absval;
-			dx = dx/absval;
+			var dx;
+			var dy;
 			
-			//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)	
-			Int.x = Int.x + (dy)*p;
-			Int.y = Int.y + (-dx)*p;
+			if(a1.x == (this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth()/2)){
+				dx = a2.x - a1.x;
+				dy = a2.y - a1.y;
+			}
+			else{
+				dx = a1.x - a2.x;
+				dy = a1.y - a2.y;
+			}
+			
+			var l = Math.sqrt(dx*dx+dy*dy);
+			dx = dx/l;
+			dy = dy/l;
+			
+			//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
+			Int.x = Int.x + dx*p;
+			Int.y = Int.y + dy*p;
 			
 			return Int;
 		}

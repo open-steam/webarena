@@ -63,7 +63,6 @@ GUI.moveLinks = function(object){
 			
 		if (!target) return;
 		
-		
 		if(object.intersectsWith(target)){ //the objects intersects each other--->do not show any links
 			GUI.showLink(object.id, target.id, false); 
 			return;
@@ -71,26 +70,18 @@ GUI.moveLinks = function(object){
 
 		GUI.showLink(object.id, target.id, true); 
 		
-		var arrowheadToTarget1 = $(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("marker-start");
-		var arrowheadToTarget2 = $(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("marker-end");
-		var arrowheadToObject1 = $(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("marker-end");
-		var arrowheadToObject2 = $(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("marker-start");
+		var padding = 3*(parseInt(value.width) + 4);
 		
-		var objectCenterX = object.getViewBoundingBoxX()+(object.getViewBoundingBoxWidth()/2);
-		var objectCenterY = object.getViewBoundingBoxY()+(object.getViewBoundingBoxHeight()/2);
-		var targetCenterX = target.getViewBoundingBoxX()+(target.getViewBoundingBoxWidth()/2);
-		var targetCenterY = target.getViewBoundingBoxY()+(target.getViewBoundingBoxHeight()/2);
+		var a1 = new Object(); //object's centerpoint 
+		var a2 = new Object(); //target's centerpoint
+		a1.x = object.getViewBoundingBoxX()+(object.getViewBoundingBoxWidth()/2);
+		a1.y = object.getViewBoundingBoxY()+(object.getViewBoundingBoxHeight()/2);
+		a2.x = target.getViewBoundingBoxX()+(target.getViewBoundingBoxWidth()/2);
+		a2.y = target.getViewBoundingBoxY()+(target.getViewBoundingBoxHeight()/2);
 		
-		var a1 = new Object();
-		var a2 = new Object();
-		a1.x = objectCenterX;
-		a1.y = objectCenterY;
-		a2.x = targetCenterX;
-		a2.y = targetCenterY;
+		if(value.arrowheadOtherEnd){ //arrowhead to target 
 		
-		if(arrowheadToTarget1 == "url(#svgMarker_arrow_black_0)" || arrowheadToTarget2 == "url(#svgMarker_arrow_black_1)"){ //arrowhead to target 
-		
-			var Intersection = target.IntersectionObjectLine(a1, a2, 20);
+			var Intersection = target.IntersectionObjectLine(a1, a2, padding);
 				
 			if(typeof Intersection == 'undefined'){ //there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
 			
@@ -105,9 +96,10 @@ GUI.moveLinks = function(object){
 				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',Intersection.y);
 			}
 		}
-		if(arrowheadToObject1 == "url(#svgMarker_arrow_black_1)"|| arrowheadToObject2 == "url(#svgMarker_arrow_black_0)"){ //arrowhead to object
 		
-			var Intersection = object.IntersectionObjectLine(a1, a2, 20);
+		if(value.arrowheadThisEnd){ //arrowhead to object
+		
+			var Intersection = object.IntersectionObjectLine(a1, a2, padding);
 				
 			if(typeof Intersection == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link	
 			
@@ -124,11 +116,11 @@ GUI.moveLinks = function(object){
 		}
 		else{ //no arrowhead to object, the line can end in the center of the object
 				
-			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',objectCenterX);
-			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',objectCenterY);
+			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',a1.x);
+			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',a1.y);
 		
-			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',objectCenterX);
-			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',objectCenterY);	
+			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',a1.x);
+			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',a1.y);	
 		}
 	});
 }
@@ -188,19 +180,6 @@ GUI.createLinks = function(object) {
 	
 	/* set current link object */
 	GUI.currentLinkObject = object;
-	
-	/*
-	//check if more than one object is selected 
-	if (ObjectManager.getSelected().length > 1) {
-	
-		//hide links for all selected objects
-		$.each(ObjectManager.getSelected(), function(index, obj) {
-			GUI.showLinks(false);
-		});
-	
-		return;
-	}
-	*/	
 		
 	var newLinks1 = [];
 	var oldLinks1 = object.getAttribute("link");

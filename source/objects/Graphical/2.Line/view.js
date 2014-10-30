@@ -207,32 +207,36 @@ Line.checkTransparency = function(attribute, value) {
 Line.getPoints = function(){
 
 	var dir = this.getAttribute("direction");
+	var bbx = this.getViewBoundingBoxX();
+	var bby = this.getViewBoundingBoxY();
+	var bbw = this.getViewBoundingBoxWidth();
+	var bbh = this.getViewBoundingBoxHeight();
 	var P1;
 	var P2;
 	
 	if(dir == 1 || dir == 3){
 	
 		P1 = {
-			x : this.getAttribute("x"),
-			y : this.getAttribute("y")
+			x : bbx,
+			y : bby
 		}
 		
 		P2 = {
-			x : (this.getAttribute("x")+this.getAttribute("width")),
-			y : (this.getAttribute("y")+this.getAttribute("height"))
+			x : (bbx+bbw),
+			y : (bby+bbh)
 		}
 		
 	}
 	if(dir == 2 || dir == 4){
 	
 		P1 = {
-			x : (this.getAttribute("x")+this.getAttribute("width")),
-			y : this.getAttribute("y")
+			x : (bbx+bbw),
+			y : bby
 		}
 		
 		P2 = {
-			x : this.getAttribute("x"),
-			y : (this.getAttribute("y")+this.getAttribute("height"))
+			x : bbx,
+			y : (bby+bbh)
 		}
 	
 	}
@@ -288,18 +292,26 @@ Line.IntersectionObjectLine = function(a1, a2, p){
 		if(t == P.length) t = 0;
 		var Int = this.IntersectionLineLine(a1, a2, P[j], P[t]);
 		if(typeof Int.x != 'undefined' && typeof Int.y != 'undefined'){
-
-			var dx = P[t].x - P[j].x;
-			var dy = P[t].y - P[j].y;
-					
-			var absval = Math.sqrt(Math.pow(dy, 2) + Math.pow(dx, 2));
 			
-			dy = dy/absval;
-			dx = dx/absval;
+			var dx;
+			var dy;
 			
-			//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)	
-			Int.x = Int.x + (dy)*p;
-			Int.y = Int.y + (-dx)*p;
+			if(a1.x == (this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth()/2)){
+				dx = a2.x - a1.x;
+				dy = a2.y - a1.y;
+			}
+			else{
+				dx = a1.x - a2.x;
+				dy = a1.y - a2.y;
+			}
+			
+			var l = Math.sqrt(dx*dx+dy*dy);
+			dx = dx/l;
+			dy = dy/l;
+			
+			//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
+			Int.x = Int.x + dx*p;
+			Int.y = Int.y + dy*p;
 			
 			return Int;
 		}
