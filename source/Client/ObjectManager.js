@@ -1173,6 +1173,6 @@ ObjectManager.startEtherpad = function(){
 		}
 	} // End of Pads code
 }
-ObjectManager.writeOnServerConsole = function(data){
-    ObjectManager.Modules.Dispatcher.query('writeOnServerConsole', data, function(){});
+ObjectManager.writeToServerConsole = function(data){
+    ObjectManager.Modules.Dispatcher.query('writeToServerConsole', data, function(){});
 }

@@ -91,7 +91,7 @@ ServerController.clientErrorMessage = function(data, socket, responseID, callbac
     Modules.Logger.log('error', 'errortype: client ' + 'message: ' + data.message + ' uri: ' + data.uri + ' line: ' + data.line + " roomID: " + data.roomID +
             " userID: " + data.user);
 };
-ServerController.writeOnServerConsole = function(data, socket, responseID, callback) {
+ServerController.writeToServerConsole = function(data, socket, responseID, callback) {
     console.log(data);
 };
 

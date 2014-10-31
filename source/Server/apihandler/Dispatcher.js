@@ -110,8 +110,8 @@ Dispatcher.registerCall('serverCall', function (socket, data, responseID) {
 	var context = Modules.UserManager.getConnectionBySocket(socket);
 	Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
 });
-Dispatcher.registerCall('writeOnServerConsole', function(socket,data, responseId){
-        Modules.ServerController.writeOnServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
+Dispatcher.registerCall('writeToServerConsole', function(socket,data, responseId){
+        Modules.ServerController.writeToServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
 });
 
 /**
