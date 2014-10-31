@@ -84,7 +84,11 @@ ServerController.bugreport = function(data, socket, responseID, callback) {
             console.log("no recipients for bug report");
         }
     }
-    Modules.Logger.log('info', "Bugreport: " + text);
+    var date = new Date();
+
+    var dateHelper = "Datum: " + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + ", " + date.getHours() + ":" + date.getMinutes() + " Uhr" + "\n";
+
+    Modules.Logger.log('info', "A bug report has been sent from + " + data.user + " at " + dateHelper );
 
 };
 ServerController.clientErrorMessage = function(data, socket, responseID, callback) {
