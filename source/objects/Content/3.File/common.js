@@ -25,8 +25,6 @@ WAFile.register=function(type){
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
 
 	this.registerAttribute('fillcolor',{hidden: true});
-	this.registerAttribute('width',{hidden: true});
-	this.registerAttribute('height',{hidden: true});
 	
 
 	this.registerAttribute('preview',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
@@ -47,6 +45,51 @@ WAFile.register=function(type){
 		}
 		
 	}, mobile: false});
+    
+     this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+
+            if (object.resizeProportional()) {
+                object.setAttribute("height", object.getAttribute("height") * (value / object.getAttribute("width")));
+            }
+
+            return true;
+
+        }, getFunction: function(object) {
+            var preview = object.getAttribute("preview");
+            if ((!preview)) {
+                var bigIcon = object.getAttribute("bigIcon");
+                if (bigIcon) {
+                    return "64"
+                } else {
+                    return "32";
+                }
+            }
+            return object.get('width');
+        },
+        mobile: false});
+
+    this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+
+            if (object.resizeProportional()) {
+                object.setAttribute("width", object.getAttribute("width") * (value / object.getAttribute("height")));
+            }
+
+            return true;
+
+        }, getFunction: function(object) {
+            var preview = object.getAttribute("preview");
+            if ((!preview)) {
+                var bigIcon = object.getAttribute("bigIcon");
+                if (bigIcon) {
+                    return "64"
+                } else {
+                    return "32";
+                }
+            }
+            return object.get('height');
+        }
+        , mobile: false});
+   
 	
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
