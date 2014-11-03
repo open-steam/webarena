@@ -30,19 +30,55 @@ IconObject.register = function(type) {
     this.registerAttribute('onMobile', {type: 'boolean', standard: false, category: 'Basic', mobile: false});
     this.registerAttribute('modeSensitive', {type: 'boolean', standard: false, category: 'Basic', mobile: false});
     //this.registerAttribute('structureStates', {type: 'array', standard: [], hidden: true});
-    
+
 //this.registerAttribute('linecolor',{hidden:true});
     //this.registerAttribute('linesize',{hidden:true});
     this.unregisterAction('to back');
     this.unregisterAction('to front');
-    
+
+    this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+
+            if (object.resizeProportional()) {
+                object.setAttribute("height", object.getAttribute("height") * (value / object.getAttribute("width")));
+            }
+
+            return true;
+
+        }, getFunction: function(object) {
+            var bigIcon = object.getAttribute("bigIcon");
+            if (bigIcon) {
+                return "64"
+            } else {
+                return "32";
+            }
+        },
+        mobile: false});
+
+    this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+
+            if (object.resizeProportional()) {
+                object.setAttribute("width", object.getAttribute("width") * (value / object.getAttribute("height")));
+            }
+
+            return true;
+
+        }, getFunction: function(object) {
+            var bigIcon = object.getAttribute("bigIcon");
+            if (bigIcon) {
+                return "64"
+            } else {
+                return "32";
+            }
+        }, mobile: false});
+
+
     this.registerAttribute('positionStatus', {type: 'string', standard: 'unpositioned', category: 'Basic', mobile: false});
     this.registerAction('Evaluate Position', function(object) {
         ObjectManager.evaluatePositions(ObjectManager.getSelected());
-        
+
     });
     //TODO: Just activate this method, if evalStatus != unevaluated.
-    
+
     this.registerAction('Reposition', function(object) {
         alert("TODO:PROPERTIES => POSITION");
     });

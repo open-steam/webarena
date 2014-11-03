@@ -303,6 +303,7 @@ AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	}
 	
 	var getter=this.attributes[attribute].getter;
+        
 	
 	// call the getter function
 	
