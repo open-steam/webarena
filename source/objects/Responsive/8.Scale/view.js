@@ -41,6 +41,9 @@ Scale.draw = function(external) {
 
     this.padding = 20;
 
+    var min = this.getAttribute('min');
+    var max = this.getAttribute('max');
+    var stepping = this.getAttribute('stepping');
 
 
     switch (this.getAttribute('orientation')) {
@@ -106,7 +109,16 @@ Scale.draw = function(external) {
                 $(currentStep).attr("stroke-width", 3);
 
                 
+                
+                var currentNumeration = min + ((i-1) * stepping);
+                var currentNumerationObject = rep.getElementsByTagName("text")[i-1];
+                currentNumerationObject.textContent = currentNumeration.toString();
+                $(currentNumerationObject).attr('x', drawLineAt-3);
+                $(currentNumerationObject).attr('y', yCoordinate + 18);
+                $(currentNumerationObject).attr('font-size', 12);
+                
                 drawLineAt += distancePerStepInPixel;
+                
                 
             }
             break;
@@ -157,6 +169,10 @@ Scale.createRepresentation = function(parent) {
     for (var i = 0; i < numberOfSteps; i++) {
         var tempStep = GUI.svg.line(rep, 0, 0, 20, 20, {});
         $(tempStep).addClass('line');
+        
+        var tempNumber = GUI.svg.createText();
+        var tempNumberRep = GUI.svg.text(rep, 0,0,tempNumber);
+        $(tempNumberRep).addClass('text');
     }
 
     this.initGUI(rep);
