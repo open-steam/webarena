@@ -163,6 +163,11 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
                 // actionsheet flows over right window border
                 scrollLeft = actionsheetLeft - 10;
             }
+			if (actionsheetTop + actionsheetHeight > scrollTop + $(window).height()) {
+                // actionsheet flows over bottom window border
+                scrollTop = actionsheetTop - 300;
+            }
+			
             if (scrollTop > actionsheetTop) {
                 // actionsheet y coordinate not inside viewing pane
                 scrollTop = actionsheetTop - 40;
