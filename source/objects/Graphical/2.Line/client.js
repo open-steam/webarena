@@ -47,7 +47,7 @@ Line.objectIntersectsWith = function(ox, oy, ow, oh){
 	for(var i = 0; i<cornerpoints.length; i++){
 		c = i+1;
 		if(c == cornerpoints.length) c = 0;
-		var Int = this.IntersectionObjectLine(cornerpoints[i], cornerpoints[c], 0);
+		var Int = this.IntersectionObjectLine(cornerpoints[i], cornerpoints[c]);
 		if(Int != "no intersection") return true;
 	}
 	

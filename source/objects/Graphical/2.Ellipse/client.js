@@ -56,7 +56,7 @@ Ellipse.objectIntersectsWith = function(otherx,othery,otherwidth,otherheight){
 
 	//now all cornerpoints lie in one quadrant. Check if all cornerpoints are outside of the ellipse object
 	for(var i = 0; i<cornerpoints.length; i++){
-		var Int = this.IntersectionObjectLine(cornerpoints[i], midP, 0);
+		var Int = this.IntersectionObjectLine(cornerpoints[i], midP);
 		var length1 = Math.sqrt(Math.pow(cornerpoints[i].x-midP.x, 2) + Math.pow(cornerpoints[i].y-midP.y, 2));    
 		var length2 = Math.sqrt(Math.pow(Int.x-midP.x, 2) + Math.pow(Int.y-midP.y, 2)); 
 		

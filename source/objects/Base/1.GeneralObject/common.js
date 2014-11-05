@@ -786,7 +786,8 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 					arrowheadOtherEnd: link.arrowheadOtherEnd,
 					arrowheadThisEnd: link.arrowheadThisEnd,
 					width: link.width,
-					style: link.style
+					style: link.style,
+					padding: link.padding
 				}
 				var destLinks = dest.getAttribute('link');
 				destLinks.push(newLink);
@@ -800,7 +801,7 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 
 //handle the desired inputs which was made in the setting-properties-dialog
 //especially: creating/changing the link attribute
-GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle){
+GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding){
 
 	var lastClicked = this;
 	var selected = ObjectManager.getSelected();
@@ -846,6 +847,7 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 					value.arrowheadThisEnd = arrowheadAtthisObject;
 					value.width = lineWidth;
 					value.style = lineStyle;
+					value.padding = linePadding;
 					
 					exists = true;
 				}
@@ -858,6 +860,7 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 					value.arrowheadThisEnd = arrowheadAtotherObject;
 					value.width = lineWidth;
 					value.style = lineStyle;
+					value.padding = linePadding;
 					
 					exists = true;
 				}
@@ -872,14 +875,16 @@ GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObjec
 					arrowheadOtherEnd: arrowheadAtotherObject,
 					arrowheadThisEnd: arrowheadAtthisObject,
 					width: lineWidth,
-					style: lineStyle
+					style: lineStyle,
+					padding: linePadding
 				};
 				link2 = {
 					destination: lastSelectedId,
 					arrowheadOtherEnd: arrowheadAtthisObject,
 					arrowheadThisEnd: arrowheadAtotherObject,
 					width: lineWidth,
-					style: lineStyle
+					style: lineStyle,
+					padding: linePadding
 				};	
 	
 				newLinks1.push(link1);

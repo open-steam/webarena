@@ -142,34 +142,13 @@ Polygon.getPoints = function(){
 
 //calculate the Intersection point between a polygon object and a line (described by a1 and a2)
 //this method will only return the first intersection point
-Polygon.IntersectionObjectLine = function(a1, a2, p){
+Polygon.IntersectionObjectLine = function(a1, a2){
 			
 	var P = this.getPoints();
 			
 	for(var j = 0; j< P.length-2; j++){
 		var Int = this.IntersectionLineLine(a1, a2, P[j], P[j+1]);
 		if(typeof Int.x != 'undefined' && typeof Int.y != 'undefined'){
-			
-			var dx;
-			var dy;
-			
-			if(a1.x == (this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth()/2)){
-				dx = a2.x - a1.x;
-				dy = a2.y - a1.y;
-			}
-			else{
-				dx = a1.x - a2.x;
-				dy = a1.y - a2.y;
-			}
-			
-			var l = Math.sqrt(dx*dx+dy*dy);
-			dx = dx/l;
-			dy = dy/l;
-			
-			//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
-			Int.x = Int.x + dx*p;
-			Int.y = Int.y + dy*p;
-			
 			return Int;
 		}
 		if(Int == "coincident") return Int;

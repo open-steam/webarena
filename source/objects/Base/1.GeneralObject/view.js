@@ -1762,54 +1762,43 @@ GeneralObject.setDisplayGhost = function(s) {
 //The object shape has to be similar to an rectangle!
 //If another shape is desired, please define on own IntersectionObjectLine-function for this object (as seen for the ellipse and polygon).
 //this method will only return the first intersection point or "no intersection" or "coincident"
-GeneralObject.IntersectionObjectLine = function(a1, a2, p){
-				
-	//you can define a padding if you need an intersection point which lies outside of the object (because of nicer graphical appearance)
-	var padding = p;
+GeneralObject.IntersectionObjectLine = function(a1, a2){
 		
 	//calculate the corner points to build the bounding box lines:	
 	var objectLeftTop = new Object();
-	objectLeftTop.x = this.getViewBoundingBoxX()-padding;
-	objectLeftTop.y = this.getViewBoundingBoxY()-padding;
+	objectLeftTop.x = this.getViewBoundingBoxX();
+	objectLeftTop.y = this.getViewBoundingBoxY();
 	
 	var objectLeftBottom = new Object();
-	objectLeftBottom.x = this.getViewBoundingBoxX()-padding;
-	objectLeftBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding;
+	objectLeftBottom.x = this.getViewBoundingBoxX();
+	objectLeftBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight();
 		
 	var objectRightBottom = new Object();
-	objectRightBottom.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()+padding;
-	objectRightBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight()+padding;
+	objectRightBottom.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth();
+	objectRightBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight();
 	
 	var objectRightTop = new Object();
-	objectRightTop.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth()+padding;
-	objectRightTop.y = this.getViewBoundingBoxY()-padding;
+	objectRightTop.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth();
+	objectRightTop.y = this.getViewBoundingBoxY();
 	
 	//calculate the Intersection Points between the line and each bounding box line
-	var Intersection1 = this.IntersectionLineLine(a1, a2, objectLeftTop, objectRightTop);
-	var Intersection2 = this.IntersectionLineLine(a1, a2, objectLeftTop, objectLeftBottom);
-	var Intersection3 = this.IntersectionLineLine(a1, a2, objectLeftBottom, objectRightBottom);
-	var Intersection4 = this.IntersectionLineLine(a1, a2, objectRightBottom, objectRightTop);
+	var Intersections = new Array();
+	Intersections[0] = this.IntersectionLineLine(a1, a2, objectLeftTop, objectRightTop);
+	Intersections[1] = this.IntersectionLineLine(a1, a2, objectLeftTop, objectLeftBottom);
+	Intersections[2] = this.IntersectionLineLine(a1, a2, objectLeftBottom, objectRightBottom);
+	Intersections[3] = this.IntersectionLineLine(a1, a2, objectRightBottom, objectRightTop);
 	
-	if(typeof Intersection1.x != 'undefined' || typeof Intersection1.y != 'undefined'){ //Intersection on top
-		return Intersection1;
-	}
-	if(typeof Intersection2.x != 'undefined' || typeof Intersection2.y != 'undefined'){ //Intersection on the left
-		return Intersection2;
-	}
-	if(typeof Intersection3.x != 'undefined' || typeof Intersection3.y != 'undefined'){ //Intersection on the bottom
-		return Intersection3;
-	}
-	if(typeof Intersection4.x != 'undefined' || typeof Intersection4.y != 'undefined'){ //Intersection on the right
-		return Intersection4;
-	}
+	for(var i = 0; i<4; i++){
+		if(typeof Intersections[i].x !== 'undefined' && typeof Intersections[i].y !== 'undefined'){
+			return Intersections[i];
+		}
+		if(Intersections[i] == 'coincident'){
+			return "coincident";
+		}
+	}	
 	
-	if(Intersection1 == "coincident" || Intersection2 == "coincident" || Intersection3 == "coincident" || Intersection4 == "coincident"){
-		return "coincident";
-	}
-	else{
-		return "no intersection"
-	}
-
+	return "no intersection";
+	
 }
 
 //calculate the Intersection Point between two lines (endpoints are defined by a1, a2 and b1, b2)

@@ -198,7 +198,7 @@ GeneralObject.boxIntersectsWith=function(otherx,othery,otherwidth,otherheight){
 }
 
 /**
-*	determine if the object's bounding box intersects with another object's bounding box
+*	determine if the object or the object's bounding box intersects with another object's bounding box
 */
 GeneralObject.intersectsWith=function(other){
 	var otherx=other.getViewBoundingBoxX();
@@ -206,7 +206,12 @@ GeneralObject.intersectsWith=function(other){
 	var otherw=other.getViewBoundingBoxWidth();
 	var otherh=other.getViewBoundingBoxHeight();
 	
-	return this.boxIntersectsWith(otherx,othery,otherw,otherh);
+	if(typeof this.objectIntersectsWith == 'function'){ 
+		return this.objectIntersectsWith(otherx, othery, otherw, otherh); 
+	}
+	else{
+		return this.boxIntersectsWith(otherx,othery,otherw,otherh);
+	}
 	
 }
 

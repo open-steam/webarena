@@ -51,6 +51,7 @@ GUI.removeLinksfromObject = function(object){
 	});
 }
 
+
 //called every time an object is moved
 GUI.moveLinks = function(object){
 	
@@ -68,9 +69,7 @@ GUI.moveLinks = function(object){
 			return;
 		}
 
-		GUI.showLink(object.id, target.id, true); 
-		
-		var padding = 3*(parseInt(value.width) + 4);
+		GUI.showLink(object.id, target.id, true);
 		
 		var a1 = new Object(); //object's centerpoint 
 		var a2 = new Object(); //target's centerpoint
@@ -79,42 +78,102 @@ GUI.moveLinks = function(object){
 		a2.x = target.getViewBoundingBoxX()+(target.getViewBoundingBoxWidth()/2);
 		a2.y = target.getViewBoundingBoxY()+(target.getViewBoundingBoxHeight()/2);
 		
-		if(value.arrowheadOtherEnd){ //arrowhead to target 
+		var arrows = 0;
+		var Intersection1 = target.IntersectionObjectLine(a1, a2);
+		var Intersection2 = object.IntersectionObjectLine(a1, a2);
 		
-			var Intersection = target.IntersectionObjectLine(a1, a2, padding);
+		//get current width of the link
+		var w;
+		var w1 = $(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("stroke-width");
+		var w2 = $(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("stroke-width");
+		
+		if(typeof w1 !== "undefined"){
+			w = parseInt(w1);
+		}
+		if(typeof w2 !== "undefined"){
+			w = parseInt(w2);
+		}
+		
+		if(value.arrowheadOtherEnd || (parseInt(value.padding) > 0)){ //arrowhead to target 
+		
+			arrows++;
+			
+			//padding (because of the markers which extend the line and optional space between the object and the marker)
+			var padding = parseInt(value.padding);
+			
+			if(value.arrowheadOtherEnd) padding += 3*w;
 				
-			if(typeof Intersection == 'undefined'){ //there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
+			if(typeof Intersection1 == 'undefined'){ //there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
 			
 				GUI.showLink(object.id, target.id, false); 
 			}
-			else{	//Intersection
+			if(Intersection1 != "coincident" && Intersection1 != "no intersection"){ //Intersection
 				
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',Intersection.x);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',Intersection.y);
+				//padding
+				var dx;
+				var dy;
 		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',Intersection.x);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',Intersection.y);
+				dx = a1.x - a2.x;
+				dy = a1.y - a2.y;
+			
+				var l = Math.sqrt(dx*dx+dy*dy);
+				dx = dx/l;
+				dy = dy/l;
+			
+				var Intp1 = {
+					x : Intersection1.x + dx*padding,
+					y : Intersection1.y + dy*padding
+				};
+
+				
+				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',Intp1.x);
+				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',Intp1.y);
+		
+				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',Intp1.x);
+				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',Intp1.y);
 			}
 		}
 		
-		if(value.arrowheadThisEnd){ //arrowhead to object
+		if(value.arrowheadThisEnd || (parseInt(value.padding) > 0)){ //arrowhead to object
 		
-			var Intersection = object.IntersectionObjectLine(a1, a2, padding);
+			arrows++;
+			
+			//padding (because of the markers which extend the line and optional space between the object and the marker)
+			var padding = parseInt(value.padding);
+			
+			if(value.arrowheadThisEnd) padding += 3*w;
 				
-			if(typeof Intersection == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link	
+			if(typeof Intersection2 == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link	
 			
 				GUI.showLink(object.id, target.id, false); 	
 			}	
-			else{   //Intersection	
+			if(Intersection2 != "coincident" && Intersection2 != "no intersection"){ //Intersection		
 						
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',Intersection.x);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',Intersection.y);
+				//padding
+				var dx;
+				var dy;
+			
+				dx = a2.x - a1.x;
+				dy = a2.y - a1.y;
+			
+				var l = Math.sqrt(dx*dx+dy*dy);
+				dx = dx/l;
+				dy = dy/l;
+			
+				var Intp2 = {
+					x : Intersection2.x + dx*padding,
+					y : Intersection2.y + dy*padding
+				};
+				
+					
+				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',Intp2.x);
+				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',Intp2.y);
 		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',Intersection.x);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',Intersection.y);
+				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',Intp2.x);
+				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',Intp2.y);
 			}
 		}
-		else{ //no arrowhead to object, the line can end in the center of the object
+		else{ //no arrowhead to object and no padding, the line can end in the center of the object
 				
 			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',a1.x);
 			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',a1.y);
@@ -122,8 +181,30 @@ GUI.moveLinks = function(object){
 			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',a1.x);
 			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',a1.y);	
 		}
+		
+		//if two objects get too close to each other, make the link width smaller 
+		var distance = Math.sqrt(Math.pow(Intersection1.x - Intersection2.x, 2) + Math.pow(Intersection1.y - Intersection2.y, 2));
+		distance = distance - (parseInt(value.padding)*2);
+		var maxWidth;
+		if(arrows == 1){
+			maxWidth = 1/3*distance - 1.5;
+		}
+		if(arrows == 2){
+			maxWidth = 1/6*distance - 1;
+		}
+	
+		if(maxWidth < 0){
+			GUI.showLink(object.id, target.id, false); 
+			return;
+		}
+		if(parseInt(value.width) > maxWidth){
+			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("stroke-width", maxWidth);
+			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("stroke-width", maxWidth);
+		}
+		
 	});
 }
+
 
 //show or hide links in the current room (via checkbox in the inspector, only if both objects are visible)
 GUI.showLinks = function(value) {
@@ -198,9 +279,6 @@ GUI.createLinks = function(object) {
 		var target = ObjectManager.getObject(targetID);
 	
 		if (!target) return;
-	
-		//$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
-		//$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
 				
 		//calculate middle of objects		
 		var objectCenterX = object.getViewBoundingBoxX()+(object.getViewBoundingBoxWidth()/2);
@@ -297,6 +375,7 @@ GUI.createLinks = function(object) {
             }, false)
         });
 
+		/*
         $(line).hover(
             function(event){
                 $(this).attr("stroke-width", parseInt(value.width)+4)
@@ -305,7 +384,7 @@ GUI.createLinks = function(object) {
                 $(this).attr("stroke-width", value.width)
             }
         );
-		
+		*/
 	
 		window.setTimeout(function() {
 
@@ -343,6 +422,7 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 	var select7;
 	
 	var linkWidth = 5;
+	var padding = 5;
 	
 	var links = object.getAttribute("link");
 	
@@ -380,6 +460,7 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 			}
 			
 			linkWidth = link.width;
+			padding = link.padding;
 		}
 	});
 										
@@ -394,6 +475,7 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 	var dashed = object.translate(GUI.currentLanguage, "dashed");
 	var style = object.translate(GUI.currentLanguage, "style");
 	var width = object.translate(GUI.currentLanguage, "width");
+	var pad = object.translate(GUI.currentLanguage, "distance between object and link");
 							
 	var PropertyDialog = document.createElement("div");
 	$(PropertyDialog).attr("title", title);
@@ -414,14 +496,19 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 		content += 		'</select>';
 		content += '</p>';
 		content += '<p>';
-		content += 		'<label for="lineWidth">'+width+'</label>';
+		content += 		'<p>'+width+'<br>';
 		content += 		'<input type="number" id="lineWidth" name="value" value="'+linkWidth+'" min="1">';
+		content += '</p>';
+		content += '<p>';
+		content += 		'<p>'+pad+'<br>';
+		content += 		'<input type="number" id="linePadding" name="value" value="'+padding+'" min="0">';
 		content += '</p>';
 					
 	var buttons = {};
 	var lineWidth;
 	var direction;
 	var lineStyle;
+	var linePadding;
 	
 	var arrowheadAtotherObject;
 	var arrowheadAtthisObject;
@@ -431,6 +518,7 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 		lineWidth = $('#lineWidth').attr("value");
 		direction = $('#direction').val();
 		lineStyle = $('#style').val();
+		linePadding = $('#linePadding').attr("value");
 		
 		if(direction=="undirected"){
 			arrowheadAtotherObject = false;
@@ -450,10 +538,10 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 		}
 
 		if(justcreated){
-			object.buildLinks(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle);
+			object.buildLinks(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
 		}
 		else{
-			GUI.changeLinks(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle);
+			GUI.changeLinks(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
 		}	
 	};
 
@@ -463,7 +551,7 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 
 //handle the desired changes which was made in the change-properties-dialog
 //especially: changing the link attribute
-GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle){
+GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding){
 
 	var newLinks3 = [];
 	var oldLinks3 = object.getAttribute("link");
@@ -488,6 +576,7 @@ GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtth
 			value.arrowheadThisEnd = arrowheadAtthisObject;
 			value.width = lineWidth;
 			value.style = lineStyle;
+			value.padding = linePadding;
 		}
 	});
 				
@@ -498,6 +587,7 @@ GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtth
 			value.arrowheadThisEnd = arrowheadAtotherObject;
 			value.width = lineWidth;
 			value.style = lineStyle;
+			value.padding = linePadding;
 		}
 	});
 						

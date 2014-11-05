@@ -48,6 +48,7 @@ GeneralObject.setTranslations('de',{
 	'dotted' : 'gepunktet',
 	'dashed' : 'gestrichelt',
 	'style' : 'Stil',
-	'save' : 'speichern'
+	'save' : 'speichern',
+	'distance between object and link' : 'Abstand zwischen Objekt und Link'
 }
 );
