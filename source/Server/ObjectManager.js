@@ -24,8 +24,8 @@ ObjectManager.history = require("./HistoryTracker.js").HistoryTracker(100);
 
 var enter = String.fromCharCode(10);
 
-ObjectManager.toString = function () {
-	return 'ObjectManager (server)';
+ObjectManager.toString = function() {
+    return 'ObjectManager (server)';
 }
 
 /**
@@ -33,8 +33,8 @@ ObjectManager.toString = function () {
  *
  *  registers an object type, so objects can be created by this objectManager
  */
-ObjectManager.registerType = function (type, constr) {
-	prototypes[type] = constr;
+ObjectManager.registerType = function(type, constr) {
+    prototypes[type] = constr;
 }
 
 
@@ -43,14 +43,14 @@ ObjectManager.registerType = function (type, constr) {
  *
  *  deletes an object and informs clients about the deletion
  */
-ObjectManager.remove = function (obj) {
+ObjectManager.remove = function(obj) {
 
-	//Send remove to connector
+    //Send remove to connector
 
-	Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
+    Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
 
-	//Inform clients about remove.
-	obj.updateClients('objectDelete');
+    //Inform clients about remove.
+    obj.updateClients('objectDelete');
 
 }
 
@@ -59,10 +59,12 @@ ObjectManager.remove = function (obj) {
  *
  *  gets the prototype (the class) of an object.
  */
-ObjectManager.getPrototype = function (objType) {
-	if (prototypes[objType]) return prototypes[objType];
-	if (prototypes['GeneralObject']) return prototypes['GeneralObject'];
-	return;
+ObjectManager.getPrototype = function(objType) {
+    if (prototypes[objType])
+        return prototypes[objType];
+    if (prototypes['GeneralObject'])
+        return prototypes['GeneralObject'];
+    return;
 }
 
 ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
@@ -82,38 +84,39 @@ ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
  */
 function buildObjectFromObjectData(objectData, roomID, type) {
 
-	if (!objectData) {
-		Modules.Log.error('No object data!');
-	}
+    if (!objectData) {
+        Modules.Log.error('No object data!');
+    }
 
-	var type = type || objectData.type;
+    var type = type || objectData.type;
 
-	//get the object's prototype
+    //get the object's prototype
 
-	var proto = ObjectManager.getPrototypeFor(type);
+    var proto = ObjectManager.getPrototypeFor(type);
 
-	//build a new object
+    //build a new object
 
-	var obj = Object.create(proto);
-	obj.init(objectData.id);
+    var obj = Object.create(proto);
+    obj.init(objectData.id);
 
-	//set the object's attributes and rights
-	obj.setAll(objectData.attributes);
-	obj.rights = objectData.rights;
-	obj.id = objectData.id;
-	obj.attributeManager.set(objectData.id, 'id', objectData.id);
-	obj.inRoom = roomID;
-	obj.set('type', type);
+    //set the object's attributes and rights
+    obj.setAll(objectData.attributes);
+    obj.rights = objectData.rights;
+    obj.id = objectData.id;
+    obj.attributeManager.set(objectData.id, 'id', objectData.id);
+    obj.inRoom = roomID;
+    obj.set('type', type);
 
-	if (!runtimeData[obj.id])runtimeData[obj.id] = {}; //create runtime data for this object if there is none
+    if (!runtimeData[obj.id])
+        runtimeData[obj.id] = {}; //create runtime data for this object if there is none
 
-	obj.runtimeData = runtimeData[obj.id];
+    obj.runtimeData = runtimeData[obj.id];
 
-    if(typeof obj.afterCreation == "function"){
+    if (typeof obj.afterCreation == "function") {
         obj.afterCreation();
     }
 
-	return obj;
+    return obj;
 }
 
 /**
@@ -125,19 +128,21 @@ function buildObjectFromObjectData(objectData, roomID, type) {
  *   The consequence of this is, that you cannot add properties to the object!
  *   If you want to save runtime data, use the runtimeData property.
  */
-ObjectManager.getObject = function (roomID, objectID, context) {
+ObjectManager.getObject = function(roomID, objectID, context) {
 
-	if (!context) throw new Error('Missing context in ObjectManager.getObject');
+    if (!context)
+        throw new Error('Missing context in ObjectManager.getObject');
 
-	var objectData = Modules.Connector.getObjectData(roomID, objectID, context);
+    var objectData = Modules.Connector.getObjectData(roomID, objectID, context);
 
-	if (!objectData) return false;
+    if (!objectData)
+        return false;
 
-	var object = buildObjectFromObjectData(objectData, roomID);
+    var object = buildObjectFromObjectData(objectData, roomID);
 
-	object.context = context;
+    object.context = context;
 
-	return object;
+    return object;
 
 }
 
@@ -154,53 +159,54 @@ ObjectManager.getObject = function (roomID, objectID, context) {
  * @param {Function}[callback]
  *
  */
-ObjectManager.getObjects = function (roomID, context, callback) {
+ObjectManager.getObjects = function(roomID, context, callback) {
 
-	if (!context) throw new Error('Missing context in ObjectManager.getObjects');
+    if (!context)
+        throw new Error('Missing context in ObjectManager.getObjects');
 
-	var inventory = [];
+    var inventory = [];
 
-	//get the object creation information by the connector
-	// {id;type;rights;attributes}
+    //get the object creation information by the connector
+    // {id;type;rights;attributes}
 
-	if (callback == undefined) {
-		/* sync. */
+    if (callback == undefined) {
+        /* sync. */
 
-		var objectsData = Modules.Connector.getInventory(roomID, context);
+        var objectsData = Modules.Connector.getInventory(roomID, context);
 
-		for (var i in objectsData) {
-			var objectData = objectsData[i];
+        for (var i in objectsData) {
+            var objectData = objectsData[i];
 
-			var object = buildObjectFromObjectData(objectData, roomID);
+            var object = buildObjectFromObjectData(objectData, roomID);
 
-			object.context = context;
+            object.context = context;
 
-			inventory.push(object);
-		}
+            inventory.push(object);
+        }
 
-		console.log('>>>> Synchronous return in getObjects');
-		
-		return inventory;
+        console.log('>>>> Synchronous return in getObjects');
 
-	} else {
-		//async.
+        return inventory;
 
-		Modules.Connector.getInventory(roomID, context, function (objectsData) {
+    } else {
+        //async.
 
-			for (var i in objectsData) {
-				var objectData = objectsData[i];
+        Modules.Connector.getInventory(roomID, context, function(objectsData) {
 
-				var object = buildObjectFromObjectData(objectData, roomID);
+            for (var i in objectsData) {
+                var objectData = objectsData[i];
 
-				object.context = context;
+                var object = buildObjectFromObjectData(objectData, roomID);
 
-				inventory.push(object);
-			}
+                object.context = context;
 
-			callback(inventory);
+                inventory.push(object);
+            }
 
-		});
-	}
+            callback(inventory);
+
+        });
+    }
 }
 
 /**
@@ -216,37 +222,37 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *  creates a new object
  *
  **/
-ObjectManager.createObject = function (roomID, type, attributes, content, context, callback) {
+ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
 
 
-	//TODO send error to client if there is a rights issue here
+    //TODO send error to client if there is a rights issue here
 
-	var proto = this.getPrototypeFor(type);
+    var proto = this.getPrototypeFor(type);
 
-	Modules.Connector.createObject(roomID, type, proto.standardData, context, function (id) {
-		var object = ObjectManager.getObject(roomID, id, context);
+    Modules.Connector.createObject(roomID, type, proto.standardData, context, function(id) {
+        var object = ObjectManager.getObject(roomID, id, context);
 
-		//set default attributes
-		var defaultAttributes = object.standardData;
-		for (var key in defaultAttributes) {
-			var value = defaultAttributes[key];
-			object.setAttribute(key, value);
-		}
+        //set default attributes
+        var defaultAttributes = object.standardData;
+        for (var key in defaultAttributes) {
+            var value = defaultAttributes[key];
+            object.setAttribute(key, value);
+        }
 
-		object.setAttribute('name', type);
+        object.setAttribute('name', type);
 
-		for (var key in attributes) {
-			var value = attributes[key];
-			object.setAttribute(key, value);
-		}
+        for (var key in attributes) {
+            var value = attributes[key];
+            object.setAttribute(key, value);
+        }
 
-		if (content) {
-			object.setContent(content);
-		}
+        if (content) {
+            object.setContent(content);
+        }
 
-		Modules.EventBus.emit("room::" + roomID + "::action::createObject", {objectID: id});
-		callback(false, object);
-	});
+        Modules.EventBus.emit("room::" + roomID + "::action::createObject", {objectID: id});
+        callback(false, object);
+    });
 }
 
 /**
@@ -254,70 +260,75 @@ ObjectManager.createObject = function (roomID, type, attributes, content, contex
  *
  * @returns {Array} - filenames of enabled object types
  */
-ObjectManager.getEnabledObjectTypes = function () {
-	
-	
-	if (this.enabledObjectTypeCache) return this.enabledObjectTypeCache;
-		
-	var configCategories=Modules.config.enabledCategories;
-	var categories=[];
-	
-	if (!configCategories){
-		console.log ('No object categories enabled in configuration file!');
-	}
-	categories.push('Base');
-	
-	for (var i in configCategories){
-		var temp=configCategories[i];
-		if (temp!=='Base') categories.push(temp);
-	}
-	
-	var result=[];
-	
-	for (var i in categories){
-		var category=categories[i];
-		var path=__dirname + '/../objects/'+category;
-		if (!fs.existsSync(path) || !fs.lstatSync(path).isDirectory()) {
-			console.log('Config error: Category '+category+' not found!');
-			continue;
-		} else {
-			var files = fs.readdirSync(__dirname + '/../objects/'+category);
-	
-			files.sort(function (a, b) {
-				return parseInt(a) - parseInt(b);
-			});
-			
-			var blackList = {};
-			
-			for (var i in Modules.config.objectBlacklist) {
-				blackList[Modules.config.objectBlacklist[i]] = true;
-			}
-			
-			files.forEach(function (filename) {
-				
-				var path=__dirname + '/../objects/'+category+'/'+filename;
-		        if (!fs.lstatSync(path).isDirectory()) return;
-				
-				var fileinfo = filename.split('.');
-				var index = fileinfo[0];
-				var objName = fileinfo[1];
-		
-				if (!index) return;
-				if (!objName) return;
-		
-				if (blackList[objName]) {
-					console.log('Object type ' + objName + ' is blacklisted.');
-					return;
-				}
-				result.push({'category':category,'filename':filename});
-			});
-			
-		}
-	}
+ObjectManager.getEnabledObjectTypes = function() {
 
-	this.enabledObjectTypeCache=result;
 
-	return result;
+    if (this.enabledObjectTypeCache)
+        return this.enabledObjectTypeCache;
+
+    var configCategories = Modules.config.enabledCategories;
+    var categories = [];
+
+    if (!configCategories) {
+        console.log('No object categories enabled in configuration file!');
+    }
+    categories.push('Base');
+
+    for (var i in configCategories) {
+        var temp = configCategories[i];
+        if (temp !== 'Base')
+            categories.push(temp);
+    }
+
+    var result = [];
+
+    for (var i in categories) {
+        var category = categories[i];
+        var path = __dirname + '/../objects/' + category;
+        if (!fs.existsSync(path) || !fs.lstatSync(path).isDirectory()) {
+            console.log('Config error: Category ' + category + ' not found!');
+            continue;
+        } else {
+            var files = fs.readdirSync(__dirname + '/../objects/' + category);
+
+            files.sort(function(a, b) {
+                return parseInt(a) - parseInt(b);
+            });
+
+            var blackList = {};
+
+            for (var i in Modules.config.objectBlacklist) {
+                blackList[Modules.config.objectBlacklist[i]] = true;
+            }
+
+            files.forEach(function(filename) {
+
+                var path = __dirname + '/../objects/' + category + '/' + filename;
+                if (!fs.lstatSync(path).isDirectory())
+                    return;
+
+                var fileinfo = filename.split('.');
+                var index = fileinfo[0];
+                var objName = fileinfo[1];
+
+                if (!index)
+                    return;
+                if (!objName)
+                    return;
+
+                if (blackList[objName]) {
+                    console.log('Object type ' + objName + ' is blacklisted.');
+                    return;
+                }
+                result.push({'category': category, 'filename': filename});
+            });
+
+        }
+    }
+
+    this.enabledObjectTypeCache = result;
+
+    return result;
 }
 
 /**
@@ -325,18 +336,18 @@ ObjectManager.getEnabledObjectTypes = function () {
  *
  *  initializes the ObjectManager
  **/
-ObjectManager.init = function (theModules) {
-	var that = this;
-	Modules = theModules;
+ObjectManager.init = function(theModules) {
+    var that = this;
+    Modules = theModules;
 
-	//go through all objects, build its client code (the code for the client side)
-	//register the object types.
+    //go through all objects, build its client code (the code for the client side)
+    //register the object types.
 
-    var processFunction = function(data){
-    	
-    	var filename=data.filename;
-    	var category=data.category;
-    	
+    var processFunction = function(data) {
+
+        var filename = data.filename;
+        var category = data.category;
+
         var fileinfo = filename.split('.');
         var objName = fileinfo[1];
         var filebase = __dirname + '/../objects/' + category + '/' + filename;
@@ -345,17 +356,17 @@ ObjectManager.init = function (theModules) {
         obj.ObjectManager = Modules.ObjectManager;
         obj.register(objName);
 
-        obj.localIconPath = function (selection) {
+        obj.localIconPath = function(selection) {
             selection = (selection) ? '_' + selection : '';
             return filebase + '/icon' + selection + '.png';
         }
     }
 
-	var files = this.getEnabledObjectTypes();
-	files.forEach(function (data) {
+    var files = this.getEnabledObjectTypes();
+    files.forEach(function(data) {
 
 
-        if(Modules.Config.debugMode){
+        if (Modules.Config.debugMode) {
             processFunction(data);
         } else {
             try {
@@ -366,53 +377,53 @@ ObjectManager.init = function (theModules) {
             }
         }
 
-	});
+    });
 }
 
-ObjectManager.undo = function (data, context, callback) {
-	var that = this;
-	var userID = data.userID;
-	var lastChange = that.history.getLastChangeForUser(userID);
+ObjectManager.undo = function(data, context, callback) {
+    var that = this;
+    var userID = data.userID;
+    var lastChange = that.history.getLastChangeForUser(userID);
 
-	if (lastChange) {
-		if (!lastChange.blocked) {
-			var changeSet = lastChange.changeSet;
-			var undoMessage = ""
-			try {
-				changeSet.forEach(function (e) {
-					var object = ObjectManager.getObject(e.roomID, e.objectID, context);
-					if (e.action === 'delete') {
-						Modules.Connector.duplicateObject(e.roomID, e.oldRoomID, e.objectID, context, function (err, newId, oldId) {
-							var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
-							o2.updateClients("objectUpdate");
-							object.remove();
-						});
-						undoMessage = 'info.undo.delete';
+    if (lastChange) {
+        if (!lastChange.blocked) {
+            var changeSet = lastChange.changeSet;
+            var undoMessage = ""
+            try {
+                changeSet.forEach(function(e) {
+                    var object = ObjectManager.getObject(e.roomID, e.objectID, context);
+                    if (e.action === 'delete') {
+                        Modules.Connector.duplicateObject(e.roomID, e.oldRoomID, e.objectID, context, function(err, newId, oldId) {
+                            var o2 = ObjectManager.getObject(e.oldRoomID, newId, context);
+                            o2.updateClients("objectUpdate");
+                            object.remove();
+                        });
+                        undoMessage = 'info.undo.delete';
 
-					} else if (e.action === 'setAttribute') {
-						object.setAttribute(e.attribute, e.old);
-						undoMessage = 'info.undo.attribute';
-					} else if (e.action === 'duplicate') {
-						object.remove();
-						undoMessage = 'info.undo.duplication';
-					} else if (e.action === 'setContent') {
-						undoMessage = "Undo of the action isn't supported";
-					}
-				});
-				callback(null, undoMessage);
-			} catch (e) {
-				callback(null, "info.error");
-			}
+                    } else if (e.action === 'setAttribute') {
+                        object.setAttribute(e.attribute, e.old);
+                        undoMessage = 'info.undo.attribute';
+                    } else if (e.action === 'duplicate') {
+                        object.remove();
+                        undoMessage = 'info.undo.duplication';
+                    } else if (e.action === 'setContent') {
+                        undoMessage = "Undo of the action isn't supported";
+                    }
+                });
+                callback(null, undoMessage);
+            } catch (e) {
+                callback(null, "info.error");
+            }
 
-			that.history.removeHistoryEntry(lastChange.transactionId);
+            that.history.removeHistoryEntry(lastChange.transactionId);
 
-		} else {
-			callback(null, 'info.undo.blocked');
-		}
-	} else {
-		callback(null, 'info.undo.nothing');
+        } else {
+            callback(null, 'info.undo.blocked');
+        }
+    } else {
+        callback(null, 'info.undo.nothing');
 
-	}
+    }
 };
 
 /**
@@ -421,32 +432,34 @@ ObjectManager.undo = function (data, context, callback) {
  *  returns the a room object for a given roomID
  *
  **/
-ObjectManager.getRoom = function (roomID, context, oldRoomId, callback) {
+ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
 
-	if (!context) throw new Error('Missing context in ObjectManager.getRoom');
+    if (!context)
+        throw new Error('Missing context in ObjectManager.getRoom');
 
-	Modules.Connector.getRoomData(roomID, context, oldRoomId, function (data) {
-		var obj = buildObjectFromObjectData(data, roomID, 'Room');
-		obj.context = context;
-		callback(obj);
-	});
+    Modules.Connector.getRoomData(roomID, context, oldRoomId, function(data) {
+        var obj = buildObjectFromObjectData(data, roomID, 'Room');
+        obj.context = context;
+        callback(obj);
+    });
 
 }
 
-ObjectManager.countSubrooms = function (roomID, context) {
-	var counter = 1;
+ObjectManager.countSubrooms = function(roomID, context) {
+    var counter = 1;
 
-	if (roomID === undefined) return counter;
+    if (roomID === undefined)
+        return counter;
 
-	var inventory = Modules.Connector.getInventory(roomID, context);
-	for (var inventoryKey in inventory) {
-		var inventoryObject = inventory[inventoryKey];
-		if (inventoryObject.type === "Subroom") {
-			counter += ObjectManager.countSubrooms(inventoryObject.attributes.destination, context);
-		}
-	}
+    var inventory = Modules.Connector.getInventory(roomID, context);
+    for (var inventoryKey in inventory) {
+        var inventoryObject = inventory[inventoryKey];
+        if (inventoryObject.type === "Subroom") {
+            counter += ObjectManager.countSubrooms(inventoryObject.attributes.destination, context);
+        }
+    }
 
-	return counter;
+    return counter;
 }
 
 
@@ -459,12 +472,15 @@ ObjectManager.countSubrooms = function (roomID, context) {
  * @param cb
  * @returns {Function}
  */
-var falseToError = function (message, cb) {
-	return function (err, res) {
-		if (err) cb(err, null);
-		else if (!res) cb(new Error(message), null);
-		else cb(null, res);
-	}
+var falseToError = function(message, cb) {
+    return function(err, res) {
+        if (err)
+            cb(err, null);
+        else if (!res)
+            cb(new Error(message), null);
+        else
+            cb(null, res);
+    }
 }
 
 /**
@@ -475,18 +491,20 @@ var falseToError = function (message, cb) {
  * @param context
  * @param cb
  */
-var mayReadMultiple = function (fromRoom, files, context, cb) {
-	var checks = [];
-	files.forEach(function (file) {
-		checks.push(function (cb2) {
-			Modules.Connector.mayRead(fromRoom,file, context, falseToError("Can't read file: " + file, cb2))
-		});
-	});
+var mayReadMultiple = function(fromRoom, files, context, cb) {
+    var checks = [];
+    files.forEach(function(file) {
+        checks.push(function(cb2) {
+            Modules.Connector.mayRead(fromRoom, file, context, falseToError("Can't read file: " + file, cb2))
+        });
+    });
 
-	async.parallel(checks, function (err, res) {
-		if (err) cb(err, null);
-		else cb(null, true);
-	});
+    async.parallel(checks, function(err, res) {
+        if (err)
+            cb(err, null);
+        else
+            cb(null, true);
+    });
 }
 
 
@@ -499,257 +517,264 @@ var mayReadMultiple = function (fromRoom, files, context, cb) {
  * 4. Change destinations
  * 5. Update object link targets
  */
-ObjectManager.duplicateNew = function (data, context, cbo) {
-	var cut = data.cut;
+ObjectManager.duplicateNew = function(data, context, cbo) {
+    var cut = data.cut;
 
-	var attributes = data.attributes || {};
-	var idTranslationList = {};
-	var reverseIdTranslationList = {};
-	var roomTranslationList = {};
+    var attributes = data.attributes || {};
+    var idTranslationList = {};
+    var reverseIdTranslationList = {};
+    var roomTranslationList = {};
 
-	var idList = [];
+    var idList = [];
 
-	//go through all rooms with new room id
-	//  go through the subrooms and references of the room and update the room ids to the corresponding new ids.
-	var updateRoomIds = function (callback) {
-	
-		for (var key in roomTranslationList) {
+    //go through all rooms with new room id
+    //  go through the subrooms and references of the room and update the room ids to the corresponding new ids.
+    var updateRoomIds = function(callback) {
+    for (var key in roomTranslationList) {
+            Modules.Connector.getInventory(roomTranslationList[key], context, function(inventory) {
+                var filteredRooms = inventory.filter(function(e) {
+                    return ((e.type === "Subroom" || e.type === "Exit") && roomTranslationList[inventoryObject.attributes.destination] !== undefined)
+                });
+                filteredRooms.forEach(function(inventoryObject) {
+                    inventoryObject.attributes.destination = roomTranslationList[inventoryObject.attributes.destination];
+                    Modules.Connector.saveObjectData(inventoryObject.inRoom, inventoryObject.id, inventoryObject.attributes, context, false, undefined);
+                });
+            });
+        }
+        callback();
+    }
 
-			Modules.Connector.getInventory(roomTranslationList[key], context, function(inventory){
-			
-				var filteredRooms = inventory.filter(function(e){return ((e.type ==="Subroom" || e.type === "Exit") && roomTranslationList[inventoryObject.attributes.destination] !== undefined)});
-				filteredRooms.forEach(function(inventoryObject){
-					inventoryObject.attributes.destination = roomTranslationList[inventoryObject.attributes.destination];
-					Modules.Connector.saveObjectData(inventoryObject.inRoom, inventoryObject.id, inventoryObject.attributes, context, false, undefined);
-				});
-			});
-		}
-		callback();
-	}
+    //inner function to do the "main work" recursive for all nested rooms
+    var myInnerFunction = function(dataInner, cbi) {
+        var newObjects = [];
+        var fromRoom = dataInner.fromRoom;
+        var toRoom = dataInner.toRoom;
+        var objectKeys = dataInner.objects;
+        var uniqueObjects = [];
 
-	//inner function to do the "main work" recursive for all nested rooms
-	var myInnerFunction = function (dataInner, cbi) {
-		var newObjects = [];
-		var fromRoom = dataInner.fromRoom;
-		var toRoom = dataInner.toRoom;
-		var objectKeys = dataInner.objects;
-		var uniqueObjects = [];
-		
-		Modules.Connector.getInventory(fromRoom, context, function(inventoryObjects){
-		
-			if (objectKeys === "ALL") {
-				objectKeys = [];
-				for(var i = 0 ; i < inventoryObjects.length; i++){
-					if(inventoryObjects[i].id !== "undefined"){
-						objectKeys.push(inventoryObjects[i].id);
-					}
-				}
-			}
-		
-			if(objectKeys === undefined) objectKeys = [];
-		
-			for (var j = 0; j < objectKeys.length; j++) {
-				var id = objectKeys[j];
-				var o = ObjectManager.getObject(fromRoom, id, context);
-				uniqueObjects.push(o);
-			}
-			
-			copy();
-		});
+        Modules.Connector.getInventory(fromRoom, context, function(inventoryObjects) {
 
-		
-		/*
-		//find all unique objects - also traverse the linked objects
-		var findUniqueRelatedObjectsIds = function (objectId) {
-			var object = ObjectManager.getObject(fromRoom, objectId, context);
-			if (!object) return;
-			if (! (objectId in uniqueObjects)) {
-				uniqueObjects[objectId] = object;
-				object.getObjectsToDuplicateAsync(function(linkedObjects){
-				
-					return linkedObjects.forEach(findUniqueRelatedObjectsIds);
-				
-				});
-				
-			}
-		}
-		//objectKeys.forEach(findUniqueRelatedObjectsIds);
-		*/
-		
-		//is called after call object were copied
-		//updated some properties + visual arrangement
-		var updateObj = function (callback) {
-		
-			newObjects.forEach(function (object) {
-				object.updateLinkIds(idTranslationList); //update links
-				// update exits and subrooms if the corresponding rooms were copied
-				if (object.getType() === "Subroom" || object.getType() === "Exit") {
-					if (roomTranslationList[object.getAttribute("destination")] !== undefined) {
-						object.setAttribute("destination", roomTranslationList[object.getAttribute("destination")]);
-					}
-				}
+            if (objectKeys === "ALL") {
+                objectKeys = [];
+                for (var i = 0; i < inventoryObjects.length; i++) {
+                    if (inventoryObjects[i].id !== "undefined") {
+                        objectKeys.push(inventoryObjects[i].id);
+                    }
+                }
+            }
 
-				if (fromRoom === toRoom) {
-					object.setAttribute("x", object.getAttribute("x") + 30);
-					object.setAttribute("y", object.getAttribute("y") + 30);
-				}
+            if (objectKeys === undefined)
+                objectKeys = [];
 
-				// add group id if source object was grouped
-				if (object.getAttribute("group") && object.getAttribute("group") > 0) {
-					object.setAttribute("group", object.getAttribute("group") + 1);
-				}
+            for (var j = 0; j < objectKeys.length; j++) {
+                var id = objectKeys[j];
+                var o = ObjectManager.getObject(fromRoom, id, context);
+                uniqueObjects.push(o);
+            }
 
-				// set attributes sent by frontend (e.g. new position when moving objects in concurrent view)
-				if (attributes[reverseIdTranslationList[object.id]] !== undefined) {
-					for (var key in attributes[reverseIdTranslationList[object.id]]) {
-						object.setAttribute(key, attributes[reverseIdTranslationList[object.id]][key]);
-					}
-				}
-
-				//object.updateClients();
-				idList.push(object.id);
-			});
-			callback();
-		}
+            copy();
+        });
 
 
-		var toWriteCheck = function (cb) {
-			Modules.Connector.mayInsert(toRoom, context, falseToError("Can't insert into the target room!", cb));
-		}
+        /*
+         //find all unique objects - also traverse the linked objects
+         var findUniqueRelatedObjectsIds = function (objectId) {
+         var object = ObjectManager.getObject(fromRoom, objectId, context);
+         if (!object) return;
+         if (! (objectId in uniqueObjects)) {
+         uniqueObjects[objectId] = object;
+         object.getObjectsToDuplicateAsync(function(linkedObjects){
+         
+         return linkedObjects.forEach(findUniqueRelatedObjectsIds);
+         
+         });
+         
+         }
+         }
+         //objectKeys.forEach(findUniqueRelatedObjectsIds);
+         */
+
+        //is called after call object were copied
+        //updated some properties + visual arrangement
+        var updateObj = function(callback) {
+
+            newObjects.forEach(function(object) {
+                object.updateLinkIds(idTranslationList); //update links
+                // update exits and subrooms if the corresponding rooms were copied
+                if (object.getType() === "Subroom" || object.getType() === "Exit") {
+                    if (roomTranslationList[object.getAttribute("destination")] !== undefined) {
+                        object.setAttribute("destination", roomTranslationList[object.getAttribute("destination")]);
+                    }
+                }
+
+                if (fromRoom === toRoom) {
+                    object.setAttribute("x", object.getAttribute("x") + 30);
+                    object.setAttribute("y", object.getAttribute("y") + 30);
+                }
+
+                // add group id if source object was grouped
+                if (object.getAttribute("group") && object.getAttribute("group") > 0) {
+                    object.setAttribute("group", object.getAttribute("group") + 1);
+                }
+
+                // set attributes sent by frontend (e.g. new position when moving objects in concurrent view)
+                if (attributes[reverseIdTranslationList[object.id]] !== undefined) {
+                    for (var key in attributes[reverseIdTranslationList[object.id]]) {
+                        object.setAttribute(key, attributes[reverseIdTranslationList[object.id]][key]);
+                    }
+                }
+
+                object.updateClients();
+                idList.push(object.id);
+            });
+            callback();
+        }
 
 
-		var innerReadCheck2 = function (cb) {
-			var arr = new Array();
-			uniqueObjects.forEach(function (object) {
-				arr.push(object.id);
-			});
-			mayReadMultiple(fromRoom, arr, context, cb);
-		}
+        var toWriteCheck = function(cb) {
+            Modules.Connector.mayInsert(toRoom, context, falseToError("Can't insert into the target room!", cb));
+        }
 
-		var copy = function(){
-		
-			var objectCopyTasks = [];
-			var roomCopyTasks = [];
 
-			//check permissions and if successful
-			//go on with further work
-			async.series([innerReadCheck2, toWriteCheck],  function (err) {
-				//TODO send error to cb
-				if (err) cbi(err, null);
-				else {
-					uniqueObjects.forEach(function (object) {
-						var someObject = object.id;
-					//for (var someObject in uniqueObjects) {
-						//var object = uniqueObjects[someObject];
-	
-						//if room we have to copy it recursively
-						if (object.getType() === "Subroom") {
-							var roomData = {};
-							roomData.fromRoom = object.getAttribute("destination");
-							roomData.toRoom = toRoom;
-							roomData.cut = cut;
-							roomData.objects = "ALL";
+        var innerReadCheck2 = function(cb) {
+            var arr = new Array();
+            uniqueObjects.forEach(function(object) {
+                arr.push(object.id);
+            });
+            mayReadMultiple(fromRoom, arr, context, cb);
+        }
 
-							roomCopyTasks.push(function (callback) {
-								var uuid = require('node-uuid');
-								Modules.Connector.getRoomData(uuid.v4(), context, toRoom, function(newRoom){
-								
-									roomData.toRoom = newRoom.id;
-									roomTranslationList[roomData.fromRoom] = newRoom.id;
+        var copy = function() {
 
-									myInnerFunction(roomData, callback);
-								});
-							});
-						}
-						//need function scope because "looping problem" //TODO: link to example
-						(function(id){
-							objectCopyTasks.push(function (callback) {
-								Modules.Connector.duplicateObject(fromRoom,toRoom, id, context, function (err, newId, oldId) {
-									if (err) console.log("Error: " + err);
+            var objectCopyTasks = [];
+            var roomCopyTasks = [];
 
-									var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+            //check permissions and if successful
+            //go on with further work
+            async.series([innerReadCheck2, toWriteCheck], function(err) {
+                //TODO send error to cb
+                if (err)
+                    cbi(err, null);
+                else {
+                    uniqueObjects.forEach(function(object) {
+                        var someObject = object.id;
+                        //for (var someObject in uniqueObjects) {
+                        //var object = uniqueObjects[someObject];
 
-									if (cut) {
-										var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
-										oldObject.remove();
-									}
+                        //if room we have to copy it recursively
+                        if (object.getType() === "Subroom") {
+                            var roomData = {};
+                            roomData.fromRoom = object.getAttribute("destination");
+                            roomData.toRoom = toRoom;
+                            roomData.cut = cut;
+                            roomData.objects = "ALL";
 
-									newObjects.push(obj);
-									idTranslationList[oldId] = newId;
-									//TODO: remove reverseIdTranslationList can be constructed afterwards
-									reverseIdTranslationList[newId] = oldId;
+                            roomCopyTasks.push(function(callback) {
+                                var uuid = require('node-uuid');
+                                Modules.Connector.getRoomData(uuid.v4(), context, toRoom, function(newRoom) {
 
-									callback();
-								});
-							});
-						})(someObject);
-					});
+                                    roomData.toRoom = newRoom.id;
+                                    roomTranslationList[roomData.fromRoom] = newRoom.id;
 
-					//execute the copy tasks
-					var tasks = roomCopyTasks.concat( objectCopyTasks);
-					async.series( tasks , function(err, res){
-						updateObj(cbi);
-					});
-				}
-			});
-		}
-	}
+                                    myInnerFunction(roomData, callback);
+                                });
+                            });
+                        }
+                        //need function scope because "looping problem" //TODO: link to example
+                        (function(id) {
+                            objectCopyTasks.push(function(callback) {
+                                Modules.Connector.duplicateObject(fromRoom, toRoom, id, context, function(err, newId, oldId) {
+                                    if (err)
+                                        console.log("Error: " + err);
 
-	//Do the recursive copies etc.
-	//When finished update the room IDs
-	//In the end we can call the outer callback - we finished our task.
-	async.series([function(cb){myInnerFunction(data, cb)}, updateRoomIds], function(err){
-		if(err) cbo(err, null);
-		else cbo(null, idList);
-	});
+                                    var obj = Modules.ObjectManager.getObject(toRoom, newId, context);
+
+                                    if (cut) {
+                                        var oldObject = Modules.ObjectManager.getObject(fromRoom, oldId, context);
+                                        oldObject.remove();
+                                    }
+
+                                    newObjects.push(obj);
+                                    idTranslationList[oldId] = newId;
+                                    //TODO: remove reverseIdTranslationList can be constructed afterwards
+                                    reverseIdTranslationList[newId] = oldId;
+
+                                    callback();
+                                });
+                            });
+                        })(someObject);
+                    });
+
+                    //execute the copy tasks
+                    var tasks = roomCopyTasks.concat(objectCopyTasks);
+                    async.series(tasks, function(err, res) {
+                        updateObj(cbi);
+                    });
+                }
+            });
+        }
+    }
+
+    //Do the recursive copies etc.
+    //When finished update the room IDs
+    //In the end we can call the outer callback - we finished our task.
+    async.series([function(cb) {
+            myInnerFunction(data, cb)
+        }, updateRoomIds], function(err) {
+        if (err)
+            cbo(err, null);
+        else
+            cbo(null, idList);
+    });
 
 }
 
 
 //deleteObject
-ObjectManager.deleteObject = function (data, context, callback) {
-	var that = this;
+ObjectManager.deleteObject = function(data, context, callback) {
+    var that = this;
 
-	var roomID = data.roomID
-	var objectID = data.objectID;
+    var roomID = data.roomID
+    var objectID = data.objectID;
 
-	var afterRightsCheck = function (err, hasRights) {
-		if (err) callback(err, null);
-		else {
-			if (hasRights) {
-				var object = ObjectManager.getObject(roomID, objectID, context);
-				if (!object) {
-					callback(new Error('Object not found ' + objectID), null);
-					return;
-				}
+    var afterRightsCheck = function(err, hasRights) {
+        if (err)
+            callback(err, null);
+        else {
+            if (hasRights) {
+                var object = ObjectManager.getObject(roomID, objectID, context);
+                if (!object) {
+                    callback(new Error('Object not found ' + objectID), null);
+                    return;
+                }
 
-				Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
-				var historyEntry = {
-					'oldRoomID': roomID,
-					'oldObjectId': objectID,
-					'roomID': 'trash',
-					'action': 'delete'
-				}
+                Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
+                var historyEntry = {
+                    'oldRoomID': roomID,
+                    'oldObjectId': objectID,
+                    'roomID': 'trash',
+                    'action': 'delete'
+                }
 
-				Modules.Connector.getTrashRoom(context, function (toRoom) {
-					Modules.Connector.duplicateObject(roomID, toRoom.id, objectID, context, function (err, newId, oldId) {
-						object.remove();
-						historyEntry["objectID"] = newId;
+                Modules.Connector.getTrashRoom(context, function(toRoom) {
+                    Modules.Connector.duplicateObject(roomID, toRoom.id, objectID, context, function(err, newId, oldId) {
+                        object.remove();
+                        historyEntry["objectID"] = newId;
 
-						var transactionId = data.transactionId;
+                        var transactionId = data.transactionId;
 
-						that.history.add(transactionId, data.userId, historyEntry);
-					});
+                        that.history.add(transactionId, data.userId, historyEntry);
+                    });
 
-				});
+                });
 
-			} else {
-				callback(new Error('No rights to delete object: ' + objectID), null);
-			}
-		}
-	}
+            } else {
+                callback(new Error('No rights to delete object: ' + objectID), null);
+            }
+        }
+    }
 
-	Modules.Connector.mayDelete(roomID, objectID, context, afterRightsCheck)
+    Modules.Connector.mayDelete(roomID, objectID, context, afterRightsCheck)
 }
 
 module.exports = ObjectManager;
