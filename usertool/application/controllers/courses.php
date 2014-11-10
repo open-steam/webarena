@@ -6,6 +6,7 @@ if (!defined('BASEPATH'))
 class Courses extends MY_Controller {
 
     public function index() {
+        log_message("debug", "hallo hallo");
         $this->load->library('session');
         $this->load->library('getText');
 
@@ -224,7 +225,35 @@ class Courses extends MY_Controller {
         }
     }
 
+    public function unfreeze() {
+        log_message("debug", "hallo hallo");
+        $this->load->library('session');
+        $this->load->library('getText');
+        
+
+        if ($this->input->is_ajax_request() == TRUE) {
+            $response = array();
+            if ($this->session->userdata('is_admin')) {
+                $this->load->model('course');
+                $this->course->loadCourseData($this->input->post("courseID"));
+                $this->course->loadMemberData(false);
+                if ($this->course->unfreeze()) {
+                    // success
+                    $response["status"] = "success";
+                } else {
+                    // error
+                    $response["status"] = "error";
+                }
+            } else {
+                $response["status"] = "error";
+            }
+            echo(json_encode($response));
+        }
+    }
+
     public function freeze() {
+        log_message("debug", "frieren");
+        
         $this->load->library('session');
         $this->load->library('getText');
 

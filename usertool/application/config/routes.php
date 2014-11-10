@@ -44,6 +44,7 @@ $route['404_override'] = '';
 $route['courses/all'] = "courses/all";
 $route['courses/create'] = "courses/create";
 $route['courses/freeze'] = "courses/freeze";
+$route['courses/unfreeze'] = "courses/unfreeze";
 $route['courses/verifyUser'] = "courses/verifyUser";
 $route['courses/changeWriteAccessUser'] = "courses/changeWriteAccessUser";
 $route['courses/deleteUser'] = "courses/deleteUser";

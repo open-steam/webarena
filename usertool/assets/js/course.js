@@ -1,13 +1,13 @@
 $(document).ready(function() {
     $("#appliedTable").tablesorter({
-        sortList: [[0,0]],
+        sortList: [[0, 0]],
         headers: {3: {sorter: false},
-                  4: {sorter: false}}
+            4: {sorter: false}}
     });
     $("#memberTable").tablesorter({
-        sortList: [[0,0]],
+        sortList: [[0, 0]],
         headers: {3: {sorter: false},
-                  4: {sorter: false}}
+            4: {sorter: false}}
     });
 });
 
@@ -38,7 +38,7 @@ $('.verifyButton').click(function() {
 $('#applyButton').click(function() {
     var data = {};
     data.courseID = courseID;
-    
+
     $.ajax({
         url: baseURL + 'courses/apply',
         type: 'POST',
@@ -55,10 +55,30 @@ $('#applyButton').click(function() {
 });
 
 // freeze button handling
+$('#unfreezeButton').click(function() {
+    var data = {};
+    data.courseID = courseID;
+    $.ajax({
+        url: baseURL + 'courses/unfreeze',
+        type: 'POST',
+        data: data,
+        success: function(json) {
+            var decodedJSON = $.parseJSON(json);
+            //var decodedJSON = {status: "success"};
+            if (decodedJSON["status"] === "success") {
+                window.location.reload();
+            } else {
+                alert('Es ist etwas schief gelaufen...');
+            }
+        }
+    });
+
+});
+
 $('#freezeButton').click(function() {
     var data = {};
     data.courseID = courseID;
-    
+
     var response = confirm('Diesen Kurs wirklich einfrieren?\nDieser Vorgang kann nicht rückgängig gemacht werden.');
     if (response) {
         $.ajax({
@@ -76,6 +96,7 @@ $('#freezeButton').click(function() {
         });
     }
 });
+
 
 // write access checkbox handling
 $('.writeAccessCheckbox').attr("autocomplete", "off");
@@ -109,8 +130,8 @@ $('.deleteUserButton').click(function() {
     var data = {};
     data.courseID = courseID;
     data.username = $(this).siblings('.username').val();
-    
-    var response = confirm('Benutzer '+data.username+' wirklich aus dem Kurs entfernen?');
+
+    var response = confirm('Benutzer ' + data.username + ' wirklich aus dem Kurs entfernen?');
     if (response) {
         $.ajax({
             url: baseURL + 'courses/deleteUser',
@@ -143,7 +164,7 @@ $('#courseTable input, #courseTable textarea').on('change input', function() {
 });
 $('#courseTable input, #courseTable textarea').on('blur', function() {
     if ($(this).hasClass('changed')) {
-        if (!($(this).attr('name')== 'courseName' && $(this).val() == '')) {
+        if (!($(this).attr('name') == 'courseName' && $(this).val() == '')) {
             $(this).removeClass('changed');
             $(this).siblings('.feedbackIcon').attr('src', baseURL + '/assets/img/ajax-loader.gif');
             var data = {};
@@ -178,14 +199,14 @@ $('#courseTable input, #courseTable textarea').on('blur', function() {
 });
 $('#courseTable input, #courseTable textarea').on('keyup', function(event) {
     if (event.keyCode == 13) {
-        if (!($(this).attr('name')== 'courseName' && $(this).val() == '')) {
+        if (!($(this).attr('name') == 'courseName' && $(this).val() == '')) {
             $(this).removeClass('changed');
             $(this).siblings('.feedbackIcon').attr('src', baseURL + '/assets/img/ajax-loader.gif');
             var data = {};
             data.id = courseID;
             data.name = $(this).attr('name');
             data.value = $(this).val();
-        
+
             $.ajax({
                 url: baseURL + 'courses/' + courseID,
                 type: 'POST',

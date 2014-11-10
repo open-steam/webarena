@@ -3,7 +3,7 @@
 $config['admins'] = array("csens");
 $config['webarenaHost'] = "localhost";
 $config['webarenaPort'] = "8080";
-$config['dataFolder'] = "/Users/christophsens/webarena/";
+$config['dataFolder'] = "/Users/christophsens/waData/";
 
 $config['userFolder'] = $config['dataFolder'] . "/users";
 $config['courseFolder'] = $config['dataFolder'] . "/courses";
