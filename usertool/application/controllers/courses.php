@@ -6,7 +6,6 @@ if (!defined('BASEPATH'))
 class Courses extends MY_Controller {
 
     public function index() {
-        log_message("debug", "hallo hallo");
         $this->load->library('session');
         $this->load->library('getText');
 
@@ -226,7 +225,6 @@ class Courses extends MY_Controller {
     }
 
     public function unfreeze() {
-        log_message("debug", "hallo hallo");
         $this->load->library('session');
         $this->load->library('getText');
         
@@ -252,8 +250,6 @@ class Courses extends MY_Controller {
     }
 
     public function freeze() {
-        log_message("debug", "frieren");
-        
         $this->load->library('session');
         $this->load->library('getText');
 

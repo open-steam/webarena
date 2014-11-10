@@ -334,7 +334,7 @@ class Course extends CI_Model {
             fwrite($courseData, json_encode($course));
             flock($courseData, LOCK_UN); // release the lock
         } else {
-            log_message("errr", "course saveCourseData: id = ".$this->id." filename = ".$filename);
+            log_message("error", "course saveCourseData: id = ".$this->id." filename = ".$filename);
             return false;
         }
         fclose($courseData);
