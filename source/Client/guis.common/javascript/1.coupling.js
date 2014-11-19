@@ -103,7 +103,7 @@ GUI.enterCouplingMode = function() {
 					position: {
 						my: "center top",
 						at: "center top+30",
-						of: window
+						of: $(navigationButton)
 					}
 				});
 		    });
@@ -142,7 +142,7 @@ GUI.enterCouplingMode = function() {
 			position: {
 				my: "center top",
 				at: "center top+30",
-				of: window
+				of: $(navigationButton)
 			},
 			height: 'auto',
 			width: 200
