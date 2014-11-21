@@ -93,7 +93,7 @@ ServerController.bugreport = function(data, socket, responseID, callback) {
 };
 ServerController.clientErrorMessage = function(data, socket, responseID, callback) {
     Modules.Logger.log('error', 'errortype: client ' + 'message: ' + data.message + ' uri: ' + data.uri + ' line: ' + data.line + " roomID: " + data.roomID +
-            " userID: " + data.user + " Navigator: " + navigator.userAgent);
+            " userID: " + data.user + " Navigator: " +data.nav);
 };
 ServerController.writeToServerConsole = function(data, socket, responseID, callback) {
     console.log(data);
