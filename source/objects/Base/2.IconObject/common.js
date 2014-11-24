@@ -33,6 +33,10 @@ IconObject.register = function(type) {
 
 //this.registerAttribute('linecolor',{hidden:true});
     //this.registerAttribute('linesize',{hidden:true});
+    
+    this.registerAttribute('contexts',{type:'object'});
+    this.registerAttribute('structures',{type:'object'});
+    
     this.unregisterAction('to back');
     this.unregisterAction('to front');
 
