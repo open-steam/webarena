@@ -41,7 +41,7 @@ BuildTool.buildClientCode = function(){
         this.clientCode += enter + "window.onerror = function(message, uri, line){var data={};\n\
     data.message=message;data.uri=uri;data.line=line;data.nav = navigator.userAgent;\n\
 data.roomID=ObjectManager.getRoomID();data.user = ObjectManager.getUser().username;\n\
-ObjectManager.clientErrorMessage(data,function(){});alert(navigator.userAgent)}";
+ObjectManager.clientErrorMessage(data,function(){});}";
 
 	files.forEach(function (data) {
 		
