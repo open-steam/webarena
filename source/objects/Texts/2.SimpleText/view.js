@@ -58,13 +58,18 @@ SimpleText.draw=function(external){
 }
 
 
-
 SimpleText.createRepresentation = function(parent) {
 	
 	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	
-	GUI.svg.text(rep, 0, 0, "Text");
+	rep.text = GUI.svg.text(rep, 0, 0, "Text");
 
+	rep.input = GUI.svg.other(rep,"foreignObject");
+	
+	var body = document.createElement("body");
+	
+	$(rep.text).append(body);
+	
 	rep.dataObject=this;
 
 	$(rep).attr("id", this.getAttribute('id'));
@@ -77,15 +82,34 @@ SimpleText.createRepresentation = function(parent) {
 }
 
 
-
-
+/**
+ * Called after a double click on the text, enables the inplace editing
+ */
 SimpleText.editText = function() {
 	
-	GUI.editText(this);
+	var rep = this.getRepresentation();
+	
+	rep.input.innerHTML='<input type="text" name="newContent" value="'+this.oldContent+'" style="font-size: '+this.getAttribute('font-size')+'px; font-family: '+this.getAttribute('font-family')+'; color: '+this.getAttribute('font-color')+'; width: '+(rep.text.getBoundingClientRect().width-6)+'px; height: '+(rep.text.getBoundingClientRect().height-5)+'px;">';
+	
+	$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+5);
+	
+	$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width);
+	
+	$(rep).find("text").hide();
+	
+	this.input = true;
+	
+	var self = this;
+	
+	$(document).bind("keyup", function(event) {
+		
+		if (event.keyCode == 13) self.saveChanges();
+		
+	});
+	
+	//GUI.editText(this);
 	
 }
-
-
 
 
 /* get the y position of the objects bounding box (this is the top position of the object) */
@@ -93,11 +117,13 @@ SimpleText.getViewBoundingBoxY = function() {
 	return this.getViewY();
 }
 
+
 /* get the height of the objects bounding box */
 SimpleText.getViewBoundingBoxHeight = function() {
 	var rep = this.getRepresentation();
 	return this.getRepresentation().getBBox().height; //<--TODO: this value is too high
 }
+
 
 /**
  * Called when the colors of the appearence of an object are changed
@@ -118,4 +144,26 @@ SimpleText.checkTransparency = function(attribute, value) {
 	if (fontcolor === 'transparent' && linecolor === 'transparent') {
 		return false;
 	} else return true;
+}
+
+
+/**
+ * Called after hitting the Enter key during the inplace editing
+ */
+SimpleText.saveChanges = function() {
+
+	var rep = this.getRepresentation();
+	
+	var newContent = $(rep).find("input").val()
+
+	$(rep).find("input").hide();
+	
+	$(rep).find("text").show();
+	
+	this.input = false;
+	
+	this.setContent(newContent);
+
+	this.draw();
+	
 }

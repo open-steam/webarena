@@ -592,8 +592,13 @@ GUI.initMouseHandler = function() {
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
 				// should be prevented
                 if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
-                    event.preventDefault();
-                    event.stopPropagation();
+					if(clickedObject.input != true){
+						event.preventDefault();
+						event.stopPropagation();
+					}
+					else{
+						return;
+					}
                 }
 
 				clickedObject.click(event);
