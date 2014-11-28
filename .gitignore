@@ -31,3 +31,5 @@ npm-debug.log
 ## Kokoa
 pluginApplications/VerwaltungsApp/config.local.js
 error.log
+usertool/application/config/config.php
+usertool/application/config/platform.php
