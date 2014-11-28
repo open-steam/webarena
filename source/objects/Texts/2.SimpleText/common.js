@@ -44,8 +44,9 @@ SimpleText.register=function(type){
 
 SimpleText.execute=function(){
 	
-	this.editText();
-	
+	if(!this.input){
+		this.editText();
+	}
 }
 
 SimpleText.isResizable=function(){
@@ -67,10 +68,10 @@ SimpleText.intelligentRename=function(newValue){
 SimpleText.register('SimpleText');
 SimpleText.isCreatable=true;
 SimpleText.onMobile = true;
+SimpleText.input = false;
 SimpleText.isCreatableOnMobile = true;
 //SimpleText.hasMobileRep = true;
 SimpleText.hasEditableMobileContent = true;
-
 SimpleText.contentURLOnly = false; //content is only accessible via URL
 
 SimpleText.content='Neuer Text';

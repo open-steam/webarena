@@ -224,6 +224,31 @@ class Courses extends MY_Controller {
         }
     }
 
+    public function unfreeze() {
+        $this->load->library('session');
+        $this->load->library('getText');
+        
+
+        if ($this->input->is_ajax_request() == TRUE) {
+            $response = array();
+            if ($this->session->userdata('is_admin')) {
+                $this->load->model('course');
+                $this->course->loadCourseData($this->input->post("courseID"));
+                $this->course->loadMemberData(false);
+                if ($this->course->unfreeze()) {
+                    // success
+                    $response["status"] = "success";
+                } else {
+                    // error
+                    $response["status"] = "error";
+                }
+            } else {
+                $response["status"] = "error";
+            }
+            echo(json_encode($response));
+        }
+    }
+
     public function freeze() {
         $this->load->library('session');
         $this->load->library('getText');

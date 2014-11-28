@@ -74,6 +74,8 @@ GUI.setTranslations('de',{
 	'Welcome' : 'Willkommen',
 	'Environment' : 'Umgebung',
 	 'Logout': 'Ausloggen',
-	 'Paint' : 'Zeichnen'
+	 'Paint' : 'Zeichnen',
+	 'You cannot create objects in presentation mode' : 'Im Präsentationsmodus können keine Objekte erstellt werden',
+	 'You cannot create objects in coupling mode' : 'Im Couplingmodus können keine Objekte erstellt werden'
 	}
 );

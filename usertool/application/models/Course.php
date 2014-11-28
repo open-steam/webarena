@@ -334,7 +334,7 @@ class Course extends CI_Model {
             fwrite($courseData, json_encode($course));
             flock($courseData, LOCK_UN); // release the lock
         } else {
-            log_message("errpr", "course saveCourseData: id = ".$this->id." filename = ".$filename);
+            log_message("error", "course saveCourseData: id = ".$this->id." filename = ".$filename);
             return false;
         }
         fclose($courseData);
@@ -393,6 +393,17 @@ class Course extends CI_Model {
         $courses = array_values($courses);
         $this->user->setCourses($courses);
         if ($this->user->saveUserData()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    function unfreeze(){
+        log_message("debug", "course unfreeze: id = ".$this->id);
+        
+        // save frozen status
+        $this->frozen = false;
+        if ($this->saveCourseData()) {
             return true;
         } else {
             return false;

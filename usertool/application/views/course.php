@@ -25,6 +25,11 @@
                                     <button id="freezeButton" class="btn btn-primary" style="float:right;">Kurs einfrieren</button>
                                     <?php
                                 }
+                                if($is_admin && ($course->isFrozen()) ){?>
+                                    <button id="unfreezeButton" class="btn btn-primary" style="float:right;">Kurs entfrieren</button>
+                                <?php
+                                
+                                }
                                 ?>
                             </th>
                         </tr>

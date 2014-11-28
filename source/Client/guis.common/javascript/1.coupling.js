@@ -100,7 +100,11 @@ GUI.enterCouplingMode = function() {
 					left : (event.pageX - ($(navigationButton).width() / 2) - 10)
 				})	
 				$('#couplingNavigation').dialog({
-					position: [event.pageX - 100, 30],
+					position: {
+						my: "center top",
+						at: "center top+30",
+						of: $(navigationButton)
+					}
 				});
 		    });
 
@@ -135,7 +139,11 @@ GUI.enterCouplingMode = function() {
 		$('#couplingNavigation').dialog({ 
 			draggable: false,
 			resizable: false,
-			position: [($(window).width() / 2) - 100, 30],
+			position: {
+				my: "center top",
+				at: "center top+30",
+				of: $(navigationButton)
+			},
 			height: 'auto',
 			width: 200
 		});
