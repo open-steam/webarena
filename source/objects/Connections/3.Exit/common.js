@@ -10,12 +10,12 @@ var Modules=require('../../../server.js');
 var Exit=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
 Exit.register=function(type){
-	
 	// Registering the object
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
-		
-	this.registerAttribute('destination',{type:'Hyperlink', standard: "choose", linkFunction: function(object){object.showDialog()}, category:'Functionality', changedFunction: function(object) { object.updateIcon(); }});
+	
+        this.registerAttribute('followOnDoubleClick',{standard:'false', hidden:'true'});
+	/*this.registerAttribute('destination',{type:'Hyperlink', standard: "choose", linkFunction: function(object){object.showDialog()}, category:'Functionality', changedFunction: function(object) { object.updateIcon(); }});
 	this.registerAttribute('destinationObject',{type:'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object){object.showDialog()}, category:'Functionality'});
 	this.registerAttribute('filterObjects',{type:'boolean',standard:false, hidden:true});
 
@@ -25,11 +25,11 @@ Exit.register=function(type){
 	
 	this.registerAction('Open in new window',function(object){	
 		object.execute(true);
-	},true);
+	},true); */
 
-}
+};
 
-Exit.execute=function(openInNewWindow){
+/*Exit.execute=function(openInNewWindow){
 
     var destination=this.getAttribute('destination');
 	
@@ -69,9 +69,9 @@ Exit.execute=function(openInNewWindow){
 		//window.location.href = "/room/"+destination;
 	}
 }
-
+*/
 Exit.register('Exit');
 Exit.isCreatable=true;
 Exit.moveByTransform = function(){return true;};
 
-module.exports=Exit;
+module.exports=Exit; 

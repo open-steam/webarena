@@ -116,7 +116,12 @@ IconObject.setViewHeight = function(value) {
 }
 
 IconObject.dblclickHandler = function() {
-	this.execute();
+    if(this.getAttribute("followOnDoubleClick")){
+        this.follow();
+    }else{
+        this.execute();
+    }
+	
 }
 
 IconObject.createPixelMap=function(SVGImage){

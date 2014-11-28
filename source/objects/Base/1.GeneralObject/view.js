@@ -1,77 +1,78 @@
 /**
-*    Webarena - A web application for responsive graphical knowledge work
-*
-*    @author Felix Winkelnkemper, University of Paderborn, 2014
-*
-*	 GeneralObject view component
-*
-*/
+ *    Webarena - A web application for responsive graphical knowledge work
+ *
+ *    @author Felix Winkelnkemper, University of Paderborn, 2014
+ *
+ *	 GeneralObject view component
+ *
+ */
 
 /**
  * Updates the representation using the attributes
  * @param {bool} external True if triggered externally (and not by the object itself)
  */
-GeneralObject.draw=function(external){
+GeneralObject.draw = function(external) {
 
-	if (!this.isGraphical) return;
-		
-	var rep=this.getRepresentation();
+    if (!this.isGraphical)
+        return;
 
-	this.setViewWidth(this.getAttribute('width'));
-	this.setViewHeight(this.getAttribute('height'));
-	
-	this.drawPosition(external);
-			
-	$(rep).attr("layer", this.getAttribute('layer'));
-	
-	if (!$(rep).hasClass("webarena_ghost")) {
-		
-		if (this.selected) {
-			$(rep).css("visibility", "visible");
-		} else {
-			
-			if (this.getAttribute("visible")) {
-			
-				if (external) {
-					if ($(rep).css("visibility") == "hidden") {
-						/* fade in */
-						$(rep).css("opacity", 0);
-						$(rep).css("visibility", "visible");
-						$(rep).animate({
-							"opacity" : 1
-						}, {queue:false, duration:500});
-					}
-				} else {
-					$(rep).css("visibility", "visible");
-				}
-				
-			} else {
-							
-				if (external) {
-					if ($(rep).css("visibility") == "visible") {			
-						/* fade out */
-						$(rep).css("opacity", 1);
-						$(rep).animate({
-							"opacity" : 0
-						}, {queue:false, 
-							complete:function() {
-								$(rep).css("visibility", "hidden");
-							}
-							});
-					}
-				} else {
-					$(rep).css("visibility", "hidden");
-				}
-				
-			}
-			
-		}
+    var rep = this.getRepresentation();
 
-		
-	}
-	
-	this.adjustControls();
-	
+    this.setViewWidth(this.getAttribute('width'));
+    this.setViewHeight(this.getAttribute('height'));
+
+    this.drawPosition(external);
+
+    $(rep).attr("layer", this.getAttribute('layer'));
+
+    if (!$(rep).hasClass("webarena_ghost")) {
+
+        if (this.selected) {
+            $(rep).css("visibility", "visible");
+        } else {
+
+            if (this.getAttribute("visible")) {
+
+                if (external) {
+                    if ($(rep).css("visibility") == "hidden") {
+                        /* fade in */
+                        $(rep).css("opacity", 0);
+                        $(rep).css("visibility", "visible");
+                        $(rep).animate({
+                            "opacity": 1
+                        }, {queue: false, duration: 500});
+                    }
+                } else {
+                    $(rep).css("visibility", "visible");
+                }
+
+            } else {
+
+                if (external) {
+                    if ($(rep).css("visibility") == "visible") {
+                        /* fade out */
+                        $(rep).css("opacity", 1);
+                        $(rep).animate({
+                            "opacity": 0
+                        }, {queue: false,
+                            complete: function() {
+                                $(rep).css("visibility", "hidden");
+                            }
+                        });
+                    }
+                } else {
+                    $(rep).css("visibility", "hidden");
+                }
+
+            }
+
+        }
+
+
+    }
+
+    this.adjustControls();
+
 }
 
 /**
@@ -79,17 +80,17 @@ GeneralObject.draw=function(external){
  * @param {bool} external True if triggered externally (and not by the object itself)
  */
 GeneralObject.drawPosition = function(external) {
-	
-	/* animations can be prevented using the objects function "startNoAnimationTimer" and the clients global function "GUI.startNoAnimationTimer" */
-	if (external === true && !this.selected && this.noAnimation == undefined && GUI.noAnimation == undefined) {
-		/* set position animated when not called locally */
-		this.setViewXYAnimated(this.getAttribute('x'), this.getAttribute('y'));
-	} else {
-		/* set position without animation */
-		this.setViewX(this.getAttribute('x'));
-		this.setViewY(this.getAttribute('y'));
-	}
-	
+
+    /* animations can be prevented using the objects function "startNoAnimationTimer" and the clients global function "GUI.startNoAnimationTimer" */
+    if (external === true && !this.selected && this.noAnimation == undefined && GUI.noAnimation == undefined) {
+        /* set position animated when not called locally */
+        this.setViewXYAnimated(this.getAttribute('x'), this.getAttribute('y'));
+    } else {
+        /* set position without animation */
+        this.setViewX(this.getAttribute('x'));
+        this.setViewY(this.getAttribute('y'));
+    }
+
 }
 
 GeneralObject.drawDimensions = GeneralObject.drawPosition;
@@ -98,30 +99,31 @@ GeneralObject.drawDimensions = GeneralObject.drawPosition;
  * Prevents all animations by drawPosition for the next second
  */
 GeneralObject.startNoAnimationTimer = function() {
-	var self = this;
-	this.noAnimation = window.setTimeout(function() {
-		self.noAnimation = undefined;
-	}, 1000);
+    var self = this;
+    this.noAnimation = window.setTimeout(function() {
+        self.noAnimation = undefined;
+    }, 1000);
 }
 
 
 /**
  * @deprecated still used?
  */
-GeneralObject.updateGUI=function(){
-	
-	//check if we are allowed to paint
-	
-	if (!ObjectManager) return;
-	if (!ObjectManager.hasObject(this)){
-		debug(this+' not in inventory');
-		return;
-	}
-	
-	this.draw();
-	
-	GUI.updateGUI(this);
-	
+GeneralObject.updateGUI = function() {
+
+    //check if we are allowed to paint
+
+    if (!ObjectManager)
+        return;
+    if (!ObjectManager.hasObject(this)) {
+        debug(this + ' not in inventory');
+        return;
+    }
+
+    this.draw();
+
+    GUI.updateGUI(this);
+
 }
 
 /**
@@ -133,21 +135,22 @@ GeneralObject.updateGUI=function(){
  *
  * @returns {DomObject} The DOM object representing the object
  */
-GeneralObject.getRepresentation=function(){
+GeneralObject.getRepresentation = function() {
 
-	if (!this.isGraphical) return;
+    if (!this.isGraphical)
+        return;
 
-	var rep=document.getElementById(this.getAttribute('id'));
+    var rep = document.getElementById(this.getAttribute('id'));
 
-	if (!rep){
-		var parent = $('#room_'+ObjectManager.getIndexOfObject(this.getAttribute("inRoom")));
-		var rep = this.createRepresentation(parent);
-		this.representationCreated();
-		
-	}
-	
-	rep.dataObject=this;
-	return rep;
+    if (!rep) {
+        var parent = $('#room_' + ObjectManager.getIndexOfObject(this.getAttribute("inRoom")));
+        var rep = this.createRepresentation(parent);
+        this.representationCreated();
+
+    }
+
+    rep.dataObject = this;
+    return rep;
 }
 
 /**
@@ -155,19 +158,20 @@ GeneralObject.getRepresentation=function(){
  */
 GeneralObject.representationCreated = function() {
 
-	if (!GUI.couplingModeActive) {
-		GUI.updateLayersDelayed();
-	} else {
-		GUI.updateLayers();
-	}
-	
-	if (!this.isSensitive()) return;
-	
-	var that = this;
+    if (!GUI.couplingModeActive) {
+        GUI.updateLayersDelayed();
+    } else {
+        GUI.updateLayers();
+    }
+
+    if (!this.isSensitive())
+        return;
+
+    var that = this;
 
     var intersectMode = false;
 
-    $("body").on("moveObject.wa", function (e) {
+    $("body").on("moveObject.wa", function(e) {
         if (e.objectId !== that.getID()) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
@@ -185,14 +189,14 @@ GeneralObject.representationCreated = function() {
 
     });
 
-    $("body").on("moveend.wa", function (e) {
+    $("body").on("moveend.wa", function(e) {
         if (e.objectId !== that.getID()) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
             //execute copy/cut - if intersecting on mouse/touch release
             if (that.intersectsWith(movedObject)) {
                 var selected = ObjectManager.getSelected();
-                _(selected).each(function (elem) {
+                _(selected).each(function(elem) {
                     if (elem !== that) {
                         that.serverCall("onDrop", elem.getID());
                     }
@@ -204,7 +208,7 @@ GeneralObject.representationCreated = function() {
         }
     });
 
-    ObjectManager.registerRoomChangeCallbacks(function(){
+    ObjectManager.registerRoomChangeCallbacks(function() {
         $("body").unbind("moveObject.wa");
         $("body").unbind("moveend.wa");
     })
@@ -220,23 +224,24 @@ GeneralObject.representationCreated = function() {
  */
 GeneralObject.createRepresentation = function() {
 
-	if (!this.isGraphical) return;
+    if (!this.isGraphical)
+        return;
 
-	var rep = GUI.svg.rect(parent,
-		10, //x
-		10, //y
-		10, //width
-		10 //height
-	);
+    var rep = GUI.svg.rect(parent,
+            10, //x
+            10, //y
+            10, //width
+            10 //height
+            );
 
-	rep.dataObject=this;
+    rep.dataObject = this;
 
-	$(rep).attr("id", this.getAttribute('id'));
+    $(rep).attr("id", this.getAttribute('id'));
 
-	this.initGUI(rep);
-	
-	return rep;
-	
+    this.initGUI(rep);
+
+    return rep;
+
 }
 
 
@@ -244,9 +249,9 @@ GeneralObject.createRepresentation = function() {
  * @deprecated ? (called by all createRepresentation functions)
  */
 GeneralObject.initGUI = function(rep) {
-	
-	var self = this;
-	
+
+    var self = this;
+
 }
 
 
@@ -256,36 +261,41 @@ GeneralObject.initGUI = function(rep) {
  * (If the SVG object itself has no border property, an SVG rect with the class "borderRect" can be used as the indicator)
  */
 GeneralObject.addSelectedIndicator = function(color, width, dashed) {
-	
-	if (!color) color='#1F7BFE';
-	if (!width) width=2;
 
-	var rep = this.getRepresentation();
+    if (!color)
+        color = '#1F7BFE';
+    if (!width)
+        width = 2;
 
-	var borderRep = rep;
+    var rep = this.getRepresentation();
 
-	if (rep.tagName == "g") {
-		/* group --> search first child */
-		borderRep = $(rep).children();
-	}
-	
-	if ($(rep).find(".borderRect").length > 0) {
-		/* border rect exists */
-		borderRep = $(rep).find(".borderRect").get(0);
-	}
+    var borderRep = rep;
 
-	this.oldAttrStroke = $(borderRep).attr("stroke");
-	this.oldAttrStrokeWidth = $(borderRep).attr("stroke-width");
-	
-	if (this.oldAttrStroke == undefined) this.oldAttrStroke = "";
-	if (this.oldAttrStrokeWidth == undefined) this.oldAttrStrokeWidth = 0;
-	
-	$(borderRep).attr("stroke", color);
-	$(borderRep).attr("stroke-width", width);
-	if (dashed) $(borderRep).attr("stroke-dasharray", (width*2)+","+(width*2));
+    if (rep.tagName == "g") {
+        /* group --> search first child */
+        borderRep = $(rep).children();
+    }
 
-	$(rep).addClass("selected");
-	
+    if ($(rep).find(".borderRect").length > 0) {
+        /* border rect exists */
+        borderRep = $(rep).find(".borderRect").get(0);
+    }
+
+    this.oldAttrStroke = $(borderRep).attr("stroke");
+    this.oldAttrStrokeWidth = $(borderRep).attr("stroke-width");
+
+    if (this.oldAttrStroke == undefined)
+        this.oldAttrStroke = "";
+    if (this.oldAttrStrokeWidth == undefined)
+        this.oldAttrStrokeWidth = 0;
+
+    $(borderRep).attr("stroke", color);
+    $(borderRep).attr("stroke-width", width);
+    if (dashed)
+        $(borderRep).attr("stroke-dasharray", (width * 2) + "," + (width * 2));
+
+    $(rep).addClass("selected");
+
 }
 
 /**
@@ -293,35 +303,35 @@ GeneralObject.addSelectedIndicator = function(color, width, dashed) {
  */
 GeneralObject.removeSelectedIndicator = function() {
 
-	var rep = this.getRepresentation();
-	
-	var borderRep = rep;
-	
-	if (rep.tagName == "g") {
-		/* group --> search first child */
-		borderRep = $(rep).children();
-	}
-	
-	if ($(rep).find(".borderRect").length > 0) {
-		/* border rect exists */
-		borderRep = $(rep).find(".borderRect").get(0);
-	}
-	
-	
-	$(borderRep).attr("stroke", this.oldAttrStroke);
-	$(borderRep).attr("stroke-width", this.oldAttrStrokeWidth);
-	$(borderRep).attr("stroke-dasharray", "none");
-	
-	$(rep).removeClass("selected");
-	
+    var rep = this.getRepresentation();
+
+    var borderRep = rep;
+
+    if (rep.tagName == "g") {
+        /* group --> search first child */
+        borderRep = $(rep).children();
+    }
+
+    if ($(rep).find(".borderRect").length > 0) {
+        /* border rect exists */
+        borderRep = $(rep).find(".borderRect").get(0);
+    }
+
+
+    $(borderRep).attr("stroke", this.oldAttrStroke);
+    $(borderRep).attr("stroke-width", this.oldAttrStrokeWidth);
+    $(borderRep).attr("stroke-dasharray", "none");
+
+    $(rep).removeClass("selected");
+
 }
 
-GeneralObject.showActivationMarker=function(){
-	this.addSelectedIndicator('red',10,true);
+GeneralObject.showActivationMarker = function() {
+    this.addSelectedIndicator('red', 10, true);
 }
 
-GeneralObject.hideActivationMarker=function(){
-	this.removeSelectedIndicator();
+GeneralObject.hideActivationMarker = function() {
+    this.removeSelectedIndicator();
 }
 
 /**
@@ -332,95 +342,96 @@ GeneralObject.hideActivationMarker=function(){
  */
 GeneralObject.select = function(multiple, groupSelect) {
 
-	if (this.selected) return;
-		
-	GUI.hideActionsheet();
+    if (this.selected)
+        return;
 
-	if (!GUI.shiftKeyDown && !multiple) {
+    GUI.hideActionsheet();
 
-		/* deselect all selected objects */
-		$.each(ObjectManager.getSelected(), function(index, object) {
-			object.deselect();
-		});
-	
-	}
-	
-	this.selected = true;
-	
-	
-	//show invisible object if selected
-	var visible = true;
-	if(!this.getAttribute("visible")){
-		var rep = this.getRepresentation();
-		$(rep).css("opacity", 1);
-		$(rep).css("visibility", "visible");
-		visible = false;
-	}
-	
-	//add ghost mode for linked + invisible objects
-	var objectID = this.getId();
-	var room = this.getRoom();
-	var linkedObjects = this.getAttribute("link");
-	$.each(linkedObjects, function(index, value) {
-		var targetID = value.destination;
-		var target = ObjectManager.getObject(targetID);
-		if (!target){
-			//console.log(objectID+' has missing linked objects');
-			return;
-		}
-		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
-		
-			var rep = target.getRepresentation();
-			$(rep).css("opacity", 0.4);
-			$(rep).css("visibility", "visible");	
-			$(rep).addClass("webarena_ghost");
+    if (!GUI.shiftKeyDown && !multiple) {
 
-			GUI.showLink(objectID, targetID, true);
-		}
-		if(!visible){
-			GUI.showLink(objectID, targetID, true);
-		}
-	});
-	
+        /* deselect all selected objects */
+        $.each(ObjectManager.getSelected(), function(index, object) {
+            object.deselect();
+        });
 
-	if (this.getAttribute("group") != 0 && !groupSelect) {
-		$.each(this.getGroupMembers(), function(index, object) {
-			object.select(true, true);
-		});
-	}
-	
-	
-	if (this.mayResize()) {
-		/* add controls for resizing */
-		this.addControls();
-	}
-	
-	if (this.mayMove()) {
-		/* add event handlers to make the object movable */
-		this.makeMovable();
-	}
-	
-	this.addSelectedIndicator();
-	
-	if(!multiple) this.selectHandler();
+    }
 
-	if (GUI.updateInspectorDelay){
-		window.clearTimeout(GUI.updateInspectorDelay);
-		GUI.updateInspectorDelay=false;
-	}
+    this.selected = true;
 
-	GUI.updateInspectorDelay=window.setTimeout(function(){
-		GUI.updateInspector(true);
-	},100);
 
-	
-	if (!groupSelect && !multiple) //GUI.showLinks(this);
-	
-	this.draw();
-	
-	/* inform all clients about the selection */
-	ObjectManager.informAboutSelection(this.id);
-		
+    //show invisible object if selected
+    var visible = true;
+    if (!this.getAttribute("visible")) {
+        var rep = this.getRepresentation();
+        $(rep).css("opacity", 1);
+        $(rep).css("visibility", "visible");
+        visible = false;
+    }
+
+    //add ghost mode for linked + invisible objects
+    var objectID = this.getId();
+    var room = this.getRoom();
+    var linkedObjects = this.getAttribute("link");
+    $.each(linkedObjects, function(index, value) {
+        var targetID = value.destination;
+        var target = ObjectManager.getObject(targetID);
+        if (!target) {
+            //console.log(objectID+' has missing linked objects');
+            return;
+        }
+        if (!target.getAttribute("visible") && room.getAttribute("showLinks")) {
+
+            var rep = target.getRepresentation();
+            $(rep).css("opacity", 0.4);
+            $(rep).css("visibility", "visible");
+            $(rep).addClass("webarena_ghost");
+
+            GUI.showLink(objectID, targetID, true);
+        }
+        if (!visible) {
+            GUI.showLink(objectID, targetID, true);
+        }
+    });
+
+
+    if (this.getAttribute("group") != 0 && !groupSelect) {
+        $.each(this.getGroupMembers(), function(index, object) {
+            object.select(true, true);
+        });
+    }
+
+
+    if (this.mayResize()) {
+        /* add controls for resizing */
+        this.addControls();
+    }
+
+    if (this.mayMove()) {
+        /* add event handlers to make the object movable */
+        this.makeMovable();
+    }
+
+    this.addSelectedIndicator();
+
+    if (!multiple)
+        this.selectHandler();
+
+    if (GUI.updateInspectorDelay) {
+        window.clearTimeout(GUI.updateInspectorDelay);
+        GUI.updateInspectorDelay = false;
+    }
+
+    GUI.updateInspectorDelay = window.setTimeout(function() {
+        GUI.updateInspector(true);
+    }, 100);
+
+
+    if (!groupSelect && !multiple) //GUI.showLinks(this);
+        this.draw();
+
+    /* inform all clients about the selection */
+    ObjectManager.informAboutSelection(this.id);
+
 }
 
 /**
@@ -428,61 +439,62 @@ GeneralObject.select = function(multiple, groupSelect) {
  */
 GeneralObject.deselect = function() {
 
-	if (!this.selected) return;
+    if (!this.selected)
+        return;
 
-	this.selected = false;
-	
-	
-	//hide invisible object after deselection
-	var visible = true;
-	if(!this.getAttribute("visible")){
-		var rep = this.getRepresentation();
-		$(rep).css("opacity", 0);
-		$(rep).css("visibility", "hidden");
-		visible = false;
-	}
-	
-	//remove ghost mode for linked + invisible objects
-	var objectID = this.getId();
-	var room = this.getRoom();
-	var linkedObjects = this.getAttribute("link");
-	$.each(linkedObjects, function(index, value) {
-		var targetID = value.destination;
-		var target = ObjectManager.getObject(targetID);
-		if (!target){
-			//console.log(objectID+' has missing linked objects');
-			return;
-		}
-		
-		if(!target.getAttribute("visible") && room.getAttribute("showLinks")){
-			
-			var rep = target.getRepresentation();
-			$(rep).css("opacity", 0);
-			$(rep).css("visibility", "hidden");	
-			$(rep).removeClass("webarena_ghost");
+    this.selected = false;
 
-			GUI.showLink(objectID, targetID, false);
-		}
-		if(!visible){
-			GUI.showLink(objectID, targetID, false);
-		}
-	});
-	
 
-	this.removeControls();
-	this.unmakeMovable();
+    //hide invisible object after deselection
+    var visible = true;
+    if (!this.getAttribute("visible")) {
+        var rep = this.getRepresentation();
+        $(rep).css("opacity", 0);
+        $(rep).css("visibility", "hidden");
+        visible = false;
+    }
 
-	this.removeSelectedIndicator();
-	
-	this.deselectHandler();
-	
-	this.startNoAnimationTimer();
-	
-	this.draw();
-	
-	/* inform all clients about the deselection */
-	ObjectManager.informAboutDeselection(this.id);
-	
+    //remove ghost mode for linked + invisible objects
+    var objectID = this.getId();
+    var room = this.getRoom();
+    var linkedObjects = this.getAttribute("link");
+    $.each(linkedObjects, function(index, value) {
+        var targetID = value.destination;
+        var target = ObjectManager.getObject(targetID);
+        if (!target) {
+            //console.log(objectID+' has missing linked objects');
+            return;
+        }
+
+        if (!target.getAttribute("visible") && room.getAttribute("showLinks")) {
+
+            var rep = target.getRepresentation();
+            $(rep).css("opacity", 0);
+            $(rep).css("visibility", "hidden");
+            $(rep).removeClass("webarena_ghost");
+
+            GUI.showLink(objectID, targetID, false);
+        }
+        if (!visible) {
+            GUI.showLink(objectID, targetID, false);
+        }
+    });
+
+
+    this.removeControls();
+    this.unmakeMovable();
+
+    this.removeSelectedIndicator();
+
+    this.deselectHandler();
+
+    this.startNoAnimationTimer();
+
+    this.draw();
+
+    /* inform all clients about the deselection */
+    ObjectManager.informAboutDeselection(this.id);
+
 }
 
 
@@ -491,361 +503,365 @@ GeneralObject.deselect = function() {
  */
 GeneralObject.adjustControls = function() {
 
-	var self = this;
-	
-	var rep = this.getRepresentation();
+    var self = this;
 
-	var couplingX = 0;
-	var couplingY = 0;
-	if (GUI.couplingModeActive) {
-		if (ObjectManager.getIndexOfObject(this.id) != 'left') {
-			couplingX = parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right');
-			couplingY = GUI.getPanY('right');
-		} else {
-			couplingX = GUI.getPanX('left');
-			couplingY = GUI.getPanY('left');
-		}
-	}
-	
-	if (this.controls) {
-	$.each(this.controls, function(index, control) {
-		
-		/* Position: right, vertically centered */
-		if (control.type == "x") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()+couplingX;
-			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2+couplingY;
-		}
-		
-		/* Position: left, vertically centered */
-		if (control.type == "x2") {
-			var x = self.getViewBoundingBoxX()+couplingX;
-			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()/2+couplingY;
-		}
+    var rep = this.getRepresentation();
 
-		/* Position: bottom, horizontally centered */
-		if (control.type == "y") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2+couplingX;
-			var y = self.getViewBoundingBoxY()+self.getViewBoundingBoxHeight()+couplingY;
-		}
-		
-		/* Position: top, horizontally centered */
-		if (control.type == "y2") {
-			var x = self.getViewBoundingBoxX()+self.getViewBoundingBoxWidth()/2+couplingX;
-			var y = self.getViewBoundingBoxY()+couplingY;
-		}
-		
-		/* Position: left, top */
-		if (control.type == "xy1") {
-			var x = self.getViewX()+couplingX;
-			var y = self.getViewY()+couplingY;
-		}
-		
-		/* Position: right, top */
-		if (control.type == "xy2") {
-			var x = self.getViewX()+self.getViewWidth()+couplingX;
-			var y = self.getViewY()+couplingY;
-		}
-		
-		/* Position: right, bottom */
-		if (control.type == "xy3") {
-			var x = self.getViewX()+self.getViewWidth()+couplingX;
-			var y = self.getViewY()+self.getViewHeight()+couplingY;
-		}
-		
-		/* Position: left, bottom */
-		if (control.type == "xy4") {
-			var x = self.getViewX()+couplingX;
-			var y = self.getViewY()+self.getViewHeight()+couplingY;
-		}
+    var couplingX = 0;
+    var couplingY = 0;
+    if (GUI.couplingModeActive) {
+        if (ObjectManager.getIndexOfObject(this.id) != 'left') {
+            couplingX = parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right');
+            couplingY = GUI.getPanY('right');
+        } else {
+            couplingX = GUI.getPanX('left');
+            couplingY = GUI.getPanY('left');
+        }
+    }
 
-		$(control).attr("cx", x);
-		$(control).attr("cy", y);
-		
-	});
-	}
+    if (this.controls) {
+        $.each(this.controls, function(index, control) {
 
-	GUI.userMarker.setPosition(this.id);
-	
+            /* Position: right, vertically centered */
+            if (control.type == "x") {
+                var x = self.getViewBoundingBoxX() + self.getViewBoundingBoxWidth() + couplingX;
+                var y = self.getViewBoundingBoxY() + self.getViewBoundingBoxHeight() / 2 + couplingY;
+            }
+
+            /* Position: left, vertically centered */
+            if (control.type == "x2") {
+                var x = self.getViewBoundingBoxX() + couplingX;
+                var y = self.getViewBoundingBoxY() + self.getViewBoundingBoxHeight() / 2 + couplingY;
+            }
+
+            /* Position: bottom, horizontally centered */
+            if (control.type == "y") {
+                var x = self.getViewBoundingBoxX() + self.getViewBoundingBoxWidth() / 2 + couplingX;
+                var y = self.getViewBoundingBoxY() + self.getViewBoundingBoxHeight() + couplingY;
+            }
+
+            /* Position: top, horizontally centered */
+            if (control.type == "y2") {
+                var x = self.getViewBoundingBoxX() + self.getViewBoundingBoxWidth() / 2 + couplingX;
+                var y = self.getViewBoundingBoxY() + couplingY;
+            }
+
+            /* Position: left, top */
+            if (control.type == "xy1") {
+                var x = self.getViewX() + couplingX;
+                var y = self.getViewY() + couplingY;
+            }
+
+            /* Position: right, top */
+            if (control.type == "xy2") {
+                var x = self.getViewX() + self.getViewWidth() + couplingX;
+                var y = self.getViewY() + couplingY;
+            }
+
+            /* Position: right, bottom */
+            if (control.type == "xy3") {
+                var x = self.getViewX() + self.getViewWidth() + couplingX;
+                var y = self.getViewY() + self.getViewHeight() + couplingY;
+            }
+
+            /* Position: left, bottom */
+            if (control.type == "xy4") {
+                var x = self.getViewX() + couplingX;
+                var y = self.getViewY() + self.getViewHeight() + couplingY;
+            }
+
+            $(control).attr("cx", x);
+            $(control).attr("cy", y);
+
+        });
+    }
+
+    GUI.userMarker.setPosition(this.id);
+
 }
 
 /**
  * Adds all possible controls for the object
  */
 GeneralObject.addControls = function() {
-		
-	var self = this;
-	
-	this.controls = {};
 
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("x") === true)
-	this.addControl("x", function(dx, dy, startWidth, startHeight, rep) {
-		
-		if (self.resizeProportional()) {
+    var self = this;
 
-			var width = startWidth+dx;
-			var height = startHeight*(width/startWidth);
+    this.controls = {};
 
-			if (width >= 20) {
-				self.setViewWidth(width);
-			}
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("x") === true)
+        this.addControl("x", function(dx, dy, startWidth, startHeight, rep) {
 
-			if (height >= 20) {
-				self.setViewHeight(height);
-			}
-			
-		} else {
-			
-			var width = startWidth+dx;
-			
-			if (width < 20) return;
-			self.setViewWidth(width);
-			
-		}
-		
-	});
-	
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("x2") === true)
-	this.addControl("x2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+            if (self.resizeProportional()) {
 
-		if (self.resizeProportional()) {
+                var width = startWidth + dx;
+                var height = startHeight * (width / startWidth);
 
-			var width = startWidth-dx;
-			var height = startHeight*(width/startWidth);
+                if (width >= 20) {
+                    self.setViewWidth(width);
+                }
 
-			var x =  startX+dx;
+                if (height >= 20) {
+                    self.setViewHeight(height);
+                }
 
-			if (width >= 20) {
-				self.setViewWidth(width);
-				self.setViewX(x);
-			}
+            } else {
 
-			if (height >= 20) {
-				self.setViewHeight(height);
-			}
-			
-		} else {
-			
-			var width = startWidth-dx;
-			var x =  startX+dx;
-			
-			if (width < 20) return;
-			self.setViewWidth(width);
-			self.setViewX(x);
-			
-		}
-		
-	});
+                var width = startWidth + dx;
 
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("y") === true)
-	this.addControl("y", function(dx, dy, startWidth, startHeight, rep) {
-		
-		if (self.resizeProportional()) {
-			
-			var height = startHeight+dy;
-			var width = startWidth*(height/startHeight);
-			
-			if (width >= 20) {
-				self.setViewWidth(width);
-			}
+                if (width < 20)
+                    return;
+                self.setViewWidth(width);
 
-			if (height >= 20) {
-				self.setViewHeight(height);
-			}
-			
-		} else {
-			
-			var height = startHeight+dy;
-			
-			if (height < 20) return;
-			self.setViewHeight(height);
-			
-		}
-		
-	});
-	
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("y2") === true)
-	this.addControl("y2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
-		
-		if (self.resizeProportional()) {
-			
-			var height = startHeight-dy;
-			var width = startWidth*(height/startHeight);
-			
-			var y =  startY+dy;
-			
-			if (width >= 20) {
-				self.setViewWidth(width);
-			}
+            }
 
-			if (height >= 20) {
-				self.setViewHeight(height);
-				self.setViewY(y);
-			}
-			
-		} else {
-			
-			var height = startHeight-dy;
-			var y =  startY+dy;
-			
-			if (height < 20) return;
-			self.setViewHeight(height);
-			self.setViewY(y);
-			
-		}
-		
-	});
-	
-	
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy1") === true)
-	if (!self.resizeProportional())
-	this.addControl("xy1", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+        });
 
-		if (!self.resizeProportional()) {
-			
-			var width = startWidth-dx;
-			var height = startHeight-dy;
-			
-			var x =  startX+dx;
-			var y =  startY+dy;
-			
-			if (width >= 20 || self.ignoreMinDimensions === true) {
-				self.setViewWidth(width);
-				self.setViewX(x);
-			}
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("x2") === true)
+        this.addControl("x2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
 
-			if (height >= 20 || self.ignoreMinDimensions === true) {
-				self.setViewHeight(height);
-				self.setViewY(y);
-			}
-			
-		}
-	
-	});
-	
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy2") === true)
-	if (!self.resizeProportional())
-	this.addControl("xy2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+            if (self.resizeProportional()) {
 
-		if (!self.resizeProportional()) {
-			
-			var width = startWidth+dx;
-			var height = startHeight-dy;
+                var width = startWidth - dx;
+                var height = startHeight * (width / startWidth);
 
-			var y =  startY+dy;
-			
-			if (width >= 20 || self.ignoreMinDimensions === true) {
-				self.setViewWidth(width);
-			}
+                var x = startX + dx;
 
-			if (height >= 20 || self.ignoreMinDimensions === true) {
-				self.setViewHeight(height);
-				self.setViewY(y);
-			}
-			
-		}
-	
-	});
-	
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy3") === true)
-	this.addControl("xy3", function(dx, dy, startWidth, startHeight, rep) {
-		
-		if (self.resizeProportional()) {
-			/* resize proportional */
-			
-			if (dx > dy) {
-				
-				var width = startWidth+dx;
-				var height = startHeight*(width/startWidth);
-				
-			} else {
-				
-				var height = startHeight+dy;
-				var width = startWidth*(height/startHeight);
-				
-			}
-			
-			if (width >= 20 && height >= 20) {
-				self.setViewWidth(width);
-				self.setViewHeight(height);
-			}
+                if (width >= 20) {
+                    self.setViewWidth(width);
+                    self.setViewX(x);
+                }
 
-		} else {
-			
-			var width = startWidth+dx;
-			var height = startHeight+dy;
-			
-			if (width >= 20 | self.ignoreMinDimensions === true) {
-				self.setViewWidth(width);
-			}
+                if (height >= 20) {
+                    self.setViewHeight(height);
+                }
 
-			if (height >= 20 | self.ignoreMinDimensions === true) {
-				self.setViewHeight(height);
-			}
-			
-		}
-		
-	});
-	
-	if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy4") === true)
-	if (!self.resizeProportional())
-	this.addControl("xy4", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+            } else {
 
-		if (!self.resizeProportional()) {
-			
-			var width = startWidth-dx;
-			var height = startHeight+dy;
-			
-			var x =  startX+dx;
-			
-			if (width >= 20 || self.ignoreMinDimensions === true) {
-				self.setViewWidth(width);
-				self.setViewX(x);
-			}
+                var width = startWidth - dx;
+                var x = startX + dx;
 
-			if (height >= 20 || self.ignoreMinDimensions === true) {
-				self.setViewHeight(height);
-			}
-			
-		}
-	
-	});
-	
+                if (width < 20)
+                    return;
+                self.setViewWidth(width);
+                self.setViewX(x);
+
+            }
+
+        });
+
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("y") === true)
+        this.addControl("y", function(dx, dy, startWidth, startHeight, rep) {
+
+            if (self.resizeProportional()) {
+
+                var height = startHeight + dy;
+                var width = startWidth * (height / startHeight);
+
+                if (width >= 20) {
+                    self.setViewWidth(width);
+                }
+
+                if (height >= 20) {
+                    self.setViewHeight(height);
+                }
+
+            } else {
+
+                var height = startHeight + dy;
+
+                if (height < 20)
+                    return;
+                self.setViewHeight(height);
+
+            }
+
+        });
+
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("y2") === true)
+        this.addControl("y2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+
+            if (self.resizeProportional()) {
+
+                var height = startHeight - dy;
+                var width = startWidth * (height / startHeight);
+
+                var y = startY + dy;
+
+                if (width >= 20) {
+                    self.setViewWidth(width);
+                }
+
+                if (height >= 20) {
+                    self.setViewHeight(height);
+                    self.setViewY(y);
+                }
+
+            } else {
+
+                var height = startHeight - dy;
+                var y = startY + dy;
+
+                if (height < 20)
+                    return;
+                self.setViewHeight(height);
+                self.setViewY(y);
+
+            }
+
+        });
+
+
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy1") === true)
+        if (!self.resizeProportional())
+            this.addControl("xy1", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+
+                if (!self.resizeProportional()) {
+
+                    var width = startWidth - dx;
+                    var height = startHeight - dy;
+
+                    var x = startX + dx;
+                    var y = startY + dy;
+
+                    if (width >= 20 || self.ignoreMinDimensions === true) {
+                        self.setViewWidth(width);
+                        self.setViewX(x);
+                    }
+
+                    if (height >= 20 || self.ignoreMinDimensions === true) {
+                        self.setViewHeight(height);
+                        self.setViewY(y);
+                    }
+
+                }
+
+            });
+
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy2") === true)
+        if (!self.resizeProportional())
+            this.addControl("xy2", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+
+                if (!self.resizeProportional()) {
+
+                    var width = startWidth + dx;
+                    var height = startHeight - dy;
+
+                    var y = startY + dy;
+
+                    if (width >= 20 || self.ignoreMinDimensions === true) {
+                        self.setViewWidth(width);
+                    }
+
+                    if (height >= 20 || self.ignoreMinDimensions === true) {
+                        self.setViewHeight(height);
+                        self.setViewY(y);
+                    }
+
+                }
+
+            });
+
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy3") === true)
+        this.addControl("xy3", function(dx, dy, startWidth, startHeight, rep) {
+
+            if (self.resizeProportional()) {
+                /* resize proportional */
+
+                if (dx > dy) {
+
+                    var width = startWidth + dx;
+                    var height = startHeight * (width / startWidth);
+
+                } else {
+
+                    var height = startHeight + dy;
+                    var width = startWidth * (height / startHeight);
+
+                }
+
+                if (width >= 20 && height >= 20) {
+                    self.setViewWidth(width);
+                    self.setViewHeight(height);
+                }
+
+            } else {
+
+                var width = startWidth + dx;
+                var height = startHeight + dy;
+
+                if (width >= 20 | self.ignoreMinDimensions === true) {
+                    self.setViewWidth(width);
+                }
+
+                if (height >= 20 | self.ignoreMinDimensions === true) {
+                    self.setViewHeight(height);
+                }
+
+            }
+
+        });
+
+    if (self.controlIsAllowed === undefined || self.controlIsAllowed("xy4") === true)
+        if (!self.resizeProportional())
+            this.addControl("xy4", function(dx, dy, startWidth, startHeight, rep, startX, startY) {
+
+                if (!self.resizeProportional()) {
+
+                    var width = startWidth - dx;
+                    var height = startHeight + dy;
+
+                    var x = startX + dx;
+
+                    if (width >= 20 || self.ignoreMinDimensions === true) {
+                        self.setViewWidth(width);
+                        self.setViewX(x);
+                    }
+
+                    if (height >= 20 || self.ignoreMinDimensions === true) {
+                        self.setViewHeight(height);
+                    }
+
+                }
+
+            });
+
 }
 
 /**
  * Hides all controls of the object
  */
 GeneralObject.hideControls = function() {
-	$("#content").find(".webarenaControl").hide();
+    $("#content").find(".webarenaControl").hide();
 }
 
 /**
  * Shows all controls of the object
  */
 GeneralObject.showControls = function() {
-	$("#content").find(".webarenaControl").show();
+    $("#content").find(".webarenaControl").show();
 }
 
 /**
  * Removes all controls of the object
  */
 GeneralObject.removeControls = function() {
-	
-	$("#content").find(".webarenaControl_"+this.id).each(function() {
-		GUI.svg.remove(this);
-	});
 
-	this.controls = {};
-	
+    $("#content").find(".webarenaControl_" + this.id).each(function() {
+        GUI.svg.remove(this);
+    });
+
+    this.controls = {};
+
 }
 
-GeneralObject.onMoveStart=function(){
-	GUI.hideActionsheet();
-	//GUI.hideLinks(this);
+GeneralObject.onMoveStart = function() {
+    GUI.hideActionsheet();
+    //GUI.hideLinks(this);
 }
 
-GeneralObject.onMoveEnd=function(){
-	//GUI.showLinks(this);
+GeneralObject.onMoveEnd = function() {
+    //GUI.showLinks(this);
 }
 
 /**
@@ -855,136 +871,137 @@ GeneralObject.onMoveEnd=function(){
  */
 GeneralObject.addControl = function(type, resizeFunction) {
 
-	var self = this;
+    var self = this;
 
-	var rep = this.getRepresentation();
+    var rep = this.getRepresentation();
 
-	if (GUI.isTouchDevice) {
-		/* touch */
-		var radius = 11;
-		var border = 3;
-	} else {
-		/* mouse */
-		var radius = 7;
-		var border = 2;
-	}
+    if (GUI.isTouchDevice) {
+        /* touch */
+        var radius = 11;
+        var border = 3;
+    } else {
+        /* mouse */
+        var radius = 7;
+        var border = 2;
+    }
 
-	var control = GUI.svg.circle(
-		10, //cx
-		10, //cy
-		radius, //radius
-		{
-			fill: "#008DDF",
-			stroke: "#FFFFFF",
-			strokeWidth: border,
-		}
-	);
-	
-	$(control).attr("class", "webarenaControl webarenaControl_"+this.id);
-	$(control).attr("layer", 10000000);
+    var control = GUI.svg.circle(
+            10, //cx
+            10, //cy
+            radius, //radius
+            {
+                fill: "#008DDF",
+                stroke: "#FFFFFF",
+                strokeWidth: border,
+            }
+    );
 
-	control.moving = false;
-	
-	control.type = type;
-	
+    $(control).attr("class", "webarenaControl webarenaControl_" + this.id);
+    $(control).attr("layer", 10000000);
 
-	var start = function(event) {
-		
-		event.preventDefault();
-		event.stopPropagation();
-		
-		self.onMoveStart();
-		
-		if (!GUI.isTouchDevice) {
-			control.startMouseX = event.pageX;
-			control.startMouseY = event.pageY;
-		} else {
-			control.startMouseX = event.targetTouches[0].pageX;
-			control.startMouseY = event.targetTouches[0].pageY;
-		}
-		control.objectStartWidth = self.getViewWidth();
-		control.objectStartHeight = self.getViewHeight();
-		control.objectStartX = self.getViewX();
-		control.objectStartY = self.getViewY();
+    control.moving = false;
 
-		control.moving = true;
-		
-		var move = function(event) {
+    control.type = type;
 
-			if (!control.moving) return;
-			
-			event.preventDefault();
 
-			if (!GUI.isTouchDevice) {
-				/* mouse */
-				var dx = event.pageX-control.startMouseX;
-				var dy = event.pageY-control.startMouseY;
-			} else {
-				/* touch */
-				var dx = event.targetTouches[0].pageX-control.startMouseX;
-				var dy = event.targetTouches[0].pageY-control.startMouseY;
-			}
+    var start = function(event) {
 
-			/* resize object */
-			resizeFunction(dx, dy, control.objectStartWidth, control.objectStartHeight, rep, control.objectStartX, control.objectStartY);
-			
-			self.adjustControls();
-					
-		};
-		
-		var end = function(event) {
-			
-			event.preventDefault();
-			
-			control.moving = false;
-			
-			self.adjustControls();
-			
-			self.resizeHandler();
-			
-			self.onMoveEnd();
-			
-			GUI.moveLinks(self);
-			
-			if (!GUI.isTouchDevice) {
-				/* mouse */
-				$("#content").unbind("mousemove.webarenaMove");
-				$("#content").unbind("mouseup.webarenaMove");
-			} else {
-				/* touch */
-				$("#content").unbind("touchmove");
-				$("#content").unbind("touchend");
-			}
-			
-		};
-		
-		if (GUI.isTouchDevice) {
-			/* touch */
-			$("#content").get(0).addEventListener("touchmove", move, false);
-			$("#content").get(0).addEventListener("touchend", end, false);			
-		} else {
-			/* mouse */
-			$("#content").bind("mousemove.webarenaMove", move);
-			$("#content").bind("mouseup.webarenaMove", end);
-		}
+        event.preventDefault();
+        event.stopPropagation();
 
-			
-	};
-	
-	
-	
-	if (GUI.isTouchDevice) {
-		/* touch */
-		control.addEventListener("touchstart", start, false);
-	} else {
-		/* mouse */
-		$(control).bind("mousedown", start);
-	}
-	
-	this.controls[type] = control;
-	
-	this.adjustControls();
-	
+        self.onMoveStart();
+
+        if (!GUI.isTouchDevice) {
+            control.startMouseX = event.pageX;
+            control.startMouseY = event.pageY;
+        } else {
+            control.startMouseX = event.targetTouches[0].pageX;
+            control.startMouseY = event.targetTouches[0].pageY;
+        }
+        control.objectStartWidth = self.getViewWidth();
+        control.objectStartHeight = self.getViewHeight();
+        control.objectStartX = self.getViewX();
+        control.objectStartY = self.getViewY();
+
+        control.moving = true;
+
+        var move = function(event) {
+
+            if (!control.moving)
+                return;
+
+            event.preventDefault();
+
+            if (!GUI.isTouchDevice) {
+                /* mouse */
+                var dx = event.pageX - control.startMouseX;
+                var dy = event.pageY - control.startMouseY;
+            } else {
+                /* touch */
+                var dx = event.targetTouches[0].pageX - control.startMouseX;
+                var dy = event.targetTouches[0].pageY - control.startMouseY;
+            }
+
+            /* resize object */
+            resizeFunction(dx, dy, control.objectStartWidth, control.objectStartHeight, rep, control.objectStartX, control.objectStartY);
+
+            self.adjustControls();
+
+        };
+
+        var end = function(event) {
+
+            event.preventDefault();
+
+            control.moving = false;
+
+            self.adjustControls();
+
+            self.resizeHandler();
+
+            self.onMoveEnd();
+
+            GUI.moveLinks(self);
+
+            if (!GUI.isTouchDevice) {
+                /* mouse */
+                $("#content").unbind("mousemove.webarenaMove");
+                $("#content").unbind("mouseup.webarenaMove");
+            } else {
+                /* touch */
+                $("#content").unbind("touchmove");
+                $("#content").unbind("touchend");
+            }
+
+        };
+
+        if (GUI.isTouchDevice) {
+            /* touch */
+            $("#content").get(0).addEventListener("touchmove", move, false);
+            $("#content").get(0).addEventListener("touchend", end, false);
+        } else {
+            /* mouse */
+            $("#content").bind("mousemove.webarenaMove", move);
+            $("#content").bind("mouseup.webarenaMove", end);
+        }
+
+
+    };
+
+
+
+    if (GUI.isTouchDevice) {
+        /* touch */
+        control.addEventListener("touchstart", start, false);
+    } else {
+        /* mouse */
+        $(control).bind("mousedown", start);
+    }
+
+    this.controls[type] = control;
+
+    this.adjustControls();
+
 }
 
 
@@ -993,18 +1010,18 @@ GeneralObject.addControl = function(type, resizeFunction) {
  * (used by GeneralObject.moveRelative)
  */
 GeneralObject.saveMoveStartPosition = function() {
-	if (GUI.couplingModeActive) { 
-		if (ObjectManager.getIndexOfObject(this.id) === 'right') {
-			this.moveObjectStartX = this.getViewX() + parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right');
-			this.moveObjectStartY = this.getViewY() + GUI.getPanY('right');
-		} else {
-			this.moveObjectStartX = this.getViewX() + GUI.getPanX('left');
-			this.moveObjectStartY = this.getViewY() + GUI.getPanY('left');
-		}
-	} else {
-		this.moveObjectStartX = this.getViewX();
-		this.moveObjectStartY = this.getViewY();
-	}
+    if (GUI.couplingModeActive) {
+        if (ObjectManager.getIndexOfObject(this.id) === 'right') {
+            this.moveObjectStartX = this.getViewX() + parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right');
+            this.moveObjectStartY = this.getViewY() + GUI.getPanY('right');
+        } else {
+            this.moveObjectStartX = this.getViewX() + GUI.getPanX('left');
+            this.moveObjectStartY = this.getViewY() + GUI.getPanY('left');
+        }
+    } else {
+        this.moveObjectStartX = this.getViewX();
+        this.moveObjectStartY = this.getViewY();
+    }
 }
 
 
@@ -1014,250 +1031,255 @@ GeneralObject.saveMoveStartPosition = function() {
  */
 GeneralObject.moveStart = function(event) {
 
-	if (!this.id || this.id == "") {
-		var self = ObjectManager.getObject($(this).closest("svg>*").attr("id"));
-	} else {
-		var self = ObjectManager.getObject(this.id);
-	}
+    if (!this.id || this.id == "") {
+        var self = ObjectManager.getObject($(this).closest("svg>*").attr("id"));
+    } else {
+        var self = ObjectManager.getObject(this.id);
+    }
 
-	if (!self.selected) self.select();
-	
-	var contentPosition = $("#content").offset();
+    if (!self.selected)
+        self.select();
 
-	event.preventDefault();
-	event.stopPropagation();
-	
-	GUI.hideActionsheet();
-	//GUI.hideLinks(self);
+    var contentPosition = $("#content").offset();
 
-	if (!GUI.isTouchDevice) {
-		/* mouse */
-		self.moveStartMouseX = event.pageX;
-		self.moveStartMouseY = event.pageY;
-	} else {
-		/* touch */
-		self.moveStartMouseX = event.targetTouches[0].pageX;
-		self.moveStartMouseY = event.targetTouches[0].pageY;
-	}
+    event.preventDefault();
+    event.stopPropagation();
 
-	/* save start position for all selected objects */
-	$.each(ObjectManager.getSelected(), function(index, object) {
-		object.saveMoveStartPosition();
+    GUI.hideActionsheet();
+    //GUI.hideLinks(self);
 
-		if (GUI.couplingModeActive) {
-			// append to main canvas
-			var rep = object.getRepresentation();
-			$(rep).appendTo('#canvas');
+    if (!GUI.isTouchDevice) {
+        /* mouse */
+        self.moveStartMouseX = event.pageX;
+        self.moveStartMouseY = event.pageY;
+    } else {
+        /* touch */
+        self.moveStartMouseX = event.targetTouches[0].pageX;
+        self.moveStartMouseY = event.targetTouches[0].pageY;
+    }
 
-			// if object is in the right room adjust x coordinate on main canvas
-			if (ObjectManager.getIndexOfObject(object.getId()) != 'left') {
-				object.setViewX(object.getViewX() + parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right'));
-				object.setViewY(object.getViewY() + GUI.getPanY('right'));
-			} else {
-				object.setViewX(object.getViewX() + GUI.getPanX('left'));
-				object.setViewY(object.getViewY() + GUI.getPanY('left'));
-			}
-		}
-	});
+    /* save start position for all selected objects */
+    $.each(ObjectManager.getSelected(), function(index, object) {
+        object.saveMoveStartPosition();
 
-	self.moving = true;
-	self.moved = false;
-	
-	self.hideControls();
-	
-	var move = function(event) {
-	
-		 //only move the object if the mouse key is pressed
-		if(event.which == 0){
-			end(event);
-			return;
-		}
-	
+        if (GUI.couplingModeActive) {
+            // append to main canvas
+            var rep = object.getRepresentation();
+            $(rep).appendTo('#canvas');
+
+            // if object is in the right room adjust x coordinate on main canvas
+            if (ObjectManager.getIndexOfObject(object.getId()) != 'left') {
+                object.setViewX(object.getViewX() + parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right'));
+                object.setViewY(object.getViewY() + GUI.getPanY('right'));
+            } else {
+                object.setViewX(object.getViewX() + GUI.getPanX('left'));
+                object.setViewY(object.getViewY() + GUI.getPanY('left'));
+            }
+        }
+    });
+
+    self.moving = true;
+    self.moved = false;
+
+    self.hideControls();
+
+    var move = function(event) {
+
+        //only move the object if the mouse key is pressed
+        if (event.which == 0) {
+            end(event);
+            return;
+        }
+
         $("body").trigger({
-            type : "moveObject.wa",
-            objectId : self.id
+            type: "moveObject.wa",
+            objectId: self.id
         });
-		if (GUI.isTouchDevice && event.touches.length > 1) return;
+        if (GUI.isTouchDevice && event.touches.length > 1)
+            return;
 
-		if (!self.moving) return;
+        if (!self.moving)
+            return;
 
-		event.preventDefault();
-		event.stopPropagation();
-		
-		self.moved = true;
-		
-		if (!GUI.isTouchDevice) {
-			/* mouse */
-			var dx = event.pageX-self.moveStartMouseX;
-			var dy = event.pageY-self.moveStartMouseY;
-		} else {
-			/* touch */
-			var dx = event.targetTouches[0].pageX-self.moveStartMouseX;
-			var dy = event.targetTouches[0].pageY-self.moveStartMouseY;
-		}
+        event.preventDefault();
+        event.stopPropagation();
 
-		/* move all selected objects */
-		$.each(ObjectManager.getSelected(), function(index, object) {
-			object.moveRelative(dx, dy);
-			GUI.moveLinks(object);
-		});
+        self.moved = true;
 
-	};
-	
-	var end = function(event) {
+        if (!GUI.isTouchDevice) {
+            /* mouse */
+            var dx = event.pageX - self.moveStartMouseX;
+            var dy = event.pageY - self.moveStartMouseY;
+        } else {
+            /* touch */
+            var dx = event.targetTouches[0].pageX - self.moveStartMouseX;
+            var dy = event.targetTouches[0].pageY - self.moveStartMouseY;
+        }
+
+        /* move all selected objects */
+        $.each(ObjectManager.getSelected(), function(index, object) {
+            object.moveRelative(dx, dy);
+            GUI.moveLinks(object);
+        });
+
+    };
+
+    var end = function(event) {
 
         $("body").trigger({
-            type : "moveend.wa",
-            objectId : self.id
+            type: "moveend.wa",
+            objectId: self.id
         })
-		var cut = !(event.ctrlKey || event.metaKey);
+        var cut = !(event.ctrlKey || event.metaKey);
 
-		var movedBetweenRooms = false;
+        var movedBetweenRooms = false;
 
-		var rep = self.getRepresentation();
-		if (GUI.couplingModeActive) {
-			// coupling mode is switched on, determine if elements were moved between rooms
-			if (parseInt($('#room_right_wrapper').attr('x')) < event.clientX) {
-				GUI.defaultZoomPanState('right', false);
-				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
-					// moved from the left room to the right
-					if (ObjectManager.getRoomID('right') != false) {
-						$.each(ObjectManager.getSelected(), function(index, object) {
-							var newX = object.getViewX() - $('#room_right_wrapper').attr('x') - GUI.getPanX('right');
-							if (newX < 0) newX = 0;
-							var newY = object.getViewY() - GUI.getPanY('right');
+        var rep = self.getRepresentation();
+        if (GUI.couplingModeActive) {
+            // coupling mode is switched on, determine if elements were moved between rooms
+            if (parseInt($('#room_right_wrapper').attr('x')) < event.clientX) {
+                GUI.defaultZoomPanState('right', false);
+                if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
+                    // moved from the left room to the right
+                    if (ObjectManager.getRoomID('right') != false) {
+                        $.each(ObjectManager.getSelected(), function(index, object) {
+                            var newX = object.getViewX() - $('#room_right_wrapper').attr('x') - GUI.getPanX('right');
+                            if (newX < 0)
+                                newX = 0;
+                            var newY = object.getViewY() - GUI.getPanY('right');
 
-							object.setViewX(newX);
-							object.setViewY(newY);
+                            object.setViewX(newX);
+                            object.setViewY(newY);
 
-							if (cut) {
-								$(object.getRepresentation()).appendTo('#room_right');
-							}
-						});
+                            if (cut) {
+                                $(object.getRepresentation()).appendTo('#room_right');
+                            }
+                        });
 
-						GUI.startNoAnimationTimer();
-						ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('left'), ObjectManager.getRoomID('right'), cut);
+                        GUI.startNoAnimationTimer();
+                        ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('left'), ObjectManager.getRoomID('right'), cut);
 
-						if (!cut) {
-							$.each(ObjectManager.getSelected(), function(index, object) {
-								object.setViewX(object.moveObjectStartX);
-								object.setViewY(object.moveObjectStartY);
+                        if (!cut) {
+                            $.each(ObjectManager.getSelected(), function(index, object) {
+                                object.setViewX(object.moveObjectStartX);
+                                object.setViewY(object.moveObjectStartY);
 
-								$(object.getRepresentation()).appendTo('#room_left');
-							});
-						}
+                                $(object.getRepresentation()).appendTo('#room_left');
+                            });
+                        }
 
-						movedBetweenRooms = true;
-					} else {
-						$.each(ObjectManager.getSelected(), function(index, object) {
-							object.setViewX(object.moveObjectStartX);
-							object.setViewY(object.moveObjectStartY);
+                        movedBetweenRooms = true;
+                    } else {
+                        $.each(ObjectManager.getSelected(), function(index, object) {
+                            object.setViewX(object.moveObjectStartX);
+                            object.setViewY(object.moveObjectStartY);
 
-							$(object.getRepresentation()).appendTo('#room_left');
-						});
-						alert(GUI.translate('No room loaded.'));
-					}
-				} else {
-					$.each(ObjectManager.getSelected(), function(index, object) {
-						if (object.getViewX() > parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right')) {
-							object.setViewX(object.getViewX() - parseInt($('#room_right_wrapper').attr('x')) - GUI.getPanX('right'));
-						} else {
-							object.setViewX(0);
-						}
-						object.setViewY(object.getViewY() - GUI.getPanY('right'));
-						$(object.getRepresentation()).appendTo('#room_right');
+                            $(object.getRepresentation()).appendTo('#room_left');
+                        });
+                        alert(GUI.translate('No room loaded.'));
+                    }
+                } else {
+                    $.each(ObjectManager.getSelected(), function(index, object) {
+                        if (object.getViewX() > parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right')) {
+                            object.setViewX(object.getViewX() - parseInt($('#room_right_wrapper').attr('x')) - GUI.getPanX('right'));
+                        } else {
+                            object.setViewX(0);
+                        }
+                        object.setViewY(object.getViewY() - GUI.getPanY('right'));
+                        $(object.getRepresentation()).appendTo('#room_right');
 
-						object.moveHandler();
-					});
-					GUI.updateLayers();
-				}
-			} else {
-				GUI.defaultZoomPanState('left', false);
-				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'right') {
-					// moved from the right room to the left
-					$.each(ObjectManager.getSelected(), function(index, object) {
-						object.setViewX(object.getViewX() - GUI.getPanX('left'));
-						object.setViewY(object.getViewY() - GUI.getPanY('left'));
+                        object.moveHandler();
+                    });
+                    GUI.updateLayers();
+                }
+            } else {
+                GUI.defaultZoomPanState('left', false);
+                if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'right') {
+                    // moved from the right room to the left
+                    $.each(ObjectManager.getSelected(), function(index, object) {
+                        object.setViewX(object.getViewX() - GUI.getPanX('left'));
+                        object.setViewY(object.getViewY() - GUI.getPanY('left'));
 
-						if (cut) {
-							$(object.getRepresentation()).appendTo('#room_left');
-						}
-					});
+                        if (cut) {
+                            $(object.getRepresentation()).appendTo('#room_left');
+                        }
+                    });
 
-					GUI.startNoAnimationTimer();
-					ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('right'), ObjectManager.getRoomID('left'), cut);
+                    GUI.startNoAnimationTimer();
+                    ObjectManager.moveObjectBetweenRooms(ObjectManager.getRoomID('right'), ObjectManager.getRoomID('left'), cut);
 
-					if (!cut) {
-						$.each(ObjectManager.getSelected(), function(index, object) {
-							object.setViewX(object.moveObjectStartX);
-							object.setViewY(object.moveObjectStartY);
+                    if (!cut) {
+                        $.each(ObjectManager.getSelected(), function(index, object) {
+                            object.setViewX(object.moveObjectStartX);
+                            object.setViewY(object.moveObjectStartY);
 
-							$(object.getRepresentation()).appendTo('#room_right');
-						});
-					}
+                            $(object.getRepresentation()).appendTo('#room_right');
+                        });
+                    }
 
-					movedBetweenRooms = true;
-				} else {
-					$.each(ObjectManager.getSelected(), function(index, object) {
-						$(object.getRepresentation()).appendTo('#room_left');
+                    movedBetweenRooms = true;
+                } else {
+                    $.each(ObjectManager.getSelected(), function(index, object) {
+                        $(object.getRepresentation()).appendTo('#room_left');
 
-						object.setViewX(object.getViewX() - GUI.getPanX('left'));
-						object.setViewY(object.getViewY() - GUI.getPanY('left'));
+                        object.setViewX(object.getViewX() - GUI.getPanX('left'));
+                        object.setViewY(object.getViewY() - GUI.getPanY('left'));
 
-						object.moveHandler();
-					});
-					GUI.updateLayers();
-				}
-			}
-		}
-		
-		//call moveHandler only after finishing the move (to set the final x and y values)
-		else{
- 			$.each(ObjectManager.getSelected(), function(index, object) {
- 				object.moveHandler();
- 			});
-		}
+                        object.moveHandler();
+                    });
+                    GUI.updateLayers();
+                }
+            }
+        }
 
-		event.preventDefault();
-		event.stopPropagation();
-		
-		self.moving = false;
-		
-		if (!movedBetweenRooms) {
-			self.showControls();
-			self.adjustControls();
-		}
-		
-		//GUI.showLinks(self);
-		
-		if (!self.moved) {
-			if (!self.selectionClickActive) self.click(event);
-		}
-		
-		self.selectionClickActive = false;
-		
-		if (GUI.isTouchDevice) {
-			/* touch */
-			$("#content").get(0).removeEventListener("touchmove", move, false);
-			$("#content").get(0).removeEventListener("touchend", end, false);
-			
-		} else {
-			/* mouse */
-			$("#content").unbind("mousemove.webarenaMove");
-			$("#content").unbind("mouseup.webarenaMove");
-		}
-		
-	};
+        //call moveHandler only after finishing the move (to set the final x and y values)
+        else {
+            $.each(ObjectManager.getSelected(), function(index, object) {
+                object.moveHandler();
+            });
+        }
 
-	if (GUI.isTouchDevice) {
-		/* touch */
-		$("#content").get(0).addEventListener("touchmove", move, false);
-		$("#content").get(0).addEventListener("touchend", end, false);
-	} else {
-		/* mouse */
-		$("#content").bind("mousemove.webarenaMove", move);
-		$("#content").bind("mouseup.webarenaMove", end);
-	}
+        event.preventDefault();
+        event.stopPropagation();
+
+        self.moving = false;
+
+        if (!movedBetweenRooms) {
+            self.showControls();
+            self.adjustControls();
+        }
+
+        //GUI.showLinks(self);
+
+        if (!self.moved) {
+            if (!self.selectionClickActive)
+                self.click(event);
+        }
+
+        self.selectionClickActive = false;
+
+        if (GUI.isTouchDevice) {
+            /* touch */
+            $("#content").get(0).removeEventListener("touchmove", move, false);
+            $("#content").get(0).removeEventListener("touchend", end, false);
+
+        } else {
+            /* mouse */
+            $("#content").unbind("mousemove.webarenaMove");
+            $("#content").unbind("mouseup.webarenaMove");
+        }
+
+    };
+
+    if (GUI.isTouchDevice) {
+        /* touch */
+        $("#content").get(0).addEventListener("touchmove", move, false);
+        $("#content").get(0).addEventListener("touchend", end, false);
+    } else {
+        /* mouse */
+        $("#content").bind("mousemove.webarenaMove", move);
+        $("#content").bind("mouseup.webarenaMove", end);
+    }
 
 }
 
@@ -1267,22 +1289,22 @@ GeneralObject.moveStart = function(event) {
  */
 GeneralObject.makeMovable = function() {
 
-	var self = this;
+    var self = this;
     var rep;
 
-    if(this.restrictedMovingArea){
+    if (this.restrictedMovingArea) {
         rep = $(this.getRepresentation()).find(".moveArea").get(0);
     } else {
         rep = this.getRepresentation();
     }
 
-	if (GUI.isTouchDevice) {
-		/* touch */
-		rep.ontouchstart = self.moveStart;
-	} else {
-		/* mouse */
-		$(rep).bind("mousedown", self.moveStart);
-	}
+    if (GUI.isTouchDevice) {
+        /* touch */
+        rep.ontouchstart = self.moveStart;
+    } else {
+        /* mouse */
+        $(rep).bind("mousedown", self.moveStart);
+    }
 
 }
 
@@ -1294,18 +1316,19 @@ GeneralObject.makeMovable = function() {
  * @param {int} dy Moved x distance
  */
 GeneralObject.moveRelative = function(dx, dy) {
-	if (this.getAttribute("locked")) return;
+    if (this.getAttribute("locked"))
+        return;
 
-	this.setViewX(this.moveObjectStartX+dx);
-	this.setViewY(this.moveObjectStartY+dy);
+    this.setViewX(this.moveObjectStartX + dx);
+    this.setViewY(this.moveObjectStartY + dy);
 
-	this.adjustControls();
+    this.adjustControls();
 
-	/*    deactivated to simplify the evaluation of objects (the object position is only set after the object movement by calling moveHandler) 
-	if (!GUI.couplingModeActive) {
-		this.moveHandler();
-	}
-	*/
+    /*    deactivated to simplify the evaluation of objects (the object position is only set after the object movement by calling moveHandler) 
+     if (!GUI.couplingModeActive) {
+     this.moveHandler();
+     }
+     */
 }
 
 /**
@@ -1315,18 +1338,18 @@ GeneralObject.moveRelative = function(dx, dy) {
  */
 GeneralObject.moveBy = function(x, y) {
 
-	this.setViewX(this.getViewX()+x);
-	this.setViewY(this.getViewY()+y);
-	
-	this.adjustControls();
-	
-	this.moveHandler();
-	
-	GUI.moveLinks(this);
-	
-	//GUI.hideLinks(this);
-	//GUI.showLinks(this);
-	
+    this.setViewX(this.getViewX() + x);
+    this.setViewY(this.getViewY() + y);
+
+    this.adjustControls();
+
+    this.moveHandler();
+
+    GUI.moveLinks(this);
+
+    //GUI.hideLinks(this);
+    //GUI.showLinks(this);
+
 }
 
 /**
@@ -1334,18 +1357,19 @@ GeneralObject.moveBy = function(x, y) {
  */
 GeneralObject.unmakeMovable = function() {
 
-	var rep;
-    if(this.restrictedMovingArea){
+    var rep;
+    if (this.restrictedMovingArea) {
         rep = $(this.getRepresentation()).find(".moveArea").get(0);
     } else {
         rep = this.getRepresentation();
     }
-	
-	$(rep).unbind("mousedown");
 
-	//rep.removeEventListener("touchstart", self.moveStart, false);
-	rep.ontouchstart = function() {};
-	
+    $(rep).unbind("mousedown");
+
+    //rep.removeEventListener("touchstart", self.moveStart, false);
+    rep.ontouchstart = function() {
+    };
+
 }
 
 
@@ -1355,30 +1379,30 @@ GeneralObject.unmakeMovable = function() {
  * get the x position of the object
  */
 GeneralObject.getViewX = function() {
-	var rep = this.getRepresentation();
-	return parseInt($(rep).attr("x"));
+    var rep = this.getRepresentation();
+    return parseInt($(rep).attr("x"));
 }
 
 /**
  * get the y position of the object
  */
 GeneralObject.getViewY = function() {
-	var rep = this.getRepresentation();
-	return parseInt($(rep).attr("y"));
+    var rep = this.getRepresentation();
+    return parseInt($(rep).attr("y"));
 }
 
 /**
  * get the width of the object
  */
 GeneralObject.getViewWidth = function() {
-	var rep = this.getRepresentation();
-	return parseInt($(rep).attr("width"));
+    var rep = this.getRepresentation();
+    return parseInt($(rep).attr("width"));
 }
 
 /* get the height of the object */
 GeneralObject.getViewHeight = function() {
-	var rep = this.getRepresentation();
-	return parseInt($(rep).attr("height"));
+    var rep = this.getRepresentation();
+    return parseInt($(rep).attr("height"));
 }
 
 /**
@@ -1386,15 +1410,15 @@ GeneralObject.getViewHeight = function() {
  */
 GeneralObject.getViewBoundingBoxX = function() {
 
-	return this.getViewX();
+    return this.getViewX();
 
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
-		return this.getViewX();
-	} else {
-		return this.getRepresentation().getBBox().x;
-	}
+    var rep = this.getRepresentation();
+
+    if (this.moveByTransform()) {
+        return this.getViewX();
+    } else {
+        return this.getRepresentation().getBBox().x;
+    }
 
 }
 
@@ -1402,17 +1426,17 @@ GeneralObject.getViewBoundingBoxX = function() {
  * get the y position of the objects bounding box (this is the top position of the object)
  */
 GeneralObject.getViewBoundingBoxY = function() {
-	
-	return this.getViewY();
-	
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
-		return this.getViewY();
-	} else {
-		return this.getRepresentation().getBBox().y;
-	}
-	
+
+    return this.getViewY();
+
+    var rep = this.getRepresentation();
+
+    if (this.moveByTransform()) {
+        return this.getViewY();
+    } else {
+        return this.getRepresentation().getBBox().y;
+    }
+
 }
 
 /**
@@ -1420,13 +1444,13 @@ GeneralObject.getViewBoundingBoxY = function() {
  * @deprecated Some kind of deprecated because the objects width should be equal
  */
 GeneralObject.getViewBoundingBoxWidth = function() {
-	
-	if (!this.getRepresentation().getBBox){
-		//return the saved with if no bounding box can be found (Internet Explorer)
-		return this.getAttribute('width');
-	}
-	
-	return parseInt(this.getRepresentation().getBBox().width);
+
+    if (!this.getRepresentation().getBBox) {
+        //return the saved with if no bounding box can be found (Internet Explorer)
+        return this.getAttribute('width');
+    }
+
+    return parseInt(this.getRepresentation().getBBox().width);
 }
 
 /**
@@ -1434,13 +1458,13 @@ GeneralObject.getViewBoundingBoxWidth = function() {
  * @deprecated Some kind of deprecated because the objects width should be equal
  */
 GeneralObject.getViewBoundingBoxHeight = function() {
-	
-		if (!this.getRepresentation().getBBox){
-		//return the saved height if no bounding box can be found (Internet Explorer)
-		return this.getAttribute('heigth');
-	}
-	
-	return parseInt(this.getRepresentation().getBBox().height);
+
+    if (!this.getRepresentation().getBBox) {
+        //return the saved height if no bounding box can be found (Internet Explorer)
+        return this.getAttribute('heigth');
+    }
+
+    return parseInt(this.getRepresentation().getBBox().height);
 }
 
 
@@ -1454,27 +1478,27 @@ GeneralObject.getViewBoundingBoxHeight = function() {
  */
 GeneralObject.setViewX = function(value) {
 
-	var self = this;
-	
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
-		
-		if (isNaN(self.getViewY())) {
-			var y = 0;
-		} else {
-			var y = self.getViewY();
-		}
-		
-		$(rep).attr("transform", "translate("+value+","+y+")");	
-	}
-	
-	$(rep).attr("x", value);
-	
-	GUI.adjustContent(this);
-	
-	GUI.moveLinks(this);
-	
+    var self = this;
+
+    var rep = this.getRepresentation();
+
+    if (this.moveByTransform()) {
+
+        if (isNaN(self.getViewY())) {
+            var y = 0;
+        } else {
+            var y = self.getViewY();
+        }
+
+        $(rep).attr("transform", "translate(" + value + "," + y + ")");
+    }
+
+    $(rep).attr("x", value);
+
+    GUI.adjustContent(this);
+
+    GUI.moveLinks(this);
+
 }
 
 /**
@@ -1483,26 +1507,26 @@ GeneralObject.setViewX = function(value) {
  */
 GeneralObject.setViewY = function(value) {
 
-	var self = this;
+    var self = this;
 
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
+    var rep = this.getRepresentation();
 
-		if (isNaN(self.getViewX())) {
-			var x = 0;
-		} else {
-			var x = self.getViewX();
-		}
-		
-		$(rep).attr("transform", "translate("+x+","+value+")");
-	}
-	
-	$(rep).attr("y", value);
-	
-	GUI.adjustContent(this);
-	
-	GUI.moveLinks(this);
+    if (this.moveByTransform()) {
+
+        if (isNaN(self.getViewX())) {
+            var x = 0;
+        } else {
+            var x = self.getViewX();
+        }
+
+        $(rep).attr("transform", "translate(" + x + "," + value + ")");
+    }
+
+    $(rep).attr("y", value);
+
+    GUI.adjustContent(this);
+
+    GUI.moveLinks(this);
 
 }
 
@@ -1511,22 +1535,26 @@ GeneralObject.setViewY = function(value) {
  * @param {int} x The new X position
  * @param {int} y The new Y position
  */
-GeneralObject.setViewXYAnimated = function(x,y) {
+GeneralObject.setViewXYAnimated = function(x, y) {
 
-	var self = this;
-	
-	var rep = this.getRepresentation();
-	
-	if (this.moveByTransform()) {
-		$(rep).animate({svgTransform: "translate("+x+","+y+")"}, 1000, function() {GUI.moveLinks(self)});
-		$(rep).attr("x", x);
-		$(rep).attr("y", y);
-	} else {
-		$(rep).animate({svgX: x, svgY: y}, 1000, function() {GUI.moveLinks(self)});
-	}
-	
-	GUI.adjustContent(this);
-	
+    var self = this;
+
+    var rep = this.getRepresentation();
+
+    if (this.moveByTransform()) {
+        $(rep).animate({svgTransform: "translate(" + x + "," + y + ")"}, 1000, function() {
+            GUI.moveLinks(self)
+        });
+        $(rep).attr("x", x);
+        $(rep).attr("y", y);
+    } else {
+        $(rep).animate({svgX: x, svgY: y}, 1000, function() {
+            GUI.moveLinks(self)
+        });
+    }
+
+    GUI.adjustContent(this);
+
 }
 
 
@@ -1536,8 +1564,8 @@ GeneralObject.setViewXYAnimated = function(x,y) {
  * @param {int} value The new width
  */
 GeneralObject.setViewWidth = function(value) {
-	$(this.getRepresentation()).attr("width", value);
-	GUI.adjustContent(this);
+    $(this.getRepresentation()).attr("width", value);
+    GUI.adjustContent(this);
 }
 
 /**
@@ -1545,8 +1573,8 @@ GeneralObject.setViewWidth = function(value) {
  * @param {int} value The new height
  */
 GeneralObject.setViewHeight = function(value) {
-	$(this.getRepresentation()).attr("height", value);
-	GUI.adjustContent(this);
+    $(this.getRepresentation()).attr("height", value);
+    GUI.adjustContent(this);
 }
 
 
@@ -1562,44 +1590,46 @@ GeneralObject.clickTimeout = false;
  */
 GeneralObject.click = function(event) {
 
-	var self = this;
-	
-	if (GUI.isTouchDevice) {
-		self.clickHandler(event);
-		return true;
-	}
-	
-	/* stop when the clicked object is the SVG canvas */
-	if (event.target == $("#content>svg").get(0)) return;
+    var self = this;
 
-	if (self.clickTimeout) {
-		/* second click */
+    if (GUI.isTouchDevice) {
+        self.clickHandler(event);
+        return true;
+    }
 
-		window.clearTimeout(self.clickTimeout);
-		self.clickTimeout = false;
+    /* stop when the clicked object is the SVG canvas */
+    if (event.target == $("#content>svg").get(0))
+        return;
 
-		if (GUI.shiftKeyDown) return;
+    if (self.clickTimeout) {
+        /* second click */
 
-		//perform dblclick action
-		self.clickRevertHandler(event);
+        window.clearTimeout(self.clickTimeout);
+        self.clickTimeout = false;
 
-		self.dblclickHandler(event);
+        if (GUI.shiftKeyDown)
+            return;
 
-	} else {
-		/* first click */
+        //perform dblclick action
+        self.clickRevertHandler(event);
 
-		/* set a timer (if another click is called while the timer is active, a second click is performed) */
-		self.clickTimeout = window.setTimeout(function() {
+        self.dblclickHandler(event);
 
-			self.clickTimeout = false;
+    } else {
+        /* first click */
 
-		}, 600);
-		
-		self.clickTimeout = true;
-		
-		self.clickHandler(event);
-	
-	}
+        /* set a timer (if another click is called while the timer is active, a second click is performed) */
+        self.clickTimeout = window.setTimeout(function() {
+
+            self.clickTimeout = false;
+
+        }, 600);
+
+        self.clickTimeout = true;
+
+        self.clickHandler(event);
+
+    }
 
 }
 
@@ -1611,32 +1641,32 @@ GeneralObject.click = function(event) {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.clickHandler = function(event) {
-	
-	if (GUI.isTouchDevice && event.touches.length > 1) {
-		this.select(true); 
-		event.stopPropagation();
-		event.preventDefault();
-		return true;
-	}
-	
-	if (this.selected) {
-        if(this.restrictedMovingArea && !$(event.target).hasClass("moveArea")){
+
+    if (GUI.isTouchDevice && event.touches.length > 1) {
+        this.select(true);
+        event.stopPropagation();
+        event.preventDefault();
+        return true;
+    }
+
+    if (this.selected) {
+        if (this.restrictedMovingArea && !$(event.target).hasClass("moveArea")) {
 
         } else {
             this.selectedClickHandler(event);
         }
-	} else {
-		this.selectionClickActive = true; //this is used to prevent a second click-call by mouseup of move when selecting an object (otherwise this would result in an doubleclick)
-		this.select();
+    } else {
+        this.selectionClickActive = true; //this is used to prevent a second click-call by mouseup of move when selecting an object (otherwise this would result in an doubleclick)
+        this.select();
 
-		if(this.restrictedMovingArea && !$(event.target).hasClass("moveArea")){
+        if (this.restrictedMovingArea && !$(event.target).hasClass("moveArea")) {
 
-		} else {
-			
-			this.moveStart(event);
-		}
-	}
-	
+        } else {
+
+            this.moveStart(event);
+        }
+    }
+
 }
 
 /**
@@ -1644,38 +1674,38 @@ GeneralObject.clickHandler = function(event) {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.clickRevertHandler = function(event) {
-	/* for a faster feeling the click event is called when the first click is recognized, even if there will be a second (double) click. In case of a double click we have to revert the click action */
-	this.deselect();
+    /* for a faster feeling the click event is called when the first click is recognized, even if there will be a second (double) click. In case of a double click we have to revert the click action */
+    this.deselect();
 }
 
 /**
  * Called after an object movement
  */
 GeneralObject.moveHandler = function() {
-	this.setPosition(this.getViewX(), this.getViewY());	
+    this.setPosition(this.getViewX(), this.getViewY());
 }
 
 /**
  * Called after an object resizing
  */
 GeneralObject.resizeHandler = function() {
-	this.setDimensions(this.getViewWidth(), this.getViewHeight());
-	this.setPosition(this.getViewX(), this.getViewY());
+    this.setDimensions(this.getViewWidth(), this.getViewHeight());
+    this.setPosition(this.getViewX(), this.getViewY());
 }
 
 /**
  * Called after object selection
  */
 GeneralObject.selectHandler = function() {
-	GUI.updateInspector(true);
-	//GUI.showLinks(this);
+    GUI.updateInspector(true);
+    //GUI.showLinks(this);
 }
 
 /**
  * Called after object deselection
  */
 GeneralObject.deselectHandler = function() {
-	//GUI.hideLinks(this);
+    //GUI.hideLinks(this);
 }
 
 /**
@@ -1683,8 +1713,12 @@ GeneralObject.deselectHandler = function() {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.dblclickHandler = function(event) {
-
-	this.execute(event);
+    if(this.getAttribute("followOnDoubleClick")){
+        this.follow(event);
+    }else{
+        this.execute(event);
+    }
+    
 }
 
 /**
@@ -1694,38 +1728,38 @@ GeneralObject.dblclickHandler = function(event) {
 GeneralObject.selectedClickHandler = function(event) {
 
 
-	if (GUI.shiftKeyDown) {
-		this.deselect();
-	} else {
+    if (GUI.shiftKeyDown) {
+        this.deselect();
+    } else {
 
-		var x = this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth();
-		var y = this.getViewBoundingBoxY();
-	
-		//line/arrow: show the actionsheet on the right end of the line/arrow
-		if(this.type == 'Line' || this.type == 'Arrow'){
-			var direction = this.getAttribute('direction');
-			if(direction == 1 || direction == 3){
-				y += this.getViewBoundingBoxHeight();
-			}
-		}
-		else{ //show the actionsheet centered on the left side of the object
-			y += this.getViewBoundingBoxHeight()/2;
-		}
+        var x = this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth();
+        var y = this.getViewBoundingBoxY();
 
-		if (GUI.couplingModeActive) {
-			var index = ObjectManager.getIndexOfObject(this.getId());
-			if (index === 'right') {
-				x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
-			} else {
-				x += GUI.getPanX(index);
-			}
-			y += GUI.getPanY(index);
-		}
+        //line/arrow: show the actionsheet on the right end of the line/arrow
+        if (this.type == 'Line' || this.type == 'Arrow') {
+            var direction = this.getAttribute('direction');
+            if (direction == 1 || direction == 3) {
+                y += this.getViewBoundingBoxHeight();
+            }
+        }
+        else { //show the actionsheet centered on the left side of the object
+            y += this.getViewBoundingBoxHeight() / 2;
+        }
 
-		GUI.showActionsheet(x, y, this);
-	
-	}
-	
+        if (GUI.couplingModeActive) {
+            var index = ObjectManager.getIndexOfObject(this.getId());
+            if (index === 'right') {
+                x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
+            } else {
+                x += GUI.getPanX(index);
+            }
+            y += GUI.getPanY(index);
+        }
+
+        GUI.showActionsheet(x, y, this);
+
+    }
+
 }
 
 /**
@@ -1734,99 +1768,100 @@ GeneralObject.selectedClickHandler = function(event) {
  * @param {String} value new value of the attribute
  */
 GeneralObject.checkTransparency = function(attribute, value) {
-	if (attribute === 'fillcolor') {
-		var fillcolor = value;
-	} else {
-		var fillcolor = this.getAttribute('fillcolor');
-	}
-	if (attribute === 'linecolor') {
-		var linecolor = value;
-	} else {
-		var linecolor = this.getAttribute('linecolor');
-	}
+    if (attribute === 'fillcolor') {
+        var fillcolor = value;
+    } else {
+        var fillcolor = this.getAttribute('fillcolor');
+    }
+    if (attribute === 'linecolor') {
+        var linecolor = value;
+    } else {
+        var linecolor = this.getAttribute('linecolor');
+    }
 
-	if (fillcolor === 'transparent' && linecolor === 'transparent') {
-		return false;
-	} else return true;
+    if (fillcolor === 'transparent' && linecolor === 'transparent') {
+        return false;
+    } else
+        return true;
 }
 
 /**
  * @deprecated No reference found. Remove?
  */
 GeneralObject.setDisplayGhost = function(s) {
-	this.displayGhost = s;
-	this.draw();
+    this.displayGhost = s;
+    this.draw();
 }
 
 //calculate the Intersection point between an object and a line (described by a1 and a2).
 //The object shape has to be similar to an rectangle!
 //If another shape is desired, please define on own IntersectionObjectLine-function for this object (as seen for the ellipse and polygon).
 //this method will only return the first intersection point or "no intersection" or "coincident"
-GeneralObject.IntersectionObjectLine = function(a1, a2){
-		
-	//calculate the corner points to build the bounding box lines:	
-	var objectLeftTop = new Object();
-	objectLeftTop.x = this.getViewBoundingBoxX();
-	objectLeftTop.y = this.getViewBoundingBoxY();
-	
-	var objectLeftBottom = new Object();
-	objectLeftBottom.x = this.getViewBoundingBoxX();
-	objectLeftBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight();
-		
-	var objectRightBottom = new Object();
-	objectRightBottom.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth();
-	objectRightBottom.y = this.getViewBoundingBoxY()+this.getViewBoundingBoxHeight();
-	
-	var objectRightTop = new Object();
-	objectRightTop.x = this.getViewBoundingBoxX()+this.getViewBoundingBoxWidth();
-	objectRightTop.y = this.getViewBoundingBoxY();
-	
-	//calculate the Intersection Points between the line and each bounding box line
-	var Intersections = new Array();
-	Intersections[0] = this.IntersectionLineLine(a1, a2, objectLeftTop, objectRightTop);
-	Intersections[1] = this.IntersectionLineLine(a1, a2, objectLeftTop, objectLeftBottom);
-	Intersections[2] = this.IntersectionLineLine(a1, a2, objectLeftBottom, objectRightBottom);
-	Intersections[3] = this.IntersectionLineLine(a1, a2, objectRightBottom, objectRightTop);
-	
-	for(var i = 0; i<4; i++){
-		if(typeof Intersections[i].x !== 'undefined' && typeof Intersections[i].y !== 'undefined'){
-			return Intersections[i];
-		}
-		if(Intersections[i] == 'coincident'){
-			return "coincident";
-		}
-	}	
-	
-	return "no intersection";
-	
+GeneralObject.IntersectionObjectLine = function(a1, a2) {
+
+    //calculate the corner points to build the bounding box lines:	
+    var objectLeftTop = new Object();
+    objectLeftTop.x = this.getViewBoundingBoxX();
+    objectLeftTop.y = this.getViewBoundingBoxY();
+
+    var objectLeftBottom = new Object();
+    objectLeftBottom.x = this.getViewBoundingBoxX();
+    objectLeftBottom.y = this.getViewBoundingBoxY() + this.getViewBoundingBoxHeight();
+
+    var objectRightBottom = new Object();
+    objectRightBottom.x = this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth();
+    objectRightBottom.y = this.getViewBoundingBoxY() + this.getViewBoundingBoxHeight();
+
+    var objectRightTop = new Object();
+    objectRightTop.x = this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth();
+    objectRightTop.y = this.getViewBoundingBoxY();
+
+    //calculate the Intersection Points between the line and each bounding box line
+    var Intersections = new Array();
+    Intersections[0] = this.IntersectionLineLine(a1, a2, objectLeftTop, objectRightTop);
+    Intersections[1] = this.IntersectionLineLine(a1, a2, objectLeftTop, objectLeftBottom);
+    Intersections[2] = this.IntersectionLineLine(a1, a2, objectLeftBottom, objectRightBottom);
+    Intersections[3] = this.IntersectionLineLine(a1, a2, objectRightBottom, objectRightTop);
+
+    for (var i = 0; i < 4; i++) {
+        if (typeof Intersections[i].x !== 'undefined' && typeof Intersections[i].y !== 'undefined') {
+            return Intersections[i];
+        }
+        if (Intersections[i] == 'coincident') {
+            return "coincident";
+        }
+    }
+
+    return "no intersection";
+
 }
 
 //calculate the Intersection Point between two lines (endpoints are defined by a1, a2 and b1, b2)
 GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
 
     var result = new Object();
-    
+
     var t1 = (b2.x - b1.x) * (a1.y - b1.y) - (b2.y - b1.y) * (a1.x - b1.x);
     var t2 = (a2.x - a1.x) * (a1.y - b1.y) - (a2.y - a1.y) * (a1.x - b1.x);
-    var t3  = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
+    var t3 = (b2.y - b1.y) * (a2.x - a1.x) - (b2.x - b1.x) * (a2.y - a1.y);
 
-    if ( t3 != 0 ) {
+    if (t3 != 0) {
         var t4 = t1 / t3;
         var t5 = t2 / t3;
 
-        if ( 0 <= t4 && t4 <= 1 && 0 <= t5 && t5 <= 1 ) {
+        if (0 <= t4 && t4 <= 1 && 0 <= t5 && t5 <= 1) {
             result.x = a1.x + t4 * (a2.x - a1.x);
-			result.y = a1.y + t4 * (a2.y - a1.y);
-        } 
-		else{
-			result = "no intersection";
-		}
+            result.y = a1.y + t4 * (a2.y - a1.y);
+        }
+        else {
+            result = "no intersection";
+        }
     }
-	else{
-		if ( t1 == 0 || t2 == 0 ) {
+    else {
+        if (t1 == 0 || t2 == 0) {
             result = "coincident";
         }
-	}
+    }
 
     return result;
 };

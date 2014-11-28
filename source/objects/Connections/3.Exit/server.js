@@ -5,6 +5,7 @@
 *
 */
 
+
 "use strict";
 
 var theObject=Object.create(require('./common.js'));
@@ -13,7 +14,7 @@ var _ = require('lodash');
 
 module.exports=theObject;
 
-theObject.browse = function(data, callback) {
+/*theObject.browse = function(data, callback) {
 	var roomId = data.id;
 	var result = [];
     var self = this;
@@ -173,3 +174,4 @@ theObject.filterObject = function(obj) {
 }
 
 theObject.browse.public = true;
+*/

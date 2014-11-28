@@ -1,4 +1,5 @@
-Exit.showDialog=function() {
+/*
+ * Exit.showDialog=function() {
 	var that = this;
 
 	var dialog_buttons = {};
@@ -105,4 +106,5 @@ Exit.showDialog=function() {
 		$(':button:contains('+that.translate(GUI.currentLanguage, "Okay")+')').attr("disabled", false);
 	});
 	
-}
+ 
+}*/

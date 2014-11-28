@@ -30,7 +30,6 @@ Subroom.register=function(type){
 		object.execute(true);
 		
 	},true);
-	
 }
 
 Subroom.execute=function(openInNewWindow){
@@ -38,7 +37,7 @@ Subroom.execute=function(openInNewWindow){
 	var destination=this.getAttribute('destination');
 	
 	//TODO this must be done serverside in the connector
-	if (!destination) {
+	if (destination === 'choose') {
 		var random=new Date().getTime()-1296055327011;
 		
 		this.setAttribute('destination',random);
