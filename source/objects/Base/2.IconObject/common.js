@@ -23,7 +23,7 @@ IconObject.register=function(type){
 	GeneralObject.register.call(this,type); //super call
 	
 	this.attributeManager.registerAttribute('layer',{hidden: true});
-	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { object.updateIcon(); }, mobile: false});
+	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { if(object) {object.updateIcon();} }, mobile: false});
 	this.registerAttribute('width',{hidden:true});
 	this.registerAttribute('height',{hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});
