@@ -42,7 +42,7 @@
                                 if ($is_admin && !($course->isFrozen())) {
                                     ?>
                                     <input type="text" id="inputCourseName" name="courseName" placeholder="Kursname" value="<?php echo htmlspecialchars($course->getName()); ?>" required>
-                                    <img class="feedbackIcon" src="" />
+                                    <img class="feedbackIcon" src="<?php echo $this->config->base_url() . "assets/img/Transparent.gif"; ?>" />
                                     <?php
                                 } else {
                                     echo $course->getName();
@@ -57,7 +57,7 @@
                                 if ($is_admin && !($course->isFrozen())) {
                                     ?>
                                     <textarea id="inputDescription" name="description" placeholder="Beschreibung"><?php echo htmlspecialchars($course->getDescription()); ?></textarea>
-                                    <img class="feedbackIcon" src="" />
+                                    <img class="feedbackIcon" src="<?php echo $this->config->base_url() . "assets/img/Transparent.gif"; ?>" />
                                     <?php
                                 } else {
                                     echo nl2br($course->getDescription());

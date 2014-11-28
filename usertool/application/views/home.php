@@ -25,21 +25,21 @@
                             <td>Vorname:</td>
                             <td>
                                 <input type="text" id="inputFirstName" name="firstName" placeholder="Vorname" value="<?php echo htmlspecialchars($user->getFirstName()); ?>" required>
-                                <img class="feedbackIcon" src="" />
+                                <img class="feedbackIcon" src="<?php echo $this->config->base_url() . "assets/img/Transparent.gif"; ?>" />
                             </td>
                         </tr>
                         <tr>
                             <td>Nachname:</td>
                             <td>
                                 <input type="text" id="inputLastName" name="lastName" placeholder="Nachname" value="<?php echo htmlspecialchars($user->getLastName()); ?>" required>
-                                <img class="feedbackIcon" src="" />
+                                <img class="feedbackIcon" src="<?php echo $this->config->base_url() . "assets/img/Transparent.gif"; ?>" />
                             </td>
                         </tr>
                         <tr>
                             <td>Email:</td>
                             <td>
                                 <input type="email" id="inputEmail" name="email" placeholder="Email" value="<?php echo htmlspecialchars($user->getEmail()); ?>">
-                                <img class="feedbackIcon" src="" />
+                                <img class="feedbackIcon" src="<?php echo $this->config->base_url() . "assets/img/Transparent.gif"; ?>" />
                             </td>
                         </tr>
                     </tbody>
