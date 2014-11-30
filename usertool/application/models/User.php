@@ -22,7 +22,7 @@ class User extends CI_Model {
     function setUsername($username) {
         $this->username = $username;
     }
-    
+
     function getUsername() {
         return $this->username;
     }
@@ -30,55 +30,55 @@ class User extends CI_Model {
     function setPassword($password) {
         $this->password = $password;
     }
-    
+
     function getPassword() {
         return $this->password;
     }
-    
+
     function setFirstName($firstName) {
         $this->firstName = $firstName;
     }
-    
+
     function getFirstName() {
         return $this->firstName;
     }
-    
+
     function setLastName($lastName) {
         $this->lastName = $lastName;
     }
-    
+
     function getLastName() {
         return $this->lastName;
     }
-    
+
     function getFullName() {
         return $this->firstName . " " . $this->lastName;
     }
-    
+
     function setEmail($email) {
         $this->email = $email;
     }
-    
+
     function getEmail() {
         return $this->email;
     }
-    
+
     function setCourses($courses) {
         $this->courses = $courses;
     }
-    
+
     function getCourses() {
         return $this->courses;
     }
-    
+
     function getCoursesMember() {
         return $this->courses_member;
     }
-    
+
     function getCoursesApplied() {
         return $this->courses_applied;
     }
-    
+
     function getCoursesFrozen() {
         return $this->courses_frozen;
     }
@@ -86,22 +86,22 @@ class User extends CI_Model {
     function setRoom($room) {
         $this->room = $room;
     }
-    
+
     function getRoom() {
         return $this->room;
     }
-    
+
     function setWriteAccess($writeAccess) {
         $this->writeAccess = $writeAccess;
     }
-    
+
     function getWriteAccess() {
         return $this->writeAccess;
     }
-    
+
     function login($password) {
-        log_message("debug", "user login: username = ".$this->username." password = ".$this->password);
-        
+        log_message("debug", "user login: username = " . $this->username . " password = " . $this->password);
+
         if ($this->password == $password)
             return true;
         else
@@ -109,8 +109,8 @@ class User extends CI_Model {
     }
 
     function loadUserData($username = "") {
-        log_message("debug", "user loadUserData: username = ".$username);
-        
+        log_message("debug", "user loadUserData: username = " . $username);
+
         $filename = $this->config->item('userFolder') . "/" . $username . ".user.txt";
         if (file_exists($filename)) {
             $userFile = fopen($filename, "r");
@@ -126,7 +126,7 @@ class User extends CI_Model {
                 $this->courses = $userData["courses"];
                 flock($userFile, LOCK_UN); // release the lock
             } else {
-                log_message("error", "user loadUserData: filename = ".$filename);
+                log_message("error", "user loadUserData: filename = " . $filename);
                 return false;
             }
             fclose($userFile);
@@ -135,14 +135,14 @@ class User extends CI_Model {
         else
             return false;
     }
-    
+
     function loadCourseData($frozen = false, $admin = false) {
-        log_message("debug", "user loadCourseData: username = ".$this->username);
-        
+        log_message("debug", "user loadCourseData: username = " . $this->username);
+
         if (!class_exists('Course')) {
             require_once(APPPATH . 'models/Course.php');
         }
-        
+
         foreach ($this->courses as $courseID) {
             $course = new Course();
             $course->loadCourseData($courseID);
@@ -150,45 +150,48 @@ class User extends CI_Model {
                 $course->loadMemberData(true);
             }
             $course->checkMemberStatus($this->username);
-
-            if ($course->getMemberStatus() !== "error") {
-                if ($frozen) {
-                    if ($course->isFrozen()) {
-                        array_push($this->courses_frozen, $course);
-                        continue;
+            if (!$course->isDeleted()) {
+                if ($course->getMemberStatus() !== "error") {
+                    if ($frozen) {
+                        if ($course->isFrozen()) {
+                            array_push($this->courses_frozen, $course);
+                            continue;
+                        }
                     }
-                }
-                if ($course->getMemberStatus() === "applied") {
-                    array_push($this->courses_applied, $course);
-                } else {
-                    array_push($this->courses_member, $course);
+                    if ($course->getMemberStatus() === "applied") {
+                        array_push($this->courses_applied, $course);
+                    } else {
+                        array_push($this->courses_member, $course);
+                    }
                 }
             }
         }
     }
-    
+
     function loadAllCourseData() {
-        log_message("debug", "user loadAllCourseData: username = ".$this->username);
-        
+        log_message("debug", "user loadAllCourseData: username = " . $this->username);
+
         if (!class_exists('Course')) {
             require_once(APPPATH . 'models/Course.php');
         }
-        
+
         $courses = scandir($this->config->item('courseFolder'));
         foreach ($courses as $courseID) {
             if ($courseID !== "." && $courseID !== "..") {
                 $course = new Course();
                 $course->loadCourseData($courseID);
-                $course->checkMemberStatus($this->username);
-                $course->readableMemberStatus();
-                array_push($this->courses, $course);
+                if (!$course->isDeleted()) {
+                    $course->checkMemberStatus($this->username);
+                    $course->readableMemberStatus();
+                    array_push($this->courses, $course);
+                }
             }
         }
     }
 
     function saveUserData() {
-        log_message("debug", "user saveUserData: username = ".$this->username);
-        
+        log_message("debug", "user saveUserData: username = " . $this->username);
+
         $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
 
         $user = array();
@@ -205,7 +208,7 @@ class User extends CI_Model {
             fwrite($userData, json_encode($user));
             flock($userData, LOCK_UN); // release the lock
         } else {
-            log_message("error", "user saveUserData: filename = ".$filename);
+            log_message("error", "user saveUserData: filename = " . $filename);
             return false;
         }
         fclose($userData);
@@ -213,21 +216,21 @@ class User extends CI_Model {
     }
 
     function createUser() {
-        log_message("debug", "user createUser: username = ".$this->username);
-        
+        log_message("debug", "user createUser: username = " . $this->username);
+
         if (!file_exists($this->config->item('userFolder'))) {
-             if (!@mkdir($this->config->item('userFolder'))) {
+            if (!@mkdir($this->config->item('userFolder'))) {
                 log_message("error", "user crateUser: cannot create folders");
                 return "writing";
-             }
+            }
         }
         if (!file_exists($this->config->item('courseFolder'))) {
             if (!@mkdir($this->config->item('courseFolder'))) {
                 log_message("error", "user crateUser: cannot create folders");
                 return "writing";
             }
-        }   
-        
+        }
+
         $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
         if (file_exists($filename)) {
             return "username";
@@ -247,7 +250,7 @@ class User extends CI_Model {
                     fwrite($userData, json_encode($user));
                     flock($userData, LOCK_UN); // release the lock
                 } else {
-                    log_message("error", "user createUser: filename = ".$filename);
+                    log_message("error", "user createUser: filename = " . $filename);
                     return "writing";
                 }
                 fclose($userData);
@@ -257,13 +260,13 @@ class User extends CI_Model {
             }
         }
     }
-    
+
     function deleteUser() {
         // delete course files
         foreach ($this->courses as $course) {
             $appliedFile = $this->config->item('courseFolder') . "/" . $course . "/verified/" . $this->username . ".txt";
             $verifiedFile = $this->config->item('courseFolder') . "/" . $course . "/verified/" . $this->username . ".txt";
-            
+
             if (file_exists($appliedFile)) {
                 if (!unlink($appliedFile)) {
                     return false;
@@ -275,7 +278,7 @@ class User extends CI_Model {
                 }
             }
         }
-        
+
         // delete user file
         $filename = $this->config->item('userFolder') . "/" . $this->username . ".user.txt";
         if (unlink($filename)) {
@@ -284,5 +287,7 @@ class User extends CI_Model {
             return false;
         }
     }
+
 }
+
 ?>

@@ -97,6 +97,28 @@ $('#freezeButton').click(function() {
     }
 });
 
+$('#deleteButton').click(function() {
+    var data = {};
+    data.courseID = courseID;
+    var response = confirm('Wenn der Kurs gelöscht wird, kann diese Änderung nicht mehr rückgängig gemacht werden. \n\
+Soll der Kurs endgültig gelöscht werden?');
+    if (response) {
+        $.ajax({
+            url: baseURL + 'courses/deleteCourse',
+            type: 'POST',
+            data: data,
+            success: function(json) {
+                var decodedJSON = $.parseJSON(json);
+                if (decodedJSON["status"] === "success") {
+                    window.location = baseURL + 'courses/';
+                } else {
+                    alert('Es ist etwas schief gelaufen...');
+                }
+            }
+        });
+    }
+});
+
 
 // write access checkbox handling
 $('.writeAccessCheckbox').attr("autocomplete", "off");

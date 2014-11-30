@@ -227,7 +227,7 @@ class Courses extends MY_Controller {
     public function unfreeze() {
         $this->load->library('session');
         $this->load->library('getText');
-        
+
 
         if ($this->input->is_ajax_request() == TRUE) {
             $response = array();
@@ -267,6 +267,29 @@ class Courses extends MY_Controller {
                     // error
                     $response["status"] = "error";
                 }
+            } else {
+                $response["status"] = "error";
+            }
+            echo(json_encode($response));
+        }
+    }
+
+    public function deleteCourse() {
+        $this->load->library('session');
+        $this->load->library('getText');
+
+        if ($this->input->is_ajax_request() == TRUE) {
+            $response = array();
+            if ($this->session->userdata('is_admin')) {
+                $this->load->model('course');
+                $this->course->setId($this->input->post("courseID"));
+                if ($this->course->deleteCourse()) {
+                    // success
+                    $response["status"] = "success";
+                } else {
+                    // error
+                    $response["status"] = "error";
+                }                
             } else {
                 $response["status"] = "error";
             }
