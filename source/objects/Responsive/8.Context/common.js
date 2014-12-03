@@ -18,8 +18,7 @@ Context.register=function(type){
 	Modules.ObjectManager.getPrototype('Rectangle').register.call(this,type);
 	this.makeStructuring();
 	
-        this.registerAttribute('structures',{type:'object'});
-        this.registerAttribute('activeObjects',{type:'object'});
+        
 	
 }
 

@@ -21,6 +21,10 @@ theObject.onLeave = function(object, oldData, newData) {
         if (object.getAttribute(data.attribute) === data.value) {
             object.setAttribute(data.attribute, '');
             console.log('Attribute ' + data.attribute + ' has been unset for ' + object);
+            
+            //destroy relationship with object
+            this.removeAssociationToAnActiveObject(object.id);
+            object.removeAssociationToAStructure(this.id);
         }
     }
 
@@ -34,26 +38,23 @@ theObject.onEnter = function(object, oldData, newData) {
         if (object.getAttribute(data.attribute) !== data.value) {
             object.setAttribute(data.attribute, data.value);
             console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);
+            
+            //establish connection with object
+            this.createAssociationToAnActiveObject(object.id);
+            object.createAssociationToAStructure(this.id);
+            
         }
     }
 };
 
 theObject.onMoveWithin = function(object, oldData, newData) {
     
-    var structureStates = object.getAttribute("structureStates");
-    structureStates.push("omw");
-    object.setAttribute("structureStates", structureStates);
-    //return this.onEnter(object,oldData,newData);
-
+    
 };
 
 theObject.onMoveOutside = function(object, oldData, newData) {
    
-    var structureStates = object.getAttribute("structureStates");
-    structureStates.push("omo");
-    object.setAttribute("structureStates", structureStates);
-    //return this.onLeave(object,oldData,newData);
-
+    
 };
 
 theObject.getData = function() {

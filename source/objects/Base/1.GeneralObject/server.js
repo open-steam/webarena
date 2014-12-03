@@ -46,6 +46,26 @@ theObject.makeStructuring = function() {
         this.getRoom().setAttribute('repositionNeeded', true);
 
     }
+    theObject.removeAssociationToAnActiveObject = function(objectId) {
+        var activeObjects = this.getAttribute('activeObjects');
+        if (activeObjects[objectId]) {
+            activeObjects[objectId] = false;
+            this.setAttribute('activeObjects', activeObjects);
+        } else {
+            console.log("Debug: You try to remove an association to an AO which isn't available!");
+        }
+        console.log(activeObjects);
+    }
+    theObject.createAssociationToAnActiveObject = function(objectId) {
+        var activeObjects = this.getAttribute('activeObjects');
+        if (activeObjects[objectId]) {
+            console.log("Debug: You try to create an association to an AO which already exists!");
+        } else {
+            activeObjects[objectId] = true;
+            this.setAttribute('activeObjects', activeObjects);
+        }
+        console.log(activeObjects);
+    }
 
     theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
 
@@ -193,17 +213,17 @@ theObject.makeStructuring = function() {
         var width = object.getAttribute('width');
         var height = object.getAttribute('height');
         var intersects = this.intersects(x, y, width, height);
-        
+
         //console.log('intersets: ' + intersects);
-        if(intersects){
+        if (intersects) {
             this.onEnter(object);
             return true;
-        }else{
+        } else {
             this.onLeave(object);
             return false;
         }
-        
-        
+
+
 
     }
 

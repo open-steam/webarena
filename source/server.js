@@ -81,10 +81,10 @@ var winston = require('winston');
 var logger = new (winston.Logger)({
     exitOnError: false,
     transports: [
-      new (winston.transports.Console)({colorize: true, json: true, handleExceptions:true}),
-      new (winston.transports.File)({filename:"error/error.log" , colorize: true, json: true , handleExceptions:true})
+        new (winston.transports.Console)({colorize: true, json: true, handleExceptions: true}),
+        new (winston.transports.File)({filename: "error/error.log", colorize: true, json: true, handleExceptions: true})
     ]
-  });
+});
 
 
 var Modules = {};
@@ -132,6 +132,8 @@ Modules.ServerController = require('./Server/controllers/ServerController.js');
 Modules.InternalDispatcher = require('./Server/apihandler/InternalDispatcher.js');
 Modules.Dispatcher = require('./Server/apihandler/Dispatcher.js');
 
+Modules.Clipper = require('./Server/Clipper.js');
+
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports = Modules;
 
@@ -150,3 +152,17 @@ if (Modules.config.plugins) {
     Modules.PluginManager = require('./Server/PluginManager.js').create();
     Modules.PluginManager.init(Modules, Modules.config.plugins);
 }
+
+/*var subj_paths = [[{X: 10, Y: 10}, {X: 110, Y: 10}, {X: 110, Y: 110}, {X: 10, Y: 110}]];
+var clip_paths = [[{X: 50, Y: 50}, {X: 150, Y: 50}, {X: 150, Y: 150}, {X: 50, Y: 150}]];
+//var clip_paths = [[{X: 20, Y: 20}, {X: 40, Y: 20}, {X: 40, Y: 40}, {X: 20, Y: 40}]]
+var cpr = new Modules.Clipper.Clipper();
+
+cpr.AddPaths(subj_paths, Modules.Clipper.PolyType.ptSubject, true);
+cpr.AddPaths(clip_paths, Modules.Clipper.PolyType.ptClip, true);
+//ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
+var solution_paths = new Modules.Clipper.Paths();
+var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctXor, solution_paths);
+console.log(JSON.stringify(solution_paths));
+*/
+
