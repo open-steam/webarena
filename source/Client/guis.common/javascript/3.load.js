@@ -101,7 +101,7 @@ GUI.loadGUI = function(step) {
 		
 		GUI.progressBarManager.updateProgress("login", 80, GUI.translate('rendering objects'));
 		
-		if (!GUI.loaded) GUI.initMouseHandler();
+		if (!GUI.loaded) GUI.input.init();
 		
 		window.setTimeout(function() {
 			GUI.loadGUI(5);

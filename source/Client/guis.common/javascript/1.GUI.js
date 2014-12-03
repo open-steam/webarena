@@ -395,47 +395,12 @@ GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
 		
 	});
 }
-
-
+ 
 /**
  * add event handler for object selection (based on clicked position and layers)
  */
-GUI.initMouseHandler = function() {
+/*GUI.initMouseHandler = function() {
 
-	// if(GUI.isTouchDevice) {
-		// var touchHandler = function(event) {
-			
-			// jPopoverManager.hideAll();
-			
-			// var contentPosition = $("#content").offset();
-
-			// var x = event.pageX-contentPosition.left;
-			// var y = event.pageY-contentPosition.top;
-			
-			// if (event.touches.length >= 1) {
-				// var x = event.touches[event.touches.length-1].pageX-contentPosition.left;
-				// var y = event.touches[event.touches.length-1].pageY-contentPosition.top;
-			// }
-			
-			// /* find objects at this position */
-			// var clickedObject = GUI.getObjectAt(x, y);
-
-			// if (clickedObject && event.target != $("#content>svg").get(0)) {
-				// event.preventDefault();
-				// event.stopPropagation();
-				// clickedObject.click(event);
-			// } else {
-				// GUI.deselectAllObjects();
-				// GUI.updateInspector();
-			// }
-			
-		// }
-		
-		// $("#content>svg").get(0).addEventListener("touchstart", touchHandler, false);
-	// }
-	
-	GUI.touch.init();
-	
 	var mousedown = function(event) {
 		if(!GUI.touch.ing) {
 			jPopoverManager.hideAll();
@@ -560,7 +525,7 @@ GUI.initMouseHandler = function() {
 
 				clickedObject.click(event);
 			} else {
-				/* clicked on background */
+				//clicked on background
 			 event.preventDefault();
 			 event.stopPropagation();
 				GUI.rubberbandStart(event);
@@ -597,8 +562,7 @@ GUI.initMouseHandler = function() {
 	
 	$("#content>svg").bind("mousedown", mousedown);
 	$("#content>svg").bind("mousemove", mousemove);
-	
-}
+}*/
 
 
 

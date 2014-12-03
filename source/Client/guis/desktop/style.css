@@ -129,6 +129,10 @@ body {
 #content {
 	margin-top: 33px;
 	position: absolute;
+	
+	/* Disable touch behaviors, like pan and zoom */
+	-ms-touch-action: none; 
+	touch-action: none;
 }
 
 
