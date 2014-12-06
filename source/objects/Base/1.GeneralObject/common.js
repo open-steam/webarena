@@ -230,7 +230,7 @@ GeneralObject.register = function(type) {
 
             var objects = ObjectManager.getObjects();
 
-            GUI.createLinks(object);
+            GUI.drawLinks(object);
 
             for (var index in objects) {
                 var object = objects[index];
@@ -286,7 +286,7 @@ GeneralObject.register = function(type) {
 
                 var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
 
-                GUI.createLinkDialog(lastClicked, lastClicked, linkProperties, true);
+                GUI.showLinkPropertyDialog(lastClicked, lastClicked, linkProperties, true);
 
             },
             false,
@@ -723,30 +723,6 @@ GeneralObject.remove = function() {
     Modules.ObjectManager.remove(this);
 }
 
-//removes the entry with the specified ID from the object's link attribute  
-GeneralObject.removeLinkedObjectById = function(removeId) {
-
-    var newLinks = [];
-    var oldLinks = this.getAttribute('link');
-
-    //check if there already existing links
-    //	if yes - reinsert them
-    if (_.isArray(oldLinks)) {
-        newLinks = newLinks.concat(oldLinks);
-    } else if (oldLinks) {
-        newLinks.push(oldLinks);
-    }
-
-    for (var i = 0; i < newLinks.length; i++) {
-
-        if (newLinks[i].destination == removeId) {
-            newLinks.splice(i, 1);
-        }
-    }
-
-    this.setAttribute("link", newLinks);
-
-}
 
 //returns if an object has links to other objects or not
 GeneralObject.hasLinkedObjects = function() {
@@ -833,117 +809,6 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 }
 
 
-//handle the desired inputs which was made in the setting-properties-dialog
-//especially: creating/changing the link attribute
-GeneralObject.buildLinks = function(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding) {
-
-    var lastClicked = this;
-    var selected = ObjectManager.getSelected();
-    var lastSelectedId = lastClicked.getId();
-
-    var newLinks1 = [];
-    var oldLinks1 = lastClicked.getAttribute('link');
-
-    //check if there already existing links
-    //	if yes - reinsert them
-    if (_.isArray(oldLinks1)) {
-        newLinks1 = newLinks1.concat(oldLinks1);
-    } else if (oldLinks1) {
-        newLinks1.push(oldLinks1);
-    }
-
-    //create or update the links for all selected objects
-    _.each(selected, function(current) {
-        var selectedId = current.getId();
-
-        if (selectedId !== lastSelectedId) { //this selected object is a target
-
-            var selectedObject = ObjectManager.getObject(selectedId);
-
-            var newLinks2 = [];
-            var oldLinks2 = selectedObject.getAttribute("link");
-
-            //check if there already existing links
-            //	if yes - reinsert them
-            if (_.isArray(oldLinks2)) {
-                newLinks2 = newLinks2.concat(oldLinks2);
-            } else if (oldLinks2) {
-                newLinks2.push(oldLinks2);
-            }
-
-            var exists = false;
-
-            //if a link already exists (between the selected and the lastclicked)-->update directions
-            $.each(newLinks1, function(index, value) {
-
-                if (value.destination == selectedId) {
-                    value.arrowheadOtherEnd = arrowheadAtotherObject;
-                    value.arrowheadThisEnd = arrowheadAtthisObject;
-                    value.width = lineWidth;
-                    value.style = lineStyle;
-                    value.padding = linePadding;
-
-                    exists = true;
-                }
-            });
-
-            $.each(newLinks2, function(index, value) {
-
-                if (value.destination == lastSelectedId) {
-                    value.arrowheadOtherEnd = arrowheadAtthisObject;
-                    value.arrowheadThisEnd = arrowheadAtotherObject;
-                    value.width = lineWidth;
-                    value.style = lineStyle;
-                    value.padding = linePadding;
-
-                    exists = true;
-                }
-            });
-
-            if (!exists) { //no link between the selected and the lastclicked-->create new link
-                var link1 = {};
-                var link2 = {};
-
-                link1 = {
-                    destination: selectedId,
-                    arrowheadOtherEnd: arrowheadAtotherObject,
-                    arrowheadThisEnd: arrowheadAtthisObject,
-                    width: lineWidth,
-                    style: lineStyle,
-                    padding: linePadding
-                };
-                link2 = {
-                    destination: lastSelectedId,
-                    arrowheadOtherEnd: arrowheadAtthisObject,
-                    arrowheadThisEnd: arrowheadAtotherObject,
-                    width: lineWidth,
-                    style: lineStyle,
-                    padding: linePadding
-                };
-
-                newLinks1.push(link1);
-                newLinks2.push(link2);
-            }
-
-            selectedObject.setAttribute("link", newLinks2);
-        }
-    });
-
-    lastClicked.setAttribute("link", newLinks1);
-
-    _.each(selected, function(current) {
-        current.deselect();
-        //current.select()
-    });
-
-    lastClicked.select();
-
-    //show all links (if 'showLinks' is deactivated, activate it)
-    var room = lastClicked.getRoom();
-    room.setAttribute('showLinks', true);
-
-    GUI.createLinks(lastClicked);
-}
 GeneralObject.follow = function(openInNewWindow) {
     var destination = this.getAttribute('destination');
 
@@ -984,7 +849,220 @@ GeneralObject.follow = function(openInNewWindow) {
 }
 
 
+/**
+*	create Links between this object and other object (by adding entries in the link-attribute of all objects)
+* @param {array} targetIds    array with ids of the target objects
+* @param {boolean} arrowheadOtherEnd    Show an arrow on the distant end of the link. Default value: false (if not specified)
+* @param {boolean} arrowheadThisEnd    Show an arrow on the near end of the link. Default value: false (if not specified) 
+* @param {int} width    Width of the link. Default value: 5 (if not specified) 
+* @param {string} style    Style of the link. Possibilities: stroke, dotted, dashed. Default value: stroke (if not specified) 
+* @param {int} padding    Space between the objects and the link. Default value: 5 (if not specified) 
+*/
+GeneralObject.createLinks = function(targetIds, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
+
+	for(var i = 0; i<targetIds.length; i++){
+		this.createLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+	}
+	
+}
+
+
+/**
+* create a Link between this object and one other object (by adding an entry in the link-attribute of both objects)
+* @param {string} targetId    the id of the target object
+*  other parameters: see above 
+*/
+GeneralObject.createLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
+
+	var target;
+	var object;
+
+	if(typeof this.context == "undefined"){ //client side call
+		target = ObjectManager.getObject(targetId);
+		object = this;
+	}
+	else{ //server side call
+		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
+		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
+	}
+
+	object.setLinkAttribute(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+	target.setLinkAttribute(this.id, arrowheadThisEnd, arrowheadOtherEnd, width, style, padding);
+	
+}
+
+
+/**
+*	change the Links between this object and all other object (by changing the entries in the link-attribute)
+*  @param  {array} targetIds     array with ids of the target objects
+*  other parameters: see above 
+*/
+GeneralObject.changeLinks = function(targetIds, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
+
+	for(var i = 0; i<targetIds.length; i++){
+		this.changeLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+	}
+
+}
+
+
+/**
+*	change the Link between this object and one other object (by changing the entry in the link-attribute)
+*  @param {string} targetId    the id of the target object
+*  other parameters: see above 
+*/
+GeneralObject.changeLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
+
+	var target;
+	var object;
+
+	if(typeof this.context == "undefined"){ //client side call
+		target = ObjectManager.getObject(targetId);
+		object = this;
+	}
+	else{ //server side call
+		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
+		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
+	}
+
+	object.setLinkAttribute(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+	target.setLinkAttribute(this.id, arrowheadThisEnd, arrowheadOtherEnd, width, style, padding);
+
+}
+
+
+/**
+*	delete all Links between this object and all other object (by removing the entries from the link-attribute)
+*/
+GeneralObject.deleteLinks = function(){
+
+	var links = this.getAttribute('link');
+	
+	for(var i = 0; i<links.length; i++){
+		this.deleteLink(links[i].destination);
+	}
+
+}
+
+
+/**
+*	delete the Link between this object and one other object (by removing the entry from the link-attribute)
+* @param {string} targetId     the id of the target object
+*/
+GeneralObject.deleteLink = function(targetId){
+
+	var target;
+	var object;
+
+	if(typeof this.context == "undefined"){ //client side call
+		target = ObjectManager.getObject(targetId);
+		object = this;
+	}
+	else{ //server side call
+		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
+		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
+	}
+
+	object.removeLinkAttribute(targetId);
+	target.removeLinkAttribute(this.id);
+
+}
+
+
+/**
+*
+*	internal
+*
+*   set the Link attribute of this object
+*/
+GeneralObject.setLinkAttribute = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
+
+	var newLinks = [];
+	var oldLinks = this.getAttribute('link');
+	
+	//check if there already existing links, if yes: reinsert them
+	if(oldLinks.length != 0){
+		for(var i = 0; i<oldLinks.length; i++){
+			newLinks.push(oldLinks[i]);
+		}
+	}
+	
+	//define default values
+	var link = {
+		destination: targetId,
+		arrowheadOtherEnd: false,
+		arrowheadThisEnd: false,
+		width: 5,
+		style: "stroke",
+		padding: 5
+	};
+	
+	for(var i = 0; i<newLinks.length; i++){
+		if(newLinks[i].destination == targetId){ //link is already specified-->overwrite the default values with the existing values
+			for (var attribute in newLinks[i]){
+				link[attribute] = newLinks[i][attribute]; 
+			}
+			newLinks.splice(i, 1);
+		}
+	}
+	
+	if(arrowheadOtherEnd == true || arrowheadOtherEnd == false){
+		link.arrowheadOtherEnd = arrowheadOtherEnd;
+	}
+	
+	if(arrowheadThisEnd == true || arrowheadThisEnd == false){
+		link.arrowheadThisEnd = arrowheadThisEnd;
+	}
+		
+	if(typeof width == "number" && width > 0){
+		link.width = width;
+	}
+	
+	if(style == "stroke" || style == "dashed" || style == "dotted"){
+		link.style = style;
+	}
+		
+	if(typeof padding == "number" && padding > -1){
+		link.padding = padding;
+	}	
+
+	newLinks.push(link);
+	
+    this.setAttribute("link", newLinks); 
+
+	if(typeof this.context == "undefined"){ //client side call
+		//show all links (if 'showLinks' is deactivated, activate it)
+		var room = this.getRoom(); 
+		room.setAttribute('showLinks', true); 
+	}
+	
+}
+
+
+/**
+*
+*	internal
+*
+*   remove an entry from the Link attribute of this object
+*/
+GeneralObject.removeLinkAttribute = function(targetId){
+
+	var newLinks = [];
+	var oldLinks = this.getAttribute('link');
+
+	//check if there already existing links, if yes and they are unequal to the targetId: reinsert them
+	if(oldLinks.length != 0){
+		for(var i = 0; i<oldLinks.length; i++){
+			if(oldLinks[i].destination != targetId){
+				newLinks.push(oldLinks[i]);
+			}
+		}
+	}
+	
+    this.setAttribute("link", newLinks);
+
+}
+
 GeneralObject.deleteIt = GeneralObject.remove;
 
 module.exports = GeneralObject;
-

@@ -284,7 +284,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		formButtons[GUI.translate("save")] = function() {
 			self.callChange();
 			$(this).dialog("close");
-			GUI.updateLinks();
 		}
 
 		

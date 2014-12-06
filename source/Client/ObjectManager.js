@@ -341,7 +341,7 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 
 	var self = this;
 	
-	GUI.deleteLinkRepresentations(); //delete the existing link representations in the old room
+	GUI.eraseAllLinks(); //erase the existing links in the old room
 	
     this.executeRoomChangeCallbacks();
 
@@ -510,7 +510,7 @@ ObjectManager.init=function(){
     })
 	
     Modules.Dispatcher.registerCall('objectDelete',function(data){
-		GUI.removeLinksfromObject(ObjectManager.getObject(data.id)); //delete all links which ends or starts in this object
+		ObjectManager.getObject(data.id).deleteLinks();  //delete all links which ends or starts in this object
         ObjectManager.removeLocally(data);
     });
 	
@@ -896,7 +896,7 @@ ObjectManager.afterDuplicate=function(newObject) {
 	
 	newObject.select(true);
 	
-	GUI.createLinks(newObject);
+	GUI.drawLinks(newObject);
 	
 	this.newIDs.splice(this.newIDs.indexOf(newObject.id), 1);
 	

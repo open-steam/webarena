@@ -145,7 +145,7 @@ GUI.loadGUI = function(step) {
 		
 		if (GUI.guiType == 'desktop') {
 			ObjectManager.paintingUpdate();
-			GUI.createLinkRepresentations(); //create the representations of the existing links in the new room
+			GUI.drawAllLinks(); //draw all existing links in the new room
 		}
 	
 	} else {
