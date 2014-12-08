@@ -301,6 +301,8 @@ ObjectManager.removeLocally=function(data){
 	
 	GUI.hideActionsheet();
 	
+	GUI.updateInspector();
+	
 }
 
 ObjectManager.login=function(username, password, externalSession){
@@ -501,8 +503,7 @@ ObjectManager.init=function(){
     });
 
     Modules.Dispatcher.registerCall('objectUpdate',function(data){
-    	
-        ObjectManager.objectUpdate(data);
+		ObjectManager.objectUpdate(data);
     })
 	
 	Modules.Dispatcher.registerCall('paintingsUpdate',function(data){ 	
