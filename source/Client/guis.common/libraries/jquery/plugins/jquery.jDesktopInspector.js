@@ -344,7 +344,9 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			
 			$.each(options, function(key, value) {
 			
-				newHtml += '<option value="'+value+'">'+value+'</option>';
+				var val = GUI.translate(value);
+			
+				newHtml += '<option value="'+val+'">'+val+'</option>';
 				
 			});
 			
