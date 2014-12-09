@@ -1714,7 +1714,7 @@ GeneralObject.deselectHandler = function() {
  */
 GeneralObject.dblclickHandler = function(event) {
     if(this.getAttribute("followOnDoubleClick")){
-        this.follow(event);
+        this.follow();
     }else{
         this.execute(event);
     }

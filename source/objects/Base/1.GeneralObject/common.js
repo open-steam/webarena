@@ -424,7 +424,7 @@ GeneralObject.register = function(type) {
     this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
             object.showDialog()
         }, category: 'Functionality', changedFunction: function(object) {
-            object.updateIcon();
+            if(object.updateIcon){object.updateIcon()};
         }});
     this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
             object.showDialog()

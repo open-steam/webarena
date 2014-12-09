@@ -44,11 +44,16 @@ GeneralObject.setTranslations('de',{
 	'bidirectional' : 'bidirektional',
 	'change properties' : 'Eigenschaften ändern',
 	'direction' : 'Richtung',
+        'destination' : 'Ziel',
+        'followOnDoubleClick' : 'Folge bei Doppelklick',
 	'stroke' : 'Linie',
 	'dotted' : 'gepunktet',
 	'dashed' : 'gestrichelt',
 	'style' : 'Stil',
 	'save' : 'speichern',
-	'distance between object and link' : 'Abstand zwischen Objekt und Link'
+	'distance between object and link' : 'Abstand zwischen Objekt und Link',
+        'create new Subroom' : 'Erstelle neuen Subraum',
+        'Cancel' : 'Abbrechen',
+        'Okay' : 'OK'
 }
 );
