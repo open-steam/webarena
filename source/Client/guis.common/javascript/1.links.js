@@ -1,25 +1,15 @@
 "use strict";
 
+
 /**
  * Functions for displaying links between objects
  */
 
+ 
 /**
- * The object for which the links are shown
+ * called when leaving a room
  */
-GUI.currentLinkObject = undefined;
-
-
-/**
- * update all links for the current object
- */
-GUI.updateLinks = function() {
-	//GUI.hideLinks(GUI.currentLinkObject);
-	//GUI.showLinks(GUI.currentLinkObject);
-}
-
-//called when leaving a room
-GUI.deleteLinkRepresentations = function(){
+GUI.eraseAllLinks = function(){
 	
 	for (var id1 in ObjectManager.getObjects()){
 		for (var id2 in ObjectManager.getObjects()){
@@ -29,30 +19,10 @@ GUI.deleteLinkRepresentations = function(){
 	}
 }
 
-//called when an object is deleted
-GUI.removeLinksfromObject = function(object){
 
-	var linkedObjects = object.getAttribute("link");
-
-	$.each(linkedObjects, function(index, value) {
-	
-		var targetID = value.destination;
-		var target = ObjectManager.getObject(targetID);
-				
-		//destroy the links
-		$(".webarenaLink_between_"+object.id+"_and_"+targetID).remove();
-		$(".webarenaLink_between_"+targetID+"_and_"+object.id).remove();
-				
-		if(!target) return;
-				
-		//remove the object id from the attribute list of the target
-        target.removeLinkedObjectById(object.id);
-		
-	});
-}
-
-
-//called every time an object is moved
+/**
+ * called every time an object is moved
+ */
 GUI.moveLinks = function(object){
 	
 	var linkedObjects = object.getAttribute("link");
@@ -206,14 +176,16 @@ GUI.moveLinks = function(object){
 }
 
 
-//show or hide links in the current room (via checkbox in the inspector, only if both objects are visible)
+/**
+ * show or hide all links in the current room (via checkbox in the inspector, only if both objects are visible)
+ */
 GUI.showLinks = function(value) {
 	
 	for (var id1 in ObjectManager.getObjects()){
 		var object1 = ObjectManager.getObject(id1);
 		if(object1.getAttribute("visible")){
-			for (var id2 in ObjectManager.getObjects()){
-				var object2 = ObjectManager.getObject(id2);
+			for (var id2 in ObjectManager.getObjects()){		
+				var object2 = ObjectManager.getObject(id2);				
 				if(object2.getAttribute("visible")){
 					GUI.showLink(id1,id2,value);
 				}
@@ -222,7 +194,10 @@ GUI.showLinks = function(value) {
 	}
 }
 
-//show or hide a link
+
+/**
+ * show or hide one link
+ */
 GUI.showLink = function(id1, id2, value) {
 	
 	var object1 = ObjectManager.getObject(id1);
@@ -243,24 +218,27 @@ GUI.showLink = function(id1, id2, value) {
 	}
 }
 
-//called after enter a room
-GUI.createLinkRepresentations = function(){
+
+/**
+ * called after entering a room
+ */
+GUI.drawAllLinks = function(){ 
 
 	for (var id in ObjectManager.getObjects()){
 	
 		var object = ObjectManager.getObject(id);
 			
-		GUI.createLinks(object);
+		GUI.drawLinks(object);
 	}
 }
 
-//create new Links or change properties of existing links
-GUI.createLinks = function(object) {
+
+/**
+ * draw all links which are specified in the object's link attribute
+ */
+GUI.drawLinks = function(object) { 
 
 	if (object == undefined) return;
-	
-	/* set current link object */
-	GUI.currentLinkObject = object;
 		
 	var newLinks1 = [];
 	var oldLinks1 = object.getAttribute("link");
@@ -353,8 +331,8 @@ GUI.createLinks = function(object) {
 							$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
 						
 							//remove the object ids from the attribute lists
-                            object.removeLinkedObjectById(target.id);
-                            target.removeLinkedObjectById(object.id);
+							object.deleteLink(target.id);
+							//target.deleteLink(object.id);
                         }
 					},
 					{
@@ -367,7 +345,7 @@ GUI.createLinks = function(object) {
 				
 							object.select();
 								
-							GUI.createLinkDialog(object, target, changeProperties, false);	
+							GUI.showLinkPropertyDialog(object, target, changeProperties, false);	
 							
                         }
                     }
@@ -409,8 +387,21 @@ GUI.createLinks = function(object) {
 	
 }
 	
-//Dialog for setting/changing the link properties
-GUI.createLinkDialog = function(object, target, title, justcreated){
+	
+/**
+ * Dialog for setting/changing the link properties
+ */
+GUI.showLinkPropertyDialog = function(object, target, title, justcreated){   
+	
+	var selected = ObjectManager.getSelected();
+	var targetIds = new Array();
+	for(var i = 0; i<selected.length; i++){
+		var currentId = selected[i].getId()
+		if(currentId != object.id){
+			targetIds.push(currentId);
+			selected[i].deselect();
+		}
+	}
 	
 	var select1;
 	var select2;
@@ -463,7 +454,7 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 			padding = link.padding;
 		}
 	});
-										
+	
 	var undirected = object.translate(GUI.currentLanguage, "undirected");
 	var objectAsTarget = object.translate(GUI.currentLanguage, "object as target");
 	var objectAsSource = object.translate(GUI.currentLanguage, "object as source");
@@ -476,10 +467,10 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 	var style = object.translate(GUI.currentLanguage, "style");
 	var width = object.translate(GUI.currentLanguage, "width");
 	var pad = object.translate(GUI.currentLanguage, "distance between object and link");
-							
+	
 	var PropertyDialog = document.createElement("div");
 	$(PropertyDialog).attr("title", title);
-							
+	
 	var content = '<p>'+direction+'<br>';
 		content += 		'<select id="direction">';
 		content += 			'<option value="undirected"'+select1+'>'+undirected+'</option>';
@@ -503,7 +494,7 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 		content += 		'<p>'+pad+'<br>';
 		content += 		'<input type="number" id="linePadding" name="value" value="'+padding+'" min="0">';
 		content += '</p>';
-					
+		
 	var buttons = {};
 	var lineWidth;
 	var direction;
@@ -515,10 +506,10 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 
 	buttons[object.translate(GUI.currentLanguage, "save")] = function(domContent){
 	
-		lineWidth = $('#lineWidth').attr("value");
+		lineWidth = parseInt($('#lineWidth').attr("value"));
 		direction = $('#direction').val();
 		lineStyle = $('#style').val();
-		linePadding = $('#linePadding').attr("value");
+		linePadding = parseInt($('#linePadding').attr("value"));
 		
 		if(direction=="undirected"){
 			arrowheadAtotherObject = false;
@@ -538,62 +529,15 @@ GUI.createLinkDialog = function(object, target, title, justcreated){
 		}
 
 		if(justcreated){
-			object.buildLinks(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
+			object.createLinks(targetIds, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
+			//object.buildLinks(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
 		}
 		else{
-			GUI.changeLinks(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
+			//GUI.changeLinks(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
+			object.changeLink(target.id, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
 		}	
 	};
 
 	GUI.dialog(title, $(content), buttons, 300, false);
 		
-}	
-
-//handle the desired changes which was made in the change-properties-dialog
-//especially: changing the link attribute
-GUI.changeLinks = function(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding){
-
-	var newLinks3 = [];
-	var oldLinks3 = object.getAttribute("link");
-	if (_.isArray(oldLinks3)){
-		newLinks3 = newLinks3.concat(oldLinks3);
-	}else if (oldLinks3){
-	newLinks3.push(oldLinks3);
-	}
-	
-	var newLinks4 = [];
-	var oldLinks4 = target.getAttribute("link");
-	if (_.isArray(oldLinks4)){
-		newLinks4 = newLinks4.concat(oldLinks4);
-	}else if (oldLinks4){
-	newLinks4.push(oldLinks4);
-	}
-
-	$.each(newLinks3, function( index, value ) {
-
-		if(value.destination == target.id){
-			value.arrowheadOtherEnd = arrowheadAtotherObject;
-			value.arrowheadThisEnd = arrowheadAtthisObject;
-			value.width = lineWidth;
-			value.style = lineStyle;
-			value.padding = linePadding;
-		}
-	});
-				
-	$.each(newLinks4, function( index, value ) {
-
-		if(value.destination == object.id){
-			value.arrowheadOtherEnd = arrowheadAtthisObject;
-			value.arrowheadThisEnd = arrowheadAtotherObject;
-			value.width = lineWidth;
-			value.style = lineStyle;
-			value.padding = linePadding;
-		}
-	});
-						
-	target.setAttribute("link", newLinks4);
-	object.setAttribute("link", newLinks3);
-									
-	GUI.createLinks(object);
-
 }

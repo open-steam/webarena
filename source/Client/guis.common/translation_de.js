@@ -73,9 +73,16 @@ GUI.setTranslations('de',{
 	'Choose Line-Endpoint' : 'Linien-Endpunkt festlegen',
 	'Welcome' : 'Willkommen',
 	'Environment' : 'Umgebung',
-	 'Logout': 'Ausloggen',
-	 'Paint' : 'Zeichnen',
-	 'You cannot create objects in presentation mode' : 'Im Präsentationsmodus können keine Objekte erstellt werden',
-	 'You cannot create objects in coupling mode' : 'Im Couplingmodus können keine Objekte erstellt werden'
+	'Logout': 'Ausloggen',
+	'Paint' : 'Zeichnen',
+	'You cannot create objects in presentation mode' : 'Im Präsentationsmodus können keine Objekte erstellt werden',
+	'You cannot create objects in coupling mode' : 'Im Couplingmodus können keine Objekte erstellt werden',
+	'Label':'Beschriftung',
+	'top':'oben',
+	'middle':'Mitte',
+	'bottom':'unten',
+	'left':'links',
+	'center':'Mitte',
+	'right':'rechts'
 	}
 );

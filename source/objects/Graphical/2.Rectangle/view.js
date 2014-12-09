@@ -7,7 +7,6 @@
 
 Rectangle.draw = function(external) {
     var rep = this.getRepresentation();
-    console.log(rep);
     
     GeneralObject.draw.call(this, external);
 
