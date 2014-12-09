@@ -43,7 +43,9 @@ Textarea.register=function(type){
 
 Textarea.execute=function(){
 	
-	this.editText();
+	if(!this.input){
+		this.editText();
+	}
 	
 }
 
@@ -66,6 +68,7 @@ Textarea.justCreated = function() {
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
 Textarea.onMobile = true;
+Textarea.input = false;
 Textarea.isCreatableOnMobile = true;
 Textarea.hasEditableMobileContent = true;
 

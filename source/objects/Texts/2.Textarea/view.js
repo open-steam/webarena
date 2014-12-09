@@ -88,6 +88,10 @@ Textarea.createRepresentation = function(parent) {
 	$(body).html('<div class="overfloating-y"><div>TEXT</div></div>');
 
 	$(rep).append(body);
+	
+	$(rep).find("body").append('<textarea></textarea>');
+	
+	$(rep).find("textarea").hide();
 
 	$(rep).attr("id", this.getAttribute('id'));
 
@@ -98,16 +102,31 @@ Textarea.createRepresentation = function(parent) {
 }
 
 
-
 Textarea.editText = function() {
+
+	var rep = this.getRepresentation();
 	
-	var passThrough = { 
-		"resizable" : true,  
-		resizeStart : function(event,ui) { 
-			$('textarea[name=textedit]').css('height', '100%'); 
-		} 
-	};
-	GUI.editText(this, true, this.getViewWidth(), this.getViewHeight(), passThrough);
+	var self = this;
+	
+	var content = this.getContentAsString();
+	
+	$(rep).find("textarea").css("font-size", self.getAttribute('font-size')+'px');
+	$(rep).find("textarea").css("font-family", self.getAttribute('font-family'));
+	$(rep).find("textarea").css("color", self.getAttribute('font-color'));
+	$(rep).find("textarea").css("width", (rep.getBoundingClientRect().width-6)+'px');
+	$(rep).find("textarea").css("height", (rep.getBoundingClientRect().height-6)+'px');
+	$(rep).find("textarea").val(content);
+	$(rep).find("textarea").show();
+	
+	$(rep).find(".overfloating-y").hide();
+
+	this.input = true;
+	
+	$(document).bind("keyup", function(event) {
+		
+		if (event.keyCode == 13) self.saveChanges();
+		
+	});
 
 }
 
@@ -141,4 +160,24 @@ Textarea.checkTransparency = function(attribute, value) {
 	if ((fillcolor === 'transparent' && linecolor === 'transparent' && fontcolor === 'transparent') || (fillcolor === 'transparent' && linecolor === 'transparent' && this.getContentAsString().trim() === '')) {
 		return false;
 	} else return true;
+}
+
+
+/**
+ * Called after hitting the Enter key during the inplace editing
+ */
+Textarea.saveChanges = function() {
+
+	var rep = this.getRepresentation();
+	
+	var newContent = $(rep).find("textarea").val();
+	
+	this.input = false;
+	
+	this.setContent(newContent);
+	
+	$(rep).find("textarea").hide();
+	
+	$(rep).find(".overfloating-y").show();
+	
 }
