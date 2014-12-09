@@ -255,9 +255,9 @@ GeneralObject.register=function(type){
 	
 	//this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
         
-        this.registerAttribute('structures',{type:'array', standard: [], hidden:true});
-        this.registerAttribute('activeObjects',{type:'array', standard: [], hidden:true});
-        this.registerAttribute('contexts',{type:'array', standard: [], hidden:true});
+        this.registerAttribute('structures',{type:"object", standard: {}, hidden:true});
+        this.registerAttribute('activeObjects',{ type:"object", standard: {}, hidden:true});
+        this.registerAttribute('context',{ type:"object", standard: 0, hidden:true});
 	
 	this.registerAction('Delete',function(){
 		

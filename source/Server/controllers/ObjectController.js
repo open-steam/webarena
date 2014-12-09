@@ -144,4 +144,14 @@ ObjectController.evaluatePositions = function(data, context, cb) {
     }
 
 }
+ObjectController.reposition = function(data, context, cb) {
+    var roomID = data.room;
+    var objIDs = data.objects;
+
+    for (var key in objIDs) {
+        var obj = ObjectManager.getObject(roomID, objIDs[key], context);
+        obj.reposition();
+    }
+
+}
 module.exports = ObjectController;

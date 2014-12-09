@@ -971,10 +971,25 @@ ObjectManager.evaluatePositions = function(objects) {
     requestData.room = objects[0].getCurrentRoom();
     requestData.objects = array;
     Modules.Dispatcher.query('evaluatePositions', requestData, function() {  
-        //TODO: Do I really need this statement?
         GUI.deselectAllObjects();
     });
 }
+ObjectManager.reposition = function(objects) {
+    //create array and push all objects
+    var array = new Array();
+
+    for (var key in objects) {
+        var object = objects[key];
+        array.push(object.getId());
+    }
+    var requestData = {};
+    requestData.room = objects[0].getCurrentRoom();
+    requestData.objects = array;
+    Modules.Dispatcher.query('reposition', requestData, function() {  
+        GUI.deselectAllObjects();
+    });
+}
+
 
 ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
     var objects = ObjectManager.getSelected();

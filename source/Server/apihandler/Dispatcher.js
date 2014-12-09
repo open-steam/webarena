@@ -115,7 +115,10 @@ Dispatcher.registerCall('evaluatePositions', function(socket, data, responseID){
         var context = Modules.UserManager.getConnectionBySocket(socket);
         Modules.ObjectController.evaluatePositions(data, context, resultCallbackWrapper(socket, responseID));
 });
-
+Dispatcher.registerCall('reposition', function(socket, data, responseID){
+        var context = Modules.UserManager.getConnectionBySocket(socket);
+        Modules.ObjectController.reposition(data, context, resultCallbackWrapper(socket, responseID));
+});
 /**
  * Creates a callback function that sends the result as an info message to the client.
  *
