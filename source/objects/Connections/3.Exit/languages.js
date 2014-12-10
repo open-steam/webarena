@@ -2,7 +2,7 @@ Exit.setTranslations('de',{
 	'Exit':'Verknüpfung',
 	'destination':'Ziel',
 	'destinationObject':'Zielobjekt',
-	'Open in new window':'in neuem Fenster öffnen',
+	'Open in new window':'In neuem Fenster öffnen',
 	'Object Selection' : 'Objektauswahl',
 	'Open Object Selection' : 'Objektauswahl öffnen',
 	'ObjectBrowser' : 'Verknüpfung (Browser)',
@@ -11,4 +11,5 @@ Exit.setTranslations('de',{
 	'Okay' : 'Auswählen',
 	'Show objects' : 'Objekte anzeigen',
 	'create new Subroom' : 'neuen Unterraum erstellen'
-});
+}
+);

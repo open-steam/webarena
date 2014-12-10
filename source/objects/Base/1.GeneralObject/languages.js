@@ -44,16 +44,19 @@ GeneralObject.setTranslations('de',{
 	'bidirectional' : 'bidirektional',
 	'change properties' : 'Eigenschaften ändern',
 	'direction' : 'Richtung',
-        'destination' : 'Ziel',
-        'followOnDoubleClick' : 'Folge bei Doppelklick',
+    'destination' : 'Ziel',
+    'followOnDoubleClick' : 'Folge bei Doppelklick',
 	'stroke' : 'Linie',
 	'dotted' : 'gepunktet',
 	'dashed' : 'gestrichelt',
 	'style' : 'Stil',
 	'save' : 'speichern',
 	'distance between object and link' : 'Abstand zwischen Objekt und Link',
-        'create new Subroom' : 'Erstelle neuen Subraum',
-        'Cancel' : 'Abbrechen',
-        'Okay' : 'OK'
+    'create new Subroom' : 'neuen Unterraum erstellen',
+    'Cancel' : 'Abbrechen',
+    'Okay' : 'Auswählen',
+	'Open in new window' : 'In neuem Fenster öffnen',
+	'Object Selection' : 'Objektauswahl',
+	'Show objects' : 'Objekte anzeigen'
 }
 );

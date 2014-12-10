@@ -35,6 +35,7 @@ Room.register=function(type){
 	this.registerAttribute('bigIcon',{hidden:true});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
+	this.registerAttribute('followOnDoubleClick',{standard:'false', hidden:'true'});
 	
 	this.registerAttribute('showUserPaintings',{type:"boolean", standard:true, changedFunction: function(object, value) {object.showUserPaintings(value);}});
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
