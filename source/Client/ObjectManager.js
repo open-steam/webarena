@@ -451,6 +451,8 @@ ObjectManager.createObject=function(type,attributes,content,callback,index) {
                 clearTimeout(interval);
 
 				ObjectManager.renumberLayers(true);
+				
+				object.setAttribute('name', GUI.translate(type));
 
                 object.justCreated();
 				if (callback != undefined) callback(object);

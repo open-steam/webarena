@@ -742,7 +742,7 @@ $(function() {
 
 			this.el = document.createElement('div');
 			$(this.el).addClass("jPopover");
-			$("body").append(this.el);
+			$( "body:first" ).append(this.el);
 
 			this.hide(true);
 

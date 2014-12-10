@@ -44,108 +44,109 @@ GUI.initToolbar = function() {
 
         $("#header>div.header_left").append(newCategoryIcon);
 
-        if (object.length > 1) { //more than one object in the category
+        //if (object.length > 1) { //more than one object in the category
 
-            $(newCategoryIcon).attr("title", GUI.translate(object[0].category));
+		$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
 
-            /* add Popover */
+		/* add Popover */
 
-            $(newCategoryIcon).jPopover({
-                positionOffsetX: popover_positionOffsetX,
-                positionOffsetY: popover_positionOffsetY,
-                onSetup: function(domEl, popover) {
+		$(newCategoryIcon).jPopover({
+			positionOffsetX: popover_positionOffsetX,
+			positionOffsetY: popover_positionOffsetY,
+			onSetup: function(domEl, popover) {
 
-                    var page = popover.addPage(GUI.translate(key));
-                    var section = page.addSection();
+				var page = popover.addPage(GUI.translate(key));
+				var section = page.addSection();
 
-                    $.each(object, function(key, object) {
+				$.each(object, function(key, object) {
 
-                        var name = object.translate(GUI.currentLanguage, object.type);
+					var name = object.translate(GUI.currentLanguage, object.type);
 
-                        var element = section.addElement('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" /> ' + name);
+					var element = section.addElement('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" /> ' + name);
 
-                        var click = function(attributes, drag) {
+					var click = function(attributes, drag) {
 
-                            popover.hide();
+						popover.hide();
 
-                            var proto = ObjectManager.getPrototype(object.type);
+						var proto = ObjectManager.getPrototype(object.type);
 
-                            if (!Modules.Config.presentationMode) {
+						if (!Modules.Config.presentationMode) {
 
-                                if (drag) {
-                                    GUI.startNoAnimationTimer();
-                                    proto.create(attributes);
-                                }
-                                else {
-                                    if (object.type == 'Arrow' || object.type == 'Line') {
+							if (drag) {
+								GUI.startNoAnimationTimer();
+								proto.create(attributes);
+							}
+							else {
+								if (object.type == 'Arrow' || object.type == 'Line') {
 
-                                        GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
+									GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
 
-                                    }
-                                    else {
-                                        $("body").css('cursor', 'url(/objectIcons/' + object.type + '), auto');
-                                    }
-                                }
-                            }
-                            else {
-                                alert(GUI.translate("You cannot create objects in presentation mode"));
-                            }
+								}
+								else {
+									$("body").css('cursor', 'url(/objectIcons/' + object.type + '), auto');
+								}
+							}
+						}
+						else {
+							alert(GUI.translate("You cannot create objects in presentation mode"));
+						}
 
-                        }
-
-
-                        if (GUI.isTouchDevice) {
-                            $(element.getDOM()).bind("touchstart", function() {
-                                click({
-                                    "x": window.pageXOffset + 40,
-                                    "y": window.pageYOffset + 40
-                                }, false);
-                            });
-                        } else {
-                            $(element.getDOM()).bind("click", function() {
-                                click({
-                                    "x": window.pageXOffset + 40,
-                                    "y": window.pageYOffset + 40
-                                }, false);
-                            });
-                        }
+					}
 
 
-                        /* make draggable */
-                        var helper = $('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" />');
-                        helper.get(0).callback = function(offsetX, offsetY) {
+					if (GUI.isTouchDevice) {
+						$(element.getDOM()).bind("touchstart", function() {
+							click({
+								"x": window.pageXOffset + 40,
+								"y": window.pageYOffset + 40
+							}, false);
+						});
+					} else {
+						$(element.getDOM()).bind("click", function() {
+							click({
+								"x": window.pageXOffset + 40,
+								"y": window.pageYOffset + 40
+							}, false);
+						});
+					}
 
-                            var svgpos = $("#content").offset();
 
-                            var top = offsetY - svgpos.top;
-                            var left = offsetX;
+					/* make draggable */
+					var helper = $('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" />');
+					helper.get(0).callback = function(offsetX, offsetY) {
 
-                            click({
-                                "x": left,
-                                "y": top
-                            }, true);
+						var svgpos = $("#content").offset();
 
-                        }
+						var top = offsetY - svgpos.top;
+						var left = offsetX;
 
-                        $(element.getDOM()).addClass("toolbar_draggable");
-                        $(element.getDOM()).draggable({
-                            revert: true,
-                            distance: 20,
-                            cursor: "move",
-                            helper: function(event) {
-                                return helper;
-                            }
-                        });
+						click({
+							"x": left,
+							"y": top
+						}, true);
 
-                    });
+					}
 
-                }
-            });
+					$(element.getDOM()).addClass("toolbar_draggable");
+					$(element.getDOM()).draggable({
+						revert: true,
+						distance: 20,
+						cursor: "move",
+						helper: function(event) {
+							return helper;
+						}
+					});
 
-        } else { //one object in the category
+				});
 
-            /* add link to icon (no Popover) */
+			}
+		});
 
+		
+        //} else { //one object in the category
+
+            /* add link to icon (no Popover) 
+			
             $(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
 
             var click = function(attributes, drag) {
@@ -157,7 +158,7 @@ GUI.initToolbar = function() {
 
                     toolbar_locked_elements[object[0].type] = true;
 
-                    /* create unlock timer */
+                    // create unlock timer
                     window.setTimeout(function() {
                         toolbar_locked_elements[object[0].type] = undefined;
                     }, 2000);
@@ -201,10 +202,10 @@ GUI.initToolbar = function() {
                 });
             }
 
-            /* All objects (except for Paint and Highlighter) can be created by dragging them to the svg area */
+            //All objects (except for Paint and Highlighter) can be created by dragging them to the svg area
             if (object[0].type != "Paint" && object[0].type != "Highlighter") {
 
-                /* make draggable */
+                //make draggable
                 var helper = $('<img src="categoryIcons/' + object[0].category + '" alt="" width="24" height="24" />');
                 helper.get(0).callback = function(offsetX, offsetY) {
 
@@ -233,7 +234,8 @@ GUI.initToolbar = function() {
             }
 
         }
-
+		*/
+		
         var effect = function() {
             $(this).animate({opacity: 1}, 500, function() {
                 $(this).animate({opacity: 0.6}, 500);

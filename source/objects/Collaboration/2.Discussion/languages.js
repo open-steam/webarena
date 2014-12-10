@@ -6,6 +6,7 @@ Discussion.setTranslations('de',{
 	'Save':'Speichern',
 	'Cancel':'Abbrechen',
 	'Discussion without title':'Diskussion ohne Titel',
-	'Title of discussion':'Diskussions-Titel'
+	'Title of discussion':'Diskussions-Titel',
+	'Discussion':'Diskussion'
 }
 );
