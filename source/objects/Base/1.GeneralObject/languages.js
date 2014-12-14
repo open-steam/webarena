@@ -45,7 +45,6 @@ GeneralObject.setTranslations('de',{
 	'change properties' : 'Eigenschaften ändern',
 	'direction' : 'Richtung',
     'destination' : 'Ziel',
-    'followOnDoubleClick' : 'Folge bei Doppelklick',
 	'stroke' : 'Linie',
 	'dotted' : 'gepunktet',
 	'dashed' : 'gestrichelt',
@@ -55,7 +54,9 @@ GeneralObject.setTranslations('de',{
     'create new Subroom' : 'neuen Unterraum erstellen',
     'Cancel' : 'Abbrechen',
     'Okay' : 'Auswählen',
-	'Open in new window' : 'In neuem Fenster öffnen',
+	'open destination on double-click' : 'Ziel mit Doppelklick öffnen',
+	'open in' : 'Ziel öffnen in',
+	'Open destination' : 'Ziel öffnen',
 	'Object Selection' : 'Objektauswahl',
 	'Show objects' : 'Objekte anzeigen'
 }

@@ -1713,12 +1713,14 @@ GeneralObject.deselectHandler = function() {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.dblclickHandler = function(event) {
-    if(this.getAttribute("followOnDoubleClick")){
-        this.follow();
-    }else{
-        this.execute(event);
-    }
-    
+
+	if(this.getAttribute("open destination on double-click")){
+		this.follow(this.getAttribute("open in"));
+	}
+	else{
+		this.execute(event);
+	}
+	
 }
 
 /**

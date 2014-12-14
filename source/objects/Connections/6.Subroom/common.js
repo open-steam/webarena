@@ -17,35 +17,36 @@ Subroom.register=function(type){
 	IconObject.register.call(this,type);
 	IconObject.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
+	this.registerAttribute('destination', {type: 'text', readonly: true, standard: new Date().getTime()-1296055327011, category: 'Functionality'});
+	this.registerAttribute('open destination on double-click',{type:'boolean',standard:true,hidden:true,category:'Functionality'});
+	
 	var self=this;
 	
-	this.registerAction('Follow',function(object){
-		
-		object.execute();
-		
-	},true);
+	this.registerAction('Open destination', function(object) {
+        object.follow(object.getAttribute("open in"));
+    }, true);
 	
-	this.registerAction('Open in new window',function(object){
-		
-		object.execute(true);
-		
-	},true);
 }
 
-Subroom.execute=function(openInNewWindow){
+/*
+Subroom.execute=function(openMethod){
 	
 	var destination=this.getAttribute('destination');
-	
-	//TODO this must be done serverside in the connector
-	if (destination === 'choose') {
-		var random=new Date().getTime()-1296055327011;
 		
-		this.setAttribute('destination',random);
-		destination = random;
+	if(openMethod == 'new Tab'){
+		window.open(destination);
+		return;
 	}
+	if(openMethod == 'new Window'){
+		var newWindow = window.open(destination, Modules.Config.projectTitle, "height="+window.outerHeight+", width="+window.outerWidth);
+		return;
+    }
 	
-	if (openInNewWindow) { window.open(destination); }
-	else { ObjectManager.loadRoom(destination,false,ObjectManager.getIndexOfObject(this.getAttribute('id'))); }}
+	//open in same tab
+	ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')));
+	
+}
+*/
 
 Subroom.register('Subroom');
 Subroom.isCreatable=true;

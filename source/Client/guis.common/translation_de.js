@@ -94,6 +94,9 @@ GUI.setTranslations('de',{
 	'bottom':'unten',
 	'left':'links',
 	'center':'Mitte',
-	'right':'rechts'
+	'right':'rechts',
+	'same Tab':'diesem Tab',
+	'new Tab':'neuem Tab',
+	'new Window':'neuem Fenster'
 	}
 );

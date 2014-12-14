@@ -333,8 +333,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		}
 		
 		this.setValue = function(value) {
-
-			widget.valueBox.find("option[value="+value+"]").attr("selected", "selected");
+		
+			widget.valueBox.find("option[value='"+value+"']").attr("selected", "selected");
 			
 		}
 		
@@ -346,7 +346,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			
 				var val = GUI.translate(value);
 			
-				newHtml += '<option value="'+val+'">'+val+'</option>';
+				newHtml += '<option value="'+value+'">'+val+'</option>';
 				
 			});
 			

@@ -14,7 +14,7 @@ Exit.register=function(type){
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
 	
-        this.registerAttribute('followOnDoubleClick',{standard:'false', hidden:'true'});
+	this.registerAttribute('open destination on double-click',{type:'boolean',standard:true,hidden:true,category:'Functionality'});
 	/*this.registerAttribute('destination',{type:'Hyperlink', standard: "choose", linkFunction: function(object){object.showDialog()}, category:'Functionality', changedFunction: function(object) { object.updateIcon(); }});
 	this.registerAttribute('destinationObject',{type:'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object){object.showDialog()}, category:'Functionality'});
 	this.registerAttribute('filterObjects',{type:'boolean',standard:false, hidden:true});

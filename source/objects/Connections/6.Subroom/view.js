@@ -13,5 +13,5 @@ Subroom.getIconText = function() {
     return this.getAttribute("name");
 }
 Subroom.dblclickHandler = function(event) {
-    this.execute(event);
+    this.follow(this.getAttribute("open in"));
 }

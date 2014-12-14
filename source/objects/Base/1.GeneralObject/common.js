@@ -247,6 +247,20 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
 
+	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
+            object.showDialog()
+        }, category: 'Functionality', changedFunction: function(object) {
+            if(object.updateIcon){object.updateIcon()};
+        }});
+    this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
+            object.showDialog()
+        }, category: 'Functionality'});
+    this.registerAttribute('filterObjects', {type: 'boolean', standard: false, hidden: true});
+	
+	this.registerAttribute('open destination on double-click',{type:'boolean',standard:false,category:'Functionality'});
+	
+	this.registerAttribute('open in',{type:'selection',standard:'same Tab',options:['same Tab','new Tab','new Window'],category:'Functionality'});
+	
     //this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 
     this.registerAction('Delete', function() {
@@ -345,7 +359,6 @@ GeneralObject.register = function(type) {
     });
 
 
-
     this.registerAction('Ungroup', function() {
 
         var selected = ObjectManager.getSelected();
@@ -376,7 +389,6 @@ GeneralObject.register = function(type) {
         return hasGroups;
 
     });
-
 
 
     var r = Modules.Helper.getRandom(0, 200);
@@ -421,26 +433,10 @@ GeneralObject.register = function(type) {
 
     }, false);
 
-    this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
-            object.showDialog()
-        }, category: 'Functionality', changedFunction: function(object) {
-            if(object.updateIcon){object.updateIcon()};
-        }});
-    this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
-            object.showDialog()
-        }, category: 'Functionality'});
-    this.registerAttribute('filterObjects', {type: 'boolean', standard: false, hidden: true});
-    this.registerAttribute('followOnDoubleClick', {type: 'boolean', standard: false});
-
-    this.registerAction('Follow', function(object) {
-        object.follow();
+    this.registerAction('Open destination', function(object) {
+        object.follow(object.getAttribute("open in"));
     }, true);
-
-    this.registerAction('Open in new window', function(object) {
-        object.follow(true);
-    }, true);
-
-
+	
 }
 
 
@@ -809,9 +805,10 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 }
 
 
-GeneralObject.follow = function(openInNewWindow) {
-    var destination = this.getAttribute('destination');
+GeneralObject.follow = function(openMethod) {
 
+    var destination = this.getAttribute('destination');
+	
     if (!destination || destination == "choose") {
         return this.showDialog();
     } else {
@@ -837,13 +834,18 @@ GeneralObject.follow = function(openInNewWindow) {
             }
         }
 
-        if (openInNewWindow) {
-            //console.log("new window");
+		
+        if(openMethod == 'new Tab'){
             window.open(destination);
-        } else {
-            //console.log("follow");
-            ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
+			return;
+		}
+        if(openMethod == 'new Window'){
+			var newWindow = window.open(destination, Modules.Config.projectTitle, "height="+window.outerHeight+", width="+window.outerWidth);
+			return;
         }
+	
+		//open in same tab
+		ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
     }
 
 }

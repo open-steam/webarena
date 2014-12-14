@@ -116,11 +116,13 @@ IconObject.setViewHeight = function(value) {
 }
 
 IconObject.dblclickHandler = function() {
-    if(this.getAttribute("followOnDoubleClick")){
-        this.follow();
-    }else{
-        this.execute();
-    }
+
+	if(this.getAttribute("open destination on double-click")){
+		this.follow(this.getAttribute("open in"));
+	}
+	else{
+		this.execute(event);
+	}
 	
 }
 
