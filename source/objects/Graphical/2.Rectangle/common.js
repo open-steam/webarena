@@ -25,9 +25,20 @@ Rectangle.register=function(type){
 	
 }
 
+
+Rectangle.execute=function(){
+	
+	if(!this.input){
+		this.editText();
+	}
+	
+}
+
+
 Rectangle.register('Rectangle');
 Rectangle.isCreatable=true;
 Rectangle.onMobile = true;
+Rectangle.input = false;
 
 Rectangle.moveByTransform = function(){return true;}
 

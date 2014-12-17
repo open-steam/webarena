@@ -168,16 +168,20 @@ Textarea.checkTransparency = function(attribute, value) {
  */
 Textarea.saveChanges = function() {
 
-	var rep = this.getRepresentation();
+	if(this.input){
+
+		var rep = this.getRepresentation();
 	
-	var newContent = $(rep).find("textarea").val();
+		var newContent = $(rep).find("textarea").val();
 	
-	this.input = false;
+		this.input = false;
 	
-	this.setContent(newContent);
+		this.setContent(newContent);
 	
-	$(rep).find("textarea").hide();
+		$(rep).find("textarea").hide();
 	
-	$(rep).find(".overfloating-y").show();
+		$(rep).find(".overfloating-y").show();
+	
+	}
 	
 }

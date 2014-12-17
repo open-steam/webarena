@@ -152,18 +152,22 @@ SimpleText.checkTransparency = function(attribute, value) {
  */
 SimpleText.saveChanges = function() {
 
-	var rep = this.getRepresentation();
-	
-	var newContent = $(rep).find("input").val()
+	if(this.input){
 
-	$(rep).find("input").hide();
+		var rep = this.getRepresentation();
 	
-	$(rep).find("text").show();
-	
-	this.input = false;
-	
-	this.setContent(newContent);
+		var newContent = $(rep).find("input").val()
 
-	this.draw();
+		$(rep).find("input").hide();
+	
+		$(rep).find("text").show();
+	
+		this.input = false;
+	
+		this.setContent(newContent);
+
+		this.draw();
+	
+	}
 	
 }

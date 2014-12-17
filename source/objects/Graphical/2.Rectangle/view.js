@@ -18,15 +18,15 @@ Rectangle.draw = function(external) {
     }
 
     var label = this.getAttribute('label');
-    if (!label)
-        label = '';
+	
+    if(!label) label = '';
 
     rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + this.getAttribute('horizontal-align') + '">' + label + '</td></tr></table>';
 
     rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.text.style.fontFamily = this.getAttribute('font-family');
     rep.text.style.color = this.getAttribute('font-color');
-
+	
 }
 
 
@@ -41,10 +41,7 @@ Rectangle.setViewWidth = function(value) {
     $(rep.text).attr("width", value);
     var table = rep.text.getElementsByTagName('td')[0];
 
-    if (table) {
-
-        table.style.textAlign = this.getAttribute('horizontal-align');
-    }
+    if(table) table.style.textAlign = this.getAttribute('horizontal-align');
 
     GUI.adjustContent(this);
 }
@@ -61,8 +58,7 @@ Rectangle.setViewHeight = function(value) {
     $(rep.text).attr("height", value);
     var table = rep.text.getElementsByTagName('td')[0];
 
-    if (table) {
-
+    if(table){
         table.style.height = value + 'px';
         table.style.verticalAlign = this.getAttribute('vertical-align');
     }
@@ -96,4 +92,56 @@ Rectangle.createRepresentation = function(parent) {
 
     return rep;
 
+}
+
+
+/**
+ * Called after a double click on the object, enables the inplace editing
+ */
+Rectangle.editText = function(){
+
+	var rep = this.getRepresentation();
+	
+	var table = rep.text.getElementsByTagName('td')[0];
+	
+	table.innerHTML='<textarea type="text" name="newContent" style="font-size: '+this.getAttribute('font-size')+'px; font-family: '+this.getAttribute('font-family')+'; color: '+this.getAttribute('font-color')+';">';
+	
+	$(rep).find("textarea").val(this.getAttribute('label'));
+	$(rep).find("textarea").css("width", "90%");
+	$(rep).find("textarea").css("height", "90%");
+	
+	this.input = true;
+	
+	var self = this;
+	
+	$(document).bind("keyup", function(event) {
+		
+		if (event.keyCode == 13) self.saveChanges();
+		
+	});
+
+}
+
+
+/**
+ * Called after hitting the Enter key during the inplace editing
+ */
+Rectangle.saveChanges = function() {
+
+	if(this.input){
+		var rep = this.getRepresentation();
+	
+		var newContent = $(rep).find("textarea").val()
+	
+		if(typeof newContent != 'undefined'){ 
+			newContent = newContent.trim();
+			this.setAttribute("label", newContent);
+		}
+	
+		this.input = false;
+
+		$(rep).find("textarea").remove();
+	
+		this.draw();	
+	}
 }
