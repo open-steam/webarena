@@ -389,6 +389,19 @@ GeneralObject.register = function(type) {
         return hasGroups;
 
     });
+    this.registerAction('copy format', function(){
+        var selected = ObjectManager.getSelected();
+        if(selected.length == 1){
+            var object = selected[0];
+            object.showFormatDialog();
+        }else{
+            alert("Funktion ist nur für ein selektiertes Objekt verfügbar!");
+        }
+    });
+    this.registerAction('paste format', function(){
+        var selected = ObjectManager.getSelected();
+        ObjectManager.pasteFormatAttributes(selected);
+    }); 
 
 
     var r = Modules.Helper.getRandom(0, 200);
@@ -803,7 +816,6 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
         }
     });
 }
-
 
 GeneralObject.follow = function(openMethod) {
 
