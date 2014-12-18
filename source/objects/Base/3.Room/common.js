@@ -22,7 +22,7 @@ Room.register=function(type){
 	this.registerAttribute('x',{hidden:true});
 	this.registerAttribute('y',{hidden:true});
 	this.registerAttribute('group',{hidden:true});
-
+	this.registerAttribute('parent', {hidden: true});
 	this.registerAttribute('chatMessages',{hidden: true, readonly:true, standard: []});
     
 	//Hide unnecessary attributes (at least for now)

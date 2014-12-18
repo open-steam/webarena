@@ -462,7 +462,7 @@ GUI.initToolbar = function() {
             /*add home button*/
             var btnHome = section.addElement('<img src= "../../guis.common/images/home_grey.png" alt="" width="24" height="24" id="home_button" class="sidebar_button" /> ' + GUI.translate("Home"));
             var clickHome = function() {
-                Modules.ObjectManager.goParent();
+                Modules.ObjectManager.goHome();
                 popover.hide();
             };
 

@@ -177,7 +177,7 @@ ObjectManager.hasObject=function(obj){
 ObjectManager.objectUpdate=function(data){
 	
     var object=ObjectManager.getObject(data.id);
-
+	
     if (object){
 		
         if (object.moving) return;
@@ -185,7 +185,7 @@ ObjectManager.objectUpdate=function(data){
         var oldData=object.get();
 		
         object.setAll(data);
-        
+		
         /**
         
         TODO Room updated come with no object type. Why?
@@ -208,6 +208,7 @@ ObjectManager.objectUpdate=function(data){
 
         object.refreshDelayed();
     } else {
+	
         object = ObjectManager.buildObject(data.type,data);
 
         if (GUI.couplingModeActive) {
@@ -305,6 +306,7 @@ ObjectManager.removeLocally=function(data){
 	
 }
 
+
 ObjectManager.login=function(username, password, externalSession){
     if (!username) username='guest';
     if (!password) password='';
@@ -317,13 +319,18 @@ ObjectManager.login=function(username, password, externalSession){
 
 
 ObjectManager.goParent=function(){
-	var parent=ObjectManager.getCurrentRoom().getAttribute('parent');
-	if (parent){
-		ObjectManager.loadRoom(ObjectManager.getCurrentRoom().getAttribute('parent'));
+	var currentRoomID = ObjectManager.currentRoomID['left'];
+	var currentRoom = ObjectManager.getObject(currentRoomID);
+	var parentID = currentRoom.getAttribute('parent');
+	
+	if (parentID){
+		ObjectManager.loadRoom(parentID);
 	} else {
 		alert(GUI.translate('This room has no parent.'))
 	}
+	
 }
+
 
 ObjectManager.goHome=function(){
 	ObjectManager.loadRoom(ObjectManager.user.home);
@@ -347,9 +354,8 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 	
     this.executeRoomChangeCallbacks();
 
-
 	if (!index) var index = 'left';
-			
+		
 	// in coupling mode: do not load room if it is already displayed
 	var proceed = true;
 	if (GUI.couplingModeActive && (ObjectManager.getRoomID('left') == roomid || ObjectManager.getRoomID('right') == roomid)) {
@@ -367,6 +373,7 @@ ObjectManager.loadRoom=function(roomid, byBrowserNav, index, callback){
 				}
 
 				if(!roomid) roomid='public';
+				
 				self.currentRoomID[index]=roomid;
 				   
 				if (!byBrowserNav && index === 'left'){
