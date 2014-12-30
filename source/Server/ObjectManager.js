@@ -776,16 +776,6 @@ ObjectManager.deleteObject = function(data, context, callback) {
 
     Modules.Connector.mayDelete(roomID, objectID, context, afterRightsCheck)
 }
-ObjectManager.updateFormatAttributesS = function(data, context, callback) {
-    var that = this;
-    for(var i in data.objectIds){
-        var obj = that.getObject(data.roomId, data.objectIds[i], context);
-        for(var d in data.data){
-            if(data.data[d]){
-                obj.setAttribute(d,data.data[d] );
-            }
-        }
-    }
-}
+
 
 module.exports = ObjectManager;

@@ -371,7 +371,7 @@ GeneralObject.showDialog = function() {
     });
 
 }
-GeneralObject.showFormatDialog = function() {
+GeneralObject.showFormatDialog = function(selected) {
     var that = this;
     var dialog_buttons = {};
     dialog_buttons[that.translate(GUI.currentLanguage, "Copy selected format attributes")] = function() {
@@ -380,25 +380,81 @@ GeneralObject.showFormatDialog = function() {
         data.y = $('#y-axis').attr('checked') == 'checked' ? that.getAttribute('y') : false;
         data.width = $('#width').attr('checked') == 'checked' ? that.getAttribute('width') : false;
         data.height = $('#height').attr('checked') == 'checked' ? that.getAttribute('height') : false;
-        data.fillcolor = $('#fillcolor').attr('checked') == 'checked' ? that.getAttribute('fillcolor') : false;
-        data.linecolor = $('#linecolor').attr('checked') == 'checked' ? that.getAttribute('linecolor') : false;
-        data.linesize = $('#linesize').attr('checked') == 'checked' ? that.getAttribute('linesize') : false;
-        var room = that.getRoom();
-        ObjectManager.copyFormatAttributes(data, room);
+        if (document.getElementById("fillcolor") !== null)
+            data.fillcolor = $('#fillcolor').attr('checked') == 'checked' ? that.getAttribute('fillcolor') : false;
+        if (document.getElementById("linecolor") !== null)
+            data.linecolor = $('#linecolor').attr('checked') == 'checked' ? that.getAttribute('linecolor') : false;
+        if (document.getElementById("linesize") !== null)
+            data.linesize = $('#linesize').attr('checked') == 'checked' ? that.getAttribute('linesize') : false;
+
+        ObjectManager.latestFormatSelections = {};
+        for (var i in selected) {
+            if (selected[i].id !== that.id) {
+                for (var d in data) {
+                    if (data[d]) {
+                        selected[i].setAttribute(d, data[d]);
+                        ObjectManager.latestFormatSelections[d] = true;
+                    }
+                }
+            }
+        }
+
+        //ObjectManager.copyFormatAttributes(data, room);
+
+        //Todo: Übertrage die Formatierungseinstellungen
         GUI.updateInspector();
     };
     dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
         return false;
     };
     var dialog_width = 600;
+    var attributes = that.getAttributes();
     var content = [];
-    content.push('<input id="x-axis" type="checkbox" /> x position <br />');
-    content.push('<input id="y-axis" type="checkbox" /> y position <br />');
-    content.push('<input id="width" type="checkbox" /> width <br />');
-    content.push('<input id="height" type="checkbox" /> height <br />');
-    content.push('<input id="fillcolor" type="checkbox" /> fill color <br />');
-    content.push('<input id="linecolor" type="checkbox" /> line color <br />');
-    content.push('<input id="linesize" type="checkbox" /> line size <br />');
+    if (ObjectManager.latestFormatSelections === undefined)
+        ObjectManager.latestFormatSelections = {};
+    if (ObjectManager.latestFormatSelections.x) {
+        content.push('<input id="x-axis" type="checkbox" checked="checked" /> x position <br />');
+    } else {
+        content.push('<input id="x-axis" type="checkbox"/> x position <br />');
+    }
+    if (ObjectManager.latestFormatSelections.y) {
+        content.push('<input id="y-axis" type="checkbox" checked="checked" /> y position <br />');
+    } else {
+        content.push('<input id="y-axis" type="checkbox"/> y position <br />');
+    }
+    if (ObjectManager.latestFormatSelections.width) {
+        content.push('<input id="width" type="checkbox"  checked="checked" /> width <br />');
+    } else {
+        content.push('<input id="width" type="checkbox" /> width <br />');
+    }
+    if (ObjectManager.latestFormatSelections.height) {
+        content.push('<input id="height" type="checkbox" checked="checked" /> height <br />');
+    } else {
+        content.push('<input id="height" type="checkbox" /> height <br />');
+    }
+    if (attributes["fillcolor"] && !attributes["fillcolor"].hidden) {
+        if (ObjectManager.latestFormatSelections.fillcolor) {
+            content.push('<input id="fillcolor" type="checkbox" checked="checked" /> fill color <br />');
+        } else {
+            content.push('<input id="fillcolor" type="checkbox"  /> fill color <br />');
+        }
+    }
+
+    if (attributes["linecolor"] && !attributes["linecolor"].hidden) {
+        if (ObjectManager.latestFormatSelections.linecolor) {
+            content.push('<input id="linecolor" type="checkbox" checked="checked" /> line color <br />');
+        } else {
+            content.push('<input id="linecolor" type="checkbox" /> line color <br />');
+        }
+    }
+
+    if (attributes["linesize"] && !attributes["linesize"].hidden) {
+        if (ObjectManager.latestFormatSelections.linesize) {
+            content.push('<input id="linesize" type="checkbox" checked="checked" /> line size <br />');
+        } else {
+            content.push('<input id="linesize" type="checkbox" /> line size <br />');
+        }
+    }
 
 
     var dialog = GUI.dialog(
