@@ -18,6 +18,12 @@ IconObject.createRepresentation = function(parent) {
 
 	rep.dataObject=this;
 
+	var SVGforeign = GUI.svg.other(rep,"foreignObject");
+	
+	var body = document.createElement("body");
+	
+	$(rep).find("foreignObject").append(body);
+	
 	this.initGUI(rep);
 	
 	return rep;
@@ -115,15 +121,22 @@ IconObject.setViewHeight = function(value) {
 
 }
 
-IconObject.dblclickHandler = function() {
+IconObject.dblclickHandler = function(event) {
 
-	if(this.getAttribute("open destination on double-click")){
-		this.follow(this.getAttribute("open in"));
-	}
-	else{
-		this.execute(event);
-	}
+	if(!this.input){
+		if(event.target.localName == "image"){
+			if(this.getAttribute("open destination on double-click")){
+				this.follow(this.getAttribute("open in"));
+			}
+			else{
+				this.execute(event);
+			}
+		}
 	
+		if(event.target.localName == "tspan"){
+			this.editText();
+		}
+	}
 }
 
 IconObject.createPixelMap=function(SVGImage){
@@ -256,6 +269,7 @@ IconObject.renderText = function (text){
     }
     var text = GUI.svg.text(rep, 0, 75, cTexts);
     $(text).attr("font-size", 12);
+	$(text).attr('pointer-events','fill');
 
 	/* center text */
 	$(rep).find("text").find("tspan").each(function() {
@@ -294,4 +308,59 @@ IconObject.updateIcon=function(){
 	if (this.getIconText()) this.renderText(this.getIconText());
 
 	this.createPixelMap();
+}
+
+
+/**
+ * Called after a double click on the text, enables the inplace editing
+ */
+IconObject.editText = function(){
+
+	var rep = this.getRepresentation();
+	
+	$(rep).find("body").append('<input type="text" name="newContent" value="'+this.getIconText()+'" style="font-size: 12px;">');
+	
+	$(rep).find("foreignObject").attr("x", -66); 
+	$(rep).find("foreignObject").attr("y", 75); 
+	$(rep).find("foreignObject").attr("height", 22);
+	$(rep).find("foreignObject").attr("width", 200);
+	$(rep).find("foreignObject").attr('pointer-events','fill');
+	
+	$(rep).find("input").css("width", "194px"); 
+	
+	$(rep).find("text").hide();
+	
+	this.input = true;
+	
+	var self = this;
+	
+	$(document).bind("keyup", function(event) {
+		
+		if (event.keyCode == 13) self.saveChanges();
+		
+	});
+
+}
+
+
+/**
+ * Called after hitting the Enter key during the inplace editing
+ */
+IconObject.saveChanges = function() {
+
+	if(this.input){
+		var rep = this.getRepresentation();
+	
+		var newContent = $(rep).find("input").val()
+
+		$(rep).find("input").remove();
+	
+		$(rep).find("text").show();
+	
+		this.input = false;
+	
+		this.setAttribute("name", newContent);
+	
+		this.draw();	
+	}
 }

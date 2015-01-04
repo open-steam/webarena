@@ -12,6 +12,16 @@ Subroom.getStatusIcon = function() {
 Subroom.getIconText = function() {
     return this.getAttribute("name");
 }
+
 Subroom.dblclickHandler = function(event) {
-    this.follow(this.getAttribute("open in"));
+
+	if(!this.input){
+		if(event.target.localName == "image"){
+			this.follow(this.getAttribute("open in"));
+		}
+	
+		if(event.target.localName == "tspan"){
+			this.editText();
+		}
+	}	
 }

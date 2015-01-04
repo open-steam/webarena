@@ -28,7 +28,7 @@ IconObject.register=function(type){
 	this.registerAttribute('height',{hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
-        this.registerAttribute('linecolor',{hidden:true});
+	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
 	this.unregisterAction('to back');
 	this.unregisterAction('to front');
@@ -75,6 +75,9 @@ IconObject.register=function(type){
 IconObject.isResizable=function(){
 	return false;
 }
+
+
+IconObject.input = false;
 
 IconObject.moveByTransform = function(){return true;};
 
