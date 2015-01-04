@@ -1221,25 +1221,4 @@ ObjectManager.writeToServerConsole = function(data) {
     ObjectManager.Modules.Dispatcher.query('writeToServerConsole', data, function() {
     });
 }
-ObjectManager.copyFormatAttributes = function(data, room) {
-    ObjectManager.formatClipBoard = {};
-    ObjectManager.formatClipBoard.data = data;
-    ObjectManager.formatClipBoard.room = room;
-}
-ObjectManager.pasteFormatAttributes = function(objects) {
-    if (ObjectManager.formatClipBoard && ObjectManager.formatClipBoard.data) {
-        var that = this;
-        var requestData = {};
-        requestData.roomId = that.getCurrentRoom().id;
-        requestData.data = ObjectManager.formatClipBoard.data;
-        requestData.objectIds = [];
-        for (var i in objects) {
-            requestData.objectIds.push(objects[i].id);
-        }
-        Modules.Dispatcher.query('updateFormatAttributes', requestData, function(idList) {
-            
-            GUI.deselectAllObjects();
-            
-        });
-    }
-}
+

@@ -115,10 +115,7 @@ Dispatcher.registerCall('serverCall', function(socket, data, responseID) {
 Dispatcher.registerCall('writeToServerConsole', function(socket, data, responseId) {
     Modules.ServerController.writeToServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
 });
-Dispatcher.registerCall('updateFormatAttributes', function(socket, data, responseID) {
-    var context = Modules.UserManager.getConnectionBySocket(socket);
-    Modules.ObjectManager.updateFormatAttributesS(data, context, resultCallbackWrapper(socket, responseID));
-});
+
 /**
  * Creates a callback function that sends the result as an info message to the client.
  *

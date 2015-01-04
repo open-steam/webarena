@@ -389,19 +389,19 @@ GeneralObject.register = function(type) {
         return hasGroups;
 
     });
-    this.registerAction('copy format', function(){
+    this.registerAction('copy format', function(lastClicked){
         var selected = ObjectManager.getSelected();
-        if(selected.length == 1){
-            var object = selected[0];
-            object.showFormatDialog();
+        //console.log(lastClicked);
+        if(selected.length > 1){
+            lastClicked.showFormatDialog(selected);
         }else{
-            alert("Funktion ist nur für ein selektiertes Objekt verfügbar!");
-        }
+            alert("Es muss mehr als ein Objekt selektiert sein. Ansonsten gibt es keine Objekte, auf die die Formatierung übertragen werden kann!");
+        } 
     });
-    this.registerAction('paste format', function(){
+    /*this.registerAction('paste format', function(){
         var selected = ObjectManager.getSelected();
         ObjectManager.pasteFormatAttributes(selected);
-    }); 
+    }); */
 
 
     var r = Modules.Helper.getRandom(0, 200);
