@@ -34,13 +34,19 @@ GUI.showLogin = function(err) {
 	
 	$("#login_username").focus();
 	
-	$("#login_submit").click(GUI.login);
-       
+	$("#login_submit").click(GUI.login);  
+	   
 	$("#login input").keyup( function(event) {
 		if (event.keyCode == 13) {
-			GUI.login();
+			
 		}
 	});
+	
+	var userDataObject = GUI.retrieveUserData();
+
+	if(userDataObject){
+		GUI.login();
+	}
 	
 }
 
@@ -132,6 +138,17 @@ GUI.login = function() {
 	
 	if (GUI.username == "") GUI.username = "User";
 	
+	var userDataObject = GUI.retrieveUserData();
+
+	if(userDataObject){
+		GUI.username = userDataObject.username;
+		GUI.password = userDataObject.password;
+		GUI.externalSession = userDataObject.external;
+	}
+	else{
+		GUI.storeUserData();
+	}
+	
 	GUI.userid = GUI.username;
         
         // add cookie with user id
@@ -145,4 +162,39 @@ GUI.login = function() {
 	
 	GUI.loadGUI(); //reload GUI
 	
+}
+
+
+/**
+ * stores the user data in the local storage
+ */
+GUI.storeUserData = function() {
+
+	var userDataObject = {'username': GUI.username, 'password': GUI.password, 'external': GUI.externalSession};
+
+	if (typeof(Storage) != "undefined") {
+		localStorage.setItem('webarena', JSON.stringify(userDataObject));
+	} 
+}
+
+
+/**
+ * reads out the user data from the local storage
+ */
+GUI.retrieveUserData = function() {
+
+	var userDataObject = localStorage.getItem('webarena');
+	
+	return JSON.parse(userDataObject);
+
+}
+
+
+/**
+ * deletes the user data from the local storage
+ */
+GUI.deleteUserData = function() {
+
+	localStorage.removeItem('webarena');
+
 }

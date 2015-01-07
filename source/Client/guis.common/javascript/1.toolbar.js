@@ -480,6 +480,7 @@ GUI.initToolbar = function() {
             var clickLogout = function() {
                 location.replace(location.origin);
                 popover.hide();
+				GUI.deleteUserData();
             };
 
 
