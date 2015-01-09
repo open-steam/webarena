@@ -50,8 +50,15 @@ IconObject.draw=function(external){
 	if (this.getIconText()) this.renderText(this.getIconText());
 
 	if (!$(rep).hasClass("selected")) {
-		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).find("rect").removeAttr("stroke");
+			$(rep).find("rect").removeAttr("stroke-width");
+		}
+		else{
+			$(rep).find("rect").attr("stroke", linecolor);
+			$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 
 	if (!$(rep).hasClass("webarena_ghost")) {

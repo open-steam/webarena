@@ -31,8 +31,15 @@ File.draw = function(external) {
     }
 	
 	if (!group.hasClass("selected")) {
-		group.find("rect").attr("stroke", this.getAttribute('linecolor'));
-		group.find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+			group.find("rect").removeAttr("stroke");
+			group.find("rect").removeAttr("stroke-width");
+		}
+		else{
+			group.find("rect").attr("stroke", linecolor);
+			group.find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 	
 	this.createPixelMap();

@@ -18,10 +18,17 @@ SimpleText.draw=function(external){
 	this.drawDimensions(external);
 
 	//$(rep).attr("fill", this.getAttribute('fillcolor'));
-	
+		
 	if (!$(rep).hasClass("selected")) {
-		$(rep).find("text").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("text").attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).find("text").removeAttr("stroke");
+			$(rep).find("text").removeAttr("stroke-width");
+		}
+		else{
+			$(rep).find("text").attr("stroke", linecolor);
+			$(rep).find("text").attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 	
 	$(rep).find("text").attr("font-size", this.getAttribute('font-size'));

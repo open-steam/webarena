@@ -12,11 +12,17 @@ Polygon.draw=function(external){
 	GeneralObject.draw.call(this, external);
 
 	$(rep).attr("fill",  this.getAttribute('fillcolor'));
-
 	
 	if (!$(rep).hasClass("selected")) {
-		$(rep).attr("stroke", this.getAttribute('linecolor'));
-		$(rep).attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).removeAttr("stroke");
+			$(rep).removeAttr("stroke-width");
+		}
+		else{
+			$(rep).attr("stroke", linecolor);
+			$(rep).attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 	
 	this.drawPolygon();

@@ -33,8 +33,15 @@ Ellipse.draw=function(external){
 	$(rep).find("ellipse").attr("fill", this.getAttribute('fillcolor'));
 	
 	if (!$(rep).hasClass("selected")) {
-		$(rep).find("ellipse").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("ellipse").attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).find("ellipse").removeAttr("stroke");
+			$(rep).find("ellipse").removeAttr("stroke-width");
+		}
+		else{
+			$(rep).find("ellipse").attr("stroke", linecolor);
+			$(rep).find("ellipse").attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 
 }

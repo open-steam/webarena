@@ -12,10 +12,17 @@ Rectangle.draw = function(external) {
 
     $(rep).attr("fill", this.getAttribute('fillcolor'));
 
-    if (!$(rep).hasClass("selected")) {
-        $(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
-        $(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
-    }
+	if (!$(rep).hasClass("selected")) {
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).find("rect").removeAttr("stroke");
+			$(rep).find("rect").removeAttr("stroke-width");
+		}
+		else{
+			$(rep).find("rect").attr("stroke", linecolor);
+			$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		}
+	}
 
     var label = this.getAttribute('label');
 	

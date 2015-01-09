@@ -317,7 +317,6 @@ GeneralObject.removeSelectedIndicator = function() {
         borderRep = $(rep).find(".borderRect").get(0);
     }
 
-
     $(borderRep).attr("stroke", this.oldAttrStroke);
     $(borderRep).attr("stroke-width", this.oldAttrStrokeWidth);
     $(borderRep).attr("stroke-dasharray", "none");
