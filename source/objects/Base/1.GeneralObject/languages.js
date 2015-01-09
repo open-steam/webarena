@@ -58,6 +58,9 @@ GeneralObject.setTranslations('de',{
 	'open in' : 'Ziel öffnen in',
 	'Open destination' : 'Ziel öffnen',
 	'Object Selection' : 'Objektauswahl',
-	'Show objects' : 'Objekte anzeigen'
+	'Show objects' : 'Objekte anzeigen',
+        'Copy selected format attributes' : 'Übertrage selektierte Eigenschaften',
+        'Copy format attributes' : 'Übertragung der Eigenschaften eines Objektes',
+        'copy format' : 'Übertrage Formatierung'
 }
 );

@@ -407,54 +407,72 @@ GeneralObject.showFormatDialog = function(selected) {
     dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
         return false;
     };
-    var dialog_width = 600;
+    var dialog_width = 400;
     var attributes = that.getAttributes();
     var content = [];
+    var html = "";
+    var text = "An dieser Stelle kann bestimmt werden, welche Eigenschaften des selektierten Objektes auf die übrigen markierten Objekte übertragen werden."
+    content.push(text + "<br /> <br />");
     if (ObjectManager.latestFormatSelections === undefined)
         ObjectManager.latestFormatSelections = {};
+
+    var attributename = that.translate(GUI.currentLanguage, "x");
+    
+    html += ('<div id="positions" style="float:left;margin-right:50px">');
+    html += '<div style="margin-bottom:3px">Objektposition:</div>';
     if (ObjectManager.latestFormatSelections.x) {
-        content.push('<input id="x-axis" type="checkbox" checked="checked" /> x position <br />');
+        html += ('<span><input id="x-axis" type="checkbox" checked="checked" /> ' + attributename + '</span> <br />');
     } else {
-        content.push('<input id="x-axis" type="checkbox"/> x position <br />');
+        html += ('<span><input id="x-axis" type="checkbox"/> ' + attributename + ' <br /></span>');
     }
+    attributename = that.translate(GUI.currentLanguage, "y");
     if (ObjectManager.latestFormatSelections.y) {
-        content.push('<input id="y-axis" type="checkbox" checked="checked" /> y position <br />');
+        html += ('<input id="y-axis" type="checkbox" checked="checked" /> ' + attributename + ' <br />');
     } else {
-        content.push('<input id="y-axis" type="checkbox"/> y position <br />');
+        html += ('<input id="y-axis" type="checkbox"/> ' + attributename + ' <br />');
     }
+    attributename = that.translate(GUI.currentLanguage, "width");
     if (ObjectManager.latestFormatSelections.width) {
-        content.push('<input id="width" type="checkbox"  checked="checked" /> width <br />');
+        html += ('<input id="width" type="checkbox"  checked="checked" /> ' + attributename + ' <br />');
     } else {
-        content.push('<input id="width" type="checkbox" /> width <br />');
+        html += ('<input id="width" type="checkbox" /> ' + attributename + ' <br />');
     }
+    attributename = that.translate(GUI.currentLanguage, "height");
     if (ObjectManager.latestFormatSelections.height) {
-        content.push('<input id="height" type="checkbox" checked="checked" /> height <br />');
+        html += ('<input id="height" type="checkbox" checked="checked" /> ' + attributename + ' <br />');
     } else {
-        content.push('<input id="height" type="checkbox" /> height <br />');
+        html += ('<input id="height" type="checkbox" /> ' + attributename + ' <br />');
     }
+    html += ('</div>');
+    html += ('<div id="graphicalAttributes">');
+    html += '<div style="margin-bottom:3px">Objektdarstellung:</div>';
+    attributename = that.translate(GUI.currentLanguage, "fillcolor");
     if (attributes["fillcolor"] && !attributes["fillcolor"].hidden) {
         if (ObjectManager.latestFormatSelections.fillcolor) {
-            content.push('<input id="fillcolor" type="checkbox" checked="checked" /> fill color <br />');
+            html += ('<span><input id="fillcolor" type="checkbox" checked="checked" /> ' + attributename + '</span> <br />');
         } else {
-            content.push('<input id="fillcolor" type="checkbox"  /> fill color <br />');
+            html += ('<span><input id="fillcolor" type="checkbox"  /> ' + attributename + '</span> <br />');
         }
     }
-
+    attributename = that.translate(GUI.currentLanguage, "linecolor");
     if (attributes["linecolor"] && !attributes["linecolor"].hidden) {
         if (ObjectManager.latestFormatSelections.linecolor) {
-            content.push('<input id="linecolor" type="checkbox" checked="checked" /> line color <br />');
+            html += ('<input id="linecolor" type="checkbox" checked="checked" /> ' + attributename + ' <br />');
         } else {
-            content.push('<input id="linecolor" type="checkbox" /> line color <br />');
+            html += ('<input id="linecolor" type="checkbox" /> ' + attributename + ' <br />');
         }
     }
-
+    attributename = that.translate(GUI.currentLanguage, "linesize");
     if (attributes["linesize"] && !attributes["linesize"].hidden) {
         if (ObjectManager.latestFormatSelections.linesize) {
-            content.push('<input id="linesize" type="checkbox" checked="checked" /> line size <br />');
+            html += ('<input id="linesize" type="checkbox" checked="checked" /> ' + attributename + ' <br />');
         } else {
-            content.push('<input id="linesize" type="checkbox" /> line size <br />');
+            html += ('<input id="linesize" type="checkbox" /> ' + attributename + ' <br />');
         }
     }
+    html += '</div>';
+
+    content.push(html);
 
 
     var dialog = GUI.dialog(
