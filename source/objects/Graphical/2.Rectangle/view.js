@@ -120,14 +120,9 @@ Rectangle.editText = function(){
 	$(rep).find("textarea").focus();
 	
 	this.input = true;
+	GUI.input = this.id;
 	
 	var self = this;
-	
-	$(document).bind("keyup", function(event) {
-		
-		if (event.keyCode == 13) self.saveChanges();
-		
-	});
 
 }
 
@@ -148,6 +143,7 @@ Rectangle.saveChanges = function() {
 		}
 	
 		this.input = false;
+		GUI.input = false;
 
 		$(rep).find("textarea").remove();
 	

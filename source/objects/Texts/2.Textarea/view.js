@@ -123,13 +123,8 @@ Textarea.editText = function() {
 	$(rep).find("textarea").focus();
 
 	this.input = true;
+	GUI.input = this.id;
 	
-	$(document).bind("keyup", function(event) {
-		
-		if (event.keyCode == 13) self.saveChanges();
-		
-	});
-
 }
 
 
@@ -177,6 +172,7 @@ Textarea.saveChanges = function() {
 		var newContent = $(rep).find("textarea").val();
 	
 		this.input = false;
+		GUI.input = false;
 	
 		this.setContent(newContent);
 	

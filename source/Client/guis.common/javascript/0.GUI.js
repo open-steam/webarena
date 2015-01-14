@@ -496,6 +496,8 @@ GUI.initMouseHandler = function() {
 		
 		var mousedown = function(event) {
 			jPopoverManager.hideAll();
+			
+			GUI.saveChanges(event);
 
 			var contentPosition = $("#content").offset();
 			
@@ -646,6 +648,23 @@ GUI.initMouseHandler = function() {
 }
 
 
+/**
+ * initialize the return key handling (save changes during the inplace editing)
+ */
+GUI.initReturnKeyHandler = function(){
+
+	$(document).bind("keyup", function(event) {
+		
+		if (event.keyCode == 13){
+			if(GUI.input){
+				var object = ObjectManager.getObject(GUI.input);
+				object.saveChanges();
+			}
+		}
+		
+	});
+
+}
 
 
 /**
@@ -973,4 +992,24 @@ GUI.setCursorText = function(text){
  */
 GUI.getCursorText = function(){
 	return $('#besideMouse').html();	
+}
+
+
+//id of the current inplace editing object (or false if the inplace editing is not active)
+GUI.input = false;
+
+/**
+ * if inplace editing is active, call the saveChanges method of the related object 
+ */
+GUI.saveChanges = function(event){
+	
+	if(GUI.input){
+		if(event.target.localName == "input" || event.target.localName == "textarea"){ 
+			return;
+		}
+		else{	//mouseclick outside of the inplace editing field
+			var object = ObjectManager.getObject(GUI.input);
+			object.saveChanges();
+		}
+	}
 }

@@ -79,12 +79,13 @@ GUI.loadGUI = function(step) {
 			if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
 			if (!GUI.loaded) GUI.initUndoByKeyboard();
 		
-		if (!GUI.loaded) GUI.initCursorDeletionByKeyboard(); //handle Escape-Key events, currently only deletion of cursors which represents objects
+			if (!GUI.loaded) GUI.initCursorDeletionByKeyboard(); //handle Escape-Key events, currently only deletion of cursors which represents objects
 		
-		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
+			if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
 
 			if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown		
 		
+			if (!GUI.loaded) GUI.initReturnKeyHandler(); //handle return key events to save changes during the inplace editing
 		
 			if (!GUI.loaded) GUI.initObjectCopyCutPasteHandlingByKeyboard(); //handle ctrl+c, ctrl+x, ctrl+v for copy, cut and paste objects //needs: ObjectManager.cutObjects, ObjectManager.copyObjects, ObjectManager.pasteObjets, ObjectManager.getSelected on keydown
 		}

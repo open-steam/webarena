@@ -340,14 +340,9 @@ IconObject.editText = function(){
 	$(rep).find("input").focus();
 	
 	this.input = true;
+	GUI.input = this.id;
 	
 	var self = this;
-	
-	$(document).bind("keyup", function(event) {
-		
-		if (event.keyCode == 13) self.saveChanges();
-		
-	});
 
 }
 
@@ -367,6 +362,7 @@ IconObject.saveChanges = function() {
 		$(rep).find("text").show();
 	
 		this.input = false;
+		GUI.input = false;
 	
 		this.setAttribute("name", newContent);
 	
