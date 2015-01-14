@@ -337,6 +337,8 @@ IconObject.editText = function(){
 	
 	$(rep).find("text").hide();
 	
+	$(rep).find("input").focus();
+	
 	this.input = true;
 	
 	var self = this;

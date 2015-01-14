@@ -117,6 +117,8 @@ Rectangle.editText = function(){
 	$(rep).find("textarea").css("width", "90%");
 	$(rep).find("textarea").css("height", "90%");
 	
+	$(rep).find("textarea").focus();
+	
 	this.input = true;
 	
 	var self = this;

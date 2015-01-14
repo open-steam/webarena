@@ -119,6 +119,8 @@ Textarea.editText = function() {
 	$(rep).find("textarea").show();
 	
 	$(rep).find(".overfloating-y").hide();
+	
+	$(rep).find("textarea").focus();
 
 	this.input = true;
 	
