@@ -15,6 +15,8 @@ Line.draw=function(external){
 		$(rep).children("line").attr("stroke", this.getAttribute('linecolor'));
 	}
 	
+	$(rep).css("opacity", (this.getAttribute('opacity')/100));
+	
 	$(rep).children("line").attr("stroke-width", this.getAttribute('linesize'));
 	
 	switch (this.getAttribute('linestyle')){

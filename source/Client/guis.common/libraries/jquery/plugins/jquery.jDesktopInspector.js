@@ -27,6 +27,10 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			widget.valueBox.children("input").attr("max", max);
 		}
 		
+		this.setStepsize = function(stepsize) {
+			widget.valueBox.children("input").attr("step", stepsize);
+		}
+		
 		widget.valueBox.html('<input type="number" id="inspector_" />');
 		
 		widget.valueBox.children("input").bind("change", function() {

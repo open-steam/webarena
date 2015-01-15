@@ -27,6 +27,8 @@ Polygon.register=function(type){
 	this.registerAttribute('edges',{type:'number',standard:6,min:3,category:'Appearance'});
 	this.registerAttribute('rotation',{type:'number',standard:0,min:0,category:'Appearance'});
 
+	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
+	
 }
 
 Polygon.register('Polygon');

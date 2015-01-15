@@ -29,6 +29,8 @@ WAFile.draw = function(external) {
         $(rep).find("text").remove();
     }
 	
+	$(rep).css("opacity", (this.getAttribute('opacity')/100));
+	
 	if (!$(rep).hasClass("selected")) {
 		var linecolor = this.getAttribute('linecolor');
 		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){

@@ -23,6 +23,8 @@ Rectangle.register=function(type){
 	this.registerAttribute('vertical-align',{type:'selection',standard:'middle',options:['top','middle','bottom'],category:'Label'});
 	this.registerAttribute('horizontal-align',{type:'selection',standard:'center',options:['left','center','right'],category:'Label'});
 	
+	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
+	
 }
 
 

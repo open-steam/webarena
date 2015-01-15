@@ -32,6 +32,8 @@ Ellipse.draw=function(external){
 
 	$(rep).find("ellipse").attr("fill", this.getAttribute('fillcolor'));
 	
+	$(rep).css("opacity", (this.getAttribute('opacity')/100));
+	
 	if (!$(rep).hasClass("selected")) {
 		var linecolor = this.getAttribute('linecolor');
 		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){

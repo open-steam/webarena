@@ -7,6 +7,7 @@ GeneralObject.setTranslations('de',{
 	'height':'Höhe',
 	'fillcolor':'Füllfarbe',
 	'linecolor':'Linienfarbe',
+	'opacity':'Deckkraft',
 	'linesize':'Linienstärke',
 	'font-family':'Schriftart',
 	'font-size':'Schriftgröße',

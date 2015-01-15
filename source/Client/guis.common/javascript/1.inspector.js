@@ -144,6 +144,7 @@ GUI.setupInspectorContent = function(inspector) {
 					widget.setValue(info.value);
 					widget.setMin(info.min);
 					widget.setMax(info.max);
+					widget.setStepsize(info.stepsize);
 					
 					widget.setMultipleValues(info.multipleValues);
 					

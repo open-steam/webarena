@@ -25,6 +25,7 @@ Line.register=function(type){
     this.attributeManager.registerAttribute('linestyle',{type:'selection',standard:'stroke',options:['stroke','dotted','dashed'],category:'Appearance'});
 	this.attributeManager.registerAttribute('linecolor',{standard:'black'});
 	
+	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
 
 	this.registerAttribute('fillcolor',{hidden:true});
 

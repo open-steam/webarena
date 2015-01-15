@@ -26,7 +26,8 @@ WAFile.register=function(type){
 
 	this.registerAttribute('fillcolor',{hidden: true});
 	
-
+	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
+	
 	this.registerAttribute('preview',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
 		if (local) {
 			object.updateIcon();
