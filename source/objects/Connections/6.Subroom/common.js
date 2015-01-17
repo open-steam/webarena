@@ -28,26 +28,6 @@ Subroom.register=function(type){
 	
 }
 
-/*
-Subroom.execute=function(openMethod){
-	
-	var destination=this.getAttribute('destination');
-		
-	if(openMethod == 'new Tab'){
-		window.open(destination);
-		return;
-	}
-	if(openMethod == 'new Window'){
-		var newWindow = window.open(destination, Modules.Config.projectTitle, "height="+window.outerHeight+", width="+window.outerWidth);
-		return;
-    }
-	
-	//open in same tab
-	ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')));
-	
-}
-*/
-
 Subroom.register('Subroom');
 Subroom.isCreatable=true;
 Subroom.onMobile = true;
