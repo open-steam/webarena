@@ -27,7 +27,7 @@ Textarea.register=function(type){
 	}});;
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
-	this.standardData.fillcolor='rgb(255,255,255)';
+	this.standardData.fillcolor='rgba(0, 0, 0, 0)';
 	this.standardData.linecolor='rgb(0,0,0)';
     this.standardData.width=250;
     this.standardData.height=100;

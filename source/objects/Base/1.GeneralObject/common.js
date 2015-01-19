@@ -169,7 +169,7 @@ GeneralObject.register = function(type) {
 
         }, mobile: false});
 
-    this.registerAttribute('fillcolor', {type: 'color', standard: 'transparent', category: 'Appearance', checkFunction: function(object, value) {
+    this.registerAttribute('fillcolor', {type: 'color', standard: 'rgba(0, 0, 0, 0)', category: 'Appearance', checkFunction: function(object, value) {
 
             if (object.checkTransparency('fillcolor', value)) {
                 return true;
@@ -178,7 +178,7 @@ GeneralObject.register = function(type) {
 
         }});
 
-    this.registerAttribute('linecolor', {type: 'color', standard: 'transparent', category: 'Appearance', checkFunction: function(object, value) {
+    this.registerAttribute('linecolor', {type: 'color', standard: 'rgba(0, 0, 0, 0)', category: 'Appearance', checkFunction: function(object, value) {
 
             if (object.checkTransparency('linecolor', value)) {
                 return true;

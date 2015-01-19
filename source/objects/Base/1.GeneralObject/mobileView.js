@@ -227,7 +227,7 @@ GeneralObject.checkTransparency = function(attribute, value) {
 		var linecolor = this.getAttribute('linecolor');
 	}
 
-	if (fillcolor === 'transparent' && linecolor === 'transparent') {
+	if (fillcolor === 'rgba(0, 0, 0, 0)' && linecolor === 'rgba(0, 0, 0, 0)') {
 		return false;
 	} else return true;
 }

@@ -33,7 +33,7 @@ WAFile.draw = function(external) {
 	
 	if (!$(rep).hasClass("selected")) {
 		var linecolor = this.getAttribute('linecolor');
-		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+		if(linecolor == "rgba(0, 0, 0, 0)"){
 			$(rep).find("rect").removeAttr("stroke");
 			$(rep).find("rect").removeAttr("stroke-width");
 		}

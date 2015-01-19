@@ -200,7 +200,7 @@ Line.checkTransparency = function(attribute, value) {
 	} else {
 		var linecolor = this.getAttribute('linecolor');
 	}
-	if (linecolor === 'transparent') {
+	if (linecolor === 'rgba(0, 0, 0, 0)') {
 		return false;
 	} else return true;
 }

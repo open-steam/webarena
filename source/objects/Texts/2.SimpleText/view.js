@@ -15,7 +15,7 @@ SimpleText.draw=function(external){
 	
 	if (!$(rep).hasClass("selected")) {
 		var linecolor = this.getAttribute('linecolor');
-		if(linecolor == "transparent" || linecolor == "rgba(0, 0, 0, 0)"){
+		if(linecolor == "rgba(0, 0, 0, 0)"){
 			$(rep).find("text").removeAttr("stroke");
 			$(rep).find("text").removeAttr("stroke-width");
 		}
@@ -145,7 +145,7 @@ SimpleText.checkTransparency = function(attribute, value) {
 	} else {
 		var linecolor = this.getAttribute('linecolor');
 	}
-	if (fontcolor === 'transparent' && linecolor === 'transparent') {
+	if (fontcolor === 'rgba(0, 0, 0, 0)' && linecolor === 'rgba(0, 0, 0, 0)') {
 		return false;
 	} else return true;
 }

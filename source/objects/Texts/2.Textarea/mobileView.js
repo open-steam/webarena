@@ -268,7 +268,7 @@ Textarea.checkTransparency = function(attribute, value) {
 	} else {
 		var linecolor = this.getAttribute('linecolor');
 	}
-	if ((fillcolor === 'transparent' && linecolor === 'transparent' && fontcolor === 'transparent') || (fillcolor === 'transparent' && linecolor === 'transparent' && this.getContentAsString().trim() === '')) {
+	if ((fillcolor === 'rgba(0, 0, 0, 0)' && linecolor === 'rgba(0, 0, 0, 0)' && fontcolor === 'rgba(0, 0, 0, 0)') || (fillcolor === 'rgba(0, 0, 0, 0)' && linecolor === 'rgba(0, 0, 0, 0)' && this.getContentAsString().trim() === '')) {
 		return false;
 	} else return true;
 }
