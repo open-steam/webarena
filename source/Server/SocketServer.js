@@ -10,7 +10,6 @@
 var SocketServer = {};
 var Modules = false;
 var uuid = require('node-uuid');
-var channels = {}; //new, for WebRTC
 var io;
 
 SocketServer.init = function (theModules) {
@@ -23,86 +22,95 @@ SocketServer.init = function (theModules) {
 	io.sockets.on('connection', function (socket) {
 		UserManager.socketConnect(socket);
 		
-		
-		//new, for WebRTC
-		var initiatorChannel = '';
-		if (!io.isConnected) {
-			io.isConnected = true;
-		}
-		
-
 		SocketServer.sendToSocket(socket, 'welcome', 0.5);
+		
 		socket.on('message', function (data) {
 			Dispatcher.call(socket, data);
 		});
 		socket.on('disconnect', function () {
 			UserManager.socketDisconnect(socket);
 		});
-				
-		//new, for WebRTC
-		socket.on('new-WebRTC-channel', function (data) {
-			if (!channels[data.channel]) {
-				initiatorChannel = data.channel;
-			}
 
-			channels[data.channel] = data.channel;
-			onNewNamespace(data.channel, data.sender);
+		//WebRTC:
+		/*
+		function log(){
+			var array = [">>> "];
+			for (var i = 0; i < arguments.length; i++) {
+				array.push(arguments[i]);
+			}
+			socket.emit('WebRTC-message', {message:'log', data:array});
+		}
+		*/
+
+		socket.on('WebRTC-message', function (data) {
+			var message = data.message;
+			if(message == 'message'){
+				var message = data.data;
+				var room = data.room;
+				//log('Got message: ', message);
+				//socket.broadcast.emit('WebRTC-message', {message:'message', data:message}); // should be room only
+				io.sockets.in(room).emit('WebRTC-message', {message:'message', data:message});
+				if(message == 'bye'){
+					socket.leave(room);
+					var clients = io.sockets.adapter.rooms[room]; 
+					var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
+					if(numClients != 0){
+						for(var name in clients){
+							var context = Modules.UserManager.getConnectionBySocketID(name);
+							context.socket.leave(room);
+						}
+					}
+				}
+			}
+			if(message == 'create/join'){
+				//var numClients = io.sockets.clients(room).length;
+			
+				var room = data.room;
+			
+				var clients = io.sockets.adapter.rooms[room]; 
+				var numClients = (typeof clients !== 'undefined') ? Object.keys(clients).length : 0;
+
+				//log('Room ' + room + ' has ' + numClients + ' client(s)');
+				//log('Request to create or join room', room);
+
+				if (numClients == 0){
+					socket.join(room);
+					socket.emit('WebRTC-message', {message:'created', data:room});
+				} else if (numClients == 1) {
+					io.sockets.in(room).emit('WebRTC-message', {message:'join', data:room});
+					socket.join(room);
+					var callerId = io.sockets.in(room).sockets[0].id;
+					var context = Modules.UserManager.getConnectionBySocket(io.sockets.in(room).sockets[0]);
+					socket.emit('WebRTC-message', {message:'joined', data:room, callerId:callerId, callerName:context.user.username});
+				} else { // max two clients
+					socket.emit('WebRTC-message',{message:'full', data:room});
+				}
+				//socket.emit('emit(): client ' + socket.id + ' joined room ' + room);
+				//socket.broadcast.emit('broadcast(): client ' + socket.id + ' joined room ' + room);
+			}
+			if(message == 'invite'){
+				var roomId = data.room;
+				var partnerId = data.data.partnerId;
+				var video = data.data.video;
+				var callername = data.data.callername;
+				
+				var context = Modules.UserManager.getConnectionBySocketID(partnerId);
+	
+				context.socket.emit('WebRTC-message',{message:'invite', room:roomId, video:video, caller:callername});
+			}
+			if(message == 'decline'){
+				var partnerId = data.data.partner;
+				
+				var context = Modules.UserManager.getConnectionBySocketID(partnerId);
+				
+				context.socket.emit('WebRTC-message',{message:'decline'});
+			}
+			
 		});
 		
-		//new, for WebRTC
-		socket.on('presence', function (channel) {
-			var isChannelPresent = !! channels[channel];
-			socket.emit('presence', isChannelPresent);
-		});
-
-		//new, for WebRTC
-		socket.on('disconnect', function (channel) {
-			if (initiatorChannel) {
-				delete channels[initiatorChannel];
-			}
-		});
-
 	});
 
 }
-
-
-/**
- * 
- * new, for WebRTC
- */
-function onNewNamespace(channel, sender) {
-    io.of('/' + channel).on('connection', function (socket) {
-        var username;
-        if (io.isConnected) {
-            io.isConnected = false;
-            socket.emit('connect', true);
-        }
-
-        socket.on('WebRTC-message', function (data) {
-            if (data.sender == sender) {
-                if(!username) username = data.data.sender;
-                
-				var url = socket.handshake.headers.referer;
-				var s = url.split("/");
-				
-                socket.broadcast.emit('WebRTC-message', data.data);
-            }
-        });
-        
-        socket.on('disconnect', function() {
-            if(username) {
-			
-				var url = socket.handshake.headers.referer;
-				var s = url.split("/");
-			
-                socket.broadcast.emit('user-left', username);
-                username = null;
-            }
-        });
-    });
-}
-
 
 
 /**

@@ -24,8 +24,8 @@ GUI.sidebar.savedState = undefined;
 GUI.sidebar.elementConfig = {
     "inspector" : {
         order : 0,
-        title : GUI.translate("Object inspector"),
-		onOpen : GUI.chat.closed
+        title : GUI.translate("Object inspector")
+		//onOpen : GUI.chat.closed
     },
     "chat" : {
         order : 1,
@@ -34,13 +34,13 @@ GUI.sidebar.elementConfig = {
     },
     "bug" : {
         order : 2,
-        title : GUI.translate("Bugreport"),
-		onOpen : GUI.chat.closed
+        title : GUI.translate("Bugreport")
+		//onOpen : GUI.chat.closed
     },
     "pad" : {
         order : 3,
-        title : GUI.translate("Annotations"),
-		onOpen : GUI.chat.closed
+        title : GUI.translate("Annotations")
+		//onOpen : GUI.chat.closed
     },
 };
 
