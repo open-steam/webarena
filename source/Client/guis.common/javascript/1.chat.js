@@ -56,15 +56,18 @@ GUI.chat.init = function() {
 GUI.chat.setUsers = function(users) {
 	
 	var userIds = [];
-	
+		
 	for(var j = 0; j<users.length; j++){   //new user: add in GUI.chat.users and create a representation
 		userIds.push(users[j].id);
-		if(GUI.chat.users.indexOf(users[j].id) == -1){
+		if(GUI.chat.users.indexOf(users[j].id) == -1){ 
 			GUI.chat.users.push(users[j].id);
 			
 			var user = users[j];
 			
 			if(user.id != ObjectManager.user.id){ // add call/video call icon
+			
+				GUI.flashNewUserIcon(true);
+			
 				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay width="0"></video></div>');
 				if(Modules.Config.WebRTC){
 					GUI.chat.addChatIcon(user.id, true);
@@ -81,6 +84,8 @@ GUI.chat.setUsers = function(users) {
 	for(var i = 0; i<GUI.chat.users.length; i++){ 	//user left: remove from GUI.chat.users and remove the representation
 		if(userIds.indexOf(GUI.chat.users[i]) == -1){
 			var userid = GUI.chat.users[i];
+			
+			GUI.flashNewUserIcon(false);
 			
 			$("#"+userid).parent().remove();
 			GUI.chat.users.splice(i, 1);
