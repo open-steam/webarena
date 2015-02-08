@@ -28,12 +28,15 @@ Scale2.register = function(type) {
     this.registerAttribute('maxY', {type: 'number', standard: 5, category: 'Scale2'});
 
     this.registerAttribute('steppingX', {type: 'number', standard: 1, min: 1, category: 'Scale2'});
-    this.registerAttribute('distinctX', {type: 'boolean', standard: false, category: 'Scale2'});
-    this.registerAttribute('orientationX', {type: 'selection', standard: 'bottom', options: ['bottom', 'top', 'left', 'right'], category: 'Scale2'});
+    //this.registerAttribute('distinctX', {type: 'boolean', standard: false, category: 'Scale2'});
+    //this.registerAttribute('orientationX', {type: 'selection', standard: 'bottom', options: ['bottom', 'top', 'left', 'right'], category: 'Scale2'});
 
     this.registerAttribute('steppingY', {type: 'number', standard: 1, min: 1, category: 'Scale2'});
-    this.registerAttribute('distinctY', {type: 'boolean', standard: false, category: 'Scale2'});
-    this.registerAttribute('orientationY', {type: 'selection', standard: 'bottom', options: ['bottom', 'top', 'left', 'right'], category: 'Scale2'});
+    //this.registerAttribute('distinctY', {type: 'boolean', standard: false, category: 'Scale2'});
+    //this.registerAttribute('orientationY', {type: 'selection', standard: 'bottom', options: ['bottom', 'top', 'left', 'right'], category: 'Scale2'});
+    
+    this.registerAttribute('labelX', {type: 'text',standard: '', category: 'Scale2'});
+    this.registerAttribute('labelY', {type: 'text', standard: '', category: 'Scale2'});
 
     
     this.standardData.fillcolor = 'white';

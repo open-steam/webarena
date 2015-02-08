@@ -65,41 +65,17 @@ theObject.getData = function(object) {
 }
 
 theObject.positionToValueX = function(object) {
-    this.padding = 20;
     var minVal = this.getAttribute('minX');
-    var maxVal = this.getAttribute('maxX');
     var stepping = this.getAttribute('steppingX');
-    var numberOfSteps = Math.floor(((maxVal - minVal) / stepping) + 1);
     //works
 
-    var pixelStart = this.padding;
-    var pixelEnd = this.getAttribute('width') - this.padding - this.padding;
-    var distancePerStepInPixel = (pixelEnd - pixelStart) / (numberOfSteps - 1);
-
-    //works
-
-    //determine current position of the structure
-    var x = this.getAttribute('x');
-    //  console.log("struct x: " + x);
-
-    var objX = object.getAttribute('x');
-    //console.log("objX: " + objX);
-    //pdf objWidth isn't true
-    //var objWidth = object.getAttribute('width');
-    //hack:
-    var objWidth = 64;
-
-    //absolute obj middle
-    var objMiddle = Math.round(objX + (objWidth / 2));
-    //console.log("objMiddle " + objMiddle);
+    var pixelStart = this.getAttribute("startX");
+    var distancePerStepInPixel = this.getAttribute("distanceX");
+    var objX = object.getAttribute('cx');
+    var v = (objX - pixelStart) / distancePerStepInPixel;
 
 
-    //Distance between scale start and objPosition
-    var relativePositonX = objMiddle - (x + pixelStart);
-    //console.log("rel Pos: " + relativePositonX);
-
-
-    var value = minVal + (Math.round(relativePositonX / distancePerStepInPixel));
+    var value = minVal + v * stepping;
     console.log(this.getAttribute('attributeX') + " " + value);
 
     return value;
@@ -107,42 +83,15 @@ theObject.positionToValueX = function(object) {
 
 }
 theObject.positionToValueY = function(object) {
-    this.padding = 20;
     var minVal = this.getAttribute('minY');
-    var maxVal = this.getAttribute('maxY');
     var stepping = this.getAttribute('steppingY');
-    var numberOfSteps = Math.floor(((maxVal - minVal) / stepping) + 1);
-    //works
+    var pixelStart = this.getAttribute("startY");
+    var distancePerStepInPixel = this.getAttribute("distanceY");
+    var objY = object.getAttribute('cy');
 
-    var pixelStart = this.getAttribute('height') - this.padding;
-    var pixelEnd = this.padding + this.padding;
+    var v = (pixelStart - objY) / distancePerStepInPixel;
+    var value = minVal + v * stepping;
 
-    var distancePerStepInPixel = (pixelEnd - pixelStart) / (numberOfSteps - 1);
-
-    //works
-
-    //determine current position of the structure
-    var y = this.getAttribute('y');
-    //console.log("struct y: " + y);
-
-    var objY = object.getAttribute('y');
-    //console.log("objY: " + objY);
-    //pdf objWidth isn't true
-    //var objWidth = object.getAttribute('width');
-    //hack:
-    var objHeight = 64;
-
-    //absolute obj middle
-    var objMiddle = Math.round(objY + (objHeight / 2));
-    //console.log("objMiddle " + objMiddle);
-
-
-    //Distance between scale start and objPosition
-    var relativePositonY = objMiddle - (y + pixelStart);
-    //console.log("rel Pos: " + relativePositonY);
-
-
-    var value = minVal + (Math.round(relativePositonY / distancePerStepInPixel));
     console.log(this.getAttribute('attributeY') + " " + value);
 
     return value;

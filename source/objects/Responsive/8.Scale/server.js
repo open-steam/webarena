@@ -58,51 +58,45 @@ theObject.onMoveOutside = function(object, oldData, newData) {
 
 theObject.getData = function(object) {
     var attribute = this.getAttribute('attribute');
-    var value = this.positionToValue(object);
+    if(this.getAttribute("direction") === "horizontal"){
+        var value = this.positionToValueX(object);
+    }else{
+        var value = this.positionToValueY(object);
+    }
+    
     return {'attribute': attribute, 'value': value};
 }
 
-theObject.positionToValue = function(object) {
-    this.padding = 20;
+theObject.positionToValueX = function(object) {
     var minVal = this.getAttribute('min');
-    var maxVal = this.getAttribute('max');
     var stepping = this.getAttribute('stepping');
-    var numberOfSteps = Math.floor(((maxVal - minVal) / stepping) + 1);
     //works
 
-    var pixelStart = this.padding;
-    var pixelEnd = this.getAttribute('width') - this.padding - this.padding;
-    var distancePerStepInPixel = (pixelEnd - pixelStart) / (numberOfSteps - 1);
-
-    //works
-
-    //determine current position of the structure
-    var x = this.getAttribute('x');
-    console.log("struct x: " + x);
-
-    var objX = object.getAttribute('x');
-    console.log("objX: " + objX);
-    //pdf objWidth isn't true
-    //var objWidth = object.getAttribute('width');
-    //hack:
-    var objWidth = 64;
-
-    //absolute obj middle
-    var objMiddle = Math.round(objX + (objWidth / 2));
-    console.log("objMiddle " + objMiddle);
+    var pixelStart = this.getAttribute("startX");
+    var distancePerStepInPixel = this.getAttribute("distanceX");
+    var objX = object.getAttribute('cx');
+    var v = (objX - pixelStart) / distancePerStepInPixel;
 
 
-    //Distance between scale start and objPosition
-    var relativePositonX = objMiddle - (x + pixelStart);
-    console.log("rel Pos: " + relativePositonX);
-
-
-    var value = minVal + (Math.round(relativePositonX / distancePerStepInPixel));
-    console.log("Value: " + value);
+    var value = minVal + v * stepping;
+    console.log(this.getAttribute('attribute') + " " + value);
 
     return value;
+}
 
+theObject.positionToValueY = function(object) {
+    var minVal = this.getAttribute('min');
+    var stepping = this.getAttribute('stepping');
+    var pixelStart = this.getAttribute("startY");
+    var distancePerStepInPixel = this.getAttribute("distanceY");
+    var objY = object.getAttribute('cy');
 
+    var v = (pixelStart - objY) / distancePerStepInPixel;
+    var value = minVal + v * stepping;
+
+    console.log(this.getAttribute('attribute') + " " + value);
+
+    return value;
 }
 /*function positionToValue(object) {
  //determine an area for validation
