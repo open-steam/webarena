@@ -159,6 +159,11 @@ GUI.adjustContent = function(webarenaObject) {
 }
 
 
+//the current canvas size (depending on the leftmost and the bottommost objects)
+GUI.maxWidth = 0;
+GUI.maxHeight = 0;
+
+
 /**
  * set width of room / svg area
  * @param {int} width new width of the room
@@ -168,14 +173,19 @@ GUI.setRoomWidth = function(width) {
 	var currentRoom = ObjectManager.getCurrentRoom();
 	if (!currentRoom) return;
 	
-	currentRoom.setAttribute("width", width);
+	if(width > GUI.maxWidth){
+		GUI.maxWidth = width;
+		
+		currentRoom.setAttribute("width", width);
 	
-	if (width < $(window).width()) {
-		width = $(window).width();
-	}
+		if (width < $(window).width()) {
+			width = $(window).width();
+		}
 
-	$("#content").css("width", width );
-	$("#content > svg").css("width", width );
+		$("#content").css("width", width );
+		$("#content > svg").css("width", width );
+	}	
+
 }
 
 /**
@@ -187,14 +197,18 @@ GUI.setRoomHeight = function(height) {
 	var currentRoom = ObjectManager.getCurrentRoom();
 	if (!currentRoom) return;
 	
-	currentRoom.setAttribute("height", height);
-
-	if (height < $(window).height()) {
-		height = $(window).height();
-	}
+	if(height > GUI.maxHeight){
+		GUI.maxHeight = height;
 	
-	$("#content").css("height", height);
-	$("#content > svg").css("height", height);
+		currentRoom.setAttribute("height", height);
+
+		if (height < $(window).height()) {
+			height = $(window).height();
+		}
+	
+		$("#content").css("height", height);
+		$("#content > svg").css("height", height);
+	}
 }
 
 
