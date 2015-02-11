@@ -11,12 +11,8 @@
  */
 GUI.eraseAllLinks = function(){
 	
-	for (var id1 in ObjectManager.getObjects()){
-		for (var id2 in ObjectManager.getObjects()){
-			$(".webarenaLink_between_"+id1+"_and_"+id2).remove();
-			$(".webarenaLink_between_"+id2+"_and_"+id1).remove();
-		}
-	}
+	$(".webarenaLink").remove();
+	
 }
 
 
@@ -54,8 +50,8 @@ GUI.moveLinks = function(object){
 		
 		//get current width of the link
 		var w;
-		var w1 = $(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("stroke-width");
-		var w2 = $(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("stroke-width");
+		var w1 = $("#webarenaLink_between_"+target.id+"_and_"+object.id).attr("stroke-width");
+		var w2 = $("#webarenaLink_between_"+object.id+"_and_"+target.id).attr("stroke-width");
 		
 		if(typeof w1 !== "undefined"){
 			w = parseInt(w1);
@@ -96,11 +92,11 @@ GUI.moveLinks = function(object){
 				};
 
 				
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',Intp1.x);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',Intp1.y);
+				$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',Intp1.x);
+				$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',Intp1.y);
 		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',Intp1.x);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',Intp1.y);
+				$("#webarenaLink_between_"+object.id+"_and_"+target.id).attr('x2',Intp1.x);
+				$("#webarenaLink_between_"+object.id+"_and_"+target.id).attr('y2',Intp1.y);
 			}
 		}
 		
@@ -136,20 +132,20 @@ GUI.moveLinks = function(object){
 				};
 				
 					
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',Intp2.x);
-				$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',Intp2.y);
+				$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',Intp2.x);
+				$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',Intp2.y);
 		
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',Intp2.x);
-				$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',Intp2.y);
+				$("#webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',Intp2.x);
+				$("#webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',Intp2.y);
 			}
 		}
 		else{ //no arrowhead to object and no padding, the line can end in the center of the object
 				
-			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',a1.x);
-			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',a1.y);
+			$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('x2',a1.x);
+			$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('y2',a1.y);
 		
-			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',a1.x);
-			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',a1.y);	
+			$("#webarenaLink_between_"+object.id+"_and_"+target.id).attr('x1',a1.x);
+			$("#webarenaLink_between_"+object.id+"_and_"+target.id).attr('y1',a1.y);	
 		}
 		
 		//if two objects get too close to each other, make the link width smaller 
@@ -168,8 +164,8 @@ GUI.moveLinks = function(object){
 			return;
 		}
 		if(parseInt(value.width) > maxWidth){
-			$(".webarenaLink_between_"+target.id+"_and_"+object.id).attr("stroke-width", maxWidth);
-			$(".webarenaLink_between_"+object.id+"_and_"+target.id).attr("stroke-width", maxWidth);
+			$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr("stroke-width", maxWidth);
+			$("#webarenaLink_between_"+object.id+"_and_"+target.id).attr("stroke-width", maxWidth);
 		}
 		
 	});
@@ -179,26 +175,33 @@ GUI.moveLinks = function(object){
 /**
  * show or hide all links in the current room (via checkbox in the inspector, only if both objects are visible)
  */
-GUI.showLinks = function(value) {
+GUI.showLinks = function(val) {
 	
 	for (var id1 in ObjectManager.getObjects()){
 		var object1 = ObjectManager.getObject(id1);
 		if(object1.getAttribute("visible")){
-			for (var id2 in ObjectManager.getObjects()){		
-				var object2 = ObjectManager.getObject(id2);				
+		
+			var linkedObjects = object1.getAttribute("link");
+	
+			$.each(linkedObjects, function(index, v) {
+		
+				var id2 = v.destination;
+				var object2 = ObjectManager.getObject(id2);
+				
 				if(object2.getAttribute("visible")){
-					GUI.showLink(id1,id2,value);
+					GUI.showLink(id1,id2,val);
 				}
-			}
+			});
 		}
 	}
+	
 }
 
 
 /**
  * show or hide one link
  */
-GUI.showLink = function(id1, id2, value) {
+GUI.showLink = function(id1, id2, val) {
 	
 	var object1 = ObjectManager.getObject(id1);
 	var object2 = ObjectManager.getObject(id2);
@@ -208,13 +211,13 @@ GUI.showLink = function(id1, id2, value) {
 	
 	var rep2 = object2.getRepresentation();
 	
-	if(value && room.getAttribute('showLinks') && $(rep1).css('opacity') > 0 && $(rep2).css('opacity') > 0){ //show
-		$(".webarenaLink_between_"+id1+"_and_"+id2).show();
-		$(".webarenaLink_between_"+id2+"_and_"+id1).show();
+	if(val && room.getAttribute('showLinks') && $(rep1).css('opacity') > 0 && $(rep2).css('opacity') > 0){ //show
+		$("#webarenaLink_between_"+id1+"_and_"+id2).show();
+		$("#webarenaLink_between_"+id2+"_and_"+id1).show();
 	}
 	else{ //hide
-		$(".webarenaLink_between_"+id1+"_and_"+id2).hide();
-		$(".webarenaLink_between_"+id2+"_and_"+id1).hide();
+		$("#webarenaLink_between_"+id1+"_and_"+id2).hide();
+		$("#webarenaLink_between_"+id2+"_and_"+id1).hide();
 	}
 }
 
@@ -248,8 +251,8 @@ GUI.drawLinks = function(object) {
 		newLinks1.push(oldLinks1);
 	}
 		
-	//destroy old links	
-	$( "line[class*='"+object.id+"']" ).remove();
+	//destroy old links of this object
+	$( "line[id*='"+object.id+"']" ).remove();
 		
 	$.each(newLinks1, function( index, value ) {
 			
@@ -272,7 +275,8 @@ GUI.drawLinks = function(object) {
 			stroke: "#000000"
 		});
 		
-		$(line).addClass("webarenaLink_between_"+object.id+"_and_"+target.id);
+		$(line).addClass("webarenaLink");
+		$(line).attr("id", "webarenaLink_between_"+object.id+"_and_"+target.id);
 
 		$(line).css("opacity", 0);
 		
@@ -327,8 +331,8 @@ GUI.drawLinks = function(object) {
                         "actionFunction" : function(){
 						
 							//destroy links
-							$(".webarenaLink_between_"+object.id+"_and_"+target.id).remove();
-							$(".webarenaLink_between_"+target.id+"_and_"+object.id).remove();
+							$("#webarenaLink_between_"+object.id+"_and_"+target.id).remove();
+							$("#webarenaLink_between_"+target.id+"_and_"+object.id).remove();
 						
 							//remove the object ids from the attribute lists
 							object.deleteLink(target.id);
