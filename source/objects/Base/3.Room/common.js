@@ -32,7 +32,7 @@ Room.register=function(type){
     this.registerAttribute('x',{hidden:true});
 	this.registerAttribute('y',{hidden:true});
 	this.registerAttribute('group',{hidden:true});
-	this.registerAttribute('bigIcon',{hidden:true});
+	this.registerAttribute('bigIcon',{hidden:true, changedFunction: function(object) {}});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
 	this.registerAttribute('destination', {hidden:'true'});
