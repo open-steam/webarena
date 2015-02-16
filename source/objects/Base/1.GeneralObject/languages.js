@@ -58,10 +58,14 @@ GeneralObject.setTranslations('de',{
 	'open destination on double-click' : 'Ziel mit Doppelklick öffnen',
 	'open in' : 'Ziel öffnen in',
 	'Open destination' : 'Ziel öffnen',
-	'Object Selection' : 'Objektauswahl',
+	'Target Selection' : 'Zielauswahl',
 	'Show objects' : 'Objekte anzeigen',
-        'Copy selected format attributes' : 'Übertrage selektierte Eigenschaften',
-        'Copy format attributes' : 'Übertragung der Eigenschaften eines Objektes',
-        'copy format' : 'Übertrage Formatierung'
-}
+	'Copy selected format attributes' : 'Übertrage selektierte Eigenschaften',
+	'Copy format attributes' : 'Übertragung der Eigenschaften eines Objektes',
+	'copy format' : 'Übertrage Formatierung',
+	'Please select a destination or enter a URL' : 'Bitte wählen Sie ein Ziel oder geben Sie eine URL ein',
+	'Please enter a valid URL' : 'Bitte geben Sie eine gültige URL ein',
+	'internal' : 'intern',
+	'external' : 'extern'
+	}
 );
