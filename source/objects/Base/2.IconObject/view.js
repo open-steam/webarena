@@ -24,6 +24,8 @@ IconObject.createRepresentation = function(parent) {
 	
 	$(rep).find("foreignObject").append(body);
 	
+	$(rep).find("foreignObject").hide();
+	
 	this.initGUI(rep);
 	
 	return rep;
@@ -325,6 +327,8 @@ IconObject.editText = function(){
 
 	var rep = this.getRepresentation();
 	
+	$(rep).find("foreignObject").show();
+	
 	$(rep).find("body").append('<input type="text" name="newContent" value="'+this.getIconText()+'" style="font-size: 12px;">');
 	
 	$(rep).find("foreignObject").attr("x", -66); 
@@ -358,6 +362,8 @@ IconObject.saveChanges = function() {
 		var newContent = $(rep).find("input").val()
 
 		$(rep).find("input").remove();
+		
+		$(rep).find("foreignObject").hide();
 	
 		$(rep).find("text").show();
 	
