@@ -56,15 +56,27 @@ GUI.chat.init = function() {
 GUI.chat.setUsers = function(users) {
 	
 	var userIds = [];
-	
+		
 	for(var j = 0; j<users.length; j++){   //new user: add in GUI.chat.users and create a representation
 		userIds.push(users[j].id);
-		if(GUI.chat.users.indexOf(users[j].id) == -1){
+		if(GUI.chat.users.indexOf(users[j].id) == -1){ 
 			GUI.chat.users.push(users[j].id);
 			
 			var user = users[j];
 			
-			$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'</div>');
+			if(user.id != ObjectManager.user.id){ // add call/video call icon
+			
+				GUI.flashNewUserIcon(true);
+			
+				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay width="0"></video></div>');
+				if(Modules.Config.WebRTC){
+					GUI.chat.addChatIcon(user.id, true);
+					GUI.chat.addChatIcon(user.id, false);
+				}
+			}
+			else{
+				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay muted width="0"></video></div>');
+			}
 			
 		}
 	}
@@ -72,6 +84,8 @@ GUI.chat.setUsers = function(users) {
 	for(var i = 0; i<GUI.chat.users.length; i++){ 	//user left: remove from GUI.chat.users and remove the representation
 		if(userIds.indexOf(GUI.chat.users[i]) == -1){
 			var userid = GUI.chat.users[i];
+			
+			GUI.flashNewUserIcon(false);
 			
 			$("#"+userid).parent().remove();
 			GUI.chat.users.splice(i, 1);
@@ -158,22 +172,8 @@ GUI.chat.addMessage = function(username, text, userColor, read) {
 GUI.chat.opened = function() {
 	GUI.chat.newMessages = 0;
 	GUI.chat.hideNotifier();
-	
-	if($('#videoChat').length == 0 && Modules.Config.WebRTC){
-		GUI.chat.addVideoChatIcon();
-	}
-	
+		
 	//$("#chat_message_input").focus(); //TODO: chrome bug
-}
-
-
-/**
- * called when chat is closed in GUI
- */
-GUI.chat.closed = function() {
-
-	$('#videoChat').remove();
-	
 }
 
 
@@ -186,6 +186,7 @@ GUI.chat.showNotifier = function() {
 	$("#chat_notifier").css("opacity", 1);
 }
 
+
 /**
  * hide the notification
  */
@@ -193,22 +194,34 @@ GUI.chat.hideNotifier = function() {
 	$("#chat_notifier").css("opacity", 0);
 }
 
-/**
- * add video chat icon
- */
-GUI.chat.addVideoChatIcon = function(){	
-	
-	var videoChat = document.createElement("img");
-	
-	$(videoChat).attr("id", "videoChat");
-	
-	$(videoChat).attr("width", "24").attr("height", "24");
-	
-	$(videoChat).attr("align", "right");
-	
-	$("#sidebar_title").after(videoChat);
 
-	$(videoChat).hover( 
+/**
+ * add video/audio chat icon
+ */
+GUI.chat.addChatIcon = function(userId, video){	
+	
+	var icon = document.createElement("img");
+	
+	$(icon).attr("class", "VideoAudioIcon");
+	
+	if(video){
+		$(icon).attr("id", "VideoIconUser"+userId);
+		$(icon).attr("src", "../../guis.common/images/startVideochat.png").attr("alt", "");
+		$(icon).attr("title", "start video call");
+		$(icon).css("margin-left", "190px");
+	}
+	else{
+		$(icon).attr("id", "AudioIconUser"+userId);
+		$(icon).attr("src", "../../guis.common/images/startAudiochat.png").attr("alt", "");
+		$(icon).attr("title", "start voice call");
+		$(icon).css("margin-left", "160px");
+	}
+	
+	$(icon).attr("width", "24").attr("height", "24");
+	
+	$(icon).attr("align", "right");
+
+	$(icon).hover( 
 		function () { 
 			$(this).css("opacity", 0.9);
 		}, 
@@ -217,73 +230,160 @@ GUI.chat.addVideoChatIcon = function(){
 		} 
 	); 
 	
-	GUI.chat.setVideoChatIcon();
+	$(icon).css("position", "absolute");
+		
+	$(icon).css("margin-top", "-6px");
 	
-	$(videoChat).css("position", "absolute");
+	$(icon).css("z-index", 11001);
 	
-	$(videoChat).css("padding", "2px");
+	$(icon).css("cursor", "pointer");
 	
-	$(videoChat).css("margin-left", "202px");
+	$(icon).css("opacity", 0.6);
 	
-	$(videoChat).css("z-index", 11001);
+	$("#"+userId).append(icon);
 	
-	$(videoChat).css("color", "#eaecf0");
-	
-	$(videoChat).css("cursor", "pointer");
-	
-	$(videoChat).css("opacity", 0.6);
+	if(WebRTCManager.busy){
+		$(icon).hide();
+	}
 	
 	if (GUI.isTouchDevice) {
-		$(videoChat).bind("touchstart", function(ev) {
+		$(icon).bind("touchstart", function(ev) {
 			var title = $(this).attr("title");
 			
-			if(title == "create a room conference"){
-				WebRTCManager.setupNewRoomButtonClickHandler();
+			var targetname = $(this).parent()[0].nextSibling.data;
+			var targetId = $(this).parent().attr("id");
+			
+			if(title == "start video call"){
+				WebRTCManager.startCall(true, targetId, targetname);
+				return;
 			}
-			if(title == "join the room conference"){
-				WebRTCManager.joinRoomButtonClickHandler();
+			if(title == "start voice call"){
+				WebRTCManager.startCall(false, targetId, targetname);
+				return;
 			}
-			if(title == "leave the room conference"){
-				WebRTCManager.leaveRoomButtonClickHandler();
-			}
+
+			WebRTCManager.hangup();
 			
 		});
 	} else {
-		$(videoChat).bind("mousedown", function(ev) {
+		$(icon).bind("mousedown", function(ev) {
 			var title = $(this).attr("title");
 			
-			if(title == "create a room conference"){
-				WebRTCManager.setupNewRoomButtonClickHandler();
+			var targetname = $(this).parent()[0].nextSibling.data;
+			var targetId = $(this).parent().attr("id");
+			
+			if(title == "start video call"){
+				WebRTCManager.startCall(true, targetId, targetname);
+				return;
 			}
-			if(title == "join the room conference"){
-				WebRTCManager.joinRoomButtonClickHandler();
+			if(title == "start voice call"){
+				WebRTCManager.startCall(false, targetId, targetname);
+				return;
 			}
-			if(title == "leave the room conference"){
-				WebRTCManager.leaveRoomButtonClickHandler();
-			}
+
+			WebRTCManager.hangup();
 			
 		});
 	}
+	
 }
 
-/**
- * set the appearance and the title of the video chat icon
- */
-GUI.chat.setVideoChatIcon = function(){
 
-	var state = WebRTCManager.state;
+/**
+ * sets the icon source and the icon title of the audio/video chat icons
+ */
+GUI.chat.changeAudioVideoIcon = function(startOrLeave){
 	
-	if(state == "create"){
-		$("#videoChat").attr("src", "../../guis.common/images/createVideochat.png").attr("alt", "");
-		$("#videoChat").attr("title", "create a room conference");
+	if(WebRTCManager.constraints.video){
+		$("#VideoIconUser"+WebRTCManager.callerId).attr("src", "../../guis.common/images/"+startOrLeave+"Videochat.png").attr("alt", "");
+		$("#VideoIconUser"+WebRTCManager.callerId).attr("title", startOrLeave+" video call");
 	}
-	if(state == "join"){
-		$("#videoChat").attr("src", "../../guis.common/images/joinVideochat.png").attr("alt", "");
-		$("#videoChat").attr("title", "join the room conference");
+	else{
+		$("#AudioIconUser"+WebRTCManager.callerId).attr("src", "../../guis.common/images/"+startOrLeave+"Audiochat.png").attr("alt", "");
+		$("#AudioIconUser"+WebRTCManager.callerId).attr("title", startOrLeave+" voice call");
 	}
-	if(state == "leave"){
-		$("#videoChat").attr("src", "../../guis.common/images/leaveVideochat.png").attr("alt", "");
-		$("#videoChat").attr("title", "leave the room conference");
+
+}
+
+
+/**
+ * starts the pulsating animation of the audio/video icon
+ */
+GUI.chat.startAudioVideoIconAnimation = function(){
+
+		var icon;
+		if(WebRTCManager.constraints.video){
+			icon = $("#VideoIconUser"+WebRTCManager.callerId);
+		}
+		else{
+			icon = $("#AudioIconUser"+WebRTCManager.callerId);
+		}
+		
+		icon.css("-webkit-animation", "pulsate 1s ease-out");
+		icon.css("-moz-animation", "pulsate 1s ease-out");
+		icon.css("-webkit-animation-iteration-count", "infinite"); 
+		icon.css("-moz-animation-iteration-count", "infinite");
+		
+}
+
+
+/**
+ * stops the pulsating animation of the audio/video icon
+ */
+GUI.chat.stopAudioVideoIconAnimation = function(){
+
+	$(".VideoAudioIcon").css("-webkit-animation", "");
+	$(".VideoAudioIcon").css("-moz-animation", "");
+	$(".VideoAudioIcon").css("-webkit-animation-iteration-count", ""); 
+	$(".VideoAudioIcon").css("-moz-animation-iteration-count", "");
+
+}
+
+
+/**
+ * hide all audio/video icons (except the active one)
+ */
+GUI.chat.hideAudioVideoIcons = function(){
+
+	$(".VideoAudioIcon").hide();
+	if(WebRTCManager.constraints.video){
+		$("#VideoIconUser"+WebRTCManager.callerId).show();
 	}
+	else{
+		$("#AudioIconUser"+WebRTCManager.callerId).show();
+	}
+
+}
+
+
+/**
+ * show all audio/video icons
+ */
+GUI.chat.showAudioVideoIcons = function(){
+
+	$(".VideoAudioIcon").show();
+
+}
+
+
+/**
+ * sets the size of the video stream container
+ */
+GUI.chat.setVideoSize = function(id, width, height){
+
+	if(WebRTCManager.constraints.video){
+		$('#video'+id).attr('width', width);
+		$('#video'+id).attr('height', height);
+	}
+
+}
+
+
+/**
+ * returns the containers for the video streams
+ */
+GUI.chat.getVideoContainer = function(id){
+
+	return document.querySelector('#video'+id);
 
 }

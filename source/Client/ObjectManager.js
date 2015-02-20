@@ -883,10 +883,9 @@ ObjectManager.pasteObjects = function() {
     }
 }
 
-
 ObjectManager.duplicateObjects = function(objects) {
     if (objects != undefined && objects.length > 0) {
-
+	
         var duplicate = false;
         if (objects.length <= 5) {
             duplicate = true;
@@ -929,7 +928,7 @@ ObjectManager.afterDuplicate = function(newObject) {
     var minX = Number.MAX_VALUE;
     var minY = Number.MAX_VALUE;
 
-    GUI.deselectAllObjects();
+    //GUI.deselectAllObjects();
 
     newObject.select(true);
 

@@ -261,6 +261,7 @@ GeneralObject.getLinkedObjects = function() {
 
     return links;
 }
+
 GeneralObject.showDialog = function() {
     var that = this;
 
@@ -280,20 +281,63 @@ GeneralObject.showDialog = function() {
     };
 
     dialog_buttons[that.translate(GUI.currentLanguage, "Okay")] = function() {
+	
+		var active = $('#tabs').tabs('option', 'active');
+		var tab = $("#tabs ul>li a").eq(active).attr("href");
+	
+		var jstree_selected_item = $('.js-tree').jstree('get_selected');
+		
+		var textareaInput = $('#external_URL').val();
+		
+		if(jstree_selected_item.length == 0 & textareaInput == ""){
+			alert(that.translate(GUI.currentLanguage, "Please select a destination or enter a URL"));
+			return;
+		}
+		if(jstree_selected_item.length == 0 & textareaInput != ""){
+			HandleTextareaInput(textareaInput);
+			return;
+		}
+		if(jstree_selected_item.length != 0 & textareaInput == ""){
+			HandleTreeInput(jstree_selected_item);
+			return;
+		}
+		if(tab == "#tabs-1"){ //two inputs, decide which tab is open
+			HandleTreeInput(jstree_selected_item);
+			return;
+		}
+		else{
+			HandleTextareaInput(textareaInput);
+			return;
+		}
+	};
+	
+	function HandleTextareaInput(textareaInput){
+	
+		if(textareaInput.indexOf("http://www.") != 0){
+			alert(that.translate(GUI.currentLanguage, "Please enter a valid URL"));
+		}
+		else{
+			that.setAttribute("destination", textareaInput);
+			that.setAttribute("destinationObject", "choose");
+			
+			GUI.updateInspector();
+		}
+	
+	}
+	
+	function HandleTreeInput(jstree_selected_item){
+		
+		if (jstree_selected_item.data('type') === "Room") {
+			that.setAttribute("destination", jstree_selected_item.data('id'));
+			that.setAttribute("destinationObject", "choose");
+		} else {
+			that.setAttribute("destination", jstree_selected_item.data('inRoom'));
+			that.setAttribute("destinationObject", jstree_selected_item.data('id'));
+		}
 
-        var jstree_selected_item = $('.js-tree').jstree('get_selected');
-
-        if (jstree_selected_item.data('type') === "Room") {
-            that.setAttribute("destination", jstree_selected_item.data('id'));
-            that.setAttribute("destinationObject", "choose");
-        } else {
-            that.setAttribute("destination", jstree_selected_item.data('inRoom'));
-            that.setAttribute("destinationObject", jstree_selected_item.data('id'));
-        }
-
-        GUI.updateInspector();
-    };
-
+		GUI.updateInspector();
+	}
+		
     var dialog_width = 600;
     var additional_dialog_options = {
         create: function() {
@@ -319,8 +363,38 @@ GeneralObject.showDialog = function() {
                 $('a > .jstree-icon').css({'background-size': 'contain'})
             });
 
-            $('.ui-dialog-content').html(renderedTree);
-
+            //$('.ui-dialog-content').html(renderedTree);
+			
+			$('.ui-dialog-content').html('<div id="tabs">'+
+				'<ul>'+
+				'<li><a id="internal_Tab" href="#tabs-1">'+that.translate(GUI.currentLanguage, "internal")+' (Webarena)</a></li>'+
+				'<li><a id="external_Tab" href="#tabs-2">'+that.translate(GUI.currentLanguage, "external")+' (URL)</a></li>'+
+				'</ul>'+
+				'<div id="tabs-1" style="height:250px">'+
+				'</div>'+
+				'<div id="tabs-2" style="height:250px">'+
+				'</div>'+
+				'</div>');
+				
+			$('#tabs-1').html(renderedTree);
+			$('#tabs-2').html('<textarea id="external_URL" rows="4" cols="72" placeholder="http://www.example.com"></textarea>');
+			
+			$(function() {
+				$( "#tabs" ).tabs();
+			});
+			
+			$('#internal_Tab').click(function() {
+				$('#filterObjects').show();
+				$('#filterObjects').next().show();
+				$(':button:contains(' + that.translate(GUI.currentLanguage, "create new Subroom") + ')').show();
+			});
+			
+			$('#external_Tab').click(function() {
+				$('#filterObjects').hide();
+				$('#filterObjects').next().hide();
+				$(':button:contains(' + that.translate(GUI.currentLanguage, "create new Subroom") + ')').hide();
+			});
+	
             // bigger icons
             //$('<style>.objectBrowserTree a > ins {width: 36px; height: 36px;} .objectBrowserTree a { min-height:36px; line-height:36px; } </style>').appendTo("head");
         },
@@ -328,16 +402,16 @@ GeneralObject.showDialog = function() {
     }
 
     var dialog = GUI.dialog(
-            that.translate(GUI.currentLanguage, "Object Selection"),
+            that.translate(GUI.currentLanguage, "Target Selection"),
             "",
             dialog_buttons,
             dialog_width,
             additional_dialog_options
             )
 
-    $(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", true);
-
-    $(".ui-dialog-buttonpane").append('<input id="filterObjects" type="checkbox">' + that.translate(GUI.currentLanguage, "Show objects") + '<br>');
+    //$(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", true);
+	
+    $(".ui-dialog-buttonpane").append('<input id="filterObjects" type="checkbox"><p style="display:inline">' + that.translate(GUI.currentLanguage, "Show objects") + '</p>');
 
     if (that.getAttribute('filterObjects')) {
         $('#filterObjects').prop('checked', false);
@@ -362,15 +436,16 @@ GeneralObject.showDialog = function() {
 
 
     dialog.on("dblclick", '.jstree-clicked', function() {
-        $(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", false);
+        //$(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", false);
         $(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').click();
     });
 
     dialog.on("click", '.jstree-clicked', function() {
-        $(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", false);
+        //$(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", false);
     });
 
 }
+
 GeneralObject.showFormatDialog = function(selected) {
     var that = this;
     var dialog_buttons = {};

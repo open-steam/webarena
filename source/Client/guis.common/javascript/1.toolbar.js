@@ -355,6 +355,17 @@ GUI.initToolbar = function() {
      }
      */
 
+	 
+	/*add new user notification*/
+    var newUserIcon = document.createElement("img");
+    $(newUserIcon).attr("width", "24").attr("height", "24");
+    $(newUserIcon).attr("id", "new_user_icon");
+    $(newUserIcon).addClass("sidebar_button");
+	$(newUserIcon).css("opacity", 0);
+
+    $("#header > .header_right").append(newUserIcon);
+	
+	 
     /*add paste button*/
     var pasteButton = document.createElement("img");
     $(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
@@ -363,7 +374,7 @@ GUI.initToolbar = function() {
     $(pasteButton).attr("id", "paste_button");
     $(pasteButton).addClass("sidebar_button");
 
-    $(pasteButton).css("padding-left", "20px");
+    //$(pasteButton).css("padding-left", "20px");
     //$(pasteButton).css("padding-right", "20px");
     $(pasteButton).css("margin-right", "20px");
     //$(pasteButton).css("border-left", "1px solid #636363");
@@ -653,4 +664,33 @@ GUI.initToolbar = function() {
         GUI.sidebar.openSidebar();
     });
 
+}
+
+
+/**
+ * If a user enter or leave the room, a flashing icon is shown
+ */
+GUI.flashNewUserIcon = function(newUser){
+	
+	if(newUser){
+		$("#new_user_icon").attr("src", "../../guis.common/images/newUser.png").attr("alt", "");
+		$("#new_user_icon").attr("title", GUI.translate("A user entered this room"));
+	}
+	else{
+		$("#new_user_icon").attr("src", "../../guis.common/images/lostUser.png").attr("alt", "");
+		$("#new_user_icon").attr("title", GUI.translate("A user left this room"));
+	}
+	
+	var flashes = 5;
+	var counter = 0;
+	function blink(){
+		counter ++;
+		if(counter <= flashes){
+			$("#new_user_icon").delay(200).fadeTo(400,1).delay(200).fadeTo(400,0, blink);
+		}
+		else{
+			$("#new_user_icon").attr("title", "");
+		}
+	}
+	blink();
 }

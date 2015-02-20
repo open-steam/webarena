@@ -857,9 +857,16 @@ GeneralObject.follow = function(openMethod) {
         }
 	
 		//open in same tab
-		ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
+		if(String(destination).indexOf("http://www.") != 0){
+			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
+		}
+		else{
+			window.open(destination,"_self")
+		}
     }
 
+	
+	
 }
 
 
