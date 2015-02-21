@@ -12,7 +12,7 @@ var Modules = require('../../../server.js');
 module.exports = theObject;
 
 theObject.onLeave = function(object, data) {
-    if (object.getAttribute('Row-' + this.id) !== undefined 
+    if (object.getAttribute('Row-' + this.id) !== undefined
             && object.getAttribute('Row-' + this.id) !== ""
             && object.getAttribute('Column-' + this.id) !== undefined
             && object.getAttribute('Column-' + this.id) !== "") {
@@ -23,10 +23,10 @@ theObject.onLeave = function(object, data) {
 };
 
 theObject.onEnter = function(object, data) {
-    //data is undefined
-    //obj is the current object which was move on "this" structure
     var structureWidth = this.getAttribute('width');
     var structureHeigth = this.getAttribute('height');
+    var structureX = this.getAttribute('x');
+    var structureY = this.getAttribute('y');
     var rows = this.getAttribute('Row');
     var columns = this.getAttribute('Column');
     var cellWidth = structureWidth / (columns.length + 1);
@@ -35,60 +35,28 @@ theObject.onEnter = function(object, data) {
     var objCX = object.getAttribute("cx");
     var objCY = object.getAttribute("cy");
 
-    var relativeX = objCX - this.getAttribute('x');
-    var relativeY = objCY - this.getAttribute('y');
+    var vx = Math.floor((objCX - structureX) / cellWidth);
+    var vy = Math.floor((objCY - structureY) / cellHeight);
 
-    if ((relativeX >= cellWidth) && (relativeY >= cellHeight)) {
-        var xIndex = Math.floor(relativeX / cellWidth);
-        var yIndex = Math.floor(relativeY / cellHeight);
-
-        var attrX = columns[xIndex - 1];
-        var attrY = rows[yIndex - 1];
-
-        var currentValueX = object.getAttribute('Row-' + this.id);
-        var currentValueY = object.getAttribute('Column-' + this.id);
-
-        if (currentValueX !== attrX && currentValueY !== attrY) {
-            object.setAttribute('Row-' + this.id, attrX);
-            object.setAttribute('Column-' + this.id, attrY);
-        } else {
-            console.log("attributes already set!");
-        }
-
-
+    if (vx < 1 || vy < 1) {
+        console.log("position out of the valid area");
     } else {
-        console.log("Inside the structure, but outside the value area");
-        object.setAttribute('Row-' + this.id, "");
-        object.setAttribute('Column-' + this.id, "");
+        var attrX = columns[vx - 1];
+        var attrY = rows[vy - 1];
+        console.log("x " + attrX);
+        console.log("y " + attrY);
+        var currentXAttr = object.getAttribute("attrbuteX-" + this.id);
+        var currentYAttr = object.getAttribute("attrbuteY-" + this.id);
+        if (currentXAttr !== attrX) {
+            object.setAttribute("attrbuteX-" + this.id, attrX);
+        }
+        if (currentYAttr !== attrY) {
+            object.setAttribute("attrbuteY-" + this.id, attrY);
+        }
+        if (currentXAttr === attrX && currentYAttr === attrY) {
+            console.log("position with the same meaning");
+        }
     }
-
-    //TODO:reduce to a function start
-
-    /* var direction = this.getAttribute('direction');
-     var overlappingObjects = this.getOverlappingObjects();
-     
-     var sortedPositions = [];
-     
-     for (var index in overlappingObjects) {
-     if (overlappingObjects[index].isActive && overlappingObjects[index].isActive) {
-     sortedPositions.push(overlappingObjects[index].getAttribute(direction));
-     }
-     
-     }
-     sortedPositions = sortedPositions.sort();
-     
-     var counter = 1;
-     for (var i in sortedPositions) {
-     for (var index in overlappingObjects) {
-     if (overlappingObjects[index].getAttribute(direction) === sortedPositions[i]) {
-     console.log(overlappingObjects[index].getAttribute('id') + "    " + counter);
-     overlappingObjects[index].setAttribute(this.getAttribute('attribute'), counter);
-     counter++;
-     break;
-     }
-     }
-     }
-     //TODO:reduce to a function end */
 
 };
 
