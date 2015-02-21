@@ -10,84 +10,67 @@
 var theObject = Object.create(require('./common.js'));
 var Modules = require('../../../server.js');
 module.exports = theObject;
+theObject.evaluatePositions = function() {
+    var direction = this.getAttribute('direction');
+    var axis;
+    var otherAxis;
+    if (direction === "vertical") {
+        axis = "y";
+        otherAxis = "x";
+    } else {
+        axis = "x";
+        otherAxis = "y";
+    }
 
+    //Hole alle überlappenden Objekte
+    var overlappingObjects = this.getOverlappingObjects();
+    var activeObjectsinStructure = [];
+    //Filtere nur die Anwendungsobjekte heraus
+    for (var index in overlappingObjects) {
+        if (overlappingObjects[index].isActive && overlappingObjects[index].isActive()) {
+            activeObjectsinStructure.push(overlappingObjects[index]);
+        }
+    }
+
+    activeObjectsinStructure = activeObjectsinStructure.sort(function(a, b) {
+        var value = a.getAttribute(axis) - b.getAttribute(axis);
+        if (value === 0) {
+            return a.getAttribute(otherAxis) - b.getAttribute(otherAxis);
+        } else {
+            return value;
+        }
+    });
+    var attributeName = this.getAttribute("attribute");
+    var counter = 1;
+    for (var i in activeObjectsinStructure) {
+        activeObjectsinStructure[i].setAttribute(attributeName, counter);
+        console.log("objid: " + activeObjectsinStructure[i].id + " rang: " + counter);
+        counter++;
+    }
+};
 theObject.onLeave = function(object, data) {
-
     var attributeName = this.getAttribute('attribute');
     if (attributeName !== '') {
         object.setAttribute(attributeName, '');
-        
-        //TODO:reduce to a function start
-        var direction = this.getAttribute('direction');
-        var overlappingObjects = this.getOverlappingObjects();
-
-        var sortedPositions = [];
-
-        for (var index in overlappingObjects) {
-            if (overlappingObjects[index].isActive && overlappingObjects[index].isActive) {
-                sortedPositions.push(overlappingObjects[index].getAttribute(direction));
-            }
-
-        }
-        sortedPositions = sortedPositions.sort();
-
-        var counter = 1;
-        for (var i in sortedPositions) {
-            for (var index in overlappingObjects) {
-                if (overlappingObjects[index].getAttribute(direction) === sortedPositions[i]) {
-                    console.log(overlappingObjects[index].getAttribute('id') + "    " + counter);
-                    overlappingObjects[index].setAttribute(this.getAttribute('attribute'), counter);
-                    counter++;
-                    break;
-                }
-            }
-        }
-//TODO:reduce to a function end
-    } else {
+        //Bewerte die Objekte innerhalb der Liste neu
+        this.evaluatePositions();
+    }
+    else {
         console.log("List: No attribute set for " + object.getAttribute('id'));
     }
-
-
 };
 
 
 theObject.onEnter = function(object, data) {
-    //TODO:reduce to a function start
+    //Bewerte die Objekte innerhalb der Liste neu
+    this.evaluatePositions();
     
-    var direction = this.getAttribute('direction');
-    var overlappingObjects = this.getOverlappingObjects();
-
-    var sortedPositions = [];
-
-    for (var index in overlappingObjects) {
-        if (overlappingObjects[index].isActive && overlappingObjects[index].isActive) {
-            sortedPositions.push(overlappingObjects[index].getAttribute(direction));
-        }
-
-    }
-    sortedPositions = sortedPositions.sort();
-
-    var counter = 1;
-    for (var i in sortedPositions) {
-        for (var index in overlappingObjects) {
-            if (overlappingObjects[index].getAttribute(direction) === sortedPositions[i]) {
-                console.log(overlappingObjects[index].getAttribute('id') + "    " + counter);
-                overlappingObjects[index].setAttribute(this.getAttribute('attribute'), counter);
-                counter++;
-                break;
-            }
-        }
-    }
-    //TODO:reduce to a function end
-
+    //TODO: Anschliessende Repositionierung der AWO
+    
 };
 
-
-
 theObject.onMoveWithin = function(object, oldData, newData) {
-
     return this.onEnter(object, oldData, newData);
-
 };
 
 

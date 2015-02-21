@@ -18,7 +18,7 @@ List.register=function(type){
 	
 	//Determines the distance between to items
 	this.registerAttribute('distance',{type:'number',standard:10,min:5,max: 100,category:'List'});
-	this.registerAttribute('direction',{type:'selection', standard:'y', options:['y','x'], category:'List'});
+	this.registerAttribute('direction',{type:'selection', standard:'vertical', options:['vertical','horizontal'], category:'List'});
         
         this.standardData.fillcolor='white';
 	this.standardData.linecolor='black';
