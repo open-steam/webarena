@@ -136,7 +136,6 @@ theObject.makeStructuring = function() {
      **/
     theObject.evaluateObject = function(object, changeData) {
         //complete data
-
         var oldData = {};
         var newData = {};
         var fields = ['x', 'y', 'cx', 'cy', 'width', 'height'];
@@ -207,7 +206,6 @@ theObject.makeStructuring = function() {
         var height = object.getAttribute('height');
         var intersects = this.intersects(x, y, width, height);
 
-        //console.log('intersets: ' + intersects);
         if (intersects) {
             this.onEnter(object);
             return true;
@@ -215,9 +213,6 @@ theObject.makeStructuring = function() {
             this.onLeave(object);
             return false;
         }
-
-
-
     }
 
 }

@@ -12,18 +12,31 @@ var Modules = require('../../../server.js');
 
 
 theObject.updateEvaluationStatus = function(object, data) {
-    /* 
-     //TODO: CHECK IF THE SEMANTIC MEANING HAS CHANGED
-     if(object.isActive()){
-     var evalStatus = object.getAttribute("positionStatus");
-     if(evalStatus === "positioned"){
-     //TODO: Just change the evalStatus, if the semantic meaning has changed
-     object.setAttribute("positionStatus", "placed");
-     }
-     } */
+    //
+//
+    //
+    //Prüfe, ob der Kontext derselbe ist. Oder ob ein anderer Kntext vorliegt!?!?!!
+    //Annahme erstmal: Es gibt immer nur ein Kontext
+    //Also das Objekt wird immer innerhalb des Kontextes bewegt.
+
+    //Falls das bewegte Objekt eine Struktur oder ein Kontext ist, dann wird gespeichert, dass es bewegt wurde.
+    //Wenn der Hintergrund verändert wurde, wissen wir, dass die Objekte zu repositionieren sind.
+    if (object.onObjectMove) {
+        //Vielleicht sollte ich das am Raum speichern
+        return object.onObjectMove(data);
+    } else if (object.isActive && object.isActive()) {
+        //Dieser Teil ist wird bei Bewegung von Anwendungsobjekten ausgeführt.
+        var allObjects = this.getInventory();
+        for (var i in allObjects) {
+            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {
+                allObjects[i].evaluateObject(object, data);
+            }
+        }
+    }
+
 
 }
-theObject.evaluateCurrentPosition = function(object) {
+theObject.evaluateCurrentPosition = function(object, data) {
     if (object.onObjectMove) {
         return object.onObjectMove(data);
     } else {
@@ -51,89 +64,8 @@ theObject.evaluatePositionFor = function(object, data) {
     if (object.onObjectMove) {
         return object.onObjectMove(data);
     } else {
-
-
-
+        console.log("room eval position for");
     }
-
-
-    //TODO: IST EIN OBJEKT AUSSERHALB UND POSITIONIERT UND WIRD AN EINE ANDERE STELLE AUSSERHALB BEWEGT, SO IST ES IMMER NOCH POSITIONIERT!!!!!!!!!!!!!!
-
-    //let the moved object be evaluated by every structuring object in the room
-    //  console.log(object.getAttribute("deleted"));
-    //console.log(object.getAttribute("isPositioned"));
-    /*if (object.getAttribute("isPositioned")) {
-     var positionInNothing = true;
-     var inventory = this.getInventory();
-     
-     for (var i in inventory) {
-     var obj = inventory[i];
-     if (obj.isStructuring()) {
-     var postitionInformation = obj.getLocationInformation(object, data);
-     if (postitionInformation != 'O' && postitionInformation != 'L') {
-     positionInNothing = false;
-     }
-     }
-     }
-     //Zustand platziert
-     //zu löschende Eigenschaften merken
-     console.log(positionInNothing);
-     if (positionInNothing) {
-     object.setAttribute("isPositioned", false);
-     //onLeaveProperties will be saved to object.deleted
-     for (var i in inventory) {
-     var obj = inventory[i];
-     if (obj.isStructuring()) {
-     obj.deletedPlacedProperties(object, data);
-     }
-     }
-     //Wenn auf Struktur abgelegt wird, dann bewerte das Element
-     } else {
-     for (var i in inventory) {
-     var obj = inventory[i];
-     if (obj.isStructuring()) {
-     obj.evaluateObject(object, data);
-     }
-     }
-     }
-     
-     
-     /*  for (var i in inventory) {
-     var obj = inventory[i];
-     if (obj.isStructuring()) {
-     obj.evaluateObject(object, data);
-     }
-     }
-     
-     var structStateArray = object.getAttribute("structureStates");
-     console.log(structStateArray);
-     
-     
-     var positionInNothing = true;
-     
-     //        var isSameStructure = true;
-     for (var i in structStateArray) {
-     if (structStateArray[i] != 'omo' && structStateArray[i] != 'ol') {
-     positionInNothing = false;
-     
-     }
-     //This method isn't in use right now! It determines if the object is stiall part of the same structures
-     //if(structStateArray[i] == 'oe' || structStateArray[i] == 'ol')
-     //    isSameStructure = false;
-     }
-     //set state to placed if necessary
-     if (positionInNothing) {
-     object.setAttribute("isPositioned", false);
-     console.log("Objekt liegt im Nichts!");
-     }
-     // Do I really need this distinction????
-     //if(!positionInNothing && isSameStructure){
-     //    console.log("Objekt ist immer noch in demselben Bereich!!!!!");
-     //}
-     
-     
-     */
-
 }
 
 
@@ -222,6 +154,78 @@ theObject.getAllStructures = function() {
         return 0;
     else
         return structures;
+}
+theObject.repositionAllObjects = function() {
+
+    var inventory = this.getInventory();
+    var structures = [];
+    var activeObjects = [];
+    for (var i in inventory) {
+        if (inventory[i].isStructuring && inventory[i].isStructuring()) {
+            structures.push(inventory[i]);
+        } else if (inventory[i].isActive && inventory[i].isActive()) {
+            activeObjects.push(inventory[i]);
+        }
+    }
+    //Um zu prüfen, ob ein Objekt anhand seiner Bewertung zu einer Struktur gehört, erhält jede Struktur ein Methode,
+    //die das prüft.
+    var objectMustBePositioned = [];
+    var objectMustNotBePositioned = [];
+    var ao = activeObjects[0];
+    for (var i in structures) {
+        if (structures[i].isStructuringObject(ao)) {
+            objectMustBePositioned.push(structures[i]);
+        } else {
+            objectMustNotBePositioned.push(structures[i]);
+        }
+    }
+
+    var solution;
+    if (objectMustBePositioned.length === 0) {
+        //TODO: Hole Abmessungen des aktuellen KontextObjects
+    } else {
+        solution = objectMustBePositioned[0].getValidPositions(ao);
+        console.log(solution);
+    }
+
+    for (var i = 1; i < objectMustBePositioned.length; i++) {
+        console.log("must");
+        var tempPositions = objectMustBePositioned[i].getValidPositions(ao);
+        console.log(tempPositions)
+        var cpr = new Modules.Clipper.Clipper();
+
+        cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
+        cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
+        //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
+        var solution_paths = new Modules.Clipper.Paths();
+        var succeeded = cpr.Execute(0, solution_paths,1,1);
+        solution = solution_paths;
+        console.log(succeeded);
+        console.log(solution);
+
+    }
+    for (var i = 0; i < objectMustNotBePositioned.length; i++) {
+        console.log("mustNot");
+        var tempPositions = objectMustNotBePositioned[i].getInvalidPositions(ao);
+        console.log(tempPositions);
+        var cpr = new Modules.Clipper.Clipper();
+
+        cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
+        cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
+
+        //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
+        var solution_paths = new Modules.Clipper.Paths();
+
+        var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctDifference, solution_paths);
+        console.log(succeeded);
+
+        solution = solution_paths;
+        console.log("solution after difference");
+        console.log(solution);
+
+    }
+
+
 }
 
 module.exports = theObject;

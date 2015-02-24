@@ -13,13 +13,18 @@ module.exports = theObject;
 
 theObject.onLeave = function(object, data) {
 
-    if (this.checkData(object)) {
-        var data = this.getData(object);
+    //if (this.checkData(object)) {
+    //  var data = this.getData(object);
 
-        if (object.getAttribute(data.attribute) === data.value) {
-            object.setAttribute(data.attribute, '');
-            console.log('Attribute ' + data.attribute + ' has been unset for ' + object);
-        }
+    //if (object.getAttribute(data.attribute) === data.value) {
+    //  object.setAttribute(data.attribute, false);
+
+    // }
+    //}
+    var attributeName = this.getAttribute("attribute");
+    if (attributeName && object.getAttribute(attributeName)) {
+        object.setAttribute(attributeName, false);
+        console.log('Attribute ' + attributeName + ' has been unset for ' + object);
     }
 
 };
@@ -58,12 +63,12 @@ theObject.onMoveOutside = function(object, oldData, newData) {
 
 theObject.getData = function(object) {
     var attribute = this.getAttribute('attribute');
-    if(this.getAttribute("direction") === "horizontal"){
+    if (this.getAttribute("direction") === "horizontal") {
         var value = this.positionToValueX(object);
-    }else{
+    } else {
         var value = this.positionToValueY(object);
     }
-    
+
     return {'attribute': attribute, 'value': value};
 }
 
@@ -98,42 +103,6 @@ theObject.positionToValueY = function(object) {
 
     return value;
 }
-/*function positionToValue(object) {
- //determine an area for validation
- var minVal = object.getAttribute('min');
- var maxVal = object.getAttribute('max');
- var stepping = object.getAttribute('stepping');
- var numberOfSteps = Math.floor(((maxVal - minVal) / stepping) + 1);
- 
- var pixelStart = object.padding;
- var pixelEnd = object.getAttribute('width') - object.padding - object.padding;
- var distancePerStepInPixel = (pixelEnd - pixelStart) / (numberOfSteps - 1);
- 
- 
- //determine current position of the structure
- var x = object.getAttribute('x');
- var y = object.getAttribute('y');
- 
- var overlappingObjects = object.getOverlappingObjects();
- 
- for (var overlappingObj in overlappingObjects) {
- //determine current position
- var objX = overlappingObj.getAttribute('x');
- var objWidth = overlappingObj.getAttribute('width');
- var objMiddle = Math.round((objX + objWidth) / 2);
- 
- //Distance between scale start and objPosition
- var relativePositonX = objMiddle - x + pixelStart;
- 
- var value = minVal + (Math.round(relativePositonX/distancePerStepInPixel));
- console.log(value);
- 
- }
- 
- 
- return 5;
- } */
-
 
 theObject.checkData = function(object) {
     var data = this.getData(object);
@@ -145,3 +114,79 @@ theObject.checkData = function(object) {
     return true;
 }
 
+theObject.getType = function() {
+    return "scale1d";
+}
+
+theObject.isStructuringObject = function(object) {
+    var attributeName = this.getAttribute("attribute");
+    var value = object.getAttribute(attributeName) || false;
+    if (value) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+theObject.getValidPositions = function(object) {
+    var startX = this.getAttribute('x');
+    var startY = this.getAttribute('y');
+    var width = this.getAttribute('width');
+    var height = this.getAttribute('height');
+
+    var aoWidth = object.getAttribute("width");
+    var aoHeight = object.getAttribute("height");
+
+    var direction = this.getAttribute("direction");
+    var minimum = this.getAttribute("min");
+    var stepping = this.getAttribute("stepping");
+    var value = object.getAttribute(this.getAttribute("attribute"));
+    var v = (value - minimum) / stepping;
+
+    if (direction === "horizontal") {
+        var d = this.getAttribute("distanceX");
+        var cx = startX + 20 + (v * d);
+        var x = cx - (aoWidth / 2)
+        var y1 = startY;
+        var y2 = startY + height - aoHeight;
+        var p1 = {X: x, Y: y1};
+        var p2 = {X: x + 1, Y: y1};
+        var p3 = {X: x + 1, Y: y2};
+        var p4 = {X: x, Y: y2};
+
+
+        return [[p1, p2, p3, p4]];
+
+    } else {
+        var d = this.getAttribute("distanceY");
+        var cy = (startY + height - 80) - (v * d);
+        var y = Math.floor(cy - (aoHeight / 2));
+        var x1 = Math.floor(startX);
+        var x2 =Math.floor( startX + width - aoWidth);
+
+        var p1 = {X: x1, Y: y};
+        var p2 = {X: x2, Y: y};
+        var p3 = {X: x2, Y: y + 1};
+        var p4 = {X: x1, Y: y + 1};
+
+        return [[p1, p2, p3, p4]];
+
+    }
+
+
+}
+theObject.getInvalidPositions = function(object) {
+    var startX = this.getAttribute('x');
+    var startY = this.getAttribute('y');
+    var width = this.getAttribute('width');
+    var height = this.getAttribute('height');
+
+    var aoWidth = object.getAttribute("width");
+    var aoHeight = object.getAttribute("height");
+
+    var p1 = {X: startX, Y: startY};
+    var p2 = {X: startX + width - aoWidth, Y: startY};
+    var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
+    var p4 = {X: startX, Y: startY + height - aoHeight};
+    return [[p1, p2, p3, p4]];
+}

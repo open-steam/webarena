@@ -50,8 +50,9 @@ theObject.evaluatePositions = function() {
 };
 theObject.onLeave = function(object, data) {
     var attributeName = this.getAttribute('attribute');
-    if (attributeName !== '') {
-        object.setAttribute(attributeName, '');
+    if (attributeName !== '' && object.getAttribute(attributeName)) {
+        object.setAttribute(attributeName, false);
+        console.log("removed " + object.id + "from list " + this.id);
         //Bewerte die Objekte innerhalb der Liste neu
         this.evaluatePositions();
     }
@@ -64,9 +65,9 @@ theObject.onLeave = function(object, data) {
 theObject.onEnter = function(object, data) {
     //Bewerte die Objekte innerhalb der Liste neu
     this.evaluatePositions();
-    
+
     //TODO: Anschliessende Repositionierung der AWO
-    
+
 };
 
 theObject.onMoveWithin = function(object, oldData, newData) {
@@ -98,3 +99,80 @@ theObject.checkData = function(object) {
     return true;
 }
 
+theObject.getType = function() {
+    return "list";
+}
+theObject.isStructuringObject = function(object) {
+    var attributeName = this.getAttribute("attribute");
+    var value = object.getAttribute(attributeName) || false;
+    if (value) {
+        return true;
+    } else {
+        return false;
+    }
+}
+theObject.getValidPositions = function(object) {
+    var startX = this.getAttribute('x');
+    var startY = this.getAttribute('y');
+    var width = this.getAttribute('width');
+    var height = this.getAttribute('height');
+
+    var aoWidth = object.getAttribute("width");
+    var aoHeight = object.getAttribute("height");
+    var attributeName = this.getAttribute("attribute");
+
+    /* var objects = this.getOverlappingObjects();
+     var activeObjects = [];
+     for (var i in objects) {
+     if (objects[i].isActive && objects[i].isActive()) {
+     activeObjects.push(objects[i]);
+     }
+     } /*
+     /*activeObjects.sort(function(a, b) {
+     var valA = a.getAttribute(attributeName);
+     var valB = b.getAttribute(attributeName);
+     return valA - valB;
+     }); */
+    //Zuvor muss ich bestimmen, wie ich mit der Distanz umgehe.
+    //Bei vertikaler Liste die Distanz zwischen links und rechts gleich halten.
+    //Bei horizontaler Liste die Distanz nach oben und unten gleich halten.
+    //Diese Distanzen können unter der Berücksichtigung der Abmessungen der Struktur bestimmt werden.
+    //Distanz zwischen den Anwendungsobjekten aus Anzahl der Anwendungsobjekte und Abmessungen der Struktur bestimmbar.
+    //Problem:
+    var value = object.getAttribute(attributeName);
+    var distance = this.getAttribute("distance");
+    var direction = this.getAttribute("direction");
+
+    var x = startX;
+    var y = startY;
+    if (direction === "vertical") {
+        x += distance;
+        y += distance * value;
+    } else {
+        y += distance;
+        x += distance * value;
+    }
+
+    var p1 = {X: x, Y: y};
+    var p2 = {X: x + 1, Y: y};
+    var p3 = {X: x + 1, Y: y + 1};
+    var p4 = {X: x, Y: y + 1};
+
+    return [[p1, p2, p3, p4]];
+}
+
+theObject.getInvalidPositions = function(object) {
+    var startX = this.getAttribute('x');
+    var startY = this.getAttribute('y');
+    var width = this.getAttribute('width');
+    var height = this.getAttribute('height');
+
+    var aoWidth = object.getAttribute("width");
+    var aoHeight = object.getAttribute("height");
+
+    var p1 = {X: startX, Y: startY};
+    var p2 = {X: startX + width - aoWidth, Y: startY};
+    var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
+    var p4 = {X: startX, Y: startY + height - aoHeight};
+    return [[p1, p2, p3, p4]];
+}

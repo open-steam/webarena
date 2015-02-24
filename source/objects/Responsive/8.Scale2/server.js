@@ -13,13 +13,15 @@ module.exports = theObject;
 
 theObject.onLeave = function(object, data) {
 
-    if (this.checkData(object)) {
-        var data = this.getData(object);
-
-        if (object.getAttribute(data.attribute) === data.value) {
-            object.setAttribute(data.attribute, '');
-            console.log('Attribute ' + data.attribute + ' has been unset for ' + object);
-        }
+    var attributeNameX = this.getAttribute("attributeX");
+    var attributeNameY = this.getAttribute("attributeY");
+    if (attributeNameX && object.getAttribute(attributeNameX)) {
+        object.setAttribute(attributeNameX, false);
+        console.log('Attribute ' + attributeNameX + ' has been unset for ' + object);
+    }
+    if (attributeNameY && object.getAttribute(attributeNameY)) {
+        object.setAttribute(attributeNameY, false);
+        console.log('Attribute ' + attributeNameY + ' has been unset for ' + object);
     }
 
 };
@@ -108,4 +110,64 @@ theObject.checkData = function(object) {
 
     return true;
 }
+theObject.getType = function() {
+    return "scale2d";
+}
+theObject.isStructuringObject = function(object) {
+    var attributeNameX = this.getAttribute("attributeX");
+    var attributeNameY = this.getAttribute("attributeY");
+    var valueX = object.getAttribute(attributeNameX) || false;
+    var valueY = object.getAttribute(attributeNameY) || false;
+    if (valueX && valueY) {
+        return true;
+    } else {
+        return false;
+    }
+}
+theObject.getValidPositions = function(object) {
+    var startX = this.getAttribute('x');
+    var startY = this.getAttribute('y');
+    var width = this.getAttribute('width');
+    var height = this.getAttribute('height');
 
+    var aoWidth = object.getAttribute("width");
+    var aoHeight = object.getAttribute("height");
+
+    var minX = this.getAttribute("minX");
+    var steppingX = this.getAttribute("steppingX");
+    var valueX = object.getAttribute(this.getAttribute("attributeX"));
+    var vx = (valueX - minX) / steppingX;
+    var dx = this.getAttribute("distanceX");
+    var cx = startX + 60 + (vx * dx);
+    var x = Math.floor(cx - (aoWidth / 2));
+    var minY = this.getAttribute("minY");
+    var steppingY = this.getAttribute("steppingY");
+    var valueY = object.getAttribute(this.getAttribute("attributeY"));
+    var vy = (valueY - minY) / steppingY;
+    var dy = this.getAttribute("distanceY");
+    var cy = (startY + height - 80) - (vy * dy);
+    var y = Math.floor(cy - (aoHeight / 2));
+    
+    var p1 = {X: x, Y: y};
+    var p2 = {X: x+1, Y: y};
+    var p3 = {X: x+1, Y: y+1};
+    var p4 = {X: x, Y: y+1};
+
+    return [[p1,p2,p3,p4]];
+}
+
+theObject.getInvalidPositions = function(object) {
+    var startX = this.getAttribute('x');
+    var startY = this.getAttribute('y');
+    var width = this.getAttribute('width');
+    var height = this.getAttribute('height');
+
+    var aoWidth = object.getAttribute("width");
+    var aoHeight = object.getAttribute("height");
+
+    var p1 = {X: startX, Y: startY};
+    var p2 = {X: startX + width - aoWidth, Y: startY};
+    var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
+    var p4 = {X: startX, Y: startY + height - aoHeight};
+    return [[p1, p2, p3, p4]];
+}

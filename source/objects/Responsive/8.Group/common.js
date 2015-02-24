@@ -15,7 +15,7 @@ Group.register=function(type){
 	this.makeStructuring();
 	
 	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});
-	this.registerAttribute('value',{type:'text',standard:'',category:'Selection'});
+	
 
 }
 

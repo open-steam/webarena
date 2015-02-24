@@ -231,13 +231,7 @@ AttributeManager.setAttribute = function(object, attribute, value, forced, noeva
 
     // do nothing, if value has not changed
     if (object.get(attribute) === value) {
-        if (attribute === "structures") {
-            console.log(attribute);
-            console.log(object.get(attribute));
-            console.log(value);
-            console.log("hier drin?")
-            console.log(object.getAttribute("structures"));
-        }
+        
         return false;
     }
 
