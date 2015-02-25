@@ -9,6 +9,7 @@ GUI.showLogin = function(err) {
 	/* check for an external session login request in the URL hash */
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession') > -1) {
 		GUI.login();
+		return;
 	}
 	
 	/* true if the login process is active */
@@ -35,12 +36,6 @@ GUI.showLogin = function(err) {
 	$("#login_username").focus();
 	
 	$("#login_submit").click(GUI.login);  
-	   
-	$("#login input").keyup( function(event) {
-		if (event.keyCode == 13) {
-			
-		}
-	});
 	
 	var userDataObject = GUI.retrieveUserData();
 
