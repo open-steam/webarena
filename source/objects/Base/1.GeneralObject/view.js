@@ -568,10 +568,15 @@ GeneralObject.adjustControls = function() {
                 var x = self.getViewX() + couplingX;
                 var y = self.getViewY() + self.getViewHeight() + couplingY;
             }
-
-            $(control).attr("cx", x);
-            $(control).attr("cy", y);
-
+			
+			if(!isNaN(x)){
+				$(control).attr("cx", x);
+			}
+			
+			if(!isNaN(y)){
+				$(control).attr("cy", y);
+			}
+			
         });
     }
 

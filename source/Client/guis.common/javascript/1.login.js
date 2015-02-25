@@ -35,7 +35,7 @@ GUI.showLogin = function(err) {
 	
 	$("#login_username").focus();
 	
-	$("#login_submit").click(GUI.login);
+	$("#login_submit").click(GUI.login);  
 	
 	var userDataObject = GUI.retrieveUserData();
 
