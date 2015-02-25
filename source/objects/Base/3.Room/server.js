@@ -169,62 +169,101 @@ theObject.repositionAllObjects = function() {
     }
     //Um zu prüfen, ob ein Objekt anhand seiner Bewertung zu einer Struktur gehört, erhält jede Struktur ein Methode,
     //die das prüft.
-    var objectMustBePositioned = [];
-    var objectMustNotBePositioned = [];
-    var ao = activeObjects[0];
-    for (var i in structures) {
-        if (structures[i].isStructuringObject(ao)) {
-            objectMustBePositioned.push(structures[i]);
-        } else {
-            objectMustNotBePositioned.push(structures[i]);
+
+    for (var index in activeObjects) {
+        var objectMustBePositioned = [];
+        var objectMustNotBePositioned = [];
+        var ao = activeObjects[index];
+
+        for (var i in structures) {
+            if (structures[i].isStructuringObject(ao)) {
+                objectMustBePositioned.push(structures[i]);
+            } else {
+                objectMustNotBePositioned.push(structures[i]);
+            }
         }
+        
+        var solution;
+        if (objectMustBePositioned.length === 0) {
+            //TODO: Hole Abmessungen des aktuellen KontextObjects
+        } else {
+            solution = objectMustBePositioned[0].getValidPositions(ao);
+        }
+
+        for (var i = 1; i < objectMustBePositioned.length; i++) {
+            var tempPositions = objectMustBePositioned[i].getValidPositions(ao);
+            var cpr = new Modules.Clipper.Clipper();
+
+            cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
+            cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
+            //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
+            var solution_paths = new Modules.Clipper.Paths();
+            var succeeded = cpr.Execute(0, solution_paths, 1, 1);
+            solution = solution_paths;
+
+        }
+        for (var i = 0; i < objectMustNotBePositioned.length; i++) {
+            var tempPositions = objectMustNotBePositioned[i].getInvalidPositions(ao);
+            var cpr = new Modules.Clipper.Clipper();
+
+            cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
+            cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
+
+            //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
+            var solution_paths = new Modules.Clipper.Paths();
+
+            var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctDifference, solution_paths);
+            solution = solution_paths;
+        }
+
+        var minX = Number.MAX_VALUE;
+        var maxX = 0;
+        var minY = Number.MAX_VALUE;
+        var maxY = 0;
+
+        for (var i in solution) {
+            for (var j in solution[i]) {
+                if (solution[i][j].X < minX) {
+                    minX = solution[i][j].X;
+                }
+                if (solution[i][j].X > maxX) {
+                    maxX = solution[i][j].X;
+                }
+                if (solution[i][j].Y < minY) {
+                    minY = solution[i][j].Y;
+                }
+                if (solution[i][j].Y > maxY) {
+                    maxY = solution[i][j].Y;
+                }
+
+            }
+        }
+
+        var inPolyFlag = false;
+        var counter = 0;
+        var randomX;
+        var randomY;
+        while (!inPolyFlag && counter < 100) {
+            var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));
+            var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));
+            var pt = new Modules.Clipper.IntPoint(randomX, randomY);
+
+            for (var i in solution) {
+                var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
+
+                if (inpoly === 1 || inpoly === -1) {
+                    inPolyFlag = true;
+                    break;
+                }
+            }
+            counter++;
+        }
+        console.log(randomX);
+        console.log(randomY);
+        ao.setAttribute("x", randomX);
+        ao.setAttribute("y", randomY);
+
     }
-
-    var solution;
-    if (objectMustBePositioned.length === 0) {
-        //TODO: Hole Abmessungen des aktuellen KontextObjects
-    } else {
-        solution = objectMustBePositioned[0].getValidPositions(ao);
-        console.log(solution);
-    }
-
-    for (var i = 1; i < objectMustBePositioned.length; i++) {
-        console.log("must");
-        var tempPositions = objectMustBePositioned[i].getValidPositions(ao);
-        console.log(tempPositions)
-        var cpr = new Modules.Clipper.Clipper();
-
-        cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
-        cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
-        //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
-        var solution_paths = new Modules.Clipper.Paths();
-        var succeeded = cpr.Execute(0, solution_paths,1,1);
-        solution = solution_paths;
-        console.log(succeeded);
-        console.log(solution);
-
-    }
-    for (var i = 0; i < objectMustNotBePositioned.length; i++) {
-        console.log("mustNot");
-        var tempPositions = objectMustNotBePositioned[i].getInvalidPositions(ao);
-        console.log(tempPositions);
-        var cpr = new Modules.Clipper.Clipper();
-
-        cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
-        cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
-
-        //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
-        var solution_paths = new Modules.Clipper.Paths();
-
-        var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctDifference, solution_paths);
-        console.log(succeeded);
-
-        solution = solution_paths;
-        console.log("solution after difference");
-        console.log(solution);
-
-    }
-
 
 }
 

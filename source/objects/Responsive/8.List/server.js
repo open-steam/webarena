@@ -78,7 +78,7 @@ theObject.onMoveWithin = function(object, oldData, newData) {
 
 theObject.onMoveOutside = function(object, oldData, newData) {
 
-    return this.onLeave(object, oldData, newData);
+    //return this.onLeave(object, oldData, newData);
 
 };
 
@@ -121,24 +121,7 @@ theObject.getValidPositions = function(object) {
     var aoHeight = object.getAttribute("height");
     var attributeName = this.getAttribute("attribute");
 
-    /* var objects = this.getOverlappingObjects();
-     var activeObjects = [];
-     for (var i in objects) {
-     if (objects[i].isActive && objects[i].isActive()) {
-     activeObjects.push(objects[i]);
-     }
-     } /*
-     /*activeObjects.sort(function(a, b) {
-     var valA = a.getAttribute(attributeName);
-     var valB = b.getAttribute(attributeName);
-     return valA - valB;
-     }); */
-    //Zuvor muss ich bestimmen, wie ich mit der Distanz umgehe.
-    //Bei vertikaler Liste die Distanz zwischen links und rechts gleich halten.
-    //Bei horizontaler Liste die Distanz nach oben und unten gleich halten.
-    //Diese Distanzen können unter der Berücksichtigung der Abmessungen der Struktur bestimmt werden.
-    //Distanz zwischen den Anwendungsobjekten aus Anzahl der Anwendungsobjekte und Abmessungen der Struktur bestimmbar.
-    //Problem:
+
     var value = object.getAttribute(attributeName);
     var distance = this.getAttribute("distance");
     var direction = this.getAttribute("direction");
@@ -147,10 +130,10 @@ theObject.getValidPositions = function(object) {
     var y = startY;
     if (direction === "vertical") {
         x += distance;
-        y += distance * value;
+        y += ((value-1) * aoHeight) + (distance * value);
     } else {
         y += distance;
-        x += distance * value;
+        x += (aoWidth*(value-1)) + (distance * value);
     }
 
     var p1 = {X: x, Y: y};
