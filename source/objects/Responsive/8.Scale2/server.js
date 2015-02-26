@@ -31,8 +31,16 @@ theObject.onEnter = function(object, data) {
 
     if (this.checkData(object)) {
         var data = this.getData(object);
+        var minX = this.getAttribute("minX");
+        var maxX = this.getAttribute("maxX");
+        var minY = this.getAttribute("minY");
+        var maxY = this.getAttribute("maxY");
 
-        if (object.getAttribute(data.attributeX) !== data.valueX && object.getAttribute(data.attributeY) !== data.valueY) {
+        if (minX > data.valueX || maxX < data.valueX || minY > data.valueY || maxY < data.valueY) {
+            console.log("obj is out of range!!!!!");
+            object.setAttribute(data.attributeX, false);
+            object.setAttribute(data.attributeY, false);
+        } else if (object.getAttribute(data.attributeX) !== data.valueX && object.getAttribute(data.attributeY) !== data.valueY) {
             object.setAttribute(data.attributeX, data.valueX);
             object.setAttribute(data.attributeY, data.valueY);
             console.log('Attribute ' + data.attributeX + ' has been set to ' + data.valueX + ' for ' + object);
@@ -147,27 +155,12 @@ theObject.getValidPositions = function(object) {
     var dy = this.getAttribute("distanceY");
     var cy = (startY + height - 80) - (vy * dy);
     var y = Math.floor(cy - (aoHeight / 2));
-    
+
     var p1 = {X: x, Y: y};
-    var p2 = {X: x+1, Y: y};
-    var p3 = {X: x+1, Y: y+1};
-    var p4 = {X: x, Y: y+1};
+    var p2 = {X: x + 1, Y: y};
+    var p3 = {X: x + 1, Y: y + 1};
+    var p4 = {X: x, Y: y + 1};
 
-    return [[p1,p2,p3,p4]];
-}
-
-theObject.getInvalidPositions = function(object) {
-    var startX = this.getAttribute('x');
-    var startY = this.getAttribute('y');
-    var width = this.getAttribute('width');
-    var height = this.getAttribute('height');
-
-    var aoWidth = object.getAttribute("width");
-    var aoHeight = object.getAttribute("height");
-
-    var p1 = {X: startX, Y: startY};
-    var p2 = {X: startX + width - aoWidth, Y: startY};
-    var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
-    var p4 = {X: startX, Y: startY + height - aoHeight};
     return [[p1, p2, p3, p4]];
 }
+

@@ -49,12 +49,12 @@ theObject.makeStructuring = function() {
     theObject.removeAssociationToAnActiveObject = function(objectId) {
         var activeObjects = this.getAttribute('activeObjects');
         activeObjects[objectId] = false;
-       console.log(this.setAttribute('activeObjects', activeObjects));
+        console.log(this.setAttribute('activeObjects', activeObjects));
     }
     theObject.createAssociationToAnActiveObject = function(objectId) {
         var activeObjects = this.getAttribute('activeObjects');
         activeObjects[objectId] = true;
-        this.setAttribute('activeObjects', activeObjects);      
+        this.setAttribute('activeObjects', activeObjects);
     }
     // theObject.getValidPositions = function() {
     //     console.log("You have to implement the function getValidPositions for a specific structure");
@@ -214,6 +214,19 @@ theObject.makeStructuring = function() {
             return false;
         }
     }
+    theObject.getInvalidPositions = function(object) {
+        var startX = this.getAttribute('x');
+        var startY = this.getAttribute('y');
+        var width = this.getAttribute('width');
+        var height = this.getAttribute('height');
+
+        var p1 = {X: startX, Y: startY};
+        var p2 = {X: startX + width, Y: startY};
+        var p3 = {X: startX + width, Y: startY + height};
+        var p4 = {X: startX, Y: startY + height};
+        return [[p1, p2, p3, p4]];
+    }
+
 
 }
 

@@ -974,19 +974,19 @@ ObjectManager.evaluatePositions = function(objects) {
         GUI.deselectAllObjects();
     });
 }
-ObjectManager.reposition = function(objects) {
+ObjectManager.reposition = function(room, objects) {
     //create array and push all objects
-    var array = new Array();
-
-    for (var key in objects) {
-        var object = objects[key];
-        array.push(object.getId());
-    }
     var requestData = {};
-    requestData.room = objects[0].getCurrentRoom();
-    requestData.objects = array;
+    requestData.room = room.id;
+    var objIDs = [];
+    if(objects && objects.length > 0){
+        for(var i in objects){
+            objIDs.push(objects[i].id);
+        }
+    }
+    requestData.objects = objIDs;
     Modules.Dispatcher.query('reposition', requestData, function() {  
-        GUI.deselectAllObjects();
+         GUI.deselectAllObjects();
     });
 }
 

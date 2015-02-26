@@ -972,6 +972,9 @@ GUI.setMode=function(mode){
 	
 	switchbutton.onclick=function(){
 		GUI.setMode(toMode);
+                if(toMode === "foreground"){
+                     ObjectManager.reposition(ObjectManager.getCurrentRoom());
+                }
 	}
 	
 	ObjectManager.getCurrentRoom().setAttribute('mode',mode);

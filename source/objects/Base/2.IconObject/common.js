@@ -26,14 +26,12 @@ IconObject.register = function(type) {
     this.registerAttribute('bigIcon', {type: 'boolean', standard: true, changedFunction: function(object) {
             object.updateIcon();
         }, mobile: false});
-    this.registerAttribute('fillcolor', {hidden: true});
+    
     this.registerAttribute('onMobile', {type: 'boolean', standard: false, category: 'Basic', mobile: false});
     this.registerAttribute('modeSensitive', {type: 'boolean', standard: false, category: 'Basic', mobile: false});
     //this.registerAttribute('structureStates', {type: 'array', standard: [], hidden: true});
 
-//this.registerAttribute('linecolor',{hidden:true});
-    //this.registerAttribute('linesize',{hidden:true});
-
+ 
     this.unregisterAction('to back');
     this.unregisterAction('to front');
 
@@ -74,7 +72,7 @@ IconObject.register = function(type) {
 
 
     this.registerAttribute('positionStatus', {type: 'string', standard: 'unpositioned', category: 'Basic', mobile: false});
-    this.registerAction('Evaluate Position', function(object) {
+  /*  this.registerAction('Evaluate Position', function(object) {
         ObjectManager.evaluatePositions(ObjectManager.getSelected());
 
     });
@@ -92,7 +90,7 @@ IconObject.register = function(type) {
 
 
 
-    });
+    }); */
 
     this.makeActive(); // Icon object normally are subject to structuring
 

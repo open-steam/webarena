@@ -146,20 +146,13 @@ ObjectController.evaluatePositions = function(data, context, cb) {
 }
 ObjectController.reposition = function(data, context, cb) {
     var roomID = data.room;
-    //Hack
-    var objIDs = data.objects;
-    
-    var obj;
-    for (var key in objIDs) {
-        obj = ObjectManager.getObject(roomID, objIDs[key], context);
-        //if (obj.reposition) {
-        //    obj.reposition();
-        //}
-    } 
-    var room = obj.getRoom();
-    room.repositionAllObjects();
-    
-    
-
+    var objects = [];
+    for(var i in data.objects){
+       var obj = ObjectManager.getObject(roomID, data.objects[i], context);
+       objects.push(obj);
+    }
+    Modules.ObjectManager.getRoom(roomID, context, function(room) { //the room object
+        room.repositionAllObjects(objects);
+    });
 }
 module.exports = ObjectController;

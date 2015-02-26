@@ -153,18 +153,3 @@ theObject.getValidPositions = function(object) {
 
 
 }
-theObject.getInvalidPositions = function(object) {
-    var startX = this.getAttribute('x');
-    var startY = this.getAttribute('y');
-    var width = this.getAttribute('width');
-    var height = this.getAttribute('height');
-
-    var aoWidth = object.getAttribute("width");
-    var aoHeight = object.getAttribute("height");
-
-    var p1 = {X: startX, Y: startY};
-    var p2 = {X: startX + width - aoWidth, Y: startY};
-    var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
-    var p4 = {X: startX, Y: startY + height - aoHeight};
-    return [[p1, p2, p3, p4]];
-}

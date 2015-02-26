@@ -47,6 +47,7 @@ theObject.evaluatePositions = function() {
         console.log("objid: " + activeObjectsinStructure[i].id + " rang: " + counter);
         counter++;
     }
+    this.setAttribute("maxRang", counter);
 };
 theObject.onLeave = function(object, data) {
     var attributeName = this.getAttribute('attribute');
@@ -129,11 +130,15 @@ theObject.getValidPositions = function(object) {
     var x = startX;
     var y = startY;
     if (direction === "vertical") {
-        x += distance;
-        y += ((value-1) * aoHeight) + (distance * value);
+        x += (width / 2) - (aoWidth / 2);
+        var length = height - (distance * 2);
+        var pixelPerElement = length / (this.getAttribute("maxRang") - 1);
+        y += distance + ((value - 1) * pixelPerElement);
     } else {
-        y += distance;
-        x += (aoWidth*(value-1)) + (distance * value);
+        y += (height / 2) - (aoHeight / 2);
+        var length = width - (distance * 2);
+        var pixelPerElement = length / (this.getAttribute("maxRang") - 1);
+        x += distance + ((value - 1) * pixelPerElement);
     }
 
     var p1 = {X: x, Y: y};
@@ -141,21 +146,5 @@ theObject.getValidPositions = function(object) {
     var p3 = {X: x + 1, Y: y + 1};
     var p4 = {X: x, Y: y + 1};
 
-    return [[p1, p2, p3, p4]];
-}
-
-theObject.getInvalidPositions = function(object) {
-    var startX = this.getAttribute('x');
-    var startY = this.getAttribute('y');
-    var width = this.getAttribute('width');
-    var height = this.getAttribute('height');
-
-    var aoWidth = object.getAttribute("width");
-    var aoHeight = object.getAttribute("height");
-
-    var p1 = {X: startX, Y: startY};
-    var p2 = {X: startX + width - aoWidth, Y: startY};
-    var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
-    var p4 = {X: startX, Y: startY + height - aoHeight};
     return [[p1, p2, p3, p4]];
 }

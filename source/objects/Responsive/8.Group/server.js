@@ -86,9 +86,6 @@ theObject.getValidPositions = function(object) {
     var p4 = {X: startX, Y: startY + height - aoHeight};
     return [[p1, p2, p3, p4]];
 }
-theObject.getInvalidPositions = function(object) {
-    return this.getValidPositions(object);
-}
 
 theObject.getType = function() {
     return "area";

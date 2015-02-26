@@ -31,33 +31,28 @@ theObject.onLeave = function(object, data) {
 
 
 theObject.onEnter = function(object, data) {
-    console.log(object);
-
     if (this.checkData(object)) {
         var data = this.getData(object);
-
-        if (object.getAttribute(data.attribute) !== data.value) {
+        var min = this.getAttribute("min");
+        var max = this.getAttribute("max");
+        if (data.value < min || data.value > max) {
+            console.log("object " + object.id + " width " + data.value + " is out of range!!!!!");
+            object.setAttribute(data.attribute, false);
+        } else if (object.getAttribute(data.attribute) !== data.value) {
             object.setAttribute(data.attribute, data.value);
             console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);
         }
-
     }
 };
 
-
-
 theObject.onMoveWithin = function(object, oldData, newData) {
-
     return this.onEnter(object, oldData, newData);
-
 };
 
 
 
 theObject.onMoveOutside = function(object, oldData, newData) {
-
     return this.onLeave(object, oldData, newData);
-
 };
 
 
@@ -82,10 +77,8 @@ theObject.positionToValueX = function(object) {
     var objX = object.getAttribute('cx');
     var v = (objX - pixelStart) / distancePerStepInPixel;
 
-
     var value = minVal + v * stepping;
     console.log(this.getAttribute('attribute') + " " + value);
-
     return value;
 }
 
@@ -98,7 +91,6 @@ theObject.positionToValueY = function(object) {
 
     var v = (pixelStart - objY) / distancePerStepInPixel;
     var value = minVal + v * stepping;
-
     console.log(this.getAttribute('attribute') + " " + value);
 
     return value;
@@ -148,7 +140,7 @@ theObject.getValidPositions = function(object) {
         var cx = startX + 20 + (v * d);
         var x = cx - (aoWidth / 2)
         var y1 = startY;
-        var y2 = startY + height - aoHeight;
+        var y2 = startY + height - aoHeight - 80;
         var p1 = {X: x, Y: y1};
         var p2 = {X: x + 1, Y: y1};
         var p3 = {X: x + 1, Y: y2};
@@ -161,8 +153,8 @@ theObject.getValidPositions = function(object) {
         var d = this.getAttribute("distanceY");
         var cy = (startY + height - 80) - (v * d);
         var y = Math.floor(cy - (aoHeight / 2));
-        var x1 = Math.floor(startX);
-        var x2 =Math.floor( startX + width - aoWidth);
+        var x1 = Math.floor(startX + 60);
+        var x2 = Math.floor(startX + width - aoWidth);
 
         var p1 = {X: x1, Y: y};
         var p2 = {X: x2, Y: y};
@@ -174,19 +166,4 @@ theObject.getValidPositions = function(object) {
     }
 
 
-}
-theObject.getInvalidPositions = function(object) {
-    var startX = this.getAttribute('x');
-    var startY = this.getAttribute('y');
-    var width = this.getAttribute('width');
-    var height = this.getAttribute('height');
-
-    var aoWidth = object.getAttribute("width");
-    var aoHeight = object.getAttribute("height");
-
-    var p1 = {X: startX, Y: startY};
-    var p2 = {X: startX + width - aoWidth, Y: startY};
-    var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
-    var p4 = {X: startX, Y: startY + height - aoHeight};
-    return [[p1, p2, p3, p4]];
 }

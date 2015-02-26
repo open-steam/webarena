@@ -155,16 +155,43 @@ theObject.getAllStructures = function() {
     else
         return structures;
 }
-theObject.repositionAllObjects = function() {
+theObject.repositionAllObjects = function(objects) {
+
+    console.log("test");
 
     var inventory = this.getInventory();
     var structures = [];
     var activeObjects = [];
-    for (var i in inventory) {
-        if (inventory[i].isStructuring && inventory[i].isStructuring()) {
-            structures.push(inventory[i]);
-        } else if (inventory[i].isActive && inventory[i].isActive()) {
-            activeObjects.push(inventory[i]);
+
+    if (objects.length > 0) {
+        for (var i in inventory) {
+            if (inventory[i].isStructuring && inventory[i].isStructuring()) {
+                structures.push(inventory[i]);
+            }
+        }
+        for(var j in objects){
+            activeObjects.push(objects[j]);
+        }
+    } else {
+        for (var i in inventory) {
+            if (inventory[i].isStructuring && inventory[i].isStructuring()) {
+                structures.push(inventory[i]);
+            } else if (inventory[i].isActive && inventory[i].isActive()) {
+                activeObjects.push(inventory[i]);
+            }
+        }
+    }
+    var xStructMax = 0;
+    var yStructMax = 0;
+    for (var s in structures) {
+        var xTemp = structures[s].getAttribute("x") + structures[s].getAttribute("width");
+        var yTemp = structures[s].getAttribute("y") + structures[s].getAttribute("height");
+
+        if (xStructMax < xTemp) {
+            xStructMax = xTemp;
+        }
+        if (yStructMax < yTemp) {
+            yStructMax = yTemp;
         }
     }
     //Um zu prüfen, ob ein Objekt anhand seiner Bewertung zu einer Struktur gehört, erhält jede Struktur ein Methode,
@@ -182,10 +209,19 @@ theObject.repositionAllObjects = function() {
                 objectMustNotBePositioned.push(structures[i]);
             }
         }
-        
+
         var solution;
         if (objectMustBePositioned.length === 0) {
-            //TODO: Hole Abmessungen des aktuellen KontextObjects
+            //Normalerweise sollte an dieser Stelle ein Kontext auf freie Fläche geprüft werden.
+            //Prototyp nimmt jedoch erst einmal einen Raum als Kontext an.
+            //Annahme: Benutzer haben Mindestauflösung von 1024 * 768
+
+            var x1 = 0;
+            var x2 = xStructMax < 1024 ? 1024 : xStructMax;
+            var y1 = 0;
+            var y2 = yStructMax < 768 ? 768 : yStructMax;
+
+            solution = [[{X: x1, Y: y1}, {X: x2, Y: y1}, {X: x2, Y: y2}, {X: x1, Y: y2}]]
         } else {
             solution = objectMustBePositioned[0].getValidPositions(ao);
         }
@@ -198,7 +234,7 @@ theObject.repositionAllObjects = function() {
             cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
             //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
             var solution_paths = new Modules.Clipper.Paths();
-            var succeeded = cpr.Execute(0, solution_paths, 1, 1);
+            var succeeded = cpr.Execute(0, solution_paths, 0, 0);
             solution = solution_paths;
 
         }
@@ -212,57 +248,70 @@ theObject.repositionAllObjects = function() {
             //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
             var solution_paths = new Modules.Clipper.Paths();
 
-            var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctDifference, solution_paths);
+            var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctDifference, solution_paths, 0, 0);
             solution = solution_paths;
+
         }
 
-        var minX = Number.MAX_VALUE;
-        var maxX = 0;
-        var minY = Number.MAX_VALUE;
-        var maxY = 0;
+        if (solution.length === 0) {
+            ao.setAttribute("linecolor", "rgb(204,0,0)");
+            ao.setAttribute("linesize", "5");
+        } else {
+            ao.setAttribute("linecolor", "transparent");
+            var minX = Number.MAX_VALUE;
+            var maxX = 0;
+            var minY = Number.MAX_VALUE;
+            var maxY = 0;
 
-        for (var i in solution) {
-            for (var j in solution[i]) {
-                if (solution[i][j].X < minX) {
-                    minX = solution[i][j].X;
+            var aoWidth = ao.getAttribute("width");
+            var aoHeight = ao.getAttribute("height");
+
+            for (var j in solution[0]) {
+                if (solution[0][j].X < minX) {
+                    minX = solution[0][j].X;
                 }
-                if (solution[i][j].X > maxX) {
-                    maxX = solution[i][j].X;
+                if (solution[0][j].X > maxX) {
+                    maxX = solution[0][j].X;
                 }
-                if (solution[i][j].Y < minY) {
-                    minY = solution[i][j].Y;
+                if (solution[0][j].Y < minY) {
+                    minY = solution[0][j].Y;
                 }
-                if (solution[i][j].Y > maxY) {
-                    maxY = solution[i][j].Y;
+                if (solution[0][j].Y > maxY) {
+                    maxY = solution[0][j].Y;
                 }
 
             }
-        }
 
-        var inPolyFlag = false;
-        var counter = 0;
-        var randomX;
-        var randomY;
-        while (!inPolyFlag && counter < 100) {
-            var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));
-            var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));
-            var pt = new Modules.Clipper.IntPoint(randomX, randomY);
-
-            for (var i in solution) {
-                var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
-
-                if (inpoly === 1 || inpoly === -1) {
-                    inPolyFlag = true;
-                    break;
-                }
+            if ((maxX - minX) > aoWidth) {
+                maxX -= aoWidth;
             }
-            counter++;
-        }
-        console.log(randomX);
-        console.log(randomY);
-        ao.setAttribute("x", randomX);
-        ao.setAttribute("y", randomY);
+            if ((maxY - minY) > aoHeight) {
+                maxY -= aoHeight;
+            }
 
+            var inPolyFlag = false;
+            var counter = 0;
+            var randomX;
+            var randomY;
+
+            while (!inPolyFlag && counter < 100) {
+                var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));
+                var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));
+                var pt = new Modules.Clipper.IntPoint(randomX, randomY);
+                var inPolyFlagHelper = true;
+                for (var i in solution) {
+                    var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
+                    if ((i === 0 && inpoly === 0) || (i > 0 && inpoly !== 0)) {
+                        inPolyFlagHelper = false;
+                        break;
+                    }
+                }
+                counter++;
+                inPolyFlag = inPolyFlagHelper;
+            }
+            ao.setAttribute("x", randomX);
+            ao.setAttribute("y", randomY);
+        }
     }
 
 }
