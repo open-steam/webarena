@@ -143,6 +143,7 @@ theObject.deleteUserPainting.neededRights = {
 }
 //output association object
 theObject.getAllStructures = function() {
+
     var inventory = this.getInventory();
     var structures = {};
     for (var index in inventory) {
@@ -155,9 +156,8 @@ theObject.getAllStructures = function() {
     else
         return structures;
 }
-theObject.repositionAllObjects = function(objects) {
 
-    console.log("test");
+theObject.repositionAllObjects = function(objects) {
 
     var inventory = this.getInventory();
     var structures = [];
@@ -169,7 +169,7 @@ theObject.repositionAllObjects = function(objects) {
                 structures.push(inventory[i]);
             }
         }
-        for(var j in objects){
+        for (var j in objects) {
             activeObjects.push(objects[j]);
         }
     } else {
@@ -212,6 +212,7 @@ theObject.repositionAllObjects = function(objects) {
 
         var solution;
         if (objectMustBePositioned.length === 0) {
+
             //Normalerweise sollte an dieser Stelle ein Kontext auf freie Fläche geprüft werden.
             //Prototyp nimmt jedoch erst einmal einen Raum als Kontext an.
             //Annahme: Benutzer haben Mindestauflösung von 1024 * 768
@@ -224,6 +225,7 @@ theObject.repositionAllObjects = function(objects) {
             solution = [[{X: x1, Y: y1}, {X: x2, Y: y1}, {X: x2, Y: y2}, {X: x1, Y: y2}]]
         } else {
             solution = objectMustBePositioned[0].getValidPositions(ao);
+
         }
 
         for (var i = 1; i < objectMustBePositioned.length; i++) {
@@ -252,6 +254,7 @@ theObject.repositionAllObjects = function(objects) {
             solution = solution_paths;
 
         }
+
 
         if (solution.length === 0) {
             ao.setAttribute("linecolor", "rgb(204,0,0)");
@@ -309,8 +312,8 @@ theObject.repositionAllObjects = function(objects) {
                 counter++;
                 inPolyFlag = inPolyFlagHelper;
             }
-            ao.setAttribute("x", randomX);
-            ao.setAttribute("y", randomY);
+            ao.setAttribute("x", randomX, false, true);
+            ao.setAttribute("y", randomY, false, true);
         }
     }
 

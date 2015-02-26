@@ -66,6 +66,15 @@ theObject.onLeave = function(object, data) {
 theObject.onEnter = function(object, data) {
     //Bewerte die Objekte innerhalb der Liste neu
     this.evaluatePositions();
+    var room = this.getRoom();
+    var inventory = room.getInventory();
+    var activeObjects = [];
+    for (var i in inventory) {
+        if (inventory[i].isActive && inventory[i].isActive()) {
+            activeObjects.push(inventory[i]);
+        }
+    }
+    room.repositionAllObjects(activeObjects);
 
     //TODO: Anschliessende Repositionierung der AWO
 
@@ -140,6 +149,8 @@ theObject.getValidPositions = function(object) {
         var pixelPerElement = length / (this.getAttribute("maxRang") - 1);
         x += distance + ((value - 1) * pixelPerElement);
     }
+    x = Math.floor(x);
+    y = Math.floor(y);
 
     var p1 = {X: x, Y: y};
     var p2 = {X: x + 1, Y: y};
