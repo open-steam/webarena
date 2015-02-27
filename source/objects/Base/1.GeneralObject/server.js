@@ -56,10 +56,7 @@ theObject.makeStructuring = function() {
         activeObjects[objectId] = true;
         this.setAttribute('activeObjects', activeObjects);
     }
-    // theObject.getValidPositions = function() {
-    //     console.log("You have to implement the function getValidPositions for a specific structure");
-    // }
-
+  
     theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
 
         if ((otherX + otherWidth) < thisX) {

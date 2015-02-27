@@ -237,3 +237,5 @@ Scale2.createRepresentation = function(parent) {
     return rep;
 
 }
+
+//TODO: setView and setHeight anpassen
