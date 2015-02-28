@@ -1,30 +1,31 @@
 /**
-*    Webarena - A webclient for responsive graphical knowledge work
-*
-*    @author Felix Winkelnkemper, University of Paderborn, 2014
-*
-*/
+ *    Webarena - A webclient for responsive graphical knowledge work
+ *
+ *    @author Felix Winkelnkemper, University of Paderborn, 2014
+ *
+ */
 
-var Modules=require('../../../server.js')
-var Group=Object.create(Modules.ObjectManager.getPrototype('Rectangle'));
+var Modules = require('../../../server.js')
+var Group = Object.create(Modules.ObjectManager.getPrototype('Rectangle'));
 
-Group.register=function(type){
-	
-	// Registering the object
-	Modules.ObjectManager.getPrototype('Rectangle').register.call(this,type);
-	this.makeStructuring();
-	
-	this.registerAttribute('attribute',{type:'text',standard:'',category:'Selection'});
-	
+Group.register = function(type) {
+
+    // Registering the object
+    Modules.ObjectManager.getPrototype('Rectangle').register.call(this, type);
+    this.makeStructuring();
+    var random = Math.random();
+
+    this.registerAttribute('attribute', {type: 'text', standard: 'areaExampleAttr-' + random, category: 'Selection'});
+    this.registerAttribute('value', {type: 'text', standard: 'areaExampleValue-' + random, category: 'Selection'});
 
 }
 
-Group.isCreatable=true; 
+Group.isCreatable = true;
 
-Group.decideIfActive = function(object){
+Group.decideIfActive = function(object) {
 
-	return true;
+    return true;
 }
 
 
-module.exports=Group;
+module.exports = Group;

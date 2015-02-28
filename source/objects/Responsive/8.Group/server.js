@@ -13,33 +13,22 @@ module.exports = theObject;
 
 
 theObject.onLeave = function(object, oldData, newData) {
-
-
     if (this.checkData()) {
         var data = this.getData();
-
         if (object.getAttribute(data.attribute) === data.value) {
             object.setAttribute(data.attribute, false);
             console.log('Attribute ' + data.attribute + ' has been unset for ' + object);
-
-            //destroy relationship with object
-            this.removeAssociationToAnActiveObject(object.id);
-            object.removeAssociationToAStructure(this.id);
         }
     }
 
 };
 
 theObject.onEnter = function(object, oldData, newData) {
-
     if (this.checkData()) {
         var data = this.getData();
         if (object.getAttribute(data.attribute) !== data.value) {
             object.setAttribute(data.attribute, data.value);
             console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);
-            //establish connection with object
-            this.createAssociationToAnActiveObject(object.id);
-            object.createAssociationToAStructure(this.id);
         }
     }
 };
@@ -56,12 +45,12 @@ theObject.onMoveOutside = function(object, oldData, newData) {
 
 theObject.getData = function() {
     var attribute = this.getAttribute('attribute');
-    return {'attribute': attribute, 'value': true};
+    var value = this.getAttribute('value');
+    return {'attribute': attribute, 'value': value};
 }
 
 theObject.checkData = function() {
     var data = this.getData();
-
     if (!data.attribute || !data.value) {
         console.log(this + ' has insufficient data.'); //TODO shout back to people in the room
         return false;
@@ -78,8 +67,6 @@ theObject.getValidPositions = function(object) {
     var aoWidth = object.getAttribute("width");
     var aoHeight = object.getAttribute("height");
 
-
-    //important: clockwise direction
     var p1 = {X: startX, Y: startY};
     var p2 = {X: startX + width - aoWidth, Y: startY};
     var p3 = {X: startX + width - aoWidth, Y: startY + height - aoHeight};
@@ -94,7 +81,7 @@ theObject.getType = function() {
 theObject.isStructuringObject = function(object) {
     var attributeName = this.getAttribute("attribute");
     var value = object.getAttribute(attributeName) || false;
-    if (value) {
+    if (value && (this.getAttribute("value") === value)) {
         return true;
     } else {
         return false;
