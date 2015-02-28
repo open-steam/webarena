@@ -150,6 +150,7 @@ theObject.getValidPositions = function(object) {
             counterX++;
         }
     }
+    
     var vx = counterX + 1;
     var vy = counterY + 1;
 

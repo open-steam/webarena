@@ -56,7 +56,7 @@ theObject.makeStructuring = function() {
         activeObjects[objectId] = true;
         this.setAttribute('activeObjects', activeObjects);
     }
-  
+
     theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
 
         if ((otherX + otherWidth) < thisX) {
@@ -132,6 +132,7 @@ theObject.makeStructuring = function() {
      *	changeData old and new values of positioning (e.g. changeData.old.x) 
      **/
     theObject.evaluateObject = function(object, changeData) {
+        object.setAttribute("linecolor", "transparent");
         //complete data
         var oldData = {};
         var newData = {};
@@ -217,10 +218,10 @@ theObject.makeStructuring = function() {
         var width = this.getAttribute('width');
         var height = this.getAttribute('height');
 
-        var p1 = {X: startX, Y: startY};
-        var p2 = {X: startX + width, Y: startY};
+        var p1 = {X: startX - 80, Y: startY - 80};
+        var p2 = {X: startX + width, Y: startY- 80};
         var p3 = {X: startX + width, Y: startY + height};
-        var p4 = {X: startX, Y: startY + height};
+        var p4 = {X: startX - 80, Y: startY + height};
         return [[p1, p2, p3, p4]];
     }
 

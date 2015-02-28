@@ -254,6 +254,13 @@ theObject.repositionAllObjects = function(objects) {
             solution = solution_paths;
 
         }
+        //TODO: morgen
+        /*if (objectMustBePositioned.length === 0) {
+            var aoX = ao.getAttribute("x");
+            var aoY = ao.getAttribute("y");
+            
+
+        }*/
 
 
         if (solution.length === 0) {
@@ -268,52 +275,65 @@ theObject.repositionAllObjects = function(objects) {
 
             var aoWidth = ao.getAttribute("width");
             var aoHeight = ao.getAttribute("height");
+            var aoX = ao.getAttribute("x");
+            var aoY = ao.getAttribute("y");
 
-            for (var j in solution[0]) {
-                if (solution[0][j].X < minX) {
-                    minX = solution[0][j].X;
+            var currentPositionInPolygon = true;
+            var currentPosition = new Modules.Clipper.IntPoint(aoX, aoY);
+            for (var i in solution) {
+                var inpoly = Modules.Clipper.Clipper.PointInPolygon(currentPosition, solution[i]);
+                if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
+                    currentPositionInPolygon = false;
+                    break;
                 }
-                if (solution[0][j].X > maxX) {
-                    maxX = solution[0][j].X;
-                }
-                if (solution[0][j].Y < minY) {
-                    minY = solution[0][j].Y;
-                }
-                if (solution[0][j].Y > maxY) {
-                    maxY = solution[0][j].Y;
-                }
-
             }
-
-            if ((maxX - minX) > aoWidth) {
-                maxX -= aoWidth;
-            }
-            if ((maxY - minY) > aoHeight) {
-                maxY -= aoHeight;
-            }
-
-            var inPolyFlag = false;
-            var counter = 0;
-            var randomX;
-            var randomY;
-
-            while (!inPolyFlag && counter < 100) {
-                var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));
-                var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));
-                var pt = new Modules.Clipper.IntPoint(randomX, randomY);
-                var inPolyFlagHelper = true;
-                for (var i in solution) {
-                    var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
-                    if ((i === 0 && inpoly === 0) || (i > 0 && inpoly !== 0)) {
-                        inPolyFlagHelper = false;
-                        break;
+            console.log(currentPositionInPolygon);
+            if (!currentPositionInPolygon) {
+                for (var j in solution[0]) {
+                    if (solution[0][j].X < minX) {
+                        minX = solution[0][j].X;
+                    }
+                    if (solution[0][j].X > maxX) {
+                        maxX = solution[0][j].X;
+                    }
+                    if (solution[0][j].Y < minY) {
+                        minY = solution[0][j].Y;
+                    }
+                    if (solution[0][j].Y > maxY) {
+                        maxY = solution[0][j].Y;
                     }
                 }
-                counter++;
-                inPolyFlag = inPolyFlagHelper;
+
+                if ((maxX - minX) > aoWidth) {
+                    maxX -= aoWidth;
+                }
+                if ((maxY - minY) > aoHeight) {
+                    maxY -= aoHeight;
+                }
+
+                var inPolyFlag = false;
+                var counter = 0;
+                var randomX;
+                var randomY;
+
+                while (!inPolyFlag && counter < 100) {
+                    var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));
+                    var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));
+                    var pt = new Modules.Clipper.IntPoint(randomX, randomY);
+                    var inPolyFlagHelper = true;
+                    for (var i in solution) {
+                        var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
+                        if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
+                            inPolyFlagHelper = false;
+                            break;
+                        }
+                    }
+                    counter++;
+                    inPolyFlag = inPolyFlagHelper;
+                }
+                ao.setAttribute("x", randomX, false, true);
+                ao.setAttribute("y", randomY, false, true);
             }
-            ao.setAttribute("x", randomX, false, true);
-            ao.setAttribute("y", randomY, false, true);
         }
     }
 
