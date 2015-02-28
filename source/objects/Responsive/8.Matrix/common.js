@@ -13,9 +13,12 @@ Matrix.register = function(type) {
     // Registering the object
     Modules.ObjectManager.getPrototype('Rectangle').register.call(this, type);
     this.makeStructuring();
-
+    var random = Math.random();
     this.registerAttribute('Row', {type: 'list', category: 'Table', standard: ["row 1", "row 2"]});
     this.registerAttribute('Column', {type: 'list', category: 'Table', standard: ["column 1", "column 2"]});
+    this.registerAttribute('RowName', {type: 'text', standard: 'RowExampleAttr-' + random, category: 'Selection'});
+    this.registerAttribute('ColumnName', {type: 'text', standard: 'ColumnExampleAttr-' + random, category: 'Selection'});
+
     this.standardData.fillcolor = 'white';
     this.standardData.linecolor = 'black';
     this.standardData.width = 400;
