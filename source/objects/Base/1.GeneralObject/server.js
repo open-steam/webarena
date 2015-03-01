@@ -213,6 +213,7 @@ theObject.makeStructuring = function() {
         }
     }
     theObject.getInvalidPositions = function(object) {
+        //Holen der notwendigen attribute
         var startX = this.getAttribute('x');
         var startY = this.getAttribute('y');
         var width = this.getAttribute('width');
@@ -221,6 +222,7 @@ theObject.makeStructuring = function() {
         var aoWidth = object.getAttribute('width');
         var aoHeight = object.getAttribute('height');
 
+        //koordinaten duerfen nicht negativ werden
         var x1;
         if (startX - aoWidth < 0) {
             x1 = 0;
@@ -228,12 +230,13 @@ theObject.makeStructuring = function() {
             x1 = startX - aoWidth;
         }
         var y1;
-        if (startY - aoHeight < 0){
+        if (startY - aoHeight < 0) {
             y1 = 0;
-        }else{
+        } else {
             y1 = startY - aoHeight;
         }
-            var p1 = {X: x1, Y: y1};
+        //Ausgabe des Rechtecks
+        var p1 = {X: x1, Y: y1};
         var p2 = {X: startX + width, Y: y1};
         var p3 = {X: startX + width, Y: startY + height};
         var p4 = {X: x1, Y: startY + height};

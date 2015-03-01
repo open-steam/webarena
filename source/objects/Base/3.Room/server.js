@@ -254,16 +254,35 @@ theObject.repositionAllObjects = function(objects) {
             solution = solution_paths;
 
         }
-        //TODO: morgen
-        /*if (objectMustBePositioned.length === 0) {
-            var aoX = ao.getAttribute("x");
-            var aoY = ao.getAttribute("y");
-            
 
-        }*/
+        var aoWidth = ao.getAttribute("width");
+        var aoHeight = ao.getAttribute("height");
+        var aoX = ao.getAttribute("x");
+        var aoY = ao.getAttribute("y");
 
 
-        if (solution.length === 0) {
+
+        if (objectMustBePositioned.length === 0) {
+            var validPosition = false;
+            var validXPosition = aoX;
+            while (!validPosition) {
+                var pt = new Modules.Clipper.IntPoint(validXPosition, aoY);
+                var validPositionHelper = true;
+                for (var i in solution) {
+                    var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
+                    if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
+                        validPositionHelper = false;
+                        validXPosition += aoWidth;
+                        break;
+                    }
+                }
+                validPosition = validPositionHelper;
+            }
+            ao.setAttribute("x", validXPosition);
+        }
+
+
+        else if (solution.length === 0) {
             ao.setAttribute("linecolor", "rgb(204,0,0)");
             ao.setAttribute("linesize", "5");
         } else {
@@ -272,11 +291,6 @@ theObject.repositionAllObjects = function(objects) {
             var maxX = 0;
             var minY = Number.MAX_VALUE;
             var maxY = 0;
-
-            var aoWidth = ao.getAttribute("width");
-            var aoHeight = ao.getAttribute("height");
-            var aoX = ao.getAttribute("x");
-            var aoY = ao.getAttribute("y");
 
             var currentPositionInPolygon = true;
             var currentPosition = new Modules.Clipper.IntPoint(aoX, aoY);
