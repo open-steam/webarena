@@ -218,10 +218,25 @@ theObject.makeStructuring = function() {
         var width = this.getAttribute('width');
         var height = this.getAttribute('height');
 
-        var p1 = {X: startX - 80, Y: startY - 80};
-        var p2 = {X: startX + width, Y: startY- 80};
+        var aoWidth = object.getAttribute('width');
+        var aoHeight = object.getAttribute('height');
+
+        var x1;
+        if (startX - aoWidth < 0) {
+            x1 = 0;
+        } else {
+            x1 = startX - aoWidth;
+        }
+        var y1;
+        if (startY - aoHeight < 0){
+            y1 = 0;
+        }else{
+            y1 = startY - aoHeight;
+        }
+            var p1 = {X: x1, Y: y1};
+        var p2 = {X: startX + width, Y: y1};
         var p3 = {X: startX + width, Y: startY + height};
-        var p4 = {X: startX - 80, Y: startY + height};
+        var p4 = {X: x1, Y: startY + height};
         return [[p1, p2, p3, p4]];
     }
 
