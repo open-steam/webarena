@@ -87,6 +87,7 @@ GUI.loginFailed = function(err) {
 	GUI.loginProcessActive = false;
 	GUI.username = undefined;
 	GUI.password = undefined;
+	GUI.clearUserStorage();
 }
 
 
@@ -115,6 +116,7 @@ GUI.login = function() {
 	$("#login_username").blur();
 	$("#login_password").blur();
 	
+	GUI.externalSession = false;
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession/') > -1) {
 		
 		var hashData = window.location.hash.substr(1).split("/")
@@ -125,6 +127,8 @@ GUI.login = function() {
 			GUI.password = hashData[2];
 			
 			GUI.externalSession = true;
+			
+			GUI.storeUserData();
 			window.location.replace('#');
 		
 		}
@@ -169,6 +173,16 @@ GUI.storeUserData = function() {
 
 	if (typeof(Storage) != "undefined") {
 		localStorage.setItem('webarena', JSON.stringify(userDataObject));
+	} 
+}
+
+/**
+ * remove local storage of user data
+ */
+GUI.clearUserStorage = function() {
+
+	if (typeof(Storage) != "undefined") {
+		localStorage.clear();
 	} 
 }
 
