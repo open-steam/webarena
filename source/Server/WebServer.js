@@ -113,9 +113,22 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
-        // room hierarchy for coupling navigation (returns child notes of given room in jstree json structure)
-        if (url.substr(0, 17) == "/getRoomHierarchy") {
+        // roomlist for coupling navigation
+        if (url.substr(0, 9) == "/getRooms") {
 
+			Modules.RoomController.listRooms(function(err, rooms){
+			
+				if(err){
+					console.log("Error during listRooms");
+				}
+				else{
+					res.writeHead(200, {'Content-Type': "application/json"});
+					res.end(JSON.stringify(rooms));
+				}
+			});
+		
+			return;
+			/*
             var roomId = url.substr(21);
 
             var hierarchy = Modules.Connector.getRoomHierarchy(roomId, false, function(hierarchy) {
@@ -148,6 +161,7 @@ WebServer.init = function (theModules) {
             });
 
             return;
+			*/
         }
 
 

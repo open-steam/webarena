@@ -154,7 +154,7 @@ GUI.enterCouplingMode = function() {
         $(navigationDiv).jstree({
             json_data: {
                 "ajax": {
-                    "url": "/getRoomHierarchy",
+                    "url": "/getRooms",
                     "data": function(n) {
                         return {id: n.attr ? n.attr("id") : ""};
                     }
@@ -171,7 +171,10 @@ GUI.enterCouplingMode = function() {
             }
         }).bind('select_node.jstree', function(event, data) {
             var selectedObj = data.rslt.obj;
-            var roomId = selectedObj.attr("id");
+            //var roomId = selectedObj.attr("id");
+			
+			var roomId = selectedObj[Object.keys(selectedObj)[0]].textContent;
+			roomId = roomId.trim();
 
             if (ObjectManager.getRoomID('left') != roomId && ObjectManager.getRoomID('right') != roomId) {
                 var cb = function() {
@@ -181,7 +184,7 @@ GUI.enterCouplingMode = function() {
                             o.updateGUI();
                     });
                 };
-                ObjectManager.loadRoom(selectedObj.attr("id"), true, 'right', cb);
+                ObjectManager.loadRoom(roomId, true, 'right', cb);
                 $('#couplingGreyRectangle').remove();
                 $(EnterRightButton).html(GUI.translate("Enter room ") + roomId);
                 $(EnterRightButton).show();

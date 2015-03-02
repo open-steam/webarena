@@ -262,12 +262,16 @@ GeneralObject.getLinkedObjects = function() {
     return links;
 }
 
-GeneralObject.showDialog = function() {
+
+/**
+ *	Exit Dialog, the user can specify an internal target (object, room) or external target (URL)
+ */
+GeneralObject.showExitDialog = function() {
     var that = this;
 
     var dialog_buttons = {};
 
-    dialog_buttons[that.translate(GUI.currentLanguage, "create new Subroom")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Create new Subroom")] = function() {
 
         var random = new Date().getTime() - 1296055327011;
 
@@ -345,11 +349,31 @@ GeneralObject.showDialog = function() {
                 "json_data": {
                     "data": function(object, callback) {
                         if (object !== -1) {
-                            var id = object.data("id");
+                            var roomId = object.data("id");
+							that.serverCall("getRoomInventory", {"id": roomId}, callback);
                         } else {
-                            var id = -1;
+							Modules.Dispatcher.query('roomlist',null, function(rooms){
+								var roomArray = new Array();
+								for(var i = 0; i<rooms.length; i++){
+									var node = {
+										data : {
+											title : rooms[i],
+											icon : '/objectIcons/Subroom'
+										},
+										metadata : {
+											id : rooms[i],
+											name : rooms[i],
+											type : 'Room'
+										}
+									}
+									if(!that.getAttribute('filterObjects')){
+										node.state = 'closed';
+									}
+									roomArray.push(node);
+								}
+								callback(roomArray);
+							});
                         }
-                        that.serverCall("browse", {"id": id}, callback);
                     },
                     "ui": {
                         "select_limit": 1,
@@ -362,13 +386,11 @@ GeneralObject.showDialog = function() {
             }).bind("open_node.jstree", function() {
                 $('a > .jstree-icon').css({'background-size': 'contain'})
             });
-
-            //$('.ui-dialog-content').html(renderedTree);
 			
 			$('.ui-dialog-content').html('<div id="tabs">'+
 				'<ul>'+
-				'<li><a id="internal_Tab" href="#tabs-1">'+that.translate(GUI.currentLanguage, "internal")+' (Webarena)</a></li>'+
-				'<li><a id="external_Tab" href="#tabs-2">'+that.translate(GUI.currentLanguage, "external")+' (URL)</a></li>'+
+				'<li><a id="internal_Tab" href="#tabs-1">'+that.translate(GUI.currentLanguage, "Internal")+' (Webarena)</a></li>'+
+				'<li><a id="external_Tab" href="#tabs-2">'+that.translate(GUI.currentLanguage, "External")+' (URL)</a></li>'+
 				'</ul>'+
 				'<div id="tabs-1" style="height:250px">'+
 				'</div>'+
@@ -386,13 +408,13 @@ GeneralObject.showDialog = function() {
 			$('#internal_Tab').click(function() {
 				$('#filterObjects').show();
 				$('#filterObjects').next().show();
-				$(':button:contains(' + that.translate(GUI.currentLanguage, "create new Subroom") + ')').show();
+				$(':button:contains(' + that.translate(GUI.currentLanguage, "Create new Subroom") + ')').show();
 			});
 			
 			$('#external_Tab').click(function() {
 				$('#filterObjects').hide();
 				$('#filterObjects').next().hide();
-				$(':button:contains(' + that.translate(GUI.currentLanguage, "create new Subroom") + ')').hide();
+				$(':button:contains(' + that.translate(GUI.currentLanguage, "Create new Subroom") + ')').hide();
 			});
 	
             // bigger icons
@@ -425,12 +447,12 @@ GeneralObject.showDialog = function() {
         if ($(this).is(':checked')) {
             that.setAttribute('filterObjects', false);
             $(':button:contains(' + that.translate(GUI.currentLanguage, "Cancel") + ')').click();
-            that.showDialog();
+            that.showExitDialog();
         }
         else {
             that.setAttribute('filterObjects', true);
             $(':button:contains(' + that.translate(GUI.currentLanguage, "Cancel") + ')').click();
-            that.showDialog();
+            that.showExitDialog();
         }
     });
 
@@ -446,6 +468,10 @@ GeneralObject.showDialog = function() {
 
 }
 
+
+/**
+ *	Format Dialog, the user can select which of the format attributes of the current object are used for another object
+ */
 GeneralObject.showFormatDialog = function(selected) {
     var that = this;
     var dialog_buttons = {};

@@ -248,12 +248,12 @@ GeneralObject.register = function(type) {
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
 
 	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
-            object.showDialog()
+            object.showExitDialog()
         }, category: 'Functionality', changedFunction: function(object) {
             if(object.updateIcon){object.updateIcon()};
         }});
     this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
-            object.showDialog()
+            object.showExitDialog()
         }, category: 'Functionality'});
     this.registerAttribute('filterObjects', {type: 'boolean', standard: false, hidden: true});
 	
@@ -822,7 +822,7 @@ GeneralObject.follow = function(openMethod) {
     var destination = this.getAttribute('destination');
 	
     if (!destination || destination == "choose") {
-        return this.showDialog();
+        return this.showExitDialog();
     } else {
         var self = this;
 

@@ -74,6 +74,7 @@ fileConnector.getTrashRoom = function(context, callback){
 
 
 fileConnector.listRooms = function(callback){
+	
 	var filebase = fileConnector.Modules.Config.filebase;
 	fs.readdir(filebase, function(err, files){
 		if(err){
@@ -278,16 +279,16 @@ fileConnector.getRoomHierarchy=function(roomID,context,callback){
 			if (!obj.attributes) return;
 			if (!obj.attributes.name) return;
 			result.rooms[file] = '' + obj.attributes.name;
-					if (obj.attributes.parent !== undefined) {
-						if (result.relation[obj.attributes.parent] === undefined) {
+			if (obj.attributes.parent !== undefined) {
+				if (result.relation[obj.attributes.parent] === undefined) {
 					result.relation[obj.attributes.parent] = new Array(''+file);
-						} else {
+				} else {
 					result.relation[obj.attributes.parent].push(''+file);
-						}
-					} else {
+				}
+			} else {
 				result.roots.push(''+file);
-					}
-			});
+			}
+		});
 		cb(null, result);
 	}
 

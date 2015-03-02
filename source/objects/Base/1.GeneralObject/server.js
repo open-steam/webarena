@@ -714,6 +714,14 @@ theObject.getObjectsToDuplicate = function(list) {
 	return arrList;
 	
 }
+
+
+/**
+*	returns the hierachy of rooms and objects (special format for JSTree!)
+*   
+*   data.id == -1: return the root rooms
+*   data.id == roomid: return the inventory of this room
+*/
 theObject.browse = function(data, callback) {
 	var roomId = data.id;
 	var result = [];
@@ -771,7 +779,6 @@ theObject.browse = function(data, callback) {
                 }
                 result.push(node);
             }
-
             callback(result);
         });
     } 
@@ -860,11 +867,20 @@ theObject.browse = function(data, callback) {
 						}
 					}
 				});
-            } else callback(result);
+            } else {
+				callback(result);
+			}
         });
     }
 }
 
+
+theObject.browse.public = true;
+
+
+/**
+*	used by the browse-function (if objects should not be displayed, filter them)
+*/
 theObject.filterObject = function(obj) {
     if (this.getAttribute("filterObjects")) {
         if (obj.type != "Subroom") {
@@ -873,4 +889,39 @@ theObject.filterObject = function(obj) {
     } else return false;
 }
 
-theObject.browse.public = true;
+
+/**
+*	returns the inventory of the given room (special format for JSTree!)
+*/
+theObject.getRoomInventory = function(room, cb){
+
+    Modules.ObjectManager.getObjects(room.id, this.context, function(objects){
+		
+		var objectArray = new Array();
+		
+		for(var i = 0; i<objects.length; i++){
+		
+			var id = objects[i].getAttribute('id');
+			var type = objects[i].getAttribute('type');
+			var name = objects[i].getAttribute('name');
+			var inRoom = objects[i].getAttribute('inRoom');
+			
+			var node = {
+				data : {
+					title : name,
+					icon : '/objectIcons/'+type
+				},
+				metadata : {
+					id : id,
+					name : name,
+					type : type,
+					inRoom : inRoom
+				}
+			}
+			objectArray.push(node);
+		}
+		cb(objectArray);
+	});
+}
+
+theObject.getRoomInventory.public = true;

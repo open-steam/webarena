@@ -66,6 +66,7 @@ GUI.setTranslations('de',{
 	'Subroom':'Unterraum',
 	'File':'Datei',
 	'This room has no parent.':'Für diesen Raum gibt es keinen übergeordneten Raum.',
+	'There is no previously visited room':'Es existiert kein Raum der früher besucht wurde',
 	'Paste' : 'Einfügen',
 	'You are duplicating' : 'Sie duplizieren',
 	'You are pasting' : 'Sie fügen ein:',
