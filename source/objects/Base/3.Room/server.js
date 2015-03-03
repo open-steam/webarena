@@ -181,19 +181,7 @@ theObject.repositionAllObjects = function(objects) {
             }
         }
     }
-    var xStructMax = 0;
-    var yStructMax = 0;
-    for (var s in structures) {
-        var xTemp = structures[s].getAttribute("x") + structures[s].getAttribute("width");
-        var yTemp = structures[s].getAttribute("y") + structures[s].getAttribute("height");
 
-        if (xStructMax < xTemp) {
-            xStructMax = xTemp;
-        }
-        if (yStructMax < yTemp) {
-            yStructMax = yTemp;
-        }
-    }
     //Um zu prüfen, ob ein Objekt anhand seiner Bewertung zu einer Struktur gehört, erhält jede Struktur ein Methode,
     //die das prüft.
 
@@ -212,7 +200,19 @@ theObject.repositionAllObjects = function(objects) {
 
         var solution;
         if (objectMustBePositioned.length === 0) {
+            var xStructMax = 0;
+            var yStructMax = 0;
+            for (var s in structures) {
+                var xTemp = structures[s].getAttribute("x") + structures[s].getAttribute("width");
+                var yTemp = structures[s].getAttribute("y") + structures[s].getAttribute("height");
 
+                if (xStructMax < xTemp) {
+                    xStructMax = xTemp;
+                }
+                if (yStructMax < yTemp) {
+                    yStructMax = yTemp;
+                }
+            }
             //Normalerweise sollte an dieser Stelle ein Kontext auf freie Fläche geprüft werden.
             //Prototyp nimmt jedoch erst einmal einen Raum als Kontext an.
             //Annahme: Benutzer haben Mindestauflösung von 1024 * 768
@@ -231,7 +231,6 @@ theObject.repositionAllObjects = function(objects) {
         for (var i = 1; i < objectMustBePositioned.length; i++) {
             var tempPositions = objectMustBePositioned[i].getValidPositions(ao);
             var cpr = new Modules.Clipper.Clipper();
-
             cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
             cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
             //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
@@ -240,6 +239,7 @@ theObject.repositionAllObjects = function(objects) {
             solution = solution_paths;
 
         }
+
         for (var i = 0; i < objectMustNotBePositioned.length; i++) {
             var tempPositions = objectMustNotBePositioned[i].getInvalidPositions(ao);
             var cpr = new Modules.Clipper.Clipper();
@@ -260,8 +260,6 @@ theObject.repositionAllObjects = function(objects) {
         var aoX = ao.getAttribute("x");
         var aoY = ao.getAttribute("y");
 
-
-
         if (objectMustBePositioned.length === 0) {
             var validPosition = false;
             var validXPosition = aoX;
@@ -272,13 +270,13 @@ theObject.repositionAllObjects = function(objects) {
                     var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
                     if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
                         validPositionHelper = false;
-                        validXPosition += aoWidth;
+                        validXPosition += aoWidth + 10;
                         break;
                     }
                 }
                 validPosition = validPositionHelper;
             }
-            ao.setAttribute("x", validXPosition);
+            ao.setAttribute("x", validXPosition, false, true);
         }
 
 
@@ -301,7 +299,7 @@ theObject.repositionAllObjects = function(objects) {
                     break;
                 }
             }
-            console.log(currentPositionInPolygon);
+            
             if (!currentPositionInPolygon) {
                 for (var j in solution[0]) {
                     if (solution[0][j].X < minX) {
