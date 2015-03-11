@@ -628,7 +628,8 @@ GeneralObject.mayResizeProportional=function() {
 }
 
 
-GeneralObject.execute=function(){
+GeneralObject.execute=function(session){
+	this.bigControls = (session.type == GUI.input.TYPE_TOUCH);
 	this.select();
 	this.selectedClickHandler();
 }

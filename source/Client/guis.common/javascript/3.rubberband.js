@@ -3,21 +3,21 @@
 /* rubberband */
 
 /**
- * Called when a user clicks on the rooms background to start the rubberband (called by DOM event)
- * @param {event} event Mouse/Touch down DOM event
+ * Called when a user clicks on the rooms background to start the rubberband
+ * @param {GUI.input.Session} session event object
  */
-GUI.rubberbandStart = function(event) {
+GUI.input.bind("start", function(session) {
 
-	if (GUI.shiftKeyDown) return;
-	
-	$("#content").find(".webarenaRubberband").remove();
-	
-	if (GUI.paintModeActive) return;
+	if (GUI.shiftKeyDown 
+	|| GUI.rubberbandActive
+	|| session.object != false
+	|| session.target != GUI.input.artboardSVG
+	|| GUI.paintModeActive)  return;
 
 	/* deselect all objects */
 	GUI.deselectAllObjects();
 
-	var contentPosition = $("#content").offset();
+	var contentPosition = GUI.input.artboardOffset;
 
 	// coupling adjustments
 	var index = 'left';
@@ -26,20 +26,22 @@ GUI.rubberbandStart = function(event) {
 		if ($('#couplingBar:hover').length != 0) return;
 
 		// adjust position according to current pan state in corresponding room (left or right)
-		if (event.pageX > $('#couplingBar').attr('x1')) {
+		if (session.getX() > $('#couplingBar').attr('x1')) {
 			var index = 'right';
-			var pageX = event.pageX - $('#couplingBar').attr('x1') - GUI.getPanX('right');
-			var pageY = event.pageY - contentPosition.top - GUI.getPanY('right');
+			var pageX = session.getX() - $('#couplingBar').attr('x1') - GUI.getPanX('right');
+			var pageY = session.getY() - contentPosition.top - GUI.getPanY('right');
 		} else {
 			var index = 'left';
-			var pageX = event.pageX - GUI.getPanX('left');
-			var pageY = event.pageY - contentPosition.top - GUI.getPanY('left');
+			var pageX = session.getX() - GUI.getPanX('left');
+			var pageY = session.getY() - contentPosition.top - GUI.getPanY('left');
 		}
 	} else {
-		var pageX = event.pageX;
-		var pageY = event.pageY-contentPosition.top;
+		var pageX = session.getX();
+		var pageY = session.getY()-contentPosition.top;
 	}
 
+	GUI.rubberbandActive = true;
+	GUI.rubberbandIndex = index;
 	GUI.rubberbandStartX = pageX;
 	GUI.rubberbandStartY = pageY;
 	GUI.rubberbandWidth = 0;
@@ -47,7 +49,7 @@ GUI.rubberbandStart = function(event) {
 	GUI.rubberbandX = 0;
 	GUI.rubberbandY = 0;
 
-	GUI.rubberband = GUI.svg.rect($('#room_'+index),
+	GUI.rubberband = GUI.svg.rect($('#room_'+GUI.rubberbandIndex),
 		GUI.rubberbandStartX, //x
 		GUI.rubberbandStartY, //y
 		0, //width
@@ -56,27 +58,28 @@ GUI.rubberbandStart = function(event) {
 	
 	$(GUI.rubberband).attr("fill", "none");
 	$(GUI.rubberband).attr("stroke", "#CCCCCC");
-	$(GUI.rubberband).attr("style", "stroke-dasharray: 9, 5; stroke-width: 1");
+	$(GUI.rubberband).attr("style", "stroke-dasharray: 9, 5; stroke-width: 1; z-index: 10000;");
 	$(GUI.rubberband).attr("class", "webarenaRubberband");
 	
 	GUI.rubberbandX = GUI.rubberbandStartX;
-	GUI.rubberbandY = GUI.rubberbandStartY;
+	GUI.rubberbandY = GUI.rubberbandStartY;	
 	
-	var move = function(event) {
+	session.bind("move", function(session) {
+		if(!GUI.rubberbandActive) return;
 		
-		event.preventDefault();
+		var contentPosition = GUI.input.artboardOffset;
 		
 		if (GUI.couplingModeActive) {
-			if (index === 'right') {
-				GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX-$('#couplingBar').attr('x1')-GUI.getPanX('right');
-				GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('right');
+			if (GUI.rubberbandIndex === 'right') {
+				GUI.rubberbandWidth = session.getX()-GUI.rubberbandStartX-$('#couplingBar').attr('x1')-GUI.getPanX('right');
+				GUI.rubberbandHeight = session.getY()-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('right');
 			} else {
-				GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX-GUI.getPanX('left');
-				GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('left');
+				GUI.rubberbandWidth = session.getX()-GUI.rubberbandStartX-GUI.getPanX('left');
+				GUI.rubberbandHeight = session.getY()-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('left');
 			}
 		} else {
-			GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX;
-			GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top;
+			GUI.rubberbandWidth = session.getX()-GUI.rubberbandStartX;
+			GUI.rubberbandHeight = session.getY()-GUI.rubberbandStartY-contentPosition.top;
 		}
 		
 		GUI.rubberbandX = GUI.rubberbandStartX;
@@ -116,40 +119,43 @@ GUI.rubberbandStart = function(event) {
 				visibleWidth += parseInt($("#sidebar").css("width"), 10);
 			}
 			// right
-			if ((event.pageX >= $(document).scrollLeft() + $(window).width() - visibleWidth) && (GUI.rubberbandX + GUI.rubberbandWidth >= $(document).scrollLeft() + $(window).width() - visibleWidth)) {
+			if ((session.getX() >= $(document).scrollLeft() + $(window).width() - visibleWidth) && (GUI.rubberbandX + GUI.rubberbandWidth >= $(document).scrollLeft() + $(window).width() - visibleWidth)) {
 				$(document).scrollLeft($(document).scrollLeft() + scrollPixel);
 			}
 			// left
-			if ((event.pageX - $(document).scrollLeft() <= scrollSensitivity) && (GUI.rubberbandX - $(document).scrollLeft() <= scrollSensitivity)) {
+			if ((session.getX() - $(document).scrollLeft() <= scrollSensitivity) && (GUI.rubberbandX - $(document).scrollLeft() <= scrollSensitivity)) {
 				$(document).scrollLeft($(document).scrollLeft() - scrollPixel);
 			}
 			// bottom
-			if ((event.pageY >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity) && (GUI.rubberbandY + GUI.rubberbandHeight >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity)) {
+			if ((session.getY() >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity) && (GUI.rubberbandY + GUI.rubberbandHeight >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity)) {
 				$(document).scrollTop($(document).scrollTop() + scrollPixel);
 			}
 			// top
-			if ((event.pageY - contentPosition.top - $(document).scrollTop() <= scrollSensitivity) && (GUI.rubberbandY - $(document).scrollTop() <= scrollSensitivity)) {
+			if ((session.getY() - contentPosition.top - $(document).scrollTop() <= scrollSensitivity) && (GUI.rubberbandY - $(document).scrollTop() <= scrollSensitivity)) {
 				$(document).scrollTop($(document).scrollTop() - scrollPixel);
 			}
 		}
-					
-	}
-	
-	var end = function(event) {
+	});
 
-		if (GUI.rubberbandWidth || GUI.rubberbandHeight){
+	session.bind("end", function(session) {
+
+		if(!GUI.rubberbandActive) return;
+			
+		if (GUI.rubberbandWidth || GUI.rubberbandHeight) {
 
 			if (GUI.rubberbandWidth < 4) GUI.rubberbandWidth = 4;
 			if (GUI.rubberbandHeight < 4) GUI.rubberbandHeight = 4;
 		
+			var bigControls = (session.type == GUI.input.TYPE_TOUCH);
 			var count = 0;
 		
-			$.each(ObjectManager.getObjects(index), function(index, object) {
+			$.each(ObjectManager.getObjects(GUI.rubberbandIndex), function(index, object) {
 			
 				if (!object.getAttribute("visible")) return;
 				
 				if (object.boxIntersectsWith(GUI.rubberbandX, GUI.rubberbandY, GUI.rubberbandWidth, GUI.rubberbandHeight)) {
 					if (object.isGraphical) {
+						object.bigControls = bigControls;
 						object.select(true);
 						count++;
 					}
@@ -159,20 +165,11 @@ GUI.rubberbandStart = function(event) {
 			
 			if (count == 0) {
 				/* clicked on background */
-				GUI.updateInspector();
+				GUI.updateInspector(true);
 			}
 		}
-	
-		$("#content>svg").unbind("mousemove.webarenaRubberband");
-
-		$("#content>svg").unbind("mouseup.webarenaRubberband");
 		
+		GUI.rubberbandActive = false;
 		$(GUI.rubberband).remove();
-		
-	}
-	
-	$("#content>svg").bind("mousemove.webarenaRubberband", move);
-	
-	$("#content>svg").bind("mouseup.webarenaRubberband", end);
-	
-}
+	});
+});

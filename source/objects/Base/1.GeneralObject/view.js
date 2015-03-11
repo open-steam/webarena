@@ -7,6 +7,8 @@
 *
 */
 
+GeneralObject.bigControls=false;
+
 /**
  * Updates the representation using the attributes
  * @param {bool} external True if triggered externally (and not by the object itself)
@@ -433,7 +435,7 @@ GeneralObject.deselect = function() {
 	if (!this.selected) return;
 
 	this.selected = false;
-	
+	this.bigControls = false;
 	
 	//hide invisible object after deselection
 	var visible = true;
@@ -855,19 +857,19 @@ GeneralObject.onMoveEnd=function(){
  * @param {ControlType} type The type of the new control (see GeneralObject.adjustControls / GeneralObject.addControls)
  * @param {Function} resizeFunction The function called when resizing the object
  */
-GeneralObject.addControl = function(type, resizeFunction) {
+GeneralObject.addControl = function(type, resizeFunction) { //TODO
 
 	var self = this;
 
 	var rep = this.getRepresentation();
 
-	if (GUI.isTouchDevice) {
+	if (GUI.isTouchDevice || this.bigControls) {
 		/* touch */
-		var radius = 11;
+		var radius = 12;
 		var border = 3;
 	} else {
 		/* mouse */
-		var radius = 7;
+		var radius = 9;
 		var border = 2;
 	}
 
@@ -890,20 +892,14 @@ GeneralObject.addControl = function(type, resizeFunction) {
 	control.type = type;
 	
 
-	var start = function(event) {
+	GUI.input.bind("start", function(session) {
 		
-		event.preventDefault();
-		event.stopPropagation();
+		if(session.target != control || session.object != false) return;
 		
 		self.onMoveStart();
 		
-		if (!GUI.isTouchDevice) {
-			control.startMouseX = event.pageX;
-			control.startMouseY = event.pageY;
-		} else {
-			control.startMouseX = event.targetTouches[0].pageX;
-			control.startMouseY = event.targetTouches[0].pageY;
-		}
+		control.startMouseX = session.getX();
+		control.startMouseY = session.getY();
 		control.objectStartWidth = self.getViewWidth();
 		control.objectStartHeight = self.getViewHeight();
 		control.objectStartX = self.getViewX();
@@ -911,32 +907,21 @@ GeneralObject.addControl = function(type, resizeFunction) {
 
 		control.moving = true;
 		
-		var move = function(event) {
+		session.bind("move", function(session) {
 
 			if (!control.moving) return;
 			
-			event.preventDefault();
-
-			if (!GUI.isTouchDevice) {
-				/* mouse */
-				var dx = event.pageX-control.startMouseX;
-				var dy = event.pageY-control.startMouseY;
-			} else {
-				/* touch */
-				var dx = event.targetTouches[0].pageX-control.startMouseX;
-				var dy = event.targetTouches[0].pageY-control.startMouseY;
-			}
-
+			var dx = session.getX()-control.startMouseX;
+			var dy = session.getY()-control.startMouseY;
+			
 			/* resize object */
 			resizeFunction(dx, dy, control.objectStartWidth, control.objectStartHeight, rep, control.objectStartX, control.objectStartY);
 			
 			self.adjustControls();
-					
-		};
-		
-		var end = function(event) {
 			
-			event.preventDefault();
+		});
+		
+		session.bind("end", function(session) {
 			
 			control.moving = false;
 			
@@ -948,40 +933,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
 			
 			GUI.moveLinks(self);
 			
-			if (!GUI.isTouchDevice) {
-				/* mouse */
-				$("#content").unbind("mousemove.webarenaMove");
-				$("#content").unbind("mouseup.webarenaMove");
-			} else {
-				/* touch */
-				$("#content").unbind("touchmove");
-				$("#content").unbind("touchend");
-			}
-			
-		};
-		
-		if (GUI.isTouchDevice) {
-			/* touch */
-			$("#content").get(0).addEventListener("touchmove", move, false);
-			$("#content").get(0).addEventListener("touchend", end, false);			
-		} else {
-			/* mouse */
-			$("#content").bind("mousemove.webarenaMove", move);
-			$("#content").bind("mouseup.webarenaMove", end);
-		}
-
-			
-	};
-	
-	
-	
-	if (GUI.isTouchDevice) {
-		/* touch */
-		control.addEventListener("touchstart", start, false);
-	} else {
-		/* mouse */
-		$(control).bind("mousedown", start);
-	}
+		});
+	});
 	
 	this.controls[type] = control;
 	
@@ -1012,35 +965,27 @@ GeneralObject.saveMoveStartPosition = function() {
 
 /**
  * Start moving an object
- * @param {DomEvent} event The DOM event
+ * @param {GUI.input.Session} session event object
  */
-GeneralObject.moveStart = function(event) {
-
+GeneralObject.moveStart = function(session) {
+	
 	if (!this.id || this.id == "") {
 		var self = ObjectManager.getObject($(this).closest("svg>*").attr("id"));
 	} else {
 		var self = ObjectManager.getObject(this.id);
 	}
-
-	if (!self.selected) self.select();
 	
-	var contentPosition = $("#content").offset();
+	if(session.object != self) return;
 
-	event.preventDefault();
-	event.stopPropagation();
-	
-	GUI.hideActionsheet();
-	//GUI.hideLinks(self);
-
-	if (!GUI.isTouchDevice) {
-		/* mouse */
-		self.moveStartMouseX = event.pageX;
-		self.moveStartMouseY = event.pageY;
-	} else {
-		/* touch */
-		self.moveStartMouseX = event.targetTouches[0].pageX;
-		self.moveStartMouseY = event.targetTouches[0].pageY;
+	if(!self.selected) {
+		self.bigControls = (session.type == GUI.input.TYPE_TOUCH);
+		self.select();
 	}
+	
+	var contentPosition = GUI.input.artboardOffset;
+	
+	self.moveStartMouseX = session.getX();
+	self.moveStartMouseY = session.getY();
 
 	/* save start position for all selected objects */
 	$.each(ObjectManager.getSelected(), function(index, object) {
@@ -1067,29 +1012,20 @@ GeneralObject.moveStart = function(event) {
 	
 	self.hideControls();
 	
-	var move = function(event) {
-        $("body").trigger({
-            type : "moveObject.wa",
-            objectId : self.id
-        });
-		if (GUI.isTouchDevice && event.touches.length > 1) return;
-
+	session.bind("move", function(session) {
+		
 		if (!self.moving) return;
-
-		event.preventDefault();
-		event.stopPropagation();
 		
-		self.moved = true;
+		$("body").trigger({
+		  type : "moveObject.wa",
+		  objectId : self.id
+		});
 		
-		if (!GUI.isTouchDevice) {
-			/* mouse */
-			var dx = event.pageX-self.moveStartMouseX;
-			var dy = event.pageY-self.moveStartMouseY;
-		} else {
-			/* touch */
-			var dx = event.targetTouches[0].pageX-self.moveStartMouseX;
-			var dy = event.targetTouches[0].pageY-self.moveStartMouseY;
-		}
+		if(!self.moved) GUI.hideActionsheet();
+		else self.moved = true;
+		
+		var dx = session.getX() - self.moveStartMouseX;
+		var dy = session.getY() - self.moveStartMouseY;
 
 		/* move all selected objects */
 		$.each(ObjectManager.getSelected(), function(index, object) {
@@ -1097,22 +1033,23 @@ GeneralObject.moveStart = function(event) {
 			GUI.moveLinks(object);
 		});
 
-	};
+	});
 	
-	var end = function(event) {
+	session.bind("end", function(session) {
 
-        $("body").trigger({
-            type : "moveend.wa",
-            objectId : self.id
-        })
-		var cut = !(event.ctrlKey || event.metaKey);
+		$("body").trigger({
+		  type : "moveend.wa",
+		  objectId : self.id
+		});
+
+		var cut = !(session.getCtrlKey() || session.getMetaKey());
 
 		var movedBetweenRooms = false;
 
 		var rep = self.getRepresentation();
 		if (GUI.couplingModeActive) {
 			// coupling mode is switched on, determine if elements were moved between rooms
-			if (parseInt($('#room_right_wrapper').attr('x')) < event.clientX) {
+			if (parseInt($('#room_right_wrapper').attr('x')) < session.getX()) {
 				GUI.defaultZoomPanState('right', false);
 				if (ObjectManager.getIndexOfObject(self.getAttribute('id')) === 'left') {
 					// moved from the left room to the right
@@ -1213,9 +1150,6 @@ GeneralObject.moveStart = function(event) {
  			});
 		}
 
-		event.preventDefault();
-		event.stopPropagation();
-		
 		self.moving = false;
 		
 		if (!movedBetweenRooms) {
@@ -1226,35 +1160,11 @@ GeneralObject.moveStart = function(event) {
 		//GUI.showLinks(self);
 		
 		if (!self.moved) {
-			if (!self.selectionClickActive) self.click(event);
+			if (!self.selectionClickActive) self.click(session);
 		}
 		
 		self.selectionClickActive = false;
-		
-		if (GUI.isTouchDevice) {
-			/* touch */
-			$("#content").get(0).removeEventListener("touchmove", move, false);
-			$("#content").get(0).removeEventListener("touchend", end, false);
-			
-		} else {
-			/* mouse */
-			$("#content").unbind("mousemove.webarenaMove");
-			$("#content").unbind("mouseup.webarenaMove");
-		}
-		
-	};
-
-	if (GUI.isTouchDevice) {
-		/* touch */
-		$("#content").get(0).addEventListener("touchmove", move, false);
-		$("#content").get(0).addEventListener("touchend", end, false);
-	} else {
-		/* mouse */
-		$("#content").bind("mousemove.webarenaMove", move);
-		$("#content").bind("mouseup.webarenaMove", end);
-	}
-
-	
+	});
 }
 
 /**
@@ -1262,25 +1172,15 @@ GeneralObject.moveStart = function(event) {
  */
 GeneralObject.makeMovable = function() {
 
-	var self = this;
-    var rep;
+	// var rep;
 
-    if(this.restrictedMovingArea){
-        rep = $(this.getRepresentation()).find(".moveArea").get(0);
-    } else {
-        rep = this.getRepresentation();
-    }
-
-	if (GUI.isTouchDevice) {
-		/* touch */
-		rep.ontouchstart = self.moveStart;
-	} else {
-		/* mouse */
-		$(rep).bind("mousedown", self.moveStart);
-	}
+	// if(this.restrictedMovingArea){
+	   // rep = $(this.getRepresentation()).find(".moveArea").get(0);
+	// } else {
+	   // rep = this.getRepresentation();
+	// }
 	
-
-	
+	GUI.input.bind("start", $.proxy(this.moveStart, this));
 }
 
 /**
@@ -1330,18 +1230,14 @@ GeneralObject.moveBy = function(x, y) {
  */
 GeneralObject.unmakeMovable = function() {
 
-	var rep;
-    if(this.restrictedMovingArea){
-        rep = $(this.getRepresentation()).find(".moveArea").get(0);
-    } else {
-        rep = this.getRepresentation();
-    }
+	// var rep;
+	// if(this.restrictedMovingArea){
+	   // rep = $(this.getRepresentation()).find(".moveArea").get(0);
+	// } else {
+	   // rep = this.getRepresentation();
+	// }
 	
-	$(rep).unbind("mousedown");
-
-	//rep.removeEventListener("touchstart", self.moveStart, false);
-	rep.ontouchstart = function() {};
-	
+	GUI.input.unbind("start", $.proxy(this.moveStart, this));
 }
 
 
@@ -1538,20 +1434,12 @@ GeneralObject.clickTimeout = false;
 /**
  * Click handler
  * (because we have to differ single click and double click)
- * @param {DomEvent} event The DOM click event
+ * @param {GUI.input.Session} session event object
  */
-GeneralObject.click = function(event) {
+GeneralObject.click = function(session) {
 
 	var self = this;
 	
-	if (GUI.isTouchDevice) {
-		self.clickHandler(event);
-		return true;
-	}
-	
-	/* stop when the clicked object is the SVG canvas */
-	if (event.target == $("#content>svg").get(0)) return;
-
 	if (self.clickTimeout) {
 		/* second click */
 
@@ -1561,23 +1449,23 @@ GeneralObject.click = function(event) {
 		if (GUI.shiftKeyDown) return;
 
 		//perform dblclick action
-		self.clickRevertHandler(event);
+		self.clickRevertHandler(session);
 
-		self.dblclickHandler(event);
+		self.dblclickHandler(session);
 
 	} else {
 		/* first click */
 
 		/* set a timer (if another click is called while the timer is active, a second click is performed) */
 		self.clickTimeout = window.setTimeout(function() {
-
+			
 			self.clickTimeout = false;
 
 		}, 600);
 		
 		self.clickTimeout = true;
 		
-		self.clickHandler(event);
+		self.clickHandler(session);
 	
 	}
 
@@ -1588,42 +1476,35 @@ GeneralObject.click = function(event) {
 
 /**
  * Called after a click if performed
- * @param {DomEvent} event DOM click event
+ * @param {GUI.input.Session} session event object
  */
-GeneralObject.clickHandler = function(event) {
-	
-	if (GUI.isTouchDevice && event.touches.length > 1) {
-		this.select(true); 
-		event.stopPropagation();
-		event.preventDefault();
-		return true;
-	}
+GeneralObject.clickHandler = function(session) {
 	
 	if (this.selected) {
-        if(this.restrictedMovingArea && !$(event.target).hasClass("moveArea")){
-
-        } else {
-            this.selectedClickHandler(event);
-        }
+		if(this.restrictedMovingArea && !$(session.target).hasClass("moveArea")){
+			
+		} else {
+			this.selectedClickHandler(session);
+		}
 	} else {
+		this.bigControls = (session.type == GUI.input.TYPE_TOUCH);
 		this.selectionClickActive = true; //this is used to prevent a second click-call by mouseup of move when selecting an object (otherwise this would result in an doubleclick)
-		this.select();
+		
+		this.select(session.type == GUI.input.TYPE_TOUCH);
 
-		if(this.restrictedMovingArea && !$(event.target).hasClass("moveArea")){
-
+		if(this.restrictedMovingArea && !$(session.target).hasClass("moveArea")){
+			
 		} else {
 			
-			this.moveStart(event);
 		}
 	}
-	
 }
 
 /**
  * Called when a click was reverted by an double click event
- * @param {DomEvent} event DOM click event
+ * @param {GUI.input.Session} session event object
  */
-GeneralObject.clickRevertHandler = function(event) {
+GeneralObject.clickRevertHandler = function() {
 	/* for a faster feeling the click event is called when the first click is recognized, even if there will be a second (double) click. In case of a double click we have to revert the click action */
 	this.deselect();
 }
@@ -1660,18 +1541,17 @@ GeneralObject.deselectHandler = function() {
 
 /**
  * Called when a double click was performed
- * @param {DomEvent} event DOM click event
+ * @param {GUI.input.Session} session event object
  */
-GeneralObject.dblclickHandler = function(event) {
-
-	this.execute(event);
+GeneralObject.dblclickHandler = function(session) {
+	this.execute(session);
 }
 
 /**
  * Called when a click was performed and the object is selected
- * @param {DomEvent} event DOM click event
+ * @param {GUI.input.Session} session event object
  */
-GeneralObject.selectedClickHandler = function(event) {
+GeneralObject.selectedClickHandler = function(session) {
 
 
 	if (GUI.shiftKeyDown) {

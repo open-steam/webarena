@@ -126,7 +126,9 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
         });
     }
-	
+    
+	actionsheet.css("opacity", 0);
+	actionsheet.show();
 	
 	/* calculate dimensions and show (little delay to ensure working width/height DOM getter methods) */
 	window.setTimeout(function() {
@@ -187,13 +189,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
             $(document).scrollTo( {top: scrollTop, left: scrollLeft}, 800 );
         }
-		
 	}, 10);
-	
-
-	actionsheet.css("opacity", 0);
-	actionsheet.show();
-
 	
 	/* little trick (the handler was called immediately by the current click which causes the actionsheet to show up) */
 	window.setTimeout(function() {

@@ -1,26 +1,78 @@
-GUI.input.bind("start", function(s) {
+/*GUI.input.bind("start", function(s) {
 	console.log("Yeah Start by " + s.type + " at " + s.getX() + ", " + s.getY());
 });
 GUI.input.bind("move", function(s) {
-	console.log("Yeah Move by " + s.type);
+    console.log("Yeah Move by " + s.type);
 });
 GUI.input.bind("end", function(s) {
-	console.log("Yeah End by " + s.type + " at " + s.getX() + ", " + s.getY());
+    console.log("Yeah End by " + s.type + " at " + s.getX() + ", " + s.getY());
 });
-/**
- * add start event handler
- *//*
-GUI.input.bind("start", function(s) {
-	jPopoverManager.hideAll();
 
-	// var contentPosition = $("#content").offset();
+GUI.input.bind("tap", function(s) {
+    console.log("Yeah Tap by " + s.type + " at " + s.getX() + ", " + s.getY());
+});
+GUI.input.bind("press", function(s) {
+    console.log("Yeah Press by " + s.type + " at " + s.getX() + ", " + s.getY());
+});*/
+
+//press object
+GUI.input.bind("press", function(session) {console.log(GUI.svg);
+	if (session.object !== false) 
+		session.object.dblclickHandler(session);
+	else GUI.updateInspector(true);
+});
+
+//"click" object
+GUI.input.bind("start", function(session) {
+	jPopoverManager.hideAll();
 	
-	// var x = s.getX()-contentPosition.left;
-	// var y = s.getY()-contentPosition.top;
+	if(session.object != false)
+		session.object.click(session);
+	else {
+		GUI.hideActionsheet();
+		GUI.updateInspector(true);
+	}
+});
+
+//couplingMode
+GUI.input.bind("start", function(session) {	
+	if(GUI.couplingModeActive) {
+		if (session.getX() > $('#couplingBar').attr('x1') && $('#couplingBar:hover').length == 0) {
+			if ($('#rightCouplingControl:hover').length == 0) {
+				if (GUI.defaultZoomPanState('right', false)) return;
+			}
+		} else {
+			if ($('#leftCouplingControl:hover').length == 0) {
+				if (GUI.defaultZoomPanState('left', false)) return;
+			}
+		}
+	}
+});
+
+//mark images parents on move
+GUI.input.bind("move", function(session) {
+	var x = session.getX();
+	var y = session.getY();
 	
-	var temp=s.target;
+	var images=$('image');
+	
+	$.each(images, function(index, image) {
 		
-	//object creation via object symbols
+		var parent=$(image).parent();
+		
+		if (!image.hasPixelAtMousePosition) return;
+		
+		if(image.hasPixelAtMousePosition(x,y)){
+			parent.attr('pointer-events','visiblePainted');
+		} else {
+			parent.attr('pointer-events','none');
+		}
+		
+	});
+});
+
+//object creation via object symbols
+GUI.input.bind("tap", function(session) {
 	var cursor = $("body").css('cursor');	
 	if(cursor != "auto"){
 		
@@ -38,14 +90,16 @@ GUI.input.bind("start", function(s) {
 		GUI.startNoAnimationTimer();
 				
 		proto.create({
-				"x" : s.getX()-30, 
-				"y" : s.getY()-65
+				"x" : session.getX()-30, 
+				"y" : session.getY()-65
 		});
 	
 		$("body").css( 'cursor', 'auto' );			
 	}
-	
-	//after selecting the arrow startpoint change the cursor text to arrow endpoint
+});
+
+//after selecting the arrow startpoint change the cursor text to arrow endpoint
+GUI.input.bind("tap", function(session) {
 	if(GUI.getCursorText()==GUI.translate('Choose Arrow-Startpoint')){
 		GUI.setCursorText(GUI.translate("Choose Arrow-Endpoint"));
 					
@@ -54,8 +108,10 @@ GUI.input.bind("start", function(s) {
 		$('#besideMouse').attr('title', position.left+','+position.top);
 		
 	}
-	
-	//after selecting the line startpoint change the cursor text to line endpoint
+});
+
+//after selecting the line startpoint change the cursor text to line endpoint
+GUI.input.bind("tap", function(session) {
 	if(GUI.getCursorText()==GUI.translate('Choose Line-Startpoint')){
 		GUI.setCursorText(GUI.translate("Choose Line-Endpoint"));
 
@@ -63,8 +119,10 @@ GUI.input.bind("start", function(s) {
 		
 		$('#besideMouse').attr('title', position.left+','+position.top);	
 	}
-	
-	//after selecting the arrow endpoint create the arrow and set the position with GUI.setFinalPosition
+});
+
+//after selecting the arrow endpoint create the arrow and set the position with GUI.setFinalPosition
+GUI.input.bind("tap", function(session) {
 	if(GUI.getCursorText()==GUI.translate('Choose Arrow-Endpoint')){
 		GUI.setCursorText("");
 
@@ -83,8 +141,10 @@ GUI.input.bind("start", function(s) {
 			
 		ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);	
 	}
-	
-	//after selecting the line endpoint create the line and set the position with GUI.setFinalPosition
+});
+
+//after selecting the line endpoint create the line and set the position with GUI.setFinalPosition
+GUI.input.bind("tap", function(session) {
 	if(GUI.getCursorText()==GUI.translate('Choose Line-Endpoint')){
 		GUI.setCursorText("");
 
@@ -103,70 +163,4 @@ GUI.input.bind("start", function(s) {
 			
 		ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);
 	}
-	
-	
-	while (temp && !temp.dataObject) {
-		temp=$(temp).parent()[0];
-	}
-	
-	var clickedObject=(temp)?temp.dataObject:false;
-	
-	//TODO check if this can be done similarly for touch devices
-
-	if (GUI.couplingModeActive) {
-		if (s.getX() > $('#couplingBar').attr('x1') && $('#couplingBar:hover').length == 0) {
-			if ($('#rightCouplingControl:hover').length == 0) {
-				if (GUI.defaultZoomPanState('right', false, event)) return;
-			}
-		} else {
-			if ($('#leftCouplingControl:hover').length == 0) {
-				if (GUI.defaultZoomPanState('left', false, event)) return;
-			}
-		}
-	}
-
-	if (clickedObject) {
-		// Objects with restricted moving areas should get the "native" events
-		// Only if clicked on the moving area, e.g. actionbar the default event handling
-		// should be prevented
-		// if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
-			// event.preventDefault();
-			// event.stopPropagation();
-		// }
-
-		//clickedObject.click(event);
-	} else {
-		//clicked on background
-		// event.preventDefault();
-		// event.stopPropagation();
-		//GUI.rubberbandStart(event);
-		GUI.updateInspector(true);
-	}
-});*/
-
-/**
- * add move event handler
- *//*
-GUI.input.bind("move", function(s) {
-	var x = s.getX();
-	var y = s.getY();
-	
-	var images=$('image');
-	
-	$.each(images, function(index, image) {
-		
-		var parent=$(image).parent();
-		
-		if (!image.hasPixelAtMousePosition) {
-			//console.log('Missing hasPixelAtMousePosition for ',parent);
-			return;
-		}
-		
-		if(image.hasPixelAtMousePosition(x,y)){
-			parent.attr('pointer-events','visiblePainted');
-		} else {
-			parent.attr('pointer-events','none');
-		}
-		
-	});
-});*/
+});

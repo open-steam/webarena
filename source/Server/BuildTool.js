@@ -69,6 +69,7 @@ BuildTool.buildClientCode = function(){
  *  get the combined client side sourcecode for objects.
  **/
 BuildTool.getClientCode = function () {
+	if(Modules.config.debugMode) this.buildClientCode();
 	return this.clientCode;
 }
 

@@ -212,6 +212,8 @@ GUI.enterCouplingMode = function() {
 		$("#canvas").css("height", $(window).height());
 		$("#content").css("width", $(window).width());
 		$("#content").css("height", $(window).height());
+		
+		GUI.input.offset();
 	}
 }
 
@@ -262,6 +264,8 @@ GUI.closeCouplingMode = function(target) {
 	if(target=='right'){
 		ObjectManager.loadRoom(ObjectManager.getRoomID('right'),false);
 	}	
+	
+	GUI.input.offset();
 }
 
 GUI.addZoomPanControl = function(index, x, y) {
