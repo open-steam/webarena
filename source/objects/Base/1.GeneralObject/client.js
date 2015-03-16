@@ -295,23 +295,21 @@ GeneralObject.showExitDialog = function() {
 		
 		if(jstree_selected_item.length == 0 & textareaInput == ""){
 			alert(that.translate(GUI.currentLanguage, "Please select a destination or enter a URL"));
-			return;
+			setTimeout(function(){ that.showExitDialog() }, 10);
 		}
 		if(jstree_selected_item.length == 0 & textareaInput != ""){
 			HandleTextareaInput(textareaInput);
-			return;
 		}
 		if(jstree_selected_item.length != 0 & textareaInput == ""){
 			HandleTreeInput(jstree_selected_item);
-			return;
 		}
-		if(tab == "#tabs-1"){ //two inputs, decide which tab is open
-			HandleTreeInput(jstree_selected_item);
-			return;
-		}
-		else{
-			HandleTextareaInput(textareaInput);
-			return;
+		if(jstree_selected_item.length != 0 & textareaInput != ""){
+			if(tab == "#tabs-1"){ //two inputs, decide which tab is open
+				HandleTreeInput(jstree_selected_item);
+			}
+			else{
+				HandleTextareaInput(textareaInput);
+			}
 		}
 	};
 	
@@ -319,6 +317,7 @@ GeneralObject.showExitDialog = function() {
 	
 		if(textareaInput.indexOf("http://www.") != 0){
 			alert(that.translate(GUI.currentLanguage, "Please enter a valid URL"));
+			setTimeout(function(){ that.showExitDialog() }, 10);
 		}
 		else{
 			that.setAttribute("destination", textareaInput);
