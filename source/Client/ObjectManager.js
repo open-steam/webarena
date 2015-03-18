@@ -954,20 +954,23 @@ ObjectManager.afterDuplicate = function(newObject) {
         minY = newObject.getAttribute('y');
     }
 
-    //scroll to position of pasted objects (TODO: only in new room...)
+    //scroll to position of pasted objects (only if object not visible in the current browser window)
     if (!GUI.couplingModeActive) {
         if (minX - 30 < 0)
             minX = 30;
         if (minY - 30 < 0)
             minY = 30;
 
-        $(document).scrollTo(
-                {
-                    top: minY - 30,
-                    left: minX - 30
-                },
-        1000
-                );
+		setTimeout(function(){ 
+			var objVisible = newObject.checkBrowserVisibility();
+			
+			if(!objVisible){
+				$(document).scrollTo({
+					top: minY - 30,
+					left: minX - 30
+				});
+			}
+		}, 500);
     }
 }
 
