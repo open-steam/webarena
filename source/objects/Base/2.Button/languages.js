@@ -1,0 +1,4 @@
+Button.setTranslations('de',{
+
+}
+);
