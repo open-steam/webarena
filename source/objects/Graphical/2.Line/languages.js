@@ -1,4 +1,5 @@
 Line.setTranslations('de',{
-	'Line':'Linie'
-}
+	'Line':'Linie',
+	'linestyle':'Linienstil'
+	}
 );

@@ -23,23 +23,19 @@ GUI.sidebar.savedState = undefined;
  */
 GUI.sidebar.elementConfig = {
     "inspector" : {
-        order : 0,
-        title : GUI.translate("Object inspector")
+        order : 0
 		//onOpen : GUI.chat.closed
     },
     "chat" : {
         order : 1,
-        title : GUI.translate("Chat"),
         onOpen : GUI.chat.opened
     },
     "bug" : {
-        order : 2,
-        title : GUI.translate("Bugreport")
+        order : 2
 		//onOpen : GUI.chat.closed
     },
     "pad" : {
-        order : 3,
-        title : GUI.translate("Annotations")
+        order : 3
 		//onOpen : GUI.chat.closed
     },
 };
@@ -220,4 +216,13 @@ GUI.sidebar.restoreFromSavedState = function() {
 GUI.sidebar.init = function() {
     $("#sidebar_content>div").addClass("animate");
     $("#sidebar_content").dontScrollParent();
+	
+	GUI.sidebar.elementConfig.inspector.title = GUI.translate("Object inspector");
+	GUI.sidebar.elementConfig.chat.title = GUI.translate("Chat");
+    GUI.sidebar.elementConfig.bug.title = GUI.translate("Bugreport");
+	GUI.sidebar.elementConfig.pad.title = GUI.translate("Annotations");
+
+	$("#header_toggle_sidebar_hide").attr('title', GUI.translate('Hide sidebar'));
+	$("#header_toggle_sidebar_show").attr('title', GUI.translate('Show sidebar'));
+	
 }

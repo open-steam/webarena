@@ -106,6 +106,11 @@ GUI.setTranslations('de',{
 	' is currently in a call, has declined your request or do not allow access to webcam or microphone!':' führt zurzeit bereits ein Gespräch, hat deine Gesprächsanfrage abgelehnt oder erlaubt den Zugriff auf Webcam oder Mikrophon nicht!',
 	'For video calls it is necessary to allow the access to the webcam and the microphone!':'Für Videogespräche ist ein Zugriff auf die Webcam und das Mikrophon nötig!',
 	'For voice calls it is necessary to allow the access to the microphone!':'Für Telefonate ist ein Zugriff auf das Mikrophon nötig!',
-        'Table':'Tabelle'
+	'Table':'Tabelle',
+	'Hide sidebar':'Sidebar ausblenden',
+	'Show sidebar':'Sidebar einblenden',
+	'stroke' : 'Linie',
+	'dotted' : 'gepunktet',
+	'dashed' : 'gestrichelt'
 	}
 );
