@@ -131,8 +131,7 @@ GUI.sidebar.openSidebar = function() {
 	
     GUI.sidebar.open = true;
 
-	$("#header_toggle_sidebar_hide").show();
-	$("#header_toggle_sidebar_show").hide();
+	GUI.resizeToolbar();
 	
 }
 
@@ -148,6 +147,8 @@ GUI.sidebar.closeSidebar = function(noReset) {
 
     GUI.sidebar.open = false;
 
+	GUI.resizeToolbar();
+	
     if (noReset !== true) {
         GUI.sidebar.currentElement = undefined;
     }
@@ -157,25 +158,6 @@ GUI.sidebar.closeSidebar = function(noReset) {
 	$("#header_toggle_sidebar_hide").hide();
 	$("#header_toggle_sidebar_show").show();
 
-}
-
-
-/**
- * Shows the sidebar
- * @function show
- */
-GUI.sidebar.show = function() {
-	$("#sidebar").show();
-	$('.header_tabs_sidebar').show();
-}
-
-/**
- * Hide the sidebar
- * @function show
- */
-GUI.sidebar.hide = function() {
-	$("#sidebar").hide();
-	$('.header_tabs_sidebar').hide();
 }
 
 

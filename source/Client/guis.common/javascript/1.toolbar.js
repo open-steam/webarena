@@ -4,10 +4,16 @@
 var popover_positionOffsetX = 8;
 var popover_positionOffsetY = 20;
 
+var numberOfIcons = 0;
+
 /**
  * Init. the toolbar
  */
 GUI.initToolbar = function() {
+
+	$(window).resize(function() {		
+		GUI.resizeToolbar();
+	});
 
     /* insert icons for creating new objects: */
 
@@ -38,6 +44,8 @@ GUI.initToolbar = function() {
     /* build categories for each type */
     $.each(types, function(key, object) {
 
+		numberOfIcons++;
+	
         var newCategoryIcon = document.createElement("img");
         $(newCategoryIcon).attr("src", "/categoryIcons/" + object[0].category).attr("alt", "");
         $(newCategoryIcon).attr("width", "24").attr("height", "24");
@@ -249,122 +257,7 @@ GUI.initToolbar = function() {
         }
 
     });
-
-    /*add coupling button*/
-    /*
-     if (Modules.Config.couplingMode) {
-     var couplingButton = document.createElement("img");
-     $(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");
-     $(couplingButton).attr("width", "24").attr("height", "24");
-     
-     $(couplingButton).attr("id", "coupling_button");
-     $(couplingButton).addClass("sidebar_button");
-     
-     $(couplingButton).css("padding-left", "20px");
-     $(couplingButton).css("padding-right", "20px");
-     $(couplingButton).css("margin-right", "20px");
-     $(couplingButton).css("border-right", "1px solid #636363");
-     
-     $(couplingButton).attr("title", GUI.translate("Coupling"));
-     
-     $("#header > .header_right").append(couplingButton);
-     
-     var click = function() {
-     GUI.enterCouplingMode();
-     }
-     
-     if (GUI.isTouchDevice) {
-     $(couplingButton).bind("touchstart", click);
-     } else {
-     $(couplingButton).bind("mousedown", click);
-     }
-     }
-     */
-
-    /*add parent button*/
-    /*
-     var parentButton = document.createElement("img");
-     $(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
-     $(parentButton).attr("width", "24").attr("height", "24");
-     
-     $(parentButton).attr("id", "parent_button");
-     $(parentButton).addClass("sidebar_button");
-     
-     $(parentButton).attr("title", GUI.translate("Environment"));
-     
-     $("#header > .header_right").append(parentButton);
-     
-     var click = function() {
-     Modules.ObjectManager.goParent();
-     }
-     
-     if (GUI.isTouchDevice) {
-     $(parentButton).bind("touchstart", click);
-     } else {
-     $(parentButton).bind("mousedown", click);
-     }
-     */
-
-    /*add home button*/
-    /*
-     var homeButton = document.createElement("img");
-     $(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
-     $(homeButton).attr("width", "24").attr("height", "24");
-     
-     $(homeButton).attr("id", "home_button");
-     $(homeButton).addClass("sidebar_button");
-     
-     $(homeButton).attr("title", GUI.translate("Home"));
-     
-     $("#header > .header_right").append(homeButton);
-     
-     var click = function() {
-     Modules.ObjectManager.goHome();
-     }
-     
-     if (GUI.isTouchDevice) {
-     $(homeButton).bind("touchstart", click);
-     } else {
-     $(homeButton).bind("mousedown", click);
-     }
-     */
-
-    /*add paint button*/
-    /*
-     if (Modules.Config.paintIcon) {
-     var paintButton = document.createElement("img");
-     $(paintButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
-     $(paintButton).attr("width", "24").attr("height", "24");
-     
-     $(paintButton).attr("id", "paint_button");
-     $(paintButton).addClass("sidebar_button");
-     
-     $(paintButton).attr("title", GUI.translate("Paint"));
-     
-     $("#header > .header_right").append(paintButton);
-     
-     var click = function() {
-     GUI.editPaint();
-     }
-     
-     if (GUI.isTouchDevice) {
-     $(paintButton).bind("touchstart", click);
-     } else {
-     $(paintButton).bind("mousedown", click);
-     }
-     }
-     */
-
 	 
-	/*add new user notification*/
-    var newUserIcon = document.createElement("img");
-    $(newUserIcon).attr("width", "24").attr("height", "24");
-    $(newUserIcon).attr("id", "new_user_icon");
-    $(newUserIcon).addClass("sidebar_button");
-	$(newUserIcon).css("opacity", 0);
-
-    $("#header > .header_right").append(newUserIcon);
-	
 	 
     /*add paste button*/
     var pasteButton = document.createElement("img");
@@ -381,7 +274,7 @@ GUI.initToolbar = function() {
     //$(pasteButton).css("border-right", "1px solid #636363");
 
     $(pasteButton).attr("title", GUI.translate("Paste"));
-
+	numberOfIcons++;
     $("#header > .header_right").append(pasteButton);
 
     var click = function() {
@@ -409,7 +302,7 @@ GUI.initToolbar = function() {
     //$(undoButton).css("border-right", "1px solid #636363");
 
     $(undoButton).attr("title", GUI.translate("undo"));
-
+	numberOfIcons++;
     $("#header > .header_right").append(undoButton);
 
     var click = function() {
@@ -421,6 +314,132 @@ GUI.initToolbar = function() {
     } else {
         $(undoButton).bind("mousedown", click);
     }
+	
+	
+	/*add coupling button*/
+    if (Modules.Config.couplingMode) {
+		var couplingButton = document.createElement("img");
+		$(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");
+		$(couplingButton).attr("width", "24").attr("height", "24");
+     
+		$(couplingButton).attr("id", "coupling_button");
+		$(couplingButton).addClass("sidebar_button");
+     
+		//$(couplingButton).css("padding-left", "20px");
+		//$(couplingButton).css("padding-right", "20px");
+		$(couplingButton).css("margin-right", "20px");
+		//$(couplingButton).css("border-right", "1px solid #636363");
+     
+		$(couplingButton).attr("title", GUI.translate("Coupling"));
+		numberOfIcons++;
+		$("#header > .header_right").append(couplingButton);
+     
+		var click = function() {
+			GUI.enterCouplingMode();
+		}
+     
+		if (GUI.isTouchDevice) {
+			$(couplingButton).bind("touchstart", click);
+		} else {
+			$(couplingButton).bind("mousedown", click);
+		}
+    }
+    
+
+    /*add parent button*/
+    var parentButton = document.createElement("img");
+    $(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
+    $(parentButton).attr("width", "24").attr("height", "24");
+	
+    $(parentButton).attr("id", "parent_button");
+    $(parentButton).addClass("sidebar_button");
+	
+    $(parentButton).attr("title", GUI.translate("Environment"));
+	numberOfIcons++;
+    $("#header > .header_right").append(parentButton);
+	
+    var click = function() {
+		Modules.ObjectManager.goParent();
+    }
+
+	if (GUI.isTouchDevice) {
+		$(parentButton).bind("touchstart", click);
+    } else {
+		$(parentButton).bind("mousedown", click);
+    }
+   
+
+    /*add home button*/
+    var homeButton = document.createElement("img");
+    $(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
+    $(homeButton).attr("width", "24").attr("height", "24");
+	
+	$(homeButton).attr("id", "home_button");
+    $(homeButton).addClass("sidebar_button");
+	
+	$(homeButton).attr("title", GUI.translate("Home"));
+	numberOfIcons++;
+	$("#header > .header_right").append(homeButton);
+	
+	var click = function() {
+		Modules.ObjectManager.goHome();
+    }
+	
+	if (GUI.isTouchDevice) {
+		$(homeButton).bind("touchstart", click);
+    } else {
+		$(homeButton).bind("mousedown", click);
+    }
+
+
+    /*add paint button*/
+    if (Modules.Config.paintIcon) {
+		var paintButton = document.createElement("img");
+		$(paintButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
+		$(paintButton).attr("width", "24").attr("height", "24");
+     
+		$(paintButton).attr("id", "paint_button");
+		$(paintButton).addClass("sidebar_button");
+     
+		$(paintButton).attr("title", GUI.translate("Paint"));
+		numberOfIcons++;
+		$("#header > .header_right").append(paintButton);
+     
+		var click = function() {
+			GUI.editPaint();
+		}
+     
+		if (GUI.isTouchDevice) {
+			$(paintButton).bind("touchstart", click);
+		} else {
+			$(paintButton).bind("mousedown", click);
+		}
+    }
+	
+	
+	/*add logout button*/
+	var logoutButton = document.createElement("img");
+	$(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
+	$(logoutButton).attr("width", "24").attr("height", "24");
+     
+	$(logoutButton).attr("id", "logout_button");
+	$(logoutButton).addClass("sidebar_button");
+	
+	$(logoutButton).attr("title", GUI.translate("Logout"));
+    numberOfIcons++;
+	$("#header > .header_right").append(logoutButton);
+     
+	var click = function() {
+		location.replace(location.origin);
+		GUI.deleteUserData();
+	}
+     
+	if (GUI.isTouchDevice) {
+		$(logoutButton).bind("touchstart", click);
+	} else {
+		$(logoutButton).bind("mousedown", click);
+	}
+	
 
     /*add menu button*/
     var menuButton = document.createElement("img");
@@ -431,7 +450,7 @@ GUI.initToolbar = function() {
     $(menuButton).addClass("sidebar_button");
 
     $(menuButton).attr("title", GUI.translate("Menu"));
-
+	$(menuButton).css("margin-right", "0px");
     $("#header > .header_right").append(menuButton);
 
     $(menuButton).jPopover({
@@ -454,6 +473,20 @@ GUI.initToolbar = function() {
             var page = popover.addPage(GUI.translate("Welcome") + " " + Modules.Helper.capitalize(GUI.username));
             var section = page.addSection();
 
+			/*add paste button*/
+            var btnPaste = section.addElement('<img src= "../../guis.common/images/paste_grey.png" alt="" width="24" height="24" id="paste_button" class="sidebar_button" /> ' + GUI.translate("Paste"));
+            var clickPaste = function() {
+				Modules.ObjectManager.pasteObjects();
+                popover.hide();
+            };
+			
+            /*add undo button*/
+            var btnUndo = section.addElement('<img src= "../../guis.common/images/undo_grey.png" alt="" width="24" height="24" id="undo_button" class="sidebar_button" /> ' + GUI.translate("undo"));
+            var clickUndo = function() {
+				Modules.Dispatcher.query("undo", {"userID": GUI.userid});
+                popover.hide();
+            };
+			
             /*add coupling button*/
             if (Modules.Config.couplingMode) {
                 var btnCoupling = section.addElement('<img src= "../../guis.common/images/coupling_grey.png" alt="" width="24" height="24" id="coupling_button" class="sidebar_button" /> ' + GUI.translate("Coupling"));
@@ -505,7 +538,8 @@ GUI.initToolbar = function() {
                 if (btnPaint) {
                     $(btnPaint.getDOM()).bind("touchstart", clickPaint);
                 }
-
+				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
+				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
             } else {
                 $(btnLogout.getDOM()).bind("click", clickLogout);
                 $(btnHome.getDOM()).bind("click", clickHome);
@@ -516,7 +550,8 @@ GUI.initToolbar = function() {
                 if (btnPaint) {
                     $(btnPaint.getDOM()).bind("click", clickPaint);
                 }
-
+				$(btnUndo.getDOM()).bind("click", clickUndo);
+				$(btnPaste.getDOM()).bind("click", clickPaste);
             }
         }
     });
@@ -663,6 +698,18 @@ GUI.initToolbar = function() {
         $(".jPopover").hide();
         GUI.sidebar.openSidebar();
     });
+	
+	
+	/*add new user notification*/
+    var newUserIcon = document.createElement("img");
+    $(newUserIcon).attr("width", "24").attr("height", "24");
+    $(newUserIcon).attr("id", "new_user_icon");
+	$(newUserIcon).css("opacity", 0);
+	$(newUserIcon).css("float", "right");
+	$(newUserIcon).css("top", "4px");
+	$(newUserIcon).css("cursor", "auto");
+
+	$("#header > .header_tabs_sidebar").append(newUserIcon);
 
 }
 
@@ -693,4 +740,40 @@ GUI.flashNewUserIcon = function(newUser){
 		}
 	}
 	blink();
+}
+
+
+/**
+ * decides which icons are shown in the toolbar, depending on the free space  
+ */
+GUI.resizeToolbar = function(){
+
+	var space = $(window).width();
+	space = space - (numberOfIcons*44); //subtract icons
+
+	if(space < -10){
+		if(GUI.sidebar.open){
+			GUI.sidebar.saveStateAndHide();
+		}
+		$("#header_toggle_sidebar_show").hide();
+	}
+	else{
+		if(GUI.sidebar.open){
+			$("#header_toggle_sidebar_hide").show();
+			$("#header_toggle_sidebar_show").hide();
+		}
+		else{
+			$("#header_toggle_sidebar_show").show();
+			$("#header_toggle_sidebar_hide").hide();
+		}
+	}
+	if((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)){
+		$("#header > .header_right > img").hide();
+		$("#menu_button").show();
+	}
+	else{
+		$("#header > .header_right > img").show();
+		$("#menu_button").hide();
+	}
+
 }
