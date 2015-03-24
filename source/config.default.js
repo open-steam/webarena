@@ -24,6 +24,19 @@ module.exports={
 	
 	showSidebarbydefault:true, // Toggle the inital state of the sidebar
 	
+// Input
+
+	input: {
+		
+		recognize: true,
+		
+		multiTouch: true,
+		
+		simulatePen: true,
+		
+		paintMode: true
+	},
+	
 // Object handling
 	
 	enabledCategories: ['graphical','texts','collaboration','connections','content'],

@@ -1,22 +1,5 @@
-/*GUI.input.bind("start", function(s) {
-	console.log("Yeah Start by " + s.type + " at " + s.getX() + ", " + s.getY());
-});
-GUI.input.bind("move", function(s) {
-    console.log("Yeah Move by " + s.type);
-});
-GUI.input.bind("end", function(s) {
-    console.log("Yeah End by " + s.type + " at " + s.getX() + ", " + s.getY());
-});
-
-GUI.input.bind("tap", function(s) {
-    console.log("Yeah Tap by " + s.type + " at " + s.getX() + ", " + s.getY());
-});
-GUI.input.bind("press", function(s) {
-    console.log("Yeah Press by " + s.type + " at " + s.getX() + ", " + s.getY());
-});*/
-
 //press object
-GUI.input.bind("press", function(session) {console.log(GUI.svg);
+GUI.input.bind("press", function(session) {
 	if (session.object !== false) 
 		session.object.dblclickHandler(session);
 	else GUI.updateInspector(true);
@@ -54,9 +37,7 @@ GUI.input.bind("move", function(session) {
 	var x = session.getX();
 	var y = session.getY();
 	
-	var images=$('image');
-	
-	$.each(images, function(index, image) {
+	$('image').each(function(index, image) {
 		
 		var parent=$(image).parent();
 		
@@ -163,4 +144,12 @@ GUI.input.bind("tap", function(session) {
 			
 		ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);
 	}
+});
+
+GUI.input.bind("MultiFingerDrag", function(multiSession) {console.log("MULTIFINGERDRAG");
+	var center = multiSession.getCenter();
+	$(document).scrollTo({
+		top: center.y,
+		left: center.x
+	}, 200);
 });

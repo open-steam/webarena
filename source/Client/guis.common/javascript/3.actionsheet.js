@@ -45,7 +45,12 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 	
 	actionsheet.css("width", 1000);
 	
-	actionsheet.addClass("actionsheet");
+	actionsheet.addClass("actionsheet")
+		.addClass("gradient")
+		.addClass("unselectable")
+		.attr("unselectable", "on")
+		.attr("draggable", false)
+		.on("dragstart", function() { return false; });
 	
 	actionsheet.html('<div class="actionsheet_arrow"></div><div class="actionsheet_buttons"></div>'); //clear actionsheet
 
@@ -60,6 +65,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
             }
 
             $(newButton).addClass("actionsheet_button");
+		  $(newButton).addClass("gradient");
 
             $(newButton).bind("click", function() {
                 ObjectManager.performActionForSelected(action, webarenaObject);

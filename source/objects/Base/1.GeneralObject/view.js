@@ -24,7 +24,11 @@ GeneralObject.draw=function(external){
 	
 	this.drawPosition(external);
 			
-	$(rep).attr("layer", this.getAttribute('layer'));
+	$(rep).attr("layer", this.getAttribute('layer'))
+		.addClass("unselectable")
+		.attr("unselectable", "on")
+		.attr("draggable", false)
+		.on("dragstart", function() { return false; });
 	
 	if (!$(rep).hasClass("webarena_ghost")) {
 		
@@ -884,8 +888,12 @@ GeneralObject.addControl = function(type, resizeFunction) { //TODO
 		}
 	);
 	
-	$(control).attr("class", "webarenaControl webarenaControl_"+this.id);
-	$(control).attr("layer", 10000000);
+	$(control).attr("class", "webarenaControl webarenaControl_"+this.id)
+		.attr("layer", 10000000)
+		.addClass("unselectable")
+		.attr("unselectable", "on")
+		.attr("draggable", false)
+		.on("dragstart", function() { return false; });
 
 	control.moving = false;
 	
@@ -974,6 +982,8 @@ GeneralObject.moveStart = function(session) {
 	} else {
 		var self = ObjectManager.getObject(this.id);
 	}
+	
+	//TODO gui.input - implement restricted moving area handling
 	
 	if(session.object != self) return;
 
@@ -1172,6 +1182,8 @@ GeneralObject.moveStart = function(session) {
  */
 GeneralObject.makeMovable = function() {
 
+	//TODO gui.input - implement restricted moving area handling
+	
 	// var rep;
 
 	// if(this.restrictedMovingArea){
@@ -1230,6 +1242,8 @@ GeneralObject.moveBy = function(x, y) {
  */
 GeneralObject.unmakeMovable = function() {
 
+	//TODO gui.input - implement restricted moving area handling
+	
 	// var rep;
 	// if(this.restrictedMovingArea){
 	   // rep = $(this.getRepresentation()).find(".moveArea").get(0);

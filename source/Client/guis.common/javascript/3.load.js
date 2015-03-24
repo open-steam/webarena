@@ -86,6 +86,9 @@ GUI.loadGUI = function(step) {
 
 		/* adjust svg area */
 		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
+		
+		/* init paint mode canvases */
+		if (!GUI.loaded) GUI.initPaintMode(); //needs ObjectManager.getCurrentRoom
 
 		/* window resizing */
 		if (!GUI.loaded) GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize

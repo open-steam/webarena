@@ -138,10 +138,18 @@
         }
 
 	</script>
+	
+	<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
 </head>
 <body oncontextmenu="return false;">
 	
-	<div id="header">
+	<div id="header" class="gradient">
 		
 		<div class="header_right">
 			
@@ -155,12 +163,12 @@
 
 	<div id="couplingNavigation"></div>
 	
-	<div id="content">
+	<div id="content" class="unselectable">
 		<p style="z-index:10; position:fixed;" id="besideMouse"></p>
 	</div>
 	
 	<div id="sidebar">
-		<div id="sidebar_title"><span></span></div>
+		<div id="sidebar_title" class="gradient"><span></span></div>
 		<div id="sidebar_content">
 			<div>
 				<div id="inspector"></div>
@@ -198,14 +206,14 @@
 		</div>
 	</div>
 	
-	<div id="actionsheet"></div>
+	<div id="actionsheet" class="gradient"></div>
 	
-	<div id="error_bg"></div>
-	<div id="error_box">
+	<div id="error_bg" class="gradient"></div>
+	<div id="error_box" class="gradient">
 		
 		<div id="error_box_heading"></div>
 		<div id="error_box_message"></div>
-		<div id="error_box_button"></div>
+		<div id="error_box_button" class="gradient"></div>
 		
 	</div>
 

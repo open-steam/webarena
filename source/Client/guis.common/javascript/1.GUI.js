@@ -151,6 +151,7 @@ GUI.setRoomWidth = function(width) {
 	$("#content > svg").css("width", width );
 	
 	GUI.input.offset();
+	GUI.resizePaintModeCanvas();
 }
 
 /**
@@ -172,6 +173,7 @@ GUI.setRoomHeight = function(height) {
 	$("#content > svg").css("height", height);
 	
 	GUI.input.offset();
+	GUI.resizePaintModeCanvas();
 }
 
 

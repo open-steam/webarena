@@ -66,11 +66,12 @@ GUI.input = {
 	/**
 	 * constants for simulatePen
 	 */
-	SIMULATEPEN_MAX_AREA: 400,
+	SIMULATEPEN_MAX_AREA: 300,
 	
 	/**
 	 * constants for multi session
 	 */
+	MIN_WAIT: 100,
 	MAX_RADIUS: 512,
 	ADD_RADIUS: 100,
 	
@@ -169,7 +170,6 @@ GUI.input = {
 				GUI.input.artboard.addEventListener("MSPointerMove", pointerhandler, useCapture);
 				GUI.input.artboard.addEventListener("MSPointerUp", pointerhandler, useCapture);
 				GUI.input.artboard.addEventListener("MSPointerCancel", pointerhandler, useCapture);
-				GUI.input.artboard.addEventListener("MSPointerLeave", pointerhandler, useCapture);
 			}
 			//pointer
 			else {
@@ -177,7 +177,6 @@ GUI.input = {
 				GUI.input.artboard.addEventListener("pointermove", pointerhandler, useCapture);
 				GUI.input.artboard.addEventListener("pointerup", pointerhandler, useCapture);
 				GUI.input.artboard.addEventListener("pointercancel", pointerhandler, useCapture);
-				GUI.input.artboard.addEventListener("pointerleave", pointerhandler, useCapture);
 			}
 		}
 		else if(GUI.isTouchDevice && GUI.isMobileDevice) {
@@ -199,7 +198,6 @@ GUI.input = {
 			//mouse
 			GUI.input.artboard.addEventListener("mousedown", GUI.input.mouse.handler, useCapture);
 			GUI.input.artboard.addEventListener("mousemove", GUI.input.mouse.handler, useCapture);
-			GUI.input.artboard.addEventListener("mouseleave", GUI.input.mouse.handler, useCapture);
 			GUI.input.artboard.addEventListener("mouseup", GUI.input.mouse.handler, useCapture);
 		}
 		else {
@@ -216,7 +214,6 @@ GUI.input = {
 			//mouse
 			GUI.input.artboard.addEventListener("mousedown", GUI.input.mouse.handler, useCapture);
 			GUI.input.artboard.addEventListener("mousemove", GUI.input.mouse.handler, useCapture);
-			GUI.input.artboard.addEventListener("mouseleave", GUI.input.mouse.handler, useCapture);
 			GUI.input.artboard.addEventListener("mouseup", GUI.input.mouse.handler, useCapture);
 		}
 		
@@ -286,16 +283,14 @@ GUI.input = {
 	/**
 	 * trigger event (start, move, end)
 	 * @param {string} event
-	 * @param {session} session
+	 * @param {object} data
 	 */
-	trigger: function(event, session) {
-		if(session instanceof GUI.input.Session) {
-			var handlers = GUI.input.handlers[event] && GUI.input.handlers[event].slice();
-			if(!handlers || !handlers.length) return;
-			
-			for(var i=0, len=handlers.length; i<len; i++)
-				handlers[i](session);
-		}
+	trigger: function(event, data) {
+		var handlers = GUI.input.handlers[event] && GUI.input.handlers[event].slice();
+		if(!handlers || !handlers.length) return;
+		
+		for(var i=0, len=handlers.length; i<len; i++)
+			handlers[i](data);
 	},
 	
 	/**
@@ -320,6 +315,120 @@ GUI.input = {
 	},
 	
 	/**
+	 * get the center of all the pointers
+	 * @param {Array} pointers
+	 * @return {Object} center contains `x` and `y` properties
+	 */
+	getCenter: function(pointers) {
+	    var pointersLength = pointers.length;
+
+	    // no need to loop when only one point
+	    if (pointersLength === 1) {
+		   return {
+			  x: Math.round(pointers[0].x),
+			  y: Math.round(pointers[0].y)
+		   };
+	    }
+
+	    var x = 0, y = 0, i = 0;
+	    while (i < pointersLength) {
+		   x += pointers[i].x;
+		   y += pointers[i].y;
+		   i++;
+	    }
+
+	    return {
+		   x: Math.round(x / pointersLength),
+		   y: Math.round(y / pointersLength)
+	    };
+	},
+	
+	/**
+	 * calculate the velocity between two points. unit is in px per ms.
+	 * @param {Number} deltaTime
+	 * @param {Object} p1 {x, y}
+	 * @param {Object} p2 {x, y}
+	 * @return {Object} velocity `x` and `y` and `all`
+	 */
+	getVelocity: function(deltaTime, p1, p2) {
+		var x = p2.x - p1.x,
+		    y = p2.y - p1.y;
+		
+	    return {
+		   x: x / deltaTime || 0,
+		   y: y / deltaTime || 0,
+		   all: Math.sqrt((x * x) + (y * y)) / deltaTime || 0
+	    };
+	},
+	
+	/**
+	 * get the direction between two points
+	 * @param {Object} p1 {x, y}
+	 * @param {Object} p2 {x, y}
+	 * @return {Number} direction
+	 */
+	getDirection: function(p1, p2) {
+		var x = p2.x - p1.x,
+		    y = p2.y - p1.y;
+		
+		if (x === y) {
+		   return GUI.input.DIRECTION_NONE;
+		}
+
+		if (Math.abs(x) >= Math.abs(y)) {
+		   return x > 0 ? GUI.input.DIRECTION_LEFT : GUI.input.DIRECTION_RIGHT;
+		}
+		return y > 0 ? GUI.input.DIRECTION_UP : GUI.input.DIRECTION_DOWN;
+	},
+	
+	/**
+	 * calculate the absolute distance between two points
+	 * @param {Object} p1 {x, y}
+	 * @param {Object} p2 {x, y}
+	 * @return {Number} distance
+	 */
+	getDistance: function(p1, p2) {
+	    var x = p2.x - p1.x,
+		   y = p2.y - p1.y;
+
+	    return Math.sqrt((x * x) + (y * y));
+	},
+	
+	/**
+	 * calculate the angle between two coordinates
+	 * @param {Object} p1
+	 * @param {Object} p2
+	 * @return {Number} angle
+	 */
+	getAngleBetween: function(p1, p2) {
+	    var x = p2.x - p1.x,
+		   y = p2.y - p1.y;
+		   
+	    return Math.atan2(y, x) * 180 / Math.PI;
+	},
+	
+	/**
+	 * calculate the rotation degrees between two pointersets
+	 * @param {Array} start array of pointers
+	 * @param {Array} end array of pointers
+	 * @return {Number} rotation
+	 */
+	getRotation: function(start, end) {
+	    return GUI.input.getAngleBetween(end[1], end[0]) - GUI.input.getAngleBetween(start[1], start[0]);
+	},
+	
+	/**
+	 * calculate the scale factor between two pointersets
+	 * no scale is 1, and goes down to 0 when pinched together, and bigger when pinched out
+	 * @param {Array} start array of pointers
+	 * @param {Array} end array of pointers
+	 * @return {Number} scale
+	 */
+	getScale: function(start, end) {
+	    return GUI.input.getDistance(end[0], end[1]) / GUI.input.getDistance(start[0], start[1]);
+	},
+	
+	/**
 	 * @namespace holds methods and variables for mouse support
 	 */
 	mouse: {
@@ -327,7 +436,7 @@ GUI.input = {
 		/**
 		 * variable to enable/disable gesture recognition
 		 */
-		recognize: false,
+		recognize: typeof Config.input.recognize !== 'undefined' ? Config.input.recognize : true,
 	
 		/**
 		 * @private variable for current session
@@ -411,8 +520,7 @@ GUI.input = {
 					GUI.input.mouse.session.push(data);
 					
 					if(type.indexOf("up") != -1
-					|| type.indexOf("cancel") != -1
-					|| type.indexOf("leave") != -1)
+					|| type.indexOf("cancel") != -1)
 						GUI.input.mouse.session.finalize();
 				}
 			}
@@ -432,17 +540,17 @@ GUI.input = {
 		/**
 		 * variable to enable/disable multitouch
 		 */
-		multi: false,
+		multi: typeof Config.input.multiTouch !== 'undefined' ? Config.input.multiTouch : true,
 		
 		/**
 		 * variable to enable/disable gesture recognition
 		 */
-		recognize: false,
+		recognize: typeof Config.input.recognize !== 'undefined' ? Config.input.recognize : true,
 		
 		/**
 		 * variable to enable/disable pen simulation
 		 */
-		simulatePen: false,
+		simulatePen: typeof Config.input.simulatePen !== 'undefined' ? Config.input.simulatePen : true,
 		
 		/**
 		 * @private variable for sessions
@@ -500,7 +608,8 @@ GUI.input = {
 					}
 					//pen detection
 					else if(event.type.toLowerCase().indexOf("start") != -1 
-						&& Math.PI * touches[i].radiusX * touches[i].radiusX < GUI.input.SIMULATEPEN_MAX_AREA) {
+						&& touches[i].radiusX > 1 && touches[i].radiusY > 1
+						&& Math.PI * touches[i].radiusX * touches[i].radiusY < GUI.input.SIMULATEPEN_MAX_AREA) {
 						
 						GUI.input.pen.session = new GUI.input.Session(GUI.input.TYPE_PEN, touches[i].target, {
 								x: touches[i].pageX, 
@@ -567,37 +676,43 @@ GUI.input = {
 			if(GUI.input.touch.recognize && GUI.input.touch.multi) {
 				if(!$.isEmptyObject(GUI.input.touch.sessions)) {
 					var found = false;
+					var finalize = (type.indexOf("up") != -1
+								|| type.indexOf("end") != -1
+								|| type.indexOf("cancel") != -1);
 					
 					//does session id exists?
 					$.each(GUI.input.touch.sessions, function(i, multiSession) {
-						if(multiSession.pushSession(id, data)) {
+						if(multiSession.push(id, data)) {
 							found = true;
+							
+							if(finalize)
+								multiSession.sessions[id].finalize();
+							
 							return false;
 						}
 					});
 					
-					if(!found) {
+					if(!found && !finalize) {
 						found = false;
 						
 						var session = new GUI.input.Session(GUI.input.TYPE_TOUCH, targ, data, GUI.input.touch.recognize, id);
 						
 						//could a new session be added to an existing multi session?
 						$.each(GUI.input.touch.sessions, function(i, multiSession) {
-							if(multiSession.newSession(session)) {
+							if(multiSession.add(session)) {
 								found = true;
 								return false;
 							}
 						});
 						
 						if(!found)
-							GUI.input.touch.sessions.push(new GUI.input.MultiSession(session));
+							GUI.input.touch.sessions[id] = new GUI.input.MultiSession(session);
 					}
 				}
 				//first new multitouch session
 				else if(type.indexOf("down") != -1
 					|| type.indexOf("start") != -1)
-					
-						GUI.input.touch.sessions.push(new GUI.input.MultiSession(new GUI.input.Session(GUI.input.TYPE_TOUCH, targ, data, GUI.input.touch.recognize, id)));
+						GUI.input.touch.sessions[id] = new GUI.input.MultiSession(new GUI.input.Session(GUI.input.TYPE_TOUCH, targ, data, GUI.input.touch.recognize, id));
 			}
 			else {
 				if(type.indexOf("down") != -1
@@ -608,8 +723,7 @@ GUI.input = {
 				
 					if(type.indexOf("up") != -1
 					|| type.indexOf("end") != -1
-					|| type.indexOf("cancel") != -1
-					|| type.indexOf("leave") != -1)
+					|| type.indexOf("cancel") != -1)
 						GUI.input.touch.sessions[id].finalize();
 				}
 			}
@@ -644,12 +758,12 @@ GUI.input = {
 		/**
 		 * variable to enable/disable gesture recognition
 		 */
-		recognize: false,
+		recognize: typeof Config.input.recognize !== 'undefined' ? Config.input.recognize : true,
 		
 		/**
 		 * variable to enable/disable pen mini paint mode
 		 */
-		paintMode: false,
+		paintMode: typeof Config.input.paintMode !== 'undefined' ? Config.input.paintMode : true,
 	
 		/**
 		 * @private variable for current session
@@ -702,8 +816,7 @@ GUI.input = {
 				GUI.input.pen.session.push(data);
 			
 				if(type.indexOf("up") != -1
-				|| type.indexOf("cancel") != -1
-				|| type.indexOf("leave") != -1)
+				|| type.indexOf("cancel") != -1)
 					GUI.input.pen.session.finalize();
 			}
 		}
@@ -778,6 +891,11 @@ GUI.input.Session = function(type, target, data, recognize, id) {
 	this.isFinal = false;
 	
 	/**
+	 * time between session start and now
+	 */
+	this.deltaTime = 0;
+	
+	/**
 	 * indicates if the pointer moved too much for tap oder press gesture
 	 */
 	this.isMaxMoved = false;
@@ -791,6 +909,26 @@ GUI.input.Session = function(type, target, data, recognize, id) {
 	 * indicates if a press gesture is possible
 	 */
 	this.isPress = false;
+	
+	/**
+	 * current direction
+	 */
+	this.direction = GUI.input.DIRECTION_NONE;
+	
+	/**
+	 * current velocity
+	 */
+	this.velocity = 0;
+	
+	/**
+	 * current distance
+	 */
+	this.distance = 0;
+	
+	/**
+	 * distance form start point
+	 */
+	this.distanceStart = 0;
 	
 	/**
 	 * @private variable for session event handlers
@@ -938,128 +1076,25 @@ GUI.input.Session.prototype = {
 	trigger: function(event) {
 		var handlers = this.handlers[event] && this.handlers[event].slice();
 		if(!handlers || !handlers.length) return;
+		
 		for(var i=0, len=handlers.length; i<len; i++)
 			handlers[i](this);
 	},
 	
 	/**
-	 * get the center of all the pointers
-	 * @param {Array} pointers
-	 * @return {Object} center contains `x` and `y` properties
-	 */
-	getCenter: function(pointers) {
-	    var pointersLength = pointers.length;
-
-	    // no need to loop when only one point
-	    if (pointersLength === 1) {
-		   return {
-			  x: round(pointers[0].x),
-			  y: round(pointers[0].y)
-		   };
-	    }
-
-	    var x = 0, y = 0, i = 0;
-	    while (i < pointersLength) {
-		   x += pointers[i].x;
-		   y += pointers[i].y;
-		   i++;
-	    }
-
-	    return {
-		   x: round(x / pointersLength),
-		   y: round(y / pointersLength)
-	    };
-	},
-	
-	/**
-	 * calculate the velocity between two points. unit is in px per ms.
-	 * @param {Number} deltaTime
-	 * @param {Number} x
-	 * @param {Number} y
-	 * @return {Object} velocity `x` and `y`
-	 */
-	getVelocity: function(deltaTime, x, y) {
-	    return {
-		   x: x / deltaTime || 0,
-		   y: y / deltaTime || 0
-	    };
-	},
-	
-	/**
-	 * get the direction between two points
-	 * @param {Number} x
-	 * @param {Number} y
-	 * @return {Number} direction
-	 */
-	getDirection: function(x, y) {
-	    if (x === y) {
-		   return GUI.input.DIRECTION_NONE;
-	    }
-
-	    if (abs(x) >= abs(y)) {
-		   return x > 0 ? GUI.input.DIRECTION_LEFT : GUI.input.DIRECTION_RIGHT;
-	    }
-	    return y > 0 ? GUI.input.DIRECTION_UP : GUI.input.DIRECTION_DOWN;
-	},
-	
-	/**
-	 * calculate the absolute distance between two points
-	 * @param {Object} p1 {x, y}
-	 * @param {Object} p2 {x, y}
-	 * @return {Number} distance
-	 */
-	getDistance: function(p1, p2) {
-	    var x = p2.x - p1.x,
-		   y = p2.y - p1.y;
-
-	    return Math.sqrt((x * x) + (y * y));
-	},
-	
-	/**
-	 * calculate the angle between two coordinates
-	 * @param {Object} p1
-	 * @param {Object} p2
-	 * @return {Number} angle
-	 */
-	getAngleBetween: function(p1, p2) {
-	    var x = p2.x - p1.x,
-		   y = p2.y - p1.y;
-		   
-	    return Math.atan2(y, x) * 180 / Math.PI;
-	},
-	
-	/**
-	 * calculate the rotation degrees between two pointersets
-	 * @param {Array} start array of pointers
-	 * @param {Array} end array of pointers
-	 * @return {Number} rotation
-	 */
-	getRotation: function(start, end) {
-	    return this.getAngleBetween(end[1], end[0]) - this.getAngleBetween(start[1], start[0]);
-	},
-	
-	/**
-	 * calculate the scale factor between two pointersets
-	 * no scale is 1, and goes down to 0 when pinched together, and bigger when pinched out
-	 * @param {Array} start array of pointers
-	 * @param {Array} end array of pointers
-	 * @return {Number} scale
-	 */
-	getScale: function(start, end) {
-	    return this.getDistance(end[0], end[1]) / this.getDistance(start[0], start[1]);
-	},
-	
-	/**
 	 * processes the input
 	 */
-	process: function(full) { //TODO
+	process: function(full) {
 		full = typeof full !== 'undefined' ? full: true;
+		
+		//deltaTime
+		this.deltaTime = Date.now() - this.data[0].time;
 		
 		//max move
 		if(!this.isMaxMoved) {
 			if(this.data.length <= GUI.input.MAX_MOVE_COUNT) {
 				for(var i = this.processed+1, len = this.data.length; i < len; i++) {
-					if(this.getDistance(this.data[0], this.data[i]) > GUI.input.MAX_MOVE_PIXEL) {
+					if(GUI.input.getDistance(this.data[0], this.data[i]) > GUI.input.MAX_MOVE_PIXEL) {
 						this.isMaxMoved = true;
 						break;
 					}
@@ -1069,23 +1104,27 @@ GUI.input.Session.prototype = {
 		}
 		
 		//is tap gesture possible?
-		if(this.isTap && (this.isMaxMoved || Date.now() - this.data[0].time > GUI.input.TAP_MAX_TIME))
+		if(this.isTap && (this.isMaxMoved || this.deltaTime > GUI.input.TAP_MAX_TIME))
 			this.isTap = false;
 		
 		//is press gesture possible?
-		if(!this.isPress && !this.isMaxMoved && Date.now() - this.data[0].time > GUI.input.PRESS_MIN_TIME)
+		if(!this.isPress && !this.isMaxMoved && this.deltaTime > GUI.input.PRESS_MIN_TIME)
 			this.isPress = true;
 		else if(this.isPress && this.isMaxMoved)
 			this.isPress = false;
 		
-		if(full) {
-			//Direction
+		if(full && this.data.length > 1 && this.processed > 1 && this.data.length > this.processed) {
+			var last = this.data[this.processed-1], current = this.get();
 			
-			//Velocity
+			//direction
+			this.direction = GUI.input.getDirection(last, current);
 			
-			//Distance
+			//velocity
+			this.velocity = GUI.input.getVelocity(this.deltaTime, last, current);
 			
-			//Angle
+			//distance
+			this.distance = GUI.input.getDistance(last, current);
+			this.distanceStart = GUI.input.getDistance(this.data[0], current);
 		}
 	},
 	
@@ -1101,9 +1140,10 @@ GUI.input.Session.prototype = {
 		
 		switch(this.state) {
 		case GUI.input.STATE_START:
-			if(!GUI.paintModeActive)
-				GUI.input.trigger("start", this);
-			else GUI.input.trigger("paint.start", this);
+			if(GUI.paintModeActive 
+			|| GUI.input.pen.paintMode && this.type == GUI.input.TYPE_PEN)
+				GUI.input.trigger("paint.start", this);
+			else GUI.input.trigger("start", this);
 			
 			this.processed = 1;
 			this.state = this.isFinal? GUI.input.STATE_END : GUI.input.STATE_MOVE;
@@ -1114,18 +1154,24 @@ GUI.input.Session.prototype = {
 				return;
 			}
 			else if(somethingNew) {
-				if(!GUI.paintModeActive) {
-					this.trigger("move");
-					GUI.input.trigger("move", this);
-				}
-				else {
+				if(GUI.paintModeActive 
+				|| GUI.input.pen.paintMode && this.type == GUI.input.TYPE_PEN) {
 					this.trigger("paint.move");
 					GUI.input.trigger("paint.move", this);
+				}
+				else {
+					this.trigger("move");
+					GUI.input.trigger("move", this);
 				}
 			}
 		break;
 		case GUI.input.STATE_END:
-			if(!GUI.paintModeActive) {
+			if(GUI.paintModeActive 
+			|| GUI.input.pen.paintMode && this.type == GUI.input.TYPE_PEN) {
+				this.trigger("paint.end");
+				GUI.input.trigger("paint.end", this);
+			}
+			else {
 				this.trigger("end");
 				GUI.input.trigger("end", this);
 				
@@ -1138,10 +1184,6 @@ GUI.input.Session.prototype = {
 					GUI.input.trigger("press", this);
 				}
 			}
-			else {
-				this.trigger("paint.end");
-				GUI.input.trigger("paint.end", this);
-			}
 			
 			switch(this.type) {
 			case GUI.input.TYPE_MOUSE:
@@ -1152,6 +1194,12 @@ GUI.input.Session.prototype = {
 			break;
 			case GUI.input.TYPE_TOUCH:
 				if(!GUI.input.touch.multi) delete GUI.input.touch.sessions[this.id];
+				else $.each(GUI.input.touch.sessions, $.proxy(function(i, ms) {
+					if(ms.has(this.id)) {
+						ms.remove(this.id);
+						return false;
+					}
+				}, this));
 			break;
 			}
 		break;
@@ -1163,12 +1211,31 @@ GUI.input.Session.prototype = {
  * class for multi sessions
  */
 GUI.input.MultiSession = function(session) {
+	
+	/**
+	 * id of this multi session (first session id)
+	 */
+	this.id = session.id
 
 	/**
 	 * array of sessions
 	 */
-	this.sessions = [];
-	this.sessions[session.id] = session;
+	this.sessions = {};
+	
+	/**
+	 * session count
+	 */
+	this.count = 1;
+	
+	/**
+	 * indicates if in this multi session was  more than one single session
+	 */
+	this.multi = false;
+	
+	/**
+	 * start timestamp
+	 */
+	this.start = Date.now();
 	
 	/**
 	 * state of this session (start, move, end)
@@ -1177,68 +1244,49 @@ GUI.input.MultiSession = function(session) {
 	this.state = GUI.input.STATE_START;
 	
 	/**
-	 * indicates if session will be terminated
-	 */
-	this.isFinal = false;
-	
-	/**
-	 * ellipse center x and y coordinate 
-	 */
-	this.center = {
-		x: session.getX(),
-		y: session.getY()
-	};
-	
-	/**
 	 * ellipse radius
 	 */
 	this.radius = GUI.input.ADD_RADIUS;
+	
+	
+	//add first session
+	this.sessions[session.id] = session;
 }
 
 GUI.input.MultiSession.prototype = {
 
 	/**
+	 * get center of current session positions
+	 */
+	getCenter: function() {
+		var points = [];
+		
+		$.each(this.sessions, function(i, s) {
+			points.push(s.get());
+		});
+		
+		return GUI.input.getCenter(points);
+	},
+	
+	/**
 	 * check if session with specific id exists
 	 */
-	hasSession: function(id) {
-		// var found = false;
-		
-		// $.each(this.sessions, function(i, session) {
-			// if(session.id == id) {
-				// found = true;
-				// return false;
-			// }
-		// });
-		
-		// return found;
-		
+	has: function(id) {
 		return !$.isEmptyObject(this.sessions[id])
 	},
 	
 	/**
 	 * check if a new session could be added to this multi session and add
 	 */
-	newSession: function(session) {
-		if(!this.hasSession(id)) {
-			// var accepted = false;
-			
-			// $.each(this.sessions, function(i, s) {
-				// if(session.getDistance(session.get, s.get) < GUI.input.MAX_DISTANCE) {
-					// accepted = true;
-					// return false;
-				// }
-			// });
-			
-			// if(accepted) {
-				// this.sessions.push(session);
-				// return true;	
-			// }
+	add: function(session) {
+		
+		if(!this.has(session.id)) {
 			
 			var point = session.get();
-			var dist = session.getDistance(this.center, point);
+			var dist = GUI.input.getDistance(this.getCenter(), point);
 			
 			if(dist <= this.radius) {
-				this.sessions.push(session);
+				this.sessions[session.id] = session;
 				
 				if(this.radius < GUI.input.MAX_RADIUS) {
 					var newRadius = dist + GUI.input.ADD_RADIUS;
@@ -1248,16 +1296,8 @@ GUI.input.MultiSession.prototype = {
 					else this.radius = GUI.input.MAX_RADIUS;
 				}
 				
-				var newCenter;
-				newCenter = session.getCenter([this.center, point]);
-				
-				// var points = [];
-				// $.each(this.sessions, function(i, s) {
-					// points.push(s.get());
-				// });
-				// newCenter = session.getCenter(points);
-				
-				this.center = newCenter;
+				this.count++;
+				this.multi = true;
 				
 				return true;
 			}
@@ -1269,21 +1309,24 @@ GUI.input.MultiSession.prototype = {
 	/**
 	 * push data to a session with specific id
 	 */
-	pushSession: function(id, data) {
-		// var found = false;
-		
-		// $.each(this.sessions, function(i, session) {
-			// if(session.id == id) {
-				// found = true;
-				// session.push(data);
-				// return false;
-			// }
-		// });
-		
-		// return found;
-		
-		if(this.hasSession(id)) {
+	push: function(id, data) {
+		if(this.has(id)) {
 			this.sessions[id].push(data);
+			
+			return true;
+		}
+		
+		return false;
+	},
+	
+	/**
+	 * remove session with specific id
+	 */
+	remove: function(id) {
+		if(this.has(id)) {
+			delete this.sessions[id];
+			this.count--;
+			
 			return true;
 		}
 		
@@ -1293,90 +1336,42 @@ GUI.input.MultiSession.prototype = {
 	/**
 	 * triggers events to listeners
 	 */
-	render: function() {
-		if(this.sessions.length == 1) {
-			var session = this.sessions.pop();
-			
-			session.render();
-			
-			if(session.state != GUI.input.STATE_END)
-				this.sessions.push(session);
+	render: function() { console.log(this.count);
+		if(this.count == 1 && Date.now() - this.start <= GUI.input.MIN_WAIT) return;
+		
+		if(this.count == 1 && !this.multi) {
+			$.each(this.sessions, $.proxy(function(i, s) {
+				s.render();
+			}, this));
 		}
-		else {
-			$.each(this.sessions, function(i, s) {
+		else { 
+			$.each(this.sessions, $.proxy(function(i, s) {
 				s.process(true);
-			});
+				s.processed = s.data.length;
+				
+				if(s.isFinal)
+					this.remove(s.id);
+			}, this));
 			
-			//TODO multi sessions render
-			
-			/*var somethingNew = (this.data.length > this.processed);
-			if(somethingNew && this.state != GUI.input.STATE_START) {
-				this.process(this.recognize);
-				this.processed = this.data.length;
+			var gestures = GUI.input.gestures && GUI.input.gestures.slice();
+			if(gestures && gestures.length){
+				for(var i=0, len=gestures.length; i<len; i++) {
+					if(gestures[i](this))
+						break;
+				}
 			}
 			
 			switch(this.state) {
 			case GUI.input.STATE_START:
-				if(!GUI.paintModeActive)
-					GUI.input.trigger("start", this);
-				else GUI.input.trigger("paint.start", this);
-				
-				this.processed = 1;
-				this.state = this.isFinal? GUI.input.STATE_END : GUI.input.STATE_MOVE;
-			break;
-			case GUI.input.STATE_MOVE:
-				if(this.isFinal) {
-					this.state = GUI.input.STATE_END;
-					return;
-				}
-				else if(somethingNew) {
-					if(!GUI.paintModeActive) {
-						this.trigger("move");
-						GUI.input.trigger("move", this);
-					}
-					else {
-						this.trigger("paint.move");
-						GUI.input.trigger("paint.move", this);
-					}
-				}
+				this.state = GUI.input.STATE_MOVE;
 			break;
 			case GUI.input.STATE_END:
-				if(!GUI.paintModeActive) {
-					this.trigger("end");
-					GUI.input.trigger("end", this);
-					
-					if(this.isTap) {
-						this.trigger("tap");
-						GUI.input.trigger("tap", this);
-					}
-					else if(this.isPress) {
-						this.trigger("press");
-						GUI.input.trigger("press", this);
-					}
-				}
-				else {
-					this.trigger("paint.end");
-					GUI.input.trigger("paint.end", this);
-				}
-				
-				switch(this.type) {
-				case GUI.input.TYPE_MOUSE:
-					GUI.input.mouse.session = null;
-				break;
-				case GUI.input.TYPE_PEN:
-					GUI.input.pen.session = null;
-				break;
-				case GUI.input.TYPE_TOUCH:
-					if(GUI.input.touch.multi) {
-						$.each(GUI.input.touch.sessions, function(i, multiSession) {
-							multiSession.remove(this.id);
-						});
-					}
-					else delete GUI.input.touch.sessions[this.id];
-				break;
-				}
+				delete GUI.input.touch.sessions[this.id];
 			break;
-			}*/
+			}
 		}
+		
+		if(this.count == 0)
+			this.state = GUI.input.STATE_END;
 	}
 }

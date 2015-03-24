@@ -2,13 +2,6 @@
 
 /* paint */
 
-/*
-	TODO: mini paint mode
-	Den Aufbau des Paint Mode ändern:
-	Immer mit canvas Element darstellen und einen Mini Paint Mode für einen Computerstift einführen
-	um zu zeichnen ohne im Paint Mode zu sein.
-*/
-
 /**
  * true if paint mode is active
  */
@@ -462,66 +455,62 @@ GUI.input.bind("paint.start", function(session) {
 });
 
 //PEN
-GUI.input.bind("start paint.start", function(session) {
+GUI.input.bind("paint.start", function(session) {
 	if (ERASER.enabled || CUT.enabled || COPY.enabled) { return; }
 	
-	if(!GUI.paintModeActive && GUI.input.pen.paintMode && session.type == GUI.input.TYPE_PEN) {
-		//TODO enter paint mode mini
+	if(!GUI.paintModeActive) {
+		GUI.paintColor = ObjectManager.getUser().color;
+		GUI.paintSize = 3;
+		GUI.paintMode = "pen";
+		GUI.paintEraseModeActive = false;
+		GUI.paintOpacity = 1;
+		
+		GUI.drawUserImage();
+		$(GUI.paintCanvas).show();
 	}
 	
-	if(GUI.paintModeActive || (!GUI.paintModeActive && GUI.input.pen.paintMode && session.type == GUI.input.TYPE_PEN)) {
-		GUI.paintLastPoint = undefined;
-		GUI.painted = true;
+	GUI.paintLastPoint = undefined;
+	GUI.painted = true;
+	
+	var x = session.getX();
+	var y = session.getY();
+	
+	if (!GUI.paintEraseModeActive) {
+		var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
+
+		var hex2rgb = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})$/;
+		var matches = hex2rgb.exec(GUI.paintColor);
+		var rgba = "rgba(" + parseInt(matches[1], 16) + "," + parseInt(matches[2], 16) + "," + parseInt(matches[3], 16) + "," + GUI.paintOpacity + ")";
+
+		canvasContext.strokeStyle = rgba;
+		canvasContext.lineWidth = GUI.paintSize;
+		canvasContext.lineCap = "round";
+		canvasContext.beginPath();
+	
+		GUI.paintMove(x, y);
+		GUI.paintPaint(x, y);
+		GUI.paintPaint(x+1, y);
+	}
+	else GUI.paintErase(x, y);
+	
+	session.bind("paint.move", function(session) {
+		if (ERASER.enabled || CUT.enabled || COPY.enabled) { return; }
 		
 		var x = session.getX();
 		var y = session.getY();
 		
-		if (!GUI.paintEraseModeActive)
-		{
-			var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-
-			var hex2rgb = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})$/;
-			var matches = hex2rgb.exec(GUI.paintColor);
-			var rgba = "rgba(" + parseInt(matches[1], 16) + "," + parseInt(matches[2], 16) + "," + parseInt(matches[3], 16) + "," + GUI.paintOpacity + ")";
-
-			canvasContext.strokeStyle = rgba;
-			canvasContext.lineWidth = GUI.paintSize;
-			canvasContext.lineCap = "round";
-			canvasContext.beginPath();
-		
-			GUI.paintMove(x, y);
+		if(!GUI.paintEraseModeActive)
 			GUI.paintPaint(x, y);
-			GUI.paintPaint(x+1, y);
-		} else {
-			GUI.paintErase(x, y);
-		}
-	}
-	
-	session.bind("move paint.move", function(session) {
-		if (ERASER.enabled || CUT.enabled || COPY.enabled) { return; }
-		
-		if(GUI.paintModeActive || (!GUI.paintModeActive && GUI.input.pen.paintMode && session.type == GUI.input.TYPE_PEN)) {
-			var x = session.getX();
-			var y = session.getY();
-			
-			if (!GUI.paintEraseModeActive) {
-				GUI.paintPaint(x, y);
-			} else {
-				GUI.paintErase(x, y);
-			}
-		}
+		else GUI.paintErase(x, y);
 	});
 
-	session.bind("end paint.end", function(session) {
+	session.bind("paint.end", function(session) {
 		if (ERASER.enabled || CUT.enabled || COPY.enabled) { return; }
 		
-		if(!GUI.paintModeActive && GUI.input.pen.paintMode && session.type == GUI.input.TYPE_PEN) {
-			//TODO exit paint mode mini
-			
-			GUI.savePaintMode();
-		}
-		else if(GUI.paintModeActive)
-			GUI.savePaintMode();
+		GUI.savePaintMode(function() {
+			if(!GUI.paintModeActive)
+				$(GUI.paintCanvas).hide();
+		});
 	});
 });
 
@@ -560,28 +549,19 @@ GUI.addPaintSize = function(size) {
 }
 
 /**
- * Enter the paint edit mode
- * @param {webarenaObject} webarenaObject The webarena object to save/load the paint data
- * @param {bool} highlighterMode True if the paint mode should be displayed in highlighter mode (different colors, sizes and opacity)
+ * refresh paint colors and sizes
  */
-GUI.editPaint = function() {
+GUI.refreshPaintColorsAndSizes = function() {
 	
-	//TODO paint mode mini check and transfer?
-
-	GUI.painted = false;
-	GUI.paintModeActive = true;
-	GUI.sidebar.saveStateAndHide();
-	
-	$("#header > div.header_left").children().hide();
-	$("#header > div.header_right").children().hide();
-	$("img[id^='userPainting_']").hide();
-	
+	//colors
 	GUI.resetPaintColors();
 	GUI.addPaintColor(ObjectManager.getUser().color, "usercolor");
 	GUI.addPaintColor("#000000", "black");
 	GUI.addPaintColor("#ff0000", "red");
 	GUI.addPaintColor("#008000", "green");
 	GUI.addPaintColor("#0000ff", "blue");
+	
+	//paint sizes
 	GUI.resetPaintSizes();
 	
 	GUI.addPaintSize(1);
@@ -591,6 +571,98 @@ GUI.editPaint = function() {
 	GUI.addPaintSize(14);
 	GUI.addPaintSize(20);
 	GUI.addPaintSize(24);
+}
+
+/**
+ * refresh canvas size
+ */
+GUI.resizePaintModeCanvas = function() {
+	
+	var windowWidth = $(window).width();
+	var roomWidth = ObjectManager.getCurrentRoom().getAttribute('width');
+
+	$(GUI.paintCanvas).attr("width", Math.max(windowWidth, roomWidth));
+	$(GUI.paintCanvasTemp).attr("width", Math.max(windowWidth, roomWidth));
+
+	var windowHeight = $(window).height();
+	var roomHeight = ObjectManager.getCurrentRoom().getAttribute('height');
+	
+	$(GUI.paintCanvas).attr("height", Math.max(windowHeight, roomHeight));
+	$(GUI.paintCanvasTemp).attr("height", Math.max(windowHeight, roomHeight));
+}
+
+/**
+ * draw user image on canvas
+ */
+GUI.drawUserImage = function() {
+	var img = new Image();
+	
+	$(img).bind("load", function() {
+		GUI.paintContext.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
+		GUI.paintContext.drawImage(img, 0, 0, img.width, img.height);
+	});
+		
+	$(img).attr("src", ObjectManager.getCurrentRoom().getUserPaintingURL());
+}
+
+/**
+ * init paint mode
+ */
+GUI.initPaintMode = function() {
+	
+	GUI.refreshPaintColorsAndSizes();
+	
+	/* create html canvas */
+	GUI.paintCanvas = document.createElement("canvas");
+	GUI.paintCanvasTemp = document.createElement("canvas");
+	
+	GUI.paintContext = GUI.paintCanvas.getContext('2d');
+	GUI.paintContextTemp = GUI.paintCanvasTemp.getContext('2d');
+	
+	/* align canvas */
+	$(GUI.paintCanvas).css("position", "absolute");
+	$(GUI.paintCanvasTemp).css("position", "absolute");
+
+	$(GUI.paintCanvas).css("top", 0);
+	$(GUI.paintCanvasTemp).css("top", 0);
+
+	$(GUI.paintCanvas).css("left", 0);
+	$(GUI.paintCanvasTemp).css("left", 0);
+	
+	GUI.resizePaintModeCanvas();
+	
+	$(GUI.paintCanvas).css("pointer-events", "none");
+	$(GUI.paintCanvasTemp).css("pointer-events", "none");
+	
+	/* add to artboard */
+	$(GUI.paintCanvas).attr("id", "webarena_paintCanvas");
+	$(GUI.paintCanvasTemp).attr("id", "webarena_paintCanvas_temp");
+	
+	$(GUI.paintCanvasTemp).css("visibility", "hidden");
+
+	$("#content").append(GUI.paintCanvas);
+	$("#content").append(GUI.paintCanvasTemp);
+}
+
+/**
+ * Enter the paint edit mode
+ * @param {webarenaObject} webarenaObject The webarena object to save/load the paint data
+ * @param {bool} highlighterMode True if the paint mode should be displayed in highlighter mode (different colors, sizes and opacity)
+ */
+GUI.editPaint = function() {
+	
+	GUI.painted = false;
+	GUI.paintModeActive = true;
+	
+	GUI.sidebar.saveStateAndHide();
+	GUI.deselectAllObjects();
+	
+	GUI.drawUserImage();
+	$(GUI.paintCanvas).show();
+	
+	$("#header > div.header_left").children().hide();
+	$("#header > div.header_right").children().hide();
+	$("img[id^='userPainting_']").hide();
 	
 	/* add color selection */
 	$.each(GUI.paintColors, function(index, color) {
@@ -608,9 +680,7 @@ GUI.editPaint = function() {
 		
 	});
 	
-	
 	/* add size selection */
-	
 	$.each(GUI.paintSizes, function(index, size) {
 		
 		var sizeSelection = document.createElement("img");
@@ -744,64 +814,14 @@ GUI.editPaint = function() {
 	
 	$("#header > div.header_right").append(closeButton);	
 
-	/* create html canvas */
-	GUI.paintCanvas = document.createElement("canvas");
-	GUI.paintCanvasTemp = document.createElement("canvas");
+	GUI.resizePaintModeCanvas();
 	
-	GUI.paintContext = GUI.paintCanvas.getContext('2d');
-	GUI.paintContextTemp = GUI.paintCanvasTemp.getContext('2d');
-	
-	/* align canvas */
-	$(GUI.paintCanvas).css("position", "absolute");
-	$(GUI.paintCanvasTemp).css("position", "absolute");
+	$(GUI.input.artboard).css("cursor", "crosshair");
 
-	$(GUI.paintCanvas).css("top", 0);
-	$(GUI.paintCanvasTemp).css("top", 0);
-
-	$(GUI.paintCanvas).css("left", 0);
-	$(GUI.paintCanvasTemp).css("left", 0);
-	
-	var windowWidth = $(window).width();
-	var roomWidth = ObjectManager.getCurrentRoom().getAttribute('width');
-
-	$(GUI.paintCanvas).attr("width", Math.max(windowWidth, roomWidth));
-	$(GUI.paintCanvasTemp).attr("width", Math.max(windowWidth, roomWidth));
-
-	var windowHeight = $(window).height();
-	var roomHeight = ObjectManager.getCurrentRoom().getAttribute('height');
-	
-	$(GUI.paintCanvas).attr("height", Math.max(windowHeight, roomHeight));
-	$(GUI.paintCanvasTemp).attr("height", Math.max(windowHeight, roomHeight));
-
-	$(GUI.paintCanvas).css("z-index", 10000);
-	$(GUI.paintCanvasTemp).css("z-index", 10001);
-
-	$(GUI.paintCanvas).attr("id", "webarena_paintCanvas");
-	$(GUI.paintCanvasTemp).attr("id", "webarena_paintCanvas_temp");
-	
-	$(GUI.paintCanvasTemp).css("visibility", "hidden");
-	$(GUI.paintCanvasTemp).css("cursor", "crosshair");
-
-	$(GUI.input.artboard).append(GUI.paintCanvas);
-	$(GUI.input.artboard).append(GUI.paintCanvasTemp);
-
-	
 	/* load content */
 	GUI.painted = true;
-
-	var img = new Image();
 	
-	$(img).bind("load", function() {
-		var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
-		
-		canvasContext.drawImage(img, 0, 0, img.width, img.height);
-		
-	});
-		
-	$(img).attr("src", ObjectManager.getCurrentRoom().getUserPaintingURL());
-	
-	
-	// set initial values
+	/* init values */
 	GUI.setPaintColor(ObjectManager.getUser().color, "usercolor");
 	GUI.setPaintMode("pen");
 	GUI.setPaintSize(3);
@@ -972,7 +992,7 @@ GUI.closePaintMode = function() {
 	
 	GUI.paintModeActive = false;
 	
-	$("#content").unbind("mousedown.paint");
+	$(GUI.input.artboard).css("cursor", "auto");
 	
 	GUI.sidebar.restoreFromSavedState();
 	
@@ -982,8 +1002,7 @@ GUI.closePaintMode = function() {
 	$("#header > div.header_right").children().show();
 	$("img[id^='userPainting_']").show();
 	
-	$("#webarena_paintCanvas").remove();
-	$("#webarena_paintCanvas_temp").remove();
+	$(GUI.paintCanvas).hide();
 	
 	/* set normal opacity to all objects */
 	$.each(ObjectManager.getObjects(), function(index, object) {
@@ -998,8 +1017,9 @@ GUI.closePaintMode = function() {
 /**
  * Save the wonderful painting and close the paint mode
  */
-GUI.savePaintMode = function() {
+GUI.savePaintMode = function(callback) {
+	callback = typeof callback !== 'undefined' ? callback : function(){};
 	
 	//This is where the content is saved.
-	ObjectManager.getCurrentRoom().saveUserPaintingData($("#webarena_paintCanvas").get(0).toDataURL(), function(){});
+	ObjectManager.getCurrentRoom().saveUserPaintingData($("#webarena_paintCanvas").get(0).toDataURL(), callback);
 }
