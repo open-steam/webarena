@@ -1235,7 +1235,12 @@ GUI.input.MultiSession = function(session) {
 	/**
 	 * start timestamp
 	 */
-	this.start = Date.now();
+	this.startTimeStamp = Date.now();
+	
+	/**
+	 * start point
+	 */
+	this.startPoint = session.data[0];
 	
 	/**
 	 * state of this session (start, move, end)
@@ -1282,25 +1287,32 @@ GUI.input.MultiSession.prototype = {
 		
 		if(!this.has(session.id)) {
 			
-			var point = session.get();
-			var dist = GUI.input.getDistance(this.getCenter(), point);
+			//multi user
+			// var point = session.get();
+			// var dist = GUI.input.getDistance(this.getCenter(), point);
 			
-			if(dist <= this.radius) {
-				this.sessions[session.id] = session;
+			// if(dist <= this.radius) {
+				// this.sessions[session.id] = session;
 				
-				if(this.radius < GUI.input.MAX_RADIUS) {
-					var newRadius = dist + GUI.input.ADD_RADIUS;
+				// if(this.radius < GUI.input.MAX_RADIUS) {
+					// var newRadius = dist + GUI.input.ADD_RADIUS;
 					
-					if(newRadius < GUI.input.MAX_RADIUS)
-						this.radius = newRadius;
-					else this.radius = GUI.input.MAX_RADIUS;
-				}
+					// if(newRadius < GUI.input.MAX_RADIUS)
+						// this.radius = newRadius;
+					// else this.radius = GUI.input.MAX_RADIUS;
+				// }
 				
-				this.count++;
-				this.multi = true;
+				// this.count++;
+				// this.multi = true;
 				
-				return true;
-			}
+				// return true;
+			// }
+			
+			this.sessions[session.id] = session;
+			this.count++;
+			this.multi = true;
+			
+			return true;
 		}
 		
 		return false;
@@ -1336,8 +1348,8 @@ GUI.input.MultiSession.prototype = {
 	/**
 	 * triggers events to listeners
 	 */
-	render: function() { console.log(this.count);
-		if(this.count == 1 && Date.now() - this.start <= GUI.input.MIN_WAIT) return;
+	render: function() {
+		if(this.count == 1 && Date.now() - this.startTimeStamp <= GUI.input.MIN_WAIT) return;
 		
 		if(this.count == 1 && !this.multi) {
 			$.each(this.sessions, $.proxy(function(i, s) {

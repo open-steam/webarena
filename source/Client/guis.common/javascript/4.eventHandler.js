@@ -146,10 +146,12 @@ GUI.input.bind("tap", function(session) {
 	}
 });
 
-GUI.input.bind("MultiFingerDrag", function(multiSession) {console.log("MULTIFINGERDRAG");
-	var center = multiSession.getCenter();
-	$(document).scrollTo({
-		top: center.y,
-		left: center.x
-	}, 200);
+GUI.input.bind("MultiFingerDrag", function(multiSession) {
+	var start = multiSession.startPoint, 
+	    center = multiSession.getCenter();
+	
+	var newX = center.x - start.x, 
+	    newY = center.y - start.y;
+	
+	window.scrollBy(center.x - start.x, center.y - start.y);
 });

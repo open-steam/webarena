@@ -6,7 +6,7 @@
  
  //MultiFingerDrag
  GUI.input.addGesture(function(multiSession) {
-	if(multiSession.count == 3) {
+	if(multiSession.count >= 3) {
 		switch(multiSession.state) {
 		case GUI.input.STATE_START:
 			GUI.input.trigger("MultiFingerDrag.start", multiSession);
