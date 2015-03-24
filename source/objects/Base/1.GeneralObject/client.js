@@ -405,14 +405,12 @@ GeneralObject.showExitDialog = function() {
 			});
 			
 			$('#internal_Tab').click(function() {
-				$('#filterObjects').show();
-				$('#filterObjects').next().show();
+				$('#checkboxLabel').show();
 				$(':button:contains(' + that.translate(GUI.currentLanguage, "Create new Subroom") + ')').show();
 			});
 			
 			$('#external_Tab').click(function() {
-				$('#filterObjects').hide();
-				$('#filterObjects').next().hide();
+				$('#checkboxLabel').hide();
 				$(':button:contains(' + that.translate(GUI.currentLanguage, "Create new Subroom") + ')').hide();
 			});
 	
@@ -431,8 +429,15 @@ GeneralObject.showExitDialog = function() {
             )
 
     //$(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", true);
+
+	$(".ui-dialog-buttonpane").append('<label id="checkboxLabel" class="checkbox-label"><input id="filterObjects" type="checkbox">'+that.translate(GUI.currentLanguage, "Show objects")+'</label>');
 	
-    $(".ui-dialog-buttonpane").append('<input id="filterObjects" type="checkbox"><p style="display:inline">' + that.translate(GUI.currentLanguage, "Show objects") + '</p>');
+	$('#checkboxLabel').css("position", "absolute");
+	$('#checkboxLabel').css("bottom", "20px");
+	$('#checkboxLabel').css("left", "35px");
+	$('#filterObjects').css("position", "relative");
+	$('#filterObjects').css("vertical-align", "middle");
+	$('#filterObjects').css("bottom", "1px");
 
     if (that.getAttribute('filterObjects')) {
         $('#filterObjects').prop('checked', false);
