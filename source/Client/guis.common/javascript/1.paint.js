@@ -683,7 +683,7 @@ GUI.editPaint = function() {
 
 	/* add pen selection */
 	var pen = document.createElement("img");
-	$(pen).attr("src", "../../guis.common/images/painting.png");
+	$(pen).attr("src", "../../guis.common/images/paint.png");
 	$(pen).addClass("jPaint_navi");
 	$(pen).addClass("jPaint_navi_pen");
 	$(pen).bind("click", function(event) {
@@ -1160,6 +1160,8 @@ GUI.closePaintMode = function() {
 	$.each(ObjectManager.getObjects(), function(index, object) {
 		$(object.getRepresentation()).css("opacity", object.normalOpacity);
 	});
+	
+	GUI.resizeToolbar();
 	
 	$(document).unbind("keyup.paint");
 	$(document).unbind("keydown.paint");

@@ -257,190 +257,8 @@ GUI.initToolbar = function() {
         }
 
     });
-	 
-	 
-    /*add paste button*/
-    var pasteButton = document.createElement("img");
-    $(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
-    $(pasteButton).attr("width", "24").attr("height", "24");
-
-    $(pasteButton).attr("id", "paste_button");
-    $(pasteButton).addClass("sidebar_button");
-
-    //$(pasteButton).css("padding-left", "20px");
-    //$(pasteButton).css("padding-right", "20px");
-    $(pasteButton).css("margin-right", "20px");
-    //$(pasteButton).css("border-left", "1px solid #636363");
-    //$(pasteButton).css("border-right", "1px solid #636363");
-
-    $(pasteButton).attr("title", GUI.translate("Paste"));
-	numberOfIcons++;
-    $("#header > .header_right").append(pasteButton);
-
-    var click = function() {
-        Modules.ObjectManager.pasteObjects();
-    }
-
-    if (GUI.isTouchDevice) {
-        $(pasteButton).bind("touchstart", click);
-    } else {
-        $(pasteButton).bind("mousedown", click);
-    }
-
-    /*add undo button*/
-    var undoButton = document.createElement("img");
-    $(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");
-    $(undoButton).attr("width", "24").attr("height", "24");
-
-    $(undoButton).attr("id", "undo_button");
-    $(undoButton).addClass("sidebar_button");
-
-    //$(undoButton).css("padding-left", "20px");
-    //$(undoButton).css("padding-right", "20px");
-    $(undoButton).css("margin-right", "20px");
-    //$(undoButton).css("border-left", "1px solid #636363");
-    //$(undoButton).css("border-right", "1px solid #636363");
-
-    $(undoButton).attr("title", GUI.translate("undo"));
-	numberOfIcons++;
-    $("#header > .header_right").append(undoButton);
-
-    var click = function() {
-        Modules.Dispatcher.query("undo", {"userID": GUI.userid});
-    }
-
-    if (GUI.isTouchDevice) {
-        $(undoButton).bind("touchstart", click);
-    } else {
-        $(undoButton).bind("mousedown", click);
-    }
 	
 	
-	/*add coupling button*/
-    if (Modules.Config.couplingMode) {
-		var couplingButton = document.createElement("img");
-		$(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");
-		$(couplingButton).attr("width", "24").attr("height", "24");
-     
-		$(couplingButton).attr("id", "coupling_button");
-		$(couplingButton).addClass("sidebar_button");
-     
-		//$(couplingButton).css("padding-left", "20px");
-		//$(couplingButton).css("padding-right", "20px");
-		$(couplingButton).css("margin-right", "20px");
-		//$(couplingButton).css("border-right", "1px solid #636363");
-     
-		$(couplingButton).attr("title", GUI.translate("Coupling"));
-		numberOfIcons++;
-		$("#header > .header_right").append(couplingButton);
-     
-		var click = function() {
-			GUI.enterCouplingMode();
-		}
-     
-		if (GUI.isTouchDevice) {
-			$(couplingButton).bind("touchstart", click);
-		} else {
-			$(couplingButton).bind("mousedown", click);
-		}
-    }
-    
-
-    /*add parent button*/
-    var parentButton = document.createElement("img");
-    $(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
-    $(parentButton).attr("width", "24").attr("height", "24");
-	
-    $(parentButton).attr("id", "parent_button");
-    $(parentButton).addClass("sidebar_button");
-	
-    $(parentButton).attr("title", GUI.translate("Environment"));
-	numberOfIcons++;
-    $("#header > .header_right").append(parentButton);
-	
-    var click = function() {
-		Modules.ObjectManager.goParent();
-    }
-
-	if (GUI.isTouchDevice) {
-		$(parentButton).bind("touchstart", click);
-    } else {
-		$(parentButton).bind("mousedown", click);
-    }
-   
-
-    /*add home button*/
-    var homeButton = document.createElement("img");
-    $(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
-    $(homeButton).attr("width", "24").attr("height", "24");
-	
-	$(homeButton).attr("id", "home_button");
-    $(homeButton).addClass("sidebar_button");
-	
-	$(homeButton).attr("title", GUI.translate("Home"));
-	numberOfIcons++;
-	$("#header > .header_right").append(homeButton);
-	
-	var click = function() {
-		Modules.ObjectManager.goHome();
-    }
-	
-	if (GUI.isTouchDevice) {
-		$(homeButton).bind("touchstart", click);
-    } else {
-		$(homeButton).bind("mousedown", click);
-    }
-
-
-    /*add paint button*/
-    if (Modules.Config.paintIcon) {
-		var paintButton = document.createElement("img");
-		$(paintButton).attr("src", "../../guis.common/images/painting.png").attr("alt", "");
-		$(paintButton).attr("width", "24").attr("height", "24");
-     
-		$(paintButton).attr("id", "paint_button");
-		$(paintButton).addClass("sidebar_button");
-     
-		$(paintButton).attr("title", GUI.translate("Paint"));
-		numberOfIcons++;
-		$("#header > .header_right").append(paintButton);
-     
-		var click = function() {
-			GUI.editPaint();
-		}
-     
-		if (GUI.isTouchDevice) {
-			$(paintButton).bind("touchstart", click);
-		} else {
-			$(paintButton).bind("mousedown", click);
-		}
-    }
-	
-	
-	/*add logout button*/
-	var logoutButton = document.createElement("img");
-	$(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
-	$(logoutButton).attr("width", "24").attr("height", "24");
-     
-	$(logoutButton).attr("id", "logout_button");
-	$(logoutButton).addClass("sidebar_button");
-	
-	$(logoutButton).attr("title", GUI.translate("Logout"));
-    numberOfIcons++;
-	$("#header > .header_right").append(logoutButton);
-     
-	var click = function() {
-		location.replace(location.origin);
-		GUI.deleteUserData();
-	}
-     
-	if (GUI.isTouchDevice) {
-		$(logoutButton).bind("touchstart", click);
-	} else {
-		$(logoutButton).bind("mousedown", click);
-	}
-	
-
     /*add menu button*/
     var menuButton = document.createElement("img");
     $(menuButton).attr("src", "../../guis.common/images/menu.png").attr("alt", "");
@@ -473,55 +291,125 @@ GUI.initToolbar = function() {
             var page = popover.addPage(GUI.translate("Welcome") + " " + Modules.Helper.capitalize(GUI.username));
             var section = page.addSection();
 
+			
 			/*add paste button*/
-            var btnPaste = section.addElement('<img src= "../../guis.common/images/paste_grey.png" alt="" width="24" height="24" id="paste_button" class="sidebar_button" /> ' + GUI.translate("Paste"));
-            var clickPaste = function() {
+			var pasteButton = document.createElement("img");
+			$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
+			$(pasteButton).attr("width", "24").attr("height", "24");
+			$(pasteButton).attr("id", "paste_button");
+			$(pasteButton).addClass("sidebar_button");
+			$(pasteButton).attr("title", GUI.translate("Paste"));
+			var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
+			$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");	
+			numberOfIcons++;
+			$("#header > .header_right").append(pasteButton); //add header icon
+			var clickPaste = function() { //click handler
 				Modules.ObjectManager.pasteObjects();
                 popover.hide();
             };
+  
 			
-            /*add undo button*/
-            var btnUndo = section.addElement('<img src= "../../guis.common/images/undo_grey.png" alt="" width="24" height="24" id="undo_button" class="sidebar_button" /> ' + GUI.translate("undo"));
-            var clickUndo = function() {
+			/*add undo button*/
+			var undoButton = document.createElement("img");
+			$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
+			$(undoButton).attr("width", "24").attr("height", "24");
+			$(undoButton).attr("id", "undo_button");
+			$(undoButton).addClass("sidebar_button");
+			$(undoButton).attr("title", GUI.translate("undo"));
+			var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("undo")); //add menu icon
+			$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");	
+			numberOfIcons++;
+			$("#header > .header_right").append(undoButton); //add header icon
+			var clickUndo = function() { //click handler
 				Modules.Dispatcher.query("undo", {"userID": GUI.userid});
                 popover.hide();
             };
 			
+			
             /*add coupling button*/
             if (Modules.Config.couplingMode) {
-                var btnCoupling = section.addElement('<img src= "../../guis.common/images/coupling_grey.png" alt="" width="24" height="24" id="coupling_button" class="sidebar_button" /> ' + GUI.translate("Coupling"));
-                var clickCoupling = function() {
-                    GUI.enterCouplingMode();
+				var couplingButton = document.createElement("img");
+				$(couplingButton).attr("src", "../../guis.common/images/coupling_grey.png").attr("alt", "");
+				$(couplingButton).attr("width", "24").attr("height", "24");
+				$(couplingButton).attr("id", "coupling_button");
+				$(couplingButton).addClass("sidebar_button");
+				$(couplingButton).attr("title", GUI.translate("Coupling"));
+				var btnCoupling = section.addElement($(couplingButton).prop('outerHTML') + GUI.translate("Coupling")); //add menu icon
+				$(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");	
+				numberOfIcons++;
+				$("#header > .header_right").append(couplingButton); //add header icon
+				var clickCoupling = function() { //click handler
+					GUI.enterCouplingMode();
                     popover.hide();
-                };
+				};
             }
 
+			
             /*add parent button*/
-            var btnParent = section.addElement('<img src= "../../guis.common/images/parent_grey.png" alt="" width="24" height="24" id="parent_button" class="sidebar_button" /> ' + GUI.translate("Environment"));
-            var clickParent = function() {
-                Modules.ObjectManager.goParent();
+			var parentButton = document.createElement("img");
+			$(parentButton).attr("src", "../../guis.common/images/parent_grey.png").attr("alt", "");
+			$(parentButton).attr("width", "24").attr("height", "24");
+			$(parentButton).attr("id", "parent_button");
+			$(parentButton).addClass("sidebar_button");
+			$(parentButton).attr("title", GUI.translate("Environment"));
+			var btnParent = section.addElement($(parentButton).prop('outerHTML') + GUI.translate("Environment")); //add menu icon
+			$(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");	
+			numberOfIcons++;
+			$("#header > .header_right").append(parentButton); //add header icon
+			var clickParent = function() { //click handler
+				Modules.ObjectManager.goParent();
                 popover.hide();
-            };
+			};
+  
 
             /*add home button*/
-            var btnHome = section.addElement('<img src= "../../guis.common/images/home_grey.png" alt="" width="24" height="24" id="home_button" class="sidebar_button" /> ' + GUI.translate("Home"));
-            var clickHome = function() {
-                Modules.ObjectManager.goHome();
+			var homeButton = document.createElement("img");
+			$(homeButton).attr("src", "../../guis.common/images/home_grey.png").attr("alt", "");
+			$(homeButton).attr("width", "24").attr("height", "24");
+			$(homeButton).attr("id", "home_button");
+			$(homeButton).addClass("sidebar_button");
+			$(homeButton).attr("title", GUI.translate("Home"));
+			var btnHome = section.addElement($(homeButton).prop('outerHTML') + GUI.translate("Home")); //add menu icon
+			$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");	
+			numberOfIcons++;
+			$("#header > .header_right").append(homeButton); //add header icon
+			var clickHome = function() { //click handler
+				Modules.ObjectManager.goHome();
                 popover.hide();
-            };
+			};
+			
 
             /*add paint button*/
-            if (Modules.Config.paintIcon) {
-                var btnPaint = section.addElement('<img src= "../../guis.common/images/paint_grey.png" alt="" width="24" height="24" id="paint_button" class="sidebar_button" /> ' + GUI.translate("Paint"));
-                var clickPaint = function() {
-                    GUI.editPaint();
-                    popover.hide();
-                };
-            }
+			if (Modules.Config.paintIcon) {
+				var paintButton = document.createElement("img");
+				$(paintButton).attr("src", "../../guis.common/images/paint_grey.png").attr("alt", "");
+				$(paintButton).attr("width", "24").attr("height", "24");
+				$(paintButton).attr("id", "paint_button");
+				$(paintButton).addClass("sidebar_button");
+				$(paintButton).attr("title", GUI.translate("Paint"));
+				var btnPaint = section.addElement($(paintButton).prop('outerHTML') + GUI.translate("Paint")); //add menu icon
+				$(paintButton).attr("src", "../../guis.common/images/paint.png").attr("alt", "");	
+				numberOfIcons++;
+				$("#header > .header_right").append(paintButton); //add header icon
+				var clickPaint = function() { //click handler
+					GUI.editPaint();
+					popover.hide();
+				};
+			}
+			
 
             /*add logout button*/
-            var btnLogout = section.addElement('<img src= "../../guis.common/images/log_out_grey.png" alt="" width="24" height="24" id="logout_button" class="sidebar_button"/> ' + GUI.translate("Logout"));
-            var clickLogout = function() {
+			var logoutButton = document.createElement("img");
+			$(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
+			$(logoutButton).attr("width", "24").attr("height", "24");
+			$(logoutButton).attr("id", "logout_button");
+			$(logoutButton).addClass("sidebar_button");
+			$(logoutButton).attr("title", GUI.translate("Logout"));
+			var btnLogout = section.addElement($(logoutButton).prop('outerHTML') + GUI.translate("Logout")); //add menu icon
+			$(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
+			numberOfIcons++;
+			$("#header > .header_right").append(logoutButton); //add header icon
+            var clickLogout = function() { //click handler
                 location.replace(location.origin);
                 popover.hide();
 				GUI.deleteUserData();
@@ -529,29 +417,39 @@ GUI.initToolbar = function() {
 
 
             if (GUI.isTouchDevice) {
-                $(btnLogout.getDOM()).bind("touchstart", clickLogout);
-                $(btnHome.getDOM()).bind("touchstart", clickHome);
-                if (btnCoupling) {
-                    $(btnCoupling.getDOM()).bind("touchstart", clickCoupling);
-                }
-                $(btnParent.getDOM()).bind("touchstart", clickParent);
-                if (btnPaint) {
-                    $(btnPaint.getDOM()).bind("touchstart", clickPaint);
-                }
-				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
+				//header:
+				$(pasteButton).bind("touchstart", clickPaste);
+				$(undoButton).bind("touchstart", clickUndo);
+				if(Modules.Config.couplingMode) $(couplingButton).bind("touchstart", clickCoupling);
+				$(parentButton).bind("touchstart", clickParent);
+				$(homeButton).bind("touchstart", clickHome);
+				if(Modules.Config.paintIcon) $(paintButton).bind("touchstart", clickPaint);
+				$(logoutButton).bind("touchstart", clickLogout);
+				//menu:
 				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
+				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
+				if(Modules.Config.couplingMode) $(btnCoupling.getDOM()).bind("touchstart", clickCoupling);
+				$(btnParent.getDOM()).bind("touchstart", clickParent);
+				$(btnHome.getDOM()).bind("touchstart", clickHome);
+				if(Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
+                $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
-                $(btnLogout.getDOM()).bind("click", clickLogout);
-                $(btnHome.getDOM()).bind("click", clickHome);
-                if (btnCoupling) {
-                    $(btnCoupling.getDOM()).bind("click", clickCoupling);
-                }
-                $(btnParent.getDOM()).bind("click", clickParent);
-                if (btnPaint) {
-                    $(btnPaint.getDOM()).bind("click", clickPaint);
-                }
-				$(btnUndo.getDOM()).bind("click", clickUndo);
-				$(btnPaste.getDOM()).bind("click", clickPaste);
+				//header:
+				$(pasteButton).bind("mousedown", clickPaste);
+				$(undoButton).bind("mousedown", clickUndo);
+				if(Modules.Config.couplingMode) $(couplingButton).bind("mousedown", clickCoupling);
+				$(parentButton).bind("mousedown", clickParent);
+				$(homeButton).bind("mousedown", clickHome);
+				if(Modules.Config.paintIcon) $(paintButton).bind("mousedown", clickPaint);
+				$(logoutButton).bind("mousedown", clickLogout);
+				//menu:
+				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
+				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
+				if(Modules.Config.couplingMode) $(btnCoupling.getDOM()).bind("mousedown", clickCoupling);
+				$(btnParent.getDOM()).bind("mousedown", clickParent);
+				$(btnHome.getDOM()).bind("mousedown", clickHome);
+				if(Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("mousedown", clickPaint);
+                $(btnLogout.getDOM()).bind("mousedown", clickLogout);
             }
         }
     });
@@ -748,32 +646,34 @@ GUI.flashNewUserIcon = function(newUser){
  */
 GUI.resizeToolbar = function(){
 
-	var space = $(window).width();
-	space = space - (numberOfIcons*44); //subtract icons
+	if(!GUI.paintModeActive && !GUI.couplingModeActive){
 
-	if(space < -10){
-		if(GUI.sidebar.open){
-			GUI.sidebar.saveStateAndHide();
-		}
-		$("#header_toggle_sidebar_show").hide();
-	}
-	else{
-		if(GUI.sidebar.open){
-			$("#header_toggle_sidebar_hide").show();
+		var space = $(window).width();
+		space = space - (numberOfIcons*44); //subtract icons
+
+		if(space < -10){
+			if(GUI.sidebar.open){
+				GUI.sidebar.saveStateAndHide();
+			}
 			$("#header_toggle_sidebar_show").hide();
 		}
 		else{
-			$("#header_toggle_sidebar_show").show();
-			$("#header_toggle_sidebar_hide").hide();
+			if(GUI.sidebar.open){
+				$("#header_toggle_sidebar_hide").show();
+				$("#header_toggle_sidebar_show").hide();
+			}
+			else{
+				$("#header_toggle_sidebar_show").show();
+				$("#header_toggle_sidebar_hide").hide();
+			}
+		}
+		if((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)){
+			$("#header > .header_right > img").hide();
+			$("#menu_button").show();
+		}
+		else{
+			$("#header > .header_right > img").show();
+			$("#menu_button").hide();
 		}
 	}
-	if((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)){
-		$("#header > .header_right > img").hide();
-		$("#menu_button").show();
-	}
-	else{
-		$("#header > .header_right > img").show();
-		$("#menu_button").hide();
-	}
-
 }

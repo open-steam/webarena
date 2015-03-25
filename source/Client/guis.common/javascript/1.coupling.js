@@ -278,6 +278,8 @@ GUI.closeCouplingMode = function(target) {
     ObjectManager.leaveRoom(ObjectManager.getRoomID('right'), 'right', !GUI.relogin);
 
     GUI.adjustContent();
+	
+	GUI.resizeToolbar();
 
     $('#room_right').html("");
 
