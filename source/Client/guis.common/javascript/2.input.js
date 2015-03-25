@@ -1113,8 +1113,11 @@ GUI.input.Session.prototype = {
 		else if(this.isPress && this.isMaxMoved)
 			this.isPress = false;
 		
-		if(full && this.data.length > 1 && this.processed > 1 && this.data.length > this.processed) {
-			var last = this.data[this.processed-1], current = this.get();
+		if(full 
+		&& this.data.length > 1 && this.processed > 1 
+		&& this.data.length > this.processed) {
+			var last = this.data[this.processed-1], 
+			    current = this.get();
 			
 			//direction
 			this.direction = GUI.input.getDirection(last, current);
@@ -1133,10 +1136,9 @@ GUI.input.Session.prototype = {
 	 */
 	render: function() {
 		var somethingNew = (this.data.length > this.processed);
-		if(somethingNew && this.state != GUI.input.STATE_START) {
+		
+		if(somethingNew && this.state != GUI.input.STATE_START)
 			this.process(this.recognize);
-			this.processed = this.data.length;
-		}
 		
 		switch(this.state) {
 		case GUI.input.STATE_START:
@@ -1149,10 +1151,8 @@ GUI.input.Session.prototype = {
 			this.state = this.isFinal? GUI.input.STATE_END : GUI.input.STATE_MOVE;
 		break;
 		case GUI.input.STATE_MOVE:
-			if(this.isFinal) {
+			if(this.isFinal)
 				this.state = GUI.input.STATE_END;
-				return;
-			}
 			else if(somethingNew) {
 				if(GUI.paintModeActive 
 				|| GUI.input.pen.paintMode && this.type == GUI.input.TYPE_PEN) {
@@ -1204,6 +1204,9 @@ GUI.input.Session.prototype = {
 			}
 		break;
 		}
+		
+		if(somethingNew && this.state != GUI.input.STATE_START)
+			this.processed = this.data.length;
 	}
 }
 
@@ -1359,7 +1362,6 @@ GUI.input.MultiSession.prototype = {
 		else { 
 			$.each(this.sessions, $.proxy(function(i, s) {
 				s.process(true);
-				s.processed = s.data.length;
 				
 				if(s.isFinal)
 					this.remove(s.id);
@@ -1381,6 +1383,10 @@ GUI.input.MultiSession.prototype = {
 				delete GUI.input.touch.sessions[this.id];
 			break;
 			}
+			
+			$.each(this.sessions, function(i, s) {
+				s.processed = s.data.length;
+			});
 		}
 		
 		if(this.count == 0)

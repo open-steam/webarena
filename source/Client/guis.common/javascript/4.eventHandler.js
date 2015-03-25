@@ -147,11 +147,14 @@ GUI.input.bind("tap", function(session) {
 });
 
 GUI.input.bind("MultiFingerDrag", function(multiSession) {
-	var start = multiSession.startPoint, 
-	    center = multiSession.getCenter();
+	var session = multiSession.sessions[multiSession.id];
 	
-	var newX = center.x - start.x, 
-	    newY = center.y - start.y;
-	
-	window.scrollBy(center.x - start.x, center.y - start.y);
+	if(session
+	&& session.data.length > 1 && session.processed > 1
+	&& session.data.length > session.processed) {
+		var last = session.data[session.processed-1], 
+		    current = session.get();
+		
+		window.scrollBy(current.x - last.x, current.y - last.y);
+	}
 });
