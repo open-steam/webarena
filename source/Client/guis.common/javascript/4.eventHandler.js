@@ -147,7 +147,8 @@ GUI.input.bind("tap", function(session) {
 });
 
 GUI.input.bind("MultiFingerDrag", function(multiSession) {
-	var session = multiSession.sessions[multiSession.id];
+	var session = multiSession.sessions[multiSession.id],
+	    correction = -1;
 	
 	if(session
 	&& session.data.length > 1 && session.processed > 1
@@ -155,6 +156,6 @@ GUI.input.bind("MultiFingerDrag", function(multiSession) {
 		var last = session.data[session.processed-1], 
 		    current = session.get();
 		
-		window.scrollBy(current.x - last.x, current.y - last.y);
+		window.scrollBy((current.x - last.x) * correction, (current.y - last.y) * correction);
 	}
 });
