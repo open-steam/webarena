@@ -629,6 +629,7 @@ GUI.editPaint = function() {
 	
 	$("#header > div.header_left").children().hide();
 	$("#header > div.header_right").children().hide();
+	$("#header_toggle_sidebar_show").hide();
 	$("img[id^='userPainting_']").hide();
 	
 	GUI.resetPaintColors();
