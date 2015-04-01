@@ -7,6 +7,9 @@
  */
 GUI.paintModeActive = false;
 
+$(window).resize(function() {		
+	GUI.resizePaintToolbar();
+});
 
 /**
  * Set a color to paint with
@@ -626,6 +629,7 @@ GUI.editPaint = function() {
 	GUI.painted = false;
 	GUI.paintModeActive = true;
 	GUI.sidebar.saveStateAndHide();
+	GUI.deselectAllObjects();
 	
 	$("#header > div.header_left").children().hide();
 	$("#header > div.header_right").children().hide();
@@ -798,8 +802,8 @@ GUI.editPaint = function() {
 		$("#statusLabel").remove();
 	});
 	
-	$("#header > div.header_right").append(closeButton);	
-
+	$("#header > div.header_right").append(closeButton);
+	
 	/* create html canvas */
 	GUI.paintCanvas = document.createElement("canvas");
 	GUI.paintCanvasTemp = document.createElement("canvas");
@@ -852,8 +856,8 @@ GUI.editPaint = function() {
 	$(GUI.paintCanvasTemp).css("visibility", "hidden");
 	$(GUI.paintCanvasTemp).css("cursor", "crosshair");
 
-	$("body").append(GUI.paintCanvas);
-	$("body").append(GUI.paintCanvasTemp);
+	$("body:first").append(GUI.paintCanvas);
+	$("body:first").append(GUI.paintCanvasTemp);
 
 	
 	/* load content */
@@ -862,7 +866,7 @@ GUI.editPaint = function() {
 	var img = new Image();
 	
 	$(img).bind("load", function() {
-		var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
+		var canvasContext = $("canvas").filter("#webarena_paintCanvas").get(0).getContext('2d');
 		
 		canvasContext.drawImage(img, 0, 0, img.width, img.height);
 		
@@ -871,8 +875,8 @@ GUI.editPaint = function() {
 	$(img).attr("src", ObjectManager.getCurrentRoom().getUserPaintingURL());
 	
 	//unbind old events
-	$("#webarena_paintCanvas").unbind("mousedown");
-	$("#webarena_paintCanvas").unbind("touchend");
+	$("canvas").filter("#webarena_paintCanvas").unbind("mousedown");
+	$("canvas").filter("#webarena_paintCanvas").unbind("touchend");
 	
 	// set initial values
 	GUI.setPaintColor(ObjectManager.getUser().color, "usercolor");
@@ -880,7 +884,7 @@ GUI.editPaint = function() {
 	GUI.setPaintSize(3);
 	
 	var start = function(event) {
-
+	
 		GUI.paintLastPoint = undefined;
 
 		event.preventDefault();
@@ -901,7 +905,7 @@ GUI.editPaint = function() {
 
 		if (!GUI.paintEraseModeActive)
 		{
-			var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
+			var canvasContext = $("canvas").filter("#webarena_paintCanvas").get(0).getContext('2d');
 
 			var hex2rgb = /^#([\da-fA-F]{2})([\da-fA-F]{2})([\da-fA-F]{2})$/;
 			var matches = hex2rgb.exec(GUI.paintColor);
@@ -948,31 +952,31 @@ GUI.editPaint = function() {
 			event.stopPropagation();
 			GUI.savePaintMode();
 
-			$("#webarena_paintCanvas").unbind("mousemove");
-			$("#webarena_paintCanvas").unbind("mouseup");
+			$("canvas").filter("#webarena_paintCanvas").unbind("mousemove");
+			$("canvas").filter("#webarena_paintCanvas").unbind("mouseup");
 			
-			$("#webarena_paintCanvas").unbind("touchmove");
-			$("#webarena_paintCanvas").unbind("touchend");
+			$("canvas").filter("#webarena_paintCanvas").unbind("touchmove");
+			$("canvas").filter("#webarena_paintCanvas").unbind("touchend");
 		};
 		
 		
 		if (GUI.isTouchDevice) {
 			/* touch */
-			$("#webarena_paintCanvas").get(0).addEventListener("touchmove", move, false);
-			$("#webarena_paintCanvas").get(0).addEventListener("touchend", end, false);
+			$("canvas").filter("#webarena_paintCanvas").get(0).addEventListener("touchmove", move, false);
+			$("canvas").filter("#webarena_paintCanvas").get(0).addEventListener("touchend", end, false);
 		} else {
 			/* click */
-			$("#webarena_paintCanvas").bind("mousemove", move);
-			$("#webarena_paintCanvas").bind("mouseup", end);
+			$("canvas").filter("#webarena_paintCanvas").bind("mousemove", move);
+			$("canvas").filter("#webarena_paintCanvas").bind("mouseup", end);
 		}
 	}
 	
 	if (GUI.isTouchDevice) {
 		/* touch */		
-		$("#webarena_paintCanvas").get(0).addEventListener("touchstart", start, false);
+		$("canvas").filter("#webarena_paintCanvas").get(0).addEventListener("touchstart", start, false);
 	} else {
 		/* click */
-		$("#webarena_paintCanvas").bind("mousedown", start);
+		$("canvas").filter("#webarena_paintCanvas").bind("mousedown", start);
 	}
 	
 	$(document).bind("keydown.paint", function(event) {
@@ -1059,7 +1063,7 @@ GUI.paintPaint = function(x,y) {
 		var yc = (GUI.paintLastPoint[1] + y) / 2;
 	}
 
-	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
+	var canvasContext = $("canvas").filter("#webarena_paintCanvas").get(0).getContext('2d');
 
 	canvasContext.quadraticCurveTo(GUI.paintLastPoint[0], GUI.paintLastPoint[1], xc, yc);
 	
@@ -1097,7 +1101,7 @@ GUI.paintMove = function(x,y) {
 	var svgpos = $("#content").offset();
 	y = y-svgpos.top;
 
-	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
+	var canvasContext = $("canvas").filter("#webarena_paintCanvas").get(0).getContext('2d');
 	
 	canvasContext.moveTo(x,y);
 	
@@ -1118,7 +1122,7 @@ GUI.paintErase = function(x,y) {
 	x = x-(eraserSize/2);
 	y = y-(eraserSize/2);
 	
-	var canvasContext = $("#webarena_paintCanvas").get(0).getContext('2d');
+	var canvasContext = $("canvas").filter("#webarena_paintCanvas").get(0).getContext('2d');
 	
 	canvasContext.clearRect(x, y, eraserSize,eraserSize);
 	
@@ -1154,8 +1158,8 @@ GUI.closePaintMode = function() {
 	$("#header > div.header_right").children().show();
 	$("img[id^='userPainting_']").show();
 	
-	$("#webarena_paintCanvas").remove();
-	$("#webarena_paintCanvas_temp").remove();
+	$("canvas").remove("#webarena_paintCanvas");
+	$("canvas").remove("#webarena_paintCanvas_temp");
 	
 	/* set normal opacity to all objects */
 	$.each(ObjectManager.getObjects(), function(index, object) {
@@ -1175,5 +1179,19 @@ GUI.closePaintMode = function() {
 GUI.savePaintMode = function() {
 	
 	//This is where the content is saved.
-	ObjectManager.getCurrentRoom().saveUserPaintingData($("#webarena_paintCanvas").get(0).toDataURL(), function(){});
+	ObjectManager.getCurrentRoom().saveUserPaintingData($("canvas").filter("#webarena_paintCanvas").get(0).toDataURL(), function(){});
+}
+
+
+/**
+ * decides which icons are shown in the paint toolbar, depending on the free space  
+ */
+GUI.resizePaintToolbar = function(){
+
+	if(GUI.paintModeActive){
+
+		var space = $(window).width();
+
+	}
+
 }
