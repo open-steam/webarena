@@ -315,8 +315,8 @@ GUI.initToolbar = function() {
 			$(undoButton).attr("width", "24").attr("height", "24");
 			$(undoButton).attr("id", "undo_button");
 			$(undoButton).addClass("sidebar_button");
-			$(undoButton).attr("title", GUI.translate("undo"));
-			var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("undo")); //add menu icon
+			$(undoButton).attr("title", GUI.translate("Undo"));
+			var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
 			$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");	
 			numberOfIcons++;
 			$("#header > .header_right").append(undoButton); //add header icon
