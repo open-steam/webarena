@@ -490,7 +490,7 @@ CUT.move = function(event){
 		CUT.destY = CUT.sourceY;
 		
 		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
-		if (!CUT.sourceW || !CUT.sourceH) { return; }
+		if (!CUT.sourceW || !CUT.sourceH) return;
 		GUI.paintContextTemp.strokeRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
 	}
 	else if (!CUT.dragging){
@@ -506,6 +506,7 @@ CUT.move = function(event){
 		CUT.destY = y - CUT.draggingOffsetY;
 
 		GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvasTemp.width, GUI.paintCanvasTemp.height);
+		
 		GUI.paintContextTemp.strokeRect(CUT.destX, CUT.destY, CUT.sourceW, CUT.sourceH);
 		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.destX, CUT.destY);
 	}
@@ -521,7 +522,7 @@ CUT.end = function(event){
 	if (!CUT.selecting){
 		// selection frame just created
 		CUT.selecting = true;
-
+		
 		CUT.selectionData = GUI.paintContext.getImageData(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
 		GUI.paintContext.clearRect(CUT.sourceX, CUT.sourceY, CUT.sourceW, CUT.sourceH);
 		GUI.paintContextTemp.putImageData(CUT.selectionData, CUT.sourceX, CUT.sourceY);
@@ -545,7 +546,11 @@ CUT.paste = function(){
 	var tempCanvas = document.createElement('canvas');
 	var tempContext = tempCanvas.getContext('2d');
 
+	tempCanvas.width = CUT.selectionData.width;
+	tempCanvas.height = CUT.selectionData.height;
+	
 	tempContext.putImageData(CUT.selectionData, 0, 0);
+	
 	GUI.paintContext.drawImage(tempCanvas, CUT.destX, CUT.destY);
 	
 	GUI.paintContextTemp.clearRect(0, 0, GUI.paintCanvas.width, GUI.paintCanvas.height);
