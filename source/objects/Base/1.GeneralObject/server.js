@@ -42,19 +42,7 @@ theObject.makeStructuring = function() {
     var theObject = this;
 
     this.onObjectMove = function(changeData) {
-
         this.getRoom().setAttribute('repositionNeeded', true);
-
-    }
-    theObject.removeAssociationToAnActiveObject = function(objectId) {
-        var activeObjects = this.getAttribute('activeObjects');
-        activeObjects[objectId] = false;
-        console.log(this.setAttribute('activeObjects', activeObjects));
-    }
-    theObject.createAssociationToAnActiveObject = function(objectId) {
-        var activeObjects = this.getAttribute('activeObjects');
-        activeObjects[objectId] = true;
-        this.setAttribute('activeObjects', activeObjects);
     }
 
     theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {

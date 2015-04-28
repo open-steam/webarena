@@ -30,10 +30,6 @@ Matrix.draw = function(external) {
     if (refresh) {
         oldGroup.remove();
         var group = GUI.svg.group(rep, this.getAttribute('id') + "-1");
-
-
-
-
         if (rows.length !== 0 && columns.length !== 0) {
             var cellNumber = (rows.length + 1) * (columns.length + 1);
         } else {
@@ -199,8 +195,8 @@ Matrix.setViewHeight = function(value) {
             if (i > 0 && i <= (columns.length)) {
                 $(texts[textCounter]).attr("y", (cellHeight / 2) + 5);
                 textCounter++;
-            } else if (i > (columns.length) && i%(columns.length + 1) === 0) {
-                $(texts[textCounter]).attr("y", row * cellHeight+ (cellHeight / 2) + 5);
+            } else if (i > (columns.length) && i % (columns.length + 1) === 0) {
+                $(texts[textCounter]).attr("y", row * cellHeight + (cellHeight / 2) + 5);
                 console.log($(texts[textCounter]));
                 textCounter++;
             }

@@ -37,7 +37,7 @@ Scale2.draw = function(external) {
 
     //Setze Darstellung der Linie
     $(line).attr("stroke", this.getAttribute('linecolor'));
-    $(line).attr("stroke-width", 5);
+    $(line).attr("stroke-width", 4);
 
     this.padding = 20;
 
@@ -94,6 +94,7 @@ Scale2.draw = function(external) {
 
     $(lineY).attr("x2", this.padding + this.padding + this.padding);
     $(lineY).attr("y2", this.padding + this.padding + this.padding + this.padding);
+    $(lineY).attr("stroke-width", "4");
 
     var pixelStart = this.getAttribute('height') - this.padding - this.padding - this.padding - this.padding;
     var pixelEnd = this.padding + this.padding + this.padding + this.padding;
@@ -124,7 +125,7 @@ Scale2.draw = function(external) {
         var currentNumerationObject = rep.getElementsByTagName("text")[i - 1];
         currentNumerationObject.textContent = currentNumeration.toString();
         $(currentNumerationObject).attr('y', drawLineAt + 3);
-        $(currentNumerationObject).attr('x', xCoordinate - 36);
+        $(currentNumerationObject).attr('x', xCoordinate - 20);
         $(currentNumerationObject).attr('font-size', 12);
 
         drawLineAt -= distancePerStepInPixel;

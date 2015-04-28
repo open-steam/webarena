@@ -274,12 +274,12 @@ GeneralObject.addSelectedIndicator = function(color, width, dashed) {
 	var borderRep = rep;
 
 	if (rep.tagName == "g") {
-		/* group --> search first child */
+		
 		borderRep = $(rep).children();
 	}
 	
 	if ($(rep).find(".borderRect").length > 0) {
-		/* border rect exists */
+		
 		borderRep = $(rep).find(".borderRect").get(0);
 	}
 
@@ -290,10 +290,10 @@ GeneralObject.addSelectedIndicator = function(color, width, dashed) {
 	if (this.oldAttrStrokeWidth == undefined) this.oldAttrStrokeWidth = 0;
 	
 	$(borderRep).attr("stroke", color);
-	$(borderRep).attr("stroke-width", width);
+	$(borderRep).attr("stroke-width", width)
 	if (dashed) $(borderRep).attr("stroke-dasharray", (width*2)+","+(width*2));
 
-	$(rep).addClass("selected");
+	$(rep).addClass("selected"); 
 	
 }
 

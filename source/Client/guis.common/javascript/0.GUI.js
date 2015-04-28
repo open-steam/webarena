@@ -941,11 +941,11 @@ GUI.confirm = function(message) {
 }
 
 GUI.setMode=function(mode){
-	
+	//Eigenschaften des Vordergrunds
 	var className='fgmode';
 	var text='Edit background';
 	var toMode='background';
-	
+	//Eigenschaften des Hintergrunds
 	if (mode=='background'){
 		className='bgmode';
 		text='Exit';
@@ -956,6 +956,7 @@ GUI.setMode=function(mode){
 	var sidebar=document.getElementById('sidebar');
 	var sidebar_title=document.getElementById('sidebar_title');
 	
+        //Füge classen hinzu um per css optische Änderungen darzustellen.
 	if (header) header.className=className;
 	if (sidebar) sidebar.className=className;
 	if (sidebar_title) sidebar_title.className=className;
@@ -964,19 +965,18 @@ GUI.setMode=function(mode){
 	var sidebarContent=document.getElementById('sidebar_content');
 	sidebarContent.className=className;
 	
-	$( "#switchbutton" ).remove();
-	
+        //ersetzte switch to vordergrund or backgrond je nachdem
+	$( "#switchbutton" ).remove();	
 	$( "<button id=\"switchbutton\">"+text+"</button>" ).appendTo(sidebar);
 	
 	var switchbutton=document.getElementById('switchbutton');
-	
 	switchbutton.onclick=function(){
 		GUI.setMode(toMode);
                 if(toMode === "foreground"){
                      ObjectManager.reposition(ObjectManager.getCurrentRoom());
                 }
 	}
-	
+	//Wird beim Raum als Attribut gespeichert.
 	ObjectManager.getCurrentRoom().setAttribute('mode',mode);
 	
 }

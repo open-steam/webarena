@@ -1002,7 +1002,7 @@ svg text.font-icon{
 
 .line {
 	fill: none;
-	stroke: steelblue;
+	stroke: black;
 	shape-rendering: auto;
 }
 
@@ -1172,4 +1172,7 @@ svg text.font-icon{
 	padding-left: 5px;
 	padding-right: 12px;
 	vertical-align: middle;
+}
+.text{
+    font-size: 16px;
 }

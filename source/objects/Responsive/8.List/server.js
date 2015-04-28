@@ -10,6 +10,7 @@
 var theObject = Object.create(require('./common.js'));
 var Modules = require('../../../server.js');
 module.exports = theObject;
+
 theObject.evaluatePositions = function() {
     var direction = this.getAttribute('direction');
     var axis;
