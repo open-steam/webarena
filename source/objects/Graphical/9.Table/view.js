@@ -199,17 +199,12 @@ Table.setViewHeight = function(value) {
             if (i > 0 && i <= (columns.length)) {
                 $(texts[textCounter]).attr("y", (cellHeight / 2) + 5);
                 textCounter++;
-            } else if (i > (columns.length) && i%(columns.length + 1) === 0) {
-                $(texts[textCounter]).attr("y", row * cellHeight+ (cellHeight / 2) + 5);
-<<<<<<< HEAD
-=======
-                //console.log($(texts[textCounter]));
->>>>>>> 71cc3bc57e0bf43281a4b5c89b4586af1f232a97
+            } else if (i > (columns.length) && i % (columns.length + 1) === 0) {
+                $(texts[textCounter]).attr("y", row * cellHeight + (cellHeight / 2) + 5);
                 textCounter++;
             }
             i++;
         });
-
     }
     $(rep).attr("height", value);
     $(rep.rect).attr("height", value);
