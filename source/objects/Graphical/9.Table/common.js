@@ -30,6 +30,10 @@ Table.decideIfActive = function(object) {
 
     return true;
 }
+Table.execute = function(){
+    //TODO: Hier die GUI für die Tabellenspalten aufrufen.
+    //GUI.dialog
+}
 
 
 module.exports = Table;
