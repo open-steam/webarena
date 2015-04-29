@@ -35,15 +35,14 @@ Rectangle.draw = function(external) {
     rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.text.style.fontFamily = this.getAttribute('font-family');
     rep.text.style.color = this.getAttribute('font-color');
-	
+
 }
-
-
 /**
  * Sets the objects width
  * @param {int} value The new width
  */
 Rectangle.setViewWidth = function(value) {
+    
     var rep = this.getRepresentation();
     $(rep).attr("width", value);
     $(rep.rect).attr("width", value);
@@ -100,7 +99,7 @@ Rectangle.createRepresentation = function(parent) {
     this.initGUI(rep);
 
     return rep;
-
+    
 }
 
 

@@ -86,7 +86,7 @@ GUI.enterCouplingMode = function() {
         }, function() {
             $(this).css('cursor', 'n-pointer');
         });
-        $(verticalBar).bind('mousedown', function(event) {
+     /*   $(verticalBar).bind('mousedown', function(event) {
             $(document).bind('mousemove', function(event) {
                 $(verticalBar).attr('x1', event.pageX);
                 $(verticalBar).attr('x2', event.pageX);
@@ -111,7 +111,7 @@ GUI.enterCouplingMode = function() {
             $(document).bind('mouseup', function() {
                 $(document).unbind('mousemove')
             });
-        });
+        }); */
 
         // window resize handling
         $(window).resize(function() {
@@ -209,7 +209,7 @@ GUI.enterCouplingMode = function() {
         $(greyRectangle).attr("id", "couplingGreyRectangle");
 
         // mouse wheel scrolling
-        $(document).bind("mousewheel", function(event, delta, deltaX, deltaY) {
+        /*$(document).bind("mousewheel", function(event, delta, deltaX, deltaY) {
             if (event.pageX < parseInt($('#room_right_wrapper').attr("x"))) {
                 GUI.deselectAllObjects();
                 GUI.pan('left', deltaX * 25, deltaY * 25);
@@ -219,7 +219,7 @@ GUI.enterCouplingMode = function() {
                     GUI.pan('right', deltaX * 25, deltaY * 25);
                 }
             }
-        });
+        }); */
 
         // resize left and right room
         $('#room_right_wrapper').attr("x", ($(window).width() / 2));
