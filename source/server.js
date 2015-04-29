@@ -10,7 +10,7 @@ var printLogo = function() {
     var logo = ['##########################################',
         '#    W E B A R E N A   S E R V E R       #',
         '#                                        #',
-        '#    (c) 2012-14 Contextual Informatics, #',
+        '#    (c) 2012-15 Contextual Informatics, #',
         '#                Universität Paderborn   #',
         '#                                        #',
         '#    Main contributors:                  #',
@@ -20,6 +20,7 @@ var printLogo = function() {
         '#        Viktor Koop                     #',
         '#        Jan Petertonkoker               #',
         '#        Steven Christopher Lücker       #',
+        '#        Christoph Sens                  #',
         '#                                        #',
         '##########################################'];
 
