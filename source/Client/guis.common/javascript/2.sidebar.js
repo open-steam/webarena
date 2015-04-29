@@ -52,6 +52,8 @@ GUI.sidebar.transformX = function(target, x) {
     target.css("-webkit-transform", trans);
     target.css("-moz-transform", trans);
     target.css("-o-transform", trans);
+	target.css("-ms-transform", trans);
+	target.css("transform", trans);
 
 }
 
