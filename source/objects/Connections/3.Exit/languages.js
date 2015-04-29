@@ -7,8 +7,6 @@ Exit.setTranslations('de',{
 	'Open Object Selection' : 'Objektauswahl öffnen',
 	'ObjectBrowser' : 'Verknüpfung (Browser)',
 	'filterObjects' : 'Nur Räume in Objektauswahl',
-	'Cancel' : 'Abbrechen', 
-	'Okay' : 'Auswählen',
 	'Show objects' : 'Objekte anzeigen',
 	'create new Subroom' : 'neuen Unterraum erstellen'
 }

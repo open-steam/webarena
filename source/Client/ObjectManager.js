@@ -14,6 +14,7 @@ ObjectManager.objects = {'left': {}, 'right': {}};
 ObjectManager.objectsRight = {'left': {}, 'right': {}};
 ObjectManager.currentRoomID = {'left': false, 'right': false};
 ObjectManager.currentRoom = {'left': false, 'right': false};
+ObjectManager.previousRoomID= false;
 ObjectManager.clientID = new Date().getTime() - 1296055327011;
 ObjectManager.prototypes = {};
 ObjectManager.user = {};
@@ -332,6 +333,7 @@ ObjectManager.login = function(username, password, externalSession) {
 
 
 ObjectManager.goParent = function() {
+	/*
     var currentRoomID = ObjectManager.currentRoomID['left'];
     var currentRoom = ObjectManager.getObject(currentRoomID);
     var parentID = currentRoom.getAttribute('parent');
@@ -341,7 +343,13 @@ ObjectManager.goParent = function() {
     } else {
         alert(GUI.translate('This room has no parent.'))
     }
-
+	*/
+	if(this.previousRoomID){
+		ObjectManager.loadRoom(this.previousRoomID);
+	}
+	else {
+        alert(GUI.translate('There is no previously visited room'));
+    }
 }
 
 
@@ -386,10 +394,7 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
                     ObjectManager.removeLocally(obj);
                 }
 
-                if (!roomid)
-                    roomid = 'public';
-
-                self.currentRoomID[index] = roomid;
+                if (!roomid) roomid = 'public';
 
                 if (!byBrowserNav && index === 'left') {
                     history.pushState({'room': roomid}, roomid, '/room/' + roomid);
@@ -398,7 +403,12 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
                 if (GUI.couplingModeActive) {
                     GUI.defaultZoomPanState(index, true);
                 }
+				else{
+					ObjectManager.previousRoomID = self.currentRoomID['left'];
+				}
 
+				self.currentRoomID[index] = roomid;
+				
                 if (callback)
                     setTimeout(callback, 1200);
 
@@ -944,20 +954,23 @@ ObjectManager.afterDuplicate = function(newObject) {
         minY = newObject.getAttribute('y');
     }
 
-    //scroll to position of pasted objects (TODO: only in new room...)
+    //scroll to position of pasted objects (only if object not visible in the current browser window)
     if (!GUI.couplingModeActive) {
         if (minX - 30 < 0)
             minX = 30;
         if (minY - 30 < 0)
             minY = 30;
 
-        $(document).scrollTo(
-                {
-                    top: minY - 30,
-                    left: minX - 30
-                },
-        1000
-                );
+		setTimeout(function(){ 
+			var objVisible = newObject.checkBrowserVisibility();
+			
+			if(!objVisible){
+				$(document).scrollTo({
+					top: minY - 30,
+					left: minX - 30
+				});
+			}
+		}, 500);
     }
 }
 

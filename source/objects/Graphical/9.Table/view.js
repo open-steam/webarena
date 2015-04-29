@@ -201,6 +201,10 @@ Table.setViewHeight = function(value) {
                 textCounter++;
             } else if (i > (columns.length) && i%(columns.length + 1) === 0) {
                 $(texts[textCounter]).attr("y", row * cellHeight+ (cellHeight / 2) + 5);
+<<<<<<< HEAD
+=======
+                //console.log($(texts[textCounter]));
+>>>>>>> 71cc3bc57e0bf43281a4b5c89b4586af1f232a97
                 textCounter++;
             }
             i++;

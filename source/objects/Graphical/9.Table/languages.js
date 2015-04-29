@@ -1,6 +1,6 @@
 Table.setTranslations('de',{
 	'Table':'Tabelle',
-        'Row':'Zeile',
-        'Column':'Spalte'
+	'Row':'Zeile',
+	'Column':'Spalte'
 }
 );

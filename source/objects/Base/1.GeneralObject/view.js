@@ -1871,3 +1871,19 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
 
     return result;
 };
+
+
+//checks if the object is currently visible in the browser window of the user
+GeneralObject.checkBrowserVisibility = function() {
+
+    var documentViewTop = $(window).scrollTop();
+    var documentViewBottom = documentViewTop + $(window).height();
+
+    var objectTop = $("#"+this.id).offset().top;
+    var objectBottom = objectTop + $("#"+this.id).height();
+
+	var result = ((objectBottom <= documentViewBottom) && (objectTop >= documentViewTop));
+	
+    return result;
+	
+}

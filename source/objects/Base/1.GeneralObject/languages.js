@@ -52,7 +52,7 @@ GeneralObject.setTranslations('de',{
 	'style' : 'Stil',
 	'save' : 'speichern',
 	'distance between object and link' : 'Abstand zwischen Objekt und Link',
-    'create new Subroom' : 'neuen Unterraum erstellen',
+    'Create new Subroom' : 'Neuen Unterraum erstellen',
     'Cancel' : 'Abbrechen',
     'Okay' : 'Auswählen',
 	'open destination on double-click' : 'Ziel mit Doppelklick öffnen',
@@ -65,7 +65,7 @@ GeneralObject.setTranslations('de',{
 	'copy format' : 'Übertrage Formatierung',
 	'Please select a destination or enter a URL' : 'Bitte wählen Sie ein Ziel oder geben Sie eine URL ein',
 	'Please enter a valid URL' : 'Bitte geben Sie eine gültige URL ein',
-	'internal' : 'intern',
-	'external' : 'extern'
+	'Internal' : 'Intern',
+	'External' : 'Extern'
 	}
 );

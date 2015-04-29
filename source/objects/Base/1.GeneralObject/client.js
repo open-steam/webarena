@@ -262,12 +262,16 @@ GeneralObject.getLinkedObjects = function() {
     return links;
 }
 
-GeneralObject.showDialog = function() {
+
+/**
+ *	Exit Dialog, the user can specify an internal target (object, room) or external target (URL)
+ */
+GeneralObject.showExitDialog = function() {
     var that = this;
 
     var dialog_buttons = {};
 
-    dialog_buttons[that.translate(GUI.currentLanguage, "create new Subroom")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Create new Subroom")] = function() {
 
         var random = new Date().getTime() - 1296055327011;
 
@@ -291,23 +295,21 @@ GeneralObject.showDialog = function() {
 		
 		if(jstree_selected_item.length == 0 & textareaInput == ""){
 			alert(that.translate(GUI.currentLanguage, "Please select a destination or enter a URL"));
-			return;
+			setTimeout(function(){ that.showExitDialog() }, 10);
 		}
 		if(jstree_selected_item.length == 0 & textareaInput != ""){
 			HandleTextareaInput(textareaInput);
-			return;
 		}
 		if(jstree_selected_item.length != 0 & textareaInput == ""){
 			HandleTreeInput(jstree_selected_item);
-			return;
 		}
-		if(tab == "#tabs-1"){ //two inputs, decide which tab is open
-			HandleTreeInput(jstree_selected_item);
-			return;
-		}
-		else{
-			HandleTextareaInput(textareaInput);
-			return;
+		if(jstree_selected_item.length != 0 & textareaInput != ""){
+			if(tab == "#tabs-1"){ //two inputs, decide which tab is open
+				HandleTreeInput(jstree_selected_item);
+			}
+			else{
+				HandleTextareaInput(textareaInput);
+			}
 		}
 	};
 	
@@ -315,6 +317,7 @@ GeneralObject.showDialog = function() {
 	
 		if(textareaInput.indexOf("http://www.") != 0){
 			alert(that.translate(GUI.currentLanguage, "Please enter a valid URL"));
+			setTimeout(function(){ that.showExitDialog() }, 10);
 		}
 		else{
 			that.setAttribute("destination", textareaInput);
@@ -345,11 +348,31 @@ GeneralObject.showDialog = function() {
                 "json_data": {
                     "data": function(object, callback) {
                         if (object !== -1) {
-                            var id = object.data("id");
+                            var roomId = object.data("id");
+							that.serverCall("getRoomInventory", {"id": roomId}, callback);
                         } else {
-                            var id = -1;
+							Modules.Dispatcher.query('roomlist',null, function(rooms){
+								var roomArray = new Array();
+								for(var i = 0; i<rooms.length; i++){
+									var node = {
+										data : {
+											title : rooms[i],
+											icon : '/objectIcons/Subroom'
+										},
+										metadata : {
+											id : rooms[i],
+											name : rooms[i],
+											type : 'Room'
+										}
+									}
+									if(!that.getAttribute('filterObjects')){
+										node.state = 'closed';
+									}
+									roomArray.push(node);
+								}
+								callback(roomArray);
+							});
                         }
-                        that.serverCall("browse", {"id": id}, callback);
                     },
                     "ui": {
                         "select_limit": 1,
@@ -362,13 +385,11 @@ GeneralObject.showDialog = function() {
             }).bind("open_node.jstree", function() {
                 $('a > .jstree-icon').css({'background-size': 'contain'})
             });
-
-            //$('.ui-dialog-content').html(renderedTree);
 			
 			$('.ui-dialog-content').html('<div id="tabs">'+
 				'<ul>'+
-				'<li><a id="internal_Tab" href="#tabs-1">'+that.translate(GUI.currentLanguage, "internal")+' (Webarena)</a></li>'+
-				'<li><a id="external_Tab" href="#tabs-2">'+that.translate(GUI.currentLanguage, "external")+' (URL)</a></li>'+
+				'<li><a id="internal_Tab" href="#tabs-1">'+that.translate(GUI.currentLanguage, "Internal")+' (Webarena)</a></li>'+
+				'<li><a id="external_Tab" href="#tabs-2">'+that.translate(GUI.currentLanguage, "External")+' (URL)</a></li>'+
 				'</ul>'+
 				'<div id="tabs-1" style="height:250px">'+
 				'</div>'+
@@ -384,15 +405,13 @@ GeneralObject.showDialog = function() {
 			});
 			
 			$('#internal_Tab').click(function() {
-				$('#filterObjects').show();
-				$('#filterObjects').next().show();
-				$(':button:contains(' + that.translate(GUI.currentLanguage, "create new Subroom") + ')').show();
+				$('#checkboxLabel').show();
+				$(':button:contains(' + that.translate(GUI.currentLanguage, "Create new Subroom") + ')').show();
 			});
 			
 			$('#external_Tab').click(function() {
-				$('#filterObjects').hide();
-				$('#filterObjects').next().hide();
-				$(':button:contains(' + that.translate(GUI.currentLanguage, "create new Subroom") + ')').hide();
+				$('#checkboxLabel').hide();
+				$(':button:contains(' + that.translate(GUI.currentLanguage, "Create new Subroom") + ')').hide();
 			});
 	
             // bigger icons
@@ -410,8 +429,15 @@ GeneralObject.showDialog = function() {
             )
 
     //$(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", true);
+
+	$(".ui-dialog-buttonpane").append('<label id="checkboxLabel" class="checkbox-label"><input id="filterObjects" type="checkbox">'+that.translate(GUI.currentLanguage, "Show objects")+'</label>');
 	
-    $(".ui-dialog-buttonpane").append('<input id="filterObjects" type="checkbox"><p style="display:inline">' + that.translate(GUI.currentLanguage, "Show objects") + '</p>');
+	$('#checkboxLabel').css("position", "absolute");
+	$('#checkboxLabel').css("bottom", "20px");
+	$('#checkboxLabel').css("left", "35px");
+	$('#filterObjects').css("position", "relative");
+	$('#filterObjects').css("vertical-align", "middle");
+	$('#filterObjects').css("bottom", "1px");
 
     if (that.getAttribute('filterObjects')) {
         $('#filterObjects').prop('checked', false);
@@ -425,12 +451,12 @@ GeneralObject.showDialog = function() {
         if ($(this).is(':checked')) {
             that.setAttribute('filterObjects', false);
             $(':button:contains(' + that.translate(GUI.currentLanguage, "Cancel") + ')').click();
-            that.showDialog();
+            that.showExitDialog();
         }
         else {
             that.setAttribute('filterObjects', true);
             $(':button:contains(' + that.translate(GUI.currentLanguage, "Cancel") + ')').click();
-            that.showDialog();
+            that.showExitDialog();
         }
     });
 
@@ -446,6 +472,10 @@ GeneralObject.showDialog = function() {
 
 }
 
+
+/**
+ *	Format Dialog, the user can select which of the format attributes of the current object are used for another object
+ */
 GeneralObject.showFormatDialog = function(selected) {
     var that = this;
     var dialog_buttons = {};
