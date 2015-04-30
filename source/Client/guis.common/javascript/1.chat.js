@@ -69,7 +69,7 @@ GUI.chat.setUsers = function(users) {
 				GUI.flashNewUserIcon(true);
 			
 				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay width="0"></video></div>');
-				if(Modules.Config.WebRTC){
+				if(Modules.Config.WebRTC && (navigator.mozGetUserMedia || navigator.webkitGetUserMedia)){
 					GUI.chat.addChatIcon(user.id, true);
 					GUI.chat.addChatIcon(user.id, false);
 				}

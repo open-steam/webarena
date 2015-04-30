@@ -81,7 +81,7 @@ WebRTCManager.startCall = function(showVideo, partnerId, partnername){
 
 WebRTCManager.receiveCall = function(showVideo, r, caller){
 	
-	if(!WebRTCManager.busy){
+	if(!WebRTCManager.busy && (navigator.mozGetUserMedia || navigator.webkitGetUserMedia)){
 	
 		var result = false;
 		
