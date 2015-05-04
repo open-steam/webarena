@@ -12,23 +12,8 @@ Table.showFormatDialog = function(selected) {
         if (document.getElementById("linecolor") !== null)
             data.linecolor = $('#linecolor').attr('checked') == 'checked' ? that.getAttribute('linecolor') : false;
         if (document.getElementById("linesize") !== null)
-            data.linesize = $('#linesize').attr('checked') == 'checked' ? that.getAttribute('linesize') : false;
-
-        ObjectManager.latestFormatSelections = {};
-        for (var i in selected) {
-            if (selected[i].id !== that.id) {
-                for (var d in data) {
-                    if (data[d]) {
-                        selected[i].setAttribute(d, data[d]);
-                        ObjectManager.latestFormatSelections[d] = true;
-                    }
-                }
-            }
-        }
-
-        //ObjectManager.copyFormatAttributes(data, room);
-
-        //Todo: Übertrage die Formatierungseinstellungen
+            data.linesize = $('#linesize').attr('checked') == 'checked' ? that.getAttribute('linesize') : false; 
+        
         GUI.updateInspector();
     };
     dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
@@ -44,8 +29,9 @@ Table.showFormatDialog = function(selected) {
     
     var attributesY = this.getAttribute("attributeY");
     html += '<ul id="sortable">';
+    
     for(var i in attributesY){
-      html += '<li class="ui-state-default">'+attributesY+'</li>'
+      html += '<li class="ui-state-default">'+attributesY+'</li>';
     }
             
 /*<li class="ui-state-default"></li>
