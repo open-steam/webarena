@@ -176,3 +176,11 @@
 	position: relative;
 	top: -20px;
 }
+
+
+.jPopover_button_right>input {
+	position: relative;
+	left: 65px;
+	top: -18px;
+	width: 50px;
+}

@@ -772,7 +772,7 @@ GUI.editPaint = function(){
         positionOffsetX: 0,
         positionOffsetY: 20,
         arrowOffsetRight: 12,
-		minWidth : 120,
+		minWidth : 150,
         onSetup: function(domEl, popover) {
 
             Object.defineProperty(popover.options, 'positionOffsetX', {
@@ -810,6 +810,18 @@ GUI.editPaint = function(){
 					$(btnSize.getDOM()).bind("mousedown", clickSize);
 				}
 			});
+			
+			//add number selecton widget
+			var element = section.addElement(GUI.translate('custom') + ':');
+			var widget = element.addWidget("number");
+			widget.setValue(10);
+			widget.setMin(1);
+			widget.setMax(99);
+			$(element.getDOM()).css("height", "16px");
+			widget.onChange(function(value){
+				GUI.setPaintSize(value);
+			});
+			
         }
     });
 	
