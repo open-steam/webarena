@@ -725,6 +725,19 @@ GUI.editPaint = function(){
 					$(btnColor.getDOM()).bind("mousedown", clickColor);
 				}
 			});
+			
+			//add color picker widget
+			var element = section.addElement(GUI.translate('custom') + ':');
+			var widget = element.addWidget("color");
+			widget.setColor("transparent");
+			$(element.getDOM()).css("height", "14px");
+			widget.onChange(function(value){
+				//console.log(value);
+				var val = value.replace(/\s/g, "").replace("rgb(", "").replace(")", "");
+				var rgb = val.split(",");
+				GUI.paintColor = "#"+GUI.convertRGBToHex(parseInt(rgb[0]), parseInt(rgb[1]), parseInt(rgb[2]));
+			});
+			
         }
     });
 	
@@ -1566,4 +1579,20 @@ GUI.resizePaintToolbar = function(){
 		}
 	}
 
+}
+
+
+/**
+ * converts RGB-values in a single hex value
+ */
+GUI.convertRGBToHex = function(R,G,B){
+	
+	function toHex(n) {
+		n = parseInt(n,10);
+		if (isNaN(n)) return "00";
+		n = Math.max(0,Math.min(n,255));
+		return "0123456789ABCDEF".charAt((n-n%16)/16) + "0123456789ABCDEF".charAt(n%16);
+	}
+
+	return toHex(R)+toHex(G)+toHex(B);
 }

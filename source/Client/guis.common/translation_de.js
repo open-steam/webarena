@@ -53,6 +53,7 @@ GUI.setTranslations('de',{
 	'green' : 'grün',
 	'blue' : 'blau',
 	'yellow' : 'gelb',
+	'custom' : 'Eigene',
 	'copy' : 'Kopieren',
 	'Copy' : 'Kopieren',
 	'cut' : 'Ausschneiden',

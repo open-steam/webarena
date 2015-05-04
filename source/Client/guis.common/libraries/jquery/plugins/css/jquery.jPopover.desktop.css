@@ -167,3 +167,12 @@
 	border-bottom: none !important;
 }
 
+.jPopoverWidget_color_preview {
+	width: 20px;
+	height: 20px;
+	border-radius: 5px;
+	border: 1px solid #abaeb3;
+  	float: right;
+	position: relative;
+	top: -20px;
+}
