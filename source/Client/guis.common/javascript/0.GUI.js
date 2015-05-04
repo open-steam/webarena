@@ -520,17 +520,10 @@ GUI.initMouseHandler = function() {
 			//object creation via object symbols
 			var cursor = $("body").css('cursor');	
 			if(cursor != "auto"){
-				
-				var t = cursor.split("/");
-				var s = t[4].split(")");
-				var r = s[0];
-				
-				//special case for Firefox
-				if(r.charCodeAt(r.length-1)==34){
-					r = r.slice(0,r.length-1);
-				}
-				
-				var proto = ObjectManager.getPrototype(r);
+								
+				var url = cursor.split(".cur");
+				var arr = url[0].split("/");	
+				var proto = ObjectManager.getPrototype(arr[arr.length-1]);
 			
 				GUI.startNoAnimationTimer();
 						

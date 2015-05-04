@@ -31,7 +31,9 @@ Rectangle.draw = function(external) {
     if(!label) label = '';
 
     rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + this.getAttribute('horizontal-align') + '">' + label + '</td></tr></table>';
-
+	
+	rep.text.style = '';
+	
     rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.text.style.fontFamily = this.getAttribute('font-family');
     rep.text.style.color = this.getAttribute('font-color');

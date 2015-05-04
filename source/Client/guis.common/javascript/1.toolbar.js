@@ -91,7 +91,8 @@ GUI.initToolbar = function() {
 
 								}
 								else {
-									$("body").css('cursor', 'url(/objectIcons/' + object.type + '), auto');
+									//$("body").css('cursor', 'url(/objectIcons/' + object.type + '), auto');
+									$("body").css('cursor', 'url(../../guis.common/images/cursor/'+object.type+'.cur), auto');
 								}
 							}
 						}

@@ -14,6 +14,9 @@ body {
 	top: 0px;
 	left: 0px;
 	right: 0px;
+	background: linear-gradient(
+		#3E3E3E 0%,
+		#1E1E1E 100%);
 	background: -moz-linear-gradient(
 		center top ,
 		#3E3E3E 0%,
@@ -24,7 +27,7 @@ body {
 		left bottom,
 		color-stop(0, #3E3E3E),
 		color-stop(1, #1E1E1E)
-		);
+		);	
 	color: #eaecf0;
 	box-shadow: 0px 1px 3px rgba(0,0,0,0.3);
 	-webkit-box-shadow: 0px 1px 3px rgba(0,0,0,0.5);
@@ -114,7 +117,9 @@ body {
 #header img.header_tab:hover,
 #header img.header_tab.active {
 	border-color: #ADADAD;
-	
+	background: linear-gradient(
+		#6E6E6E 0%,
+		#1E1E1E 100%);
 	background: -moz-linear-gradient(
 		center top ,
 		#6E6E6E 0%,
@@ -394,7 +399,7 @@ div.header_menu form {
 #sidebar_title {
 	z-index: 11000;
 	height: 25px;
-	position: fixed;
+	position: relative;
 	top: 0px;
 	width: 220px;
 	right: 0px;
