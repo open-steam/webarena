@@ -129,6 +129,7 @@ GUI.setTranslations('de',{
 	'Show sidebar':'Sidebar einblenden',
 	'stroke' : 'Linie',
 	'dotted' : 'gepunktet',
-	'dashed' : 'gestrichelt'
+	'dashed' : 'gestrichelt',
+	'Unfortunately Microsoft Internet Explorer did not support all features of this system. We recommend using Google Chrome or Mozilla Firefox. Thank you for your understanding.' : 'Leider unterstützt der Microsoft Internet Explorer nicht alle Funktionen dieses Systems. Wir empfehlen die Verwendung von Google Chrome oder Mozilla Firefox. Vielen Dank für ihr Verständnis.'
 	}
 );
