@@ -14,8 +14,8 @@ CoordinateSystem.register = function(type) {
     Modules.ObjectManager.getPrototype('Rectangle').register.call(this, type);
     this.makeStructuring();
 
-    this.registerAttribute('attributeX', {type: 'text', standard: '', category: 'Scale2'});
-    this.registerAttribute('attributeY', {type: 'text', standard: '', category: 'Scale2'});
+    //this.registerAttribute('attributeX', {type: 'text', standard: '', category: 'Scale2'});
+    //this.registerAttribute('attributeY', {type: 'text', standard: '', category: 'Scale2'});
 
     this.registerAttribute('linestyleX', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
     this.registerAttribute('linestyleY', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});

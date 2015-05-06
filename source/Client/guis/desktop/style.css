@@ -937,7 +937,7 @@ svg text.font-icon{
 
 .line {
 	fill: none;
-	stroke: steelblue;
+	stroke: black;
 	shape-rendering: auto;
 }
 

@@ -1,6 +1,4 @@
-/*Table.setTranslations('de',{
-	'Table':'Tabelle',
-	'Row':'Zeile',
-	'Column':'Spalte'
+CoordinateSystem.setTranslations('de',{
+	'CoordinateSystem':'Koordinatensystem',	
 }
-); */
+); 

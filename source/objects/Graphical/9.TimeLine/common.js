@@ -14,8 +14,6 @@ TimeLine.register = function(type) {
     Modules.ObjectManager.getPrototype('Rectangle').register.call(this, type);
     this.makeStructuring();
 
-    this.registerAttribute('attribute', {type: 'text', standard: '', category: 'TimeLine'});
-
     this.registerAttribute('linestyle', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
 
     this.registerAttribute('min', {type: 'number', standard: 1, category: 'TimeLine'});
