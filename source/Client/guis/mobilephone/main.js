@@ -113,6 +113,3 @@ GUI.setupInspector = function() {
     });
 
 }
-
-
-
