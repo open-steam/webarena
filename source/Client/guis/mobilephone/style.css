@@ -1,4 +1,4 @@
-body {
+﻿body {
 	margin: 0px;
 	padding: 0px;
 	font-family: 'Open Sans', sans-serif;
@@ -1172,4 +1172,28 @@ svg text.font-icon{
 	padding-left: 5px;
 	padding-right: 12px;
 	vertical-align: middle;
+}
+
+#uploadWindow {
+	height: 70px; 
+    	width: 300px; 
+    	top: 200px; 
+    	left: 30px; 
+    	display: block; 
+    	z-index: 101;
+    	border-bottom-right-radius: 4px;
+    	border-bottom-left-radius: 4px;
+    	border-top-right-radius: 4px;
+    	border-top-left-radius: 4px;
+    	border-top-color: rgb(221, 221, 221);
+ 	border-top-style: solid;
+ 	border-top-width: 1px;
+ 	background: #b0b3b7;
+  	color: #333333;
+        font-family: Trebuchet MS,Tahoma,Verdana,Arial,sans-serif;
+  	font-size: 1.1em;
+ 	overflow: hidden;
+  	position: absolute;
+  	padding: .2em;
+  	outline: 0;
 }

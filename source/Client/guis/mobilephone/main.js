@@ -6,81 +6,61 @@
 GUI.uploadFile=function(object,message){
 
     var uploadDialog = document.createElement("div");
-    $(uploadDialog).attr("title", GUI.translate("Upload file"));
-    $(uploadDialog).html('<p>'+message+'</p>');
+	$(uploadDialog).attr("id", "uploadWindow");
+    $(uploadDialog).html('<div style="display: block; width: auto; min-height: 43px; max-height: none; height: auto;"><input type="file" id="fileInput" style="position: relative; left:10px; bottom:0px;"></div><div><div><button type="button" id="CancelButton" role="button" style="position: relative; left: 10px; bottom:0px;"><span>'+GUI.translate('cancel')+'</span></button></div></div></div>');
 
-    var form = document.createElement("input");
-    $(form).attr("type", "file");
+	$("body").append(uploadDialog);
+	
+	$("#CancelButton").bind('click', function (){
+		$(uploadDialog).remove();
+	});
+	
+	$("#fileInput").change(function(){
+		
+		var fd = new FormData();
+	
+		var x = document.getElementById("fileInput");
 
-    $(form).bind("change", function() {
+		if ('files' in x) {
+			if (x.files.length == 0){
+				alert(GUI.translate("Please select a file"));
+			} else {
+				for (var i = 0; i < x.files.length; i++){
+					fd.append("file", x.files[0]);
+				}
+			}
+		} 
+		else {
+			if (x.value == ""){
+				alert(GUI.translate("Please select a file"));
+			}
+		}
 
-        var progress = document.createElement("div");
-        $(progress).css("margin-top", "10px");
-        $(progress).progressbar({
-            value: 0
-        });
+		var filename = $(this).val().replace("C:\\fakepath\\", "");
+		object.setAttribute('name', filename, true);
 
-        $(uploadDialog).append(progress);
+		var xhr = new XMLHttpRequest();
 
-        var fd = new FormData();
-        fd.append("file", form.files[0]);
-
-
-        var filename = $(this).val().replace("C:\\fakepath\\", "");
-        object.setAttribute('name', filename, true);
-
-
-        var xhr = new XMLHttpRequest();
-        xhr.upload.addEventListener("progress", function(evt) {
-
-            if (evt.lengthComputable) {
-                var percentComplete = Math.round(evt.loaded * 100 / evt.total);
-                $(progress).progressbar("value", percentComplete);
-            } else {
-                $(progress).progressbar("destroy");
-                $(progress).html("unable to compute progress");
-            }
-
-        }, false);
-
-        xhr.addEventListener("load", function() {
+		xhr.addEventListener("load", function() {
             //upload complete
-            $(uploadDialog).dialog("close");
+            $(uploadDialog).remove();
         }, false);
         xhr.addEventListener("error", function() {
             //failed
-            alert("failed");
+            alert(GUI.translate("Error while uploading file"));
         }, false);
         xhr.addEventListener("abort", function() {
             //canceled
-            alert("cancel");
+            alert(GUI.translate("Upload aborted")); 
         }, false);
-        xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
-        xhr.send(fd);
+		
+		xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
+		xhr.send(fd);
+		
+		$(uploadDialog).html(GUI.translate('File is currently being uploaded...'));
 
-        var dialogButtons = {};
-        dialogButtons[GUI.translate("cancel")] = function() {
-            xhr.abort();
-            $(this).dialog("close");
-        }
-
-        $(uploadDialog).dialog("option", "buttons", dialogButtons);
-
-    });
-
-    $(uploadDialog).append(form);
-
-    var dialogButtons = {};
-    dialogButtons[GUI.translate("cancel")] = function() {
-        $(this).dialog("close");
-    }
-
-    $(uploadDialog).dialog({
-        modal: true,
-        resizable: false,
-        buttons: dialogButtons
-    });
-
+	});
+	
 }
 
 /**
@@ -88,13 +68,14 @@ GUI.uploadFile=function(object,message){
  */
 GUI.updateInspector = function(selectionChanged) {
 
-    if (!selectionChanged && $("#inspector").data("jDesktopInspector").hasFocus) {
-        return; // do not update inspector content when the inspector has focus
-    }
+	if(typeof $("#inspector").data("jDesktopInspector") != 'undefined'){
+		if (!selectionChanged && $("#inspector").data("jDesktopInspector").hasFocus) {
+			return; // do not update inspector content when the inspector has focus
+		}
 
-
-    $("#inspector").data("jDesktopInspector").update();
-    $("#sidebar_content").scrollTop(0);
+		$("#inspector").data("jDesktopInspector").update();
+		$("#sidebar_content").scrollTop(0);
+	}
 
 }
 

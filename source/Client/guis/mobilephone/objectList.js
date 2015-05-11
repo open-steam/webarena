@@ -172,7 +172,8 @@ ObjectList.buildObjectEntry = function(object, categoryID) {
     if (object.getType() == "Subroom") {
         // Simply change the current room.
         $(objectDiv).bind('click', function () {
-            object.execute(false);
+            //object.execute(false);
+			object.follow(object.getAttribute("open in"));
         });
     } else {
         // Switch to the view of the object.
@@ -188,18 +189,11 @@ ObjectList.buildObjectEntry = function(object, categoryID) {
 }
 
 ObjectList.deleteObject = function(webarenaObject) {
-	var dom = $('<div></div>');
-	var title = GUI.translate('Delete Object');
-	var message = GUI.translate('Do you really want to delete the object?');
-	
-	$(dom).append(message);
-	
-	var buttons = {};
-	
-	buttons[GUI.translate("Delete Object")] = function(domContent){
+
+	var dialog = confirm(GUI.translate('Do you really want to delete the object?'));
+	if (dialog){
 		webarenaObject.deleteIt();
-	};
-	buttons[GUI.translate("Cancel Deletion")] = function(domContent){};
+		window.location.reload();
+	} 
 	
-	GUI.dialog(title, dom, buttons)
 }
