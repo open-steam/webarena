@@ -37,6 +37,8 @@ Rectangle.draw = function(external) {
     rep.text.style.color = this.getAttribute('font-color');
 
 }
+
+
 /**
  * Sets the objects width
  * @param {int} value The new width

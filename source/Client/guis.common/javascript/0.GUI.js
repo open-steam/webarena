@@ -225,10 +225,6 @@ GUI.deselectAllObjects = function() {
 }
 
 
-
-
-
-
 /* multi selection */
 
 /**
@@ -267,7 +263,6 @@ GUI.initShiftKeyHandling = function() {
 	});
 	
 }
-
 
 
 /* move by keyboard */
@@ -359,8 +354,8 @@ GUI.initMoveByKeyboard = function() {
 	});
 }
 
-GUI.initUndoByKeyboard = function(){
 
+GUI.initUndoByKeyboard = function(){
 
     $(document).bind("keydown", function(event) {
         var ctrlDown = event.ctrlKey||event.metaKey
@@ -371,6 +366,7 @@ GUI.initUndoByKeyboard = function(){
         }
     });
 }
+
 
 /**
  * add event handler for removing selected objects by pressing delete-key
