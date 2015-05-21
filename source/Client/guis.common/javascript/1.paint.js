@@ -257,6 +257,8 @@ COPY.start = function(event){
 	//$("#statusLabel").html(GUI.translate("Mode") + ": " + GUI.translate("copy"));
 	//$("#statusLabel").css("display", "inline");
 	
+	COPY.mouseOverSelectionBox = ( COPY.destX < x && x < COPY.destX + COPY.sourceW ) && ( COPY.destY < y && y < COPY.destY + COPY.sourceH );
+	
 	if(!COPY.selecting){
 		// start creating selection frame
 		COPY.sourceXTemp = x;
@@ -278,7 +280,7 @@ COPY.start = function(event){
 
 COPY.move = function(event){
 	if (!COPY.enabled) return;
-
+	
 	event.preventDefault();
 	event.stopPropagation();
 
@@ -316,7 +318,7 @@ COPY.move = function(event){
 	else if (!COPY.dragging){
 		// selection frame drawn
 		COPY.mouseOverSelectionBox = ( COPY.destX < x && x < COPY.destX + COPY.sourceW ) && ( COPY.destY < y && y < COPY.destY + COPY.sourceH );
-	
+		
 		if (COPY.mouseOverSelectionBox) $(GUI.paintCanvasTemp).css("cursor", "move");
 		else $(GUI.paintCanvasTemp).css("cursor", "crosshair");
 	}
@@ -437,6 +439,8 @@ CUT.start = function(event){
 	//$("#statusLabel").html(GUI.translate("Mode") + ": " + GUI.translate("cut"));
 	//$("#statusLabel").css("display", "inline");
 
+	CUT.mouseOverSelectionBox = ( CUT.destX < x && x < CUT.destX + CUT.sourceW ) && ( CUT.destY < y && y < CUT.destY + CUT.sourceH );
+	
 	if (!CUT.selecting){
 		// start creating selection frame
 		CUT.sourceXTemp = x;
@@ -1180,17 +1184,32 @@ GUI.editPaint = function(){
 	GUI.paintContext = GUI.paintCanvas.getContext('2d');
 	GUI.paintContextTemp = GUI.paintCanvasTemp.getContext('2d');
 
-	GUI.paintCanvasTemp.addEventListener("mousedown", COPY.start, false);
-	GUI.paintCanvasTemp.addEventListener("mousemove", COPY.move, false);
-	GUI.paintCanvasTemp.addEventListener("mouseup", COPY.end, false);
+	if (GUI.isTouchDevice){
+		GUI.paintCanvasTemp.addEventListener("touchstart", COPY.start, false);
+		GUI.paintCanvasTemp.addEventListener("touchmove", COPY.move, false);
+		GUI.paintCanvasTemp.addEventListener("touchend", COPY.end, false);
 
-	GUI.paintCanvasTemp.addEventListener("mousedown", CUT.start, false);
-	GUI.paintCanvasTemp.addEventListener("mousemove", CUT.move, false);
-	GUI.paintCanvasTemp.addEventListener("mouseup", CUT.end, false);
-	
-	GUI.paintCanvasTemp.addEventListener("mousedown", ERASER.start, false);
-	GUI.paintCanvasTemp.addEventListener("mousemove", ERASER.move, false);
-	GUI.paintCanvasTemp.addEventListener("mouseup", ERASER.end, false);
+		GUI.paintCanvasTemp.addEventListener("touchstart", CUT.start, false);
+		GUI.paintCanvasTemp.addEventListener("touchmove", CUT.move, false);
+		GUI.paintCanvasTemp.addEventListener("touchend", CUT.end, false);
+		
+		GUI.paintCanvasTemp.addEventListener("touchstart", ERASER.start, false);
+		GUI.paintCanvasTemp.addEventListener("touchmove", ERASER.move, false);
+		GUI.paintCanvasTemp.addEventListener("touchend", ERASER.end, false);
+	}
+	else{
+		GUI.paintCanvasTemp.addEventListener("mousedown", COPY.start, false);
+		GUI.paintCanvasTemp.addEventListener("mousemove", COPY.move, false);
+		GUI.paintCanvasTemp.addEventListener("mouseup", COPY.end, false);
+
+		GUI.paintCanvasTemp.addEventListener("mousedown", CUT.start, false);
+		GUI.paintCanvasTemp.addEventListener("mousemove", CUT.move, false);
+		GUI.paintCanvasTemp.addEventListener("mouseup", CUT.end, false);
+		
+		GUI.paintCanvasTemp.addEventListener("mousedown", ERASER.start, false);
+		GUI.paintCanvasTemp.addEventListener("mousemove", ERASER.move, false);
+		GUI.paintCanvasTemp.addEventListener("mouseup", ERASER.end, false);
+	}
 	
 	var svgpos = $("#content").offset();
 	
