@@ -329,15 +329,18 @@ IconObject.editText = function(){
 	
 	$(rep).find("foreignObject").show();
 	
-	$(rep).find("body").append('<input type="text" name="newContent" value="'+this.getIconText()+'" style="font-size: 12px;">');
+	$(rep).find("body").append('<input type="text">');
 	
-	$(rep).find("foreignObject").attr("x", -66); 
+	$(rep).find("foreignObject").attr("x", -60); 
 	$(rep).find("foreignObject").attr("y", 75); 
-	$(rep).find("foreignObject").attr("height", 22);
+	$(rep).find("foreignObject").attr("height", 25);
 	$(rep).find("foreignObject").attr("width", 200);
 	$(rep).find("foreignObject").attr('pointer-events','fill');
 	
-	$(rep).find("input").css("width", "194px"); 
+	$(rep).find("input").css("width", "186px"); 
+	$(rep).find("input").css("font-size", "12px"); 
+	$(rep).find("input").attr("value", this.getIconText()); 
+	$(rep).find("input").attr("name", "newContent"); 
 	
 	$(rep).find("text").hide();
 	
@@ -345,8 +348,6 @@ IconObject.editText = function(){
 	
 	this.input = true;
 	GUI.input = this.id;
-	
-	var self = this;
 
 }
 

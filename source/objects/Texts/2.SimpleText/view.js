@@ -75,7 +75,7 @@ SimpleText.createRepresentation = function(parent) {
 	
 	var body = document.createElement("body");
 	
-	$(rep.text).append(body);
+	$(rep).find("foreignObject").append(body);
 	
 	rep.dataObject=this;
 
@@ -96,11 +96,18 @@ SimpleText.editText = function() {
 	
 	var rep = this.getRepresentation();
 	
-	rep.input.innerHTML='<input type="text" name="newContent" value="'+this.oldContent+'" style="font-size: '+this.getAttribute('font-size')+'px; font-family: '+this.getAttribute('font-family')+'; color: '+this.getAttribute('font-color')+'; width: '+(rep.text.getBoundingClientRect().width-6)+'px; height: '+(rep.text.getBoundingClientRect().height-5)+'px;">';
+	$(rep).find("foreignObject").show();
 	
-	$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+5);
-	
-	$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width);
+	$(rep).find("body").append('<input type="text">');
+	$(rep).find("input").attr("name", "newContent");
+	$(rep).find("input").attr("value", this.oldContent);
+	$(rep).find("input").css("font-size", this.getAttribute('font-size')+"px");
+	$(rep).find("input").css("font-family", this.getAttribute('font-family')); 
+	$(rep).find("input").css("color", this.getAttribute('font-color'));
+	$(rep).find("input").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
+	$(rep).find("input").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
+	$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
+	$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+26);
 	
 	$(rep).find("text").hide();
 	
@@ -108,10 +115,6 @@ SimpleText.editText = function() {
 	
 	this.input = true;
 	GUI.input = this.id;
-	
-	var self = this;
-		
-	//GUI.editText(this);
 	
 }
 
@@ -162,7 +165,9 @@ SimpleText.saveChanges = function() {
 	
 		var newContent = $(rep).find("input").val()
 
-		$(rep).find("input").hide();
+		$(rep).find("input").remove();
+	
+		$(rep).find("foreignObject").hide();
 	
 		$(rep).find("text").show();
 	

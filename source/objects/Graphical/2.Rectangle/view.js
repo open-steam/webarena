@@ -29,13 +29,9 @@ Rectangle.draw = function(external) {
     var label = this.getAttribute('label');
 	
     if(!label) label = '';
-
-    rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + this.getAttribute('horizontal-align') + '">' + label + '</td></tr></table>';
+	$(rep).find("td").empty();
+	$(rep).find("td").append(label);
 	
-    rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
-    rep.text.style.fontFamily = this.getAttribute('font-family');
-    rep.text.style.color = this.getAttribute('font-color');
-
 }
 
 
@@ -93,6 +89,16 @@ Rectangle.createRepresentation = function(parent) {
     var body = document.createElement("body");
 
     $(rep.text).append(body);
+	
+	$(rep).find("body").append('<table><tr><td></td></tr></table>');
+	
+	$(rep).find("table").css("width", "100%");
+	$(rep).find("table").css("fontSize", this.getAttribute('font-size')+"px");
+	$(rep).find("table").css("fontFamily", this.getAttribute('font-family'));
+	$(rep).find("table").css("color", this.getAttribute('font-color'));
+	$(rep).find("td").css("height", this.getAttribute('height')+"px");
+	$(rep).find("td").css("vertical-align", this.getAttribute('vertical-align'));
+	$(rep).find("td").css("text-align", this.getAttribute('horizontal-align'));
 
     rep.dataObject = this;
 
@@ -112,20 +118,24 @@ Rectangle.editText = function(){
 
 	var rep = this.getRepresentation();
 	
-	var table = rep.text.getElementsByTagName('td')[0];
+	$(rep).find("table").hide();
 	
-	table.innerHTML='<textarea type="text" name="newContent" style="font-size: '+this.getAttribute('font-size')+'px; font-family: '+this.getAttribute('font-family')+'; color: '+this.getAttribute('font-color')+';">';
+	$(rep).find("body").append('<textarea type="text">');
 	
+	$(rep).find("textarea").attr("name", "newContent");
 	$(rep).find("textarea").val(this.getAttribute('label'));
-	$(rep).find("textarea").css("width", "90%");
-	$(rep).find("textarea").css("height", "90%");
+	$(rep).find("textarea").css("width", (this.getAttribute("width")-16)+"px");
+	$(rep).find("textarea").css("height", (this.getAttribute("height")-16)+"px");
+	$(rep).find("textarea").css("font-size", this.getAttribute('font-size')+"px");
+	$(rep).find("textarea").css("font-family", this.getAttribute('font-family'));
+	$(rep).find("textarea").css("color", this.getAttribute('font-color'));
+	$(rep).find("textarea").css("margin-left", "5px");
+	$(rep).find("textarea").css("margin-top", "5px");
 	
 	$(rep).find("textarea").focus();
 	
 	this.input = true;
 	GUI.input = this.id;
-	
-	var self = this;
 
 }
 
@@ -149,6 +159,8 @@ Rectangle.saveChanges = function() {
 		GUI.input = false;
 
 		$(rep).find("textarea").remove();
+	
+		$(rep).find("table").show();
 	
 		this.draw();	
 	}

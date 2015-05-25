@@ -476,6 +476,8 @@ GUI.initMouseHandler = function() {
 			
 			jPopoverManager.hideAll();
 			
+			GUI.saveChanges(event);
+			
 			var contentPosition = $("#content").offset();
 
 			var x = event.pageX-contentPosition.left;
