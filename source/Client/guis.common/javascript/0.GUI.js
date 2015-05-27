@@ -58,8 +58,7 @@ GUI.guiType = 'desktop';
  */
 $(function() {
     var userAgent = navigator.userAgent;
-    if (userAgent.indexOf('iPhone') > 0 ||
-		(userAgent.indexOf('Android') > 0 && userAgent.indexOf('Mobile') > 0)) {
+    if (userAgent.indexOf('iPhone') > 0 || (userAgent.indexOf('Android') > 0 && userAgent.indexOf('Mobile') > 0)) {
 		GUI.guiType = 'mobilephone';
     }
 });

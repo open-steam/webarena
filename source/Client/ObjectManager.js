@@ -73,9 +73,8 @@ ObjectManager.getObject = function(objectID) {
 }
 
 ObjectManager.buildObject = function(type, attributes) {
-
-    if (!type)
-        console.trace();
+	
+    if (!type) console.trace();
 
     var proto = this.getPrototype(type);
     var object = Object.create(proto);
@@ -185,7 +184,7 @@ ObjectManager.objectUpdate = function(data) {
     var object = ObjectManager.getObject(data.id);
 
     if (object) {
-
+	
         if (object.moving)
             return;
 
@@ -216,6 +215,8 @@ ObjectManager.objectUpdate = function(data) {
         object.refreshDelayed();
     } else {
 
+		if(data.type == "Discussion" && GUI.guiType == 'mobilephone') return;
+	
         object = ObjectManager.buildObject(data.type, data);
 
         if (GUI.couplingModeActive) {
@@ -272,7 +273,7 @@ ObjectManager.registerAttributeChangedFunction = function(theFunction) {
 
 ObjectManager.contentUpdate = function(data) {
     var object = ObjectManager.getObject(data.id);
-    object.contentUpdated();
+    if(object) object.contentUpdated();
 }
 
 ObjectManager.remove = function(object) {
@@ -550,8 +551,11 @@ ObjectManager.init = function() {
     })
 
     Modules.Dispatcher.registerCall('objectDelete', function(data) {
-        ObjectManager.getObject(data.id).deleteLinks();  //delete all links which ends or starts in this object
-        ObjectManager.removeLocally(data);
+		var object = ObjectManager.getObject(data.id);
+		if(object){
+			object.deleteLinks();  //delete all links which ends or starts in this object
+			ObjectManager.removeLocally(data);
+		}
     });
 
     Modules.Dispatcher.registerCall('contentUpdate', function(data) {

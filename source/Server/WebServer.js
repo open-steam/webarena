@@ -49,8 +49,7 @@ WebServer.init = function (theModules) {
 		*/
 		
 		/* Check if the client is on a mobile phone or not. */
-		if (agent && (agent.indexOf('iPhone') > 0 ||
-			(agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0))) {
+		if (agent && (agent.indexOf('iPhone') > 0 || (agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0))) {
 			WebServer.guiType = 'mobilephone';
 		} else {
 			WebServer.guiType = 'desktop';
