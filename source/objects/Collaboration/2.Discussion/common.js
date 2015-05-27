@@ -30,12 +30,21 @@ Discussion.register=function(type){
         hidden: true
     })
 
+	/*
     this.registerAttribute("discussionTitle",{
         hidden: true,
         changedFunction: function(object, value) {
             object.updateHeading(value);
         }
     })
+	*/
+	
+	this.registerAttribute('name', {
+		type: 'text',
+		changedFunction: function(object, value) {
+            object.updateHeading(value);
+        }
+	})
 
 }
 

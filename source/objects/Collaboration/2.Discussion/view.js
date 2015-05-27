@@ -38,7 +38,6 @@ Discussion.drawEmbedded = function () {
 
     var that = this;
 
-    this.bindAdminControlls();
 }
 
 Discussion.updateHeading = function(newHeading){
@@ -77,19 +76,6 @@ Discussion.draw = function (external) {
     this.adjustControls();
 }
 
-Discussion.bindAdminControlls = function () {
-    var rep = this.getRepresentation();
-    var that = this;
-    $(rep).find(".statement-delete").click(function () {
-        var deleteId = ($(this).parent('.discussion-statement').attr("data-message-id"))
-
-        that.deleteStatement(deleteId);
-    })
-
-    $(rep).find(".statement-edit").click(function () {
-        $(this).siblings(".discussion-statement-text").trigger("discussion-statement-edit")
-    });
-}
 
 Discussion.enableInlineEditors = function () {
     var rep = this.getRepresentation();
@@ -110,10 +96,10 @@ Discussion.enableInlineEditors = function () {
         that.setContent(JSON.stringify(changedArr));
     };
 
-
+	/*
     $(rep).find('.discussion-statement-text').editable(saveFunction, {
         type: "autogrow",
-        submit: this.translate(GUI.currentLanguage, "Save"),
+        //submit: this.translate(GUI.currentLanguage, "Save"),
         cancel: this.translate(GUI.currentLanguage, "Cancel"),
         placeholderHTML5: this.translate(GUI.currentLanguage, "Title of discussion"),
         autogrow: {
@@ -134,6 +120,7 @@ Discussion.enableInlineEditors = function () {
             $(this).parent().removeClass('active-editing')
         }
     });
+	*/
 }
 
 Discussion.switchStateView = function(){
@@ -167,7 +154,7 @@ Discussion.createRepresentationEmbedded = function (parent) {
     var rep = GUI.svg.other(parent,"foreignObject");
     rep.dataObject = this;
 
-    var heading = this.getAttribute("discussionTitle") || this.translate(GUI.currentLanguage, "Title of discussion");
+    var heading = this.getAttribute("name"); // || this.translate(GUI.currentLanguage, "Title of discussion");
 
     // content
     var body = document.createElement("body");
@@ -184,38 +171,66 @@ Discussion.createRepresentationEmbedded = function (parent) {
 
     that.oldContent = new Array();
 
-    that.title = this.getAttribute("discussionTitle") || "TITLE";
+    that.title = this.getAttribute("name"); //|| "TITLE";
 
-    $(body).on("keyup", "input", function (event) {
-        if (event.keyCode == 13 && $(this).val() != "") { // enter
-            var value = $(this).val();
+	var createMessage = function(value){
+		var message = {};
+        message.author = GUI.username;
+        message.timestamp = new Date();
+        message.text = htmlEscape(value);
 
-            var message = {};
-            message.author = GUI.username;
-            message.timestamp = new Date();
-            message.text = htmlEscape(value);
-
-            if (!that.oldContent) {
-                that.oldContent = new Array();
-            }
-            that.oldContent.push(message);
-
-            $(this).val('');
-
-            that.setContent(JSON.stringify(that.oldContent));
-            $(body).find(".discussion-content").animate(
-                { scrollTop: $(body).find(".discussion-content").prop("scrollHeight")}, 1500
-            );
+        if (!that.oldContent) {
+            that.oldContent = new Array();
         }
-    });
-
-    $(body).on("click", ".discussion-input", function () {
-        $(this).focus();
-    });
-
-    $(body).on("click", ".minimize-button", function () {
-        that.switchState();
-    });
+        that.oldContent.push(message);
+		
+        that.setContent(JSON.stringify(that.oldContent));
+        $(body).find(".discussion-content").animate({
+			scrollTop: $(body).find(".discussion-content").prop("scrollHeight")
+		}, 1500);
+	}
+		
+	$(body).on("keyup", ".discussion-input", function (event) {
+		if (event.keyCode == 13 && $(this).val() != "") { // enter
+			var value = $(this).val();
+			$(this)[Object.keys($(this))[0]].value = "";
+			createMessage(value);
+		}
+	});	
+		
+	if(GUI.isTouchDevice){
+		$(body).on("touchend", "#minimizeDiscussion", function () {
+			that.switchState();
+		});
+		$(body).on("touchend", ".discussion-input", function () {
+			$(this).focus();
+		});
+		$(body).on("touchend", "#deleteStatement", function () {
+			that.deleteStatement($(this)[Object.keys($(this))[0]].parentNode.attributes[1].nodeValue);
+		});
+		$(body).on("touchend", ".discussion-heading", function () {
+			if(!this.input){
+				that.editTitle();
+			}
+		});
+	}
+	else{
+		$(body).on("click", "#minimizeDiscussion", function () {
+			that.switchState();
+		});
+		$(body).on("click", ".discussion-input", function () {
+			$(this).focus();
+		});
+		$(body).on("click", "#deleteStatement", function () {
+			that.deleteStatement($(this)[Object.keys($(this))[0]].parentNode.attributes[1].nodeValue);
+		});
+		$(body).on("click", ".discussion-heading", function () {
+			if(!this.input){
+				that.editTitle();
+			}
+		});
+		
+	}
 
 
     // add content to wrapper
@@ -245,7 +260,7 @@ Discussion.createRepresentationIcon = function (parent) {
     var rep = GUI.svg.other(parent,"foreignObject");
 
     var body = document.createElement("body");
-    var title = this.getAttribute('discussionTitle') || this.translate(GUI.currentLanguage, "Discussion without title");
+    var title = this.getAttribute('name');// || this.translate(GUI.currentLanguage, "Discussion without title");
 
     $(body).append("<div class='discussion-blob moveArea triangle-border'><div class='wrapped-text moveArea'>"+title+"</div></div>");
 	
@@ -344,28 +359,28 @@ Discussion.representationCreated = function () {
 
     var saveFunction = function (value, settings) {
         value = htmlEncode(value)
-        that.setAttribute("discussionTitle", value);
+        that.setAttribute("name", value);
 
         return(value);
     }
 
     var rep = this.getRepresentation();
+	/*
     $(rep).find('.discussion-heading').editable(saveFunction, {
         type: "autogrow",
-        submit: this.translate(GUI.currentLanguage, "Save"),
+        //submit: this.translate(GUI.currentLanguage, "Save"),
+		cancel: this.translate(GUI.currentLanguage, "Cancel"),
         placeholderHTML5: this.translate(GUI.currentLanguage, "Title of discussion"),
-        cancel: this.translate(GUI.currentLanguage, "Cancel"),
-
-        data: function () {
-            var headingText = that.getAttribute('discussionTitle') || '';
-            return htmlDecode(headingText)
-        },
-
-        autogrow: {
+		autogrow: {
             lineHeight: 16,
             maxHeight: 512
+        },
+        data: function () {
+            var headingText = that.getAttribute('discussionTitle') || '';
+            return htmlDecode(headingText);
         }
     });
+	*/
 }
 
 /**
@@ -375,4 +390,49 @@ Discussion.representationCreated = function () {
  */
 Discussion.checkTransparency = function(attribute, value) {
     return true;
+}
+
+
+/**
+ * Called after a click on the discussion title, enables the inplace editing
+ */
+Discussion.editTitle = function(){
+
+	var rep = this.getRepresentation();
+
+	$(rep).find(".discussion-heading").hide();
+	
+	$(rep).find(".discussion-content").prepend('<input type="text" id="discussion-heading-input">');
+	$(rep).find("#discussion-heading-input").attr("name", "newContent");
+	$(rep).find("#discussion-heading-input").attr("value", this.getAttribute('name')); 
+	$(rep).find("#discussion-heading-input").attr("class", "discussion-heading");
+	$(rep).find("input").css("width", (this.getAttribute("width")-40)+"px"); 
+	
+	$(rep).find("#discussion-heading-input").focus();
+	
+	this.input = true;
+	GUI.input = this.id;
+}
+
+
+/**
+ * Called after hitting the Enter key during the inplace editing of the discussion title
+ */
+Discussion.saveChanges = function(){
+	if(this.input){
+
+		var rep = this.getRepresentation();
+	
+		var newContent = $(rep).find("#discussion-heading-input").val()
+
+		$(rep).find("#discussion-heading-input").remove();
+	
+		this.input = false;
+		GUI.input = false;
+	
+		$(rep).find(".discussion-heading").show();
+		
+		this.setAttribute("name", newContent);
+	
+	}
 }

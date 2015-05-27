@@ -46,9 +46,6 @@
 .discussion-statement-heading {
   font-size: 12px;
 }
-.discussion-statement-heading .message-timestamp {
-  float: right;
-}
 
 .discussion-statement-text {
   padding: 5px;
@@ -96,6 +93,13 @@
 
 .discussion-blob {
   font-size: 12px;
+}
+
+#deleteStatement {
+	position: absolute;
+	top: 4px;
+	right: -4px;
+	z-index: 1;
 }
 
 
