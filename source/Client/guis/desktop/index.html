@@ -41,6 +41,8 @@
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
+	
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.ui.touch-punch.min.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
 	
@@ -288,15 +290,13 @@
         <span class='message-timestamp'>( <%- message.formattedTimestamp %> )</span>
       </div>
       <p class='discussion-statement-text'> <%- message.text %> </p>
-
-      <div class='statement-delete'>löschen</div>
-      <div class='statement-edit'>bearbeiten</div>
+	  <span class="minimize-button" id="deleteStatement"></span>
     </div>
   </script>
   <script type="text/template" id="discussion-container-template">
     <div class="discussion">
       <div class="embedded-toolbar moveArea">
-        <span class="minimize-button"></span>
+        <span class="minimize-button" id="minimizeDiscussion"></span>
       </div>
       <div class="discussion-content">
         <div class="discussion-heading"> <%- heading %>

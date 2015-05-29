@@ -35,6 +35,10 @@ GUI.showLogin = function(err) {
 	
 	$("#login_username").focus();
 	
+	if(navigator.userAgent.indexOf("Trident") > -1){
+		$("#login").append("<p>"+GUI.translate('Unfortunately Microsoft Internet Explorer did not support all features of this system. We recommend using Google Chrome or Mozilla Firefox. Thank you for your understanding.')+"</p>");
+	}
+	
 	$("#login_submit").click(GUI.login);  
 	
 	var userDataObject = GUI.retrieveUserData();

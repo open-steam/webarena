@@ -72,6 +72,8 @@ GUI.initToolbar = function() {
 
 					var element = section.addElement('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" /> ' + name);
 
+					var dragging = false;
+					
 					var click = function(attributes, drag) {
 
 						popover.hide();
@@ -83,32 +85,36 @@ GUI.initToolbar = function() {
 							if (drag) {
 								GUI.startNoAnimationTimer();
 								proto.create(attributes);
+								dragging = false;
 							}
 							else {
-								if (object.type == 'Arrow' || object.type == 'Line') {
-
-									GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
-
+								if(GUI.isTouchDevice){
+									proto.create(attributes);
 								}
-								else {
-									//$("body").css('cursor', 'url(/objectIcons/' + object.type + '), auto');
-									$("body").css('cursor', 'url(../../guis.common/images/cursor/'+object.type+'.cur), auto');
+								else{
+									if (object.type == 'Arrow' || object.type == 'Line'){
+										GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
+									}
+									else {
+										$("body").css('cursor', 'url(../../guis.common/images/cursor/'+object.type+'.cur), auto');
+									}
 								}
 							}
 						}
 						else {
 							alert(GUI.translate("You cannot create objects in presentation mode"));
 						}
-
 					}
 
 
 					if (GUI.isTouchDevice) {
-						$(element.getDOM()).bind("touchstart", function() {
-							click({
-								"x": window.pageXOffset + 40,
-								"y": window.pageYOffset + 40
-							}, false);
+						$(element.getDOM()).bind("touchend", function(event) {
+							if(!dragging){
+								click({
+									"x": window.pageXOffset + 40,
+									"y": window.pageYOffset + 40
+								}, false);
+							}
 						});
 					} else {
 						$(element.getDOM()).bind("click", function() {
@@ -123,7 +129,7 @@ GUI.initToolbar = function() {
 					/* make draggable */
 					var helper = $('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" />');
 					helper.get(0).callback = function(offsetX, offsetY) {
-
+					
 						var svgpos = $("#content").offset();
 
 						var top = offsetY - svgpos.top;
@@ -142,6 +148,7 @@ GUI.initToolbar = function() {
 						distance: 20,
 						cursor: "move",
 						helper: function(event) {
+							dragging = true;
 							return helper;
 						}
 					});

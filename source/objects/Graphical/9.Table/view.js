@@ -85,8 +85,6 @@ Table.draw = function(external) {
 
     //var direction = this.getAttribute('direction');
     //var distance = this.getAttribute('distance');
-
-	rep.text.style = '';
 	
     rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.text.style.fontFamily = this.getAttribute('font-family');

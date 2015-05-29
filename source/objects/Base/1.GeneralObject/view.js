@@ -931,8 +931,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 
         var move = function(event) {
 
-            if (!control.moving)
-                return;
+            if (!control.moving) return;
 
             event.preventDefault();
 
@@ -954,7 +953,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
         };
 
         var end = function(event) {
-
+		
             event.preventDefault();
 
             control.moving = false;
@@ -989,9 +988,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
             $("#content").bind("mouseup.webarenaMove", end);
         }
 
-
     };
-
 
 
     if (GUI.isTouchDevice) {
@@ -1088,28 +1085,29 @@ GeneralObject.moveStart = function(event) {
     self.hideControls();
 
     var move = function(event) {
-
+	
         //only move the object if the mouse key is pressed
-        if (event.which == 0) {
-            end(event);
-            return;
-        }
+		if(!GUI.isTouchDevice){
+			if (event.which == 0) {
+				end(event);
+				return;
+			}
+		}
 
         $("body").trigger({
             type: "moveObject.wa",
             objectId: self.id
         });
-        if (GUI.isTouchDevice && event.touches.length > 1)
-            return;
+		
+        if (GUI.isTouchDevice && event.touches.length > 1) return;
 
-        if (!self.moving)
-            return;
+        if (!self.moving) return;
 
         event.preventDefault();
         event.stopPropagation();
 
         self.moved = true;
-
+		
         if (!GUI.isTouchDevice) {
             /* mouse */
             var dx = event.pageX - self.moveStartMouseX;
@@ -1129,7 +1127,7 @@ GeneralObject.moveStart = function(event) {
     };
 
     var end = function(event) {
-
+	
         $("body").trigger({
             type: "moveend.wa",
             objectId: self.id
@@ -1253,11 +1251,8 @@ GeneralObject.moveStart = function(event) {
             self.adjustControls();
         }
 
-        //GUI.showLinks(self);
-
         if (!self.moved) {
-            if (!self.selectionClickActive)
-                self.click(event);
+            if (!self.selectionClickActive) self.click(event);
         }
 
         self.selectionClickActive = false;
@@ -1596,10 +1591,12 @@ GeneralObject.click = function(event) {
 
     var self = this;
 
+	/*
     if (GUI.isTouchDevice) {
         self.clickHandler(event);
         return true;
     }
+	*/
 
     /* stop when the clicked object is the SVG canvas */
     if (event.target == $("#content>svg").get(0))

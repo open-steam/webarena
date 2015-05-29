@@ -11,8 +11,8 @@ GUI.uploadFile=function(object,message){
 
     var form = document.createElement("input");
     $(form).attr("type", "file");
-
-    $(form).bind("change", function() {
+	
+	$(form).change(function(){
 
         var progress = document.createElement("div");
         $(progress).css("margin-top", "10px");

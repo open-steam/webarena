@@ -58,8 +58,7 @@ GUI.guiType = 'desktop';
  */
 $(function() {
     var userAgent = navigator.userAgent;
-    if (userAgent.indexOf('iPhone') > 0 ||
-		(userAgent.indexOf('Android') > 0 && userAgent.indexOf('Mobile') > 0)) {
+    if (userAgent.indexOf('iPhone') > 0 || (userAgent.indexOf('Android') > 0 && userAgent.indexOf('Mobile') > 0)) {
 		GUI.guiType = 'mobilephone';
     }
 });
@@ -225,10 +224,6 @@ GUI.deselectAllObjects = function() {
 }
 
 
-
-
-
-
 /* multi selection */
 
 /**
@@ -267,7 +262,6 @@ GUI.initShiftKeyHandling = function() {
 	});
 	
 }
-
 
 
 /* move by keyboard */
@@ -359,8 +353,8 @@ GUI.initMoveByKeyboard = function() {
 	});
 }
 
-GUI.initUndoByKeyboard = function(){
 
+GUI.initUndoByKeyboard = function(){
 
     $(document).bind("keydown", function(event) {
         var ctrlDown = event.ctrlKey||event.metaKey
@@ -371,6 +365,7 @@ GUI.initUndoByKeyboard = function(){
         }
     });
 }
+
 
 /**
  * add event handler for removing selected objects by pressing delete-key
@@ -479,6 +474,8 @@ GUI.initMouseHandler = function() {
 		var touchHandler = function(event) {
 			
 			jPopoverManager.hideAll();
+			
+			GUI.saveChanges(event);
 			
 			var contentPosition = $("#content").offset();
 
