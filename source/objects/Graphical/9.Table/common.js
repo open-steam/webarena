@@ -18,8 +18,14 @@ Table.register = function(type) {
     this.registerAttribute('Column', {type: 'list', category: 'Table', standard: ["column 1", "column 2"]});
     this.standardData.fillcolor = 'white';
     this.standardData.linecolor = 'black';
-    this.standardData.width=400;
-    this.standardData.height=200;
+    this.standardData.width = 400;
+    this.standardData.height = 200;
+
+    this.registerAction('copy format', function(lastClicked) {
+        var selected = ObjectManager.getSelected();
+        lastClicked.showFormatDialog(selected);
+
+    });
 
 
 }
@@ -30,7 +36,7 @@ Table.decideIfActive = function(object) {
 
     return true;
 }
-Table.execute = function(){
+Table.execute = function() {
     //TODO: Hier die GUI für die Tabellenspalten aufrufen.
     //GUI.dialog
 }
