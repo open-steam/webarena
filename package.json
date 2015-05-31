@@ -2,7 +2,7 @@
   "name": "webarena",
   "version": "1.0.0",
   "dependencies": {
-    "socket.io": ">=0.9.14",
+    "socket.io": "=0.9.14",
     "formidable": "*",
     "imagemagick": "0.1.2",
     "sharepoint": "*",
@@ -14,9 +14,8 @@
     "async": "~0.2.9",
     "json-socket": "~0.1.2",
     "lodash": "~2.2.1",
-    "bcrypt": "~0.7.7",
-    "winston": "0.8.0"
-
+    "winston": "0.8.0",
+    "bcrypt": "~0.8.x"
   },
   "devDependencies": {
     "superagent": "~0.15.7",

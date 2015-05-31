@@ -345,9 +345,8 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
-		//paintings
-
-		else  if (url.substr(0,10) == '/paintings'){
+		// paintings
+		else if (url.substr(0,10) == '/paintings') {
 			
 			try {
 				var ids = url.substr(11).split('/');
@@ -356,7 +355,7 @@ WebServer.init = function (theModules) {
 				
 				var mimeType = 'image/png';
 				
-				if(Modules.Connector.getPaintingStream !== undefined){
+				if(Modules.Connector.getPaintingStream !== undefined) {
 					
 
 					var objStream = Modules.Connector.getPaintingStream(roomID, user, context);

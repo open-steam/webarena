@@ -724,7 +724,7 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 	copyFunc(objectFilename, objectFilenameNew, function() {
 		/* object data copied */
 
-		var path = require('path');
+		var path = require('fs');
 
 		/* check if content exists */
 		if (path.existsSync(contentFilename)) {
@@ -813,7 +813,7 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 		data.attributes.type='Room';
 	}
 	
-	var path = require('path');
+	var path = require('fs');
 	
 	filename=filebase+'/'+roomID+'/'+objectID+'.content';
 	
