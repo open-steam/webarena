@@ -96,26 +96,32 @@ SimpleText.editText = function() {
 	
 	var rep = this.getRepresentation();
 	
-	$(rep).find("foreignObject").show();
+	var userAgent = navigator.userAgent;
+    if(userAgent.indexOf('Android') > 0 && userAgent.indexOf('Chrome') > 0){
+		//inplace editing of SimpleTexts on Android and Chrome does not work properly
+		GUI.editText(this);
+	}
+	else{
+		$(rep).find("foreignObject").show();
 	
-	$(rep).find("body").append('<input type="text">');
-	$(rep).find("input").attr("name", "newContent");
-	$(rep).find("input").attr("value", this.oldContent);
-	$(rep).find("input").css("font-size", this.getAttribute('font-size')+"px");
-	$(rep).find("input").css("font-family", this.getAttribute('font-family')); 
-	$(rep).find("input").css("color", this.getAttribute('font-color'));
-	$(rep).find("input").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
-	$(rep).find("input").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
-	$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
-	$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+26);
-	
-	$(rep).find("text").hide();
-	
-	$(rep).find("input").focus();
-	
-	this.input = true;
-	GUI.input = this.id;
-	
+		$(rep).find("body").append('<input type="text">');
+		$(rep).find("input").attr("name", "newContent");
+		$(rep).find("input").attr("value", this.oldContent);
+		$(rep).find("input").css("font-size", this.getAttribute('font-size')+"px");
+		$(rep).find("input").css("font-family", this.getAttribute('font-family')); 
+		$(rep).find("input").css("color", this.getAttribute('font-color'));
+		$(rep).find("input").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
+		$(rep).find("input").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
+		$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
+		$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+26);
+		
+		$(rep).find("text").hide();
+		
+		$(rep).find("input").focus();
+		
+		this.input = true;
+		GUI.input = this.id;
+	}
 }
 
 
