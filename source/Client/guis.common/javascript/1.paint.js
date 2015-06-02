@@ -1223,17 +1223,21 @@ GUI.editPaint = function(){
 	$(GUI.paintCanvas).css("left", svgpos.left);
 	$(GUI.paintCanvasTemp).css("left", svgpos.left);
 	
-	var windowWidth = $(window).width();
-	var roomWidth = ObjectManager.getCurrentRoom().getAttribute('width');
-
-	$(GUI.paintCanvas).attr("width", Math.max(windowWidth, roomWidth));
-	$(GUI.paintCanvasTemp).attr("width", Math.max(windowWidth, roomWidth));
-
-	var windowHeight = $(window).height();
-	var roomHeight = ObjectManager.getCurrentRoom().getAttribute('height');
+	//set the size of the canvas to the maximum of screen width and height --> it does not matter if the user resize the window or turn the screen (tablet)
+	var screenWidth = window.screen.width;
+	var screenHeight = window.screen.height;
 	
-	$(GUI.paintCanvas).attr("height", Math.max(windowHeight, roomHeight));
-	$(GUI.paintCanvasTemp).attr("height", Math.max(windowHeight, roomHeight));
+	//var windowWidth = $(window).width();
+	//var roomWidth = ObjectManager.getCurrentRoom().getAttribute('width');
+
+	//var windowHeight = $(window).height();
+	//var roomHeight = ObjectManager.getCurrentRoom().getAttribute('height');
+	
+	$(GUI.paintCanvas).attr("width", Math.max(screenWidth, screenHeight));
+	$(GUI.paintCanvasTemp).attr("width", Math.max(screenWidth, screenHeight));
+
+	$(GUI.paintCanvas).attr("height", Math.max(screenWidth, screenHeight));
+	$(GUI.paintCanvasTemp).attr("height", Math.max(screenWidth, screenHeight));
 
 	$(GUI.paintCanvas).css("z-index", 10000);
 	$(GUI.paintCanvasTemp).css("z-index", 10001);
