@@ -206,7 +206,7 @@ Discussion.createRepresentationEmbedded = function (parent) {
 			$(this).focus();
 		});
 		$(body).on("touchend", "#deleteStatement", function () {
-			that.deleteStatement($(this)[Object.keys($(this))[0]].parentNode.attributes[1].nodeValue);
+			that.deleteStatement($(this).parent().attr("data-message-id"));
 		});
 		$(body).on("touchend", ".discussion-heading", function () {
 			if(!this.input){
@@ -222,7 +222,7 @@ Discussion.createRepresentationEmbedded = function (parent) {
 			$(this).focus();
 		});
 		$(body).on("click", "#deleteStatement", function () {
-			that.deleteStatement($(this)[Object.keys($(this))[0]].parentNode.attributes[1].nodeValue);
+			that.deleteStatement($(this).parent().attr("data-message-id"));
 		});
 		$(body).on("click", ".discussion-heading", function () {
 			if(!this.input){
