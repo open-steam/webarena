@@ -21,7 +21,7 @@ Table.register = function(type) {
     this.standardData.width = 400;
     this.standardData.height = 200;
 
-    this.registerAction('copy format', function(lastClicked) {
+    this.registerAction('Zeilen und Spalten der Tabelle anpassen', function(lastClicked) {
         var selected = ObjectManager.getSelected();
         lastClicked.showFormatDialog(selected);
 

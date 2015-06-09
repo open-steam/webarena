@@ -961,44 +961,61 @@ svg text.font-icon{
     0% {-moz-transform: scale(0.1, 0.1);}
 100% {-moz-transform: scale(1.2, 1.2);}
 }
+
+#sortableDiv {
+    float: left;
+    width: 228px;
+}
 #sortable { list-style-type: none; 
             margin: 0; 
             padding: 0; 
-            width: 30%; 
+         
 }
 #sortable li { margin: 0 5px 5px 5px;
                padding: 5px; 
                font-size: 1.2em; 
                height: 1.5em; 
 }
-html>body #sortable li { height: 1.5em; line-height: 1.2em; clear:both;}
 .ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 
-
-#sortable1 { list-style-type:none; 
-             margin-left:200px; 
-             padding: 0; 
-             width: 100%; 
-             text-align: center;
+#sortable1Div {
+    float: right;
+    width: 228px;
+}
+#sortable1 { list-style-type: none; 
+            margin: 0; 
+            padding: 0; 
+            
+             
              
 }
-#sortable1 li { margin: 0 5px 5px 5px;
-                padding: 5px; 
-                font-size: 1.2em; 
-                height: 1.5em; 
-                display: inline-block;
-                width: 30%;
+#sortable1 li { margin: 0px 5px 5px 5px;
+               padding: 5px; 
+               font-size: 1.2em; 
+               height: 1.5em; 
+         
                 
 }
 
 html>body #sortable1 li { height: 1.5em; line-height: 1.2em;}
-.ui-state-highlight { height: 1.5em; line-height: 1.2em; }
 
-#sortable1 li input{    
-   /* display: block;
-    width: 8em; */
-}
+
+
 .remove-item{
     float:right;
     display:block;
+    font-size: 1.3em;
+    color: firebrick;
+}
+.input-row-column{
+    float:left;
+}
+#sortable1 .remove-item{
+    padding-top: 3px;
+}
+#sort-headline {
+    font-size: 1.2em;
+}
+#drag-icon-headline img {
+    width: 15px;
 }
