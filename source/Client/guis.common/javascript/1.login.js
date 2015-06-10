@@ -39,7 +39,16 @@ GUI.showLogin = function(err) {
 		$("#login").append("<p>"+GUI.translate('Unfortunately Microsoft Internet Explorer did not support all features of this system. We recommend using Google Chrome or Mozilla Firefox. Thank you for your understanding.')+"</p>");
 	}
 	
-	$("#login_submit").click(GUI.login);  
+	$("body").append("<p id='TouchMouseNote' style='position: fixed; bottom: 10px; z-index: 15002; left: 10%'>"+GUI.translate('Please note: if you are using a computer with touchscreen AND mouse, press the login button with your prefered device. The webarena interface will be optimized for the selected input method.')+"</p>");
+	
+	$("#login_submit").on("touchend", function () {
+		GUI.isTouchDevice = true;
+		GUI.login();
+	});
+	
+	$("#login_submit").on("mouseup", function () {
+		GUI.login();
+	});
 	
 	var userDataObject = GUI.retrieveUserData();
 
@@ -57,6 +66,7 @@ GUI.hideLogin = function() {
 	$("#login").hide();
 	$("#login_background").hide();
 	$("#login_background").css("opacity", 1);
+	$("#TouchMouseNote").hide();
 	
 	GUI.progressBarManager.updateProgress("login", 100);
 
@@ -147,6 +157,7 @@ GUI.login = function() {
 		GUI.username = userDataObject.username;
 		GUI.password = userDataObject.password;
 		GUI.externalSession = userDataObject.external;
+		GUI.isTouchDevice = userDataObject.isTouchDevice;
 	}
 	else{
 		GUI.storeUserData();
@@ -173,7 +184,7 @@ GUI.login = function() {
  */
 GUI.storeUserData = function() {
 
-	var userDataObject = {'username': GUI.username, 'password': GUI.password, 'external': GUI.externalSession};
+	var userDataObject = {'username': GUI.username, 'password': GUI.password, 'external': GUI.externalSession, 'isTouchDevice': GUI.isTouchDevice};
 
 	if (typeof(Storage) != "undefined") {
 		localStorage.setItem('webarena', JSON.stringify(userDataObject));
