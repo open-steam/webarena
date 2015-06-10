@@ -13,8 +13,8 @@ Discussion.drawEmbedded = function () {
     // set properties
     this.setViewX(this.getAttribute('x'));
     this.setViewY(this.getAttribute('y'));
-    this.setViewWidth(this.getAttribute('width'));
-    this.setViewHeight(this.getAttribute('height'));
+    this.setViewWidth(this.getAttribute('embedded-width'));
+    this.setViewHeight(this.getAttribute('embedded-height'));
 
     // draw outer line
     var linesize = this.getAttribute('linesize') || 0;
@@ -67,7 +67,7 @@ Discussion.draw = function (external) {
 
     //GeneralObject.draw.call(this,external);
 
-    var embedded = this.getAttribute("show_embedded");
+    var embedded = this.showEmbedded;
     if (embedded) {
         this.drawEmbedded();
     } else {
@@ -125,15 +125,16 @@ Discussion.enableInlineEditors = function () {
 
 Discussion.switchStateView = function(){
     $('#' + this.getAttribute('id')).remove();
+	GUI.hideActionsheet();
     this.getRepresentation();
     this.deselect()
 }
 
 
 Discussion.switchState = function () {
-    var embedded = this.getAttribute("show_embedded") || false;
-    this.setAttribute("show_embedded", !embedded);
-
+    var embedded = this.showEmbedded || false;
+    this.showEmbedded = !embedded;
+	/*
     if (!embedded) {
         this.setAttribute("width", 400);
         this.setAttribute("height", 500);
@@ -142,6 +143,7 @@ Discussion.switchState = function () {
         this.setAttribute("width", 64 * 2.5);
         this.setAttribute("height", 64 * 1.5)
     }
+	*/
     this.switchStateView();
 }
 
@@ -279,7 +281,7 @@ Discussion.getFileIcon = function () {
 
 Discussion.createRepresentation = function (parent) {
 
-    var embedded = this.getAttribute("show_embedded");
+    var embedded = this.showEmbedded;
     var rep;
     if (embedded) {
         rep = this.createRepresentationEmbedded(parent);
@@ -317,7 +319,7 @@ Discussion.setViewHeight = function (value) {
 
 Discussion.updateInnerHeight = function (value) {
     
-	var embedded = this.getAttribute("show_embedded");
+	var embedded = this.showEmbedded;
 
     if (embedded) {
         this.updateInnerHeightEmbedded(value);

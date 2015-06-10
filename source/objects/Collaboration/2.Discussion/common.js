@@ -26,18 +26,27 @@ Discussion.register=function(type){
     this.registerAttribute('linesize',{hidden: true});
     this.registerAttribute('linecolor',{hidden: true});
 
-    this.registerAttribute("show_embedded",{
-        hidden: true
-    })
+    this.registerAttribute("embedded-width", {type: 'number', min: 5, standard: 400, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
-	/*
-    this.registerAttribute("discussionTitle",{
-        hidden: true,
-        changedFunction: function(object, value) {
-            object.updateHeading(value);
-        }
-    })
-	*/
+            if (object.resizeProportional()) {
+                object.setAttribute("embedded-height", object.getAttribute("embedded-height") * (value / object.getAttribute("embedded-width")));
+            }
+
+            return true;
+
+        }, mobile: false
+	});
+	
+	this.registerAttribute("embedded-height",{type: 'number', min: 5, standard: 500, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+
+            if (object.resizeProportional()) {
+                object.setAttribute("embedded-width", object.getAttribute("embedded-width") * (value / object.getAttribute("embedded-height")));
+            }
+
+            return true;
+
+        }, mobile: false
+	});
 	
 	this.registerAttribute('name', {
 		type: 'text',
@@ -50,9 +59,7 @@ Discussion.register=function(type){
 
 
 Discussion.execute=function(){
-    if(!this.getAttribute("show_embedded")){
-        this.switchState();
-    }
+    this.switchState();
 }
 
 
@@ -61,6 +68,7 @@ Discussion.moveByTransform = function(){
 }
 
 Discussion.isCreatable=true;
+Discussion.showEmbedded=false;
 Discussion.restrictedMovingArea = false; 
 Discussion.contentURLOnly = false;
 
