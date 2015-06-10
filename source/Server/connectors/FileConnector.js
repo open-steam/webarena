@@ -727,14 +727,14 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 		var path = require('path');
 
 		/* check if content exists */
-		if (path.existsSync(contentFilename)) {
+		if (fs.existsSync(contentFilename)) {
 
 			/* copy content */
 			copyFunc(contentFilename, contentFilenameNew, function() {
 				/* object content copied */
 
 				/* check if preview exists */
-				if (path.existsSync(previewFilename)) {
+				if (fs.existsSync(previewFilename)) {
 					/* copy preview */
 					copyFunc(previewFilename, previewFilenameNew, function() {
 						/* object preview copied */
@@ -817,7 +817,7 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 	
 	filename=filebase+'/'+roomID+'/'+objectID+'.content';
 	
-	if (path.existsSync(filename)) {
+	if (fs.existsSync(filename)) {
 		
 		data.attributes.hasContent=true;
 		data.attributes.contentAge=new Date().getTime();
