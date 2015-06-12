@@ -21,19 +21,16 @@ Table.register = function(type) {
     this.standardData.width = 400;
     this.standardData.height = 200;
 
-    this.registerAction('Zeilen und Spalten der Tabelle anpassen', function(lastClicked) {
+    this.registerAction('Zeilen und Spalten anpassen', function(lastClicked) {
         var selected = ObjectManager.getSelected();
         lastClicked.showFormatDialog(selected);
 
     });
-
-
 }
 
 Table.isCreatable = true;
 
 Table.decideIfActive = function(object) {
-
     return true;
 }
 Table.execute = function() {

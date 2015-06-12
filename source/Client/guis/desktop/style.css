@@ -963,13 +963,15 @@ svg text.font-icon{
 }
 
 #sortableDiv {
+
     float: left;
     width: 228px;
 }
 #sortable { list-style-type: none; 
             margin: 0; 
             padding: 0; 
-         
+
+
 }
 #sortable li { margin: 0 5px 5px 5px;
                padding: 5px; 
@@ -983,18 +985,18 @@ svg text.font-icon{
     width: 228px;
 }
 #sortable1 { list-style-type: none; 
-            margin: 0; 
-            padding: 0; 
-            
-             
-             
+             margin: 0; 
+             padding: 0; 
+
+
+
 }
 #sortable1 li { margin: 0px 5px 5px 5px;
-               padding: 5px; 
-               font-size: 1.2em; 
-               height: 1.5em; 
-         
-                
+                padding: 5px; 
+                font-size: 1.2em; 
+                height: 1.5em; 
+
+
 }
 
 html>body #sortable1 li { height: 1.5em; line-height: 1.2em;}
@@ -1006,9 +1008,12 @@ html>body #sortable1 li { height: 1.5em; line-height: 1.2em;}
     display:block;
     font-size: 1.3em;
     color: firebrick;
+    opacity: 0.7;
+    
 }
 .input-row-column{
     float:left;
+    margin-top: -2px;
 }
 #sortable1 .remove-item{
     padding-top: 3px;
@@ -1018,4 +1023,10 @@ html>body #sortable1 li { height: 1.5em; line-height: 1.2em;}
 }
 #drag-icon-headline img {
     width: 15px;
+}
+.sortable-inner{
+    margin-top: -15px;
+}
+.drag-item{
+    opacity: 0.5;
 }

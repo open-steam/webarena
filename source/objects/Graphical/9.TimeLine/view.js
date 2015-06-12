@@ -102,8 +102,6 @@ TimeLine.draw = function(external) {
             $(currentStep).attr("stroke", this.getAttribute('linecolor'));
             $(currentStep).attr("stroke-width", 3);
 
-
-
             var currentNumeration = min + ((i - 1) * stepping);
             var currentNumerationObject = group.getElementsByTagName("text")[i - 1];
             currentNumerationObject.textContent = currentNumeration.toString();
