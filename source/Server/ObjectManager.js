@@ -10,7 +10,7 @@
 
 var fs = require('fs');
 var _ = require('lodash');
-var tokenChecker = require("./TokenChecker.js");
+//var tokenChecker = require("./TokenChecker.js"); Part of the uncompleted application API
 var async = require("async");
 var Q = require("q");
 

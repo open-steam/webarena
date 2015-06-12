@@ -2,7 +2,7 @@
 var SocketClient={};
 
 SocketClient.init=function(){
-	var url=location.protocol+'//'+location.hostname;
+	var url=location.protocol+'//'+location.hostname+':'+location.port;
 	var socket = io.connect(url);
 	Modules.Socket=socket;
 	socket.on('message', function (data) {

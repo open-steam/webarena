@@ -13,8 +13,8 @@ Discussion.drawEmbedded = function () {
     // set properties
     this.setViewX(this.getAttribute('x'));
     this.setViewY(this.getAttribute('y'));
-    this.setViewWidth(this.getAttribute('width'));
-    this.setViewHeight(this.getAttribute('height'));
+    this.setViewWidth(this.getAttribute('embedded-width'));
+    this.setViewHeight(this.getAttribute('embedded-height'));
 
     // draw outer line
     var linesize = this.getAttribute('linesize') || 0;
@@ -61,13 +61,14 @@ Discussion.drawIcon = function () {
     $(rep).find(".discussion-blob").css("color", this.getAttribute('font-color'));
 	
     $(rep).attr("layer", this.getAttribute('layer'));
+	
 }
 
 Discussion.draw = function (external) {
 
     //GeneralObject.draw.call(this,external);
 
-    var embedded = this.getAttribute("show_embedded");
+    var embedded = this.showEmbedded;
     if (embedded) {
         this.drawEmbedded();
     } else {
@@ -125,24 +126,54 @@ Discussion.enableInlineEditors = function () {
 
 Discussion.switchStateView = function(){
     $('#' + this.getAttribute('id')).remove();
+	GUI.hideActionsheet();
     this.getRepresentation();
-    this.deselect()
+	this.deselect()
 }
 
 
 Discussion.switchState = function () {
-    var embedded = this.getAttribute("show_embedded") || false;
-    this.setAttribute("show_embedded", !embedded);
-
+    var embedded = this.showEmbedded || false;
+    this.showEmbedded = !embedded;
+	var that = this;
+	
     if (!embedded) {
-        this.setAttribute("width", 400);
-        this.setAttribute("height", 500);
-
+        //this.setAttribute("width", 400);
+        //this.setAttribute("height", 500);		
+		$('#' + this.getAttribute('id')).animate({
+			height: that.getAttribute('embedded-height')+"px",
+			width: that.getAttribute('embedded-width')+"px"
+		}, 1000);
+		$('#' + this.getAttribute('id')).children(":first").animate({
+			height: that.getAttribute('embedded-height')+"px",
+			width: that.getAttribute('embedded-width')+"px"
+		}, 1000);
+		$('#' + this.getAttribute('id')).children(":first").children(":first").animate({
+			height: (that.getAttribute('embedded-height')-20)+"px",
+			width: (that.getAttribute('embedded-width')-20)+"px"
+		}, 1000, function() {
+			that.switchStateView();
+		});
     } else {
-        this.setAttribute("width", 64 * 2.5);
-        this.setAttribute("height", 64 * 1.5)
+		//this.setAttribute("width", 64 * 2.5);
+        //this.setAttribute("height", 64 * 1.5)
+		that.switchStateView();
+		this.setViewWidth(this.getAttribute('embedded-width'));
+		this.setViewHeight(this.getAttribute('embedded-height'));
+		$('#' + this.getAttribute('id')).animate({
+			height: that.getAttribute('height')+"px",
+			width: that.getAttribute('width')+"px"
+		}, 1000);
+		$('#' + this.getAttribute('id')).children(":first").animate({
+			height: that.getAttribute('height')+"px",
+			width: that.getAttribute('width')+"px"
+		}, 1000);
+		$('#' + this.getAttribute('id')).children(":first").children(":first").animate({
+			height: (that.getAttribute('height')-20)+"px",
+			width: (that.getAttribute('width')-20)+"px"
+		}, 1000);
     }
-    this.switchStateView();
+	
 }
 
 
@@ -279,7 +310,7 @@ Discussion.getFileIcon = function () {
 
 Discussion.createRepresentation = function (parent) {
 
-    var embedded = this.getAttribute("show_embedded");
+    var embedded = this.showEmbedded;
     var rep;
     if (embedded) {
         rep = this.createRepresentationEmbedded(parent);
@@ -317,7 +348,7 @@ Discussion.setViewHeight = function (value) {
 
 Discussion.updateInnerHeight = function (value) {
     
-	var embedded = this.getAttribute("show_embedded");
+	var embedded = this.showEmbedded;
 
     if (embedded) {
         this.updateInnerHeightEmbedded(value);
