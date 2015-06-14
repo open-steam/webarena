@@ -9,13 +9,13 @@ Discussion.deleteStatement = function(timestamp){
     this.setContent(JSON.stringify(newArr));
 }
 
-Discussion.fetchDiscussion = function(rep){
-    if(!rep)rep = this.getRepresentation();
+Discussion.fetchDiscussion = function(rep) {
+    if (!rep) rep = this.getRepresentation();
+    
     var that = this;
-	
     var remoteContent = this.getContentAsString();
 
-    if(remoteContent !== "") remoteContent = JSON.parse(remoteContent);
+    if (remoteContent !== "") remoteContent = JSON.parse(remoteContent);
 
     that.messageArray = remoteContent;
 
@@ -23,10 +23,9 @@ Discussion.fetchDiscussion = function(rep){
     if (that.oldContent !== remoteContent) {   //content has changed
         var messageArray = remoteContent;
 
-        var text = _.reduce(messageArray, function(memo, message){
+        var text = _.reduce(messageArray, function(memo, message) {
             return memo + that.renderMessage(message);
         }, "")
-
 
         $(rep).find(".discussion-text").html(text);
 
@@ -34,10 +33,7 @@ Discussion.fetchDiscussion = function(rep){
 
         that.enableInlineEditors();
     }
-
-
 }
-
 
 Discussion.contentUpdated = function(){
     var that = this;

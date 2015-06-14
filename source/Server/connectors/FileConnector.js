@@ -576,37 +576,35 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 	
 }
 
-fileConnector.getContentStream = function(roomID,objectID,context){
-    this.Modules.Log.debug("Get content stream (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-    var filebase=this.Modules.Config.filebase;
-    var filename=filebase+'/'+roomID+'/'+objectID+'.content';
+fileConnector.getContentStream = function(roomID, objectID, context) {
+    this.Modules.Log.debug("Get content stream (roomID: '" + roomID + "', objectID: '" + objectID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
+    var filebase = this.Modules.Config.filebase;
+    var filename = filebase + '/' + roomID + '/' + objectID + '.content';
 
     var rds = fs.createReadStream(filename);
+    var that = this;
     rds.on("error", function(err) {
-        this.Modules.Log.error("Error reading file: " + filename);
+    	that.Modules.Log.error("Error reading file: " + filename);
+    	return undefined;
     });
 
     return rds;
 }
 
-
-fileConnector.getPaintingStream = function(roomID,user,context){
-		
-    this.Modules.Log.debug("Get painting stream (roomID: '"+roomID+"', user: '"+user+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-    var filebase=this.Modules.Config.filebase;
-    var filename=filebase+'/'+roomID+'/'+user+'.painting';
+fileConnector.getPaintingStream = function(roomID, user, context) {
+    this.Modules.Log.debug("Get painting stream (roomID: '" + roomID + "', user: '" + user + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
+    var filebase = this.Modules.Config.filebase;
+    var filename = filebase + '/' + roomID + '/' + user + '.painting';
 
     var rds = fs.createReadStream(filename);
-	var that=this;
+	var that = this;
     rds.on("error", function(err) {
-        // that.Modules.Log.debug("Error reading file: " + filename);
+        that.Modules.Log.debug("Error reading file: " + filename);
         return undefined;
     });
 
     return rds;
 }
-
-
 
 /**
 *	remove

@@ -19,6 +19,8 @@ var calls = {};
  */
 
 Dispatcher.call = function(socket, message) {
+//	console.log("------ Dispatcher.call -------");
+	
     var SocketServer = Modules.SocketServer;
     var type = message.type;
     var responseID = message.responseID;

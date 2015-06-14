@@ -100,7 +100,7 @@
 
 	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 
-    <link type="text/css" href="/guis/desktop/style.css" rel="Stylesheet" />
+    <link type="text/css" href="/views/desktop/style.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/actionsheet.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/progressBar.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
@@ -112,13 +112,13 @@
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
 
-    <script type="text/javascript" src="/guis/desktop/main.js"></script>
+    <script type="text/javascript" src="/views/desktop/main.js"></script>
 	<script>
 
         /**
          * Define room which will be loaded (value will be replaced by node.js Webserver)
          */
-        GUI.startRoom = '##START_ROOM##';
+        GUI.startRoom = '{{start_room}}';
 
         /**
          * check if device is touch-device
@@ -226,11 +226,11 @@
 		
 		<div class="login_error"></div>
 		
-		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
+		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="{{username}}" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
 		
 		<br />
 		
-		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="" id="login_password" class="login_input" autocomplete="off" />
+		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="{{password}}" id="login_password" class="login_input" autocomplete="off" />
 		
 		<br />
 		

@@ -1,5 +1,18 @@
 "use strict";
 
+GUI.username = undefined;
+GUI.password = undefined;
+GUI.userid = undefined;
+
+GUI.loginProcessActive = false;
+
+GUI.externalSession = false;
+
+/**
+ * true if the user is logged in
+ */
+GUI.isLoggedIn = false;
+
 /**
  * Show login prompt
  * @param {bool|String} [err=false] Optional error message 
@@ -41,12 +54,12 @@ GUI.showLogin = function(err) {
 	
 	$("#login_submit").click(GUI.login);  
 	
-	var userDataObject = GUI.retrieveUserData();
-
-	if(userDataObject){
-		GUI.login();
-	}
-	
+//	var userDataObject = GUI.retrieveUserData();
+//
+//	if (userDataObject) {
+//		GUI.login();
+//	}
+	GUI.login();
 }
 
 /**
@@ -65,11 +78,6 @@ GUI.hideLogin = function() {
 }
 
 /**
- * true if the user is logged in
- */
-GUI.isLoggedIn = false;
-
-/**
  * called when the user is logged in
  */
 GUI.loggedIn = function() {
@@ -78,7 +86,6 @@ GUI.loggedIn = function() {
 	GUI.isLoggedIn = true;
 
 	GUI.progressBarManager.updateProgress("login", 30, GUI.translate('loading room'));
-	
 }
 
 /**
@@ -93,16 +100,6 @@ GUI.loginFailed = function(err) {
 	GUI.password = undefined;
 	GUI.clearUserStorage();
 }
-
-
-
-GUI.username = undefined;
-GUI.password = undefined;
-GUI.userid = undefined;
-
-GUI.loginProcessActive = false;
-
-GUI.externalSession = false;
 
 /**
  * called when hitting the login-button
@@ -143,28 +140,19 @@ GUI.login = function() {
 	
 	var userDataObject = GUI.retrieveUserData();
 
-	if(userDataObject){
+	if (userDataObject) {
 		GUI.username = userDataObject.username;
 		GUI.password = userDataObject.password;
 		GUI.externalSession = userDataObject.external;
-	}
-	else{
-		GUI.storeUserData();
-	}
+	} 
 	
 	GUI.userid = GUI.username;
-        
-        // add cookie with user id
-//        Webserver.response.writeHead(200, {
-//            'Set-Cookie': 'userid='+GUI.userid
-//        });
-	
+
 	$("#disconnected_message").remove();
 	
 	GUI.progressBarManager.addProgress(GUI.translate('checking login information'), "login");
 	
 	GUI.loadGUI(); //reload GUI
-	
 }
 
 
@@ -195,7 +183,6 @@ GUI.clearUserStorage = function() {
  * reads out the user data from the local storage
  */
 GUI.retrieveUserData = function() {
-
 	var userDataObject = localStorage.getItem('webarena');
 	
 	return JSON.parse(userDataObject);

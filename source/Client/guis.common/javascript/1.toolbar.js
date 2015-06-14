@@ -418,9 +418,12 @@ GUI.initToolbar = function() {
 			numberOfIcons++;
 			$("#header > .header_right").append(logoutButton); //add header icon
             var clickLogout = function() { //click handler
-                location.replace(location.origin);
+            	// Change 07.06.2015
+            	
+                // location.replace(location.origin);
+                location.pathname = "/logout";
                 popover.hide();
-				GUI.deleteUserData();
+				//GUI.deleteUserData();
             };
 
 

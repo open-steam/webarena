@@ -13,11 +13,11 @@ var uuid = require('node-uuid');
 var io;
 
 SocketServer.init = function (theModules) {
-
 	Modules = theModules;
 	var Dispatcher = Modules.Dispatcher;
 	var UserManager = Modules.UserManager;
-	io = require('socket.io').listen(Modules.WebServer.server);
+	io = require('socket.io').listen(Modules.WebServer.server, { log: true });
+//	io.set('log level', 2); // reduce logging
 
 	io.sockets.on('connection', function (socket) {
 		UserManager.socketConnect(socket);

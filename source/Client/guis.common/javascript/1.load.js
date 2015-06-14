@@ -40,7 +40,7 @@ GUI.loadGUI = function(step) {
 		return;
 	}
 	
-	if (step == undefined || step == 1) {
+	if (step == undefined || step == 1) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
 		if (GUI.guiType == 'desktop') {

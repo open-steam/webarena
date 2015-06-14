@@ -169,9 +169,7 @@ ObjectManager.getObjectsByLayerInverted = function(index) {
     objects.reverse();
 
     return objects;
-
 }
-
 
 /**
  *	hasObject - determine, if an object is within the current inventory
@@ -237,33 +235,31 @@ ObjectManager.objectUpdate = function(data) {
 }
 
 ObjectManager.attributeChanged = function(object, key, newValue, local) {
-
-    if (!object.attributeManager.getAttributes()[key])
-        return;
+    if (!object.attributeManager.getAttributes()[key]) return;
 
     var changedFunction = object.attributeManager.getAttributes()[key].changedFunction;
 
-    if (changedFunction)
+    if (changedFunction) {
         changedFunction(object, newValue, local);
-
-    if (this.informGUI)
+    }
+    
+    if (this.informGUI) {
         this.informGUI(object, key, newValue, local)
-    else
+    } else {
         console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
-
+    }
 }
 
 ObjectManager.onObjectRemoveListeners = [];
 ObjectManager.registerOnObjectRemoveListener = function(listener) {
     this.onObjectRemoveListeners.push(listener);
 }
+
 ObjectManager.onObjectRemove = function(object) {
     for (var i = 0; i < this.onObjectRemoveListeners.length; ++i) {
         this.onObjectRemoveListeners[i](object);
     }
 }
-
-
 
 ObjectManager.informGUI = false;
 ObjectManager.registerAttributeChangedFunction = function(theFunction) {
@@ -315,9 +311,7 @@ ObjectManager.removeLocally = function(data) {
     GUI.hideActionsheet();
 
     GUI.updateInspector();
-
 }
-
 
 ObjectManager.login = function(username, password, externalSession) {
     if (!username)
@@ -330,7 +324,6 @@ ObjectManager.login = function(username, password, externalSession) {
         'externalSession': externalSession
     });
 }
-
 
 ObjectManager.goParent = function() {
 	/*
