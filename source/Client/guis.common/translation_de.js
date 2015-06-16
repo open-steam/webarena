@@ -133,6 +133,8 @@ GUI.setTranslations('de',{
 	'dashed' : 'gestrichelt',
 	'Unfortunately Microsoft Internet Explorer did not support all features of this system. We recommend using Google Chrome or Mozilla Firefox. Thank you for your understanding.' : 'Leider unterstützt der Microsoft Internet Explorer nicht alle Funktionen dieses Systems. Wir empfehlen die Verwendung von Google Chrome oder Mozilla Firefox. Vielen Dank für ihr Verständnis.',
 	'Please select a file' : 'Bitte wählen Sie eine Datei aus',
-	'Please note: if you are using a computer with touchscreen AND mouse, press the login button with your prefered device. The webarena interface will be optimized for the selected input method.' : 'Hinweis: Wenn Sie einen Computer mit Touchbildschirm und Maus verwenden, betätigen Sie den Login-Button mit dem gewünschten Gerät. Die Webarena Oberfläche wird daraufhin für die gewünschte Eingabemethode optimiert.'
+	'Please note: if you are using a computer with touchscreen AND mouse, press the login button with your prefered device. The webarena interface will be optimized for the selected input method.' : 'Hinweis: Wenn Sie einen Computer mit Touchbildschirm und Maus verwenden, betätigen Sie den Login-Button mit dem gewünschten Gerät. Die Webarena Oberfläche wird daraufhin für die gewünschte Eingabemethode optimiert.',
+	'This filetype is not an image or is not supported.' : 'Dieser Dateityp ist kein Bild oder wird nicht unterstützt.',
+	'This file is too large. You can only upload files with a maximum size of ' : 'Diese Datei ist zu groß. Die maximale Dateigröße beträgt '
 	}
 );

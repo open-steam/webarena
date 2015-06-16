@@ -9,17 +9,17 @@ File.draw = function(external) {
 	
 	GeneralObject.draw.call(this,external);
 	
-	if (this.hasContent() == false || this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {
+	//if (this.hasContent() == false || this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {
 		
-		if (this.getAttribute("bigIcon")) {
-			this.setViewWidth(64);
-			this.setViewHeight(64);
-		} else {
-			this.setViewWidth(32);
-			this.setViewHeight(32);
-		}
-		
+	if (this.getAttribute("bigIcon")) {
+		this.setViewWidth(64);
+		this.setViewHeight(64);
+	} else {
+		this.setViewWidth(32);
+		this.setViewHeight(32);
 	}
+		
+	//}
 	
 	var rep = this.getRepresentation();
 	var group = $(rep).find('g');
@@ -75,30 +75,30 @@ File.draw = function(external) {
 
 /* get the width of the objects bounding box */
 File.getViewBoundingBoxWidth = function() {
-	if (this.hasContent() == false || this.getAttribute("preview") == false) {
-		if (this.getAttribute("bigIcon")) {
-			return 64;
-		} else return 32;
-	} else {
-		return GeneralObject.getViewBoundingBoxWidth.call(this);
-	}
+	//if (this.hasContent() == false || this.getAttribute("preview") == false) {
+	if (this.getAttribute("bigIcon")) {
+		return 64;
+	} else return 32;
+	//} else {
+		//return GeneralObject.getViewBoundingBoxWidth.call(this);
+	//}
 }
 
 /* get the height of the objects bounding box */
 File.getViewBoundingBoxHeight = function() {
-	if (this.hasContent() == false || this.getAttribute("preview") == false) {
-		if (this.getAttribute("bigIcon")) {
-			return 64;
-		} else return 32;
-	} else {
-		return GeneralObject.getViewBoundingBoxHeight.call(this);
-	}
+	//if (this.hasContent() == false || this.getAttribute("preview") == false) {
+	if (this.getAttribute("bigIcon")) {
+		return 64;
+	} else return 32;
+	//} else {
+		//return GeneralObject.getViewBoundingBoxHeight.call(this);
+	//}
 }
 
 File.getStatusIcon = function() {
 	if (this.hasContent() == false) {
 		return this.getIconPath() + "/upload";
-	} else if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
+	} else { //if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
 		var typeIcon = "file";
 		var mimeType = this.getAttribute("mimeType");
 	
@@ -114,13 +114,14 @@ File.getStatusIcon = function() {
 		}
 
 		return this.getIconPath() + "/" + typeIcon;
-	} else {
-		return this.getPreviewContentURL();
-	}
+	} 
+	//else {
+		//return this.getPreviewContentURL();
+	//}
 }
 
 File.getIconText = function() {
-    if ((this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) && this.hasContent()) {
-        return this.getAttribute("name");
-    } else return false;
+    //if ((this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) && this.hasContent()) {
+    return this.getAttribute("name");
+    //} else return false;
 }

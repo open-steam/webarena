@@ -19,7 +19,7 @@ WAFile.register=function(type){
 	this.registerAttribute('bigIcon',{type:'boolean',standard:true,changedFunction: function(object) { 
 		object.updateIcon(); 
 	}, checkFunction: function(object, value) {
-		if (object.getAttribute("preview")) return "icon size not changeable when preview is shown";
+		//if (object.getAttribute("preview")) return "icon size not changeable when preview is shown";
 	}, mobile: false});
 
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
@@ -28,6 +28,7 @@ WAFile.register=function(type){
 	
 	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
 	
+	/*
 	this.registerAttribute('preview',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
 		if (local) {
 			object.updateIcon();
@@ -46,7 +47,8 @@ WAFile.register=function(type){
 		}
 		
 	}, mobile: false});
-    
+    */
+	
      this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
             if (object.resizeProportional()) {
@@ -56,15 +58,15 @@ WAFile.register=function(type){
             return true;
 
         }, getFunction: function(object) {
-            var preview = object.getAttribute("preview");
-            if ((!preview)) {
-                var bigIcon = object.getAttribute("bigIcon");
-                if (bigIcon) {
-                    return "64"
-                } else {
-                    return "32";
-                }
+            //var preview = object.getAttribute("preview");
+            //if ((!preview)) {
+            var bigIcon = object.getAttribute("bigIcon");
+            if (bigIcon) {
+                return "64"
+            } else {
+                return "32";
             }
+            //}
             return object.get('width');
         },
         mobile: false});
@@ -78,15 +80,15 @@ WAFile.register=function(type){
             return true;
 
         }, getFunction: function(object) {
-            var preview = object.getAttribute("preview");
-            if ((!preview)) {
-                var bigIcon = object.getAttribute("bigIcon");
-                if (bigIcon) {
-                    return "64"
-                } else {
-                    return "32";
-                }
+            //var preview = object.getAttribute("preview");
+            //if ((!preview)) {
+            var bigIcon = object.getAttribute("bigIcon");
+            if (bigIcon) {
+                return "64"
+            } else {
+                return "32";
             }
+            //}
             return object.get('height');
         }
         , mobile: false});
@@ -187,7 +189,7 @@ WAFile.execute=function(){
 
 	if (this.hasContent() == true) {
 		
-		if (this.getAttribute('preview')) return;
+		//if (this.getAttribute('preview')) return;
 		
 		this.openFile();
 		
@@ -206,9 +208,10 @@ WAFile.resizeProportional=function(){
 }
 
 WAFile.isResizable=function(){
-	if (this.hasContent() == true && this.getAttribute("preview") == true) {
-		return GeneralObject.isResizable.call(this);
-	} else return false; 
+	//if (this.hasContent() == true && this.getAttribute("preview") == true) {
+		//return GeneralObject.isResizable.call(this);
+	//} else 
+	return false; 
 }
 
 WAFile.register('File');
@@ -219,9 +222,10 @@ WAFile.onMobile = true;
 WAFile.moveByTransform = function(){return true;};
 
 WAFile.alwaysOnTop = function () {
-	if (this.hasContent() == true && this.getAttribute("preview") == true) {
-		return false;
-	} else return true;
+	//if (this.hasContent() == true && this.getAttribute("preview") == true) {
+		//return false;
+	//} else 
+	return true;
 };
 
 module.exports=WAFile;
