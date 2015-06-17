@@ -21,7 +21,7 @@ BuildTool.addToClientCode = function(filename) {
 	try {
 		fileContent = fs.readFileSync(filename, 'UTF8');
 
-		//Add linenumbers as in file
+		//Add line numbers as in file
 		if(showDebugLineNumbers){
 			fileContent = fileContent.split(enter).reduce(function(soFar, line, index){
 				return soFar + line + " //" + (index +1) + enter;
@@ -33,7 +33,7 @@ BuildTool.addToClientCode = function(filename) {
 	}
 }
 
-BuildTool.buildClientCode = function(){
+BuildTool.buildClientCode = function(guiType) {
 	var that = this;
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
 	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
@@ -45,8 +45,8 @@ ObjectManager.clientErrorMessage(data,function(){});}";
 
 	files.forEach(function (data) {
 		
-		var filename=data.filename;
-		var category=data.category;
+		var filename = data.filename;
+		var category = data.category;
 		
 		var fileinfo = filename.split('.');
 		var index = fileinfo[0];
@@ -54,16 +54,16 @@ ObjectManager.clientErrorMessage(data,function(){});}";
 		if (!index) return;
 		if (!objName) return;
 		
-		if (objName=='File') {
-			var temp='WAFile'; //TODO This is a hot fix. Implement proper namespaces instead
-		} else temp=objName;
+		if (objName == 'File') {
+			var temp = 'WAFile'; //TODO This is a hot fix. Implement proper namespaces instead
+		} else temp = objName;
 
 		var filebase = __dirname + '/../objects/' + category + '/' + filename;
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
 		
 		/* Objects which has a mobile representation must have a file named mobileView.js. */
-		if (Modules.WebServer.guiType == "desktop") {
+		if (guiType == "desktop") {
 			that.addToClientCode(filebase + '/view.js');
 		} else {
 			that.addToClientCode(filebase + '/mobileView.js');
@@ -73,7 +73,6 @@ ObjectManager.clientErrorMessage(data,function(){});}";
 		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
 
 		that.addToClientCode(filebase + '/languages.js');
-
 	});
 }
 
@@ -82,8 +81,8 @@ ObjectManager.clientErrorMessage(data,function(){});}";
  *
  *  get the combined client side sourcecode for objects.
  **/
-BuildTool.getClientCode = function () {
-	this.buildClientCode();
+BuildTool.getClientCode = function (guiType) {
+	this.buildClientCode(guiType);
 	return this.clientCode;
 }
 
