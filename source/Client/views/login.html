@@ -4,8 +4,13 @@
 <!--[if IE 8 ]>    <html lang="en" class="no-js ie8 lt8"> <![endif]-->
 <!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
 <!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
- 
-    <body>
+    {{#extend "head"}}
+        <meta name="author" content="Codrops" />
+        <link type="text/css" href="/guis.common/css/demo.css" rel="Stylesheet">
+        <link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet">
+        <link type="text/css" href="/guis.common/css/animate-custom.css" rel="Stylesheet">
+    {{/extend}}
+    {{#extend "body"}}
         <div class="container">
             <!-- Codrops top bar -->
             <div class="codrops-top">
@@ -99,5 +104,4 @@
                 </div>  
             </section>
         </div>
-    </body>
-</html>
+   {{/extend}}

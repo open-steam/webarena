@@ -1,13 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
-<head>
-	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-
-	<title>Webarena 1.0</title>
-	
-	<meta content="minimum-scale=1.0, initial-scale=1.0, width=device-width, maximum-scale=1, user-scalable=no" name="viewport" />
-	<meta content="yes" name="apple-mobile-web-app-capable" />
+{{#extend "head"}}
 	<link rel="apple-touch-icon" sizes="72x72" href="/guis.common/images/ipad_icon.png" />
 
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
@@ -146,8 +137,9 @@
         }
 
 	</script>
-</head>
-<body>
+
+{{/extend}}
+{{#extend "body"}}
 	
 	<div id="header">
 		<div class="header_right"></div>
@@ -177,10 +169,10 @@
 					
 					<div>
 						Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />
-						Bitte haben Sie VerstÃ¤ndnis dafÃ¼r, dass wir nicht auf jede Anfrage persÃ¶nlich antworten kÃ¶nnen.
+						Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.
 						<span><br />
 						<br />
-							Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermÃ¶glichen.
+							Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.
 						</span>
 					</div>
 					
@@ -308,5 +300,4 @@
   </script>
   <!-- END: Underscore Template Definition. -->
 
-</body>
-</html>
+{{/extend}}
