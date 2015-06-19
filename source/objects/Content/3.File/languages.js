@@ -3,6 +3,6 @@ WAFile.setTranslations('de',{
 	'Download' : 'Herunterladen',
 	'Upload file' : 'Datei hochladen',
 	'Change content' : 'Austauschen',
-	'File' : 'Datei von Computer',
+	'File' : 'Datei',
 }
 );

@@ -465,28 +465,29 @@ WebServer.init = function (theModules) {
 
 						if (!data) {
 
-							Modules.Log.warn('no inline preview found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+							if (mimeType != false){
+						
+								Modules.Log.warn('no inline preview found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+							
+								if(mimeType.indexOf("image/") >= 0) {
 
-							if (mimeType.indexOf("image/") >= 0) {
+									fs.readFile(__dirname + '/../Client/guis.common/images/imageNotFound.png', function (err, data) {
 
-								fs.readFile(__dirname + '/../Client/guis.common/images/imageNotFound.png', function (err, data) {
+										if (err) {
+											res.writeHead(404);
+											Modules.Log.warn("Error loading imageNotFound.png file (" + url + ")");
+											return res.end('404 Error loading imageNotFound.png file');
+										}
 
-									if (err) {
-										res.writeHead(404);
-										Modules.Log.warn("Error loading imageNotFound.png file (" + url + ")");
-										return res.end('404 Error loading imageNotFound.png file');
-									}
+										res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
+										res.end(data);
 
-									res.writeHead(200, {'Content-Type': 'image/png', 'Content-Disposition': 'inline'});
-									res.end(data);
-
-								});
-
-							} else {
-								res.writeHead(404);
-								res.end('Object not found');
+									});
+								} else {
+									res.writeHead(404);
+									res.end('Object not found');
+								}
 							}
-
 						} else {
 							res.writeHead(200, {'Content-Type': 'text/plain', 'Content-Disposition': 'inline'});
 							res.end(new Buffer(data));

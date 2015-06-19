@@ -25,14 +25,22 @@ GUI.uploadFile=function(object,message){
         var fd = new FormData();
         fd.append("file", form.files[0]);
 
-
         var filename = $(this).val().replace("C:\\fakepath\\", "");
+		if(message.indexOf("image") > 0 || message.indexOf("Bild") > 0){
+			var filenameArray = filename.split(".");
+			var filenameType = filenameArray[filenameArray.length - 1];
+			if(!GUI.mimeTypeIsPreviewable("image/"+filenameType)){
+				alert(GUI.translate('This filetype is not an image or is not supported.')); 
+				return;
+			}
+		}
+		
         object.setAttribute('name', filename, true);
 
 		/* Restrict the uploaded file size, the maximum filesize is spezified in config.default */
 		var filesize = form.files[0].size;  
 		if(Modules.Config.maxFilesizeInMB*1000000<filesize){
-			alert('This file is too large. You can only upload files with a maximum size of '+Modules.Config.maxFilesizeInMB+' megabyte!'); 
+			alert(GUI.translate('This file is too large. You can only upload files with a maximum size of ')+Modules.Config.maxFilesizeInMB+' megabyte!'); 
 		}
 		else{
 	
