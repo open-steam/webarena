@@ -67,6 +67,17 @@ Discussion.moveByTransform = function(){
    return false 
 }
 
+
+Discussion.isResizable = function(){
+    if(this.showEmbedded){
+		return false;
+	}
+	else{
+		return true;
+	}
+}
+
+
 Discussion.isCreatable=true;
 Discussion.showEmbedded=false;
 Discussion.restrictedMovingArea = false; 

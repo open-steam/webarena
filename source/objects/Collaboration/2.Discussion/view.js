@@ -137,9 +137,7 @@ Discussion.switchState = function () {
     this.showEmbedded = !embedded;
 	var that = this;
 	
-    if (!embedded) {
-        //this.setAttribute("width", 400);
-        //this.setAttribute("height", 500);		
+    if (!embedded) {	
 		$('#' + this.getAttribute('id')).animate({
 			height: that.getAttribute('embedded-height')+"px",
 			width: that.getAttribute('embedded-width')+"px"
@@ -155,11 +153,6 @@ Discussion.switchState = function () {
 			that.switchStateView();
 		});
     } else {
-		//this.setAttribute("width", 64 * 2.5);
-        //this.setAttribute("height", 64 * 1.5)
-		that.switchStateView();
-		this.setViewWidth(this.getAttribute('embedded-width'));
-		this.setViewHeight(this.getAttribute('embedded-height'));
 		$('#' + this.getAttribute('id')).animate({
 			height: that.getAttribute('height')+"px",
 			width: that.getAttribute('width')+"px"
@@ -171,7 +164,9 @@ Discussion.switchState = function () {
 		$('#' + this.getAttribute('id')).children(":first").children(":first").animate({
 			height: (that.getAttribute('height')-20)+"px",
 			width: (that.getAttribute('width')-20)+"px"
-		}, 1000);
+		}, 1000, function(){
+			that.switchStateView();
+		});
     }
 	
 }
@@ -437,7 +432,7 @@ Discussion.editTitle = function(){
 	$(rep).find("#discussion-heading-input").attr("name", "newContent");
 	$(rep).find("#discussion-heading-input").attr("value", this.getAttribute('name')); 
 	$(rep).find("#discussion-heading-input").attr("class", "discussion-heading");
-	$(rep).find("input").css("width", (this.getAttribute("width")-40)+"px"); 
+	$(rep).find("#discussion-heading-input").css("width", (this.getAttribute("embedded-width")-40)+"px"); 
 	
 	$(rep).find("#discussion-heading-input").focus();
 	
