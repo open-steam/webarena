@@ -38,6 +38,10 @@ GUI.sidebar.elementConfig = {
         order : 3
 		//onOpen : GUI.chat.closed
     },
+	"trashbasket" : {
+		order : 4,
+		onOpen : GUI.trashbasket.opened
+	}
 };
 
 /**
@@ -205,6 +209,7 @@ GUI.sidebar.init = function() {
 	GUI.sidebar.elementConfig.chat.title = GUI.translate("Chat");
     GUI.sidebar.elementConfig.bug.title = GUI.translate("Bugreport");
 	GUI.sidebar.elementConfig.pad.title = GUI.translate("Annotations");
+	GUI.sidebar.elementConfig.trashbasket.title = GUI.translate("Trash basket");
 
 	$("#header_toggle_sidebar_hide").attr('title', GUI.translate('Hide sidebar'));
 	$("#header_toggle_sidebar_show").attr('title', GUI.translate('Show sidebar'));

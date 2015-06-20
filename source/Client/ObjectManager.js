@@ -277,6 +277,7 @@ ObjectManager.contentUpdate = function(data) {
 }
 
 ObjectManager.remove = function(object) {
+
     var that = this;
     if (!this.transactionId) {
         that.transactionId = new Date().getTime();
@@ -287,13 +288,15 @@ ObjectManager.remove = function(object) {
             that.transactionId = new Date().getTime();
         }, this.transactionTimeout);
     }
-
+	
     Modules.SocketClient.serverCall('deleteObject', {
         'roomID': object.getRoomID(),
         'objectID': object.getID(),
         'transactionId': that.transactionId,
         'userId': GUI.userid
     });
+	
+	GUI.trashbasket.update();
 }
 
 ObjectManager.removeLocally = function(data) {
@@ -922,7 +925,7 @@ ObjectManager.duplicateObjects = function(objects) {
             requestData.objects = array;
             requestData.cut = false;
             requestData.attributes = {};
-
+			
             Modules.Dispatcher.query('duplicateObjects', requestData, function(idList) {
                 for (var key in idList) {
                     if (ObjectManager.newIDs.indexOf(idList[key]) == -1) {
@@ -1233,8 +1236,28 @@ ObjectManager.startEtherpad = function() {
         }
     } // End of Pads code
 }
+
+
 ObjectManager.writeToServerConsole = function(data) {
     ObjectManager.Modules.Dispatcher.query('writeToServerConsole', data, function() {
     });
 }
 
+
+ObjectManager.restoreObject = function(objectID){
+
+	var arr = new Array();
+	arr.push(objectID);
+
+	var requestData = {};
+    requestData.fromRoom = "trash";
+	requestData.toRoom = ObjectManager.getRoomID();
+	requestData.objects = arr;
+	requestData.cut = true;
+	requestData.attributes = {}
+	
+	Modules.Dispatcher.query('duplicateObjects', requestData, function(idList) {
+		//console.log(idList);
+	});
+
+}

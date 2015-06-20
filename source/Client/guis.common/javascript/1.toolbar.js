@@ -594,6 +594,35 @@ GUI.initToolbar = function() {
 
     }
 
+	
+	/* add trashbasket toggle */
+    if (!Modules.Config.presentationMode) {
+
+        var trashButton = document.createElement("img");
+        $(trashButton).attr("src", "../../guis.common/images/delete.png").attr("alt", "");
+        $(trashButton).attr("width", "24").attr("height", "24");
+
+        $(trashButton).attr("id", "trash_button");
+        $(trashButton).addClass("sidebar_button header_tab");
+
+        $(trashButton).attr("title", GUI.translate("Trash basket"));
+
+        var click = function() {
+            GUI.sidebar.openPage("trashbasket", trashButton);
+        }
+
+        if (GUI.isTouchDevice) {
+            $(trashButton).bind("touchstart", click);
+        } else {
+            $(trashButton).bind("mousedown", click);
+        }
+
+        $("#header > .header_tabs_sidebar").append(trashButton);
+
+        GUI.sidebar.openPage("trashbasket", trashButton);
+
+    }
+	
 
     $("#header_toggle_sidebar_hide").on("click", function() {
         $(".jPopover").hide();

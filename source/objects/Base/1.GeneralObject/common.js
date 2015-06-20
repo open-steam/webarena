@@ -141,6 +141,7 @@ GeneralObject.register = function(type) {
     this.registerAttribute('id', {type: 'number', readonly: true});
     this.registerAttribute('type', {type: 'text', readonly: true});
     this.registerAttribute('name', {type: 'text'});
+	this.registerAttribute('oldRoomID', {type: 'text', hidden:true});
 
     this.registerAttribute('hasContent', {type: 'boolean', hidden: true, standard: false});
     this.registerAttribute('layer', {type: 'layer', readonly: false, category: 'Dimensions', changedFunction: function(object, value) {

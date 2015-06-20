@@ -138,6 +138,7 @@ GUI.loadGUI = function(step) {
 		if (GUI.guiType == 'desktop') {
 			GUI.updateLayers(); //update z-order by layer-attribute
 			GUI.updateInspector();
+			GUI.trashbasket.update();
 		}
 		
 		GUI.loaded = true;

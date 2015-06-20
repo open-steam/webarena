@@ -747,7 +747,7 @@ ObjectManager.deleteObject = function(data, context, callback) {
                     callback(new Error('Object not found ' + objectID), null);
                     return;
                 }
-
+				
                 Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
                 var historyEntry = {
                     'oldRoomID': roomID,
@@ -755,9 +755,11 @@ ObjectManager.deleteObject = function(data, context, callback) {
                     'roomID': 'trash',
                     'action': 'delete'
                 }
-
+				
                 Modules.Connector.getTrashRoom(context, function(toRoom) {
                     Modules.Connector.duplicateObject(roomID, toRoom.id, objectID, context, function(err, newId, oldId) {
+						var newObject = Modules.ObjectManager.getObject(toRoom.id, newId, context);
+						newObject.setAttribute("oldRoomID", roomID);
                         object.remove();
                         historyEntry["objectID"] = newId;
 
