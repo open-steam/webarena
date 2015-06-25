@@ -11,6 +11,19 @@ WAFile.justCreated=function(){
 
 WAFile.openFile=function(){
 	
+	var type = this.getAttribute("mimeType");
+	
+	/*
+	if(type.indexOf("pdf") > -1){
+		
+		return;
+	}
+	*/
+	if(type.indexOf("image") > -1){
+		this.openImage();
+		return;
+	}
+
 	window.open(this.getContentURL(), "_blank");
 	
 }
