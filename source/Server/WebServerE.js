@@ -11,15 +11,17 @@ var Q = require('q');
 var fs = require('fs');
 var _ = require('lodash');
 
-var everyauth = require('everyauth');
-var hbs = require('hbs');
 var express = require('express');
-var bodyParser = require('body-parser');
-var cookieParser = require('cookie-parser');
-var session = require('express-session');
-var validator = require('validator');
-
+var Session = require('express-session');                                                                      // half an hour
+var session = Session({secret: 'keyboard gato', key: 'sid', resave: false, saveUninitialized: false, cookie: { maxAge: 1800000 }});
 var app = express();
+
+var everyauth = require('everyauth');
+var validator = require('validator');
+var bodyParser = require('body-parser');
+
+var hbs = require('hbs');
+var blocks = {};
 
 var Modules = false;
 
@@ -29,20 +31,6 @@ var Modules = false;
  */
 var WebServer = {};
 
-/**
- * Init function called in server.js to initialize this module.
- * 
- * @param {Object} theModules variable to access the other modules.
- */
-WebServer.init = function(theModules) {
-  Modules = theModules;
-
-  var server = require('http').createServer(app);
-  WebServer.server = server;
-
-  server.listen(Modules.config.port); // start server (port set in config file)
-};
-
 everyauth.password
 	.loginFormFieldName('username')
 	.passwordFormFieldName('password')
@@ -50,7 +38,8 @@ everyauth.password
 	.postLoginPath('/login') // Uri path that your login form POSTs to
 	.loginView('login.html')
 	.authenticate(function(login, password) {
-	    var errors = [];
+	    var promise;
+		var errors = [];
 	
 	    if (!login) {
 	        errors.push('Missing username');
@@ -61,8 +50,8 @@ everyauth.password
 	    }
 	
 	    if (errors.length) return errors;
-	
-	    var promise = this.Promise();
+
+		promise = this.Promise();
 	    Modules.UserDAO.usersByUserName(login, function(err, doc) {
 	        if (err) {
 	            return promise.fulfill([ err ]);
@@ -141,55 +130,6 @@ everyauth.everymodule.findUserById(function(id, callback) {
 // key field in the User collection
 everyauth.everymodule.userPkey('_id');
 
-app.use(express.static(path.resolve(__dirname, '../Client')))
-    .use('/Common', express.static(path.resolve(__dirname, '../Common')))
-	.use('/guis/mobilephone/images', express.static(path.resolve(__dirname, '../Client/views/mobilephone/images')))
-	.set('views', path.resolve(__dirname, '../Client/views'))
-	.set('view engine', 'html')
-	.engine('html', hbs.__express)
-	.use(bodyParser.urlencoded({
-		extended: true
-	}))
-	.use(bodyParser.json())
-	.use(cookieParser())
-	.use(session({secret: 'keyboard gato', key: 'sid', resave: true, saveUninitialized: true}))
-	.use(everyauth.middleware(app));
-
-// invoked for any requested passed to this router
-app.use(function(req, res, next) {
-    var agent = req.get('user-agent');
-  
-    /* Check if the client is on a mobile phone or not. */
-    if (agent && (agent.indexOf('iPhone') > 0 || (agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0))) {
-    	req.guiType = 'mobilephone';
-		console.log("its a mobile device!!!");
-	} else {
-		req.guiType = 'desktop';
-	}
-	    
-    if (req.loggedIn) {
-
-	    /* get userHash */
-	    var userHashIndex = req.path.indexOf("/___");
-	    if (userHashIndex > -1) {
-
-		    /* userHash found */
-			var userHash = req.path.slice(userHashIndex + 1);
-			var context = Modules.UserManager.getConnectionByUserHash(userHash);
-	    } else {
-			var context = false;
-		}
-
-		req.context = context;
-		next();
-	} else {
-		res.redirect('/login');
-	}
- 
-});
-
-var blocks = {};
-
 hbs.registerHelper('extend', function(name, context) {
     var block = blocks[name];
     if (!block) {
@@ -207,12 +147,72 @@ hbs.registerHelper('block', function(name) {
     return val;
 });
 
-app.get('/', function(req, res, next) {
+app.use(express.static(path.resolve(__dirname, '../Client')))
+    .use('/Common', express.static(path.resolve(__dirname, '../Common')))
+    .use('/guis/mobilephone/images', express.static(path.resolve(__dirname, '../Client/views/mobilephone/images')))
+    .set('views', path.resolve(__dirname, '../Client/views'))
+    .set('view engine', 'html')
+    .engine('html', hbs.__express)
+    .use(bodyParser.urlencoded({
+        extended: true
+    }))
+    .use(bodyParser.json())
+    .use(session) // session support
+    .use(everyauth.middleware(app));
+
+/**
+ * Init function called in server.js to initialize this module.
+ *
+ * @param {Object} theModules variable to access the other modules.
+ */
+WebServer.init = function(theModules) {
+    Modules = theModules;
+
+    var server = require('http').createServer(app);
+    WebServer.server = server;
+    WebServer.session = session;
+
+    server.listen(Modules.config.port); // start server (port set in config file)
+};
+
+// invoked for any requested passed to this router
+app.use(function(req, res, next) {
+    var agent = req.get('user-agent');
+  
+    /* Check if the client is on a mobile phone or not. */
+    if (agent && (agent.indexOf('iPhone') > 0 || (agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0))) {
+    	req.guiType = 'mobilephone';
+	} else {
+		req.guiType = 'desktop';
+	}
+	    
+    if (req.loggedIn) {
+
+        var context = false;
+
+	    /* get userHash */
+	    var userHashIndex = req.path.indexOf("/___");
+	    if (userHashIndex > -1) {
+
+		    /* userHash found */
+			var userHash = req.path.slice(userHashIndex + 1);
+			var context = Modules.UserManager.getConnectionByUserHash(userHash);
+	    }
+
+		req.context = context;
+		next();
+	} else {
+		res.redirect('/login');
+	}
+ 
+});
+
+app.get('/', function(req, res) {
     var filePath = path.resolve(__dirname, '../Client/views/' + Modules.config.homepage);
     res.sendFile(filePath);
 });
 
-app.get('/room/:id', function(req, res, next) {
+app.get('/room/:id', function(req, res) {
     //console.log("user -> " + JSON.stringify(req.user));
     var userName = (req.user !== undefined) ? req.user.username : "user";
 	var password = (req.user !== undefined) ? req.user.password : "user";
@@ -229,7 +229,7 @@ app.get('/room/:id', function(req, res, next) {
 });
 
 // room list for coupling navigation
-app.get('/getRooms', function(req, res, next) {
+app.get('/getRooms', function(req, res) {
 	Modules.RoomController.listRooms(function(err, rooms) {
 		
 		if (err) {
@@ -241,7 +241,7 @@ app.get('/getRooms', function(req, res, next) {
 	});
 });
 
-app.get('/objectIcons/:objectType/:section?', function(req, res, next) {
+app.get('/objectIcons/:objectType/:section?', function(req, res) {
     var obj = Modules.ObjectManager.getPrototype(req.params.objectType);
 
     if (!obj) {
@@ -251,7 +251,7 @@ app.get('/objectIcons/:objectType/:section?', function(req, res, next) {
 	res.sendFile(path.resolve(__dirname, obj.localIconPath(req.params.section)));
 });
 
-app.get('/categoryIcons/:category', function(req, res, next) {
+app.get('/categoryIcons/:category', function(req, res) {
 	var iconPath = path.resolve(__dirname, '../objects/' + req.params.category + '/icon.png');
 	
 	if (!fs.existsSync(iconPath)) {
@@ -261,7 +261,7 @@ app.get('/categoryIcons/:category', function(req, res, next) {
 	res.sendFile(iconPath);
 });
 
-app.post('/setContent/:roomID/:objectID/:hash', function(req, res, next) {
+app.post('/setContent/:roomID/:objectID/:hash', function(req, res) {
 	var roomID = req.params.roomID;
 	var objectID = req.params.objectID;
 	
@@ -272,7 +272,7 @@ app.post('/setContent/:roomID/:objectID/:hash', function(req, res, next) {
 	    'action': 'setContent'
 	};
 
-	Modules.ObjectManager.history.add(new Date().toDateString(), req.context.user.username, historyEntry)
+	Modules.ObjectManager.history.add(new Date().toDateString(), req.context.user.username, historyEntry);
 	
 	if (!object) {
 		Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
@@ -335,7 +335,7 @@ app.post('/setContent/:roomID/:objectID/:hash', function(req, res, next) {
 	});  // form
 });
 
-app.get('/paintings/:roomID/:user/:picID/:hash', function(req, res, next) {
+app.get('/paintings/:roomID/:user/:picID/:hash', function(req, res) {
 	var roomID = req.params.roomID;
 	var user   = req.params.user;
 	
@@ -368,7 +368,7 @@ app.get('/paintings/:roomID/:user/:picID/:hash', function(req, res, next) {
 });
 
 // p3 might specify a content age
-app.get('/getContent/:roomID/:objectID/:p3/:hash', function(req, res, next) {
+app.get('/getContent/:roomID/:objectID/:p3/:hash', function(req, res) {
 	var roomID   = req.params.roomID;
 	var objectID = req.params.objectID;
 	
@@ -404,7 +404,7 @@ app.get('/getContent/:roomID/:objectID/:p3/:hash', function(req, res, next) {
 	}
 });
 
-app.get('/getPreviewContent/:roomID/:objectID/:p3/:hash', function(req, res, next) {
+app.get('/getPreviewContent/:roomID/:objectID/:p3/:hash', function(req, res) {
 	var roomID   = req.params.roomID;
 	var objectID = req.params.objectID;
 	
@@ -444,7 +444,7 @@ app.get('/getPreviewContent/:roomID/:objectID/:p3/:hash', function(req, res, nex
 });
 
 // Combine all javascript files in guis.common/javascript
-app.get('/defaultJavascripts', function(req, res, next) {
+app.get('/defaultJavascripts', function(req, res) {
     Q.nfcall(fs.readdir, 'Client/guis.common/javascript').then(function(files) {
         files.sort(function(a, b) {
         	return parseInt(a) - parseInt(b);
@@ -487,7 +487,7 @@ app.get('/defaultJavascripts', function(req, res, next) {
     });
 });
 
-app.get('/time', function(req, res, next) {
+app.get('/time', function(req, res) {
 	var currentdate = new Date(); 
 	var etag = currentdate.getTime();
 	 if (req.get('if-none-match') === etag) {
@@ -507,14 +507,14 @@ app.get('/time', function(req, res, next) {
 	}
 });
 
-app.get('/config.js', function(req, res, next) {
+app.get('/config.js', function(req, res) {
 	var obj = JSON.stringify(Modules.ConfigClient);
 	var data = "\"use strict\";" + "\n" + "\n" + "var Config=" + obj + ';';	
 	
 	res.status(200).send(data); 
 });
 
-app.get('/objects', function(req, res, next) {
+app.get('/objects', function(req, res) {
 	var code = Modules.BuildTool.getClientCode(req.guiType);
 
 	res.set('Content-Type', 'application/javascript');
