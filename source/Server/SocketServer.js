@@ -21,12 +21,24 @@ SocketServer.init = function (theModules) {
 	io = require('socket.io')(Modules.WebServer.server);
     io.use(ios(Modules.WebServer.session)); // session support
 
+    io.use(function(socket, next) {
+        var loggedIn = socket.handshake.session.auth != undefined ? socket.handshake.session.auth.loggedIn : false;
+
+        if (loggedIn) return next();
+
+        next(new Error('Authentication error'));
+    });
+
 	io.sockets.on('connection', function (socket) {
-        //console.log(socket.handshake.session);
 		UserManager.socketConnect(socket);
 		SocketServer.sendToSocket(socket, 'welcome', 0.5);
 		
 		socket.on('message', function (data) {
+
+            if (new Date(socket.handshake.session.cookie.expires) < new Date()) {
+                return socket.emit('session-expired', {expires:true});
+            }
+
 			Dispatcher.call(socket, data);
 		});
 		

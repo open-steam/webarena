@@ -30,6 +30,10 @@ SocketClient.init = function() {
 	socket.on('WebRTC-message', function(data) {
 		WebRTCManager.receiveMessage(data);
 	});
+
+	socket.on('session-expired', function() {
+		window.location = "/login";
+	});
 }
 
 /**
