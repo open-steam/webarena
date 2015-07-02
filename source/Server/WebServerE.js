@@ -14,8 +14,9 @@ var fs = require('fs');
 var _ = require('lodash');
 
 var express = require('express');
-var Session = require('express-session');                                                                    // half an hour = 1800000
+var Session = require('express-session');                                                                  // half an hour = 1800000
 var session = Session({secret: 'keyboard gato', key: 'sid', resave: false, saveUninitialized: false, cookie: { maxAge: 1800000 }});
+var checkMobile = require('connect-mobile-detection');
 var bodyParser = require('body-parser');
 var app = express();
 
@@ -72,17 +73,18 @@ app.use(express.static(path.resolve(__dirname, '../Client')))
         extended: true
     }))
     .use(bodyParser.json())
+    .use(checkMobile())
     .use(session) // session support
     .use(authenticator.everyauth.middleware(app));
 
 // invoked for any requested passed to this router
 app.use(function(req, res, next) {
-    var agent = req.get('user-agent');
-  
+
     /* Check if the client is on a mobile phone or not. */
-    if (agent && (agent.indexOf('iPhone') > 0 || (agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0))) {
+    if (req.phone) {
     	req.guiType = 'mobilephone';
 	} else {
+        // the client is a tablet or a computer
 		req.guiType = 'desktop';
 	}
 	    
