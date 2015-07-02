@@ -9,22 +9,10 @@
 
 "use strict";
 
-var Modules = false;
+var mongoDBConfig = require('./MongoDBConfig')();
+
 var users = false;
 var UserDAO = {};
-
-/**
- * Init function called in server.js to initialize this module
- * 
- * @param {Object} theModules variable to access the other modules.
- */
-UserDAO.init = function(theModules) {
-    Modules = theModules;
-    var db = require('monk')(Modules.MongoDBConfig.getURI());
-    
-    users = db.get('users');
-    users.ensureIndex( { "username": 1 }, { unique: true } )
-}
 
 /**
 * @param username
@@ -58,4 +46,11 @@ UserDAO.updateUsersById = function(id, newUserAttr) {
     users.update({_id:id}, {$set:newUserAttr});
 }
 
-module.exports = UserDAO;
+module.exports = function() {
+    var db = require('monk')(mongoDBConfig.getURI());
+
+    users = db.get('users');
+    users.ensureIndex( { "username": 1 }, { unique: true } )
+
+    return UserDAO;
+}

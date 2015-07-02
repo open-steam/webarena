@@ -6,6 +6,7 @@
     "bcrypt": "~0.8.x",
     "body-parser": "*",
     "connect-mobile-detection": "0.0.5",
+    "connect-mongo": "^0.8.1",
     "eventemitter2": "~0.4.13",
     "everyauth": "*",
     "express": "~4.x",

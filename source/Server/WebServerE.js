@@ -7,6 +7,7 @@
 "use strict";
 
 var authenticator = require('./Authentication');
+var mongoDBConfig = require('./db/MongoDBConfig')();
 
 var path = require('path');
 var Q = require('q');
@@ -14,8 +15,13 @@ var fs = require('fs');
 var _ = require('lodash');
 
 var express = require('express');
-var Session = require('express-session');                                                                  // half an hour = 1800000
-var session = Session({secret: 'keyboard gato', key: 'sid', resave: false, saveUninitialized: false, cookie: { maxAge: 1800000 }});
+var Session = require('express-session');
+var MongoStore = require('connect-mongo')(Session);// half an hour = 1800000
+var session = Session({secret: 'keyboard gato',
+                       key: 'sid', resave: false,
+                       saveUninitialized: false,
+                       store: new MongoStore({ url: mongoDBConfig.getURI() }),
+                       cookie: { maxAge: 1800000 }});
 var checkMobile = require('connect-mobile-detection');
 var bodyParser = require('body-parser');
 var app = express();

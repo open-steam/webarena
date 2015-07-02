@@ -8,7 +8,7 @@
 
 var everyauth = require('everyauth');
 var validator = require('validator');
-var userDAO   = require('./db/UserDAO.js');
+var userDAO   = require('./db/UserDAO')();
 
 /**
  * @class Authenticator

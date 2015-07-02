@@ -84,7 +84,7 @@ var logger = new (winston.Logger)({
     transports: [
         new (winston.transports.Console)({colorize: true, json: true, handleExceptions: true}),
         new (winston.transports.File)({filename:"error/error.log" , colorize: true, json: true , handleExceptions:true, maxsize:1048576})
-        
+
     ]
 });
 
@@ -101,7 +101,6 @@ Modules.config = config;
 Modules.Config = config;
 Modules.ConfigClient = clientConfig;
 
-Modules.MongoDBConfig   = require('./Server/db/MongoDBConfig.js');
 Modules.ObjectManager 	= require('./Server/ObjectManager.js');
 Modules.WebServer 		= require('./Server/WebServerE.js');
 Modules.SocketServer 	= require('./Server/SocketServer.js');
@@ -132,9 +131,6 @@ Modules.ServerController = require('./Server/controllers/ServerController.js');
 Modules.InternalDispatcher = require('./Server/apihandler/InternalDispatcher.js');
 Modules.Dispatcher = require('./Server/apihandler/Dispatcher.js');
 
-// DAO (Data Access Object) 
-Modules.UserDAO  = require('./Server/db/UserDAO.js');
-
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports = Modules;
 
@@ -151,7 +147,3 @@ if (Modules.config.plugins) {
     Modules.PluginManager = require('./Server/PluginManager.js').create();
     Modules.PluginManager.init(Modules, Modules.config.plugins);
 }
-
-// launchers
-var mongoDBLauncher = require('./Server/launchers/MongoDBLauncher.js').init(Modules).launch();
-
