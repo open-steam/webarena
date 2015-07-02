@@ -11,7 +11,7 @@ var printLogo = function() {
         '#    W E B A R E N A   S E R V E R       #',
         '#                                        #',
         '#    (c) 2012-15 Contextual Informatics, #',
-        '#                Universität Paderborn  #',
+        '#                Universität Paderborn   #',
         '#                                        #',
         '#    Main contributors:                  #',
         '#                                        #',
@@ -19,7 +19,7 @@ var printLogo = function() {
         '#        Tobias Kempkensteffen           #',
         '#        Viktor Koop                     #',
         '#        Jan Petertonkoker               #',
-        '#        Steven Christopher Lücker      #',
+        '#        Steven Christopher Lücker       #',
         '#        Christoph Sens                  #',
         '#                                        #',
         '##########################################'];
