@@ -22,6 +22,7 @@
     "node-uuid": "*",
     "path": "*",
     "q": "~0.9.6",
+    "serve-favicon": "^2.3.0",
     "sharepoint": "*",
     "socket.io": ">=0.9.14",
     "socket.io-express-session": "*",

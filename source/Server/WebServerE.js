@@ -14,6 +14,7 @@ var Q = require('q');
 var fs = require('fs');
 var _ = require('lodash');
 
+var favicon = require('serve-favicon');
 var express = require('express');
 var Session = require('express-session');
 var MongoStore = require('connect-mongo')(Session);// half an hour = 1800000
@@ -69,7 +70,8 @@ hbs.registerHelper('block', function(name) {
     return val;
 });
 
-app.use(express.static(path.resolve(__dirname, '../Client')))
+app.use(favicon(path.resolve(__dirname, '../Client/favicon.ico')))
+    .use(express.static(path.resolve(__dirname, '../Client')))
     .use('/Common', express.static(path.resolve(__dirname, '../Common')))
     .use('/guis/mobilephone/images', express.static(path.resolve(__dirname, '../Client/views/mobilephone/images')))
     .set('views', path.resolve(__dirname, '../Client/views'))
