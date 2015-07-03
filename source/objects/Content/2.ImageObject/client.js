@@ -12,8 +12,9 @@ ImageObject.upload = function() {
 	GUI.uploadFile(this,this.translate(GUI.currentLanguage, "Please select an image"));
 }
 
-ImageObject.openFile=function(){
+ImageObject.downloadImage=function(){
 	
+	//TODO: direct download!!!
 	window.open(this.getContentURL(), "_blank");
 	
 }

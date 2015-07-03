@@ -19,6 +19,8 @@ GeneralObject.setTranslations('de',{
 	'Link':'Verknüpfen',
 	'to front':'Nach vorne',
 	'to back':'Nach hinten',
+	'open File':'Datei öffnen',
+	'open/close':'Öffnen/Schließen',
 	'locked':'Angeheftet',
 	'visible':'Sichtbar',
 	'group':'Gruppe',

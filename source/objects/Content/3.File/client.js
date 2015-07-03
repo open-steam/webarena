@@ -9,6 +9,14 @@ WAFile.justCreated=function(){
 }
 
 
+WAFile.downloadFile=function(){
+
+	//TODO: direct download!!!
+	window.open(this.getContentURL(), "_blank");
+
+}
+
+
 WAFile.openFile=function(){
 	
 	var type = this.getAttribute("mimeType");
@@ -19,8 +27,8 @@ WAFile.openFile=function(){
 		return;
 	}
 	*/
-	if(type.indexOf("image") > -1){
-		this.openImage();
+	if(type.indexOf("image") > -1 || type.indexOf("text") > -1){
+		this.buildContentDialog();
 		return;
 	}
 

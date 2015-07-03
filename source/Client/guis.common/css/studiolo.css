@@ -154,7 +154,7 @@
 }
 
 .ui-dialog-content {
-  overflow: hidden !important;
+  overflow: hidden;
 }
 
 .easydb-result-wrapper {

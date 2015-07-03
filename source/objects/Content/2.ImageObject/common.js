@@ -56,7 +56,7 @@ ImageObject.register=function(type){
 		for (var i in selected) {
 			var obj = selected[i];
 			
-			obj.openFile();
+			obj.downloadImage();
 			
 		}
 		

@@ -29,7 +29,7 @@ WAFile.draw = function(external) {
         $(rep).find("text").remove();
     }
 	
-	if ($("#imagePreviewDialog_"+this.id).dialog( "isOpen" ) != true){
+	if ($("#FileContentDialog_"+this.id).dialog( "isOpen" ) != true){
 		$(rep).css("opacity", (this.getAttribute('opacity')/100));
 	}
 	
@@ -105,63 +105,72 @@ WAFile.getIconText = function() {
 }
 
 
-WAFile.openImage = function(){
+WAFile.buildContentDialog = function(){
 	
 	var that = this;
+	var type = this.getAttribute("mimeType");
 	
-	if ($("#imagePreviewDialog_"+this.id).length == 0) {
-		
-		$("body").first().append('<div id="imagePreviewDialog_'+this.id+'" title='+this.getAttribute("name")+'><image width="100%" height="100%" src="'+this.getPreviewContentURL()+'"></image></div>');
-	
-		$("#imagePreviewDialog_"+this.id).dialog({
-			//autoOpen: false,
-			minWidth: 57,
-			width: 57,
-			height: 57,
+	if ($("#FileContentDialog_"+this.id).length == 0) {
+		$("body").first().append('<div id="FileContentDialog_'+this.id+'" title='+this.getAttribute("name")+'></div>');
+		$("#FileContentDialog_"+this.id).dialog({
 			position: { my: "left top", at: "left top", of: $("#"+that.id).find("image")}
 		});
-	
-		var img = $("#imagePreviewDialog_"+this.id).find("img")[0];
-
-		$(img).on("load", function(){
 		
-			var w = $(img).context.naturalWidth;
-			var h = $(img).context.naturalHeight;
+		if(type.indexOf("image") > -1){
+			$("#FileContentDialog_"+this.id).append('<image width="100%" src="'+this.getPreviewContentURL()+'"></image>');
+			var img = $("#FileContentDialog_"+this.id).find("img")[0];
+			$(img).on("load", function(){
+				$("#FileContentDialog_"+that.id).dialog("option","resizable", false);
+				$("#FileContentDialog_"+that.id).parent().resizable({ 
+					handles: 'n,e,s,w,se,sw,ne,nw', 
+					aspectRatio: true 
+				});
+				
+				var w = $(img).context.naturalWidth;
+				var h = $(img).context.naturalHeight;
 		
-			that.openImageAnimation(w, h);
-		});
-	
-		$("#imagePreviewDialog_"+this.id).on( "dialogbeforeclose", function(event, ui) {
-		
-			$("#imagePreviewDialog_"+that.id).animate({
-				height: that.getAttribute("height")+"px"
-			}, 1000);
-		
-			$("#imagePreviewDialog_"+that.id).parent().animate({
-				width: that.getAttribute("width")+"px",
-				height: that.getAttribute("height")+"px",
-				top: (that.getAttribute("y")+30)+"px",
-				left: that.getAttribute("x")+"px"
-			}, 1000, function() {
-				that.draw();
+				that.openContentDialog(w, h);
 			});
-			
+		}
+		if(type.indexOf("text") > -1){
+			this.serverCall('getContent', function(arr){
+				var result = "";
+				for(var i = 0; i < arr.length; i++) {
+					result += String.fromCharCode(arr[i]); 
+				}
+				$("#FileContentDialog_"+that.id).append('<p>'+result+'</p>');
+				$("#FileContentDialog_"+that.id).dialog("option","height", 440);
+				that.openContentDialog(300, 400);
+			});
+		}
+	
+		$("#FileContentDialog_"+this.id).on( "dialogbeforeclose", function(event, ui) {
+			that.closeContentDialog();
 		});
 	
 	}
 	else{
-		
-		$("#imagePreviewDialog_"+this.id).dialog( "option", "position", {my: "left top", at: "left top", of: $("#"+this.id).find("image")});
-		
-		$("#imagePreviewDialog_"+this.id).dialog("open");
-		
-		that.openImageAnimation();
-		
+		this.openContentDialog();
 	}
 }
 
 
-WAFile.openImageAnimation = function(w, h){
+WAFile.removeContentDialog = function(){
+	if ($("#FileContentDialog_"+this.id).length != 0) {
+		$("#FileContentDialog_"+this.id).parent().remove();
+		$("#FileContentDialog_"+this.id).remove();
+	}
+}
+
+
+WAFile.openContentDialog = function(w, h){
+	
+	var that = this;
+	
+	$("#FileContentDialog_"+this.id).dialog( "option", "position", {my: "left top", at: "left top", of: $("#"+this.id).find("image")});
+	$("#FileContentDialog_"+this.id).dialog("open");
+	$("#FileContentDialog_"+this.id).parent().css("width", "64px");
+	$("#FileContentDialog_"+this.id).parent().css("height", "64px");	
 	
 	if(w){
 		this.naturalWidth = w;
@@ -169,20 +178,54 @@ WAFile.openImageAnimation = function(w, h){
 	if(h){
 		this.naturalHeight = h;
 	}
-
-	var that = this;
-
-	$("#imagePreviewDialog_"+that.id).animate({
-		height: that.naturalHeight+"px"
-	}, 1000);
 	
-	$("#imagePreviewDialog_"+that.id).parent().animate({
-		width: that.naturalWidth+"px",
-		height: that.naturalHeight+"px",
-		top: (that.getAttribute("y")+130)+"px",
-		left: (that.getAttribute("x")+100)+"px"
+	var aspectRatio = this.naturalWidth/this.naturalHeight;
+	var maxWidth;
+	var maxHeight = window.innerHeight-160;
+	
+	if(GUI.sidebar.open){
+		maxWidth = window.innerWidth-350;
+	}
+	else{
+		maxWidth = window.innerWidth-120;
+	}
+	
+	var dialogWidth = this.naturalWidth;
+	var dialogHeight = this.naturalHeight;
+	
+	//resize dialog if window ist too small
+	if(dialogWidth > maxWidth){
+		var dialogWidth = maxWidth;
+		var dialogHeight = maxWidth/aspectRatio;
+	}
+	if(dialogHeight > maxHeight){
+		var dialogHeight = maxHeight;
+		var dialogWidth = maxHeight*aspectRatio;
+	}
+	
+	$("#FileContentDialog_"+this.id).parent().animate({
+		width: dialogWidth+"px",
+		height: (dialogHeight+40)+"px",
+		top: ($(window).scrollTop()+70)+"px",
+		left: ($(window).scrollLeft()+50)+"px"
 	}, 1000);
 	
 	$("#"+this.id).css("opacity", 0.3)
+	
+}
+
+
+WAFile.closeContentDialog = function(){
+
+	var that = this;
+	
+	$("#FileContentDialog_"+this.id).parent().animate({
+		width: "64px",
+		height: "64px",
+		top: (that.getAttribute("y")+30)+"px",
+		left: that.getAttribute("x")+"px"
+	}, 1000, function() {
+		that.draw();
+	});
 	
 }

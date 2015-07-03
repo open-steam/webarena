@@ -590,8 +590,6 @@ GUI.initToolbar = function() {
 
         $("#header > .header_tabs_sidebar").append(padButton);
 
-        GUI.sidebar.openPage("pad", padButton);
-
     }
 
 	
@@ -618,8 +616,6 @@ GUI.initToolbar = function() {
         }
 
         $("#header > .header_tabs_sidebar").append(trashButton);
-
-        GUI.sidebar.openPage("trashbasket", trashButton);
 
     }
 	

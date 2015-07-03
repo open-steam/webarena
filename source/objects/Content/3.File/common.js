@@ -96,6 +96,16 @@ WAFile.register=function(type){
 	
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
+	this.registerAction('open File',function(){
+	
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected){
+			var obj = selected[i];
+			obj.openFile();
+		}
+	});
+	
 	this.registerAction('to front',function(){
 	
 		/* set a very high layer for all selected objects (keeping their order) */
@@ -151,7 +161,7 @@ WAFile.register=function(type){
 			var obj = selected[i];
 			
 			obj.upload();
-			
+			obj.removeContentDialog();
 		}
 		
 	},true, function() {
@@ -166,7 +176,7 @@ WAFile.register=function(type){
 		for (var i in selected) {
 			var obj = selected[i];
 			
-			obj.openFile();
+			obj.downloadFile();
 			
 		}
 		
