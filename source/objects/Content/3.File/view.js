@@ -116,6 +116,10 @@ WAFile.buildContentDialog = function(){
 			position: { my: "left top", at: "left top", of: $("#"+that.id).find("image")}
 		});
 		
+		$("#FileContentDialog_"+this.id).parent().css("-webkit-box-shadow", "3px 3px 6px rgba(0, 0, 0, 0.5)");
+		$("#FileContentDialog_"+this.id).parent().css("-moz-box-shadow", "3px 3px 6px rgba(0, 0, 0, 0.5)");
+		$("#FileContentDialog_"+this.id).parent().css("box-shadow", "3px 3px 6px rgba(0, 0, 0, 0.5)");
+		
 		if(type.indexOf("image") > -1){
 			$("#FileContentDialog_"+this.id).append('<image width="100%" src="'+this.getPreviewContentURL()+'"></image>');
 			var img = $("#FileContentDialog_"+this.id).find("img")[0];
