@@ -28,16 +28,14 @@
                             <form name="login" action="/login" method="post" autocomplete="on"> 
                                 <div class="login_title" id="login_title"><h1>Already using Web Arena? Log in!</h1> </div>
                                 
-                                {{#if errors}} 
-                                	{{#if login}}
-			                              <p> 
-										    <div class="login_error">
-										      {{#each errors}}
-										      <span>{{this}}</span><br />
-										      {{/each}}
-										    </div> 
-										  </p>
-								   {{/if}}
+                                {{#if errors}}
+                                      <p>
+                                        <div class="login_error">
+                                          {{#each errors}}
+                                          <span>{{this}}</span><br />
+                                          {{/each}}
+                                        </div>
+                                      </p>
 							    {{/if}}
                                 
                                 <p> 
@@ -60,19 +58,15 @@
 
                         <div id="register" class="animate form">
                             <form  name="login" action="/register" method="post" autocomplete="on"> 
-                                <h1> Sign up </h1> 
-                                
-                                {{#if errors}} 
-                                	{{#if userParams.username}} 
-		                              <p> 
-									    <div class="login_error">
-									      {{#each errors}}
-									      <span>{{this}}</span><br />
-									      {{/each}}
-									    </div> 
-									  </p>
-								  {{/if}}
-							    {{/if}}
+                                <h1> Sign up </h1>
+
+                                {{#if info}}
+                                    <p>
+                                    <div class="login_error">
+                                        <span>{{info}}</span><br />
+                                    </div>
+                                    </p>
+                                {{/if}}
 							    
                                 <p> 
                                     <label for="usernamesignup" class="uname" data-icon="u">Your username</label>

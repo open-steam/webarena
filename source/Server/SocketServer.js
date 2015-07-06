@@ -21,14 +21,6 @@ SocketServer.init = function (theModules) {
 	io = require('socket.io')(Modules.WebServer.server);
     io.use(ios(Modules.WebServer.session)); // session support
 
-    io.use(function(socket, next) {
-        var loggedIn = socket.handshake.session.auth != undefined ? socket.handshake.session.auth.loggedIn : false;
-
-        if (loggedIn) return next();
-
-        next(new Error('Authentication error'));
-    });
-
 	io.sockets.on('connection', function (socket) {
 		UserManager.socketConnect(socket);
 		SocketServer.sendToSocket(socket, 'welcome', 0.5);
