@@ -102,7 +102,7 @@ Modules.Config = config;
 Modules.ConfigClient = clientConfig;
 
 Modules.ObjectManager 	= require('./Server/ObjectManager.js');
-Modules.WebServer 		= require('./Server/WebServerE.js');
+Modules.WebServer 		= require('./Server/webServer.js');
 Modules.SocketServer 	= require('./Server/SocketServer.js');
 Modules.UserManager 	= require('./Server/UserManager.js');
 Modules.Helper 			= require('./Server/Helper.js');

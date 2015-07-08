@@ -49,7 +49,7 @@ router.post('/login',
 
 router.get('/logout', function(req, res) {
     req.logout();
-    res.redirect('/');
+    res.redirect('/login');
 });
 
 router.get('/ping', function(req, res){
