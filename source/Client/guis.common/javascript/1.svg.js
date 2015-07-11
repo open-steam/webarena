@@ -3,6 +3,7 @@
 /* SVG */
 // http://keith-wood.name/svgRef.html
 
+
 /**
  * Refresh the SVG
  */
@@ -10,6 +11,7 @@ GUI.refreshSVG = function() {
 	$("#room_left").hide().show();
 	GUI.updateLayers();
 }
+
 
 /**
  * Create the SVG area
@@ -43,6 +45,7 @@ GUI.initSVG = function() {
 		}
 	});
 }
+
 
 /**
  * Resort all svg elements by their layer
@@ -179,12 +182,5 @@ GUI.getSvgMarkerId = function(type, color, up) {
 		return markerId;
 		
 	}
-	
-
-	
+		
 }
-
-
-
-
-

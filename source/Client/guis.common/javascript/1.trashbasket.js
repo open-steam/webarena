@@ -8,17 +8,19 @@ GUI.trashbasket = {};
 /**
  * called when the room is entered
  */
-GUI.trashbasket.update = function() {
-	GUI.trashbasket.opened();
+GUI.trashbasket.opened = function() {
+	
+	GUI.trashbasket.update();
+	
 }
+
 
 /**
  * called when the trashbasket is opened in GUI
  */
-GUI.trashbasket.opened = function() {
+GUI.trashbasket.update = function() {
 
 	$('#jsTrashTree').remove();
-	$('#RestoreButton').remove();
 
 	var renderedTree = $("<div id='jsTrashTree' class='js-tree objectBrowserTree'></div>").jstree({
 		"json_data": {
@@ -52,4 +54,14 @@ GUI.trashbasket.opened = function() {
 			GUI.trashbasket.update();
 		}
     });
+}
+
+
+/**
+ * called when the trashbasket is closed in GUI
+ */
+GUI.trashbasket.closed = function() {
+
+	//TODO
+
 }

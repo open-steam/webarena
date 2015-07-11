@@ -24,7 +24,6 @@ GUI.sidebar.savedState = undefined;
 GUI.sidebar.elementConfig = {
     "inspector" : {
         order : 0
-		//onOpen : GUI.chat.closed
     },
     "chat" : {
         order : 1,
@@ -32,15 +31,14 @@ GUI.sidebar.elementConfig = {
     },
     "bug" : {
         order : 2
-		//onOpen : GUI.chat.closed
     },
     "pad" : {
         order : 3
-		//onOpen : GUI.chat.closed
     },
 	"trashbasket" : {
 		order : 4,
-		onOpen : GUI.trashbasket.opened
+		onOpen : GUI.trashbasket.opened,
+		onClose: GUI.trashbasket.closed
 	}
 };
 
@@ -80,6 +78,12 @@ GUI.sidebar.openPage = function(element, button) {
         return;
     }
 
+	if(GUI.sidebar.currentElement !== undefined){
+		if (GUI.sidebar.elementConfig[GUI.sidebar.currentElement]['onClose'] !== undefined) {
+			GUI.sidebar.elementConfig[GUI.sidebar.currentElement]['onClose']();
+		}
+    }
+	
     /* set currently opened element/page */
     GUI.sidebar.currentElement = element;
 
@@ -109,7 +113,6 @@ GUI.sidebar.openPage = function(element, button) {
     if (GUI.sidebar.elementConfig[element]['onOpen'] !== undefined) {
         GUI.sidebar.elementConfig[element]['onOpen']();
     }
-
 
     if (button !== undefined) {
         GUI.sidebar.elementConfig[element]['button'] = button;

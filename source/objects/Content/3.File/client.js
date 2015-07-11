@@ -21,13 +21,7 @@ WAFile.openFile=function(){
 	
 	var type = this.getAttribute("mimeType");
 	
-	/*
-	if(type.indexOf("pdf") > -1){
-		
-		return;
-	}
-	*/
-	if(type.indexOf("image") > -1 || type.indexOf("text") > -1){
+	if(type.indexOf("image") > -1 || type.indexOf("text") > -1 || type.indexOf("pdf") > -1){
 		this.buildContentDialog();
 		return;
 	}

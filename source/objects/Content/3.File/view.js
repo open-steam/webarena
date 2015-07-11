@@ -143,9 +143,13 @@ WAFile.buildContentDialog = function(){
 					result += String.fromCharCode(arr[i]); 
 				}
 				$("#FileContentDialog_"+that.id).append('<p>'+result+'</p>');
-				$("#FileContentDialog_"+that.id).dialog("option","height", 440);
-				that.openContentDialog(300, 400);
+				that.openContentDialog(window.innerWidth*0.3, window.innerHeight/2);
 			});
+		}
+		if(type.indexOf("pdf") > -1){
+			$("#FileContentDialog_"+this.id).append('<iframe id="iframePDF" width="100%" height="99%" src="'+this.getContentURL()+'"></iframe>');
+			$("#FileContentDialog_"+that.id).css("overflow", "hidden");
+			that.openContentDialog(window.innerWidth*0.7, window.innerHeight);
 		}
 	
 		$("#FileContentDialog_"+this.id).on( "dialogbeforeclose", function(event, ui) {
@@ -212,6 +216,10 @@ WAFile.openContentDialog = function(w, h){
 		height: (dialogHeight+40)+"px",
 		top: ($(window).scrollTop()+70)+"px",
 		left: ($(window).scrollLeft()+50)+"px"
+	}, 1000);
+	
+	$("#FileContentDialog_"+this.id).animate({
+		height: dialogHeight+"px"
 	}, 1000);
 	
 	$("#"+this.id).css("opacity", 0.3)
