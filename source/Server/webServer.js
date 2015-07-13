@@ -1,18 +1,14 @@
 /**
  *    Webarena - A web application for responsive graphical knowledge work
  *
- *    @author Felix Winkelnkemper, University of Paderborn, 2012
+ *    @author Alejandro Sandoval, University of Paderborn, 2015
  *
  */
 "use strict";
 
-var mongoDBConfig = require('./db/MongoDBConfig')();
 var path = require('path');
 var flash = require('connect-flash');
-
-// mongoose
 var mongoose = require('mongoose');
-mongoose.connect(mongoDBConfig.getURI());
 
 var favicon = require('serve-favicon');
 var express = require('express');
@@ -29,21 +25,20 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 
 // passport config
-var Account = require('./db/account');
-passport.use(new LocalStrategy(Account.authenticate()));
-passport.serializeUser(Account.serializeUser());
-passport.deserializeUser(Account.deserializeUser());
+var User = require('./db/users');
+passport.use(new LocalStrategy(User.authenticate()));
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 passport.ensureAuthenticated = ensureAuthenticated;
 
-var logginRouter = require('./routes/loginRouter');
-var appRouter = require('./routes/appRouter');
-
 var app = express();
-
 var hbs = require('hbs');
 var blocks = {};
 
 var Modules = false;
+var LogginRouter = require('./routes/loginRouter');
+var AppRouter = require('./routes/appRouter');
+var RolesManager = require('./rolesManager');
 
 /**
  * @class WebServer
@@ -59,14 +54,28 @@ var WebServer = {};
 WebServer.init = function(theModules) {
     Modules = theModules;
 
-    // initialize the router
-    appRouter.init(theModules);
+    new AppRouter(theModules, app);
+    new LogginRouter(app);
+    new RolesManager(app);
+
+    // Error handling ( most notably 'Insufficient permissions' )
+    app.use(function (err, req, res, next) {
+        res.status(err.status || 500);
+        res.send({
+            message: err.message,
+            error: err,
+            title: 'error'
+        });
+    });
 
     var server = require('http').createServer(app);
     WebServer.server = server;
     WebServer.session = session;
 
     server.listen(Modules.config.port); // start server (port set in config file)
+    server.on('listening', function (callback) {
+        console.info("Http server now listening on port: " + Modules.config.port);
+    });
 };
 
 hbs.registerHelper('extend', function(name, context) {
@@ -88,29 +97,53 @@ hbs.registerHelper('block', function(name) {
 
 //hbs.localsAsTemplateData(app);
 
-app.use(favicon(path.resolve(__dirname, '../Client/favicon.ico')))
-    .use(express.static(path.resolve(__dirname, '../Client')))
-    .use('/guis/mobilephone/images', express.static(path.resolve(__dirname, '../Client/views/mobilephone/images')))
-    .set('views', path.resolve(__dirname, '../Client/views'))
+app.set('views', path.resolve(__dirname, '../Client/views'))
     .set('view engine', 'html')
     .engine('html', hbs.__express)
+    .use(favicon(path.resolve(__dirname, '../Client/favicon.ico')))
+    .use(express.static(path.resolve(__dirname, '../Client')))
+    .use('/guis/mobilephone/images', express.static(path.resolve(__dirname, '../Client/views/mobilephone/images')))
+    .use('/Common', express.static(path.resolve(__dirname, '../Common')))
     .use(bodyParser.json())
     .use(bodyParser.urlencoded({ extended: false }))
     .use(checkMobile())
     .use(session) // session support
     .use(flash())
     .use(passport.initialize())
-    .use(passport.session())
-    .use('/Common', express.static(path.resolve(__dirname, '../Common')));
+    .use(passport.session());
 
-app.use(appRouter.router);
-app.use(logginRouter);
+// a middleware with no mount path, gets executed for every request to the router
+app.use(function(req, res, next) {
+    if (req.phone) {
+        req.guiType = 'mobilephone';
+    } else {
+        // the client is a tablet or a computer
+        req.guiType = 'desktop';
+    }
+
+    if (req.isAuthenticated()) {
+        var context = false;
+
+        /* get userHash */
+        var userHashIndex = req.path.indexOf("/___");
+        if (userHashIndex > -1) {
+
+            /* userHash found */
+            var userHash = req.path.slice(userHashIndex + 1);
+            var context = Modules.UserManager.getConnectionByUserHash(userHash);
+        }
+
+        req.context = context;
+    }
+
+    next();
+});
 
 // Simple route middleware to ensure user is authenticated.
 // Use this route middleware on any resource that needs to be protected.  If
 // the request is authenticated (typically via a persistent login session),
 // the request will proceed.  Otherwise, the user will be redirected to the
-// login page.
+// login page. NOTE: use as passport.ensureAuthenticated
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) { return next(); }
     res.redirect('/login');

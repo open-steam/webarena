@@ -9,10 +9,18 @@
 
 "use strict";
 
-var localconfig = require('../../config.local.js');
+var localconfig = undefined;
 
-var MongoDBConfig = {};
-var uri = "";
+function MongoDBConfig(config) {
+    localconfig = config;
+    this.uri = createURI();
+}
+
+MongoDBConfig.prototype = {
+    getURI: function () {
+        return this.uri;
+    }
+};
 
 /**
  * URI Format: http://docs.mongodb.org/manual/reference/connection-string/
@@ -22,22 +30,14 @@ var uri = "";
 var createURI = function () {
     var uri = 'mongodb://';
 
-    uri += ((localconfig.server.mongodb.user != '') && (localconfig.server.mongodb.password != '')) ?
-    localconfig.server.mongodb.user + ":" + localconfig.server.mongodb.password + "@" : "";
+    uri += ((localconfig.user != '') && (localconfig.password != '')) ?
+    localconfig.user + ":" + localconfig.password + "@" : "";
 
-    uri += localconfig.server.mongodb.host;
-    uri += (localconfig.server.mongodb.port != '') ? ":" + localconfig.server.mongodb.port : "";
-    uri += (localconfig.server.mongodb.dbname != '') ? "/" + localconfig.server.mongodb.dbname : "";
+    uri += localconfig.host;
+    uri += (localconfig.port != '') ? ":" + localconfig.port : "";
+    uri += (localconfig.dbname != '') ? "/" + localconfig.dbname : "";
 
     return uri;
 };
 
-MongoDBConfig.getURI = function () {
-    return uri;
-}
-
-module.exports = function() {
-    uri = createURI();
-
-    return MongoDBConfig;
-};
+exports = module.exports = MongoDBConfig;

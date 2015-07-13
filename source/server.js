@@ -94,6 +94,18 @@ Modules.Log = require('./Common/Log.js');
 
 Modules.Logger = logger;
 
+// MonggoDb connection
+var MongoDBConfig = require('./Server/db/mongoDBConfig');
+var mongoDBConfig = new MongoDBConfig(config.mongodb);
+
+var mongoose = require('mongoose');
+mongoose.connect(mongoDBConfig.getURI());
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function (callback) {
+    console.info("connection to MongoDB succeed.");
+});
+
 // These modules are accessible everywhere by accessing the global variable Modules
 // They shall exist only once for the whole server
 
