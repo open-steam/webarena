@@ -17,7 +17,11 @@ var passport = require('passport');
 function AppRouter(modules, app) {
 
     app.get('/', function (req, res) {
-        res.redirect('/login');
+        if (req.isAuthenticated()) {
+            res.redirect('/room/public');
+        } else {
+            res.redirect('/login');
+        }
     });
 
     app.get('/room/:id', passport.ensureAuthenticated, function(req, res) {
