@@ -81,6 +81,31 @@ ImageObject.createPixelMap=function(SVGImage){
 			return(isThere);
 		}
 		
+		SVGImage.hasPixelAt=function(absX,absY){
+			
+			var bbox=SVGImage.getBoundingClientRect();
+			
+			var x=absX-bbox.left;
+			var y=absY-bbox.top;
+			var isThere=false;
+			
+			if (x<0) return false;
+			if (y<0) return false;
+			if (x>bbox.width) return false;
+			if (y>bbox.height) return false;
+			
+			var imgd = ctx.getImageData(x, y, 1, 1);
+			var pix = imgd.data;
+			
+			var sum = pix[0] + pix[1] + pix[2] + pix[3];
+			
+			//transparent pixel: 0, 0, 0, 0 (sum 0)
+			//white pixel: 255, 255, 255, 255 (sum 1020)
+			if(sum != 0 && sum != 1020) isThere=true;
+			
+			return(isThere);
+		}
+		
 	}
 	
 }
