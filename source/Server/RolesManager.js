@@ -18,7 +18,7 @@ function RolesManager(app_express) {
 }
 
 function mongo_connected() {
-    var mongoBackend = new node_acl.mongodbBackend( mongoose.connection.db /*, {String} prefix */ );
+    var mongoBackend = new node_acl.mongodbBackend( mongoose.connection.db, "acl_" );
 
     // Create a new access control list by providing the mongo backend
     // Also inject a simple logger to provide meaningful output
@@ -35,59 +35,29 @@ function mongo_connected() {
 // different resources.
 function set_roles() {
 
-    // Define roles, resources and permissions
-    acl.allow([
-        {
-            roles: 'admin',
-            allows: [
-                { resources: '/secret', permissions: 'create' },
-                { resources: '/topsecret', permissions: '*' }
-            ]
-        }, {
-            roles: 'user',
-            allows: [
-                { resources: '/secret', permissions: 'get' }
-            ]
-        }, {
-            roles: 'guest',
-            allows: []
-        }
-    ], function(err) {
-        console.log("set_roles error: " + err);
+    //acl.allow("guest", [], "", function(err) {
+    //
+    //});
+
+    acl.addUserRoles('joed', 'guest', function(err, res){
+        if (err){
+            console.log("Error ---> " + err);
+        } else console.log("Todo chido ---> " + res);
     });
+
+    // guest is allowed to view blogs
+    // acl.allow('guest', 'blogs', 'view');
 
     // Inherit roles
     // Every user is allowed to do what guests do
     // Every admin is allowed to do what users do
-    acl.addRoleParents( 'user', 'guest' );
-    acl.addRoleParents( 'admin', 'user' );
+    //acl.addRoleParents( 'user', 'guest' );
+    //acl.addRoleParents( 'admin', 'user' );
 }
 
 // Defining routes ( resources )
+// an HTTP API for ACL
 function set_routes() {
-
-    // Simple overview of granted permissions
-    app.get( '/info',
-        function(req, res) {
-            acl.allowedPermissions(get_user_id(req), [ '/info', '/secret', '/topsecret' ], function(error, permissions){
-                res.json(permissions);
-            });
-        }
-    );
-
-    // Only for users and higher
-    app.get('/secret', acl.middleware(),
-        function(req, res) {
-            res.send('Welcome Sir!');
-        }
-    );
-
-    // Only for admins
-    app.get('/topsecret', acl.middleware(),
-        function(req, res) {
-            res.send('Hi Admin!');
-        }
-    );
 
     // Setting a new role
     app.get('/allow/:user/:role', function(req, res) {
@@ -103,8 +73,8 @@ function set_routes() {
 }
 
 // Provide logic for getting the logged-in user
-function get_user_id(req) {
-    return req.user != undefined? req.user.id : "bob";
+function get_user_id(req, res) {
+    return req.user != undefined? req.user.id : undefined;
 }
 
 // Generic debug logger for node_acl

@@ -15,7 +15,7 @@ function LoginRouter(app) {
     });
 
     app.post('/register', function(req, res) {
-        User.register(new User({ username : req.body.username }), req.body.password, function(err, account) {
+        User.register(new User({ username : req.body.username, email : req.body.e_mail }), req.body.password, function(err, account) {
             if (err) {
                 res.location('login#toregister'); // TODO: Fix this hash navigation
                 return res.render("login", {info: "Sorry. That username already exists. Try again."});

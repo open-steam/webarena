@@ -101,10 +101,6 @@ var mongoDBConfig = new MongoDBConfig(config.mongodb);
 var mongoose = require('mongoose');
 mongoose.connect(mongoDBConfig.getURI());
 var db = mongoose.connection;
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function (callback) {
-    console.info("connection to MongoDB succeed.");
-});
 
 // These modules are accessible everywhere by accessing the global variable Modules
 // They shall exist only once for the whole server
@@ -128,10 +124,6 @@ Modules.AttributeManager 	= require('./Common/AttributeManager.js');
 Modules.TranslationManager 	= require('./Common/TranslationManager.js');
 Modules.ActionManager 		= require('./Common/ActionManager.js');
 
-if (Modules.config.tcpApiServer) {
-    Modules['TcpEventServer'] = require("./Server/TcpSocketServer.js").create();
-}
-
 Modules.Connector = Modules.config.connector; //shortcut
 
 //Controllers
@@ -145,16 +137,15 @@ Modules.Dispatcher = require('./Server/apihandler/Dispatcher.js');
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports = Modules;
 
-// Initialize all Modules if there is a init-function
-for (var name in Modules) {
-    var module = Modules[name];
-    if (module.init) {
-        module.init(Modules);
-    }
-}
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function (callback) {
+    console.info("connection to MongoDB succeed.");
 
-//load plugins
-if (Modules.config.plugins) {
-    Modules.PluginManager = require('./Server/PluginManager.js').create();
-    Modules.PluginManager.init(Modules, Modules.config.plugins);
-}
+    // Initialize all Modules if there is a init-function
+    for (var name in Modules) {
+        var module = Modules[name];
+        if (module.init) {
+            module.init(Modules);
+        }
+    }
+});
