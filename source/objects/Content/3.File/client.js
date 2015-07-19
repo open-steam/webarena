@@ -11,8 +11,7 @@ WAFile.justCreated=function(){
 
 WAFile.downloadFile=function(){
 
-	//TODO: direct download!!!
-	window.open(this.getContentURL(), "_blank");
+	window.open(this.getDownloadURL())
 
 }
 

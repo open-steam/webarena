@@ -144,6 +144,10 @@ GeneralObject.getContentURL = function() {
     return "/getContent/" + this.getRoomID() + "/" + this.id + "/" + this.getAttribute('contentAge') + "/" + ObjectManager.userHash;
 }
 
+GeneralObject.getDownloadURL = function() {
+    return "/getDownload/" + this.getRoomID() + "/" + this.id + "/" + this.getAttribute('contentAge') + "/" + ObjectManager.userHash;
+}
+
 GeneralObject.create = function(attributes) {
 
     if (attributes === undefined) {

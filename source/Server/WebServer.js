@@ -398,9 +398,8 @@ WebServer.init = function (theModules) {
 		}
 
 		// getContent
-
+		
 		else if (url.substr(0, 11) == '/getContent') {
-
 			try {
 			
 				var ids = url.substr(12).split('/');
@@ -415,11 +414,11 @@ WebServer.init = function (theModules) {
 				}
 
 				var mimeType = object.getAttribute('mimeType') || 'text/plain';
-
 				res.writeHead(200, {
 					'Content-Type': mimeType,
 					'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'
 				});
+			
 				if(Modules.Connector.getContentStream !== undefined){
 					var objStream = Modules.Connector.getContentStream(roomID, objectID, context);
 					objStream.pipe(res);
@@ -442,7 +441,53 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
+		
+		// getDownload
 
+		else if (url.substr(0, 12) == '/getDownload') {
+			try {
+			
+				var ids = url.substr(13).split('/');
+				var roomID = ids[0];
+				var objectID = ids[1];
+				var object = Modules.ObjectManager.getObject(roomID, objectID, context);
+
+				if (!object) {
+					res.writeHead(404);
+					Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');
+					return res.end('Object not found');
+				}
+
+				var mimeType = object.getAttribute('mimeType') || 'text/plain';
+
+				res.writeHead(200, {
+					'Content-Type': 'application/force-download',
+					'Content-Disposition': 'attachment; filename="' + object.getAttribute("name") + '"'
+				});
+				
+				if(Modules.Connector.getContentStream !== undefined){
+					var objStream = Modules.Connector.getContentStream(roomID, objectID, context);
+					objStream.pipe(res);
+					objStream.on("end", function(){
+						res.end();
+					})
+				} else {
+					var data = object.getContent();
+					res.end(new Buffer(data));
+				}
+
+			} catch (err) {
+
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
+
+			return;
+		}
+		
+		
 		// getPreviewContent
 
 		else if (url.substr(0, 18) == '/getPreviewContent') {
