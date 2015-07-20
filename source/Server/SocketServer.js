@@ -31,6 +31,9 @@ SocketServer.init = function (theModules) {
                 return socket.emit('session-expired', {expires:true});
             }
 
+			// add the user to the data (take it from session)
+			data.data.passport = socket.handshake.session.passport;
+
 			Dispatcher.call(socket, data);
 		});
 		

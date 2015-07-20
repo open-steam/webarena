@@ -8,7 +8,7 @@
 var passport = require('passport');
 var User = require('../db/users');
 
-function LoginRouter(app) {
+function LoginRouter(app, acl) {
 
     app.get('/register', function(req, res) {
         res.render('register', { });
@@ -20,6 +20,13 @@ function LoginRouter(app) {
                 res.location('login#toregister'); // TODO: Fix this hash navigation
                 return res.render("login", {info: "Sorry. That username already exists. Try again."});
             }
+
+            // create a new acm_user with 'user' role that represents this user
+            acl.addUserRoles(req.body.username, 'user', function(err) {
+                 if(err) {
+                      console.warn("ERROR!! by adding acm_user role to the new user" + err);
+                 }
+            });
 
             passport.authenticate('local')(req, res, function () {
                 res.redirect('/room/public');

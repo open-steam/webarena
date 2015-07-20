@@ -18,7 +18,7 @@ var session = Session({secret: 'keyboard gato',
                        key: 'sid', resave: false,
                        saveUninitialized: false,
                        store: new MongoStore({ mongooseConnection: mongoose.connection }),
-                       cookie: { maxAge: 1800000 }}); // half an hour = 1800000
+                       cookie: { maxAge: (1800000 / 2) }}); // half an hour = 1800000
 var checkMobile = require('connect-mobile-detection');
 var bodyParser = require('body-parser');
 var passport = require('passport');
@@ -38,7 +38,6 @@ var blocks = {};
 var Modules = false;
 var LogginRouter = require('./routes/loginRouter');
 var AppRouter = require('./routes/appRouter');
-var RolesManager = require('./rolesManager');
 
 /**
  * @class WebServer
@@ -55,8 +54,7 @@ WebServer.init = function(theModules) {
     Modules = theModules;
 
     new AppRouter(theModules, app);
-    new LogginRouter(app);
-    new RolesManager(app);
+    new LogginRouter(app, theModules.ACLManager);
 
     // Error handling ( most notably 'Insufficient permissions' )
     app.use(function (err, req, res, next) {
@@ -66,6 +64,13 @@ WebServer.init = function(theModules) {
             error: err,
             title: 'error'
         });
+    });
+
+    // Create the admin user
+    User.register(new User({ username : 'admin', email : 'admin@webarena.com' }), 'admin', function(err, account) {
+        if (err && (err.message != "User already exists with username admin")) {
+            console.warn("User admin: " + err);
+        }
     });
 
     var server = require('http').createServer(app);

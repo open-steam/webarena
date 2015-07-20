@@ -36,6 +36,8 @@
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.ui.touch-punch.min.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
+
+    <script type="text/javascript" src="/guis.common/libraries/async.js"></script>
 	
 	<script src="/config.js"></script>
 	<script src="/Helper.js"></script>
@@ -51,8 +53,10 @@
 	<script src="/Common/AttributeManager.js"></script>
 	<script src="/Common/TranslationManager.js"></script>
 
+    <script src="/aclManager-client.js"></script>
+
 	<script>
-	var  Modules={
+	var  Modules = {
 		'Log':Log,
 		'config':Config,
 		'Config':Config,
@@ -61,26 +65,27 @@
 		'ObjectManager':ObjectManager,
 		'Helper':Helper,
 
-		//Object specific
+		// Object specific
 
 		'DataSet':DataSet,
 		'AttributeManager':AttributeManager,
 		'TranslationManager':TranslationManager,
 		'ActionManager':ActionManager,
+
+        // DUI
+        'ACLManager': new ACLManagerClient()
 	};
 
-	
 	$(document).ready(function() {
 		for (var name in Modules){
-			var module=Modules[name];
+			var module = Modules[name];
 			if (module.init) {
 				module.init(Modules);
-				module.Modules=Modules;
+				module.Modules = Modules;
 			}
 		}
 		
-		document.title=Modules.Config.projectTitle||'WebArena';
-		
+		document.title = Modules.Config.projectTitle || 'WebArena';
 	});
 
 	</script>

@@ -17,14 +17,11 @@ var calls = {};
  *	on the dispatcher, that react on certain calls by the client. The websocket server
  *	calls the call-function of the dispatcher in case of an incoming communication.
  */
-
 Dispatcher.call = function(socket, message) {
-//	console.log("------ Dispatcher.call -------");
-	
     var SocketServer = Modules.SocketServer;
     var type = message.type;
-    var responseID = message.responseID;
     var data = message.data;
+    var responseID = message.responseID;
 
     if (calls[type]) {
         process.nextTick(function() {
@@ -54,11 +51,9 @@ Dispatcher.respond = function(socket, responseID, response) {
  *	register a function for an incoming call type
  */
 Dispatcher.registerCall = function(type, callFunction) {
-    if (!callFunction)
-        return;
+    if (!callFunction) return;
     calls[type] = callFunction;
 }
-
 
 Dispatcher.init = function(theModules) {
     Modules = theModules;
@@ -114,8 +109,13 @@ Dispatcher.registerCall('serverCall', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
 });
+
 Dispatcher.registerCall('writeToServerConsole', function(socket, data, responseId) {
     Modules.ServerController.writeToServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
+});
+
+Dispatcher.registerCall('isAllowed', function(socket, data, responseId) {
+    Modules.AccessController.isAllowed(data, resultCallbackWrapper(socket, responseId));
 });
 
 /**
@@ -149,7 +149,5 @@ function resultCallbackWrapper(socket, responseID) {
         }
     }
 }
-
-
 
 module.exports = Dispatcher;
