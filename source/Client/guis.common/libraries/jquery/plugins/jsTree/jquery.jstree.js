@@ -1004,7 +1004,7 @@
 			this.data.ui.to_select = this.get_settings().ui.initially_select;
 
 			this.get_container()
-				.delegate("a", "click.jstree", $.proxy(function (event) {
+				.delegate("a", "mousedown.jstree", $.proxy(function (event) {
 						event.preventDefault();
 						event.currentTarget.blur();
 						if(!$(event.currentTarget).hasClass("jstree-loading")) {

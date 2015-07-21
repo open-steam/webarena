@@ -1135,7 +1135,7 @@ GeneralObject.moveStart = function(event) {
         var cut = !(event.ctrlKey || event.metaKey);
 
         var movedBetweenRooms = false;
-
+			
         var rep = self.getRepresentation();
         if (GUI.couplingModeActive) {
             // coupling mode is switched on, determine if elements were moved between rooms
@@ -1266,6 +1266,7 @@ GeneralObject.moveStart = function(event) {
             /* mouse */
             $("#content").unbind("mousemove.webarenaMove");
             $("#content").unbind("mouseup.webarenaMove");
+			$("#sidebar").unbind("mouseup", end);
         }
 
     };
@@ -1278,6 +1279,7 @@ GeneralObject.moveStart = function(event) {
         /* mouse */
         $("#content").bind("mousemove.webarenaMove", move);
         $("#content").bind("mouseup.webarenaMove", end);
+		$("#sidebar").bind("mouseup", end);
     }
 
 }

@@ -1244,17 +1244,27 @@ ObjectManager.writeToServerConsole = function(data) {
 }
 
 
-ObjectManager.restoreObject = function(objectID){
+ObjectManager.restoreObject = function(objectID, x, y){
 
 	var arr = new Array();
 	arr.push(objectID);
-
+	
 	var requestData = {};
     requestData.fromRoom = "trash";
 	requestData.toRoom = ObjectManager.getRoomID();
 	requestData.objects = arr;
 	requestData.cut = true;
-	requestData.attributes = {}
+	
+	if(x != undefined && y != undefined){
+		var positions = {};
+		positions[objectID] = {};
+		positions[objectID]['x'] = x;
+		positions[objectID]['y'] = y;
+		requestData.attributes = positions;
+	}
+	else{
+		requestData.attributes = {};
+	}
 	
 	Modules.Dispatcher.query('duplicateObjects', requestData, function(idList) {
 		//console.log(idList);
