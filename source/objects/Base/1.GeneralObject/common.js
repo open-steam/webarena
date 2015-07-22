@@ -390,21 +390,23 @@ GeneralObject.register = function(type) {
         return hasGroups;
 
     });
-    this.registerAction('copy format', function(lastClicked){
+	
+    this.registerAction('Transfer attributes', function(lastClicked){
         var selected = ObjectManager.getSelected();
-        //console.log(lastClicked);
-        if(selected.length > 1){
-            lastClicked.showFormatDialog(selected);
-        }else{
-            alert("Es muss mehr als ein Objekt selektiert sein. Ansonsten gibt es keine Objekte, auf die die Formatierung übertragen werden kann!");
-        } 
-    });
-    /*this.registerAction('paste format', function(){
-        var selected = ObjectManager.getSelected();
-        ObjectManager.pasteFormatAttributes(selected);
-    }); */
+		
+		lastClicked.showAttributeTransferDialog(selected);
+		
+	}, false, function(){
+		var selected = ObjectManager.getSelected();
 
-
+        /* only one object --> no group */
+        if (selected.length == 1){
+            return false;
+		}
+		
+		return true;
+	});
+	
     var r = Modules.Helper.getRandom(0, 200);
     var g = Modules.Helper.getRandom(0, 200);
     var b = Modules.Helper.getRandom(0, 200);
@@ -415,7 +417,7 @@ GeneralObject.register = function(type) {
     this.standardData.height = width;
 
 
-    this.registerAction('to front', function() {
+    this.registerAction('To front', function() {
 
         /* set a very high layer for all selected objects (keeping their order) */
         var selected = ObjectManager.getSelected();
@@ -431,7 +433,7 @@ GeneralObject.register = function(type) {
 
     }, false);
 
-    this.registerAction('to back', function() {
+    this.registerAction('To back', function() {
 
         /* set a very low layer for all selected objects (keeping their order) */
         var selected = ObjectManager.getSelected();

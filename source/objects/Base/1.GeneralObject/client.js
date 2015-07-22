@@ -478,12 +478,13 @@ GeneralObject.showExitDialog = function() {
 
 
 /**
- *	Format Dialog, the user can select which of the format attributes of the current object are used for another object
+ *	Attribute Transfer Dialog, where the user can select which of the attributes of the current object will be transferred to the selected objects
  */
-GeneralObject.showFormatDialog = function(selected) {
+GeneralObject.showAttributeTransferDialog = function(selected) {
     var that = this;
+	this.deselect();
     var dialog_buttons = {};
-    dialog_buttons[that.translate(GUI.currentLanguage, "Copy selected format attributes")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Transfer attributes")] = function() {
         var data = {};
         data.x = $('#x-axis').attr('checked') == 'checked' ? that.getAttribute('x') : false;
         data.y = $('#y-axis').attr('checked') == 'checked' ? that.getAttribute('y') : false;
@@ -520,7 +521,7 @@ GeneralObject.showFormatDialog = function(selected) {
     var attributes = that.getAttributes();
     var content = [];
     var html = "";
-    var text = "An dieser Stelle kann bestimmt werden, welche Eigenschaften des selektierten Objektes auf die übrigen markierten Objekte übertragen werden."
+    var text = that.translate(GUI.currentLanguage, "Choose the attributes which should be transferred to the selected objects");
     content.push(text + "<br /> <br />");
     if (ObjectManager.latestFormatSelections === undefined)
         ObjectManager.latestFormatSelections = {};
@@ -528,7 +529,7 @@ GeneralObject.showFormatDialog = function(selected) {
     var attributename = that.translate(GUI.currentLanguage, "x");
     
     html += ('<div id="positions" style="float:left;margin-right:50px">');
-    html += '<div style="margin-bottom:3px">Objektposition:</div>';
+    html += '<div style="margin-bottom:3px">'+GUI.translate("Dimensions")+':</div>';
     if (ObjectManager.latestFormatSelections.x) {
         html += ('<span><input id="x-axis" type="checkbox" checked="checked" /> ' + attributename + '</span> <br />');
     } else {
@@ -554,7 +555,7 @@ GeneralObject.showFormatDialog = function(selected) {
     }
     html += ('</div>');
     html += ('<div id="graphicalAttributes">');
-    html += '<div style="margin-bottom:3px">Objektdarstellung:</div>';
+    html += '<div style="margin-bottom:3px">'+GUI.translate("Appearance")+':</div>';
     attributename = that.translate(GUI.currentLanguage, "fillcolor");
     if (attributes["fillcolor"] && !attributes["fillcolor"].hidden) {
         if (ObjectManager.latestFormatSelections.fillcolor) {
@@ -583,13 +584,12 @@ GeneralObject.showFormatDialog = function(selected) {
 
     content.push(html);
 
-
     var dialog = GUI.dialog(
-            that.translate(GUI.currentLanguage, "Copy format attributes"),
-            content,
-            dialog_buttons,
-            dialog_width,
-            null
-            );
+		that.translate(GUI.currentLanguage, "Transfer object attributes"),
+		content,
+		dialog_buttons,
+		dialog_width,
+		null
+	);
 
 }
