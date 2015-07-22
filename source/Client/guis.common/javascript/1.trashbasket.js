@@ -39,7 +39,15 @@ GUI.trashbasket.update = function() {
 	}).bind("loaded.jstree", function() {
 		$('a > .jstree-icon').css({'background-size': 'contain'});
 		$('.jstree-leaf').attr("title", "Double click or drag to restore object");
-		$('.jstree-leaf').find("a").draggable({helper:function( event ) { return $(this).html().replace("&nbsp;", "");}, appendTo: $('#content'), zIndex: 11003, cursorAt: {top: 8, left: 8}}); 
+		$('.jstree-leaf').find("a").draggable({
+			helper: function(event) { 
+				return $(this).html().replace("&nbsp;", "");
+			}, 
+			appendTo: $('#content'), 
+			zIndex: 11003, 
+			scope: "ContentDrag", 
+			cursorAt: {top: 8, left: 8}
+		}); 
 	}).bind("open_node.jstree", function() {
 		$('a > .jstree-icon').css({'background-size': 'contain'})
 	});

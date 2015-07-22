@@ -144,8 +144,9 @@ GUI.initToolbar = function() {
 
 					$(element.getDOM()).addClass("toolbar_draggable");
 					$(element.getDOM()).draggable({
-						revert: true,
+						revert:  "invalid",
 						distance: 20,
+						scope: "ContentDrag", 
 						cursor: "move",
 						helper: function(event) {
 							dragging = true;

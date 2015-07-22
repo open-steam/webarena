@@ -38,13 +38,12 @@ GUI.initSVG = function() {
 	$(room_right).attr('id', 'room_right');
 
 	$("#content").droppable({
-		//accept: ".toolbar_draggable",
+		scope: "ContentDrag", 		
 		drop: function( event, ui ) {
 			if(ui.helper[0].className == "jstree-icon ui-draggable-dragging"){
 				GUI.trashbasket.restoreObject(event.pageX, event.pageY-33);
 			}
 			else if(ui.helper[0].currentSrc.indexOf("objectIcons") > -1){
-				$(ui.helper).hide();
 				ui.helper[0].callback(ui.offset.left, ui.offset.top);
 			}
 		}
