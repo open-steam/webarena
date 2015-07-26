@@ -39,6 +39,11 @@ GUI.sidebar.elementConfig = {
 		order : 4,
 		onOpen : GUI.trashbasket.opened,
 		onClose: GUI.trashbasket.closed
+	},
+	"cloud" : {
+		order : 5,
+		onOpen : GUI.cloud.opened,
+		onClose: GUI.cloud.closed
 	}
 };
 
@@ -213,7 +218,8 @@ GUI.sidebar.init = function() {
     GUI.sidebar.elementConfig.bug.title = GUI.translate("Bugreport");
 	GUI.sidebar.elementConfig.pad.title = GUI.translate("Annotations");
 	GUI.sidebar.elementConfig.trashbasket.title = GUI.translate("Trash basket");
-
+	GUI.sidebar.elementConfig.cloud.title = GUI.translate("Cloud");
+	
 	$("#header_toggle_sidebar_hide").attr('title', GUI.translate('Hide sidebar'));
 	$("#header_toggle_sidebar_show").attr('title', GUI.translate('Show sidebar'));
 	

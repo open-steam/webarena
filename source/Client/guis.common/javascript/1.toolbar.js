@@ -621,6 +621,33 @@ GUI.initToolbar = function() {
     }
 	
 
+	/* add cloud toggle */
+    if (!Modules.Config.presentationMode) {
+
+        var cloudButton = document.createElement("img");
+        $(cloudButton).attr("src", "../../guis.common/images/cloud.png").attr("alt", "");
+        $(cloudButton).attr("width", "24").attr("height", "24");
+
+        $(cloudButton).attr("id", "cloud_button");
+        $(cloudButton).addClass("sidebar_button header_tab");
+
+        $(cloudButton).attr("title", GUI.translate("Cloud"));
+
+        var click = function() {
+            GUI.sidebar.openPage("cloud", cloudButton);
+        }
+
+        if (GUI.isTouchDevice) {
+            $(cloudButton).bind("touchstart", click);
+        } else {
+            $(cloudButton).bind("mousedown", click);
+        }
+
+        $("#header > .header_tabs_sidebar").append(cloudButton);
+
+    }
+	
+	
     $("#header_toggle_sidebar_hide").on("click", function() {
         $(".jPopover").hide();
         GUI.sidebar.closeSidebar(true);

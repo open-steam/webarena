@@ -963,3 +963,19 @@ theObject.getDeletedObjects = function(room, cb){
 }
 
 theObject.getDeletedObjects.public = true;
+
+
+/**
+*	returns the file-list of the specified FTP-Server (special format for JSTree!)
+*/
+theObject.getFTPFiles = function(data, cb){
+
+	Modules.FTPConnection.getFTPFiles(data.host, data.user, data.pw, data.path, function(result){
+	
+		cb(result);
+	
+	});
+
+}
+
+theObject.getFTPFiles.public = true;
