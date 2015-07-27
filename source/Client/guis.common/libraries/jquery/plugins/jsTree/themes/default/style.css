@@ -18,9 +18,7 @@
 .jstree-default a.jstree-loading .jstree-icon { background:url("throbber.gif") center center no-repeat !important; }
 
 .jstree-default.jstree-focused { 
-	-webkit-box-shadow: inset 12px 10px 10px -10px rgba	(0,0,0,0.3);
-    	box-shadow: rgba(0,0,0,0.3) 12px 10px 10px -10px inset;
-    	background-color: #DDE0E5;
+    	background-color: transparent;
 }
 
 .jstree-default .jstree-no-dots li, 

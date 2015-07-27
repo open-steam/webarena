@@ -139,6 +139,7 @@ GUI.setTranslations('de',{
 	'This file is too large. You can only upload files with a maximum size of ' : 'Diese Datei ist zu groß. Die maximale Dateigröße beträgt ',
 	'Please fill in the given boxes to connect with an FTP-Server' : 'Bitte füllen Sie die angegebenen Felder aus, um sich mit einem FTP-Server zu verbinden',
 	'Password' : 'Passwort',
-	'Connect' : 'Verbinden'
+	'Connect' : 'Verbinden',
+	'Change' : 'Ändern'
 	}
 );

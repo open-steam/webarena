@@ -10,7 +10,7 @@ GUI.cloud = {};
  */
 GUI.cloud.opened = function() {
 	
-	if(typeof GUI.cloud.host === 'undefined' && $("#cloud").find("p").length == 0){
+	if((typeof GUI.cloud.host === 'undefined' || GUI.cloud.host == "") && $("#cloud").find("p").length == 0){
 	
 		$("#cloud").append(
 			'<p style="margin-right: 10px; margin-left:10px;">'+GUI.translate("Please fill in the given boxes to connect with an FTP-Server")+'</p>'+
@@ -72,9 +72,21 @@ GUI.cloud.buildContent = function() {
 		$('a > .jstree-icon').css({'background-size': 'contain'})
 	});
 	
+	$("#cloud").append(
+		'<p style="margin-left: 5px;">'+GUI.cloud.host+
+		'<input type="button" id="ChangeButton" value="'+GUI.translate("Change")+'" style="margin-left: 10px;"/>'+
+		'</p>'
+	);
+	
 	$("#cloud").append(renderedTree)
 	
-	$('#jsCloudTree').css("margin-top", "5px");
+	$('#jsCloudTree').css("margin-top", "-10px");
+	
+	if (GUI.isTouchDevice) {
+		$("#cloud").find("#ChangeButton").bind("touchstart", GUI.cloud.clickChange);
+	} else {
+		$("#cloud").find("#ChangeButton").bind("click", GUI.cloud.clickChange);
+	}
 	
 	$("#cloud").on("dblclick", '.jstree-clicked', function() {
 		//TODO
@@ -128,5 +140,22 @@ GUI.cloud.clickSubmit = function() {
 	$("#cloud").find("form").remove();
 
 	GUI.cloud.buildContent();
+	
+}
+
+
+/**
+ * called when the change button is clicked
+ */
+GUI.cloud.clickChange = function() {
+
+	GUI.cloud.host = "";
+	GUI.cloud.user = "";
+	GUI.cloud.pw = "";
+
+	$("#cloud").find("p").remove();
+	$('#jsCloudTree').remove();
+	
+	GUI.cloud.opened();
 	
 }
