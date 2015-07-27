@@ -970,7 +970,7 @@ theObject.getDeletedObjects.public = true;
 */
 theObject.getFTPFiles = function(data, cb){
 
-	Modules.FTPConnection.getFTPFiles(data.host, data.user, data.pw, data.path, function(result){
+	Modules.FTPConnection.getFiles(data.host, data.user, data.pw, data.path, function(result){
 	
 		cb(result);
 	
@@ -979,3 +979,19 @@ theObject.getFTPFiles = function(data, cb){
 }
 
 theObject.getFTPFiles.public = true;
+
+
+/**
+*	returns the koala file-list (special format for JSTree!)
+*/
+theObject.getKoalaFiles = function(data, cb){
+
+	Modules.KoalaConnection.getFiles(data.user, data.pw, data.path, function(result){
+	
+		cb(result);
+	
+	});
+
+}
+
+theObject.getKoalaFiles.public = true;

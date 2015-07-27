@@ -13,18 +13,27 @@ GUI.cloud.opened = function() {
 	if((typeof GUI.cloud.host === 'undefined' || GUI.cloud.host == "") && $("#cloud").find("p").length == 0){
 	
 		$("#cloud").append(
-			'<p style="margin-right: 10px; margin-left:10px;">'+GUI.translate("Please fill in the given boxes to connect with an FTP-Server")+'</p>'+
+			'<p style="margin-right: 10px; margin-left:10px; font-weight:bold;">FTP-Server:</p>'+
 			'<form name="login" style="margin-left: 40px;">'+
-			'<input type="text" id="host" name="host" placeholder="ftp.xyz.com"/>'+
-			'<input type="text" id="user" name="username" placeholder="'+GUI.translate("Username")+'" style="margin-top: 5px;"/>'+
-			'<input type="password" id="pw" name="password" placeholder="'+GUI.translate("Password")+'" style="margin-top: 5px;"/>'+
-			'<input type="button" id="SubmitButton" value="'+GUI.translate("Connect")+'" style="margin-top: 10px"/>'+
-			'</form>');
+			'<input type="text" id="FTPHost" name="host" placeholder="ftp.xyz.com"/>'+
+			'<input type="text" id="FTPUser" name="username" placeholder="'+GUI.translate("Username")+'" style="margin-top: 5px;"/>'+
+			'<input type="password" id="FTPPw" name="password" placeholder="'+GUI.translate("Password")+'" style="margin-top: 5px;"/>'+
+			'<input type="button" id="SubmitFTPButton" value="'+GUI.translate("Connect")+'" style="margin-top: 10px"/>'+
+			'</form>'+
+			'<p style="margin-right: 10px; margin-left:10px; font-weight:bold;">Koala:</p>'+
+			'<form name="login" style="margin-left: 40px;">'+
+			'<input type="text" id="KoalaUser" name="username" placeholder="'+GUI.translate("Username")+'" style="margin-top: 5px;"/>'+
+			'<input type="password" id="KoalaPw" name="password" placeholder="'+GUI.translate("Password")+'" style="margin-top: 5px;"/>'+
+			'<input type="button" id="SubmitKoalaButton" value="'+GUI.translate("Connect")+'" style="margin-top: 10px"/>'+
+			'</form>'
+		);
 		
 		if (GUI.isTouchDevice) {
-			$("#cloud").find("#SubmitButton").bind("touchstart", GUI.cloud.clickSubmit);
+			$("#cloud").find("#SubmitFTPButton").bind("touchstart", GUI.cloud.clickSubmitFTP);
+			$("#cloud").find("#SubmitKoalaButton").bind("touchstart", GUI.cloud.clickSubmitKoala);
 		} else {
-			$("#cloud").find("#SubmitButton").bind("click", GUI.cloud.clickSubmit);
+			$("#cloud").find("#SubmitFTPButton").bind("click", GUI.cloud.clickSubmitFTP);
+			$("#cloud").find("#SubmitKoalaButton").bind("click", GUI.cloud.clickSubmitKoala);
 		}
 		
 	}
@@ -44,10 +53,20 @@ GUI.cloud.buildContent = function() {
 			"data": function(object, callback) {
 				var room = ObjectManager.getObject(ObjectManager.getRoomID());
 				if(object == -1){
-					room.serverCall("getFTPFiles", {"host": GUI.cloud.host, "user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": "."}, callback);
+					if(GUI.cloud.host != "Koala"){
+						room.serverCall("getFTPFiles", {"host": GUI.cloud.host, "user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": "."}, callback);
+					}
+					else{
+						room.serverCall("getKoalaFiles", {"user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": ""}, callback);
+					}
 				}
 				else{
-					room.serverCall("getFTPFiles", {"host": GUI.cloud.host, "user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": object.data("path")}, callback);
+					if(GUI.cloud.host != "Koala"){
+						room.serverCall("getFTPFiles", {"host": GUI.cloud.host, "user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": object.data("path")}, callback);
+					}
+					else{
+						room.serverCall("getKoalaFiles", {"user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": object.data("path")}, callback);
+					}
 				}
 			},
 			"ui": {
@@ -73,7 +92,7 @@ GUI.cloud.buildContent = function() {
 	});
 	
 	$("#cloud").append(
-		'<p style="margin-left: 5px;">'+GUI.cloud.host+
+		'<p style="margin-left: 5px; font-weight:bold;">'+GUI.cloud.host+
 		'<input type="button" id="ChangeButton" value="'+GUI.translate("Change")+'" style="margin-left: 10px;"/>'+
 		'</p>'
 	);
@@ -123,18 +142,44 @@ GUI.cloud.copyObject = function(x, y) {
 
 
 /**
- * called when the submit button is clicked
+ * called when the FTP submit button is clicked
  */
-GUI.cloud.clickSubmit = function() {
+GUI.cloud.clickSubmitFTP = function() {
 
-	if($("#cloud").find("#host").val() == ""){
-        $("#cloud").find("#host").css("borderColor", "red");
+	if($("#cloud").find("#FTPHost").val() == ""){
+        $("#cloud").find("#FTPHost").css("borderColor", "red");
 		return;
 	}
 
-	GUI.cloud.host = $("#cloud").find("#host").val();
-	GUI.cloud.user = $("#cloud").find("#user").val();
-	GUI.cloud.pw = $("#cloud").find("#pw").val();
+	GUI.cloud.host = $("#cloud").find("#FTPHost").val();
+	GUI.cloud.user = $("#cloud").find("#FTPUser").val();
+	GUI.cloud.pw = $("#cloud").find("#FTPPw").val();
+
+	$("#cloud").find("p").remove();
+	$("#cloud").find("form").remove();
+
+	GUI.cloud.buildContent();
+	
+}
+
+
+/**
+ * called when the Koala submit button is clicked
+ */
+GUI.cloud.clickSubmitKoala = function() {
+
+	if($("#cloud").find("#KoalaUser").val() == ""){
+        $("#cloud").find("#KoalaUser").css("borderColor", "red");
+		return;
+	}
+	if($("#cloud").find("#KoalaPw").val() == ""){
+        $("#cloud").find("#KoalaPw").css("borderColor", "red");
+		return;
+	}
+
+	GUI.cloud.host = "Koala";
+	GUI.cloud.user = $("#cloud").find("#KoalaUser").val();
+	GUI.cloud.pw = $("#cloud").find("#KoalaPw").val();
 
 	$("#cloud").find("p").remove();
 	$("#cloud").find("form").remove();

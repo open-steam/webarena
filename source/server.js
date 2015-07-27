@@ -111,6 +111,7 @@ Modules.EventBus = require("./Server/EventBus.js");
 /*Modules.TokenChecker = require("./Server/TokenChecker");*/
 Modules.BuildTool = require('./Server/BuildTool.js');
 Modules.FTPConnection = require('./Server/FTPConnection.js');
+Modules.KoalaConnection = require('./Server/KoalaConnection.js');
 
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));

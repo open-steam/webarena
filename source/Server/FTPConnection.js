@@ -4,10 +4,12 @@ var FTPConnection = {};
 var JSFtp = require("jsftp");
 var Modules=false;
 
+
 FTPConnection.init=function(theModules){
 	this.Modules=theModules;
 	Modules=theModules;
 }
+
 
 FTPConnection.createConnection = function(host, username, password){
 
@@ -25,6 +27,7 @@ FTPConnection.createConnection = function(host, username, password){
 
 }
 
+
 FTPConnection.listDirectory = function(Connection, path, cb){
 
 	Connection.ls(path, function(err, res) {
@@ -37,7 +40,7 @@ FTPConnection.listDirectory = function(Connection, path, cb){
 *	returns the hierachy of folders and objects (special format for JSTree!)
 *   
 */
-FTPConnection.getFTPFiles = function(host, user, pw, path, callback) {
+FTPConnection.getFiles = function(host, user, pw, path, callback) {
 
 	var FTP = this.createConnection(host, user, pw);
 	
@@ -60,7 +63,7 @@ FTPConnection.getFTPFiles = function(host, user, pw, path, callback) {
 				node.metadata.path = "/"+args.name+"/";
 			}
 			else{
-				node.metadata.path = path+"/"+args.name+"/";
+				node.metadata.path = path+args.name+"/";
 			}
 		}
 		node.metadata.id = args.name;
@@ -86,6 +89,6 @@ FTPConnection.getFTPFiles = function(host, user, pw, path, callback) {
 }
 
 
-FTPConnection.getFTPFiles.public = true;
+FTPConnection.getFiles.public = true;
 
 module.exports=FTPConnection;
