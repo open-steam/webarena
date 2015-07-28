@@ -18,7 +18,7 @@ GUI.initToolbar = function() {
     /* insert icons for creating new objects: */
     var types = {};
 
-    async.forEachOf(ObjectManager.getTypes(), function (object, key, callback) {
+    async.forEachOfSeries(ObjectManager.getTypes(), function (object, key, callback) {
         if (object.isCreatable) {
             var resource = ('/ui/static/' + object.category + '/' + object.type).toLowerCase();
 
@@ -374,25 +374,25 @@ function initToolbarAux(types) {
                 };
             }
 
-            /* add logout button */
-            var logoutButton = document.createElement("img");
-            $(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
-            $(logoutButton).attr("width", "24").attr("height", "24");
-            $(logoutButton).attr("id", "logout_button");
-            $(logoutButton).addClass("sidebar_button");
-            $(logoutButton).attr("title", GUI.translate("Logout"));
-            var btnLogout = section.addElement($(logoutButton).prop('outerHTML') + GUI.translate("Logout")); //add menu icon
-            $(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
-            numberOfIcons++;
-            $("#header > .header_right").append(logoutButton); //add header icon
-            var clickLogout = function() { //click handler
-                // Change 07.06.2015
-
-                // location.replace(location.origin);
-                location.pathname = "/logout";
-                popover.hide();
-                //GUI.deleteUserData();
-            };
+//            /* add logout button */
+//            var logoutButton = document.createElement("img");
+//            $(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
+//            $(logoutButton).attr("width", "24").attr("height", "24");
+//            $(logoutButton).attr("id", "logout_button");
+//            $(logoutButton).addClass("sidebar_button");
+//            $(logoutButton).attr("title", GUI.translate("Logout"));
+//            var btnLogout = section.addElement($(logoutButton).prop('outerHTML') + GUI.translate("Logout")); //add menu icon
+//            $(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
+//            numberOfIcons++;
+//            $("#header > .header_right").append(logoutButton); //add header icon
+//            var clickLogout = function() { //click handler
+//               // Change 07.06.2015
+//
+//                // location.replace(location.origin);
+//                location.pathname = "/logout";
+//                popover.hide();
+//                //GUI.deleteUserData();
+//            };
 
             if (GUI.isTouchDevice) {
                 // header:
@@ -404,8 +404,6 @@ function initToolbarAux(types) {
 
                 if(Modules.Config.paintIcon) $(paintButton).bind("touchstart", clickPaint);
 
-                $(logoutButton).bind("touchstart", clickLogout);
-
                 // menu:
                 $(btnPaste.getDOM()).bind("touchstart", clickPaste);
                 $(btnUndo.getDOM()).bind("touchstart", clickUndo);
@@ -415,7 +413,8 @@ function initToolbarAux(types) {
 
                 if(Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
 
-                $(btnLogout.getDOM()).bind("touchstart", clickLogout);
+//                $(logoutButton).bind("touchstart", clickLogout);
+//                $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
                 // header:
                 $(pasteButton).bind("mousedown", clickPaste);
@@ -426,8 +425,6 @@ function initToolbarAux(types) {
 
                 if (Modules.Config.paintIcon) $(paintButton).bind("mousedown", clickPaint);
 
-                $(logoutButton).bind("mousedown", clickLogout);
-
                 // menu:
                 $(btnPaste.getDOM()).bind("mousedown", clickPaste);
                 $(btnUndo.getDOM()).bind("mousedown", clickUndo);
@@ -437,7 +434,8 @@ function initToolbarAux(types) {
 
                 if (Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("mousedown", clickPaint);
 
-                $(btnLogout.getDOM()).bind("mousedown", clickLogout);
+//                $(logoutButton).bind("mousedown", clickLogout);
+//                $(btnLogout.getDOM()).bind("mousedown", clickLogout);
             }
         }
     });

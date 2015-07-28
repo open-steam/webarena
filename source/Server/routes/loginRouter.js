@@ -5,59 +5,86 @@
  *
  */
 "use strict";
+
+var AUTHENTICATE_SESSION  = true;
+var AUTHENTICATE_STRATEGY = 'wa'; // 'local', 'wa'
+var COOKIE_NAME = 'WADIV';
+
+var uuid     = require('node-uuid');
 var passport = require('passport');
-var User = require('../db/users');
 
 function LoginRouter(app, acl) {
 
     app.get('/register', function(req, res) {
-        res.render('register', { });
+        if (!req.cookies.WADIV) {
+            res.render('register');
+        } else {
+            res.redirect('/login');
+        }
     });
 
     app.post('/register', function(req, res) {
-        User.register(new User({ username : req.body.username, email : req.body.e_mail }), req.body.password, function(err, account) {
-            if (err) {
-                res.location('login#toregister'); // TODO: Fix this hash navigation
-                return res.render("login", {info: "Sorry. That username already exists. Try again."});
+        var name = req.body.username;
+        var WADIV = uuid.v1();
+
+        var d = new Date();
+        d.setFullYear(2030, 0, 14);
+        res.cookie(COOKIE_NAME, { WADIV: WADIV, name: name }, { expires: d,
+                                                                secure: false,
+                                                                httpOnly: false });
+
+        console.info("New Device WADIV: " + WADIV + "with name: " + name);
+
+        // create a new acm_user with 'user' role that represents this device
+        acl.addUserRoles(WADIV, 'user', function(err) {
+            if(err) {
+                console.warn("ERROR!! by adding acm_user role to the new user" + err);
             }
 
-            // create a new acm_user with 'user' role that represents this user
-            acl.addUserRoles(req.body.username, 'user', function(err) {
-                 if(err) {
-                      console.warn("ERROR!! by adding acm_user role to the new user" + err);
-                 }
-            });
+            res.redirect('/login');
+        });
+    });
 
-            passport.authenticate('local')(req, res, function () {
-                res.redirect('/room/public');
-            });
+    app.get('/unregister', function(req, res) {
+        console.info("unregister called from");
+        console.info(req.cookies.WADIV);
+
+        acl.removeUserRoles(req.cookies.WADIV.WADIV, 'user', function(err) {
+            if(err) {
+                console.warn("ERROR!! by removing acm_user role from device" + err);
+            } else {
+
+                // Delete cookie
+                res.clearCookie(COOKIE_NAME);
+
+                console.info("Device: " + req.cookies.WADIV.WADIV + "unregistered");
+            }
+
+            res.redirect('/logout');
         });
     });
 
     app.get('/login', function(req, res) {
-        var errors = req.flash('error');
+        console.info("login called from");
+        console.info(req.cookies.WADIV);
 
-        if ((errors != undefined) & (errors.length > 0)) {
-            res.render('login', { user : req.user, errors: errors });
+        if (req.cookies.WADIV) {
+            passport.authenticate(AUTHENTICATE_STRATEGY, { session: AUTHENTICATE_SESSION })(req, res, function () {
+                res.redirect('/room/public');
+            });
         } else {
-            res.render('login', { user : req.user });
+            res.redirect('/register');
         }
     });
-
-    app.post('/login',
-        passport.authenticate('local', { failureRedirect: '/login',
-            failureFlash: true }),
-        function(req, res) {
-            res.redirect('/room/public');
-        }
-    );
 
     app.get('/logout', function(req, res) {
         req.logout();
-        res.redirect('/login');
+
+        //res.redirect('/login');
+        res.status(200).send("you are now logged out!");
     });
 
-    app.get('/ping', function(req, res){
+    app.get('/ping', function(req, res) {
         res.status(200).send("pong!");
     });
 };

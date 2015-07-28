@@ -7,11 +7,11 @@
 "use strict";
 
 var path = require('path');
-var Q = require('q');
-var fs = require('fs');
-var _ = require('lodash');
+var Q    = require('q');
+var fs   = require('fs');
+var _    = require('lodash');
 
-var express = require('express');
+var express  = require('express');
 var passport = require('passport');
 
 function AppRouter(modules, app) {
@@ -26,8 +26,6 @@ function AppRouter(modules, app) {
 
     app.get('/room/:id', passport.ensureAuthenticated, function(req, res) {
         //console.log("user -> " + JSON.stringify(req.user));
-        var userName = (req.user !== undefined) ? req.user.username : "user";
-        var password = (req.user !== undefined) ? req.user.password : "user";
 
         /* Get the most suitable index file in dependency to the given gui type. */
         var indexFilename = '';
@@ -37,7 +35,9 @@ function AppRouter(modules, app) {
             indexFilename = 'desktop/index.html';
         }
 
-        res.render(indexFilename, {start_room: req.params.id, username: userName, password: password});
+        var name = req.cookies.WADIV ? req.cookies.WADIV.name : req.user;
+
+        res.render(indexFilename, {start_room: req.params.id, username: name, password: ""});
     });
 
     // room list for coupling navigation

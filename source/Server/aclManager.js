@@ -13,15 +13,71 @@ var acl = undefined;
 
 function ACLManager() {
     mongo_connected();
-}
+};
 
 ACLManager.prototype.addUserRoles = function(userId, roles, cb) {
     acl.addUserRoles(userId, roles, cb);
-}
+};
+
+ACLManager.prototype.removeUserRoles = function(userId, roles, cb) {
+    acl.removeUserRoles(userId, roles, cb);
+};
+
+ACLManager.prototype.userRoles = function(userId, cb) {
+    acl.userRoles(userId, cb);
+};
+
+ACLManager.prototype.roleUsers = function(rolename, cb) {
+    acl.roleUsers(rolename, cb);
+};
+
+ACLManager.prototype.hasRole = function(userId, rolename, cb) {
+    acl.hasRole(userId, rolename, cb);
+};
+
+ACLManager.prototype.addRoleParents = function(role, parents, cb) {
+    acl.addRoleParents(role, parents, cb);
+};
+
+ACLManager.prototype.removeRoleParents = function(role, parents, cb) {
+    acl.removeRoleParents(role, parents, cb);
+};
+
+ACLManager.prototype.removeRole = function(role, cb) {
+    acl.removeRole(role, cb);
+};
+
+ACLManager.prototype.removeResource = function(resource, cb) {
+    acl.removeResource(resource, cb);
+};
+
+ACLManager.prototype.allow = function(roles, resources, permissions, cb) {
+    acl.allow(roles, resources, permissions, cb);
+};
+
+ACLManager.prototype.allow = function(permissionsArray, cb) {
+    acl.allow(permissionsArray, cb);
+};
+
+ACLManager.prototype.removeAllow = function(role, resources, permissions, cb) {
+    acl.removeAllow(role, resources, permissions, cb);
+};
+
+ACLManager.prototype.allowedPermissions = function(userId, resources, cb) {
+    acl.allowedPermissions(userId, resources, cb);
+};
 
 ACLManager.prototype.isAllowed = function(userId, resource, permissions, cb) {
     acl.isAllowed(userId, resource, permissions, cb);
-}
+};
+
+ACLManager.prototype.areAnyRolesAllowed = function(roles, resource, permissions, cb) {
+    acl.areAnyRolesAllowed(roles, resource, permissions, cb);
+};
+
+ACLManager.prototype.whatResources = function(role, cb) {
+    acl.whatResources(role, cb);
+};
 
 function mongo_connected() {
     var mongoBackend = new node_acl.mongodbBackend( mongoose.connection.db, "acl_" );

@@ -38,6 +38,8 @@
 	<script src="/Common/AttributeManager.js"></script>
 	<script src="/Common/TranslationManager.js"></script>
 
+    <script src="/aclManager-client.js"></script>
+
 	<script>
 	var  Modules={
 		'Log':Log,
@@ -54,6 +56,9 @@
 		'AttributeManager':AttributeManager,
 		'TranslationManager':TranslationManager,
 		'ActionManager':ActionManager,
+
+        // DUI
+        'ACLManager': new ACLManagerClient()
 	};
 
 	
@@ -74,17 +79,11 @@
 
 	<script src="/objects"></script>
 
-
-
-
-
 	<script type="text/javascript" src="/views/mobilephone/canvas.js"></script>
 	<script type="text/javascript" src="/views/mobilephone/objectList.js"></script>
 	<script type="text/javascript" src="/views/mobilephone/toolbar.js"></script>
 	<script type="text/javascript" src="/views/mobilephone/objectView.js"></script>
 	<script type="text/javascript" src="/defaultJavascripts"></script>
-
-
 
 	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 
@@ -93,8 +92,7 @@
 	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/studiolo.css" rel="Stylesheet" />
 
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
-	
+    <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet" />
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jDesktopInspector.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" />

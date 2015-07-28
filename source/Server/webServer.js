@@ -6,29 +6,37 @@
  */
 "use strict";
 
-var path = require('path');
-var flash = require('connect-flash');
-var mongoose = require('mongoose');
+var path        = require('path');
+var flash       = require('connect-flash');
+var mongoose    = require('mongoose');
 
-var favicon = require('serve-favicon');
-var express = require('express');
-var Session = require('express-session');
-var MongoStore = require('connect-mongo')(Session);
+var favicon         = require('serve-favicon');
+var express         = require('express');
+var Session         = require('express-session');
+var cookieParser    = require('cookie-parser')
+var MongoStore      = require('connect-mongo')(Session);
 var session = Session({secret: 'keyboard gato',
                        key: 'sid', resave: false,
+                       rolling: true,
                        saveUninitialized: false,
                        store: new MongoStore({ mongooseConnection: mongoose.connection }),
-                       cookie: { maxAge: (1800000 / 2) }}); // half an hour = 1800000
-var checkMobile = require('connect-mobile-detection');
-var bodyParser = require('body-parser');
-var passport = require('passport');
-var LocalStrategy = require('passport-local').Strategy;
+                       cookie: { maxAge: (1800000 * 2) }}); // half an hour = 1800000
+var checkMobile     = require('connect-mobile-detection');
+var bodyParser      = require('body-parser');
+var passport        = require('passport');
+var WAStrategy      = require('./passport-wa/passport-wa.js').Strategy;
+//var LocalStrategy   = require('passport-local').Strategy;
 
 // passport config
-var User = require('./db/users');
-passport.use(new LocalStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
+//var User = require('./db/users');
+//passport.use(new LocalStrategy(User.authenticate()));
+//passport.serializeUser(User.serializeUser());
+//passport.deserializeUser(User.deserializeUser());
+
+passport.use(new WAStrategy());
+passport.serializeUser(WAStrategy.serializeUser());
+passport.deserializeUser(WAStrategy.deserializeUser());
+
 passport.ensureAuthenticated = ensureAuthenticated;
 
 var app = express();
@@ -66,12 +74,12 @@ WebServer.init = function(theModules) {
         });
     });
 
-    // Create the admin user
-    User.register(new User({ username : 'admin', email : 'admin@webarena.com' }), 'admin', function(err, account) {
-        if (err && (err.message != "User already exists with username admin")) {
-            console.warn("User admin: " + err);
-        }
-    });
+    //// Create the admin user
+    //User.register(new User({ username : 'admin', email : 'admin@webarena.com' }), 'admin', function(err, account) {
+    //    if (err && (err.message != "User already exists with username admin")) {
+    //        console.warn("User admin: " + err);
+    //    }
+    //});
 
     var server = require('http').createServer(app);
     WebServer.server = server;
@@ -100,8 +108,6 @@ hbs.registerHelper('block', function(name) {
     return val;
 });
 
-//hbs.localsAsTemplateData(app);
-
 app.set('views', path.resolve(__dirname, '../Client/views'))
     .set('view engine', 'html')
     .engine('html', hbs.__express)
@@ -115,7 +121,8 @@ app.set('views', path.resolve(__dirname, '../Client/views'))
     .use(session) // session support
     .use(flash())
     .use(passport.initialize())
-    .use(passport.session());
+    .use(passport.session())
+    .use(cookieParser());
 
 // a middleware with no mount path, gets executed for every request to the router
 app.use(function(req, res, next) {
@@ -146,7 +153,7 @@ app.use(function(req, res, next) {
 
 // Simple route middleware to ensure user is authenticated.
 // Use this route middleware on any resource that needs to be protected.  If
-// the request is authenticated (typically via a persistent login session),
+// the request is authenticated,
 // the request will proceed.  Otherwise, the user will be redirected to the
 // login page. NOTE: use as passport.ensureAuthenticated
 function ensureAuthenticated(req, res, next) {
