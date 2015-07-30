@@ -39,10 +39,7 @@ GUI.setupInspectorContent = function(inspector) {
 	/* reset the inspector */
 	inspector.reset();
 
-	
-
 	var categories = {};
-	
 
 	/* get attributes for all selected objects */
 	$.each(objects, function(index, object) {
@@ -72,12 +69,10 @@ GUI.setupInspectorContent = function(inspector) {
 					categories[info.category][attribute].multipleValues = true;
 				}
 			}
-
 		});
 		
 	});
-	
-	
+
 	/* get categories for all selected objects */
 	$.each(categories, function(category, attributes) {
 		
@@ -87,44 +82,33 @@ GUI.setupInspectorContent = function(inspector) {
 				/* this attribute does not apply to all selected objects --> delete it */
 				delete(categories[category][attributeName]);
 			}
-			
 		});
-		
 	});
-	
 	
 	/* delete categories without attributes */
 	$.each(categories, function(category, attributes) {
-		
 		var counter = 0;
 		
 		$.each(attributes, function(attributeName, attribute) {
-			
 			counter++;
-			
 		});
 		
 		if (counter == 0) {
 			delete(categories[category]);
 		}
-		
 	});
-
 
 	GUI.inspectorElementsSetter = {};
 
 	/* provide information to inspector object */
 	$.each(categories, function(category, elements) {
-	
 		var page = inspector.addPage(GUI.translate(category)); 
 		var section = page.addSection();
 		
 		$.each(elements, function(attribute, info) {
-		
 			var element = section.addElement(object.translate(GUI.currentLanguage,info.description));
 		
 			if (info.readonly) {
-				
 				if (info.multipleValues) {
 					element.setValue(GUI.translate("multiple values"));
 				} else {
@@ -132,7 +116,6 @@ GUI.setupInspectorContent = function(inspector) {
 				}
 				
 				element.setInactive();
-				
 			} else {
 				
 				/* map to inspector widgets for different types of attributes */
@@ -291,7 +274,7 @@ GUI.setupInspectorContent = function(inspector) {
 					
 					GUI.inspectorElementsSetter[attribute] = element.setVal;
 			
-				}else {
+				} else {
 			
 					element.setValue(info.value);
 					element.setInactive();

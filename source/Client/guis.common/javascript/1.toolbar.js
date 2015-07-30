@@ -374,26 +374,6 @@ function initToolbarAux(types) {
                 };
             }
 
-//            /* add logout button */
-//            var logoutButton = document.createElement("img");
-//            $(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
-//            $(logoutButton).attr("width", "24").attr("height", "24");
-//            $(logoutButton).attr("id", "logout_button");
-//            $(logoutButton).addClass("sidebar_button");
-//            $(logoutButton).attr("title", GUI.translate("Logout"));
-//            var btnLogout = section.addElement($(logoutButton).prop('outerHTML') + GUI.translate("Logout")); //add menu icon
-//            $(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
-//            numberOfIcons++;
-//            $("#header > .header_right").append(logoutButton); //add header icon
-//            var clickLogout = function() { //click handler
-//               // Change 07.06.2015
-//
-//                // location.replace(location.origin);
-//                location.pathname = "/logout";
-//                popover.hide();
-//                //GUI.deleteUserData();
-//            };
-
             if (GUI.isTouchDevice) {
                 // header:
                 $(pasteButton).bind("touchstart", clickPaste);
@@ -412,9 +392,6 @@ function initToolbarAux(types) {
                 $(btnHome.getDOM()).bind("touchstart", clickHome);
 
                 if(Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
-
-//                $(logoutButton).bind("touchstart", clickLogout);
-//                $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
                 // header:
                 $(pasteButton).bind("mousedown", clickPaste);
@@ -433,37 +410,37 @@ function initToolbarAux(types) {
                 $(btnHome.getDOM()).bind("mousedown", clickHome);
 
                 if (Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("mousedown", clickPaint);
-
-//                $(logoutButton).bind("mousedown", clickLogout);
-//                $(btnLogout.getDOM()).bind("mousedown", clickLogout);
             }
         }
     });
 
-    /* add bug report toggle */
+    /* add inspector toggle */
     if (!Modules.Config.presentationMode) {
-        if (Modules.Config.bugreportIcon) {
+        var inspectorButton = document.createElement("img");
+        $(inspectorButton).attr("src", "../../guis.common/images/inspector.png").attr("alt", "");
+        $(inspectorButton).attr("width", "24").attr("height", "24");
 
-            var bugButton = document.createElement("img");
-            $(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
-            $(bugButton).attr("width", "24").attr("height", "24");
+        $(inspectorButton).attr("id", "inspector_button");
+        $(inspectorButton).addClass("sidebar_button header_tab");
 
-            $(bugButton).attr("id", "bug_button");
-            $(bugButton).addClass("sidebar_button header_tab");
+        $(inspectorButton).attr("title", GUI.translate("Object inspector"));
 
-            $(bugButton).attr("title", GUI.translate("Bugreport"));
+        var click = function() {
+            GUI.sidebar.openPage("inspector", inspectorButton);
+        }
 
-            $("#header > .header_tabs_sidebar").append(bugButton);
+        if (GUI.isTouchDevice) {
+            $(inspectorButton).bind("touchstart", click);
+        } else {
+            $(inspectorButton).bind("mousedown", click);
+        }
 
-            var click = function() {
-                GUI.sidebar.openPage("bug", bugButton);
-            }
+        $("#header > .header_tabs_sidebar").append(inspectorButton);
 
-            if (GUI.isTouchDevice) {
-                $(bugButton).bind("touchstart", click);
-            } else {
-                $(bugButton).bind("mousedown", click);
-            }
+        GUI.sidebar.openPage("inspector", inspectorButton);
+
+        if (!Modules.Config.showSidebarbydefault) {
+            GUI.sidebar.closeSidebar(false);
         }
     }
 
@@ -507,33 +484,29 @@ function initToolbarAux(types) {
         }
     }
 
-    /* add inspector toggle */
+    /* add device info toggle */
     if (!Modules.Config.presentationMode) {
-        var inspectorButton = document.createElement("img");
-        $(inspectorButton).attr("src", "../../guis.common/images/inspector.png").attr("alt", "");
-        $(inspectorButton).attr("width", "24").attr("height", "24");
+        if (Modules.Config.userInfoIcon) {
+            var userInfoButton = document.createElement("img");
+            $(userInfoButton).attr("src", "../../guis.common/images/userinfo.png").attr("alt", "");
+            $(userInfoButton).attr("width", "24").attr("height", "24");
 
-        $(inspectorButton).attr("id", "inspector_button");
-        $(inspectorButton).addClass("sidebar_button header_tab");
+            $(userInfoButton).attr("id", "user_info");
+            $(userInfoButton).addClass("sidebar_button header_tab");
 
-        $(inspectorButton).attr("title", GUI.translate("Object inspector"));
+            $(userInfoButton).attr("title", GUI.translate("User Info"));
 
-        var click = function() {
-            GUI.sidebar.openPage("inspector", inspectorButton);
-        }
+            $("#header > .header_tabs_sidebar").append(userInfoButton);
 
-        if (GUI.isTouchDevice) {
-            $(inspectorButton).bind("touchstart", click);
-        } else {
-            $(inspectorButton).bind("mousedown", click);
-        }
+            var click = function() {
+                GUI.sidebar.openPage("userInfo", userInfoButton);
+            }
 
-        $("#header > .header_tabs_sidebar").append(inspectorButton);
-
-        GUI.sidebar.openPage("inspector", inspectorButton);
-
-        if (!Modules.Config.showSidebarbydefault) {
-            GUI.sidebar.closeSidebar(false);
+            if (GUI.isTouchDevice) {
+                $(userInfoButton).bind("touchstart", click);
+            } else {
+                $(userInfoButton).bind("mousedown", click);
+            }
         }
     }
 

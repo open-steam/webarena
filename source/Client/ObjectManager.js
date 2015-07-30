@@ -32,6 +32,7 @@ ObjectManager.getTypes = function() {
 
 ObjectManager.getPrototype = function(objType) {
     var prototypes = this.prototypes;
+
     if (prototypes[objType])
         return prototypes[objType];
     if (prototypes['UnknownObject'])
@@ -117,8 +118,10 @@ ObjectManager.buildObject = function(type, attributes) {
  * getObjects - get an array of all objects including the room
  */
 ObjectManager.getObjects = function(index) {
-    if (!index)
+    if (!index){
         index = 'left';
+    }
+
     return this.objects[index];
 }
 ObjectManager.getInventory = ObjectManager.getObjects;
@@ -127,7 +130,6 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  * getObjectsByLayer - get an array of all objects ordered by layer (highest layer first)
  */
 ObjectManager.getObjectsByLayer = function(index) {
-
     var objects = this.getObjects(index);
 
     var objectsArray = [];
@@ -156,15 +158,12 @@ ObjectManager.getObjectsByLayer = function(index) {
     });
 
     return objectsArray;
-
 }
-
 
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (lowest layer first)
  */
 ObjectManager.getObjectsByLayerInverted = function(index) {
-
     var objects = ObjectManager.getObjectsByLayer(index);
     objects.reverse();
 
@@ -179,20 +178,16 @@ ObjectManager.hasObject = function(obj) {
 }
 
 ObjectManager.objectUpdate = function(data) {
-
     var object = ObjectManager.getObject(data.id);
 
     if (object) {
 
-        if (object.moving)
-            return;
+        if (object.moving) return;
 
         var oldData = object.get();
-
         object.setAll(data);
 
         /**
-         
          TODO Room updated come with no object type. Why?
          
          if (!data.type){
@@ -201,7 +196,6 @@ ObjectManager.objectUpdate = function(data) {
          console.trace();
          }
          **/
-
 
         for (var key in oldData) {
             var oldValue = oldData[key];
@@ -213,7 +207,6 @@ ObjectManager.objectUpdate = function(data) {
 
         object.refreshDelayed();
     } else {
-
         object = ObjectManager.buildObject(data.type, data);
 
         if (GUI.couplingModeActive) {
@@ -251,6 +244,7 @@ ObjectManager.attributeChanged = function(object, key, newValue, local) {
 }
 
 ObjectManager.onObjectRemoveListeners = [];
+
 ObjectManager.registerOnObjectRemoveListener = function(listener) {
     this.onObjectRemoveListeners.push(listener);
 }
@@ -262,6 +256,7 @@ ObjectManager.onObjectRemove = function(object) {
 }
 
 ObjectManager.informGUI = false;
+
 ObjectManager.registerAttributeChangedFunction = function(theFunction) {
     this.informGUI = theFunction;
 }
@@ -277,8 +272,8 @@ ObjectManager.remove = function(object) {
         that.transactionId = new Date().getTime();
     } else {
         window.transactionTimer = window.setTimeout(function() {
-            //calculate new transactionId
-            //TODO: isn't safe - concurrent users may result in same timestamp
+            // calculate new transactionId
+            // TODO: isn't safe - concurrent users may result in same timestamp
             that.transactionId = new Date().getTime();
         }, this.transactionTimeout);
     }
@@ -292,7 +287,6 @@ ObjectManager.remove = function(object) {
 }
 
 ObjectManager.removeLocally = function(data) {
-
     var object = ObjectManager.getObject(data.id);
 
     this.onObjectRemove(object);
@@ -305,11 +299,11 @@ ObjectManager.removeLocally = function(data) {
     delete(ObjectManager.objects[ObjectManager.getIndexOfObject(data.id)][data.id]);
 
     // delete associated pad
-    if (Modules.config.collaborativeEditor)
+    if (Modules.config.collaborativeEditor) {
         ObjectManager.Pads.deletePadFor(data.id);
+    }
 
     GUI.hideActionsheet();
-
     GUI.updateInspector();
 }
 

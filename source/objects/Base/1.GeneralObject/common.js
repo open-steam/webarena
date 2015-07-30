@@ -51,7 +51,6 @@ GeneralObject.isStructuring = function() {
     return this.isStructuringFlag || false;
 }
 
-
 GeneralObject.utf8 = {};
 
 GeneralObject.utf8.toByteArray = function(str) {
@@ -64,6 +63,7 @@ GeneralObject.utf8.toByteArray = function(str) {
             for (var j = 0; j < h.length; j++)
                 byteArray.push(parseInt(h[j], 16));
         }
+
     return byteArray;
 };
 
@@ -122,7 +122,6 @@ GeneralObject.currentLanguage = Modules.Config.language;
  * @param {ObjectType} type The type of the object
  */
 GeneralObject.register = function(type) {
-
     var that = this;
     var ObjectManager = this.ObjectManager;
     var AttributeManager = this.attributeManager;
@@ -136,7 +135,6 @@ GeneralObject.register = function(type) {
     this.translationManager = Object.create(Modules.TranslationManager);
     this.translationManager.init(this);
     this.actionManager.init(this);
-
 
     this.registerAttribute('id', {type: 'number', readonly: true});
     this.registerAttribute('type', {type: 'text', readonly: true});

@@ -15,12 +15,9 @@ ServerController.getMemoryUsage = function(data, context, callback) {
 
     console.log(result);
     callback(null, result);
-
 }
 
 ServerController.bugreport = function(data, socket, responseID, callback) {
-
-
     var date = new Date();
 
     var text = "Datum: " + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + ", " + date.getHours() + ":" + date.getMinutes() + " Uhr" + "\n";
@@ -51,7 +48,6 @@ ServerController.bugreport = function(data, socket, responseID, callback) {
         });
 
         if (Modules.config.bugreport.recipients !== undefined) {
-
             var counter = 0;
 
             for (var i in Modules.config.bugreport.recipients) {
@@ -65,21 +61,15 @@ ServerController.bugreport = function(data, socket, responseID, callback) {
                 }, function(err, message) {
 
                     if (counter == 0) {
-
                         if (err === null) {
                             Modules.Dispatcher.respond(socket, responseID, true); //ok
                         } else {
                             Modules.Dispatcher.respond(socket, responseID, false); //error sending mail
                         }
-
                     }
-
                     counter++;
-
                 });
-
             }
-
         } else {
             console.log("no recipients for bug report");
         }
@@ -89,12 +79,13 @@ ServerController.bugreport = function(data, socket, responseID, callback) {
     var dateHelper = "Datum: " + date.getDate() + "." + (date.getMonth() + 1) + "." + date.getFullYear() + ", " + date.getHours() + ":" + date.getMinutes() + " Uhr" + "\n";
 
     Modules.Logger.log('info', "A bug report has been sent from + " + data.user + " at " + dateHelper );
-
 };
+
 ServerController.clientErrorMessage = function(data, socket, responseID, callback) {
     Modules.Logger.log('error', 'errortype: client ' + 'message: ' + data.message + ' uri: ' + data.uri + ' line: ' + data.line + " roomID: " + data.roomID +
             " userID: " + data.user + " Navigator: " +data.nav);
 };
+
 ServerController.writeToServerConsole = function(data, socket, responseID, callback) {
     console.log(data);
 };

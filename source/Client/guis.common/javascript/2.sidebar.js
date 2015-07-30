@@ -30,9 +30,9 @@ GUI.sidebar.elementConfig = {
         order : 1,
         onOpen : GUI.chat.opened
     },
-    "bug" : {
+    "userInfo" : {
         order : 2
-		//onOpen : GUI.chat.closed
+        //onOpen : GUI.chat.closed
     },
     "pad" : {
         order : 3
@@ -46,15 +46,13 @@ GUI.sidebar.elementConfig = {
  * @param {int} x The x position to move the sidebar to
  */
 GUI.sidebar.transformX = function(target, x) {
-
-    var trans = "translate3d("+x+"px,0,0)";
+    var trans = "translate3d(" + x + "px, 0, 0)";
 
     target.css("-webkit-transform", trans);
     target.css("-moz-transform", trans);
     target.css("-o-transform", trans);
 	target.css("-ms-transform", trans);
 	target.css("transform", trans);
-
 }
 
 /**
@@ -93,7 +91,6 @@ GUI.sidebar.openPage = function(element, button) {
         }, 500);
 
         GUI.sidebar.openSidebar();
-
     }
 
     GUI.sidebar.transformX($("#sidebar_content").children("div"), left);
@@ -106,7 +103,6 @@ GUI.sidebar.openPage = function(element, button) {
         GUI.sidebar.elementConfig[element]['onOpen']();
     }
 
-
     if (button !== undefined) {
         GUI.sidebar.elementConfig[element]['button'] = button;
     }
@@ -116,15 +112,12 @@ GUI.sidebar.openPage = function(element, button) {
     }
 
     $("#sidebar_content").scrollTop(0);
-
 }
-
 
 /**
  * open the sidebar using animation
  */
 GUI.sidebar.openSidebar = function() {
-
     GUI.sidebar.transformX($("#sidebar"), 0);
     GUI.sidebar.transformX($("#header>.header_right"), -250);
 	GUI.sidebar.transformX($("#header>.header_tabs_sidebar"), 0);
@@ -132,9 +125,7 @@ GUI.sidebar.openSidebar = function() {
 	$("#"+GUI.sidebar.currentElement+"_button").addClass("active");
 	
     GUI.sidebar.open = true;
-
 	GUI.resizeToolbar();
-	
 }
 
 /**
@@ -142,7 +133,6 @@ GUI.sidebar.openSidebar = function() {
  * @param {bool} noReset True if the current element should not be reset (used by GUI.sidebar.saveStateAndHide)
  */
 GUI.sidebar.closeSidebar = function(noReset) {
-
     GUI.sidebar.transformX($("#sidebar"), 230);
     GUI.sidebar.transformX($("#header>.header_right"), -20);
 	GUI.sidebar.transformX($("#header>.header_tabs_sidebar"), 230);
@@ -156,42 +146,33 @@ GUI.sidebar.closeSidebar = function(noReset) {
     }
 
     $(".sidebar_button").removeClass("active");
-	
 	$("#header_toggle_sidebar_hide").hide();
 	$("#header_toggle_sidebar_show").show();
-
 }
-
 
 /**
  * saves the current sidebar state and hides it
  */
 GUI.sidebar.saveStateAndHide = function() {
-
     GUI.sidebar.savedState = {
         "open" : GUI.sidebar.open,
         "currentElement" : GUI.sidebar.currentElement
     };
 
     GUI.sidebar.closeSidebar(true);
-
 }
 
 /**
  * restores the sidebar from the saved state and shows it
  */
 GUI.sidebar.restoreFromSavedState = function() {
-
     if (GUI.sidebar.savedState.open) {
-
         GUI.sidebar.openSidebar();
 
         if (GUI.sidebar.elementConfig[GUI.sidebar.savedState.currentElement]['button'] !== undefined) {
             $(GUI.sidebar.elementConfig[GUI.sidebar.savedState.currentElement]['button']).addClass("active");
         }
-
     }
-
 }
 
 /**
@@ -203,10 +184,9 @@ GUI.sidebar.init = function() {
 	
 	GUI.sidebar.elementConfig.inspector.title = GUI.translate("Object inspector");
 	GUI.sidebar.elementConfig.chat.title = GUI.translate("Chat");
-    GUI.sidebar.elementConfig.bug.title = GUI.translate("Bugreport");
 	GUI.sidebar.elementConfig.pad.title = GUI.translate("Annotations");
+    GUI.sidebar.elementConfig.userInfo.title = GUI.translate("User Info");
 
 	$("#header_toggle_sidebar_hide").attr('title', GUI.translate('Hide sidebar'));
 	$("#header_toggle_sidebar_show").attr('title', GUI.translate('Show sidebar'));
-	
 }
