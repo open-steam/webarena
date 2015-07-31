@@ -11,7 +11,6 @@ var Q    = require('q');
 var fs   = require('fs');
 var _    = require('lodash');
 
-var express  = require('express');
 var passport = require('passport');
 
 function AppRouter(modules, app) {

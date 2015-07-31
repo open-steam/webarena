@@ -114,8 +114,8 @@ Dispatcher.registerCall('writeToServerConsole', function(socket, data, responseI
     Modules.ServerController.writeToServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
 });
 
-Dispatcher.registerCall('isAllowed', function(socket, data, responseId) {
-    Modules.AccessController.isAllowed(data, resultCallbackWrapper(socket, responseId));
+Dispatcher.registerCall('acl', function(socket, data, responseId) {
+    Modules.AccessController.query(data, resultCallbackWrapper(socket, responseId));
 });
 
 /**

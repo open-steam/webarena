@@ -25,13 +25,6 @@ var checkMobile     = require('connect-mobile-detection');
 var bodyParser      = require('body-parser');
 var passport        = require('passport');
 var WAStrategy      = require('./passport-wa/passport-wa.js').Strategy;
-//var LocalStrategy   = require('passport-local').Strategy;
-
-// passport config
-//var User = require('./db/users');
-//passport.use(new LocalStrategy(User.authenticate()));
-//passport.serializeUser(User.serializeUser());
-//passport.deserializeUser(User.deserializeUser());
 
 passport.use(new WAStrategy());
 passport.serializeUser(WAStrategy.serializeUser());
@@ -46,6 +39,7 @@ var blocks = {};
 var Modules = false;
 var LogginRouter = require('./routes/loginRouter');
 var AppRouter = require('./routes/appRouter');
+var ACLRouter = require('./routes/aclRouter');
 
 /**
  * @class WebServer
@@ -62,6 +56,7 @@ WebServer.init = function(theModules) {
     Modules = theModules;
 
     new AppRouter(theModules, app);
+    new ACLRouter(app, theModules.ACLManager);
     new LogginRouter(app, theModules.ACLManager);
 
     // Error handling ( most notably 'Insufficient permissions' )
@@ -73,13 +68,6 @@ WebServer.init = function(theModules) {
             title: 'error'
         });
     });
-
-    //// Create the admin user
-    //User.register(new User({ username : 'admin', email : 'admin@webarena.com' }), 'admin', function(err, account) {
-    //    if (err && (err.message != "User already exists with username admin")) {
-    //        console.warn("User admin: " + err);
-    //    }
-    //});
 
     var server = require('http').createServer(app);
     WebServer.server = server;

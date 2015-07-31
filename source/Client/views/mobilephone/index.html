@@ -3,11 +3,8 @@
 
 	<link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
 
-	<script type="text/javascript" src="/socket.io/socket.io.js"></script>
-
-	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
-	
+
     <script type="text/javascript" src="/guis.common/libraries/lodash.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/adapter.js"></script>
 
@@ -15,14 +12,12 @@
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
-	
+
 	<!-- Library for creating data driven complex svg graphs. -->
 	<script type="text/javascript" src="/guis.common/libraries/d3/d3.min.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
 	<link type="text/css" href="/views/mobilephone/jquery-ui.css" rel="Stylesheet" />
-
-    <script type="text/javascript" src="/guis.common/libraries/async.js"></script>
 
 	<script src="/config.js"></script>
 	<script src="/Helper.js"></script>
@@ -31,7 +26,7 @@
 	<script src="/SocketClient.js"></script>
 
 	<script src="/WebRTCManager.js"></script>
-	
+
 	<script src="/Common/Log.js"></script>
 	<script src="/Common/DataSet.js"></script>
 	<script src="/Common/ActionManager.js"></script>
@@ -61,7 +56,7 @@
         'ACLManager': new ACLManagerClient()
 	};
 
-	
+
 	$(document).ready(function() {
 		for (var name in Modules){
 			var module=Modules[name];
@@ -70,9 +65,9 @@
 				module.Modules=Modules;
 			}
 		}
-		
+
 		document.title=Modules.Config.projectTitle||'WebArena';
-		
+
 	});
 
 	</script>

@@ -100,23 +100,18 @@ GUI.updateInspector = function(selectionChanged) {
         return; // do not update inspector content when the inspector has focus
     }
 
-
     $("#inspector").data("jDesktopInspector").update();
     $("#sidebar_content").scrollTop(0);
-
 }
 
 /**
  * GUI specific setup of inspector
  */
 GUI.setupInspector = function() {
-
     /* add jQuery inspector plugin to inspector-div */
     $("#inspector").jDesktopInspector({
         onUpdate : function(domEl, inspector) {
-
             GUI.setupInspectorContent(inspector);
-
         }
     });
 

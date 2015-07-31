@@ -117,7 +117,6 @@ Modules.Helper 			= require('./Server/Helper.js');
 Modules.EventBus 		= require("./Server/EventBus.js");
 Modules.BuildTool 		= require('./Server/BuildTool.js');
 var aclManager          = require('./Server/aclManager.js');
-Modules.ACLManager 		= new aclManager();
 
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
@@ -132,12 +131,10 @@ Modules.Connector = Modules.config.connector; //shortcut
 Modules.RoomController 	 = require('./Server/controllers/RoomController.js');
 Modules.ObjectController = require('./Server/controllers/ObjectController.js');
 Modules.ServerController = require('./Server/controllers/ServerController.js');
-
-var accessController = require('./Server/controllers/accessController.js');
-Modules.AccessController = new accessController(Modules.ACLManager);
+var accessController     = require('./Server/controllers/accessController.js');
 
 Modules.InternalDispatcher = require('./Server/apihandler/InternalDispatcher.js');
-Modules.Dispatcher = require('./Server/apihandler/Dispatcher.js');
+Modules.Dispatcher         = require('./Server/apihandler/Dispatcher.js');
 
 // Objects can gain access to the Modules (on the server side) by requireing this file
 module.exports = Modules;
@@ -145,6 +142,9 @@ module.exports = Modules;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
     console.info("connection to MongoDB succeed.");
+
+    Modules.ACLManager 		 = new aclManager();
+    Modules.AccessController = new accessController(Modules.ACLManager);
 
     // Initialize all Modules if there is a init-function
     for (var name in Modules) {

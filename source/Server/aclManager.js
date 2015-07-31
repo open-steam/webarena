@@ -5,6 +5,8 @@
  *
  */
 
+var MONGODB_PREFIX = "acl_";
+
 var node_acl = require('acl');
 var mongoose = require('mongoose');
 
@@ -79,8 +81,31 @@ ACLManager.prototype.whatResources = function(role, cb) {
     acl.whatResources(role, cb);
 };
 
+// +--- The following methods are marked as private in the acl node API ----+
+
+//
+// Returns the permissions for the given resource and set of roles
+//
+ACLManager.prototype.resourcePermissions = function(roles, resource, cb) {
+    acl._resourcePermissions(roles, resource, cb);
+};
+
+// permittedResources ?
+
+
+// +---------------------------------------------------------------------------+
+
+// +--- The following methods are not part of the original acl API  ----+
+
+ACLManager.prototype.isUser = function(user, cb) {
+    // TODO:
+    cb();
+};
+
+// +---------------------------------------------------------------------------+
+
 function mongo_connected() {
-    var mongoBackend = new node_acl.mongodbBackend( mongoose.connection.db, "acl_" );
+    var mongoBackend = new node_acl.mongodbBackend( mongoose.connection.db, MONGODB_PREFIX );
 
     // Create a new access control list by providing the mongo backend
     // Also inject a simple logger to provide meaningful output
@@ -98,36 +123,37 @@ function set_roles() {
 
     // This array contains all the static (not dynamically created) objects/resources
     // which can be accessed by the admin role
-    var staticUIList = ['/ui/static/graphical/ellipse',
-                        '/ui/static/graphical/line',
-                        '/ui/static/graphical/polygon',
-                        '/ui/static/graphical/rectangle',
-                        '/ui/static/graphical/arrow',
-                        '/ui/static/graphical/coordinatesystem',
-                        '/ui/static/graphical/table',
-                        '/ui/static/graphical/timeline',
-                        '/ui/static/texts/simpletext',
-                        '/ui/static/texts/textarea',
-                        '/ui/static/connections/exit',
-                        '/ui/static/connections/subroom',
-                        '/ui/static/content/file',
-                        '/ui/static/tools/coupling'
+    var staticUIList = ['ui_static_graphical_ellipse',
+                        'ui_static_graphical_line',
+                        'ui_static_graphical_polygon',
+                        'ui_static_graphical_rectangle',
+                        'ui_static_graphical_arrow',
+                        'ui_static_graphical_coordinatesystem',
+                        'ui_static_graphical_table',
+                        'ui_static_graphical_timeline',
+                        'ui_static_texts_simpletext',
+                        'ui_static_texts_textarea',
+                        'ui_static_connections_exit',
+                        'ui_static_connections_subroom',
+                        'ui_static_content_file',
+                        'ui_static_tools_coupling'
                         ];
 
     // Create the 'admin' Role
     // Create roles implicitly by giving them permissions:
-    acl.allow('admin', staticUIList, '*');
-    // Now create the 'acl_admin' user and assign the role 'admin' to him
-    acl.addUserRoles('admin', 'admin');
+    acl.allow('admin', staticUIList, '*', logError);
 
-    // Create the 'user' Role and the 'acl_user' user
-    // by default every new user in the system get this role (except for admin)
-    acl.addUserRoles('user', 'user');
-    acl.allow('user','/public' , '*');
+    // Create the 'user' Role
+    // by default every new user in the system get this role
+    acl.allow('user','public' , '*', logError);
 
     // Inherit roles
     // Every admin is allowed to do what users do
-    acl.addRoleParents( 'admin', 'user' );
+    acl.addRoleParents( 'admin', 'user', logError);
+}
+
+function logError(err) {
+    if (err) console.warn("Error!!! -> " + err);
 }
 
 // Provide logic for getting the logged-in user

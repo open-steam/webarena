@@ -15,18 +15,33 @@ function UserInfo() {
 UserInfo.prototype.init = function() {
     this.userInfoArea = $("#userInfo");
 
-    var objectArea = $("<div>");
-    objectArea.addClass("jDesktopInspector_main");
-    objectArea.html('<div class="jDesktopInspector_pageHead">Basic</div>');
-    this.userInfoArea.append(objectArea);
-
     this.inspectorArea = $("<div>");
     this.userInfoArea.append(this.inspectorArea);
 
     this.inspectorArea.jDesktopInspector();
     this.inspector = this.inspectorArea.data("jDesktopInspector");
 
+    var cookie = JSON.parse($.cookie("WADIV").replace("j:", ""));
 
+    // A new jQueryInspector page...
+    var page = this.inspector.addPage("Basic");
+    var section = page.addSection();
+
+    var name = section.addElement("Name");
+    name.setValue(cookie['name']);
+    name.setInactive();
+
+    var wadiv = section.addElement("WADIV");
+    wadiv.setValue(cookie['WADIV']);
+    wadiv.setInactive();
+
+    var wadiv = section.addElement("Role");
+    Modules.ACLManager.userRoles(function (err, result) {
+        var user = _.contains(result, 'admin') ? "admin" : "user";
+
+        wadiv.setValue(user);
+        wadiv.setInactive();
+    });
 };
 
 GUI.userInfo = new UserInfo();

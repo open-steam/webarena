@@ -56,8 +56,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		
 	}
 	
-	
-	
 	/* text widget */
 	this.text = function() {
 		var self = this;
@@ -96,9 +94,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		});
 		
 	}
-	
-
-	
 	
 	/* point widget */
 	/*
@@ -308,13 +303,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			
 	}
 	
-	
-	
-	
-
-	
-	
-	
 	/* selection widget */
 	this.selection = function() {
 		var self = this;
@@ -365,8 +353,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		}
 		
 	}
-	
-	
 	
 	/* boolean widget */
 	this.boolean = function() {
@@ -428,11 +414,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		
 	}
 	
-	
-	
 
-	
-	
 	/* color picker widget */
 	this.color = function() {
 		var self = this;
@@ -469,7 +451,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		
 		this.page_open = false;
 		
-		
 		this.hidePage = function() {
 			
 			this.page_open = false;
@@ -478,8 +459,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			widget.el.find("table").remove();
 			
 		}
-		
-		
+
 		this.showSelectPage = function() {
 			
 			if (this.page_open) {
@@ -563,12 +543,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			});
 				
 		}
-		
-		
 	}
-	
-	
-	
 	
 	/* font picker widget */
 	this.font = function() {
@@ -781,11 +756,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		
 	}
 	
-	
-	
-	
-	
-	
 	this.el = el;
 	this.valueBox = valueBox;
 	
@@ -812,10 +782,7 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 	
 }
 
-
-
 $(function() { });
-
 
 (function( $ ){
 	
@@ -824,10 +791,6 @@ $(function() { });
 		onSetup : undefined,
 		onUpdate : undefined
 	};
-	
-
-
-	
 	
 	/**
 	 * The jDesktopInspector object.
@@ -849,30 +812,19 @@ $(function() { });
 		this.pageIdCounter = 0;
 		this.currentPage = 0;
 		this.prevPage = 0;
-	
 		this.mainEl = undefined;
-		
 		this.hasFocus = false;
 	
 		
 		/* used to reference object in context where "this" is already in use */
 		var self = this;
-	
 		
 		/* initial setup */
 		this.setup = function() {
-			
 			$(self.el).addClass("jDesktopInspector");
-			
 			self.callEvent("onSetup");
-			
 			self.update();
-
 		};
-		
-
-
-
 
 		this.addPage = function(title) {
 
@@ -890,12 +842,10 @@ $(function() { });
 
 			$(this.el).children("div").append(newHead);
 			$(this.el).children("div").append(newPage);
-			
-			
+
 			//TEMP:
 			//$(newHead).removeClass("jDesktopInspector_pageHead_closed");
 			//$(newPage).show();
-			
 			
 			var thisPage = {
 				page: newPage,
@@ -903,17 +853,13 @@ $(function() { });
 			};
 			
 			self.pages.push(thisPage);
-			
 
 			return new function() {
 				this.addSection = function(title) {
 					return self.addSection(thisPage, title);
 				}
 			};
-
 		}
-
-
 
 		this.addSection = function(page, title) {
 
@@ -986,16 +932,10 @@ $(function() { });
 				this.onClick = function(callback) {
 					$(newElement).click(callback);
 				}
-				
 			};
-
 		}
 
-
-
-
 		this.reset = function() {
-			
 			self.mainEl = document.createElement("div");
 			$(self.mainEl).addClass("jDesktopInspector_main");
 //			$(self.mainEl).css("border", "1px solid red");
@@ -1004,57 +944,36 @@ $(function() { });
 			$(self.el).append(self.mainEl);
 			
 			self.pageIdCounter = 0;
-			
 		}
-
-
 
 		this.update = function() {
-			
 			self.reset();
-			
 			self.callEvent("onUpdate");
-			
-
-
 		}
 
-
 		this.openPage = function(page, head) {
-			
 			var open = $(page).is(":visible");
 			
 			$(head).removeClass("jDesktopInspector_pageHead_closed");
 			$(page).show();
-			
-		
-			
 		}
-
-		
 		
 		this.callEvent = function(eventName) {
-
 			var eventFunction = eval("self.options."+eventName);
 
 			if (eventFunction != undefined) {
 				eventFunction(self.el, self);
 			}
-
 		}
-	
-	
-		
+
 		/**
 		 * called when using .jDesktopInspector({...}) for an element the second time
 		 *
 		 */
 		this.reload = function() { }
-
 		
 		/* call setup function */
 		this.setup();
-		
 	};
 
 	var $ts = $.jDesktopInspector;
@@ -1067,7 +986,6 @@ $(function() { });
 	 * @return jQuery
 	 * @param o {Hash|String} A set of key/value pairs to set as configuration properties or a method name to call on a formerly created instance.
 	 */
-		
 	$.fn.jDesktopInspector = function(o) {
 	        
 		if (typeof o == 'string') {

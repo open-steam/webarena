@@ -702,10 +702,6 @@ $(function() {
 		onSetup : undefined
 	};
 	
-
-
-	
-	
 	/**
 	 * The jPopover object.
 	 *
@@ -885,13 +881,10 @@ $(function() {
 			self.currentPage = pageId;
 
 		}
-		
-		
+
 		this.changeToPrevPage = function() {
 			this.changePage(this.prevPage);
 		}
-
-
 
 		this.addSpecialPage = function() {
 			
@@ -945,8 +938,6 @@ $(function() {
 			};
 			
 		}
-
-
 
 		this.addPage = function(title) {
 

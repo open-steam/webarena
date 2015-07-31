@@ -20,7 +20,7 @@ GUI.initToolbar = function() {
 
     async.forEachOfSeries(ObjectManager.getTypes(), function (object, key, callback) {
         if (object.isCreatable) {
-            var resource = ('/ui/static/' + object.category + '/' + object.type).toLowerCase();
+            var resource = ('ui_static_' + object.category + '_' + object.type).toLowerCase();
 
             Modules.ACLManager.isAllowed(resource, "create", function (err, result) {
                 if(!err && result) {
@@ -246,6 +246,7 @@ function initToolbarAux(types) {
         positionOffsetX: popover_positionOffsetX,
         positionOffsetY: popover_positionOffsetY,
         arrowOffsetRight: 12,
+
         onSetup: function(domEl, popover) {
 
             Object.defineProperty(popover.options, 'positionOffsetX', {
@@ -296,7 +297,7 @@ function initToolbarAux(types) {
 
             /* add coupling button */
             if (Modules.Config.couplingMode) {
-                Modules.ACLManager.isAllowed('/ui/static/tools/coupling', "create", function (err, result) {
+                Modules.ACLManager.isAllowed('ui_static_tools_coupling', "create", function (err, result) {
                     if (!err && result) {
                         var couplingButton = document.createElement("img");
                         $(couplingButton).attr("src", "../../guis.common/images/coupling_grey.png").attr("alt", "");
