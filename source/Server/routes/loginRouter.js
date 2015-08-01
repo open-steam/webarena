@@ -6,7 +6,6 @@
  */
 "use strict";
 
-var AUTHENTICATE_SESSION  = true;
 var AUTHENTICATE_STRATEGY = 'wa'; // 'local', 'wa'
 var COOKIE_NAME = 'WADIV';
 
@@ -39,6 +38,7 @@ function LoginRouter(app, acl) {
         acl.addUserRoles(WADIV, 'user', function(err) {
             if(err) {
                 console.warn("ERROR!! by adding acm_user role to the new user" + err);
+                return  res.status(501).send("ERROR!! by adding acm_user role to the new user" + err);
             }
 
             res.redirect('/login');
@@ -65,12 +65,30 @@ function LoginRouter(app, acl) {
     });
 
     app.get('/login', function(req, res) {
-        console.info("login called from");
-        console.info(req.cookies.WADIV);
+        //console.info("login called from");
+        //console.info(req.cookies.WADIV);
 
         if (req.cookies.WADIV) {
-            passport.authenticate(AUTHENTICATE_STRATEGY, { session: AUTHENTICATE_SESSION })(req, res, function () {
-                res.redirect('/room/public');
+            var WADIV = req.cookies.WADIV.WADIV;
+
+            acl.isUser(WADIV, function(err, result) {
+                if (result) {
+                    passport.authenticate(AUTHENTICATE_STRATEGY)(req, res, function () {
+                        res.redirect('/room/public');
+                    });
+                } else {
+                    // create a new acm_user with 'user' role that represents this device
+                    acl.addUserRoles(WADIV, 'user', function(err) {
+                        if(err) {
+                            console.warn("ERROR!! by adding acm_user role to the new user" + err);
+                            return  res.status(501).send("ERROR!! by adding acm_user role to the new user" + err);
+                        }
+
+                        passport.authenticate(AUTHENTICATE_STRATEGY)(req, res, function () {
+                            res.redirect('/room/public');
+                        });
+                    });
+                }
             });
         } else {
             res.redirect('/register');

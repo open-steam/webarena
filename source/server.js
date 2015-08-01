@@ -143,7 +143,7 @@ db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function (callback) {
     console.info("connection to MongoDB succeed.");
 
-    Modules.ACLManager 		 = new aclManager();
+    Modules.ACLManager 		 = new aclManager(mongoDBConfig.getURI());
     Modules.AccessController = new accessController(Modules.ACLManager);
 
     // Initialize all Modules if there is a init-function

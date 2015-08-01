@@ -13,7 +13,10 @@ var mongoose = require('mongoose');
 // The actual acl will reside here
 var acl = undefined;
 
-function ACLManager() {
+function ACLManager(db_url) {
+    var db = require('monk')(db_url);
+    this.users = db.get(MONGODB_PREFIX + 'users');
+
     mongo_connected();
 };
 
@@ -98,8 +101,9 @@ ACLManager.prototype.resourcePermissions = function(roles, resource, cb) {
 // +--- The following methods are not part of the original acl API  ----+
 
 ACLManager.prototype.isUser = function(user, cb) {
-    // TODO:
-    cb();
+    this.users.findOne({ key: user }, function (err, user) {
+        cb(err, (user != null));
+    });
 };
 
 // +---------------------------------------------------------------------------+

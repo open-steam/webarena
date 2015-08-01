@@ -118,14 +118,16 @@ function ACLRouter(app, acl) {
         });
     });
 
-    acl_router.get('/isUser/:user', function(req, res) {
-        acl.isUser(req.params.user, function(result) {
+    acl_router.get('/isUser/:user?', function(req, res) {
+        var user = req.params.user ? req.params.user : req.cookies.WADIV.WADIV
+
+        acl.isUser(user, function(err, result) {
             if(err) {
                 console.warn("ERROR!! by isUser function" + err);
                 return res.status(500).send("ERROR!! by isUser function" + err);
             }
 
-            return res.status(501).send("Not Implemented yet");
+            return res.status(200).send(result);
         });
     });
 
