@@ -137,7 +137,6 @@ GUI.setTranslations('de',{
 	'Please note: if you are using a computer with touchscreen AND mouse, press the login button with your prefered device. The webarena interface will be optimized for the selected input method.' : 'Hinweis: Wenn Sie einen Computer mit Touchbildschirm und Maus verwenden, betätigen Sie den Login-Button mit dem gewünschten Gerät. Die Webarena Oberfläche wird daraufhin für die gewünschte Eingabemethode optimiert.',
 	'This filetype is not an image or is not supported.' : 'Dieser Dateityp ist kein Bild oder wird nicht unterstützt.',
 	'This file is too large. You can only upload files with a maximum size of ' : 'Diese Datei ist zu groß. Die maximale Dateigröße beträgt ',
-	'Please fill in the given boxes to connect with an FTP-Server' : 'Bitte füllen Sie die angegebenen Felder aus, um sich mit einem FTP-Server zu verbinden',
 	'Password' : 'Passwort',
 	'Connect' : 'Verbinden',
 	'Change' : 'Ändern'

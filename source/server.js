@@ -110,8 +110,6 @@ Modules.Helper = require('./Server/Helper.js');
 Modules.EventBus = require("./Server/EventBus.js");
 /*Modules.TokenChecker = require("./Server/TokenChecker");*/
 Modules.BuildTool = require('./Server/BuildTool.js');
-Modules.FTPConnection = require('./Server/FTPConnection.js');
-Modules.KoalaConnection = require('./Server/KoalaConnection.js');
 
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
@@ -135,7 +133,7 @@ Modules.ServerController = require('./Server/controllers/ServerController.js');
 Modules.InternalDispatcher = require('./Server/apihandler/InternalDispatcher.js');
 Modules.Dispatcher = require('./Server/apihandler/Dispatcher.js');
 
-// Objects can gain access to the Modules (on the server side) by requireing this file
+// Objects can gain access to the Modules (on the server side) by requiring this file
 module.exports = Modules;
 
 // Initialize all Modules if there is a init-function

@@ -94,8 +94,8 @@ Dispatcher.registerCall('bugreport', function(socket, data, responseID) {
     Modules.ServerController.bugreport(data, socket, responseID, resultCallbackWrapper(socket, responseID));
 });
 
-Dispatcher.registerCall('clientErrorMessage', function(socket, data, responseId) {
-    Modules.ServerController.clientErrorMessage(data, socket, responseId, resultCallbackWrapper(socket, responseId));
+Dispatcher.registerCall('clientErrorMessage', function(socket, data, responseID) {
+    Modules.ServerController.clientErrorMessage(data, socket, responseID, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('undo', function(socket, data, responseID) {
@@ -112,8 +112,26 @@ Dispatcher.registerCall('serverCall', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
 });
-Dispatcher.registerCall('writeToServerConsole', function(socket, data, responseId) {
-    Modules.ServerController.writeToServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
+Dispatcher.registerCall('writeToServerConsole', function(socket, data, responseID) {
+    Modules.ServerController.writeToServerConsole(data, socket, responseID, resultCallbackWrapper(socket, responseID));
+});
+Dispatcher.registerCall('listCloudFiles', function(socket, data, responseID) {
+	var start = data.host.substring(0, 3).toLowerCase();
+	if(start == "ftp"){
+		Modules.Connector.listFTPFiles(data.host, data.user, data.pw, data.path, resultCallbackWrapper(socket, responseID));
+	}
+	else{
+		Modules.Connector.listWebDavFiles(data.host, data.user, data.pw, data.path, resultCallbackWrapper(socket, responseID));
+	}
+});
+Dispatcher.registerCall('getCloudFile', function(socket, data, responseID) {
+	var start = data.host.substring(0, 3).toLowerCase();
+	if(start == "ftp"){
+		Modules.Connector.getFTPFile(data.host, data.user, data.pw, data.path, data.object, socket.id, resultCallbackWrapper(socket, responseID));
+	}
+	else{
+		Modules.Connector.getWebDavFile(data.host, data.user, data.pw, data.path, data.object, socket.id, resultCallbackWrapper(socket, responseID));
+	}
 });
 
 /**

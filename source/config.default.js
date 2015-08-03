@@ -98,6 +98,12 @@ module.exports={
 		}
 		*/
 		
+		// FTPConnector - Connecting WebArena to an FTP server
+		connector:require('./Server/connectors/FTPConnector.js'), // The chosen connector
+		
+		// WebDavConnector - Connecting WebArena to a WebDav server
+		connector:require('./Server/connectors/WebDavConnector.js'), // The chosen connector
+		
 		// API Server
 	 
 		tcpApiServer: false,

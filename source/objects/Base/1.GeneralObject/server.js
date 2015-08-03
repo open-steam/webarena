@@ -359,8 +359,6 @@ theObject.hasContent=function(){
 */
 theObject.setContent=function(content,callback){
 	
-	//console.log(content);
-	
 	if ((typeof content) != "object" && content.substr(0,22)=='data:image/png;base64,'){
 		
 		var base64Data = content.replace(/^data:image\/png;base64,/,""),
@@ -963,35 +961,3 @@ theObject.getDeletedObjects = function(room, cb){
 }
 
 theObject.getDeletedObjects.public = true;
-
-
-/**
-*	returns the file-list of the specified FTP-Server (special format for JSTree!)
-*/
-theObject.getFTPFiles = function(data, cb){
-
-	Modules.FTPConnection.getFiles(data.host, data.user, data.pw, data.path, function(result){
-	
-		cb(result);
-	
-	});
-
-}
-
-theObject.getFTPFiles.public = true;
-
-
-/**
-*	returns the koala file-list (special format for JSTree!)
-*/
-theObject.getKoalaFiles = function(data, cb){
-
-	Modules.KoalaConnection.getFiles(data.user, data.pw, data.path, function(result){
-	
-		cb(result);
-	
-	});
-
-}
-
-theObject.getKoalaFiles.public = true;

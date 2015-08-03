@@ -37,9 +37,9 @@ GUI.trashbasket.update = function() {
 		},
 		"plugins": ["themes", "json_data", "ui"]
 	}).bind("loaded.jstree", function() {
-		$('a > .jstree-icon').css({'background-size': 'contain'});
-		$('.jstree-leaf').attr("title", "Double click or drag to restore object");
-		$('.jstree-leaf').find("a").draggable({
+		$(this).find('a > .jstree-icon').css({'background-size': 'contain'});
+		$(this).find('.jstree-leaf').attr("title", "Double click or drag to restore object");
+		$(this).find('.jstree-leaf').find("a").draggable({
 			helper: function(event) { 
 				return $(this).html().replace("&nbsp;", "");
 			}, 
@@ -49,7 +49,7 @@ GUI.trashbasket.update = function() {
 			cursorAt: {top: 8, left: 8}
 		}); 
 	}).bind("open_node.jstree", function() {
-		$('a > .jstree-icon').css({'background-size': 'contain'})
+		$(this).find('a > .jstree-icon').css({'background-size': 'contain'})
 	});
 	
 	$("#trash").append(renderedTree)
@@ -103,7 +103,7 @@ GUI.trashbasket.drop = function(event) {
  */
 GUI.trashbasket.restoreObject = function(x, y) {
 
-	var jstree_selected_item = $('.js-tree').jstree('get_selected');
+	var jstree_selected_item = $('#trash').find('.js-tree').jstree('get_selected');
 		
 	if(jstree_selected_item.length != 0){
 		var objectID = jstree_selected_item.data('id');

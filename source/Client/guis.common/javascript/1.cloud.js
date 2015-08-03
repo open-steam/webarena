@@ -51,23 +51,25 @@ GUI.cloud.buildContent = function() {
 	var renderedTree = $("<div id='jsCloudTree' class='js-tree objectBrowserTree'></div>").jstree({
 		"json_data": {
 			"data": function(object, callback) {
-				var room = ObjectManager.getObject(ObjectManager.getRoomID());
+				var path;
 				if(object == -1){
-					if(GUI.cloud.host != "Koala"){
-						room.serverCall("getFTPFiles", {"host": GUI.cloud.host, "user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": "."}, callback);
+					var start = GUI.cloud.host.substring(0, 3).toLowerCase();
+					if(start == "ftp"){
+						path = ".";
 					}
 					else{
-						room.serverCall("getKoalaFiles", {"user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": ""}, callback);
+						path = "";
 					}
 				}
 				else{
-					if(GUI.cloud.host != "Koala"){
-						room.serverCall("getFTPFiles", {"host": GUI.cloud.host, "user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": object.data("path")}, callback);
-					}
-					else{
-						room.serverCall("getKoalaFiles", {"user": GUI.cloud.user, "pw": GUI.cloud.pw, "path": object.data("path")}, callback);
-					}
+					path = object.data("path");
 				}
+				Modules.Dispatcher.query('listCloudFiles', {
+					'host': GUI.cloud.host,
+					'user': GUI.cloud.user,
+					'pw': GUI.cloud.pw,
+					'path': path
+				}, function(result){callback(result)});
 			},
 			"ui": {
 				"select_limit": 1,
@@ -75,12 +77,12 @@ GUI.cloud.buildContent = function() {
 			"progressive_render": true
 		},
 		"plugins": ["themes", "json_data", "ui"]
-	}).bind("loaded.jstree", function() {
-		$('a > .jstree-icon').css({'background-size': 'contain'});
-		$('.jstree-leaf').attr("title", "Double click or drag to copy object");
-		$('.jstree-leaf').find("a").draggable({
+	}).bind("loaded.jstree after_open.jstree", function() {
+		$(this).find('a > .jstree-icon').css({'background-size': 'contain'});
+		$(this).find('.jstree-leaf').attr("title", "Double click or drag to copy object");
+		$(this).find('.jstree-leaf').find("a").draggable({
 			helper: function(event) { 
-				return $(this).html().replace("&nbsp;", "");
+				return $(this).html().replace("&nbsp;", "").replace("jstree-icon", "jstree-icon file");
 			}, 
 			appendTo: $('#content'), 
 			zIndex: 11003, 
@@ -88,11 +90,14 @@ GUI.cloud.buildContent = function() {
 			cursorAt: {top: 8, left: 8}
 		}); 
 	}).bind("open_node.jstree", function() {
-		$('a > .jstree-icon').css({'background-size': 'contain'})
+		$(this).find('a > .jstree-icon').css({'background-size': 'contain'})
 	});
 	
+	var name = GUI.cloud.host;
+	if(name.indexOf("koala") > -1) name = "Koala"; 
+	
 	$("#cloud").append(
-		'<p style="margin-left: 5px; font-weight:bold;">'+GUI.cloud.host+
+		'<p style="margin-left: 5px; font-weight:bold;">'+name+
 		'<input type="button" id="ChangeButton" value="'+GUI.translate("Change")+'" style="margin-left: 10px;"/>'+
 		'</p>'
 	);
@@ -108,7 +113,7 @@ GUI.cloud.buildContent = function() {
 	}
 	
 	$("#cloud").on("dblclick", '.jstree-clicked', function() {
-		//TODO
+		GUI.cloud.copyObject();
     });
 	
 }
@@ -127,17 +132,30 @@ GUI.cloud.closed = function() {
  */
 GUI.cloud.copyObject = function(x, y) {
 
-	/*
-	var jstree_selected_item = $('.js-tree').jstree('get_selected');
-		
-	if(jstree_selected_item.length != 0){
-		var objectID = jstree_selected_item.data('name');
-		
-		//TODO
-		
-	}
-	*/
+	var jstree_selected_item = $('#cloud').find('.js-tree').jstree('get_selected');
 	
+	if(jstree_selected_item.length != 0){
+		var path = jstree_selected_item.data('path');
+		var attributes = undefined;
+		if(x){
+			attributes = {"x": x, "y": y};
+		}
+		
+		var roomID = ObjectManager.getRoomID();
+		var room = ObjectManager.getObject(roomID);
+		
+		ObjectManager.createObject("File", attributes, "dummyContent", function(object){
+
+			Modules.SocketClient.serverCall('getCloudFile', {
+					'host': GUI.cloud.host,
+					'user': GUI.cloud.user,
+					'pw': GUI.cloud.pw,
+					'path': path,
+					'object': object.id
+				});
+		
+		}, undefined);	
+	}	
 }
 
 
@@ -177,7 +195,7 @@ GUI.cloud.clickSubmitKoala = function() {
 		return;
 	}
 
-	GUI.cloud.host = "Koala";
+	GUI.cloud.host = "https://koala.uni-paderborn.de/webdav/";
 	GUI.cloud.user = $("#cloud").find("#KoalaUser").val();
 	GUI.cloud.pw = $("#cloud").find("#KoalaPw").val();
 
