@@ -146,7 +146,7 @@ GUI.cloud.copyObject = function(x, y) {
 		
 		ObjectManager.createObject("File", attributes, "dummyContent", function(object){
 
-			Modules.SocketClient.serverCall('getCloudFile', {
+			Modules.SocketClient.serverCall('setCloudFileAsContent', {
 					'host': GUI.cloud.host,
 					'user': GUI.cloud.user,
 					'pw': GUI.cloud.pw,

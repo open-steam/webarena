@@ -7,6 +7,9 @@ var mime = require('mime');
 mime.default_type = 'text/plain';
 
 
+/**
+*	internal
+*/
 WebDavConnector.createWebDavConnection = function(host, username, password){
 
 	var connection = new WebDav(username, password, host);
@@ -16,6 +19,9 @@ WebDavConnector.createWebDavConnection = function(host, username, password){
 }
 
 
+/**
+*	internal
+*/
 WebDavConnector.listWebDavDirectory = function(Connection, path, cb){
 
 	Connection.PROPFIND(path, function(err, body) {
@@ -38,8 +44,23 @@ WebDavConnector.listWebDavDirectory = function(Connection, path, cb){
 
 
 /**
-*	returns the hierachy of folders and objects (special format for JSTree!)
-*   
+*	internal
+*/
+WebDavConnector.getWebDavFile = function(Connection, path, cb){
+	
+	Connection.GET(path, function(err, body){
+		if(err){
+			console.log("error");
+		}
+		else{
+			cb(body);
+		}
+	});
+}
+
+
+/**
+*	returns the hierachy of folders and objects of an WebDav-Server (special format for JSTree!)   
 */
 WebDavConnector.listWebDavFiles = function(host, user, pw, path, callback) {
 
@@ -101,7 +122,10 @@ WebDavConnector.listWebDavFiles = function(host, user, pw, path, callback) {
 }
 
 
-WebDavConnector.getWebDavFile = function(host, user, pw, path, object, socketID, callback) {
+/**
+*	set a file (specified by its path) from an WebDav-Server as the content of an object (specified by its ID)
+*/
+WebDavConnector.setWebDavFileAsContent = function(host, user, pw, path, objectID, socketID, callback) {
 	
 	var conn = this.createWebDavConnection(host, user, pw);
 	var that = this;
@@ -112,18 +136,17 @@ WebDavConnector.getWebDavFile = function(host, user, pw, path, object, socketID,
 	var type = arr[arr.length-1];
 	var mimeType = mime.lookup(type);
 	
-	conn.GET(path, function(err, body){
+	this.getWebDavFile(conn, path, function(body){
 		var result = [];
 		if(body){
 			var context = that.Modules.UserManager.getConnectionBySocketID(socketID);
-			var room = context.rooms.left.id;
-			var obj = that.Modules.ObjectManager.getObject(room, object, context);
-			fs.writeFile(that.Modules.Config.filebase + '/' + room + '/' + object + '.content', body, function(err) {
+			var roomID = context.rooms.left.id;
+			var obj = that.Modules.ObjectManager.getObject(roomID, objectID, context);
+			fs.writeFile(that.Modules.Config.filebase + '/' + roomID + '/' + objectID + '.content', body, function(err) {
 				if(err) {
 					return console.log(err);
 				}
 				else{
-					//console.log("The file was saved!");
 					obj.set('contentAge', new Date().getTime());
 					obj.set('mimeType', mimeType);
 					obj.persist();
@@ -134,7 +157,7 @@ WebDavConnector.getWebDavFile = function(host, user, pw, path, object, socketID,
 						obj.set('preview', true);
 
 						/* get dimensions */
-						that.Modules.Connector.getInlinePreviewDimensions(room, object, mimeType, true, function (width, height) {
+						that.Modules.Connector.getInlinePreviewDimensions(roomID, objectID, mimeType, true, function (width, height) {
 					
 							if (width != false) obj.setAttribute("width", width);
 							if (height != false) obj.setAttribute("height", height);

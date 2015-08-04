@@ -124,13 +124,13 @@ Dispatcher.registerCall('listCloudFiles', function(socket, data, responseID) {
 		Modules.Connector.listWebDavFiles(data.host, data.user, data.pw, data.path, resultCallbackWrapper(socket, responseID));
 	}
 });
-Dispatcher.registerCall('getCloudFile', function(socket, data, responseID) {
+Dispatcher.registerCall('setCloudFileAsContent', function(socket, data, responseID) {
 	var start = data.host.substring(0, 3).toLowerCase();
 	if(start == "ftp"){
-		Modules.Connector.getFTPFile(data.host, data.user, data.pw, data.path, data.object, socket.id, resultCallbackWrapper(socket, responseID));
+		Modules.Connector.setFTPFileAsContent(data.host, data.user, data.pw, data.path, data.object, socket.id, resultCallbackWrapper(socket, responseID));
 	}
 	else{
-		Modules.Connector.getWebDavFile(data.host, data.user, data.pw, data.path, data.object, socket.id, resultCallbackWrapper(socket, responseID));
+		Modules.Connector.setWebDavFileAsContent(data.host, data.user, data.pw, data.path, data.object, socket.id, resultCallbackWrapper(socket, responseID));
 	}
 });
 

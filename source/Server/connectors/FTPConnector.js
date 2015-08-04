@@ -6,7 +6,9 @@ var fs = require('fs');
 var mime = require('mime');
 mime.default_type = 'text/plain';
 
-
+/**
+*	internal
+*/
 FTPConnector.createFTPConnection = function(host, username, password){
 
 	if(username == "") username = "anonymous";
@@ -24,17 +26,40 @@ FTPConnector.createFTPConnection = function(host, username, password){
 }
 
 
+/**
+*	internal
+*/
 FTPConnector.listFTPDirectory = function(Connection, path, cb){
 
 	Connection.ls(path, function(err, res) {
-		cb(res);
+		if(err){
+			console.log("Error");
+		}
+		else{
+			cb(res);
+		}
 	});
 }
 
 
 /**
-*	returns the hierachy of folders and objects (special format for JSTree!)
-*   
+*	internal
+*/
+FTPConnector.getFTPFile = function(Connection, path, cb){
+	
+	Connection.get(path, function(hadErr, socket) {
+		if (hadErr){
+			console.error('There was an error retrieving the file.');
+		}
+		else{
+			cb(socket);
+		}
+	});
+}
+
+
+/**
+*	returns the hierachy of folders and objects of an FTP-Server (special format for JSTree!)
 */
 FTPConnector.listFTPFiles = function(host, user, pw, path, callback) {
 
@@ -85,7 +110,10 @@ FTPConnector.listFTPFiles = function(host, user, pw, path, callback) {
 }
 
 
-FTPConnector.getFTPFile = function(host, user, pw, path, object, socketID, callback) {
+/**
+*	set a file (specified by its path) from an FTP-Server as the content of an object (specified by its ID)
+*/
+FTPConnector.setFTPFileAsContent = function(host, user, pw, path, objectID, socketID, callback) {
 
 	var FTP = this.createFTPConnection(host, user, pw);
 	var that = this;
@@ -95,48 +123,45 @@ FTPConnector.getFTPFile = function(host, user, pw, path, object, socketID, callb
 	var type = arr[arr.length-1];
 	var mimeType = mime.lookup(type);
 	
-	FTP.get(path, function(hadErr, socket) {
-		if (hadErr) console.error('There was an error retrieving the file.');
-		else{
-			var context = that.Modules.UserManager.getConnectionBySocketID(socketID);
-			var room = context.rooms.left.id;
-			socket.pipe(fs.createWriteStream(that.Modules.Config.filebase + '/' + room + '/' + object + '.content'));
-			socket.resume();
-			var obj = that.Modules.ObjectManager.getObject(room, object, context);
-			
-			socket.on('end', function(){
-			
-				obj.set('contentAge', new Date().getTime());
-				obj.set('mimeType', mimeType);
-				obj.persist();
-				obj.updateClients('contentUpdate');
-			
-				/* check if content is inline displayable */
-				if (that.Modules.Connector.isInlineDisplayable(mimeType)) {
-					obj.set('preview', true);
-
-					/* get dimensions */
-					that.Modules.Connector.getInlinePreviewDimensions(room, object, mimeType, true, function (width, height) {
-					
-						if (width != false) obj.setAttribute("width", width);
-						if (height != false) obj.setAttribute("height", height);
-
-						//send object update to all listeners
-						obj.persist();
-						obj.updateClients('contentUpdate');
-
-					});
-
-				} else {
-					obj.set('preview', false);
+	this.getFTPFile(FTP, path, function(socket){
+		var context = that.Modules.UserManager.getConnectionBySocketID(socketID);
+		var roomID = context.rooms.left.id;
+		socket.pipe(fs.createWriteStream(that.Modules.Config.filebase + '/' + roomID + '/' + objectID + '.content'));
+		socket.resume();
+		var obj = that.Modules.ObjectManager.getObject(roomID, objectID, context);
+		
+		socket.on('end', function(){
+		
+			obj.set('contentAge', new Date().getTime());
+			obj.set('mimeType', mimeType);
+			obj.persist();
+			obj.updateClients('contentUpdate');
+		
+			/* check if content is inline displayable */
+			if (that.Modules.Connector.isInlineDisplayable(mimeType)) {
+				obj.set('preview', true);
+				
+				/* get dimensions */
+				that.Modules.Connector.getInlinePreviewDimensions(roomID, objectID, mimeType, true, function (width, height) {
+				
+					if (width != false) obj.setAttribute("width", width);
+					if (height != false) obj.setAttribute("height", height);
 
 					//send object update to all listeners
 					obj.persist();
 					obj.updateClients('contentUpdate');
 
-				}	
-			});
-		}
+				});
+				
+			} else {
+				obj.set('preview', false);
+
+				//send object update to all listeners
+				obj.persist();
+				obj.updateClients('contentUpdate');
+
+			}	
+		});
 	});
 }
 
