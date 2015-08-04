@@ -28,7 +28,7 @@ GUI.trashbasket.update = function() {
 		"json_data": {
 			"data": function(object, callback) {
 				var room = ObjectManager.getObject(ObjectManager.getRoomID());
-				room.serverCall("getDeletedObjects", {"id": ObjectManager.getRoomID()}, callback);
+				room.serverCall("getDeletedObjects", callback);
 			},
 			"ui": {
 				"select_limit": 1,

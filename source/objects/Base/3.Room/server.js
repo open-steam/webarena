@@ -377,4 +377,46 @@ theObject.deleteUserPainting.neededRights = {
     write : true
 }
 
+
+/**
+*	returns the objects which were deleted in the current room (special format for JSTree!)
+*/
+theObject.getDeletedObjects = function(cb){
+
+	var that = this;
+	
+    Modules.ObjectManager.getObjects("trash", this.context, function(objects){
+		
+		var objectArray = new Array();
+		
+		for(var i = 0; i<objects.length; i++){
+			var oldRoom = objects[i].getAttribute("oldRoomID");
+			if(that.id == oldRoom){
+		
+				var id = objects[i].getAttribute('id');
+				var type = objects[i].getAttribute('type');
+				var name = objects[i].getAttribute('name');
+			
+				var node = {
+					data : {
+						title : name,
+						icon : '/objectIcons/'+type
+					},
+					metadata : {
+						id : id,
+						name : name,
+						type : type,
+						inRoom : oldRoom
+					}
+				}
+				objectArray.push(node);
+			}
+		}
+		cb(objectArray);
+	});
+}
+
+theObject.getDeletedObjects.public = true;
+
+
 module.exports=theObject;
