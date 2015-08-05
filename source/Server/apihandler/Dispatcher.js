@@ -133,6 +133,15 @@ Dispatcher.registerCall('setCloudFileAsContent', function(socket, data, response
 		Modules.Connector.setWebDavFileAsContent(data.host, data.user, data.pw, data.path, data.object, socket.id, resultCallbackWrapper(socket, responseID));
 	}
 });
+Dispatcher.registerCall('putBack', function(socket, data, responseID) {
+	var start = data.host.substring(0, 3).toLowerCase();
+	if(start == "ftp"){
+		Modules.Connector.uploadContentToFTP(data.host, data.user, data.pw, data.path, data.object, data.room, resultCallbackWrapper(socket, responseID));
+	}
+	else{
+		Modules.Connector.uploadContentToWebDav(data.host, data.user, data.pw, data.path, data.object, data.room, resultCallbackWrapper(socket, responseID));
+	}
+});
 
 /**
  * Creates a callback function that sends the result as an info message to the client.

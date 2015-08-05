@@ -146,13 +146,15 @@ GUI.cloud.copyObject = function(x, y) {
 		
 		ObjectManager.createObject("File", attributes, "dummyContent", function(object){
 
+			object.setAttribute("CloudConnection", [GUI.cloud.host, GUI.cloud.user, GUI.cloud.pw, path,]);
+		
 			Modules.SocketClient.serverCall('setCloudFileAsContent', {
-					'host': GUI.cloud.host,
-					'user': GUI.cloud.user,
-					'pw': GUI.cloud.pw,
-					'path': path,
-					'object': object.id
-				});
+				'host': GUI.cloud.host,
+				'user': GUI.cloud.user,
+				'pw': GUI.cloud.pw,
+				'path': path,
+				'object': object.id
+			});
 		
 		}, undefined);	
 	}	
@@ -221,4 +223,25 @@ GUI.cloud.clickChange = function() {
 	
 	GUI.cloud.opened();
 	
+}
+
+
+/**
+ * Uploads the content of the object and delete it
+ */
+GUI.cloud.putBack = function(host, user, pw, path, objectID) {
+
+	path = path.substring(0, path.length - 1);
+	
+	Modules.Dispatcher.query('putBack', {
+		'host': host,
+		'user': user,
+		'pw': pw,
+		'path': path,
+		'object': objectID,
+		'room': ObjectManager.getRoomID()
+	}, function(result){
+		var object = ObjectManager.getObject(objectID);
+		object.deleteIt();
+	});
 }

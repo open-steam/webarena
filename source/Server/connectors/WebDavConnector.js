@@ -60,6 +60,22 @@ WebDavConnector.getWebDavFile = function(Connection, path, cb){
 
 
 /**
+*	internal
+*/
+WebDavConnector.setWebDavFile = function(Connection, localPath, remotePath, cb){
+
+	Connection.PUT(localPath, remotePath, function(err, response) {
+		if(err){
+			console.log("error");
+		}
+		else{
+			cb();
+		}
+	});
+}
+	
+	
+/**
 *	returns the hierachy of folders and objects of an WebDav-Server (special format for JSTree!)   
 */
 WebDavConnector.listWebDavFiles = function(host, user, pw, path, callback) {
@@ -180,6 +196,18 @@ WebDavConnector.setWebDavFileAsContent = function(host, user, pw, path, objectID
 			});
 		}
 	}); 
+}
+
+
+/**
+*	upload the content of an object (specified by its ID) to the specified path of an WebDav-Server
+*/
+WebDavConnector.uploadContentToWebDav = function(host, user, pw, path, objectID, roomID, callback) {
+
+	var conn = this.createWebDavConnection(host, user, pw);
+
+	this.setWebDavFile(conn, this.Modules.Config.filebase + '/' + roomID + '/' + objectID + '.content', path, callback);
+
 }
 
 module.exports=WebDavConnector;

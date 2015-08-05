@@ -96,6 +96,8 @@ WAFile.register=function(type){
 	
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
+	this.registerAttribute('CloudConnection', {type:'list', hidden: true, standard: ["", "", "", ""]});
+	
 	this.registerAction('open File',function(){
 	
 		var selected = ObjectManager.getSelected();
@@ -190,6 +192,31 @@ WAFile.register=function(type){
 			return (obj.hasContent() == true);
 			
 		}
+		
+	});
+	
+	this.registerAction('Put back', function(lastClicked){
+	
+        var selected = ObjectManager.getSelected();
+		for(var i = 0; i<selected.length; i++){
+			var objectID = selected[i].id;
+			var host = selected[i].getAttribute("CloudConnection")[0];
+			var user = selected[i].getAttribute("CloudConnection")[1];
+			var pw = selected[i].getAttribute("CloudConnection")[2];
+			var path = selected[i].getAttribute("CloudConnection")[3];
+			GUI.cloud.putBack(host, user, pw, path, objectID);
+		}
+		
+	}, false, function(){
+	
+	   /* check if there is at least one selected object which cannot put back due to missing cloud information */
+		var selected = ObjectManager.getSelected();
+		for(var i = 0; i<selected.length; i++){
+			if(selected[i].getAttribute("CloudConnection")[0] == ""){
+				return false;
+			}
+		}
+		return true;
 		
 	});
 	

@@ -59,6 +59,22 @@ FTPConnector.getFTPFile = function(Connection, path, cb){
 
 
 /**
+*	internal
+*/
+FTPConnector.setFTPFile = function(Connection, localPath, remotePath, cb){
+
+	Connection.put(localPath, remotePath, function(hadError) {
+		if (hadError){
+			console.log("error");
+		}
+		else{
+			cb();
+		}
+	});
+}
+
+
+/**
 *	returns the hierachy of folders and objects of an FTP-Server (special format for JSTree!)
 */
 FTPConnector.listFTPFiles = function(host, user, pw, path, callback) {
@@ -131,7 +147,7 @@ FTPConnector.setFTPFileAsContent = function(host, user, pw, path, objectID, sock
 		var obj = that.Modules.ObjectManager.getObject(roomID, objectID, context);
 		
 		socket.on('end', function(){
-		
+
 			obj.set('contentAge', new Date().getTime());
 			obj.set('mimeType', mimeType);
 			obj.persist();
@@ -164,5 +180,18 @@ FTPConnector.setFTPFileAsContent = function(host, user, pw, path, objectID, sock
 		});
 	});
 }
+
+
+/**
+*	upload the content of an object (specified by its ID) to the specified path of an FTP-Server
+*/
+FTPConnector.uploadContentToFTP = function(host, user, pw, path, objectID, roomID, callback) {
+
+	var FTP = this.createFTPConnection(host, user, pw);
+
+	this.setFTPFile(FTP, this.Modules.Config.filebase + '/' + roomID + '/' + objectID + '.content', path, callback);
+	
+}
+
 
 module.exports=FTPConnector;

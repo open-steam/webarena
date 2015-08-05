@@ -4,5 +4,6 @@ WAFile.setTranslations('de',{
 	'Upload file' : 'Datei hochladen',
 	'Change content' : 'Austauschen',
 	'File' : 'Datei',
+	'Put back' : 'Zurücklegen'
 }
 );
