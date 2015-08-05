@@ -389,7 +389,7 @@ GUI.initToolbar = function() {
 			
 
             /*add paint button*/
-			if (Modules.Config.paintIcon) {
+			if (Modules.Config.paintMode) {
 				var paintButton = document.createElement("img");
 				$(paintButton).attr("src", "../../guis.common/images/paint_grey.png").attr("alt", "");
 				$(paintButton).attr("width", "24").attr("height", "24");
@@ -465,73 +465,67 @@ GUI.initToolbar = function() {
 
 
     /* add bug report toggle */
-    if (!Modules.Config.presentationMode) {
-        if (Modules.Config.bugreportIcon) {
+    if (!Modules.Config.presentationMode && Modules.config.bugReport) {
+		var bugButton = document.createElement("img");
+		$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
+		$(bugButton).attr("width", "24").attr("height", "24");
 
-            var bugButton = document.createElement("img");
-            $(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
-            $(bugButton).attr("width", "24").attr("height", "24");
+		$(bugButton).attr("id", "bug_button");
+		$(bugButton).addClass("sidebar_button header_tab");
 
-            $(bugButton).attr("id", "bug_button");
-            $(bugButton).addClass("sidebar_button header_tab");
+		$(bugButton).attr("title", GUI.translate("Bugreport"));
 
-            $(bugButton).attr("title", GUI.translate("Bugreport"));
+		$("#header > .header_tabs_sidebar").append(bugButton);
 
-            $("#header > .header_tabs_sidebar").append(bugButton);
+		var click = function() {
+			GUI.sidebar.openPage("bug", bugButton);
+		}
 
-            var click = function() {
-                GUI.sidebar.openPage("bug", bugButton);
-            }
-
-            if (GUI.isTouchDevice) {
-                $(bugButton).bind("touchstart", click);
-            } else {
-                $(bugButton).bind("mousedown", click);
-            }
-
-        }
+		if (GUI.isTouchDevice) {
+			$(bugButton).bind("touchstart", click);
+		} else {
+			$(bugButton).bind("mousedown", click);
+		}
     }
 
 
     /* add chat toggle */
-    if (!Modules.Config.presentationMode) {
-        if (Modules.Config.chatIcon) {
-            var chatButton = document.createElement("img");
-            $(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
-            $(chatButton).attr("width", "24").attr("height", "24");
+    if (!Modules.Config.presentationMode && Modules.config.chat) {
+		var chatButton = document.createElement("img");
+		$(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
+		$(chatButton).attr("width", "24").attr("height", "24");
 
-            $(chatButton).attr("id", "chat_button");
-            $(chatButton).addClass("sidebar_button header_tab");
+		$(chatButton).attr("id", "chat_button");
+		$(chatButton).addClass("sidebar_button header_tab");
 
-            $(chatButton).attr("title", GUI.translate("Chat"));
+		$(chatButton).attr("title", GUI.translate("Chat"));
 
-            $("#header > .header_tabs_sidebar").append(chatButton);
+		$("#header > .header_tabs_sidebar").append(chatButton);
 
-            var chatNotifier = document.createElement("span");
-            $(chatNotifier).attr("id", "chat_notifier");
-            $(chatNotifier).html("");
+		var chatNotifier = document.createElement("span");
+		$(chatNotifier).attr("id", "chat_notifier");
+		$(chatNotifier).html("");
 
-            $(chatNotifier).css("opacity", 0);
+		$(chatNotifier).css("opacity", 0);
 
-            var buttonPos = $(chatButton).position();
+		var buttonPos = $(chatButton).position();
 
-            $(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
+		$(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
 
-            $("#header > .header_tabs_sidebar").append(chatNotifier);
+		$("#header > .header_tabs_sidebar").append(chatNotifier);
 
 
-            var click = function() {
-                GUI.sidebar.openPage("chat", chatButton);
-            }
+		var click = function() {
+			GUI.sidebar.openPage("chat", chatButton);
+		}
 
-            if (GUI.isTouchDevice) {
-                $(chatButton).bind("touchstart", click);
-                $(chatNotifier).bind("touchstart", click);
-            } else {
-                $(chatButton).bind("mousedown", click);
-                $(chatNotifier).bind("mousedown", click);
-            }
-        }
+		if (GUI.isTouchDevice) {
+			$(chatButton).bind("touchstart", click);
+			$(chatNotifier).bind("touchstart", click);
+		} else {
+			$(chatButton).bind("mousedown", click);
+			$(chatNotifier).bind("mousedown", click);
+		}
     }
 
     /* add inspector toggle */
@@ -595,8 +589,8 @@ GUI.initToolbar = function() {
 
 	
 	/* add trashbasket toggle */
-    if (!Modules.Config.presentationMode) {
-
+    if (!Modules.Config.presentationMode && Modules.config.trash) {
+	
         var trashButton = document.createElement("img");
         $(trashButton).attr("src", "../../guis.common/images/delete.png").attr("alt", "");
         $(trashButton).attr("width", "24").attr("height", "24");
@@ -622,7 +616,7 @@ GUI.initToolbar = function() {
 	
 
 	/* add cloud toggle */
-    if (!Modules.Config.presentationMode) {
+    if (!Modules.Config.presentationMode && Modules.config.cloud) {
 
         var cloudButton = document.createElement("img");
         $(cloudButton).attr("src", "../../guis.common/images/cloud.png").attr("alt", "");

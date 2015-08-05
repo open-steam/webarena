@@ -36,13 +36,17 @@ module.exports={
 	
 	collaborativeEditor:false, //sidebar
 	
-	paintIcon:true,
+	paintMode:true,
 	
-	chatIcon:true,
+	chat:true,
 	
-	bugreportIcon:true,
+	bugReport:true,
 	
 	WebRTC: false,
+	
+	trash: true,
+	
+	cloud: true,
 	
 // Development
 	
