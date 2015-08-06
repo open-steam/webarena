@@ -458,18 +458,21 @@ ObjectManager.createObject = function(type, attributes, content, callback, index
     };
 
     Modules.Dispatcher.query('createObject', data, function(objectID) {
-        //objectID is the id of the newly created object
-        //the object may not yet be loaded so we wait for it
+        // objectID is the id of the newly created object
+        // the object may not yet be loaded so we wait for it
 
         var runs = 0;
         var object = false;
         var interval = setInterval(function() {
+
             if (runs == 50) {
                 console.log('ERROR: Timeout while waiting for the object');
                 clearTimeout(interval);
                 return;
             }
+
             object = Modules.ObjectManager.getObject(objectID);
+
             if (object) {
                 clearTimeout(interval);
 
@@ -478,13 +481,15 @@ ObjectManager.createObject = function(type, attributes, content, callback, index
                 object.setAttribute('name', GUI.translate(type));
 
                 object.justCreated();
-                if (callback != undefined)
+                if (callback != undefined) {
                     callback(object);
+                }
+
                 return;
             }
+
             runs++;
         }, 100);
-
     });
 }
 

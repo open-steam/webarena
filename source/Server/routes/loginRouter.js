@@ -34,12 +34,25 @@ function LoginRouter(app, acl) {
 
         console.info("New Device WADIV: " + WADIV + "with name: " + name);
 
+        // Create a new Role for the user
+        acl.allow(WADIV, 'public', '*', function(err) {
+            if (err) console.warn("ERROR!! by adding the new user role to admin role" + err);
+            else console.info("New role: " + WADIV + " created");
+        });
+
+        var roles = ['user', WADIV];
+
         // create a new acm_user with 'user' role that represents this device
-        acl.addUserRoles(WADIV, 'user', function(err) {
+        acl.addUserRoles(WADIV, roles, function(err) {
             if(err) {
                 console.warn("ERROR!! by adding acm_user role to the new user" + err);
                 return  res.status(501).send("ERROR!! by adding acm_user role to the new user" + err);
             }
+
+            // Every admin is allowed to do what users do
+            acl.addRoleParents('admin', WADIV, function(err) {
+                if (err) console.warn("ERROR!! by adding the new user role to admin role" + err);
+            });
 
             res.redirect('/login');
         });
@@ -71,18 +84,32 @@ function LoginRouter(app, acl) {
         if (req.cookies.WADIV) {
             var WADIV = req.cookies.WADIV.WADIV;
 
-            acl.isUser(WADIV, function(err, result) {
-                if (result) {
+            acl.isUser(WADIV, function(err, registered) {
+                if (registered) {
                     passport.authenticate(AUTHENTICATE_STRATEGY)(req, res, function () {
                         res.redirect('/room/public');
                     });
                 } else {
-                    // create a new acm_user with 'user' role that represents this device
-                    acl.addUserRoles(WADIV, 'user', function(err) {
+
+                    // Create a new Role for the user
+                    acl.allow(WADIV, 'public', '*', function(err) {
+                        if (err) console.warn("ERROR!! by adding the new user role to admin role" + err);
+                        else console.info("New role: " + WADIV + " created");
+                    });
+
+                    var roles = ['user', WADIV];
+
+                    // create a new acm_user that represents this device
+                    acl.addUserRoles(WADIV, roles, function(err) {
                         if(err) {
                             console.warn("ERROR!! by adding acm_user role to the new user" + err);
                             return  res.status(501).send("ERROR!! by adding acm_user role to the new user" + err);
                         }
+
+                        // Every admin is allowed to do what users do
+                        acl.addRoleParents('admin', WADIV, function(err) {
+                            if (err) console.warn("ERROR!! by adding the new user role to admin role" + err);
+                        });
 
                         passport.authenticate(AUTHENTICATE_STRATEGY)(req, res, function () {
                             res.redirect('/room/public');

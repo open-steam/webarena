@@ -11,6 +11,10 @@ var Modules = false; //set in init
 var Dispatcher = {};
 var calls = {};
 
+Dispatcher.init = function(theModules) {
+    Modules = theModules;
+}
+
 /**
  *	The dispatcher is the connection between requests sent to the server by websocket
  *	and the functions that are called inside the server. Server Modules register functions
@@ -26,16 +30,17 @@ Dispatcher.call = function(socket, message) {
     if (calls[type]) {
         process.nextTick(function() {
 
-            var response = calls[type](socket, data, responseID); 		//TODO: this is still blocking, swtich to callbacks if necessary
+            var response = calls[type](socket, data, responseID); // TODO: this is still blocking, swtich to callbacks if necessary
 
-            //TODO: Fire an event
+            // TODO: Fire an event
             /**
              *	Clients can provide a unique responseID when calling a function on the server. If the
              *	function called has a result other than undefined and a responseID is given, the response
              *	is sent back to the client (including the responseID)
              */
-            if (responseID !== undefined && response !== undefined)
+            if (responseID !== undefined && response !== undefined) {
                 Modules.Dispatcher.respond(socket, responseID, response);
+            }
         });
     } else {
         console.log('ERROR: No function for ' + type);
@@ -53,10 +58,6 @@ Dispatcher.respond = function(socket, responseID, response) {
 Dispatcher.registerCall = function(type, callFunction) {
     if (!callFunction) return;
     calls[type] = callFunction;
-}
-
-Dispatcher.init = function(theModules) {
-    Modules = theModules;
 }
 
 Dispatcher.registerCall('deleteObject', function(socket, data, responseID) {
@@ -114,6 +115,7 @@ Dispatcher.registerCall('writeToServerConsole', function(socket, data, responseI
     Modules.ServerController.writeToServerConsole(data, socket, responseId, resultCallbackWrapper(socket, responseId));
 });
 
+// ACL are enquiries about permissions
 Dispatcher.registerCall('acl', function(socket, data, responseId) {
     Modules.AccessController.query(data, resultCallbackWrapper(socket, responseId));
 });

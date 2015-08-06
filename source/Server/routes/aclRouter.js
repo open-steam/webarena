@@ -13,6 +13,7 @@ function ACLRouter(app, acl) {
 
     app.use('/acl', acl_router);
 
+    // Assign the admin role to the user.
     acl_router.get('/makeAdmin', ensureAuthenticated, function(req, res) {
         acl.addUserRoles(req.cookies.WADIV.WADIV, 'admin', function(err) {
             if(err) {
@@ -24,6 +25,31 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Adds roles to a given user id.
+    acl_router.get('/addUserRoles/:userId/:roles', function(req, res) {
+        acl.addUserRoles(req.params.userId, req.params.roles, function(err) {
+            if(err) {
+                console.warn("ERROR!! by addUserRoles function" + err);
+                return res.status(500).send("ERROR!! by addUserRoles function" + err);
+            }
+
+            return res.status(200).send("role(s) added");
+        });
+    });
+
+    // Remove roles from a given user.
+    acl_router.get('/removeUserRoles/:userId/:roles', function(req, res) {
+        acl.removeUserRoles(req.params.userId, req.params.roles, function(err) {
+            if(err) {
+                console.warn("ERROR!! by removeUserRoles function" + err);
+                return res.status(500).send("ERROR!! by removeUserRoles function" + err);
+            }
+
+            return res.status(200).send("role(s) removed");
+        });
+    });
+
+    // Removes a role from the system.
     acl_router.get('/removeRole/:role', function(req, res) {
         acl.removeRole(req.params.role, function(err) {
             if(err) {
@@ -35,6 +61,7 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Return boolean whether user has the role
     acl_router.get('/hasRole/:userId/:rolename', function(req, res) {
         acl.hasRole(req.params.userId, req.params.rolename, function(err, hasRole) {
             if(err) {
@@ -46,6 +73,7 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Returns true if any of the given roles have the right permissions.
     acl_router.get('/areAnyRolesAllowed/:roles/:resource/:permissions', function(req, res) {
         var roles       = req.params.roles;
         var resource    = req.params.resource;
@@ -61,6 +89,7 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Return all users who has a given role.
     acl_router.get('/roleUsers/:rolename', function(req, res) {
         acl.roleUsers(req.params.rolename, function(err, users) {
             if(err) {
@@ -72,8 +101,9 @@ function ACLRouter(app, acl) {
         });
     });
 
+    /// Return all the roles from a given user.
     acl_router.get('/userRoles/:user?', function(req, res) {
-        var user = req.params.user ? req.params.user : req.cookies.WADIV.WADIV
+        var user = req.params.user ? req.params.user : req.cookies.WADIV.WADIV;
 
         acl.userRoles(user, function(err, roles) {
             if(err) {
@@ -85,6 +115,7 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Returns what resources a given role has permissions over.
     acl_router.get('/whatResources/:role', function(req, res) {
         acl.whatResources(req.params.role, function(err, resources) {
             if(err) {
@@ -96,6 +127,7 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Removes a resource from the system
     acl_router.get('/removeResource/:resource', function(req, res) {
         acl.removeResource(req.params.resource, function(err) {
             if(err) {
@@ -107,6 +139,7 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Returns the permissions for the given resource and set of roles
     acl_router.get('/resourcePermissions/:roles/:resource', function(req, res) {
         acl.resourcePermissions(req.params.roles, req.params.resource, function(resource_Permissions) {
             if(err) {
@@ -118,8 +151,25 @@ function ACLRouter(app, acl) {
         });
     });
 
+    // Adds the given permissions to the given roles over the given resources.
+    acl_router.get('/allow/:roles/:resources/:permissions', function(req, res) {
+        var roles       = req.params.roles;
+        var resources   = req.params.resources;
+        var permissions = req.params.permissions;
+
+        acl.allow(roles, resources, permissions, function(err) {
+            if(err) {
+                console.warn("ERROR!! by allow function" + err);
+                return res.status(500).send("ERROR!! by allow function" + err);
+            }
+
+            return res.status(200).send("allowed");
+        });
+    });
+
+    // Returns if a user is already registered in the system
     acl_router.get('/isUser/:user?', function(req, res) {
-        var user = req.params.user ? req.params.user : req.cookies.WADIV.WADIV
+        var user = req.params.user ? req.params.user : req.cookies.WADIV.WADIV;
 
         acl.isUser(user, function(err, result) {
             if(err) {

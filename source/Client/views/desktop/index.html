@@ -124,8 +124,7 @@
         /**
          * jQuery extension used to prevent scrolling of sidebar/body when scrolling of sidebar contents hits top/bottom (e.g. for chat messages container)
          */
-        $.fn.dontScrollParent = function()
-        {
+        $.fn.dontScrollParent = function() {
             this.bind('mousewheel DOMMouseScroll',function(e)
             {
                 var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
@@ -167,8 +166,8 @@
 		<div id="sidebar_content">
 			<div>
 				<div id="inspector"></div>
-				<div id="chat"></div>
 				<div id="userInfo"></div>
+                <div id="chat"></div>
                 <div id="pad"><iframe name="padframe"></iframe></div>
 			</div>
 		</div>

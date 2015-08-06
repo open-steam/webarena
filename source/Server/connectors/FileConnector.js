@@ -101,28 +101,25 @@ fileConnector.listRooms = function(callback){
 
 }
 
-
-
-fileConnector.isLoggedIn=function(context) {
+fileConnector.isLoggedIn = function(context) {
 	return true;
 }
 
-
 /* RIGHTS */
 
-fileConnector.mayWrite=function(roomID,objectID,connection,callback) {
+fileConnector.mayWrite = function(roomID, objectID, connection, callback) {
 	callback(null, true);
 }
 
-fileConnector.mayRead=function(roomID,objectID,connection,callback) {
+fileConnector.mayRead = function(roomID, objectID, connection, callback) {
 	callback(null, true);
 }
 
-fileConnector.mayDelete=function(roomID,objectID,connection,callback) {
+fileConnector.mayDelete = function(roomID, objectID, connection, callback) {
 	callback(null, true);
 }
 
-fileConnector.mayEnter=function(roomID,connection,callback) {
+fileConnector.mayEnter = function(roomID, connection, callback) {
 	callback(null, true);
 }
 

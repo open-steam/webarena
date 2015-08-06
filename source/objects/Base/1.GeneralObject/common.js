@@ -274,23 +274,17 @@ GeneralObject.register = function(type) {
 
     }, false);
 
-    this.registerAction('Duplicate', function() {
+    //this.registerAction('Duplicate', function() {
+    //    ObjectManager.duplicateObjects(ObjectManager.getSelected());
+    //}, false);
 
-        ObjectManager.duplicateObjects(ObjectManager.getSelected());
+    //this.registerAction('Copy', function() {
+    //    ObjectManager.copyObjects(ObjectManager.getSelected());
+    //}, false);
 
-    }, false);
-
-    this.registerAction('Copy', function() {
-
-        ObjectManager.copyObjects(ObjectManager.getSelected());
-
-    }, false);
-
-    this.registerAction('Cut', function() {
-
-        ObjectManager.cutObjects(ObjectManager.getSelected());
-
-    }, false);
+    //this.registerAction('Cut', function() {
+    //    ObjectManager.cutObjects(ObjectManager.getSelected());
+    //}, false);
 
     this.registerAction(
             'Link',

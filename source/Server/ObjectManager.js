@@ -9,19 +9,67 @@
 "use strict";
 
 var fs = require('fs');
-var _ = require('lodash');
 var async = require("async");
-var Q = require("q");
 
 var Modules = false;
-var ObjectManager = {};
 var runtimeData = {};
 var prototypes = {};
+
+var ObjectManager = {};
 
 ObjectManager.isServer = true;
 ObjectManager.history = require("./HistoryTracker.js").HistoryTracker(100);
 
 var enter = String.fromCharCode(10);
+
+/**
+ *  init
+ *
+ *  initializes the ObjectManager
+ **/
+ObjectManager.init = function(theModules) {
+    var that = this;
+    Modules = theModules;
+
+    //go through all objects, build its client code (the code for the client side)
+    //register the object types.
+
+    var processFunction = function(data) {
+
+        var filename = data.filename;
+        var category = data.category;
+
+        var fileinfo = filename.split('.');
+        var objName = fileinfo[1];
+        var filebase = __dirname + '/../objects/' + category + '/' + filename;
+
+        var obj = require(filebase + '/server.js');
+        obj.ObjectManager = Modules.ObjectManager;
+        obj.register(objName);
+
+        obj.localIconPath = function(selection) {
+            selection = (selection) ? '_' + selection : '';
+            return filebase + '/icon' + selection + '.png';
+        }
+    }
+
+    var files = this.getEnabledObjectTypes();
+    files.forEach(function(data) {
+
+
+        if (Modules.Config.debugMode) {
+            processFunction(data);
+        } else {
+            try {
+                processFunction(data)
+            } catch (e) {
+                Modules.Log.warn('Could not register ' + objName);
+                Modules.Log.warn(e.stack);
+            }
+        }
+
+    });
+}
 
 ObjectManager.toString = function() {
     return 'ObjectManager (server)';
@@ -36,7 +84,6 @@ ObjectManager.registerType = function(type, constr) {
     prototypes[type] = constr;
 }
 
-
 /**
  *  remove
  *
@@ -44,13 +91,11 @@ ObjectManager.registerType = function(type, constr) {
  */
 ObjectManager.remove = function(obj) {
 
-    //Send remove to connector
-
+    // Send remove to connector
     Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
 
     //Inform clients about remove.
     obj.updateClients('objectDelete');
-
 }
 
 /**
@@ -67,7 +112,6 @@ ObjectManager.getPrototype = function(objType) {
 }
 
 ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
-
 
 /**
  *  buildObjectFromObjectData
@@ -222,10 +266,7 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *
  **/
 ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
-
-
-    //TODO send error to client if there is a rights issue here
-
+    // TODO send error to client if there is a rights issue here
     var proto = this.getPrototypeFor(type);
 
     Modules.Connector.createObject(roomID, type, proto.standardData, context, function(id) {
@@ -328,55 +369,6 @@ ObjectManager.getEnabledObjectTypes = function() {
     this.enabledObjectTypeCache = result;
 
     return result;
-}
-
-/**
- *  init
- *
- *  initializes the ObjectManager
- **/
-ObjectManager.init = function(theModules) {
-    var that = this;
-    Modules = theModules;
-
-    //go through all objects, build its client code (the code for the client side)
-    //register the object types.
-
-    var processFunction = function(data) {
-
-        var filename = data.filename;
-        var category = data.category;
-
-        var fileinfo = filename.split('.');
-        var objName = fileinfo[1];
-        var filebase = __dirname + '/../objects/' + category + '/' + filename;
-
-        var obj = require(filebase + '/server.js');
-        obj.ObjectManager = Modules.ObjectManager;
-        obj.register(objName);
-
-        obj.localIconPath = function(selection) {
-            selection = (selection) ? '_' + selection : '';
-            return filebase + '/icon' + selection + '.png';
-        }
-    }
-
-    var files = this.getEnabledObjectTypes();
-    files.forEach(function(data) {
-
-
-        if (Modules.Config.debugMode) {
-            processFunction(data);
-        } else {
-            try {
-                processFunction(data)
-            } catch (e) {
-                Modules.Log.warn('Could not register ' + objName);
-                Modules.Log.warn(e.stack);
-            }
-        }
-
-    });
 }
 
 ObjectManager.undo = function(data, context, callback) {
@@ -629,11 +621,9 @@ ObjectManager.duplicateNew = function(data, context, cbo) {
             callback();
         }
 
-
         var toWriteCheck = function(cb) {
             Modules.Connector.mayInsert(toRoom, context, falseToError("Can't insert into the target room!", cb));
         }
-
 
         var innerReadCheck2 = function(cb) {
             var arr = new Array();
@@ -728,13 +718,15 @@ ObjectManager.duplicateNew = function(data, context, cbo) {
 
 }
 
-
 //deleteObject
 ObjectManager.deleteObject = function(data, context, callback) {
     var that = this;
 
     var roomID = data.roomID
     var objectID = data.objectID;
+
+    var user = data.passport.user;
+    var resource = 'ui_dynamic_object_' + objectID;
 
     var afterRightsCheck = function(err, hasRights) {
         if (err)
@@ -748,6 +740,7 @@ ObjectManager.deleteObject = function(data, context, callback) {
                 }
 
                 Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
+
                 var historyEntry = {
                     'oldRoomID': roomID,
                     'oldObjectId': objectID,
@@ -767,14 +760,19 @@ ObjectManager.deleteObject = function(data, context, callback) {
 
                 });
 
+                Modules.ACLManager.removeResource(resource, function(err) {
+                    if (err) console.warn("Error while removing resource: " + resource + " err: " + err);
+                });
+
             } else {
                 callback(new Error('No rights to delete object: ' + objectID), null);
             }
         }
     }
 
-    Modules.Connector.mayDelete(roomID, objectID, context, afterRightsCheck)
+    Modules.ACLManager.isAllowed(user, resource, 'delete', function(err, allowed) {
+        afterRightsCheck(err, allowed);
+    });
 }
-
 
 module.exports = ObjectManager;

@@ -50,31 +50,28 @@ GUI.initToolbar = function() {
 /**
  * If a user enter or leave the room, a flashing icon is shown
  */
-GUI.flashNewUserIcon = function(newUser){
+GUI.flashNewUserIcon = function(newUser) {
 	
 	if(newUser){
 		$("#new_user_icon").attr("src", "../../guis.common/images/newUser.png").attr("alt", "");
 		$("#new_user_icon").attr("title", GUI.translate("A user entered this room"));
-	}
-	else{
+	} else{
 		$("#new_user_icon").attr("src", "../../guis.common/images/lostUser.png").attr("alt", "");
 		$("#new_user_icon").attr("title", GUI.translate("A user left this room"));
 	}
 	
 	var flashes = 5;
 	var counter = 0;
-	function blink(){
+	function blink() {
 		counter ++;
-		if(counter <= flashes){
+		if (counter <= flashes){
 			$("#new_user_icon").delay(200).fadeTo(400,1).delay(200).fadeTo(400,0, blink);
-		}
-		else{
+		} else{
 			$("#new_user_icon").attr("title", "");
 		}
 	}
 	blink();
 }
-
 
 /**
  * decides which icons are shown in the toolbar, depending on the free space  
@@ -263,21 +260,21 @@ function initToolbarAux(types) {
             var page = popover.addPage(GUI.translate("Welcome") + " " + Modules.Helper.capitalize(GUI.username));
             var section = page.addSection();
 
-            /* add paste button */
-            var pasteButton = document.createElement("img");
-            $(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
-            $(pasteButton).attr("width", "24").attr("height", "24");
-            $(pasteButton).attr("id", "paste_button");
-            $(pasteButton).addClass("sidebar_button");
-            $(pasteButton).attr("title", GUI.translate("Paste"));
-            var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
-            $(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
-            numberOfIcons++;
-            $("#header > .header_right").append(pasteButton); //add header icon
-            var clickPaste = function() { //click handler
-                Modules.ObjectManager.pasteObjects();
-                popover.hide();
-            };
+            ///* add paste button */
+            //var pasteButton = document.createElement("img");
+            //$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
+            //$(pasteButton).attr("width", "24").attr("height", "24");
+            //$(pasteButton).attr("id", "paste_button");
+            //$(pasteButton).addClass("sidebar_button");
+            //$(pasteButton).attr("title", GUI.translate("Paste"));
+            //var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
+            //$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
+            //numberOfIcons++;
+            //$("#header > .header_right").append(pasteButton); //add header icon
+            //var clickPaste = function() { //click handler
+            //    Modules.ObjectManager.pasteObjects();
+            //    popover.hide();
+            //};
 
             /* add undo button */
             var undoButton = document.createElement("img");
@@ -377,7 +374,7 @@ function initToolbarAux(types) {
 
             if (GUI.isTouchDevice) {
                 // header:
-                $(pasteButton).bind("touchstart", clickPaste);
+                //$(pasteButton).bind("touchstart", clickPaste);
                 $(undoButton).bind("touchstart", clickUndo);
 
                 $(parentButton).bind("touchstart", clickParent);
@@ -386,7 +383,7 @@ function initToolbarAux(types) {
                 if(Modules.Config.paintIcon) $(paintButton).bind("touchstart", clickPaint);
 
                 // menu:
-                $(btnPaste.getDOM()).bind("touchstart", clickPaste);
+                //$(btnPaste.getDOM()).bind("touchstart", clickPaste);
                 $(btnUndo.getDOM()).bind("touchstart", clickUndo);
 
                 $(btnParent.getDOM()).bind("touchstart", clickParent);
@@ -395,7 +392,7 @@ function initToolbarAux(types) {
                 if(Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
             } else {
                 // header:
-                $(pasteButton).bind("mousedown", clickPaste);
+                //$(pasteButton).bind("mousedown", clickPaste);
                 $(undoButton).bind("mousedown", clickUndo);
 
                 $(parentButton).bind("mousedown", clickParent);
@@ -404,7 +401,7 @@ function initToolbarAux(types) {
                 if (Modules.Config.paintIcon) $(paintButton).bind("mousedown", clickPaint);
 
                 // menu:
-                $(btnPaste.getDOM()).bind("mousedown", clickPaste);
+                //$(btnPaste.getDOM()).bind("mousedown", clickPaste);
                 $(btnUndo.getDOM()).bind("mousedown", clickUndo);
 
                 $(btnParent.getDOM()).bind("mousedown", clickParent);
@@ -448,40 +445,44 @@ function initToolbarAux(types) {
     /* add chat toggle */
     if (!Modules.Config.presentationMode) {
         if (Modules.Config.chatIcon) {
-            var chatButton = document.createElement("img");
-            $(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
-            $(chatButton).attr("width", "24").attr("height", "24");
+            Modules.ACLManager.isAllowed('ui_static_tools_chatIcon', "show", function (err, result) {
+                if (!err && result) {
+                    var chatButton = document.createElement("img");
+                    $(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
+                    $(chatButton).attr("width", "24").attr("height", "24");
 
-            $(chatButton).attr("id", "chat_button");
-            $(chatButton).addClass("sidebar_button header_tab");
+                    $(chatButton).attr("id", "chat_button");
+                    $(chatButton).addClass("sidebar_button header_tab");
 
-            $(chatButton).attr("title", GUI.translate("Chat"));
+                    $(chatButton).attr("title", GUI.translate("Chat"));
 
-            $("#header > .header_tabs_sidebar").append(chatButton);
+                    $("#header > .header_tabs_sidebar").append(chatButton);
 
-            var chatNotifier = document.createElement("span");
-            $(chatNotifier).attr("id", "chat_notifier");
-            $(chatNotifier).html("");
+                    var chatNotifier = document.createElement("span");
+                    $(chatNotifier).attr("id", "chat_notifier");
+                    $(chatNotifier).html("");
 
-            $(chatNotifier).css("opacity", 0);
+                    $(chatNotifier).css("opacity", 0);
 
-            var buttonPos = $(chatButton).position();
+                    var buttonPos = $(chatButton).position();
 
-            $(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
+                    $(chatNotifier).css("left", buttonPos.left).css("top", buttonPos.top);
 
-            $("#header > .header_tabs_sidebar").append(chatNotifier);
+                    $("#header > .header_tabs_sidebar").append(chatNotifier);
 
-            var click = function() {
-                GUI.sidebar.openPage("chat", chatButton);
-            }
+                    var click = function() {
+                        GUI.sidebar.openPage("chat", chatButton);
+                    }
 
-            if (GUI.isTouchDevice) {
-                $(chatButton).bind("touchstart", click);
-                $(chatNotifier).bind("touchstart", click);
-            } else {
-                $(chatButton).bind("mousedown", click);
-                $(chatNotifier).bind("mousedown", click);
-            }
+                    if (GUI.isTouchDevice) {
+                        $(chatButton).bind("touchstart", click);
+                        $(chatNotifier).bind("touchstart", click);
+                    } else {
+                        $(chatButton).bind("mousedown", click);
+                        $(chatNotifier).bind("mousedown", click);
+                    }
+                }
+            });
         }
     }
 

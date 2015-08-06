@@ -26,13 +26,13 @@ GUI.sidebar.elementConfig = {
         order : 0
 		//onOpen : GUI.chat.closed
     },
-    "chat" : {
-        order : 1,
-        onOpen : GUI.chat.opened
-    },
     "userInfo" : {
-        order : 2
+        order : 1
         //onOpen : GUI.chat.closed
+    },
+    "chat" : {
+        order : 2,
+        onOpen : GUI.chat.opened
     },
     "pad" : {
         order : 3

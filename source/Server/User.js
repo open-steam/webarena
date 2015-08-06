@@ -7,11 +7,9 @@
 
 "use strict";
 
-var User=function(UserManager){
-	
-	this.username=false;
-	this.home=false;
-
+var User = function(UserManager) {
+	this.username = false;
+	this.home = false;
 }
 
-module.exports=User;
+module.exports = User;

@@ -11,10 +11,16 @@ SocketClient.init = function() {
 		
 		// console.log(data);
 		if (data.type == 'call') {
+			console.log("Call ->");
+			console.log(data);
+
 			Modules.Dispatcher.call(data);
 		}
 		
 		if (data.type == 'response') {
+			console.log("Response ->");
+			console.log(data);
+
 			Modules.Dispatcher.response(data);
 		}
 	});
@@ -25,10 +31,6 @@ SocketClient.init = function() {
 	
 	socket.on('connect', function() {
 		GUI.connected();
-	});
-	
-	socket.on('WebRTC-message', function(data) {
-		WebRTCManager.receiveMessage(data);
 	});
 
 	socket.on('session-expired', function() {

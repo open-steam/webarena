@@ -60,9 +60,9 @@ ACLManager.prototype.allow = function(roles, resources, permissions, cb) {
     acl.allow(roles, resources, permissions, cb);
 };
 
-ACLManager.prototype.allow = function(permissionsArray, cb) {
-    acl.allow(permissionsArray, cb);
-};
+//ACLManager.prototype.allow = function(permissionsArray, cb) {
+//    acl.allow(permissionsArray, cb);
+//};
 
 ACLManager.prototype.removeAllow = function(role, resources, permissions, cb) {
     acl.removeAllow(role, resources, permissions, cb);
@@ -95,7 +95,6 @@ ACLManager.prototype.resourcePermissions = function(roles, resource, cb) {
 
 // permittedResources ?
 
-
 // +---------------------------------------------------------------------------+
 
 // +--- The following methods are not part of the original acl API  ----+
@@ -108,6 +107,8 @@ ACLManager.prototype.isUser = function(user, cb) {
 
 // +---------------------------------------------------------------------------+
 
+ACLManager.prototype.logError = logError;
+
 function mongo_connected() {
     var mongoBackend = new node_acl.mongodbBackend( mongoose.connection.db, MONGODB_PREFIX );
 
@@ -119,7 +120,7 @@ function mongo_connected() {
     set_roles();
 
     console.info("Roles manager successfully loaded.");
-}
+};
 
 // This creates a set of roles which have permissions on
 // different resources.
@@ -140,7 +141,8 @@ function set_roles() {
                         'ui_static_connections_exit',
                         'ui_static_connections_subroom',
                         'ui_static_content_file',
-                        'ui_static_tools_coupling'
+                        'ui_static_tools_coupling',
+                        'ui_static_tools_chatIcon'
                         ];
 
     // Create the 'admin' Role
@@ -148,22 +150,21 @@ function set_roles() {
     acl.allow('admin', staticUIList, '*', logError);
 
     // Create the 'user' Role
-    // by default every new user in the system get this role
     acl.allow('user','public' , '*', logError);
 
     // Inherit roles
     // Every admin is allowed to do what users do
     acl.addRoleParents( 'admin', 'user', logError);
-}
+};
 
 function logError(err) {
     if (err) console.warn("Error!!! -> " + err);
-}
+};
 
 // Provide logic for getting the logged-in user
 function get_user_id(req, res) {
     return req.user != undefined? req.user.id : undefined;
-}
+};
 
 // Generic debug logger for node_acl
 function logger() {
@@ -172,6 +173,6 @@ function logger() {
             console.log( '-DEBUG-', msg );
         }
     };
-}
+};
 
 exports = module.exports = ACLManager;

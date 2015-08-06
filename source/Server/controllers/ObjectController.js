@@ -2,48 +2,66 @@
  * Provides API methods for Object related tasks
  */
 
-
-
 "use strict";
 
-var fs = require('fs');
-var _ = require('lodash');
 var async = require("async");
-var Q = require("q");
+var _	  = require("underscore");
 
 var ObjectController = {}
 
 var Modules = false;
 var ObjectManager = false;
+var AclManager    = false;
 
 ObjectController.init = function(theModules){
 	Modules = theModules;
 	ObjectManager = Modules.ObjectManager;
+	AclManager    = Modules.ACLManager;
 }
 
-ObjectController.createObject = function(data, context, callback){
+ObjectController.createObject = function(data, context, callback) {
+	var roomID = data.roomID;
+	var type = data.type;
+	var attributes = data.attributes;
+	var content = data.content;
 
-    var roomID = data.roomID;
-    var type = data.type;
-    var attributes = data.attributes;
-    var content = data.content;
+	var user = data.passport.user;
 
-    var afterRightsCheck = function(err, mayInsert){
-        if(err){
-            callback(err, null);
-        } else {
-            if(mayInsert){
-                Modules.ObjectManager.createObject(roomID, type, attributes, content, context, function(err, obj){
-                    // we are only interested in the object id.
-                    callback(err, obj.id);
-                });
-            } else {
-                callback(new Error("No rights to write into room: " + roomID), null);
-            }
-        }
-    }
+	var afterRightsCheck = function(err, mayInsert) {
+		if (err) {
+			callback(err, null);
+		} else {
+			if (mayInsert) {
+				async.waterfall([
+					function(callback) {
+						Modules.ObjectManager.createObject(roomID, type, attributes, content, context, function (err, obj) {
+							callback(err, obj);
+						});
+					},
+					function(obj, callback) {
+						AclManager.userRoles(user, function(err, roles) {
+							callback(err, obj, roles);
+						});
+					},
+					function(obj, roles, callback) {
+						var completeRoles = _.union(_.without(roles, 'user'), ['admin']);
+						var resource = 'ui_dynamic_object_' + obj.id;
 
-    Modules.Connector.mayInsert(roomID, context, afterRightsCheck)
+						AclManager.allow(completeRoles, resource, '*', function (err) {
+							callback(err, obj);
+						});
+					}
+				], function (err, obj) {
+					// we are only interested in the object id.
+					callback(err, obj.id);
+				});
+			} else {
+				callback(new Error("No rights to write into room: " + roomID), null);
+			}
+		}
+	}
+
+	Modules.Connector.mayInsert(roomID, context, afterRightsCheck)
 }
 
 ObjectController.executeServersideAction = function (data, context, cb) {
