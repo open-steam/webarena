@@ -555,8 +555,7 @@ GeneralObject.getActions = function() {
 }
 
 GeneralObject.translate = function(language, text) {
-    if (!this.translationManager)
-        return text;
+    if (!this.translationManager) return text;
     return this.translationManager.get(language, text);
 }
 

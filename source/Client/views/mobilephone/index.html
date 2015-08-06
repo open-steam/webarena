@@ -36,7 +36,7 @@
     <script src="/socketClient.js"></script>
 
 	<script>
-	var  Modules={
+	var  Modules = {
 		'Log':Log,
 		'config':Config,
 		'Config':Config,
@@ -49,25 +49,27 @@
 		'DataSet':DataSet,
 		'AttributeManager':AttributeManager,
 		'TranslationManager':TranslationManager,
-		'ActionManager':ActionManager,
-
-        // DUI
-        'SocketClient' : new SocketClient(),
-        'ACLManager': new ACLManagerClient()
+		'ActionManager':ActionManager
 	};
 
-
 	$(document).ready(function() {
-		for (var name in Modules){
-			var module=Modules[name];
+        // DUI
+        Modules.SocketClient = new SocketClient();
+        Modules.ACLManager =   new ACLManagerClient();
+
+		for (var name in Modules) {
+			var module = Modules[name];
 			if (module.init) {
 				module.init(Modules);
 				module.Modules=Modules;
 			}
 		}
 
-		document.title=Modules.Config.projectTitle||'WebArena';
+        new TranslationDE();
+        new TranslationEN();
+        new TranslationES();
 
+		document.title = Modules.Config.projectTitle||'WebArena';
 	});
 
 	</script>
@@ -79,8 +81,6 @@
 	<script type="text/javascript" src="/views/mobilephone/toolbar.js"></script>
 	<script type="text/javascript" src="/views/mobilephone/objectView.js"></script>
 	<script type="text/javascript" src="/defaultJavascripts"></script>
-
-	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 
     <link type="text/css" href="/views/mobilephone/style.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/progressBar.css" rel="Stylesheet" />

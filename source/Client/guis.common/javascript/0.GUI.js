@@ -43,7 +43,7 @@ window.onpopstate = function(event) {
 };
 
 GUI.setTranslations = function(language, data) {
-	return this.translationManager.addTranslations.bind(this.translationManager, language, data);
+	return this.translationManager.addTranslations(language, data);
 }
 
 GUI.translate = function(text) {

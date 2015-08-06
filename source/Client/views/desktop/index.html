@@ -66,14 +66,14 @@
 		'DataSet':DataSet,
 		'AttributeManager':AttributeManager,
 		'TranslationManager':TranslationManager,
-		'ActionManager':ActionManager,
-
-        // DUI
-        'SocketClient': new SocketClient(),
-        'ACLManager':   new ACLManagerClient()
+		'ActionManager':ActionManager
 	};
 
 	$(document).ready(function() {
+        // DUI
+        Modules.SocketClient = new SocketClient();
+        Modules.ACLManager =   new ACLManagerClient();
+
 		for (var name in Modules){
 			var module = Modules[name];
 			if (module.init) {
@@ -81,6 +81,10 @@
 				module.Modules = Modules;
 			}
 		}
+
+        new TranslationDE();
+        new TranslationEN();
+        new TranslationES();
 
 		document.title = Modules.Config.projectTitle || 'WebArena';
 	});
@@ -90,8 +94,6 @@
 	<script src="/objects"></script>
 
 	<script type="text/javascript" src="/defaultJavascripts"></script>
-
-	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 
     <link type="text/css" href="/views/desktop/style.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/actionsheet.css" rel="Stylesheet" />
