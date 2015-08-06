@@ -40,7 +40,6 @@
 	<script src="/Helper.js"></script>
 	<script src="/Dispatcher.js"></script>
 	<script src="/ObjectManager.js"></script>
-	<script src="/SocketClient.js"></script>
 
 	<script src="/WebRTCManager.js"></script>
 
@@ -51,13 +50,13 @@
 	<script src="/Common/TranslationManager.js"></script>
 
     <script src="/aclManager-client.js"></script>
+    <script src="/socketClient.js"></script>
 
 	<script>
 	var  Modules = {
 		'Log':Log,
 		'config':Config,
 		'Config':Config,
-		'SocketClient':SocketClient,
 		'Dispatcher':Dispatcher,
 		'ObjectManager':ObjectManager,
 		'Helper':Helper,
@@ -70,7 +69,8 @@
 		'ActionManager':ActionManager,
 
         // DUI
-        'ACLManager': new ACLManagerClient()
+        'SocketClient': new SocketClient(),
+        'ACLManager':   new ACLManagerClient()
 	};
 
 	$(document).ready(function() {

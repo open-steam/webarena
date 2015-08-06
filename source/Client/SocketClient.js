@@ -1,13 +1,10 @@
 "use strict";
-var SocketClient = {};
 
-SocketClient.init = function() {
-	
+function SocketClient() {
 	var url = location.protocol + '//' + location.hostname;
-	var socket = io.connect(url);
-	Modules.Socket = socket;
-	
-	socket.on('message', function(data) {
+	this.socket = io.connect(url);
+
+	this.socket.on('message', function(data) {
 		
 		// console.log(data);
 		if (data.type == 'call') {
@@ -24,16 +21,16 @@ SocketClient.init = function() {
 			Modules.Dispatcher.response(data);
 		}
 	});
-	
-	socket.on('disconnect', function() {
+
+	this.socket.on('disconnect', function() {
 		GUI.disconnected();
 	});
-	
-	socket.on('connect', function() {
+
+	this.socket.on('connect', function() {
 		GUI.connected();
 	});
 
-	socket.on('session-expired', function() {
+	this.socket.on('session-expired', function() {
 		window.location = "/login";
 	});
 }
@@ -45,20 +42,24 @@ SocketClient.init = function() {
  * @param {Object} data the data to be sent to the server.
  * @param {Object} responseID the response id.
  */
-SocketClient.sendCall = function(type, data, responseID) {
-	Modules.Socket.emit('message', {
+SocketClient.prototype.serverCall = SocketClient.prototype.sendCall = function(type, data, responseID) {
+	this.socket.emit('message', {
 		'type' : type,
 		'data' : data,
 		'responseID' : responseID
 	});
 }
 
-SocketClient.sendWebRTCCall = function(message, data, room) {
-	Modules.Socket.emit('WebRTC-message', {
+SocketClient.prototype.sendWebRTCCall = function(message, data, room) {
+	this.socket.emit('WebRTC-message', {
 		'message' : message,
 		'data' : data,
 		'room' : room
 	});
 }
 
-SocketClient.serverCall = SocketClient.sendCall;
+SocketClient.prototype.getSocket = function() {
+	return this.socket;
+}
+
+

@@ -3,55 +3,52 @@
 /**
  * @namespace holds methods and variables for GUI
  */
-var GUI={};
+var GUI = {};
 
-/**
- * language of the client (used by translate function)
- * @default de
- */
-GUI.currentLanguage=Modules.Config.language;
-
-
-//This is called then forward or backwards-buttons are used in the browser.
-//See ObjectManager.onload for pushState
-window.onpopstate = function(event) {
- 
-  if (!event.state) return;
-  var room=event.state.room;
-  if (!room) return;
-  if (GUI.isLoggedIn){
-  	ObjectManager.loadRoom(room,true);
-  }
-
-};
-
-
-GUI.translationManager=Object.create(TranslationManager);
-GUI.translationManager.init(undefined);
-
-
-GUI.setTranslations=function(language,data){
-	return this.translationManager.addTranslations(language, data);
-}
-
-GUI.translate=function(text){
-	
-	return this.translationManager.get(this.currentLanguage, text);
-	
-}
-
+// the current canvas size (depending on the leftmost and the bottommost objects)
+GUI.maxWidth  = 0;
+GUI.maxHeight = 0;
 
 /**
  * variable to check if client is a touch device (to add suitable event handlers)
  */
 GUI.isTouchDevice = false;
 
-
 /**
  * Variable indicates the type of gui which is currently used.
  * Default value is 'desktop'.
  */
 GUI.guiType = 'desktop';
+
+/**
+ * language of the client (used by translate function)
+ * @default de
+ */
+GUI.currentLanguage = Modules.Config.language;
+
+GUI.translationManager = Object.create(TranslationManager);
+
+// This is called then forward or backwards-buttons are used in the browser.
+// See ObjectManager.onload for pushState
+window.onpopstate = function(event) {
+ 
+  if (!event.state) return;
+  var room = event.state.room;
+
+  if (!room) return;
+
+  if (GUI.isLoggedIn) {
+  	ObjectManager.loadRoom(room,true);
+  }
+};
+
+GUI.setTranslations = function(language, data) {
+	return this.translationManager.addTranslations.bind(this.translationManager, language, data);
+}
+
+GUI.translate = function(text) {
+	return this.translationManager.get(this.currentLanguage, text);
+}
 
 /**
  * Sets the gui type on startup.
@@ -64,7 +61,6 @@ $(function() {
     }
 });
 
-
 /**
  * @deprecated still needed?
  */
@@ -72,18 +68,14 @@ GUI.updateGUI = function(webarenaObject) {
 
 }
 
-
 /**
  * check room size on browser window resize
  */
 GUI.initResizeHandler = function() {
-
 	$(document).bind("resize", function() {
 		GUI.adjustContent();
 	});
-	
 }
-
 
 /**
  * set room width and height depending on objects in room
@@ -94,6 +86,7 @@ GUI.adjustContent = function(webarenaObject) {
 	if (GUI.guiType != 'desktop') {
 	  return;
 	}
+
 	if (webarenaObject != undefined) {
 
 		if (!webarenaObject.isGraphical) return;
@@ -102,8 +95,8 @@ GUI.adjustContent = function(webarenaObject) {
 
 		var currentRoom = ObjectManager.getCurrentRoom();
 		
-		var maxX = Math.round(webarenaObject.getViewBoundingBoxX()+webarenaObject.getViewBoundingBoxWidth())+300;
-		var maxY = Math.round(webarenaObject.getViewBoundingBoxY()+webarenaObject.getViewBoundingBoxHeight())+300;
+		var maxX = Math.round(webarenaObject.getViewBoundingBoxX() + webarenaObject.getViewBoundingBoxWidth())  + 300;
+		var maxY = Math.round(webarenaObject.getViewBoundingBoxY() + webarenaObject.getViewBoundingBoxHeight()) + 300;
 
 		if (maxX > currentRoom.getAttribute("width")) {
 			GUI.setRoomWidth(maxX);
@@ -112,7 +105,6 @@ GUI.adjustContent = function(webarenaObject) {
 		if (maxY > currentRoom.getAttribute("height")) {
 			GUI.setRoomHeight(maxY);
 		}
-
 		
 	} else {
 		/* set room width/height */
@@ -137,7 +129,6 @@ GUI.adjustContent = function(webarenaObject) {
 			if (my > maxY) {
 				maxY = my;
 			}
-
 		});
 
 		maxX += 300;
@@ -153,16 +144,8 @@ GUI.adjustContent = function(webarenaObject) {
 		
 		GUI.setRoomWidth(width);
 		GUI.setRoomHeight(height);
-		
 	}
-	
 }
-
-
-//the current canvas size (depending on the leftmost and the bottommost objects)
-GUI.maxWidth = 0;
-GUI.maxHeight = 0;
-
 
 /**
  * set width of room / svg area
@@ -193,11 +176,10 @@ GUI.setRoomWidth = function(width) {
  * @param {int} height new height of the room
  */
 GUI.setRoomHeight = function(height) {
-
 	var currentRoom = ObjectManager.getCurrentRoom();
 	if (!currentRoom) return;
 	
-	if(height > GUI.maxHeight){
+	if (height > GUI.maxHeight) {
 		GUI.maxHeight = height;
 	
 		currentRoom.setAttribute("height", height);
@@ -211,19 +193,14 @@ GUI.setRoomHeight = function(height) {
 	}
 }
 
-
-
 /**
  * deselects all objects in the current room
  */
 GUI.deselectAllObjects = function() {
-	
 	$.each(ObjectManager.getSelected(), function(index, object) {
 		object.deselect();
 	});
-	
 }
-
 
 /* multi selection */
 

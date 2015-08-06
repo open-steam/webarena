@@ -2,8 +2,6 @@
 
 "use strict";
 
-var Modules = false;
-
 /**
  * Object providing functions for object management
  */
@@ -21,6 +19,151 @@ ObjectManager.user = {};
 ObjectManager.clipBoard = {};
 ObjectManager.roomChangeCallbacks = [];
 ObjectManager.newIDs = [];
+
+ObjectManager.init = function() {
+    this.transactionId = false;
+    this.transactionTimeout = 500;
+    var that = this;
+
+    ObjectManager.startEtherpad();
+
+    Modules.Dispatcher.registerCall('infotext', function(text) {
+        var translatedText = GUI.translate(text);
+
+        //GUI.error("warning", text, false, false);
+        $().toastmessage('showToast', {
+            'text': translatedText,
+            'sticky': false,
+            'position': 'top-left'
+        });
+    });
+
+    Modules.Dispatcher.registerCall('welcome', function(data) {
+
+    });
+
+    Modules.Dispatcher.registerCall('loggedIn', function(data) {
+        GUI.loggedIn();
+        ObjectManager.user = data.userData;
+        ObjectManager.userHash = data.userhash;
+
+        if (GUI.startRoom !== undefined && GUI.startRoom != '') {
+            ObjectManager.loadRoom(GUI.startRoom);
+        } else if (data.home !== undefined) {
+            ObjectManager.loadRoom(data.home);
+        } else {
+            GUI.error("Unable to load room", "Unable to load room. (no room defined)", false, true);
+        }
+
+    });
+
+    Modules.Dispatcher.registerCall('loginFailed', function(data) {
+        GUI.loginFailed(data);
+    });
+
+    Modules.Dispatcher.registerCall('objectUpdate', function(data) {
+        ObjectManager.objectUpdate(data);
+    })
+
+    Modules.Dispatcher.registerCall('paintingsUpdate', function(data) {
+        ObjectManager.paintingUpdate(data);
+    })
+
+    Modules.Dispatcher.registerCall('objectDelete', function(data) {
+        ObjectManager.getObject(data.id).deleteLinks();  //delete all links which ends or starts in this object
+        ObjectManager.removeLocally(data);
+    });
+
+    Modules.Dispatcher.registerCall('contentUpdate', function(data) {
+        ObjectManager.contentUpdate(data);
+    });
+
+    Modules.Dispatcher.registerCall('entered', function(data) {
+        GUI.entered();
+    });
+
+    Modules.Dispatcher.registerCall('error', function(data) {
+        GUI.error("server error", data, false, true);
+    });
+
+    Modules.Dispatcher.registerCall('inform', function(data) {
+
+        if (data.message.awareness !== undefined && data.message.awareness.present !== undefined) {
+            //list of users
+            var users = [];
+            for (var i = 0; i < data.message.awareness.present.length; i++) {
+                var d = data.message.awareness.present[i];
+                users.push(d);
+            }
+            GUI.chat.setUsers(users);
+            GUI.userMarker.removeOfflineUsers(users);
+        }
+
+        if (data.message.text !== undefined) {
+            GUI.chat.addMessage(data.user, data.message.text, data.color, data.message.read);
+        }
+
+        if (data.message.selection) {
+            if (data.userId != ObjectManager.user.id) { //do not display own selections
+
+                GUI.userMarker.select({
+                    "objectId": data.message.selection,
+                    "title": data.user,
+                    "identifier": data.userId,
+                    "color": data.color
+                });
+
+            }
+
+        }
+
+        if (data.message.deselection) {
+
+            if (data.userId != ObjectManager.user.id) { //do not display own selections
+
+                GUI.userMarker.deselect({
+                    "objectId": data.message.deselection,
+                    "identifier": data.userId,
+                });
+
+            }
+
+        }
+
+    });
+
+    Modules.Dispatcher.registerCall('askForChoice', function(data) {
+
+        var dialogTitle = data.title;
+        var choices = data.choices;
+
+        var onSave = function() {
+            var responseEvent = 'response::askForChoice::' + data.responseID
+            var choice = $(dialog).find('input:radio:checked').val();
+            console.log(choice);
+            Modules.Socket.emit(responseEvent, {choice: choice});
+        }
+        var onExit = function() {
+            return false;
+        };
+
+        var dialogButtons = {
+            "Antworten": onSave,
+            "Abbrechen": onExit
+        };
+
+        var content = '<form>';
+        content = _(choices).reduce(function(accum, choice) {
+            //TODO perhaps need to escape whitesapces in choice
+            return accum + "<input type='radio' name='some-choice' value='" + choice + "'>" + choice + "<br/>";
+        }, content)
+        content += "</form>";
+        console.log(content);
+        console.log(data);
+
+        var dialog = GUI.dialog(dialogTitle, content, dialogButtons);
+    });
+}
 
 ObjectManager.registerType = function(type, constr) {
     this.prototypes[type] = constr;
@@ -493,153 +636,6 @@ ObjectManager.createObject = function(type, attributes, content, callback, index
     });
 }
 
-ObjectManager.init = function() {
-    this.transactionId = false;
-    this.transactionTimeout = 500;
-    var that = this;
-
-    ObjectManager.startEtherpad();
-
-    Modules.Dispatcher.registerCall('infotext', function(text) {
-        var translatedText = GUI.translate(text);
-        //GUI.error("warning", text, false, false);
-        $().toastmessage('showToast', {
-            'text': translatedText,
-            'sticky': false,
-            'position': 'top-left'
-        });
-    });
-
-    Modules.Dispatcher.registerCall('welcome', function(data) {
-
-    });
-
-    Modules.Dispatcher.registerCall('loggedIn', function(data) {
-        GUI.loggedIn();
-        ObjectManager.user = data.userData;
-        ObjectManager.userHash = data.userhash;
-
-        if (GUI.startRoom !== undefined && GUI.startRoom != '') {
-            ObjectManager.loadRoom(GUI.startRoom);
-        } else if (data.home !== undefined) {
-            ObjectManager.loadRoom(data.home);
-        } else {
-            GUI.error("Unable to load room", "Unable to load room. (no room defined)", false, true);
-        }
-
-    });
-
-    Modules.Dispatcher.registerCall('loginFailed', function(data) {
-        GUI.loginFailed(data);
-    });
-
-    Modules.Dispatcher.registerCall('objectUpdate', function(data) {
-        ObjectManager.objectUpdate(data);
-    })
-
-    Modules.Dispatcher.registerCall('paintingsUpdate', function(data) {
-        ObjectManager.paintingUpdate(data);
-    })
-
-    Modules.Dispatcher.registerCall('objectDelete', function(data) {
-        ObjectManager.getObject(data.id).deleteLinks();  //delete all links which ends or starts in this object
-        ObjectManager.removeLocally(data);
-    });
-
-    Modules.Dispatcher.registerCall('contentUpdate', function(data) {
-        ObjectManager.contentUpdate(data);
-    });
-
-    Modules.Dispatcher.registerCall('entered', function(data) {
-        GUI.entered();
-    });
-
-    Modules.Dispatcher.registerCall('error', function(data) {
-        GUI.error("server error", data, false, true);
-    });
-
-    Modules.Dispatcher.registerCall('inform', function(data) {
-
-        if (data.message.awareness !== undefined && data.message.awareness.present !== undefined) {
-            //list of users
-            var users = [];
-            for (var i = 0; i < data.message.awareness.present.length; i++) {
-                var d = data.message.awareness.present[i];
-                users.push(d);
-            }
-            GUI.chat.setUsers(users);
-            GUI.userMarker.removeOfflineUsers(users);
-        }
-
-        if (data.message.text !== undefined) {
-            GUI.chat.addMessage(data.user, data.message.text, data.color, data.message.read);
-        }
-
-        if (data.message.selection) {
-            if (data.userId != ObjectManager.user.id) { //do not display own selections
-
-                GUI.userMarker.select({
-                    "objectId": data.message.selection,
-                    "title": data.user,
-                    "identifier": data.userId,
-                    "color": data.color
-                });
-
-            }
-
-        }
-
-        if (data.message.deselection) {
-
-            if (data.userId != ObjectManager.user.id) { //do not display own selections
-
-                GUI.userMarker.deselect({
-                    "objectId": data.message.deselection,
-                    "identifier": data.userId,
-                });
-
-            }
-
-        }
-
-    });
-
-
-    Modules.Dispatcher.registerCall('askForChoice', function(data) {
-
-        var dialogTitle = data.title;
-        var choices = data.choices;
-
-        var onSave = function() {
-            var responseEvent = 'response::askForChoice::' + data.responseID
-            var choice = $(dialog).find('input:radio:checked').val();
-            console.log(choice);
-            Modules.Socket.emit(responseEvent, {choice: choice});
-        }
-        var onExit = function() {
-            return false;
-        };
-
-        var dialogButtons = {
-            "Antworten": onSave,
-            "Abbrechen": onExit
-        };
-
-        var content = '<form>';
-        content = _(choices).reduce(function(accum, choice) {
-            //TODO perhaps need to escape whitesapces in choice
-            return accum + "<input type='radio' name='some-choice' value='" + choice + "'>" + choice + "<br/>";
-        }, content)
-        content += "</form>";
-        console.log(content);
-        console.log(data);
-
-        var dialog = GUI.dialog(dialogTitle, content, dialogButtons);
-
-
-    });
-}
-
 ObjectManager.getRoomID = function(index) {
     if (!index)
         var index = 'left';
@@ -811,9 +807,8 @@ ObjectManager.showAll = function() {
 }
 
 ObjectManager.clientErrorMessage = function(data, callback) {
-    ObjectManager.Modules.Dispatcher.query('clientErrorMessage', data, callback);
+    Modules.Dispatcher.query('clientErrorMessage', data, callback);
 }
-
 
 ObjectManager.copyObjects = function(objects) {
     if (objects != undefined && objects.length > 0) {
