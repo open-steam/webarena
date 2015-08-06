@@ -44,6 +44,11 @@ GUI.sidebar.elementConfig = {
 		order : 5,
 		onOpen : GUI.cloud.opened,
 		onClose: GUI.cloud.closed
+	},
+	"recentChanges" : {
+		order : 6,
+		onOpen : GUI.recentChanges.opened,
+		onClose: GUI.recentChanges.closed
 	}
 };
 
@@ -219,6 +224,7 @@ GUI.sidebar.init = function() {
 	GUI.sidebar.elementConfig.pad.title = GUI.translate("Annotations");
 	GUI.sidebar.elementConfig.trashbasket.title = GUI.translate("Trash basket");
 	GUI.sidebar.elementConfig.cloud.title = GUI.translate("Cloud");
+	GUI.sidebar.elementConfig.recentChanges.title = GUI.translate("Recent Changes");
 	
 	$("#header_toggle_sidebar_hide").attr('title', GUI.translate('Hide sidebar'));
 	$("#header_toggle_sidebar_show").attr('title', GUI.translate('Show sidebar'));

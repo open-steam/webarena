@@ -224,6 +224,7 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  **/
 ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
 
+	var that = this;
 
     //TODO send error to client if there is a rights issue here
 
@@ -251,6 +252,16 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         }
 
         Modules.EventBus.emit("room::" + roomID + "::action::createObject", {objectID: id});
+		
+		var historyEntry = {
+			'roomID': roomID,
+            'objectID': id,
+            'action': 'create Object'
+        }
+
+        that.history.add(new Date().getTime(), context.user.username, historyEntry);
+		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+		
         callback(false, object);
     });
 }
@@ -749,23 +760,32 @@ ObjectManager.deleteObject = function(data, context, callback) {
                 }
 				
                 Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
+				
                 var historyEntry = {
-                    'oldRoomID': roomID,
-                    'oldObjectId': objectID,
-                    'roomID': 'trash',
-                    'action': 'delete'
+                    'roomID': roomID,
+                    'objectID': objectID,
+                    'action': 'delete Object'
                 }
+				
+				var transactionId = data.transactionId;
+
+                that.history.add(new Date().getTime(), data.userId, historyEntry);
+				Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 				
                 Modules.Connector.getTrashRoom(context, function(toRoom) {
                     Modules.Connector.duplicateObject(roomID, toRoom.id, objectID, context, function(err, newId, oldId) {
 						var newObject = Modules.ObjectManager.getObject(toRoom.id, newId, context);
 						newObject.setAttribute("oldRoomID", roomID);
                         object.remove();
-                        historyEntry["objectID"] = newId;
 
-                        var transactionId = data.transactionId;
-
-                        that.history.add(transactionId, data.userId, historyEntry);
+						historyEntry = {
+							'roomID': 'trash',
+							'objectID': newId,
+							'action': 'create Object'
+						}
+						
+                        that.history.add(new Date().getTime(), data.userId, historyEntry);
+						Modules.RoomController.informAllInRoom({"room": 'trash', 'message': {'change': 'change'}}, null); 
                     });
 
                 });

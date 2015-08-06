@@ -175,7 +175,7 @@ GUI.setRoomWidth = function(width) {
 	if(width > GUI.maxWidth){
 		GUI.maxWidth = width;
 		
-		currentRoom.setAttribute("width", width);
+		//currentRoom.setAttribute("width", width);
 	
 		if (width < $(window).width()) {
 			width = $(window).width();
@@ -199,7 +199,7 @@ GUI.setRoomHeight = function(height) {
 	if(height > GUI.maxHeight){
 		GUI.maxHeight = height;
 	
-		currentRoom.setAttribute("height", height);
+		//currentRoom.setAttribute("height", height);
 
 		if (height < $(window).height()) {
 			height = $(window).height();

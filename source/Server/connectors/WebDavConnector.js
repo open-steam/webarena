@@ -163,6 +163,16 @@ WebDavConnector.setWebDavFileAsContent = function(host, user, pw, path, objectID
 					return console.log(err);
 				}
 				else{
+				
+					var historyEntry = {
+						'objectID' : objectID,
+						'roomID' : roomID,
+						'action' : 'set Content'
+					}
+					
+					Modules.ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);
+					Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+				
 					obj.set('contentAge', new Date().getTime());
 					obj.set('mimeType', mimeType);
 					obj.persist();

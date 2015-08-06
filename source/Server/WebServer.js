@@ -260,14 +260,14 @@ WebServer.init = function (theModules) {
 
 				var object = Modules.ObjectManager.getObject(roomID, objectID, context);
 				var historyEntry = {
-					'objectID' : roomID,
+					'objectID' : objectID,
 					'roomID' : roomID,
-					'action' : 'setContent'
+					'action' : 'set Content'
 				}
-				Modules.ObjectManager.history.add(
-						new Date().toDateString(), context.user.username, historyEntry
-				)
-
+				
+				Modules.ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);
+				Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+				
 				if (!object) {
 					res.writeHead(404);
 					Modules.Log.warn('Object not found (roomID: ' + roomID + ' objectID: ' + objectID + ')');

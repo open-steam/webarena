@@ -418,5 +418,34 @@ theObject.getDeletedObjects = function(cb){
 
 theObject.getDeletedObjects.public = true;
 
+theObject.getRecentChanges = function(data, cb){
 
+	var history = Modules.ObjectManager.history.getHistoryEntries();
+	
+	var arr = [];
+	
+	for(var i in history){
+		var entry = history[i].changeSet[0];
+		if(entry.roomID == data.roomID){
+			entry.user = history[i].userId;
+	
+			var date = new Date(parseInt(i));
+			var day = date.getDate();
+			var year = date.getFullYear();
+			var hours = date.getHours();
+			var minutes = date.getMinutes();
+			var month = date.getMonth()+1;
+			
+			entry.date = day+'.'+month+'.'+year+', '+hours+':'+minutes;
+
+			arr.push(entry);
+		}
+	}
+	
+	cb(arr);
+	
+}
+	
+theObject.getRecentChanges.public = true;	
+	
 module.exports=theObject;

@@ -38,6 +38,7 @@ GUI.setTranslations('de',{
 	'Bugreport' : 'Fehlerbericht',
 	'Object inspector' : 'Objektinspektor',
 	'Trash basket' : 'Papierkorb',
+	'Recent Changes' : 'Letzte Änderungen',
 	'Toggle hidden mode' : 'Versteckt-Modus wechseln',
 	'Texts' : 'Texte',
 	'Mode' : 'Modus',
@@ -139,6 +140,10 @@ GUI.setTranslations('de',{
 	'This file is too large. You can only upload files with a maximum size of ' : 'Diese Datei ist zu groß. Die maximale Dateigröße beträgt ',
 	'Password' : 'Passwort',
 	'Connect' : 'Verbinden',
-	'Change' : 'Ändern'
+	'Change' : 'Ändern',
+	'set Attribute' : 'Attribut gesetzt',
+	'set Content' : 'Inhalt gesetzt',
+	'create Object' : 'Objekt erstellt',
+	'delete Object' : 'Objekt gelöscht'
 	}
 );

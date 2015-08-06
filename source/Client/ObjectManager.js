@@ -466,14 +466,14 @@ ObjectManager.leaveRoom = function(roomid, index, serverCall) {
 ObjectManager.createObject = function(type, attributes, content, callback, index) {
     if (!index)
         var index = 'left';
-
+		
     var data = {
         'roomID': this.currentRoomID[index],
         'type': type,
         'attributes': attributes,
         'content': content
     };
-
+	
     Modules.Dispatcher.query('createObject', data, function(objectID) {
         //objectID is the id of the newly created object
         //the object may not yet be loaded so we wait for it
@@ -616,6 +616,10 @@ ObjectManager.init = function() {
             }
 
         }
+		
+		if(data.message.change && GUI.sidebar.currentElement == "recentChanges"){
+			GUI.recentChanges.update();
+		}
 
     });
 
@@ -628,7 +632,7 @@ ObjectManager.init = function() {
         var onSave = function() {
             var responseEvent = 'response::askForChoice::' + data.responseID
             var choice = $(dialog).find('input:radio:checked').val();
-            console.log(choice);
+            //console.log(choice);
             Modules.Socket.emit(responseEvent, {choice: choice});
         }
         var onExit = function() {
@@ -646,8 +650,8 @@ ObjectManager.init = function() {
             return accum + "<input type='radio' name='some-choice' value='" + choice + "'>" + choice + "<br/>";
         }, content)
         content += "</form>";
-        console.log(content);
-        console.log(data);
+        //console.log(content);
+        //console.log(data);
 
         var dialog = GUI.dialog(dialogTitle, content, dialogButtons);
 
@@ -751,16 +755,16 @@ ObjectManager.renumberLayers = function(noUpdate) {
     });
 
     /* set new layers */
-    var layer = 1;
+    var layer = 0;
 
     for (var i in objectsArray) {
         var obj = objectsArray[i];
-
+		layer++;
         obj.setAttribute("layer", layer);
-        layer++;
+        
 
     }
-
+	
     if (noUpdate === undefined) {
         GUI.updateLayers();
     }

@@ -106,27 +106,30 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 			cb(err, null);
 			return;
 		}
-		if (serverFunction === "setAttribute") {
+		if (serverFunction === "setAttribute"){
 			var oldValue = object.getAttribute(serverFunctionParams[0]);
 			var historyEntry = {
-				'action': "setAttribute",
+				'action': 'set Attribute',
 				'objectID': objectID,
 				'roomID': roomID,
 				'attribute': serverFunctionParams[0],
 				'old': oldValue,
 				'new': serverFunctionParams[1]
 			}
-
-			ObjectManager.history.add(probableTransactionInfo.transactionId, probableTransactionInfo.userId, historyEntry);
+			
+			ObjectManager.history.add(new Date().getTime(), probableTransactionInfo.userId, historyEntry);
+			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+			
 		} else if (serverFunction === "setContent") {
 			var historyEntry = {
-				'objectID': roomID,
+				'objectID': objectID,
 				'roomID': roomID,
-				'action': 'setContent'
+				'action': 'set Content'
 			}
-			ObjectManager.history.add(
-				new Date().toDateString(), context.user.username, historyEntry
-			)
+			
+			ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);
+			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+			
 		}
 		fn.apply(object, serverFunctionParams);
 	});

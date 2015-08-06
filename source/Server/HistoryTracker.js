@@ -93,6 +93,10 @@ var HistoryTracker = function(maxStackSize){
         historyTransactionIds = _.filter(historyTransactionIds, function(e){return e != transactionId})
     }
 
+	that.getHistoryEntries = function(){
+		return historyEntries;
+	}
+	
     return that;
 
 }

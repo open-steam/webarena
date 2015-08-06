@@ -1030,3 +1030,69 @@ html>body #sortable1 li { height: 1.5em; line-height: 1.2em;}
 .drag-item{
     opacity: 0.5;
 }
+
+/* recent_changes */
+
+#recent_changes {
+    height: 44px;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+}
+
+#recent_changes {
+    overflow-y: hidden;
+    overflow-x: hidden;
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    height: 100%;
+}
+
+#recent_changes>div {
+    border-radius: 3px;
+    padding: 5px;
+    margin: 10px;
+    font-size: 12px;
+    box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+    -webkit-box-shadow: 0px 1px 1px rgba(0,0,0,0.1);
+    -moz-box-shadow: rgba(0,0,0,0.1) 0px 1px 1px;
+    position: relative;
+}
+
+#recent_changes>div>span {
+    display: block;
+    font-size: 11px;
+    margin-bottom: 2px;
+    color: #5F5F5F;
+    font-weight: bold;
+}
+
+#recent_changes>div.recent_change_mine {
+    background: -moz-linear-gradient(
+        center top ,
+        #E7F1FF 0%,
+        #B5D4FD 100%) repeat scroll 0 0 transparent;	
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, #E7F1FF),
+        color-stop(1, #B5D4FD)
+        );
+}
+
+#recent_changes>div.recent_change_other {
+    background: -moz-linear-gradient(
+        center top ,
+        #FEFEFE 0%,
+        #E9E9E9 100%) repeat scroll 0 0 transparent;	
+    background: -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        color-stop(0, #FEFEFE),
+        color-stop(1, #E9E9E9)
+        );
+}

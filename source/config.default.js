@@ -48,6 +48,8 @@ module.exports={
 	
 	cloud: true,
 	
+	recentChanges: true,
+	
 // Development
 	
 	debugMode: false,

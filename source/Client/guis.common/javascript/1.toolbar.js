@@ -641,6 +641,31 @@ GUI.initToolbar = function() {
 
     }
 	
+	/* add recent changes toggle */
+    if (!Modules.Config.presentationMode && Modules.config.recentChanges) {
+
+        var recentChangesButton = document.createElement("img");
+        $(recentChangesButton).attr("src", "../../guis.common/images/clock.png").attr("alt", "");
+        $(recentChangesButton).attr("width", "24").attr("height", "24");
+
+        $(recentChangesButton).attr("id", "recentChanges_button");
+        $(recentChangesButton).addClass("sidebar_button header_tab");
+
+        $(recentChangesButton).attr("title", GUI.translate("Recent Changes"));
+
+        var click = function() {
+            GUI.sidebar.openPage("recentChanges", recentChangesButton);
+        }
+
+        if (GUI.isTouchDevice) {
+            $(recentChangesButton).bind("touchstart", click);
+        } else {
+            $(recentChangesButton).bind("mousedown", click);
+        }
+
+        $("#header > .header_tabs_sidebar").append(recentChangesButton);
+
+    }
 	
     $("#header_toggle_sidebar_hide").on("click", function() {
         $(".jPopover").hide();
