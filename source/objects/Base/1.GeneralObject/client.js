@@ -149,12 +149,9 @@ GeneralObject.create = function(attributes) {
     if (attributes === undefined) {
         var attributes = {
         };
-    } else {
-
     }
 
     ObjectManager.createObject(this.type, attributes);
-
 }
 
 GeneralObject.removeRepresentation = function() {

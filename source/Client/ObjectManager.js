@@ -83,7 +83,7 @@ ObjectManager.init = function() {
     });
 
     Modules.Dispatcher.registerCall('error', function(data) {
-        GUI.error("server error", data, false, true);
+        GUI.error("server error", data, false, false);
     });
 
     Modules.Dispatcher.registerCall('inform', function(data) {
@@ -411,6 +411,7 @@ ObjectManager.contentUpdate = function(data) {
 
 ObjectManager.remove = function(object) {
     var that = this;
+
     if (!this.transactionId) {
         that.transactionId = new Date().getTime();
     } else {
@@ -421,11 +422,22 @@ ObjectManager.remove = function(object) {
         }, this.transactionTimeout);
     }
 
-    Modules.SocketClient.serverCall('deleteObject', {
-        'roomID': object.getRoomID(),
-        'objectID': object.getID(),
-        'transactionId': that.transactionId,
-        'userId': GUI.userid
+    var data = {
+            'roomID': object.getRoomID(),
+            'objectID': object.getID(),
+            'transactionId': that.transactionId,
+            'userId': GUI.userid
+        };
+
+    Modules.Dispatcher.query('deleteObject', data, function(result) {
+       if (!result.deleted) {
+           $().toastmessage('showToast', {
+               text: GUI.translate(result.msg),
+               sticky: false,
+               position: 'top-left',
+               type    : 'error'
+           });
+       }
     });
 }
 
@@ -481,7 +493,6 @@ ObjectManager.goParent = function() {
         alert(GUI.translate('There is no previously visited room'));
     }
 }
-
 
 ObjectManager.goHome = function() {
     ObjectManager.loadRoom(ObjectManager.user.home);
@@ -648,7 +659,6 @@ ObjectManager.getCurrentRoom = function(index) {
     return this.currentRoom[index];
 }
 
-
 ObjectManager.getSelected = function() {
     var result = [];
 
@@ -664,7 +674,6 @@ ObjectManager.getSelected = function() {
     }
     return result;
 }
-
 
 ObjectManager.getActionsForSelected = function() {
 
@@ -696,7 +705,6 @@ ObjectManager.getActionsForSelected = function() {
 
 }
 
-
 ObjectManager.performActionForSelected = function(actionName, clickedObject) {
 
     var selectedObjects = this.getSelected();
@@ -705,9 +713,7 @@ ObjectManager.performActionForSelected = function(actionName, clickedObject) {
         return;
 
     selectedObjects[0].performAction(actionName, clickedObject);
-
 }
-
 
 ObjectManager.renumberLayers = function(noUpdate) {
 
@@ -961,8 +967,6 @@ ObjectManager.afterDuplicate = function(newObject) {
     }
 }
 
-
-
 ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
     var objects = ObjectManager.getSelected();
 
@@ -999,6 +1003,33 @@ ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
             newIDs = idList;
             GUI.deselectAllObjects();
             setTimeout(selectNewObjects, 200);
+        });
+    }
+}
+
+ObjectManager.grantFullRights = function() {
+    var objects = ObjectManager.getSelected();
+
+    if (objects != undefined && objects.length > 0) {
+
+        var array = new Array();
+
+        for (var key in objects) {
+            var object = objects[key];
+            array.push(object.getId());
+        }
+
+        Modules.Dispatcher.query('acl', { type: 'grantFullRights', objects: array }, function(result) {
+            if (result.err) {
+                $().toastmessage('showToast', {
+                    text: GUI.translate(result.msg),
+                    sticky: false,
+                    position: 'top-left',
+                    type    : 'error'
+                });
+            }
+
+            GUI.deselectAllObjects();
         });
     }
 }

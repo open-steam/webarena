@@ -128,10 +128,11 @@ Dispatcher.registerCall('acl', function(socket, data, responseId) {
  */
 function infoCallbackWrapper(socket) {
     return function(err, message) {
-        if (err)
+        if (err) {
             Modules.SocketServer.sendToSocket(socket, 'error', err.message);
-        else
+        } else {
             Modules.SocketServer.sendToSocket(socket, 'infotext', message);
+        }
     };
 }
 

@@ -322,6 +322,39 @@ function initToolbarAux(types) {
                 })
             }
 
+            // This button grant full rights (including delete) to the admin role for the
+            // selected object(s)
+            // This is a fix for objects that other ways could not be touched
+            /* add grant full rights button */
+            if (Modules.Config.grantFullRightsIcon) {
+                Modules.ACLManager.isAllowed('ui_static_tools_grantFullRightsIcon', "show", function (err, result) {
+                    if (!err && result) {
+                        var grantFullRightsButton = document.createElement("img");
+                        $(grantFullRightsButton).attr("src", "../../guis.common/images/fix_me.png").attr("alt", "");
+                        $(grantFullRightsButton).attr("width", "24").attr("height", "24");
+                        $(grantFullRightsButton).attr("id", "grantFullRights_button");
+                        $(grantFullRightsButton).addClass("sidebar_button");
+                        $(grantFullRightsButton).attr("title", GUI.translate("grantFullRights.button"));
+                        var btnGrantFullRights = section.addElement($(grantFullRightsButton).prop('outerHTML') + GUI.translate("Coupling")); // add menu icon
+                        $(grantFullRightsButton).attr("src", "../../guis.common/images/fix_me.png").attr("alt", "");
+                        numberOfIcons++;
+                        $("#header > .header_right").append(grantFullRightsButton); //add header icon
+                        var clickGrantFullRights = function() { //click handler
+                            Modules.ObjectManager.grantFullRights();
+                            popover.hide();
+                        };
+
+                        if (GUI.isTouchDevice) {
+                            $(grantFullRightsButton).bind("touchstart", clickGrantFullRights);
+                            $(btnGrantFullRights.getDOM()).bind("touchstart", clickGrantFullRights);
+                        } else {
+                            $(btnGrantFullRights.getDOM()).bind("mousedown", clickGrantFullRights);
+                            $(grantFullRightsButton).bind("mousedown", clickGrantFullRights);
+                        }
+                    }
+                })
+            }
+
             /* add parent button */
             var parentButton = document.createElement("img");
             $(parentButton).attr("src", "../../guis.common/images/parent_grey.png").attr("alt", "");

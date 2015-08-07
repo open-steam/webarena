@@ -142,7 +142,8 @@ function set_roles() {
                         'ui_static_connections_subroom',
                         'ui_static_content_file',
                         'ui_static_tools_coupling',
-                        'ui_static_tools_chatIcon'
+                        'ui_static_tools_chatIcon',
+                        'ui_static_tools_grantFullRightsIcon'
                         ];
 
     // Create the 'admin' Role

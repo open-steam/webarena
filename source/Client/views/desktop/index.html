@@ -74,7 +74,7 @@
         Modules.SocketClient = new SocketClient();
         Modules.ACLManager =   new ACLManagerClient();
 
-		for (var name in Modules){
+		for (var name in Modules) {
 			var module = Modules[name];
 			if (module.init) {
 				module.init(Modules);

@@ -6,6 +6,8 @@
  */
 "use strict";
 
+var _ = require('underscore');
+
 function AccessController(my_acl) {
     this.acl = my_acl;
 }
@@ -24,10 +26,25 @@ AccessController.prototype.query = function(data, cb) {
                 cb(err, roles);
             });
             break;
+        case 'grantFullRights':
+            this._grantFullRights('admin', data.objects, cb);
+            break;
         default:
             throw new Error('AccessController:: query type unknown!!');
     }
 
 }
+
+AccessController.prototype._grantFullRights = function(roles, objects, cb) {
+    var prefix = "ui_dynamic_object_";
+    var resources = _.map(objects, function(obj){ return prefix + obj; });
+
+    this.acl.allow(roles, resources, "*", function(err) {
+        var error = (err != null);
+        var msg = (error) ? ("" + err) : "";
+
+        cb(null, { err: error, msg: msg });
+    });
+};
 
 exports = module.exports = AccessController;

@@ -871,7 +871,6 @@ GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
  * @param {bool} fatal True if the error is fatal and the webpage has to be reloaded after displaying the error
  */
 GUI.error = function(heading, message, webarenaObject, fatal) {
-
     var translate = function(text) {
         if (!webarenaObject) {
             return GUI.translate(text);
@@ -893,10 +892,9 @@ GUI.error = function(heading, message, webarenaObject, fatal) {
     }
 
     var heading = translate(heading);
-    var message = '<p>'+translate(message)+'</p>';
+    var message = '<p>'+translate(message) + '</p>';
 
     GUI.dialog(heading, message, errorButtons);
-
 }
 
 /**

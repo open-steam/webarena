@@ -16,7 +16,8 @@ function TranslationEN() {
             'tagManager.duplicateSecondaryTag.error' :'A secondary tag with the specified name already exists',
             'tagManager.maintagdeletion.error' : 'The main tag cannot be deleted since there are files tagged with this tag',
             'tagManager.maintagcreation.error' : "An unexpected error occurred during the creation of the main tag",
-            'tagManager.sectagdeletion.duplicate.error' : ""
+            'tagManager.sectagdeletion.duplicate.error' : "",
+            'grantFullRights.button': "Grant Full Rights"
         }
     );
 };

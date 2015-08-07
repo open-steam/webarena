@@ -186,7 +186,6 @@ ObjectManager.getObject = function(roomID, objectID, context) {
     object.context = context;
 
     return object;
-
 }
 
 /**
@@ -718,11 +717,10 @@ ObjectManager.duplicateNew = function(data, context, cbo) {
 
 }
 
-//deleteObject
 ObjectManager.deleteObject = function(data, context, callback) {
     var that = this;
 
-    var roomID = data.roomID
+    var roomID = data.roomID;
     var objectID = data.objectID;
 
     var user = data.passport.user;
@@ -756,6 +754,8 @@ ObjectManager.deleteObject = function(data, context, callback) {
                         var transactionId = data.transactionId;
 
                         that.history.add(transactionId, data.userId, historyEntry);
+
+                        callback(null, { deleted: true, msg: '' });
                     });
 
                 });
@@ -765,7 +765,7 @@ ObjectManager.deleteObject = function(data, context, callback) {
                 });
 
             } else {
-                callback(new Error('No rights to delete object: ' + objectID), null);
+                callback(null, { deleted: false, msg: 'No rights to delete object: ' + objectID });
             }
         }
     }

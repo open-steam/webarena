@@ -14,11 +14,11 @@ function ACLRouter(app, acl) {
     app.use('/acl', acl_router);
 
     // Assign the admin role to the user.
-    acl_router.get('/makeAdmin', ensureAuthenticated, function(req, res) {
+    acl_router.get('/makeMeAdmin', ensureAuthenticated, function(req, res) {
         acl.addUserRoles(req.cookies.WADIV.WADIV, 'admin', function(err) {
             if(err) {
-                console.warn("ERROR!! by makeAdmin function" + err);
-                return res.status(500).send("ERROR!! by makeAdmin function" + err);
+                console.warn("ERROR!! by makeMeAdmin function" + err);
+                return res.status(500).send("ERROR!! by makeMeAdmin function" + err);
             }
 
             return res.status(200).send("now you are an Admin");
@@ -38,14 +38,16 @@ function ACLRouter(app, acl) {
     });
 
     // Remove roles from a given user.
-    acl_router.get('/removeUserRoles/:userId/:roles', function(req, res) {
-        acl.removeUserRoles(req.params.userId, req.params.roles, function(err) {
+    acl_router.get('/removeUserRoles/:roles/:userId?', function(req, res) {
+        var user = req.params.userId ? req.params.userId : req.cookies.WADIV.WADIV;
+
+        acl.removeUserRoles(user, req.params.roles, function(err) {
             if(err) {
                 console.warn("ERROR!! by removeUserRoles function" + err);
                 return res.status(500).send("ERROR!! by removeUserRoles function" + err);
             }
 
-            return res.status(200).send("role(s) removed");
+            return res.status(200).send("role(s): " + req.params.roles + " removed");
         });
     });
 
@@ -164,6 +166,21 @@ function ACLRouter(app, acl) {
             }
 
             return res.status(200).send("allowed");
+        });
+    });
+
+    // Returns all the allowable permissions a given user have to access the given resources.
+    acl_router.get('/allowedPermissions/:resources/:userId?', function(req, res) {
+        var user = req.params.userId ? req.params.userId : req.cookies.WADIV.WADIV;
+        var resources   = req.params.resources;
+
+        acl.allowedPermissions(user, resources, function(err, obj) {
+            if(err) {
+                console.warn("ERROR!! by allowedPermissions function" + err);
+                return res.status(500).send("ERROR!! by allowedPermissions function" + err);
+            }
+
+            return res.status(200).send(obj);
         });
     });
 
