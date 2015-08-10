@@ -144,6 +144,7 @@ GUI.setTranslations('de',{
 	'set Attribute' : 'Attribut gesetzt',
 	'set Content' : 'Inhalt gesetzt',
 	'create Object' : 'Objekt erstellt',
-	'delete Object' : 'Objekt gelöscht'
+	'delete Object' : 'Objekt gelöscht',
+	'Release the mouse button to delete' : 'Zum Löschen die Maustaste loslassen'
 	}
 );

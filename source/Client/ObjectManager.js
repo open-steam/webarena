@@ -1271,7 +1271,11 @@ ObjectManager.restoreObject = function(objectID, x, y){
 	}
 	
 	Modules.Dispatcher.query('duplicateObjects', requestData, function(idList) {
-		//console.log(idList);
+		for (var key in idList) {
+			if (ObjectManager.newIDs.indexOf(idList[key]) == -1) {
+				ObjectManager.newIDs.push(idList[key]);
+            }
+        }
 	});
 
 }

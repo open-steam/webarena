@@ -13,6 +13,8 @@ GUI.trashbasket.opened = function() {
 	GUI.trashbasket.update();
 	
 	$("#sidebar").bind("mouseup", GUI.trashbasket.drop);
+	$("#sidebar").bind("mouseenter", GUI.trashbasket.enter);
+	$("#sidebar").bind("mouseleave", GUI.trashbasket.leave);
 	
 }
 
@@ -69,6 +71,8 @@ GUI.trashbasket.update = function() {
 GUI.trashbasket.closed = function() {
 	
 	$("#sidebar").unbind("mouseup", GUI.trashbasket.drop);
+	$("#sidebar").unbind("mouseenter", GUI.trashbasket.enter);
+	$("#sidebar").unbind("mouseleave", GUI.trashbasket.leave);
 	
 }
 
@@ -90,11 +94,12 @@ GUI.trashbasket.drop = function(event) {
 		}
 	}
 	   
-	for (var i in selected) {
-        var object = selected[i];
-		object.deleteIt();
+	if(moving){   
+		for (var i in selected) {
+			var object = selected[i];
+			object.deleteIt();
+		}
 	}
-	
 }
 
 
@@ -111,4 +116,36 @@ GUI.trashbasket.restoreObject = function(x, y) {
 		GUI.trashbasket.update();
 	}
 	
+}
+
+
+/**
+ * called when the mouse cursor enters the trashbasket area 
+ */
+GUI.trashbasket.enter = function() {
+
+	var selected = ObjectManager.getSelected();
+	var moving = false;
+	
+	//check if one of the selected objects has the property moving, than all selected objects are moved
+    for (var i in selected) {
+        var object = selected[i];
+		if(object.moving){
+			$('#jsTrashTree').hide();
+			$("#trash").append('<p style="margin-left: 10px"><b>'+GUI.translate("Release the mouse button to delete")+'</b></p>');
+			break;
+		}
+	}
+
+}
+
+
+/**
+ * called when the mouse cursor leaves the trashbasket area 
+ */
+GUI.trashbasket.leave = function() {
+
+	$("#trash").find("p").remove();
+	$('#jsTrashTree').show();
+
 }

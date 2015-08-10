@@ -5,7 +5,7 @@ ImageObject.contentUpdated=function(){
 }
 
 ImageObject.justCreated=function(){
-	this.execute();
+	this.upload();
 }
 
 ImageObject.upload = function() {

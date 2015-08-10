@@ -18,6 +18,8 @@ ImageObject.createRepresentation=function(parent) {
 	
 	this.createPixelMap(SVGImage);
 	
+	this.updateImage();
+	
 	rep.dataObject=this;
 
 	this.initGUI(rep);
@@ -25,6 +27,7 @@ ImageObject.createRepresentation=function(parent) {
 	return rep;
 	
 }
+
 
 ImageObject.createPixelMap=function(SVGImage){
 	
@@ -170,6 +173,7 @@ ImageObject.setViewWidth = function(value) {
 	$(this.getRepresentation()).find("image").attr("width", parseInt(value));
 	$(this.getRepresentation()).find("rect").attr("width", parseInt(value));
 }
+
 
 ImageObject.setViewHeight = function(value) {
 	GeneralObject.setViewHeight.call(this, value);

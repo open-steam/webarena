@@ -77,9 +77,7 @@ ImageObject.register=function(type){
 
 ImageObject.execute=function(){
 	
-	var that=this;
-	
-	GUI.uploadFile(this,this.translate(GUI.currentLanguage, "Please select an image"));
+	this.downloadImage();
 
 }
 
