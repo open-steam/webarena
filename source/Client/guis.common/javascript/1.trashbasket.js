@@ -6,7 +6,7 @@
 GUI.trashbasket = {};
 
 /**
- * called when the room is entered
+ * called when the trashbasket is opened in GUI
  */
 GUI.trashbasket.opened = function() {
 	
@@ -20,7 +20,7 @@ GUI.trashbasket.opened = function() {
 
 
 /**
- * called when the trashbasket is opened in GUI
+ * updates the trashbasket content (called when opening the trashbasket or if an object was deleted)
  */
 GUI.trashbasket.update = function() {
 

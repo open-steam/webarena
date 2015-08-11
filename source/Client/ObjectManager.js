@@ -219,6 +219,9 @@ ObjectManager.objectUpdate = function(data) {
 	
         object = ObjectManager.buildObject(data.type, data);
 
+		//object is restored from trash
+		if(object.getAttribute("oldRoomID") && GUI.sidebar.currentElement == "trashbasket") GUI.trashbasket.update();
+		
         if (GUI.couplingModeActive) {
             // to enable smooth dragging of objects between rooms display new objects immediately 
             // exceptions: SimpleText and Textarea need to load their content first else they are invisible or empty
@@ -558,6 +561,7 @@ ObjectManager.init = function() {
 		if(object){
 			object.deleteLinks();  //delete all links which ends or starts in this object
 			ObjectManager.removeLocally(data);
+			if(GUI.sidebar.currentElement == "trashbasket") GUI.trashbasket.update();
 		}
     });
 
@@ -574,7 +578,7 @@ ObjectManager.init = function() {
     });
 
     Modules.Dispatcher.registerCall('inform', function(data) {
-
+	
         if (data.message.awareness !== undefined && data.message.awareness.present !== undefined) {
             //list of users
             var users = [];
