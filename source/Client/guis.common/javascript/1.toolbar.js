@@ -677,44 +677,35 @@ GUI.initToolbar = function() {
         GUI.sidebar.openSidebar();
     });
 	
-	
-	/*add new user notification*/
-    var newUserIcon = document.createElement("img");
-    $(newUserIcon).attr("width", "24").attr("height", "24");
-    $(newUserIcon).attr("id", "new_user_icon");
-	$(newUserIcon).css("opacity", 0);
-	$(newUserIcon).css("float", "right");
-	$(newUserIcon).css("top", "4px");
-	$(newUserIcon).css("cursor", "auto");
-
-	$("#header > .header_tabs_sidebar").append(newUserIcon);
-
 }
 
 
 /**
  * If a user enter or leave the room, a flashing icon is shown
  */
-GUI.flashNewUserIcon = function(newUser){
+GUI.showUserNotification = function(newUser){
 	
+	if(GUI.sidebar.currentElement == "chat") return;
+		
 	if(newUser){
-		$("#new_user_icon").attr("src", "../../guis.common/images/newUser.png").attr("alt", "");
-		$("#new_user_icon").attr("title", GUI.translate("A user entered this room"));
+		$("#chat_button").attr("src", "../../guis.common/images/newUser.png").attr("alt", "");
+		$("#chat_button").attr("title", GUI.translate("A user entered this room"));
 	}
 	else{
-		$("#new_user_icon").attr("src", "../../guis.common/images/lostUser.png").attr("alt", "");
-		$("#new_user_icon").attr("title", GUI.translate("A user left this room"));
+		$("#chat_button").attr("src", "../../guis.common/images/lostUser.png").attr("alt", "");
+		$("#chat_button").attr("title", GUI.translate("A user left this room"));
 	}
 	
-	var flashes = 5;
 	var counter = 0;
 	function blink(){
-		counter ++;
-		if(counter <= flashes){
-			$("#new_user_icon").delay(200).fadeTo(400,1).delay(200).fadeTo(400,0, blink);
+		if(counter < 4){
+			counter++;
+			$("#chat_button").delay(200).fadeTo(500,0).delay(200).fadeTo(500,1, blink);
 		}
 		else{
-			$("#new_user_icon").attr("title", "");
+			$("#chat_button").css("opacity", '');
+			$("#chat_button").attr("src", "../../guis.common/images/chat.png").attr("alt", "");
+			$("#chat_button").attr("title", GUI.translate("Chat"));
 		}
 	}
 	blink();

@@ -63,11 +63,8 @@ GUI.chat.setUsers = function(users) {
 			GUI.chat.users.push(users[j].id);
 			
 			var user = users[j];
-			
+			var showNotification = true;
 			if(user.id != ObjectManager.user.id){ // add call/video call icon
-			
-				GUI.flashNewUserIcon(true);
-			
 				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay width="0"></video></div>');
 				if(Modules.Config.WebRTC && (navigator.mozGetUserMedia || navigator.webkitGetUserMedia)){
 					GUI.chat.addChatIcon(user.id, true);
@@ -75,9 +72,10 @@ GUI.chat.setUsers = function(users) {
 				}
 			}
 			else{
+				showNotification = false;
 				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay muted width="0"></video></div>');
 			}
-			
+			if(showNotification) GUI.showUserNotification(true);
 		}
 	}
 	
@@ -85,7 +83,7 @@ GUI.chat.setUsers = function(users) {
 		if(userIds.indexOf(GUI.chat.users[i]) == -1){
 			var userid = GUI.chat.users[i];
 			
-			GUI.flashNewUserIcon(false);
+			GUI.showUserNotification(false);
 			
 			$("#"+userid).parent().remove();
 			GUI.chat.users.splice(i, 1);
