@@ -184,6 +184,34 @@ function ACLRouter(app, acl) {
         });
     });
 
+    acl_router.get('/rolesCollection', function(req, res) {
+        acl.rolesCollection(function(err, roles) {
+            if(err) {
+                console.warn("ERROR!! by rolesCollection function" + err);
+                return res.status(500).send("ERROR!! by rolesCollection function" + err);
+            }
+
+            return res.status(200).send(roles);
+        });
+    });
+
+    /// Returns all the allowable permissions roles have to access the given resources.
+    ///
+    /// It returns an array of objects where every object maps a role name to a list of
+    /// permissions for the resource.
+    acl_router.get('/allowedRolesPermissions/:resources', function(req, res) {
+        var resources = (typeof req.params.resources === 'string') ? [req.params.resources] : req.params.resources;
+
+        acl.allowedRolesPermissions(resources, function(err, obj) {
+            if(err) {
+                console.warn("ERROR!! by allowedRolesPermissions function" + err);
+                return res.status(500).send("ERROR!! by allowedRolesPermissions function" + err);
+            }
+
+            return res.status(200).send(obj);
+        });
+    });
+
     // Returns if a user is already registered in the system
     acl_router.get('/isUser/:user?', function(req, res) {
         var user = req.params.user ? req.params.user : req.cookies.WADIV.WADIV;

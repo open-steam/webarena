@@ -35,6 +35,24 @@ GeneralObject.hasMobileRep = false;
 GeneralObject.hasEditableMobileContent = false;
 GeneralObject.isCreatableOnMobile = false;
 
+/**
+ * Call this on actual objects! (should be done by the object manager)
+ *
+ * @param {int} id the id of the actual object
+ */
+GeneralObject.init = function(id) {
+    if (!id) return;
+
+    this.id = id;
+
+    if (this.get(id, 'id')) {
+        return;
+    }
+
+    this.set('id', id);
+    this.set('type', this.type);
+}
+
 GeneralObject.makeSensitive = function() {
     this.isSensitiveFlag = true;
 }
@@ -236,7 +254,6 @@ GeneralObject.register = function(type) {
                 if (!object.hasLinkedObjects() && object.getAttribute("visible") != true) {
                     object.setAttribute("visible", true);
                 }
-
             }
 
             return true;
@@ -250,9 +267,11 @@ GeneralObject.register = function(type) {
         }, category: 'Functionality', changedFunction: function(object) {
             if(object.updateIcon){object.updateIcon()};
         }});
+
     this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
             object.showExitDialog()
         }, category: 'Functionality'});
+
     this.registerAttribute('filterObjects', {type: 'boolean', standard: false, hidden: true});
 	
 	this.registerAttribute('open destination on double-click',{type:'boolean',standard:false,category:'Functionality'});
@@ -261,18 +280,16 @@ GeneralObject.register = function(type) {
 	
     //this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 
-    this.registerAction('Delete', function() {
+    var r = Modules.Helper.getRandom(0, 200);
+    var g = Modules.Helper.getRandom(0, 200);
+    var b = Modules.Helper.getRandom(0, 200);
+    var width = 100;
 
-        var selected = ObjectManager.getSelected();
+    this.standardData.fillcolor = 'rgb(' + r + ',' + g + ',' + b + ')';
+    this.standardData.width = width;
+    this.standardData.height = width;
 
-        for (var i in selected) {
-            var object = selected[i];
-
-            object.deleteIt();
-
-        }
-
-    }, false);
+    // ------------------------------------- Actions -----------------------------------------------------------------------------------------
 
     //this.registerAction('Duplicate', function() {
     //    ObjectManager.duplicateObjects(ObjectManager.getSelected());
@@ -285,6 +302,22 @@ GeneralObject.register = function(type) {
     //this.registerAction('Cut', function() {
     //    ObjectManager.cutObjects(ObjectManager.getSelected());
     //}, false);
+
+    /*this.registerAction('paste format', function(){
+     var selected = ObjectManager.getSelected();
+     ObjectManager.pasteFormatAttributes(selected);
+     }); */
+
+    this.registerAction('Delete', function() {
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            var object = selected[i];
+
+            object.deleteIt();
+        }
+
+    }, false);
 
     this.registerAction(
             'Link',
@@ -301,9 +334,7 @@ GeneralObject.register = function(type) {
             }
     );
 
-
     this.registerAction('Group', function() {
-
         var selected = ObjectManager.getSelected();
 
         var date = new Date();
@@ -313,11 +344,9 @@ GeneralObject.register = function(type) {
             var obj = selected[i];
 
             obj.setAttribute("group", groupID);
-
         }
 
     }, false, function() {
-
         var selected = ObjectManager.getSelected();
 
         /* only one object --> no group */
@@ -337,29 +366,24 @@ GeneralObject.register = function(type) {
                 if (group != obj.getAttribute("group")) {
                     return true;
                 }
-
             }
-
         }
 
         /* if the common group is 0 there is no group */
-        if (group == 0)
+        if (group == 0) {
             return true;
+        }
 
         return false;
-
     });
 
-
     this.registerAction('Ungroup', function() {
-
         var selected = ObjectManager.getSelected();
 
         for (var i in selected) {
             var obj = selected[i];
 
             obj.setAttribute("group", 0);
-
         }
 
     }, false, function() {
@@ -375,36 +399,20 @@ GeneralObject.register = function(type) {
             if (obj.getAttribute("group") != 0) {
                 hasGroups = true;
             }
-
         }
 
         return hasGroups;
-
     });
-    this.registerAction('copy format', function(lastClicked){
-        var selected = ObjectManager.getSelected();
-        //console.log(lastClicked);
-        if(selected.length > 1){
-            lastClicked.showFormatDialog(selected);
-        }else{
-            alert("Es muss mehr als ein Objekt selektiert sein. Ansonsten gibt es keine Objekte, auf die die Formatierung übertragen werden kann!");
-        } 
-    });
-    /*this.registerAction('paste format', function(){
-        var selected = ObjectManager.getSelected();
-        ObjectManager.pasteFormatAttributes(selected);
-    }); */
 
-
-    var r = Modules.Helper.getRandom(0, 200);
-    var g = Modules.Helper.getRandom(0, 200);
-    var b = Modules.Helper.getRandom(0, 200);
-    var width = 100;
-
-    this.standardData.fillcolor = 'rgb(' + r + ',' + g + ',' + b + ')';
-    this.standardData.width = width;
-    this.standardData.height = width;
-
+    //this.registerAction('copy format', function(lastClicked) {
+    //    var selected = ObjectManager.getSelected();
+    //    //console.log(lastClicked);
+    //    if(selected.length > 1) {
+    //        lastClicked.showFormatDialog(selected);
+    //    } else {
+    //        alert("Es muss mehr als ein Objekt selektiert sein. Ansonsten gibt es keine Objekte, auf die die Formatierung übertragen werden kann!");
+    //    }
+    //});
 
     this.registerAction('to front', function() {
 
@@ -415,7 +423,6 @@ GeneralObject.register = function(type) {
             var obj = selected[i];
 
             obj.setAttribute("layer", obj.getAttribute("layer") + 999999);
-
         }
 
         ObjectManager.renumberLayers();
@@ -431,19 +438,21 @@ GeneralObject.register = function(type) {
             var obj = selected[i];
 
             obj.setAttribute("layer", obj.getAttribute("layer") - 999999);
-
         }
 
         ObjectManager.renumberLayers();
 
     }, false);
 
-    this.registerAction('Open destination', function(object) {
-        object.follow(object.getAttribute("open in"));
-    }, true);
-	
-}
+    //this.registerAction('Open destination', function(object) {
+    //    object.follow(object.getAttribute("open in"));
+    //}, true);
 
+    this.registerAction('object.show.roles.permissions', function() {
+        var selected = ObjectManager.getSelected();
+        Modules.ACLManager.allowedRolesPermissions(selected[0].getAttribute("id"));
+    }, true);
+}
 
 GeneralObject.get = function(key) {
     return this.attributeManager.get(this.id, key);
@@ -455,22 +464,6 @@ GeneralObject.set = function(key, value) {
 
 GeneralObject.setAll = function(data) {
     return this.attributeManager.setAll(this.id, data);
-}
-
-/**
- * Call this on actual objects! (should be done by the object manager)
- *
- * @param {int} id the id of the actual object
- */
-GeneralObject.init = function(id) {
-    if (!id)
-        return;
-    this.id = id;
-    if (this.get(id, 'id'))
-        return;
-
-    this.set('id', id);
-    this.set('type', this.type);
 }
 
 GeneralObject.toString = function() {
@@ -489,8 +482,6 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
 }
 
 GeneralObject.setAttribute = function(attribute, value, forced, transactionId) {
-
-
     if (this.mayChangeAttributes()) {
 
         //rights could also be checked in the attribute manager but HAVE to
@@ -617,12 +608,13 @@ GeneralObject.setPosition = function(x, y) {
  *	update the object's width and height
  */
 GeneralObject.setDimensions = function(width, height) {
-    if (height === undefined)
+    if (height === undefined) {
         height = width;
+    }
+
     this.setAttribute('width', width);
     this.setAttribute('height', height);
 }
-
 
 GeneralObject.toFront = function() {
     ObjectManager.performAction("toFront");
@@ -631,7 +623,6 @@ GeneralObject.toFront = function() {
 GeneralObject.toBack = function() {
     ObjectManager.performAction("toBack");
 }
-
 
 GeneralObject.isMovable = function() {
     return this.mayChangeAttributes();
@@ -644,7 +635,6 @@ GeneralObject.isResizable = function() {
 GeneralObject.resizeProportional = function() {
     return false;
 }
-
 
 /* following functions are used by the GUI. (because the three functions above will be overwritten) */
 GeneralObject.mayMove = function() {
@@ -670,7 +660,6 @@ GeneralObject.mayResizeProportional = function() {
         return this.resizeProportional();
     }
 }
-
 
 GeneralObject.execute = function() {
     this.select();
@@ -723,7 +712,6 @@ GeneralObject.remove = function() {
     Modules.ObjectManager.remove(this);
 }
 
-
 //returns if an object has links to other objects or not
 GeneralObject.hasLinkedObjects = function() {
 
@@ -733,9 +721,7 @@ GeneralObject.hasLinkedObjects = function() {
 
     for (var id in linkedObjects) {
         var object = linkedObjects[id];
-
         counter++;
-
     }
 
     if (counter > 0) {
@@ -746,9 +732,7 @@ GeneralObject.hasLinkedObjects = function() {
 
 }
 
-
 GeneralObject.getGroupMembers = function() {
-
     var list = [];
 
     var objects = ObjectManager.getObjects();
@@ -763,9 +747,7 @@ GeneralObject.getGroupMembers = function() {
     }
 
     return list;
-
 }
-
 
 //update the links after duplicate an object
 GeneralObject.updateLinkIds = function(idTranslationList) {
@@ -855,11 +837,7 @@ GeneralObject.follow = function(openMethod) {
 			window.open(destination,"_self")
 		}
     }
-
-	
-	
 }
-
 
 /**
 *	create Links between this object and other object (by adding entries in the link-attribute of all objects)
@@ -878,13 +856,12 @@ GeneralObject.createLinks = function(targetIds, arrowheadOtherEnd, arrowheadThis
 	
 }
 
-
 /**
 * create a Link between this object and one other object (by adding an entry in the link-attribute of both objects)
 * @param {string} targetId    the id of the target object
 *  other parameters: see above 
 */
-GeneralObject.createLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
+GeneralObject.createLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding) {
 
 	var target;
 	var object;
@@ -903,7 +880,6 @@ GeneralObject.createLink = function(targetId, arrowheadOtherEnd, arrowheadThisEn
 	
 }
 
-
 /**
 *	change the Links between this object and all other object (by changing the entries in the link-attribute)
 *  @param  {array} targetIds     array with ids of the target objects
@@ -916,7 +892,6 @@ GeneralObject.changeLinks = function(targetIds, arrowheadOtherEnd, arrowheadThis
 	}
 
 }
-
 
 /**
 *	change the Link between this object and one other object (by changing the entry in the link-attribute)
@@ -939,9 +914,7 @@ GeneralObject.changeLink = function(targetId, arrowheadOtherEnd, arrowheadThisEn
 
 	object.setLinkAttribute(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
 	target.setLinkAttribute(this.id, arrowheadThisEnd, arrowheadOtherEnd, width, style, padding);
-
 }
-
 
 /**
 *	delete all Links between this object and all other object (by removing the entries from the link-attribute)
@@ -955,7 +928,6 @@ GeneralObject.deleteLinks = function(){
 	}
 
 }
-
 
 /**
 *	delete the Link between this object and one other object (by removing the entry from the link-attribute)
@@ -977,9 +949,7 @@ GeneralObject.deleteLink = function(targetId){
 
 	object.removeLinkAttribute(targetId);
 	target.removeLinkAttribute(this.id);
-
 }
-
 
 /**
 *

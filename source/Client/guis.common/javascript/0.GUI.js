@@ -809,17 +809,14 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
  *
  */
 GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
-
     GUI.blockKeyEvents = true;
 
     if (buttons == undefined) {
-
         var buttons = {};
 
         buttons[GUI.translate("close")] = function() {
             //nothing
         }
-
     }
 
     var dialogContent = document.createElement("div");
@@ -834,7 +831,6 @@ GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
             callback(dialogContent);
             $(this).dialog("close");
         }
-
     });
 
     if (dialogWidth == undefined) {
@@ -853,14 +849,11 @@ GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
         }
     }
 
-    if(typeof passThrough === "object"){
+    if (typeof passThrough === "object") {
         $.extend(dialogOptions, passThrough)
     }
 
-
     return $(dialogContent).dialog(dialogOptions);
-
-
 };
 
 /**

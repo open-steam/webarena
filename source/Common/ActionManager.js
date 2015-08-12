@@ -7,23 +7,21 @@
 *
 */
 
-var ActionManager=Object.create(Object);
+var ActionManager = Object.create(Object);
 
-ActionManager.proto=false;
-ActionManager.actions=false;
+ActionManager.proto = false;
+ActionManager.actions = false;
 
-ActionManager.init=function(proto){
-	
-	this.proto=proto;
-	this.actions={};
+ActionManager.init = function(proto) {
+    this.proto = proto;
+    this.actions = {};
 }
 
-ActionManager.toString=function(){
-	return 'ActionManager for '+this.proto;
+ActionManager.toString = function() {
+	return 'ActionManager for ' + this.proto;
 }
 
-
-ActionManager.registerAction=function(name,func,single,visibilityFunc){
+ActionManager.registerAction = function(name, func, single, visibilityFunc) {
 	
 	this.actions[name] = {
 		"func": func,
@@ -32,16 +30,14 @@ ActionManager.registerAction=function(name,func,single,visibilityFunc){
 	};
 	
 	return this;
-	
 }
 
-ActionManager.unregisterAction=function(name){
+ActionManager.unregisterAction = function(name) {
 	delete(this.actions[name]);
 	return this;
 }
 
-
-ActionManager.performAction=function(name, clickedObject){
+ActionManager.performAction = function(name, clickedObject) {
 	
 	if (!this.actions[name]) {
 		debug(this + ' has no action ' + name);
@@ -51,11 +47,10 @@ ActionManager.performAction=function(name, clickedObject){
 	this.actions[name]["func"](clickedObject);
 	
 	return this;
-
 }
 
-ActionManager.getActions=function(){
+ActionManager.getActions = function() {
 	return this.actions;
 }
 
-module.exports=ActionManager;
+module.exports = ActionManager;

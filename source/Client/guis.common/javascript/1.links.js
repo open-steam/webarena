@@ -1,26 +1,20 @@
 "use strict";
 
-
 /**
  * Functions for displaying links between objects
  */
-
  
 /**
  * called when leaving a room
  */
 GUI.eraseAllLinks = function(){
-	
 	$(".webarenaLink").remove();
-	
 }
-
 
 /**
  * called every time an object is moved
  */
-GUI.moveLinks = function(object){
-	
+GUI.moveLinks = function(object) {
 	var linkedObjects = object.getAttribute("link");
 	
 	$.each(linkedObjects, function(index, value) {
@@ -30,7 +24,7 @@ GUI.moveLinks = function(object){
 			
 		if (!target) return;
 		
-		if(object.intersectsWith(target)){ //the objects intersects each other--->do not show any links
+		if (object.intersectsWith(target)) { //the objects intersects each other--->do not show any links
 			GUI.showLink(object.id, target.id, false); 
 			return;
 		}
@@ -39,50 +33,51 @@ GUI.moveLinks = function(object){
 		
 		var a1 = new Object(); //object's centerpoint 
 		var a2 = new Object(); //target's centerpoint
-		a1.x = object.getViewBoundingBoxX()+(object.getViewBoundingBoxWidth()/2);
-		a1.y = object.getViewBoundingBoxY()+(object.getViewBoundingBoxHeight()/2);
-		a2.x = target.getViewBoundingBoxX()+(target.getViewBoundingBoxWidth()/2);
-		a2.y = target.getViewBoundingBoxY()+(target.getViewBoundingBoxHeight()/2);
+		a1.x = object.getViewBoundingBoxX() + (object.getViewBoundingBoxWidth()  / 2);
+		a1.y = object.getViewBoundingBoxY() + (object.getViewBoundingBoxHeight() / 2);
+		a2.x = target.getViewBoundingBoxX() + (target.getViewBoundingBoxWidth()  / 2);
+		a2.y = target.getViewBoundingBoxY() + (target.getViewBoundingBoxHeight() / 2);
 		
 		var arrows = 0;
 		var Intersection1 = target.IntersectionObjectLine(a1, a2);
 		var Intersection2 = object.IntersectionObjectLine(a1, a2);
 		
-		//get current width of the link
+		// get current width of the link
 		var w;
 		var w1 = $("#webarenaLink_between_"+target.id+"_and_"+object.id).attr("stroke-width");
 		var w2 = $("#webarenaLink_between_"+object.id+"_and_"+target.id).attr("stroke-width");
 		
-		if(typeof w1 !== "undefined"){
+		if (typeof w1 !== "undefined") {
 			w = parseInt(w1);
 		}
-		if(typeof w2 !== "undefined"){
+
+		if (typeof w2 !== "undefined") {
 			w = parseInt(w2);
 		}
 		
-		if(value.arrowheadOtherEnd || (parseInt(value.padding) > 0)){ //arrowhead to target 
+		if (value.arrowheadOtherEnd || (parseInt(value.padding) > 0)){ //arrowhead to target
 		
 			arrows++;
 			
-			//padding (because of the markers which extend the line and optional space between the object and the marker)
+			// padding (because of the markers which extend the line and optional space between the object and the marker)
 			var padding = parseInt(value.padding);
 			
-			if(value.arrowheadOtherEnd) padding += 3*w;
+			if (value.arrowheadOtherEnd) padding += 3 * w;
 				
-			if(typeof Intersection1 == 'undefined'){ //there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
-			
+			if (typeof Intersection1 == 'undefined') { // there is no Intersection between the target and the line --> the center of the object is inside the target -->  hide the link
 				GUI.showLink(object.id, target.id, false); 
 			}
-			if(Intersection1 != "coincident" && Intersection1 != "no intersection"){ //Intersection
+
+			if(Intersection1 != "coincident" && Intersection1 != "no intersection") { // Intersection
 				
-				//padding
+				// padding
 				var dx;
 				var dy;
 		
 				dx = a1.x - a2.x;
 				dy = a1.y - a2.y;
 			
-				var l = Math.sqrt(dx*dx+dy*dy);
+				var l = Math.sqrt(dx*dx + dy*dy);
 				dx = dx/l;
 				dy = dy/l;
 			
@@ -90,7 +85,6 @@ GUI.moveLinks = function(object){
 					x : Intersection1.x + dx*padding,
 					y : Intersection1.y + dy*padding
 				};
-
 				
 				$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('x1',Intp1.x);
 				$("#webarenaLink_between_"+target.id+"_and_"+object.id).attr('y1',Intp1.y);
@@ -100,19 +94,19 @@ GUI.moveLinks = function(object){
 			}
 		}
 		
-		if(value.arrowheadThisEnd || (parseInt(value.padding) > 0)){ //arrowhead to object
-		
+		if (value.arrowheadThisEnd || (parseInt(value.padding) > 0)) { //arrowhead to object
 			arrows++;
 			
-			//padding (because of the markers which extend the line and optional space between the object and the marker)
+			// padding (because of the markers which extend the line and optional space between the object and the marker)
 			var padding = parseInt(value.padding);
 			
-			if(value.arrowheadThisEnd) padding += 3*w;
+			if (value.arrowheadThisEnd) padding += 3*w;
 				
-			if(typeof Intersection2 == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link	
+			if (typeof Intersection2 == 'undefined'){ //there is no Intersection between the object and the line --> the center of the target is inside the target --> hide the link
 			
 				GUI.showLink(object.id, target.id, false); 	
-			}	
+			}
+
 			if(Intersection2 != "coincident" && Intersection2 != "no intersection"){ //Intersection		
 						
 				//padding
@@ -390,12 +384,11 @@ GUI.drawLinks = function(object) {
 	});
 	
 }
-	
-	
+
 /**
  * Dialog for setting/changing the link properties
  */
-GUI.showLinkPropertyDialog = function(object, target, title, justcreated){   
+GUI.showLinkPropertyDialog = function(object, target, title, justcreated) {
 	
 	var selected = ObjectManager.getSelected();
 	var targetIds = new Array();
@@ -508,40 +501,40 @@ GUI.showLinkPropertyDialog = function(object, target, title, justcreated){
 	var arrowheadAtotherObject;
 	var arrowheadAtthisObject;
 
-	buttons[object.translate(GUI.currentLanguage, "save")] = function(domContent){
-	
+	buttons[object.translate(GUI.currentLanguage, "save")] = function(domContent) {
 		lineWidth = parseInt($('#lineWidth').attr("value"));
 		direction = $('#direction').val();
 		lineStyle = $('#style').val();
 		linePadding = parseInt($('#linePadding').attr("value"));
 		
-		if(direction=="undirected"){
+		if (direction == "undirected") {
 			arrowheadAtotherObject = false;
 			arrowheadAtthisObject = false;
 		}
-		if(direction=="toObject"){
+
+		if (direction == "toObject") {
 			arrowheadAtotherObject = false;
 			arrowheadAtthisObject = true;
 		}
-		if(direction=="fromObject"){
+
+		if (direction == "fromObject") {
 			arrowheadAtotherObject = true;
 			arrowheadAtthisObject = false;
 		}
-		if(direction=="bidirectional"){
+
+		if (direction == "bidirectional") {
 			arrowheadAtotherObject = true;
 			arrowheadAtthisObject = true;
 		}
 
-		if(justcreated){
+		if (justcreated) {
 			object.createLinks(targetIds, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
 			//object.buildLinks(arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
-		}
-		else{
+		} else {
 			//GUI.changeLinks(object, target, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
 			object.changeLink(target.id, arrowheadAtotherObject, arrowheadAtthisObject, lineWidth, lineStyle, linePadding);
 		}	
 	};
 
 	GUI.dialog(title, $(content), buttons, 300, false);
-		
 }

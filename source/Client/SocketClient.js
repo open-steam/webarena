@@ -5,18 +5,18 @@ function SocketClient() {
 	this.socket = io.connect(url);
 
 	this.socket.on('message', function(data) {
-		
+
 		// console.log(data);
 		if (data.type == 'call') {
-			console.log("Call ->");
-			console.log(data);
+			//console.log("Call ->");
+			//console.log(data);
 
 			Modules.Dispatcher.call(data);
 		}
 		
 		if (data.type == 'response') {
-			console.log("Response ->");
-			console.log(data);
+			//console.log("Response ->");
+			//console.log(data);
 
 			Modules.Dispatcher.response(data);
 		}

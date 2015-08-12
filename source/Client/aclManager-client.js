@@ -6,10 +6,15 @@
 
 "use strict";
 
+// This list contains actions that should be check for authorization
+ACLManagerClient.prototype.notForEveryOne = ['Delete',
+                                            'object.show.roles.permissions'];
+
 function ACLManagerClient() {
 
 };
 
+// userId got in server side using the session
 ACLManagerClient.prototype.isAllowed = function(resource, permissions, cb) {
     //console.log("ACLManagerClient.isAllowed resource: " + resource);
     //console.log("ACLManagerClient.isAllowed permissions: " + permissions);
@@ -34,4 +39,40 @@ ACLManagerClient.prototype.userRoles = function(userId, cb) {
     });
 };
 
+ACLManagerClient.prototype.allowedRolesPermissions = function(id, cb) {
+    var resources = ["ui_dynamic_object_" + id ];
+
+    Modules.Dispatcher.query('acl', { type: 'allowedRolesPermissions', resources: resources }, function (data) {
+        if (cb != undefined) return cb(data);
+
+        var buttons = {};
+        var content = '<div id="allowedRolesPermissions_group">';
+
+        _.each(data, function (value, key, list) {
+            content += '<div id="' + key + '_resource">';
+            content += '<p>';
+            _.each(value, function (value2, key2, list2) {
+                content += '<p>';
+                content += '<span><b>Role:</b> ' +  value2.role + '</span>';
+                content += '<br>';
+                content += '<span><b>Permissions:</b> [';
+
+                _.each(value2.permissions, function (element, index, list3) {
+                    content += element;
+                    if (value2.permissions.length < (index + 1))  content += ',';
+                });
+
+                content += ']</span>';
+                content += '</p>';
+            });
+
+            content += '</p>';
+            content += '</div>';
+        });
+
+        content += '</div>';
+
+        GUI.dialog("Roles and Permissions", $(content), buttons, undefined, false);
+    });
+};
 

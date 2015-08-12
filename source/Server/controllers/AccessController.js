@@ -29,6 +29,11 @@ AccessController.prototype.query = function(data, cb) {
         case 'grantFullRights':
             this._grantFullRights('admin', data.objects, cb);
             break;
+        case 'allowedRolesPermissions':
+            this.acl.allowedRolesPermissions(data.resources, function(err, obj) {
+                cb(err, obj);
+            });
+            break;
         default:
             throw new Error('AccessController:: query type unknown!!');
     }

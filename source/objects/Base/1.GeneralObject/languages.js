@@ -69,3 +69,9 @@ GeneralObject.setTranslations('de',{
 	'External' : 'Extern'
 	}
 );
+
+GeneralObject.setTranslations('en',{
+        'External' : 'External',
+        'object.show.roles.permissions': "Show roles and permissions"
+    }
+);

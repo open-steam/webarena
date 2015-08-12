@@ -13,8 +13,9 @@
  */
 GeneralObject.draw = function(external) {
 
-    if (!this.isGraphical)
+    if (!this.isGraphical) {
         return;
+    }
 
     var rep = this.getRepresentation();
 
@@ -47,7 +48,6 @@ GeneralObject.draw = function(external) {
                 }
 
             } else {
-
                 if (external) {
                     if ($(rep).css("visibility") == "visible") {
                         /* fade out */
@@ -63,16 +63,11 @@ GeneralObject.draw = function(external) {
                 } else {
                     $(rep).css("visibility", "hidden");
                 }
-
             }
-
         }
-
-
     }
 
     this.adjustControls();
-
 }
 
 /**
@@ -100,11 +95,11 @@ GeneralObject.drawDimensions = GeneralObject.drawPosition;
  */
 GeneralObject.startNoAnimationTimer = function() {
     var self = this;
+
     this.noAnimation = window.setTimeout(function() {
         self.noAnimation = undefined;
     }, 1000);
 }
-
 
 /**
  * @deprecated still used?
@@ -113,8 +108,10 @@ GeneralObject.updateGUI = function() {
 
     //check if we are allowed to paint
 
-    if (!ObjectManager)
+    if (!ObjectManager) {
         return;
+    }
+
     if (!ObjectManager.hasObject(this)) {
         debug(this + ' not in inventory');
         return;
@@ -123,7 +120,6 @@ GeneralObject.updateGUI = function() {
     this.draw();
 
     GUI.updateGUI(this);
-
 }
 
 /**
@@ -137,8 +133,9 @@ GeneralObject.updateGUI = function() {
  */
 GeneralObject.getRepresentation = function() {
 
-    if (!this.isGraphical)
+    if (!this.isGraphical) {
         return;
+    }
 
     var rep = document.getElementById(this.getAttribute('id'));
 
@@ -150,6 +147,7 @@ GeneralObject.getRepresentation = function() {
     }
 
     rep.dataObject = this;
+
     return rep;
 }
 
@@ -215,8 +213,6 @@ GeneralObject.representationCreated = function() {
 
 }
 
-
-
 /**
  * Creates a new representation for this object
  * 
@@ -244,7 +240,6 @@ GeneralObject.createRepresentation = function() {
 
 }
 
-
 /**
  * @deprecated ? (called by all createRepresentation functions)
  */
@@ -253,7 +248,6 @@ GeneralObject.initGUI = function(rep) {
     var self = this;
 
 }
-
 
 /**
  * Adds a graphical indicator for selected objects
@@ -1729,8 +1723,6 @@ GeneralObject.dblclickHandler = function(event) {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.selectedClickHandler = function(event) {
-
-
     if (GUI.shiftKeyDown) {
         this.deselect();
     } else {
@@ -1760,7 +1752,6 @@ GeneralObject.selectedClickHandler = function(event) {
         }
 
         GUI.showActionsheet(x, y, this);
-
     }
 
 }

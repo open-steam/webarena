@@ -7,6 +7,8 @@
 
 var MONGODB_PREFIX = "acl_";
 
+var async = require('async');
+var _ = require('underscore');
 var node_acl = require('acl');
 var mongoose = require('mongoose');
 
@@ -15,7 +17,8 @@ var acl = undefined;
 
 function ACLManager(db_url) {
     var db = require('monk')(db_url);
-    this.users = db.get(MONGODB_PREFIX + 'users');
+    this._roles = db.get(MONGODB_PREFIX + 'roles');
+    this._users = db.get(MONGODB_PREFIX + 'users');
 
     mongo_connected();
 };
@@ -84,24 +87,58 @@ ACLManager.prototype.whatResources = function(role, cb) {
     acl.whatResources(role, cb);
 };
 
-// +--- The following methods are marked as private in the acl node API ----+
-
-//
-// Returns the permissions for the given resource and set of roles
-//
-ACLManager.prototype.resourcePermissions = function(roles, resource, cb) {
-    acl._resourcePermissions(roles, resource, cb);
-};
-
-// permittedResources ?
-
-// +---------------------------------------------------------------------------+
-
 // +--- The following methods are not part of the original acl API  ----+
 
 ACLManager.prototype.isUser = function(user, cb) {
-    this.users.findOne({ key: user }, function (err, user) {
+    this._users.findOne({ key: user }, function (err, user) {
         cb(err, (user != null));
+    });
+};
+
+ACLManager.prototype.rolesCollection = function(cb) {
+    this._roles.find({}, ['key'], function (err, docs) {
+        if (!err)docs = _.pluck(docs, 'key');
+
+        cb(err, docs);
+    });
+};
+
+ACLManager.prototype.allowedRolesPermissions = function(resources, cb) {
+    this.rolesCollection(function(err, roles) {
+        if(err) {
+           return cb(err, null);
+        }
+
+        var result = {};
+
+        _.each(resources, function (resource) {
+            result[resource] = [];
+        });
+
+        async.each(roles, function(role, callback) {
+            acl.whatResources(role, function(err, obj) {
+                if (err) return callback(err);
+
+                _.each(resources, function (resource) {
+
+                    if (obj[resource]) {
+                        var temp = {role: role, permissions: obj[resource]};
+                        result[resource].push(temp);
+                    }
+                });
+
+                callback(null);
+            });
+        }, function(err) {
+            if (err) return cb(err, null);
+            else {
+                result = _.omit(result, function(value, key) {
+                    return value.length == 0;
+                });
+
+                return cb(null, result);
+            }
+        });
     });
 };
 

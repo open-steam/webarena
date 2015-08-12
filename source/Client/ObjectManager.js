@@ -463,10 +463,14 @@ ObjectManager.removeLocally = function(data) {
 }
 
 ObjectManager.login = function(username, password, externalSession) {
-    if (!username)
+    if (!username) {
         username = 'guest';
-    if (!password)
+    }
+
+    if (!password) {
         password = '';
+    }
+
     Modules.SocketClient.serverCall('login', {
         'username': username,
         'password': password,
@@ -676,7 +680,6 @@ ObjectManager.getSelected = function() {
 }
 
 ObjectManager.getActionsForSelected = function() {
-
     var selectedObjects = this.getSelected();
 
     var actions = new Array();
@@ -694,15 +697,12 @@ ObjectManager.getActionsForSelected = function() {
             if ((!actionData.single || selectedObjects.length == 1) && (!actionData.visibilityFunc || actionData.visibilityFunc())) {
                 objActions.push(actionName);
             }
-
         }
 
         actions = Helper.getIntersectionOfArrays(actions, objActions);
-
     }
 
     return actions;
-
 }
 
 ObjectManager.performActionForSelected = function(actionName, clickedObject) {
@@ -751,7 +751,6 @@ ObjectManager.renumberLayers = function(noUpdate) {
     if (noUpdate === undefined) {
         GUI.updateLayers();
     }
-
 }
 
 ObjectManager.getUser = function() {
@@ -802,14 +801,12 @@ ObjectManager.reportBug = function(data, callback) {
 }
 
 ObjectManager.showAll = function() {
-
     var objects = ObjectManager.getObjects();
 
     for (var i in objects) {
         var obj = objects[i];
         obj.setAttribute("visible", true);
     }
-
 }
 
 ObjectManager.clientErrorMessage = function(data, callback) {
@@ -924,7 +921,6 @@ ObjectManager.duplicateObjects = function(objects) {
     }
 }
 
-
 // select new objects after duplication and build the links
 ObjectManager.afterDuplicate = function(newObject) {
 
@@ -1036,15 +1032,13 @@ ObjectManager.grantFullRights = function() {
 
 ObjectManager.paintingUpdate = function(data) {
 
-    if (!ObjectManager.getCurrentRoom().getAttribute("showUserPaintings"))
+    if (!ObjectManager.getCurrentRoom().getAttribute("showUserPaintings")) {
         return;
+    }
 
-    ObjectManager.getCurrentRoom().getUserPaintings(function(paintings)
-    {
-        for (var n = 0; n < paintings.length; n++)
-        {
-            if ($("#userPainting_" + paintings[n]).length == 0)
-            {
+    ObjectManager.getCurrentRoom().getUserPaintings(function(paintings) {
+        for (var n = 0; n < paintings.length; n++) {
+            if ($("#userPainting_" + paintings[n]).length == 0) {
                 var img = document.createElement("img");
 
                 img.setAttribute("id", "userPainting_" + paintings[n]);
@@ -1063,7 +1057,6 @@ ObjectManager.paintingUpdate = function(data) {
 }
 
 ObjectManager.startEtherpad = function() {
-
     if (Modules.config.collaborativeEditor) {
 
         //************************************
@@ -1071,13 +1064,11 @@ ObjectManager.startEtherpad = function() {
         //************************************
         ObjectManager.Pads = {};
 
-
         // Access token required to use Etherpad Lite's HTTP API
         ObjectManager.Pads.apikey = '634ae1cab746c3a2e5ef6bf2de903e380835edbcdde06a08948d5dde4d7389dc';
 
         // Etherpad Lite server address
         ObjectManager.Pads.server = 'http://localhost:9001';
-
 
         // Displays the pad containing the annotation for the currently
         // selected object or creates one if it doesn't exist.
@@ -1088,7 +1079,6 @@ ObjectManager.startEtherpad = function() {
                     '?showLineNumbers=false' +
                     '&showChat=false';
         }
-
 
         // Creates an annotation pad for the specified room and displays it.
         ObjectManager.Pads.createRoomPad = function(roomID) {
@@ -1101,7 +1091,6 @@ ObjectManager.startEtherpad = function() {
                     .always(this.showDefault());
         }
 
-
         // Reverts the pad panel to default state,
         // i.e., shows the current room's annotation.
         ObjectManager.Pads.showDefault = function() {
@@ -1111,7 +1100,6 @@ ObjectManager.startEtherpad = function() {
                     '&showChat=false' +
                     '&noColors=true';
         }
-
 
         // Deletes the pad associated with the specified object ID.
         ObjectManager.Pads.deletePadFor = function(id) {
@@ -1124,7 +1112,6 @@ ObjectManager.startEtherpad = function() {
                     '?apikey=' + this.apikey +
                     '&padID=' + ObjectManager.getRoomID() + id + 'content');
         }
-
 
         // Updates the specified CollText object with current contents of its content pad.
         // Also updates the linked master document if it exists.

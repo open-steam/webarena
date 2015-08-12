@@ -276,21 +276,21 @@ function initToolbarAux(types) {
             //    popover.hide();
             //};
 
-            /* add undo button */
-            var undoButton = document.createElement("img");
-            $(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
-            $(undoButton).attr("width", "24").attr("height", "24");
-            $(undoButton).attr("id", "undo_button");
-            $(undoButton).addClass("sidebar_button");
-            $(undoButton).attr("title", GUI.translate("Undo"));
-            var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
-            $(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");
-            numberOfIcons++;
-            $("#header > .header_right").append(undoButton); //add header icon
-            var clickUndo = function() { //click handler
-                Modules.Dispatcher.query("undo", {"userID": GUI.userid});
-                popover.hide();
-            };
+            ///* add undo button */
+            //var undoButton = document.createElement("img");
+            //$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
+            //$(undoButton).attr("width", "24").attr("height", "24");
+            //$(undoButton).attr("id", "undo_button");
+            //$(undoButton).addClass("sidebar_button");
+            //$(undoButton).attr("title", GUI.translate("Undo"));
+            //var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
+            //$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");
+            //numberOfIcons++;
+            //$("#header > .header_right").append(undoButton); //add header icon
+            //var clickUndo = function() { //click handler
+            //    Modules.Dispatcher.query("undo", {"userID": GUI.userid});
+            //    popover.hide();
+            //};
 
             /* add coupling button */
             if (Modules.Config.couplingMode) {
@@ -408,7 +408,7 @@ function initToolbarAux(types) {
             if (GUI.isTouchDevice) {
                 // header:
                 //$(pasteButton).bind("touchstart", clickPaste);
-                $(undoButton).bind("touchstart", clickUndo);
+                //$(undoButton).bind("touchstart", clickUndo);
 
                 $(parentButton).bind("touchstart", clickParent);
                 $(homeButton).bind("touchstart", clickHome);
@@ -417,7 +417,7 @@ function initToolbarAux(types) {
 
                 // menu:
                 //$(btnPaste.getDOM()).bind("touchstart", clickPaste);
-                $(btnUndo.getDOM()).bind("touchstart", clickUndo);
+                //$(btnUndo.getDOM()).bind("touchstart", clickUndo);
 
                 $(btnParent.getDOM()).bind("touchstart", clickParent);
                 $(btnHome.getDOM()).bind("touchstart", clickHome);
@@ -426,7 +426,7 @@ function initToolbarAux(types) {
             } else {
                 // header:
                 //$(pasteButton).bind("mousedown", clickPaste);
-                $(undoButton).bind("mousedown", clickUndo);
+                //$(undoButton).bind("mousedown", clickUndo);
 
                 $(parentButton).bind("mousedown", clickParent);
                 $(homeButton).bind("mousedown", clickHome);
@@ -435,7 +435,7 @@ function initToolbarAux(types) {
 
                 // menu:
                 //$(btnPaste.getDOM()).bind("mousedown", clickPaste);
-                $(btnUndo.getDOM()).bind("mousedown", clickUndo);
+                //$(btnUndo.getDOM()).bind("mousedown", clickUndo);
 
                 $(btnParent.getDOM()).bind("mousedown", clickParent);
                 $(btnHome.getDOM()).bind("mousedown", clickHome);
