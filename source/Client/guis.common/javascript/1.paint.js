@@ -1012,7 +1012,7 @@ GUI.editPaint = function(){
 	
 	/* add delete button */
 	var deleteButton = document.createElement("img");
-	$(deleteButton).attr("src", "../../guis.common/images/delete.png").attr("alt", "");
+	$(deleteButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
 	$(deleteButton).attr("width", "24").attr("height", "24");
 	$(deleteButton).attr("id", "delete_button");
 	$(deleteButton).addClass("sidebar_button");

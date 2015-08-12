@@ -592,7 +592,7 @@ GUI.initToolbar = function() {
     if (!Modules.Config.presentationMode && Modules.config.trash) {
 	
         var trashButton = document.createElement("img");
-        $(trashButton).attr("src", "../../guis.common/images/delete.png").attr("alt", "");
+        $(trashButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
         $(trashButton).attr("width", "24").attr("height", "24");
 
         $(trashButton).attr("id", "trash_button");
@@ -681,31 +681,55 @@ GUI.initToolbar = function() {
 
 
 /**
- * If a user enter or leave the room, a flashing icon is shown
+ * add a notification if a user entered or left the room or if an object was deleted or restored
  */
-GUI.showUserNotification = function(newUser){
+GUI.showNotification = function(add, icon){
 	
-	if(GUI.sidebar.currentElement == "chat") return;
-		
-	if(newUser){
-		$("#chat_button").attr("src", "../../guis.common/images/newUser.png").attr("alt", "");
-		$("#chat_button").attr("title", GUI.translate("A user entered this room"));
+	var button = "";
+	var IconEnter = "";
+	var IconLeft = "";
+	var TextEnter = "";
+	var TextLeft = "";
+	var title = "";
+	if(icon == "chat"){
+		if(GUI.sidebar.currentElement == "chat") return;
+		button = "chat_button";
+		IconEnter = "newUser.png";
+		IconLeft = "lostUser.png";
+		TextEnter = GUI.translate("A user entered this room");
+		TextLeft = GUI.translate("A user left this room");
+		title = GUI.translate("Chat");
+	}
+	if(icon == "trash"){
+		if(GUI.sidebar.currentElement == "trash") return;
+		button = "trash_button";
+		IconEnter = "plus.png";
+		IconLeft = "minus.png";
+		TextEnter = GUI.translate("An object was deleted");
+		TextLeft = GUI.translate("An object was restored");
+		title = GUI.translate("Trash basket");
+	}
+	
+	if(add){
+		$("#"+button).attr("src", "../../guis.common/images/"+IconEnter).attr("alt", "");
+		$("#"+button).attr("title", TextEnter);
 	}
 	else{
-		$("#chat_button").attr("src", "../../guis.common/images/lostUser.png").attr("alt", "");
-		$("#chat_button").attr("title", GUI.translate("A user left this room"));
+		$("#"+button).attr("src", "../../guis.common/images/"+IconLeft).attr("alt", "");
+		$("#"+button).attr("title", TextLeft);
 	}
 	
 	var counter = 0;
 	function blink(){
 		if(counter < 4){
 			counter++;
-			$("#chat_button").delay(200).fadeTo(500,0).delay(200).fadeTo(500,1, blink);
+			$("#"+button).delay(200).fadeTo(500,0).delay(200).fadeTo(500,1, blink);
 		}
 		else{
-			$("#chat_button").css("opacity", '');
-			$("#chat_button").attr("src", "../../guis.common/images/chat.png").attr("alt", "");
-			$("#chat_button").attr("title", GUI.translate("Chat"));
+			$("#"+button).css("opacity", '');
+			$("#"+button).attr("src", "../../guis.common/images/"+icon+".png").attr("alt", "");
+			$("#"+button).attr("title", title);
+			
 		}
 	}
 	blink();

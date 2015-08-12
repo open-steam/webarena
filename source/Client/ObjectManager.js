@@ -220,7 +220,14 @@ ObjectManager.objectUpdate = function(data) {
         object = ObjectManager.buildObject(data.type, data);
 
 		//object is restored from trash
-		if(object.getAttribute("oldRoomID") && GUI.sidebar.currentElement == "trashbasket") GUI.trashbasket.update();
+		if(object.getAttribute("oldRoomID")){
+			if(GUI.sidebar.currentElement == "trashbasket"){ 
+				GUI.trashbasket.update();
+			}
+			else{
+				GUI.showNotification(false, "trash");
+			}
+		}
 		
         if (GUI.couplingModeActive) {
             // to enable smooth dragging of objects between rooms display new objects immediately 
@@ -561,7 +568,12 @@ ObjectManager.init = function() {
 		if(object){
 			object.deleteLinks();  //delete all links which ends or starts in this object
 			ObjectManager.removeLocally(data);
-			if(GUI.sidebar.currentElement == "trashbasket") GUI.trashbasket.update();
+			if(GUI.sidebar.currentElement == "trashbasket"){
+				GUI.trashbasket.update();
+			}
+			else{
+				GUI.showNotification(true, "trash");
+			}
 		}
     });
 

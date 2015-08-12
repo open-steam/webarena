@@ -20,7 +20,7 @@ GUI.trashbasket.opened = function() {
 
 
 /**
- * updates the trashbasket content (called when opening the trashbasket or if an object was deleted)
+ * updates the trashbasket content (called when opening the trashbasket, if an object was deleted or restored)
  */
 GUI.trashbasket.update = function() {
 

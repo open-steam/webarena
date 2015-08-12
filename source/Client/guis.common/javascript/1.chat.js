@@ -75,7 +75,7 @@ GUI.chat.setUsers = function(users) {
 				showNotification = false;
 				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay muted width="0"></video></div>');
 			}
-			if(showNotification) GUI.showUserNotification(true);
+			if(showNotification) GUI.showNotification(true, "chat");
 		}
 	}
 	
@@ -83,7 +83,7 @@ GUI.chat.setUsers = function(users) {
 		if(userIds.indexOf(GUI.chat.users[i]) == -1){
 			var userid = GUI.chat.users[i];
 			
-			GUI.showUserNotification(false);
+			GUI.showNotification(false, "chat");
 			
 			$("#"+userid).parent().remove();
 			GUI.chat.users.splice(i, 1);
