@@ -51,7 +51,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 
     async.forEachOfSeries(ObjectManager.getActionsForSelected(), function (action, key, callback) {
         if (_.contains(Modules.ACLManager.notForEveryOne, action)) {
-            var resource = 'ui_dynamic_object_' + webarenaObject.id;
+            var resource = Modules.ACLManager.makeACLName(webarenaObject.id);
 
             Modules.ACLManager.isAllowed(resource, action, function (err, result) {
                 if(!err && result) {

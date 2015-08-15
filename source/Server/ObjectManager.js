@@ -724,7 +724,7 @@ ObjectManager.deleteObject = function(data, context, callback) {
     var objectID = data.objectID;
 
     var user = data.passport.user;
-    var resource = 'ui_dynamic_object_' + objectID;
+    var resource = Modules.ACLManager.makeACLName(objectID);
 
     var afterRightsCheck = function(err, hasRights) {
         if (err)

@@ -290,8 +290,24 @@ theObject.makeStructuring=function(){
 *	This may be different from actual object data
 *	as evaluations may be involved
 */
-theObject.getAttributeSet=function(){
+theObject.getAttributeSet = function() {
 	return Modules.AttributeManager.getAttributeSet(this);
+}
+
+/**
+ *	persist
+ *
+ *	call this whenever an object has changed. It is saved
+ *	through the current connector, the evaluation is called
+ *	and a message is sent to the clients
+ *
+ */
+theObject.persist = function() {
+    var data = this.get();
+    if (data) {
+        Modules.Connector.saveObjectData(this.inRoom, this.id, data, this.context, false, undefined);
+        this.updateClients();
+    }
 }
 
 /**
@@ -299,29 +315,23 @@ theObject.getAttributeSet=function(){
 *
 *	send a message to a client (identified by its socket)
 */
-theObject.updateClient=function(socket,mode){
-	if (!mode) mode='objectUpdate';
-	var object=this;
-	process.nextTick(function(){
-		var SocketServer=Modules.SocketServer;
-		SocketServer.sendToSocket(socket,mode, object.getAttributeSet());
-	});
-}
+theObject.updateClient = function(socket, mode) {
+	if (!mode) mode = 'objectUpdate';
+	var object = this.getAttributeSet();
 
-/**
-*	persist
-*
-*	call this whenever an object has changed. It is saved
-*	through the current connector, the evaluation is called
-*	and a message is sent to the clients
-*
-*/
-theObject.persist=function(){
-	var data=this.get();
-	if (data){
-		Modules.Connector.saveObjectData(this.inRoom, this.id, data, this.context, false, undefined);
-		this.updateClients();
-	} 
+	process.nextTick(function() {
+        var userId = socket.handshake.session.passport.user;
+        var resource = Modules.ACLManager.makeACLName(object.id, object.type);
+
+        Modules.ACLManager.isAllowed(userId, resource, "show", function(err, allowed) {
+           if (allowed) {
+               var SocketServer = Modules.SocketServer;
+                SocketServer.sendToSocket(socket, mode, object);
+           } else {
+               //console.info("++ updateClient:: userId: " + userId + " is not allowed to show resource: " + resource);
+           }
+        });
+	});
 }
 
 /**
@@ -330,16 +340,14 @@ theObject.persist=function(){
 *	send an upadate message to all clients which are subscribed
 *	to the object's room
 */
-theObject.updateClients=function(mode){
+theObject.updateClients = function(mode) {
+	if (!mode) mode = 'objectUpdate';
 	
-	if (!mode) mode='objectUpdate';
-	
-	var connections=Modules.UserManager.getConnectionsForRoom(this.inRoom);
+	var connections = Modules.UserManager.getConnectionsForRoom(this.inRoom);
 
-	for (var i in connections){
-		this.updateClient(connections[i].socket,mode);
+	for (var i in connections) {
+		this.updateClient(connections[i].socket, mode);
 	}
-	
 }
 
 /**
@@ -347,7 +355,7 @@ theObject.updateClients=function(mode){
 *
 *	determines, if the object has content or not
 */
-theObject.hasContent=function(){
+theObject.hasContent = function() {
 	return this.getAttribute('hasContent');
 }
 
@@ -357,11 +365,11 @@ theObject.hasContent=function(){
 *	set a new content. If the content is base64 encoded png data,
 *	it is decoded first.
 */
-theObject.setContent=function(content,callback){
+theObject.setContent = function(content, callback) {
 	
 	//console.log(content);
 	
-	if ((typeof content) != "object" && content.substr(0,22)=='data:image/png;base64,'){
+	if ((typeof content) != "object" && content.substr(0,22 )== 'data:image/png;base64,') {
 		
 		var base64Data = content.replace(/^data:image\/png;base64,/,""),
 		content = new Buffer(base64Data, 'base64');
@@ -382,7 +390,6 @@ theObject.setContent.public = true;
 theObject.setContent.neededRights = {
     write : true
 }
-
 
 theObject.copyContentFromFile=function(filename,callback) {
 
@@ -662,9 +669,7 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 			var arrList = [];
 	
 			for (var objectId in list) {
-		
 				arrList.push(objectId);
-				
 			}
 			
 			callback(arrList);

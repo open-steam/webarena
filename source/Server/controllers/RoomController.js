@@ -1,12 +1,14 @@
 /**
  * Contains room related tasks
  */
-var _ = require('lodash');
+
+var async = require('async');
+var lodash = require('lodash');
+var _ = require('underscore');
 
 var RoomController = {}
 
 var Modules = false;
-
 
 RoomController.init = function (theModules) {
     Modules = theModules;
@@ -36,7 +38,7 @@ RoomController.createRoom = function (data, context, callback) {
 
     //create callback with first parameter always null (otherwise would throw
     //error
-    var cb = _.partial(callback, null);
+    var cb = lodash.partial(callback, null);
 
     Modules.Connector.saveObjectData(roomID, roomID, obj, context, true, cb)
 
@@ -84,21 +86,43 @@ RoomController.duplicateRoom = function (data, context, callback) {
     Modules.ObjectManager.duplicateNew(requestData, context, callback);
 }
 
-
 //TODO: remove? combine with "browse" of exit object
 RoomController.listRooms = function (callback) {
     Modules.Connector.listRooms(callback)
 }
 
-//Information are sent to all clients in the same room
-RoomController.informAllInRoom = function (data, callback) {
-
+// Information are sent to all clients in the same room
+RoomController.informAllInRoom = function (data, cb) {
     var connections = Modules.UserManager.getConnectionsForRoom(data.room);
 
-    for (var i in connections) {
-        var socket = connections[i].socket;
-        Modules.SocketServer.sendToSocket(socket, 'inform', data);
-    }
+    var connectionsList = [];
+    _.each(connections, function (value, key, list) {
+        if (data.passport.user != value.socket.handshake.session.passport.user) {
+            connectionsList.push(value.socket);
+        }
+    });
+
+    async.each(connectionsList, function (socket, callback) {
+        // Inform only the clients who have permissions over the resource
+        var resourceID = data.message.selection ? data.message.selection : data.message.deselection;
+
+        var userId = socket.handshake.session.passport.user;
+        var resource = Modules.ACLManager.makeACLName(resourceID);
+
+        Modules.ACLManager.isAllowed(userId, resource, "show", function(err, allowed) {
+            if (!err && allowed) {
+                Modules.SocketServer.sendToSocket(socket, 'inform', data);
+            } else {
+               //console.info("++ informAllInRoom:: userId: " + userId + " is not allowed to show resource: " + resource);
+            }
+
+            callback(err);
+        });
+    }, function (err) {
+        if (err) console.error(err.message);
+
+        cb(null, 'OK');
+    });
 };
 
 /**

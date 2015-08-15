@@ -765,11 +765,12 @@ ObjectManager.inform = function(type, content, index) {
     var data = {};
     data.message = {};
     data.message[type] = content;
-    data.room = this.getRoomID(index);
-    data.user = this.getUser().username;
-    data.color = this.getUser().color;
+    data.room   = this.getRoomID(index);
+    data.user   = this.getUser().username;
+    data.color  = this.getUser().color;
     data.userId = this.getUser().id;
-    ObjectManager.Modules.Dispatcher.query('inform', data);
+
+    ObjectManager.Modules.Dispatcher.query('inform', data, function(result) {});
 }
 
 ObjectManager.tell = function(text) {
@@ -778,16 +779,18 @@ ObjectManager.tell = function(text) {
 
 ObjectManager.informAboutSelection = function(id) {
     // show the annotation pad for the selected object
-    if (Modules.config.collaborativeEditor)
+    if (Modules.config.collaborativeEditor) {
         ObjectManager.Pads.showPadFor(id);
+    }
 
     ObjectManager.inform('selection', id, ObjectManager.getIndexOfObject(id));
 }
 
 ObjectManager.informAboutDeselection = function(id) {
     // show room's annotation if nothing is selected
-    if (Modules.config.collaborativeEditor)
+    if (Modules.config.collaborativeEditor) {
         ObjectManager.Pads.showDefault();
+    }
 
     ObjectManager.inform('deselection', id, ObjectManager.getIndexOfObject(id));
 }

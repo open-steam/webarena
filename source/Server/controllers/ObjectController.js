@@ -45,7 +45,7 @@ ObjectController.createObject = function(data, context, callback) {
 					},
 					function(obj, roles, callback) {
 						var completeRoles = _.union(_.without(roles, 'user'), ['admin']);
-						var resource = 'ui_dynamic_object_' + obj.id;
+						var resource = AclManager.makeACLName(obj.id);
 
 						AclManager.allow(completeRoles, resource, '*', function (err) {
 							callback(err, obj);
@@ -65,7 +65,7 @@ ObjectController.createObject = function(data, context, callback) {
 }
 
 ObjectController.executeServersideAction = function (data, context, cb) {
-	var roomID = data.roomID
+	var roomID   = data.roomID
 	var objectID = data.objectID;
 
 	if (!roomID){
@@ -95,7 +95,7 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 	
 	if (!fn){
 		if(serverFunction!="setAttribute"){
-			Modules.Log.warn("Client called a nonexisting function ("+serverFunction+","+object+"). Request will be aborted.");
+			Modules.Log.warn("Client called a nonexisting function (" + serverFunction + "," + object + "). Request will be aborted.");
 		}
 		return;
 	}

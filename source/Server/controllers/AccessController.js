@@ -41,8 +41,7 @@ AccessController.prototype.query = function(data, cb) {
 }
 
 AccessController.prototype._grantFullRights = function(roles, objects, cb) {
-    var prefix = "ui_dynamic_object_";
-    var resources = _.map(objects, function(obj){ return prefix + obj; });
+    var resources = _.map(objects, function(obj) { return this.acl.makeACLName(obj); });
 
     this.acl.allow(roles, resources, "*", function(err) {
         var error = (err != null);

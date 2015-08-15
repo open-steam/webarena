@@ -146,6 +146,15 @@ ACLManager.prototype.allowedRolesPermissions = function(resources, cb) {
 
 ACLManager.prototype.logError = logError;
 
+ACLManager.prototype.makeACLName = function(id, type) {
+    var omitTypes = [ 'Room' ];
+
+    if (id == undefined || id == null) new Error("id by makeACLName function must not be null");
+
+    if ((type != null) && _.contains(omitTypes, type)) return id;
+    else return 'ui_dynamic_object_' + id;
+};
+
 function mongo_connected() {
     var mongoBackend = new node_acl.mongodbBackend( mongoose.connection.db, MONGODB_PREFIX );
 

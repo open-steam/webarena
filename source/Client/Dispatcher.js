@@ -62,7 +62,7 @@ Dispatcher.query = function(queryName, queryArguments, responseFunction) {
 
 	responseCleanupTimeout = window.setTimeout(function() {
 		responseFunction = {}; // get rid of all remaining response functions
-	},5000);
+	}, 5000);
 
 	Modules.SocketClient.sendCall(queryName, queryArguments, responseID);
 }

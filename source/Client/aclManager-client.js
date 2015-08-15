@@ -14,6 +14,10 @@ function ACLManagerClient() {
 
 };
 
+ACLManagerClient.prototype.makeACLName = function(id) {
+    return 'ui_dynamic_object_' + id;
+};
+
 // userId got in server side using the session
 ACLManagerClient.prototype.isAllowed = function(resource, permissions, cb) {
     //console.log("ACLManagerClient.isAllowed resource: " + resource);
@@ -40,7 +44,7 @@ ACLManagerClient.prototype.userRoles = function(userId, cb) {
 };
 
 ACLManagerClient.prototype.allowedRolesPermissions = function(id, cb) {
-    var resources = ["ui_dynamic_object_" + id ];
+    var resources = [this.makeACLName(id)];
 
     Modules.Dispatcher.query('acl', { type: 'allowedRolesPermissions', resources: resources }, function (data) {
         if (cb != undefined) return cb(data);
