@@ -28,7 +28,7 @@ GUI.uploadFile=function(object,message){
         var filename = $(this).val().replace("C:\\fakepath\\", "");
 		if(message.indexOf("image") > 0 || message.indexOf("Bild") > 0){
 			var filenameArray = filename.split(".");
-			var filenameType = filenameArray[filenameArray.length - 1];
+			var filenameType = filenameArray[filenameArray.length - 1].toLowerCase();
 			if(!GUI.mimeTypeIsPreviewable("image/"+filenameType)){
 				alert(GUI.translate('This filetype is not an image or is not supported.')); 
 				return;

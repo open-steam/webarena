@@ -436,6 +436,10 @@ theObject.getRecentChanges = function(data, cb){
 			var minutes = date.getMinutes();
 			var month = date.getMonth()+1;
 			
+			if(minutes < 10){
+				minutes = '0'+minutes;
+			}
+			
 			entry.date = day+'.'+month+'.'+year+', '+hours+':'+minutes;
 
 			arr.push(entry);

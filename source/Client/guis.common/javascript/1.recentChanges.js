@@ -20,7 +20,7 @@ GUI.recentChanges.addChange = function(room, change) {
 		'<div class="recent_change_other">'+
 		'<span style="color:  #000000">'+change.user+' ('+change.date+')</span>'+
 		action+
-		'<span style="color:  #000000; font-weight: normal; font-size: 10px">'+change.objectID+'</span>'+
+		'<span style="color:  #000000; font-weight: normal; font-size: 9px">'+change.objectID+'</span>'+
 		'</div>'
 	);
 }
