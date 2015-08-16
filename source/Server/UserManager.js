@@ -14,20 +14,26 @@
 
 "use strict";
 
+var _ = require("underscore");
+
+var enter = String.fromCharCode(10);
+
 var Modules = false;
 
 var UserManager = {};
-
-var enter = String.fromCharCode(10);
 
 UserManager.connections = {};
 
 UserManager.init = function(theModules) {
  	Modules = theModules;
 	var Dispatcher = Modules.Dispatcher;
-	Dispatcher.registerCall('login',UserManager.login);
-    Dispatcher.registerCall('enter',UserManager.enterRoom);  
-    Dispatcher.registerCall('leave',UserManager.leaveRoom);
+	Dispatcher.registerCall('login', UserManager.login);
+    Dispatcher.registerCall('enter', UserManager.enterRoom);
+    Dispatcher.registerCall('leave', UserManager.leaveRoom);
+};
+
+UserManager.getConnections = function() {
+    return UserManager.connections;
 };
 
 /**
@@ -36,6 +42,7 @@ UserManager.init = function(theModules) {
 *	in case of a new connection, a new entry is created.
 **/
 UserManager.socketConnect = function(socket) {
+    socket.deviceID = socket.handshake.session.passport ? socket.handshake.session.passport.user : undefined;
 	this.connections[socket.id] = ({'socket':socket, 'user':false, 'rooms':{'left':false, 'right':false}});
 };
 
@@ -64,12 +71,16 @@ function loggedInInfo() {
 
    	var count = 0;
    	var userInfo = '';
+
    	for (var i in connections) {
    		var data = connections[i];
    		count++;
+
    		if (count > 1) userInfo += '; ';
+
    		userInfo += data.user.username + ' in ';
    		var countRooms = 0;
+
    		for (var index in data.rooms) {
    			if (data.rooms[index]) {
    				if (countRooms > 0) userInfo += ' and ';
@@ -79,7 +90,7 @@ function loggedInInfo() {
    		}
    	}
 
-   	console.log(count + ' users: ' + userInfo);
+   	console.info(count + ' users: ' + userInfo);
 };
 
 /**
@@ -166,24 +177,24 @@ UserManager.enterRoom = function(socketOrUser, data, responseID) {
 	
 	// oldrooom is sent down to the connector, which may use it for parent creation
 	if (connection.rooms[index]) {
-		var oldRoomId=connection.rooms[index].id;
+		var oldRoomId = connection.rooms[index].id;
 	}
 	
 	if (!connection) {
 		Modules.Log.error("UserManager", "+enter", "There is no connection for this user (user: '" + userID + "')");
 		return;
 	}
+
 	var socket = connection.socket;
 	var connector = Modules.Connector;
 	var socketServer = Modules.SocketServer;
 	var user = connection.user;
 
-	//try to enter the room on the connector
-	connector.mayEnter(roomID,connection, function(err, mayEnter) {
+	// try to enter the room on the connector
+	connector.mayEnter(roomID, connection, function(err, mayEnter) {
 
-		//if the connector responds true, the client is informed about the successful entering of the room
-		//and all clients in the same rooms get new awarenessData.
-
+		// if the connector responds true, the client is informed about the successful entering of the room
+		// and all clients in the same rooms get new awarenessData.
 		if (mayEnter) {
 			
 			ObjectManager.getRoom(roomID, connection, oldRoomId, function(room) {
@@ -193,12 +204,10 @@ UserManager.enterRoom = function(socketOrUser, data, responseID) {
 				UserManager.sendAwarenessData(room.id);
 			});
 			
-			//ObjectManager.sendChatMessages(roomID,socket);
+			// ObjectManager.sendChatMessages(roomID,socket);
 			
 			Modules.Dispatcher.respond(socket, responseID, false);
-
 			Modules.EventBus.emit("room::" + roomID + "::userEntered", {username : connection.user.username});
-
 		} else {
 			socketServer.sendToSocket(socket, 'error', 'User ' + user.username + ' may not enter ' + roomID);
 			Modules.Dispatcher.respond(socket, responseID, true);
@@ -219,11 +228,11 @@ UserManager.leaveRoom = function(socket,data,responseID) {
 
 	UserManager.sendAwarenessData(roomID);
 
-	Modules.Dispatcher.respond(socket,responseID,false);
+	Modules.Dispatcher.respond(socket, responseID, false);
 };
 
 /**
-*	getArarenessData
+*	getAwarenessData
 *
 *	awarenessData is a set of information about the users in the current room.
 *	This may be extended further, when user get their own objects
@@ -297,21 +306,20 @@ UserManager.getConnectionsForRoom = function(roomID) {
 };
 
 UserManager.getConnectionBySocket = function(socket) {
-	for (var i in this.connections) {
-		var connection = this.connections[i];
-		if (connection.socket == socket) return connection;
-	}
+    var key = _.findKey(this.connections, {
+        socket : socket
+    });
 
-	return false;
+    return key ? this.connections[key] : false;
 };
 
 UserManager.getConnectionBySocketID = function(socketID) {
-	for (var i in this.connections) {
-		var connection = this.connections[i];
-		if (connection.socket.id == socketID) return connection;
-	}
+    for (var i in this.connections) {
+        var connection = this.connections[i];
+        if (connection.socket.id == socketID) return connection;
+    }
 
-	return false;
+    return false;
 };
 
 UserManager.getConnectionByUserHash = function(userHash) {

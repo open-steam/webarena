@@ -126,7 +126,6 @@ ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
  *
  */
 function buildObjectFromObjectData(objectData, roomID, type) {
-
     if (!objectData) {
         Modules.Log.error('No object data!');
     }
@@ -150,8 +149,9 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     obj.inRoom = roomID;
     obj.set('type', type);
 
-    if (!runtimeData[obj.id])
-        runtimeData[obj.id] = {}; //create runtime data for this object if there is none
+    if (!runtimeData[obj.id]) {
+        runtimeData[obj.id] = {}; // create runtime data for this object if there is none
+    }
 
     obj.runtimeData = runtimeData[obj.id];
 
@@ -202,9 +202,9 @@ ObjectManager.getObject = function(roomID, objectID, context) {
  *
  */
 ObjectManager.getObjects = function(roomID, context, callback) {
-
-    if (!context)
+    if (!context) {
         throw new Error('Missing context in ObjectManager.getObjects');
+    }
 
     var inventory = [];
 
@@ -218,9 +218,7 @@ ObjectManager.getObjects = function(roomID, context, callback) {
 
         for (var i in objectsData) {
             var objectData = objectsData[i];
-
             var object = buildObjectFromObjectData(objectData, roomID);
-
             object.context = context;
 
             inventory.push(object);
@@ -229,24 +227,18 @@ ObjectManager.getObjects = function(roomID, context, callback) {
         console.log('>>>> Synchronous return in getObjects');
 
         return inventory;
-
     } else {
-        //async.
-
+        // async.
         Modules.Connector.getInventory(roomID, context, function(objectsData) {
 
             for (var i in objectsData) {
                 var objectData = objectsData[i];
-
                 var object = buildObjectFromObjectData(objectData, roomID);
-
                 object.context = context;
-
                 inventory.push(object);
             }
 
             callback(inventory);
-
         });
     }
 }
@@ -424,8 +416,9 @@ ObjectManager.undo = function(data, context, callback) {
  **/
 ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
 
-    if (!context)
+    if (!context) {
         throw new Error('Missing context in ObjectManager.getRoom');
+    }
 
     Modules.Connector.getRoomData(roomID, context, oldRoomId, function(data) {
         var obj = buildObjectFromObjectData(data, roomID, 'Room');

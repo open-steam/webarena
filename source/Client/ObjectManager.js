@@ -87,9 +87,9 @@ ObjectManager.init = function() {
     });
 
     Modules.Dispatcher.registerCall('inform', function(data) {
-
         if (data.message.awareness !== undefined && data.message.awareness.present !== undefined) {
-            //list of users
+
+            // list of users
             var users = [];
             for (var i = 0; i < data.message.awareness.present.length; i++) {
                 var d = data.message.awareness.present[i];
@@ -112,22 +112,16 @@ ObjectManager.init = function() {
                     "identifier": data.userId,
                     "color": data.color
                 });
-
             }
-
         }
 
         if (data.message.deselection) {
-
-            if (data.userId != ObjectManager.user.id) { //do not display own selections
-
+            if (data.userId != ObjectManager.user.id) { // do not display own selections
                 GUI.userMarker.deselect({
                     "objectId": data.message.deselection,
                     "identifier": data.userId,
                 });
-
             }
-
         }
 
     });

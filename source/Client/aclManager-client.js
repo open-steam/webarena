@@ -8,7 +8,8 @@
 
 // This list contains actions that should be check for authorization
 ACLManagerClient.prototype.notForEveryOne = ['Delete',
-                                            'object.show.roles.permissions'];
+                                            'object.show.roles.permissions',
+                                            'object.coupling.action'];
 
 function ACLManagerClient() {
 

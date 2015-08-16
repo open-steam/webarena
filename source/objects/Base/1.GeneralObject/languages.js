@@ -72,6 +72,7 @@ GeneralObject.setTranslations('de',{
 
 GeneralObject.setTranslations('en',{
         'External' : 'External',
-        'object.show.roles.permissions': "Show roles and permissions"
+        'object.show.roles.permissions': "Show roles and permissions",
+		'object.coupling.action': "Couple with device(s)"
     }
 );

@@ -320,7 +320,7 @@ theObject.updateClient = function(socket, mode) {
 	var object = this.getAttributeSet();
 
 	process.nextTick(function() {
-        var userId = socket.handshake.session.passport.user;
+        var userId = socket.handshake.session.passport ? socket.handshake.session.passport.user : socket.deviceID;
         var resource = Modules.ACLManager.makeACLName(object.id, object.type);
 
         Modules.ACLManager.isAllowed(userId, resource, "show", function(err, allowed) {

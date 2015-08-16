@@ -1,50 +1,57 @@
-StatusLight.execute = function(){
+
+StatusLight.execute = function() {
     var that = this;
     var compiledTemplate = _.template($('script#proceeding-statusdialog').html());
 
-    var afterLoad = function(data){
+    var afterLoad = function(data) {
         //only first not done can be changed
-        var firstNotDoneIndex = _(data).findIndex(function(elem){
+        var firstNotDoneIndex = _(data).findIndex(function(elem) {
             return !elem.done;
         });
         var changedDate = false;
         var initialDone = data[firstNotDoneIndex].done;
         var newStatus = initialDone;
 
-        //replace timestamp with formated string
-        _(data).each(function(e){
-            if(e.startdate){
+        // replace timestamp with formated string
+        _(data).each(function(e) {
+            if (e.startdate) {
                 e.startdate = moment(e.startdate).format("DD.MM.YYYY");
             }
-            if(e.enddate){
+
+            if (e.enddate) {
                 e.enddate = moment(e.enddate).format("DD.MM.YYYY");
             }
+
             return e;
         })
+
         var content = compiledTemplate({milestones : data, editable : firstNotDoneIndex});
 
         var dialog_buttons = {
-            "Speichern" : function(){
+            "Speichern" : function() {
                 var changeEventData = {
                     milestoneIndex : firstNotDoneIndex,
                     diff : {}
                 };
 
-                //s.th. changed
-                if(changedDate || initialDone != newStatus){
-                    if(changedDate){
+                // s.th. changed
+                if (changedDate || initialDone != newStatus) {
+                    if (changedDate) {
                         changeEventData.diff.enddate = changedDate;
                     }
-                    if(initialDone != newStatus){
+
+                    if (initialDone != newStatus) {
                         changeEventData.diff.done = newStatus;
                     }
                 }
-                that.saveChanges(changeEventData, function(){
+
+                that.saveChanges(changeEventData, function() {
                     //TODO: give some visual feedback
                     that.draw();
                 })
             },
-            "Verwerfen" : function(){return false;}
+
+            "Verwerfen" : function() { return false; }
         }
 
         var dialog = GUI.dialog(
@@ -53,7 +60,7 @@ StatusLight.execute = function(){
             dialog_buttons
         );
 
-        $(dialog).find(".datepicker-trigger").change(function(){
+        $(dialog).find(".datepicker-trigger").change(function() {
             var value = this.value;
             changedDate  = moment(value, "D.M.YYYY")._d.getTime();
         });
@@ -65,7 +72,7 @@ StatusLight.execute = function(){
 //            }
 //        });
 
-        ($($(dialog).find("input[type=checkbox]")[firstNotDoneIndex])).change(function(e){
+        ($($(dialog).find("input[type=checkbox]")[firstNotDoneIndex])).change(function(e) {
             newStatus = e.target.checked ;
         });
     }

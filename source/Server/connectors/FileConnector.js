@@ -140,42 +140,38 @@ fileConnector.mayInsert=function(roomID,connection,callback) {
 *	returns all objects in a room (no actual objects, just their attributeset)
 *
 */
-fileConnector.getInventory=function(roomID,context,callback){
-
+fileConnector.getInventory = function(roomID, context, callback) {
 	var self = this;
-
-	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	this.Modules.Log.debug("Request inventory (roomID: '" + roomID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
 	
 	if (!context) throw new Error('Missing context in getInventory');
 	
-	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+ roomID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
 	
-	var filebase=this.Modules.Config.filebase;
-
-	var inventory=[];
+	var filebase = this.Modules.Config.filebase;
+	var inventory = [];
 
 	try {
-		fs.mkdirSync(filebase+'/'+roomID)
+		fs.mkdirSync(filebase + '/' + roomID)
 	} catch(e){};
 
-	var files=fs.readdirSync(filebase+'/'+roomID);
+	var files = fs.readdirSync(filebase + '/' + roomID);
+    files = files || [];
 
-    files= files || [];
+	files.forEach(function(value, index) {
+		var position = value.indexOf('.object.txt');
+		if (position == -1) return; // not an object file
+		var filename = value;
+		var objectID = filename.substr(0, position);
 
-	files.forEach(function(value,index){
-		var position=value.indexOf('.object.txt');
-		if(position == -1) return; //not an object file
-		var filename=value;
-		var objectID=filename.substr(0,position);
-
-		if (roomID==objectID) return; //leave out the room
+		if (roomID == objectID) return; // leave out the room
 
 		try {		
-			var obj=self.getObjectDataByFile(roomID,objectID);
+			var obj = self.getObjectDataByFile(roomID, objectID);
 			if (obj) inventory.push(obj);
         } catch (e) {
 			console.log(e);
-			self.Modules.Log.error("Cannot load object with id '"+objectID+"' (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
+			self.Modules.Log.error("Cannot load object with id '" + objectID + "' (roomID: '" + roomID + "', user: '" + self.Modules.Log.getUserFromContext(context) + "')");
 		}
 
 	});
@@ -187,12 +183,9 @@ fileConnector.getInventory=function(roomID,context,callback){
 		return inventory;
 	} else {
 		/* async */
-		process.nextTick(function(){callback(inventory);});
+		process.nextTick(function() { callback(inventory); } );
 	}
-	
 }
-
-
 
 /**
  *	getRoomData
@@ -205,28 +198,29 @@ fileConnector.getInventory=function(roomID,context,callback){
  * @param oldRoomId - id of the parent room
  * @returns {*}
  */
-fileConnector.getRoomData=function(roomID,context,oldRoomId,callback){
-	this.Modules.Log.debug("Get data for room (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+fileConnector.getRoomData = function(roomID, context, oldRoomId, callback) {
+	this.Modules.Log.debug("Get data for room (roomID: '" + roomID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
-	var filebase=this.Modules.Config.filebase;
-	var obj=this.getObjectDataByFile(roomID,roomID);
+	var filebase = this.Modules.Config.filebase;
+	var obj = this.getObjectDataByFile(roomID, roomID);
 	
-	if (!obj){
-		obj={};
-		obj.id=roomID;
-		obj.name=roomID;
+	if (!obj) {
+		obj = {};
+		obj.id = roomID;
+		obj.name = roomID;
+
 		if (oldRoomId) {
-			obj.parent=oldRoomId;
+			obj.parent = oldRoomId;
 		}
-		var self=this;
-		this.saveObjectData(roomID,roomID,obj,context,true,function(){
-			self.Modules.Log.debug("Created room (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"', parent:'"+oldRoomId+"')");
+
+		var self = this;
+		this.saveObjectData(roomID, roomID, obj ,context, true, function() {
+			self.Modules.Log.debug("Created room (roomID: '" + roomID + "', user: '" + self.Modules.Log.getUserFromContext(context) + "', parent:'" + oldRoomId + "')");
 		})
 		
-		return self.getRoomData(roomID,context,oldRoomId,callback);
-		
+		return self.getRoomData(roomID, context, oldRoomId, callback);
 	} else {
     	if (callback === undefined) {
 			/* sync */

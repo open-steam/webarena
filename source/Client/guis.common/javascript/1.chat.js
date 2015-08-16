@@ -19,7 +19,6 @@ GUI.chat.users = [];
  * adds components for chat and event handlers for sending chat messages
  */
 GUI.chat.init = function() {
-
 	$("#chat").append('<div id="chat_messages"></div><div id="chat_message"><textarea id="chat_message_input"></textarea></div><div id="chat_users"></div>');
 	
 	$("#chat_message_input").attr("placeholder", GUI.translate("Message"));
@@ -54,35 +53,31 @@ GUI.chat.init = function() {
  * @param {UserInfo[]} users Array of active users information
  */
 GUI.chat.setUsers = function(users) {
-	
 	var userIds = [];
 		
-	for(var j = 0; j<users.length; j++){   //new user: add in GUI.chat.users and create a representation
+	for (var j = 0; j < users.length; j++) {   //new user: add in GUI.chat.users and create a representation
 		userIds.push(users[j].id);
-		if(GUI.chat.users.indexOf(users[j].id) == -1){ 
+		if (GUI.chat.users.indexOf(users[j].id) == -1) {
 			GUI.chat.users.push(users[j].id);
 			
 			var user = users[j];
 			
-			if(user.id != ObjectManager.user.id){ // add call/video call icon
-			
+			if (user.id != ObjectManager.user.id) { // add call/video call icon
 				GUI.flashNewUserIcon(true);
 			
-				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay width="0"></video></div>');
-				if(Modules.Config.WebRTC && (navigator.mozGetUserMedia || navigator.webkitGetUserMedia)){
+				$("#chat_users").append('<div><span id=' + user.id + ' style="background-color: ' + user.color+'"></span>' + user.username + '<video id="video' + user.id + '" autoplay width="0"></video></div>');
+				if (Modules.Config.WebRTC && (navigator.mozGetUserMedia || navigator.webkitGetUserMedia)) {
 					GUI.chat.addChatIcon(user.id, true);
 					GUI.chat.addChatIcon(user.id, false);
 				}
+			} else {
+				$("#chat_users").append('<div><span id=' + user.id + ' style="background-color: ' + user.color + '"></span>' + user.username + '<video id="video' + user.id + '" autoplay muted width="0"></video></div>');
 			}
-			else{
-				$("#chat_users").append('<div><span id='+user.id+' style="background-color: '+user.color+'"></span>'+user.username+'<video id="video'+user.id+'" autoplay muted width="0"></video></div>');
-			}
-			
 		}
 	}
 	
-	for(var i = 0; i<GUI.chat.users.length; i++){ 	//user left: remove from GUI.chat.users and remove the representation
-		if(userIds.indexOf(GUI.chat.users[i]) == -1){
+	for (var i = 0; i < GUI.chat.users.length; i++) { 	//user left: remove from GUI.chat.users and remove the representation
+		if (userIds.indexOf(GUI.chat.users[i]) == -1) {
 			var userid = GUI.chat.users[i];
 			
 			GUI.flashNewUserIcon(false);
@@ -94,14 +89,11 @@ GUI.chat.setUsers = function(users) {
 	
 }
 
-
 /**
  * clears all chat messages
  */
 GUI.chat.clear = function() {
-	
 	$("#chat_messages").html('<span id="chat_messages_spacer"></span>');
-	
 }
 
 /**

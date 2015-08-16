@@ -3,7 +3,7 @@
  */
 
 function TranslationEN() {
-    GUI.setTranslations('en',{
+    GUI.setTranslations('en', {
             'info.undo.attribute' : 'An attribute change has been undone.',
             'info.undo.duplication' : 'Duplication was reversed.',
             'info.undo.delete' : 'Restore deleted object.',
@@ -17,7 +17,8 @@ function TranslationEN() {
             'tagManager.maintagdeletion.error' : 'The main tag cannot be deleted since there are files tagged with this tag',
             'tagManager.maintagcreation.error' : "An unexpected error occurred during the creation of the main tag",
             'tagManager.sectagdeletion.duplicate.error' : "",
-            'grantFullRights.button': "Grant Full Rights"
+            'grantFullRights.button': "Grant Full Rights",
+            'object.device.coupling.dialog.tittle': "Object-device coupling"
         }
     );
 };

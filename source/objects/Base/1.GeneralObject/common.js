@@ -426,7 +426,6 @@ GeneralObject.register = function(type) {
         }
 
         ObjectManager.renumberLayers();
-
     }, false);
 
     this.registerAction('to back', function() {
@@ -441,7 +440,6 @@ GeneralObject.register = function(type) {
         }
 
         ObjectManager.renumberLayers();
-
     }, false);
 
     //this.registerAction('Open destination', function(object) {
@@ -451,6 +449,13 @@ GeneralObject.register = function(type) {
     this.registerAction('object.show.roles.permissions', function() {
         var selected = ObjectManager.getSelected();
         Modules.ACLManager.allowedRolesPermissions(selected[0].getAttribute("id"));
+    }, true);
+
+    this.registerAction('object.coupling.action', function() {
+        var selectedObjects = ObjectManager.getSelected();
+        var devices = [];
+        var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
+        objectDevCoupDialog.show();
     }, true);
 }
 

@@ -51,6 +51,7 @@
 
     <script src="/aclManager-client.js"></script>
     <script src="/socketClient.js"></script>
+    <script src="/dialogs/objectDeviceCoupling-dialog.js"></script>
 
 	<script>
 	var  Modules = {
@@ -186,27 +187,16 @@
 		
 	</div>
 
-
 	<div id="login_background" style="display: none">&nbsp;</div>
 	<div id="login" style="display: none;">
-		
 		<div class="login_title" id="login_title">Webarena 1.0</div>
-		
 		<div class="login_error"></div>
-		
 		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="{{username}}" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
-		
 		<br />
-		
 		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="{{password}}" id="login_password" class="login_input" autocomplete="off" />
-		
 		<br />
-		
 		<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
-		
 	</div>
-	
-	
 	<div id="progressBar"><div class="progressBar_container"></div></div>
 
   <!-- BEGIN: Underscore Template Definition. -->
@@ -274,6 +264,11 @@
       <input class="discussion-input" placeholder=Texteingabe>
     </div>
   </script>
+  <script type="text/template" id="coupling-dialog-template">
+    <div class="">
+       hola mundo cruel
+    </div>
+</script>
   <!-- END: Underscore Template Definition. -->
 
 {{/extend}}

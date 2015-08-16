@@ -57,7 +57,7 @@ WebServer.init = function(theModules) {
 
     new AppRouter(theModules, app);
     new ACLRouter(app, theModules.ACLManager);
-    new LogginRouter(app, theModules.ACLManager);
+    new LogginRouter(app, theModules.ACLManager, theModules.UserManager);
 
     // Error handling ( most notably 'Insufficient permissions' )
     app.use(function (err, req, res, next) {

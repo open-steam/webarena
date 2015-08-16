@@ -11,8 +11,9 @@ var COOKIE_NAME = 'WADIV';
 
 var uuid     = require('node-uuid');
 var passport = require('passport');
+var _        = require('underscore');
 
-function LoginRouter(app, acl) {
+function LoginRouter(app, acl, userManager) {
 
     app.get('/register', function(req, res) {
         if (!req.cookies.WADIV) {
@@ -127,6 +128,11 @@ function LoginRouter(app, acl) {
 
         //res.redirect('/login');
         res.status(200).send("you are now logged out!");
+    });
+
+    app.get('/connectedUsers', function(req, res) {
+        var connections = userManager.getConnections();
+        res.status(200).send(_.pluck(connections, 'user'));
     });
 
     app.get('/ping', function(req, res) {

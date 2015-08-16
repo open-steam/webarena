@@ -97,7 +97,10 @@ RoomController.informAllInRoom = function (data, cb) {
 
     var connectionsList = [];
     _.each(connections, function (value, key, list) {
-        if (data.passport.user != value.socket.handshake.session.passport.user) {
+        var uID = value.socket.handshake.session.passport ? value.socket.handshake.session.passport.user :
+                                                            value.socket.deviceID;
+
+        if (data.passport.user != uID) {
             connectionsList.push(value.socket);
         }
     });
@@ -126,34 +129,31 @@ RoomController.informAllInRoom = function (data, cb) {
 };
 
 /**
- *    sendRoom
+ * sendRoom
  *
- *    sends a rooms content to a client (given by its socket)
+ * sends a rooms content to a client (given by its socket)
  * TODO: there should be no socket! We are inside of a controller
  *
  */
 RoomController.sendRoom = function (socket, roomID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
 
-    Modules.ObjectManager.getRoom(roomID, context, false, function (room) { //the room object
+    Modules.ObjectManager.getRoom(roomID, context, false, function (room) { // the room object
 
-        room.updateClient(socket);				//and send it to the client
+        room.updateClient(socket);	// and send it to the client
 
         Modules.ObjectManager.getInventory(roomID, context, function (objects) {
             for (var i in objects) {
                 var object = objects[i];
                 object.updateClient(socket, 'objectUpdate');	//the object data
+
                 if (object.hasContent()) {		//and its content if there is some
                     object.updateClient(socket, 'contentUpdate', object.hasContent(socket));
                 }
             }
-
         });
-
     });
-
-}
-
+};
 
 module.exports = RoomController;
 
