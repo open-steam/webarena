@@ -252,7 +252,7 @@
 
 .minimize-button {
   background-image: url("../images/close_grey.png");
-  float: left;
+  float: right;
 }
 
 .open-extern-button {
