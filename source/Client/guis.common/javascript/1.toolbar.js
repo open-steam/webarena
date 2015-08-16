@@ -703,8 +703,8 @@ GUI.showNotification = function(add, icon){
 	if(icon == "trash"){
 		if(GUI.sidebar.currentElement == "trash") return;
 		button = "trash_button";
-		IconEnter = "plus.png";
-		IconLeft = "minus.png";
+		IconEnter = "trashadd.png";
+		IconLeft = "trashleft.png";
 		TextEnter = GUI.translate("An object was deleted");
 		TextLeft = GUI.translate("An object was restored");
 		title = GUI.translate("Trash basket");
