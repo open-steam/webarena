@@ -31,7 +31,7 @@ GUI.recentChanges.addChange = function(room, change) {
  */
 GUI.recentChanges.opened = function() {
 
-	$("#recentChanges").find('div').remove();
+	$("#recentChanges").empty();
 	
 	$("#recentChanges").append('<div id="recent_changes"></div>');
 	
@@ -39,12 +39,14 @@ GUI.recentChanges.opened = function() {
 
 	room.serverCall("getRecentChanges", {"roomID" : room.id}, function(result){
 		
-		for(var i = 0; i<result.length; i++){
-			
-			GUI.recentChanges.addChange(room, result[i]);
-			
+		if(result.length == 0){
+			$("#recentChanges").append('<p id="emptyChangesMessage" style="margin-left: 10px"><b>'+GUI.translate("There are no recent changes")+'</b></p>');
 		}
-	
+		else{
+			for(var i = 0; i<result.length; i++){
+				GUI.recentChanges.addChange(room, result[i]);
+			}
+		}
 	});
 	
 }
