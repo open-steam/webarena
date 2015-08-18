@@ -22,14 +22,14 @@ GUI.sidebar.savedState = undefined;
  * Available sidebar pages
  */
 GUI.sidebar.elementConfig = {
-    "inspector" : {
+    "bug" : {
         order : 0
     },
-    "chat" : {
+	"chat" : {
         order : 1,
         onOpen : GUI.chat.opened
     },
-    "bug" : {
+    "inspector" : {
         order : 2
     },
     "pad" : {
