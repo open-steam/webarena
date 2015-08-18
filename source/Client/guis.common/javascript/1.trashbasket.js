@@ -24,13 +24,18 @@ GUI.trashbasket.opened = function() {
  */
 GUI.trashbasket.update = function() {
 
-	$('#jsTrashTree').remove();
+	$('#trash').empty();
 
 	var renderedTree = $("<div id='jsTrashTree' class='js-tree objectBrowserTree'></div>").jstree({
 		"json_data": {
 			"data": function(object, callback) {
 				var room = ObjectManager.getObject(ObjectManager.getRoomID());
-				room.serverCall("getDeletedObjects", callback);
+				room.serverCall("getDeletedObjects", function(result){
+					if(result[0] == undefined && $("#trash").find("#emptyTrashMessage").length == 0){
+						$("#trash").append('<p id="emptyTrashMessage" style="margin-left: 10px"><b>'+GUI.translate("The trash basket is empty. You can delete objects with the contextmenu, the Escape-Button or by dragging them into the trash basket.")+'</b></p>');
+					}
+					callback(result);
+				});
 			},
 			"ui": {
 				"select_limit": 1,
@@ -132,7 +137,8 @@ GUI.trashbasket.enter = function() {
         var object = selected[i];
 		if(object.moving){
 			$('#jsTrashTree').hide();
-			$("#trash").append('<p style="margin-left: 10px"><b>'+GUI.translate("Release the mouse button to delete")+'</b></p>');
+			$("#trash").find("#emptyTrashMessage").hide();
+			$("#trash").append('<p id="dropMessage" style="margin-left: 10px"><b>'+GUI.translate("Release the mouse button to delete")+'</b></p>');
 			break;
 		}
 	}
@@ -145,7 +151,8 @@ GUI.trashbasket.enter = function() {
  */
 GUI.trashbasket.leave = function() {
 
-	$("#trash").find("p").remove();
+	$("#trash").find("#dropMessage").remove();
+	$("#trash").find("#emptyTrashMessage").show();
 	$('#jsTrashTree').show();
-
+	
 }
