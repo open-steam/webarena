@@ -134,7 +134,11 @@ ObjectManager.init = function() {
         var onSave = function() {
             var responseEvent = 'response::askForChoice::' + data.responseID
             var choice = $(dialog).find('input:radio:checked').val();
+            var n = $("input:checked").length;
+
+            console.log(n);
             console.log(choice);
+
             Modules.Socket.emit(responseEvent, {choice: choice});
         }
         var onExit = function() {
@@ -1005,14 +1009,14 @@ ObjectManager.grantFullRights = function() {
 
     if (objects != undefined && objects.length > 0) {
 
-        var array = new Array();
+        var resources = new Array();
 
         for (var key in objects) {
             var object = objects[key];
-            array.push(object.getId());
+            resources.push(Modules.ACLManager.makeACLName(object.getId()));
         }
 
-        Modules.Dispatcher.query('acl', { type: 'grantFullRights', objects: array }, function(result) {
+        Modules.ACLManager.grantFullRights(resources, function(result) {
             if (result.err) {
                 $().toastmessage('showToast', {
                     text: GUI.translate(result.msg),

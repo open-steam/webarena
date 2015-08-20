@@ -131,8 +131,8 @@ function LoginRouter(app, acl, userManager) {
     });
 
     app.get('/connectedUsers', function(req, res) {
-        var connections = userManager.getConnections();
-        res.status(200).send(_.pluck(connections, 'user'));
+        var connections = userManager.getConnectedUsers();
+        res.status(200).send(connections);
     });
 
     app.get('/ping', function(req, res) {

@@ -52,6 +52,7 @@
     <script src="/aclManager-client.js"></script>
     <script src="/socketClient.js"></script>
     <script src="/dialogs/objectDeviceCoupling-dialog.js"></script>
+    <script src="/couplingManager-client.js"></script>
 
 	<script>
 	var  Modules = {
@@ -72,8 +73,9 @@
 
 	$(document).ready(function() {
         // DUI
-        Modules.SocketClient = new SocketClient();
-        Modules.ACLManager =   new ACLManagerClient();
+        Modules.SocketClient    = new SocketClient();
+        Modules.ACLManager      = new ACLManagerClient();
+        Modules.CouplingManager = new CouplingManager();
 
 		for (var name in Modules) {
 			var module = Modules[name];
@@ -102,6 +104,7 @@
 	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/studiolo.css" rel="Stylesheet" />
     <link type="text/css" href="/guis.common/css/userInfo.css" rel="Stylesheet" />
+    <link type="text/css" href="/guis.common/css/object-device-couplingDialog.css" rel="Stylesheet" />
 
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
@@ -265,8 +268,25 @@
     </div>
   </script>
   <script type="text/template" id="coupling-dialog-template">
-    <div class="">
-       hola mundo cruel
+    <div class="coupling-device">
+        <table>
+            <thead>
+            <tr>
+                <th><span>Select</span></th>
+                <th><span>Device Name</span></th>
+                <th><span>WADIV</span></th>
+            </tr>
+            </thead>
+            <tbody>
+            <% _(devices).each(function(device) { %>
+            <tr>
+                <td><input type="checkbox" name="devices" value="<%= device.WADIV %>" id="<%= device.WADIV %>"></td>
+                <td><%= device.username %></td>
+                <td><%= device.WADIV %></td>
+            </tr>
+            <% }); %>
+            </tbody>
+        </table>
     </div>
 </script>
   <!-- END: Underscore Template Definition. -->

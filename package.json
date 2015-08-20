@@ -9,6 +9,7 @@
     "connect-flash": "^0.1.1",
     "connect-mobile-detection": "0.0.5",
     "connect-mongo": "^0.8.1",
+    "cookie": "^0.2.0",
     "eventemitter2": "~0.4.13",
     "express": "~4.x",
     "express-session": "*",

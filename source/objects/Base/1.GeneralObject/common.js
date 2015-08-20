@@ -453,9 +453,33 @@ GeneralObject.register = function(type) {
 
     this.registerAction('object.coupling.action', function() {
         var selectedObjects = ObjectManager.getSelected();
-        var devices = [];
-        var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
-        objectDevCoupDialog.show();
+        Modules.CouplingManager.getConnectedUsers(function (err, devices) {
+            var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
+            objectDevCoupDialog.show();
+            $(objectDevCoupDialog).on("objectDevCoupling::selections", function(event) {
+                var choices = event.payLoad;
+                var roles = [];
+                var resources = [];
+                $.each(choices, function(index, choice) {
+                    roles.push(choice.id);
+                });
+
+                $.each(selectedObjects, function(index, obj) {
+                    resources.push(Modules.ACLManager.makeACLName(obj.id));
+                });
+
+                Modules.ACLManager.allow(roles, resources, "couple", function(result) {
+                    if (result) {
+                        $().toastmessage('showToast', {
+                            text: GUI.translate("Couple succeed"),
+                            sticky: false,
+                            position: 'top-left',
+                            type    : 'success'
+                        });
+                    }
+                });
+            });
+        });
     }, true);
 }
 

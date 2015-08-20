@@ -32,8 +32,8 @@ UserManager.init = function(theModules) {
     Dispatcher.registerCall('leave', UserManager.leaveRoom);
 };
 
-UserManager.getConnections = function() {
-    return UserManager.connections;
+UserManager.getConnectedUsers = function() {
+    return _.pluck(UserManager.connections, 'user');
 };
 
 /**
@@ -42,7 +42,6 @@ UserManager.getConnections = function() {
 *	in case of a new connection, a new entry is created.
 **/
 UserManager.socketConnect = function(socket) {
-    socket.deviceID = socket.handshake.session.passport ? socket.handshake.session.passport.user : undefined;
 	this.connections[socket.id] = ({'socket':socket, 'user':false, 'rooms':{'left':false, 'right':false}});
 };
 
@@ -143,6 +142,7 @@ UserManager.login = function(socketOrUser, data) {
 			connection.user.color = userColor;
 			connection.user.externalSession = data.externalSession;
 			connection.user.id = socket.id;
+            connection.user.WADIV = socket.deviceID;
 		
 			connection.user.home = data.home;
 			connection.user.hash = '___' + require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");

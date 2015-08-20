@@ -10,6 +10,7 @@
 var SocketServer = {};
 var Modules = false;
 var uuid = require('node-uuid');
+var cookie = require('cookie');
 var io;
 
 SocketServer.init = function (theModules) {
@@ -22,6 +23,16 @@ SocketServer.init = function (theModules) {
     io.use(ios(Modules.WebServer.session)); // session support
 
 	io.sockets.on('connection', function (socket) {
+
+		// check if there's a cookie header
+		if (socket.handshake.headers.cookie) {
+			// if there is, parse the cookie
+			var cookiesRaw = cookie.parse(socket.handshake.headers.cookie);
+			var cookies = JSON.parse(cookiesRaw.WADIV.replace("j:", ""));
+
+			socket.deviceID = cookies.WADIV;
+		}
+
 		UserManager.socketConnect(socket);
 		SocketServer.sendToSocket(socket, 'welcome', 0.5);
 		
@@ -34,6 +45,11 @@ SocketServer.init = function (theModules) {
 
 			// add user info to the data payload (take it from session)
 			data.data.passport = socket.handshake.session.passport;
+
+			// make sure everything is fine
+			if (!socket.handshake.session.passport) {
+				data.data.passport = { user : socket.deviceID };
+			}
 
 			Dispatcher.call(socket, data);
 		});

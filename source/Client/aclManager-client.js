@@ -19,6 +19,21 @@ ACLManagerClient.prototype.makeACLName = function(id) {
     return 'ui_dynamic_object_' + id;
 };
 
+ACLManagerClient.prototype.allow = function(roles, resources, permissions, cb) {
+    Modules.Dispatcher.query('acl', { type: 'allow',
+                                      roles: roles,
+                                      resources: resources,
+                                      permissions: permissions }, function(result) {
+        cb(result);
+    });
+};
+
+ACLManagerClient.prototype.grantFullRights = function(resources, cb) {
+    Modules.Dispatcher.query('acl', { type: 'grantFullRights', resources: resources }, function(result) {
+        cb(result);
+    });
+};
+
 // userId got in server side using the session
 ACLManagerClient.prototype.isAllowed = function(resource, permissions, cb) {
     //console.log("ACLManagerClient.isAllowed resource: " + resource);
@@ -53,18 +68,20 @@ ACLManagerClient.prototype.allowedRolesPermissions = function(id, cb) {
         var buttons = {};
         var content = '<div id="allowedRolesPermissions_group">';
 
-        _.each(data, function (value, key, list) {
+        _.each(data, function (value, key) {
             content += '<div id="' + key + '_resource">';
             content += '<p>';
-            _.each(value, function (value2, key2, list2) {
+            _.each(value, function (value2) {
                 content += '<p>';
                 content += '<span><b>Role:</b> ' +  value2.role + '</span>';
                 content += '<br>';
                 content += '<span><b>Permissions:</b> [';
 
-                _.each(value2.permissions, function (element, index, list3) {
+                _.each(value2.permissions, function (element, index) {
                     content += element;
-                    if (value2.permissions.length < (index + 1))  content += ',';
+                    if ((index + 1) < value2.permissions.length) {
+                        content += ' , ';
+                    }
                 });
 
                 content += ']</span>';

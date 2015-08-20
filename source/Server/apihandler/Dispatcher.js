@@ -120,6 +120,10 @@ Dispatcher.registerCall('acl', function(socket, data, responseId) {
     Modules.AccessController.query(data, resultCallbackWrapper(socket, responseId));
 });
 
+Dispatcher.registerCall('getConnectedUsers', function(socket, data, responseId) {
+    Modules.CouplingManager.getConnectedUsers(resultCallbackWrapper(socket, responseId));
+});
+
 /**
  * Creates a callback function that sends the result as an info message to the client.
  *

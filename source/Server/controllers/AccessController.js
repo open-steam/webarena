@@ -27,11 +27,18 @@ AccessController.prototype.query = function(data, cb) {
             });
             break;
         case 'grantFullRights':
-            this._grantFullRights('admin', data.objects, cb);
+            this._grantFullRights('admin', data.resources, cb);
             break;
         case 'allowedRolesPermissions':
             this.acl.allowedRolesPermissions(data.resources, function(err, obj) {
                 cb(err, obj);
+            });
+            break;
+        case 'allow':
+            this.acl.allow(data.roles, data.resources, data.permissions, function(err) {
+                var result = err ? false : true;
+
+                cb(err, result);
             });
             break;
         default:
@@ -40,9 +47,7 @@ AccessController.prototype.query = function(data, cb) {
 
 }
 
-AccessController.prototype._grantFullRights = function(roles, objects, cb) {
-    var resources = _.map(objects, function(obj) { return this.acl.makeACLName(obj); });
-
+AccessController.prototype._grantFullRights = function(roles, resources, cb) {
     this.acl.allow(roles, resources, "*", function(err) {
         var error = (err != null);
         var msg = (error) ? ("" + err) : "";

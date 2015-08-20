@@ -1,0 +1,9 @@
+
+coupling-device.table, th, tr {
+    border: 1px solid black;
+}
+
+th {
+    background-color: cornflowerblue;
+    color: white;
+}

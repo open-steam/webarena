@@ -7,11 +7,27 @@
 "use strict";
 
 function ObjectDeviceCouplingDialog(objects, devices) {
-    this.devices = devices;
+    this.devices = _.filter(devices, function(dev){ return _.isObject(dev); });
     this.objects = objects;
     this.compiledTemplate = _.template($('script#coupling-dialog-template').html());
-    this.buttons = {};
     this.dialog = null;
+
+    var that = this;
+    var onSave = function() {
+        var choices = $(that.dialog).find('input:checkbox:checked');
+        var event = jQuery.Event("objectDevCoupling::selections");
+        event.payLoad = choices;
+        $(that).trigger(event);
+    };
+
+    var onExit = function() {
+        return false;
+    };
+
+    this.buttons = {
+        "Couple": onSave,
+        "Cancel": onExit
+    };
 
     this.content = this.compiledTemplate({ devices : this.devices });
 };

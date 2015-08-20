@@ -117,6 +117,7 @@ Modules.Helper 			= require('./Server/Helper.js');
 Modules.EventBus 		= require("./Server/EventBus.js");
 Modules.BuildTool 		= require('./Server/BuildTool.js');
 var aclManager          = require('./Server/aclManager.js');
+var couplingManager     = require('./Server/couplingManager.js');
 
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
@@ -145,6 +146,7 @@ db.once('open', function (callback) {
 
     Modules.ACLManager 		 = new aclManager(mongoDBConfig.getURI());
     Modules.AccessController = new accessController(Modules.ACLManager);
+    Modules.CouplingManager  = new couplingManager(Modules.UserManager);
 
     // Initialize all Modules if there is a init-function
     for (var name in Modules) {
