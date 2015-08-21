@@ -196,39 +196,38 @@ var saveDelays={};
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
-	if (attribute=='position'){
-		this.setAttribute(object,'x',value.x,forced);
-		this.setAttribute(object,'y',value.y,forced);
+AttributeManager.setAttribute = function(object, attribute, value, forced, noevaluation) {
+	if (attribute == 'position') {
+		this.setAttribute(object, 'x', value.x, forced);
+		this.setAttribute(object, 'y', value.y, forced);
 		return true;
 	} 	
 	var that = this;
 	
-	if (object.ObjectManager.isServer && !noevaluation){	
-		
-		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
+	if (object.ObjectManager.isServer && !noevaluation) {
+		if (attribute == 'x' || attribute == 'y' || attribute == 'width' || attribute == 'height') {
+			object.evaluatePosition(attribute, value, object.getAttribute(attribute));
 		}
 	}	
 	
 	// do nothing, if value has not changed
-	if (object.get(attribute)===value) return false;
+	if (object.get(attribute) === value) return false;
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
 	// specified value
-	var setter=false;
+	var setter = false;
 	
-	if(this.attributes[attribute]){
-		setter=this.attributes[attribute].setter;
+	if (this.attributes[attribute]) {
+		setter = this.attributes[attribute].setter;
 	} else {
-		setter=function(object,value){object.set(attribute,value);};
+		setter = function(object, value){ object.set(attribute,value); };
 	}
 	
 	// check if the attribute is read only
 	if (this.attributes[attribute] && this.attributes[attribute].readonly) {
-		console.log('Attribute '+attribute+' is read only for '+this.proto);
-		if(attribute=='id'){
+		console.log('Attribute ' + attribute + ' is read only for ' + this.proto);
+		if (attribute == 'id') {
 			console.log('TRIED TO SET ID');
 			console.trace();
 		}
@@ -236,40 +235,35 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	}
 	
 	// call the setter function
-	setter(object,value);
+	setter(object, value);
 	
 	// persist the results
-	
-	if (object.ObjectManager.isServer){
+	if (object.ObjectManager.isServer) {
 		object.persist();
 	} else {
-
-		var identifier=object.id+'#'+attribute;
+		var identifier = object.id + '#' + attribute;
 		
-		if (saveDelays[identifier]){
+		if (saveDelays[identifier]) {
 			window.clearTimeout(saveDelays[identifier]);
 			delete(saveDelays[identifier]);
 		}
 
-		if (window.transactionTimer){
+		if (window.transactionTimer) {
 			window.clearTimeout(window.transactionTimer);
 		}
 
-		
-		if(! this.transactionId){
+		if (!this.transactionId) {
 			that.transactionId = new Date().getTime();
 		} else {
-			window.transactionTimer = window.setTimeout(function(){
-				//calculate new transactionId
-		        //TODO: isn't safe - concurrent users may result in same timestamp
+			window.transactionTimer = window.setTimeout(function() {
+				// calculate new transactionId
+		        // TODO: isn't safe - concurrent users may result in same timestamp
 				that.transactionId = new Date().getTime();
 			}, this.transactionTimeout);
 		}
-		
 
-
-		//this timer is the delay in which changes on the same object are discarded
-		var theTimer=200;
+		// this timer is the delay in which changes on the same object are discarded
+		var theTimer = 200;
 		
 		if (forced) {
             object.serverCall('setAttribute', attribute, value, false, {
@@ -277,7 +271,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
             	'userId' : GUI.userid
             })
 		} else {
-			saveDelays[identifier]=window.setTimeout(function(){
+			saveDelays[identifier]= window.setTimeout(function() {
                 object.serverCall('setAttribute', attribute, value, false, {
                 	'transactionId': that.transactionId,
                 	'userId' : GUI.userid
@@ -287,7 +281,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		
 	}
 	
-	if (object.ObjectManager.attributeChanged) object.ObjectManager.attributeChanged(object,attribute,this.getAttribute(object, attribute),true);
+	if (object.ObjectManager.attributeChanged) object.ObjectManager.attributeChanged(object,attribute, this.getAttribute(object, attribute), true);
 	
 	return true;
 }

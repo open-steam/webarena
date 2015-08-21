@@ -5,11 +5,9 @@
 *
 */
 
-
 "use strict";
 
-
-var Log={};
+var Log = {};
 var Modules = false;
 
 Log.colors = {
@@ -22,71 +20,62 @@ Log.colors = {
 
 Log.linebreak = '\n';
 
-
-Log.init=function(theModules){
-	Modules=theModules;
+Log.init = function(theModules) {
+	Modules = theModules;
 }
 
-Log.getTime=function() {
+Log.getTime = function() {
 	var date = new Date();
 	return date.toLocaleString();
 }
 
-Log.getLogString=function(message,color) {
-	return color+""+Log.getTime()+"   "+message+""+Log.colors.reset+"\n";
+Log.getLogString = function(message, color) {
+	return color + "" + Log.getTime() + "   " + message + "" + Log.colors.reset + "\n";
 }
 
-Log.info=function(message) {
+Log.info = function(message) {
 	if (!Modules.Config.logLevels.info) return;
 	
 	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
+	var on = "\n" + lines[2].replace(/\n/g, '');
 	
-	var on = "\n"+lines[2].replace(/\n/g, '');
-	
-	console.log(Log.getLogString(message+on,Log.colors.info));
-	
+	console.log(Log.getLogString(message + on, Log.colors.info));
 }
 
-Log.error=function(message) {
-
+Log.error = function(message) {
 	if (message.stack === undefined) {
-		//Log.error was directly called --> create real error (to get stack)
+		// Log.error was directly called --> create real error (to get stack)
 		throw new Error(message);
 	}
 
 	var msg = message.stack;
 	
-	//var lines = msg.match(/^.*((\r\n|\n|\r)|$)/gm);
-	//lines.splice(1,1);
-	//msg = lines.join("");
+	// var lines = msg.match(/^.*((\r\n|\n|\r)|$)/gm);
+	// lines.splice(1,1);
+	// msg = lines.join("");
 
-	console.error(Log.getLogString(msg,Log.colors.error));
-
+	console.error(Log.getLogString(msg, Log.colors.error));
 }
 
-Log.warn=function(message) {
+Log.warn = function(message) {
 	if (!Modules.Config.logLevels.warn) return;
 	
 	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
+	var on = "\n" + lines[2].replace(/\n/g, '');
 	
-	var on = "\n"+lines[2].replace(/\n/g, '');
-	
-	console.log(Log.getLogString(message+on,Log.colors.warn));
-	
+	console.log(Log.getLogString(message + on, Log.colors.warn));
 }
 
-Log.debug=function(message) {
+Log.debug = function(message) {
 	if (!Modules.Config.logLevels.debug) return;
 	
 	var lines = new Error().stack.match(/^.*((\r\n|\n|\r)|$)/gm);
+	var on = "\n" + lines[2].replace(/\n/g, '');
 	
-	var on = "\n"+lines[2].replace(/\n/g, '');
-	
-	console.log(Log.getLogString(message+on,Log.colors.debug));
-	
+	console.log(Log.getLogString(message + on, Log.colors.debug));
 }
 
-Log.getUserFromContext=function(context) {
+Log.getUserFromContext = function(context) {
 	if (context === true) {
  		return "root";
 	} else {
@@ -94,5 +83,4 @@ Log.getUserFromContext=function(context) {
 	}
 }
 
-
-module.exports=Log;
+module.exports = Log;

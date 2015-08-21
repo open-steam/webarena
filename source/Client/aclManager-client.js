@@ -19,11 +19,16 @@ ACLManagerClient.prototype.makeACLName = function(id) {
     return 'ui_dynamic_object_' + id;
 };
 
-ACLManagerClient.prototype.allow = function(roles, resources, permissions, cb) {
+ACLManagerClient.prototype.allow = function(roles, resources, permissions, extras, cb) {
+    if (_.isFunction(extras) && !cb) {
+        cb = extras;
+    }
+
     Modules.Dispatcher.query('acl', { type: 'allow',
                                       roles: roles,
                                       resources: resources,
-                                      permissions: permissions }, function(result) {
+                                      permissions: permissions,
+                                      extras: extras }, function(result) {
         cb(result);
     });
 };
@@ -60,7 +65,7 @@ ACLManagerClient.prototype.userRoles = function(userId, cb) {
 };
 
 ACLManagerClient.prototype.allowedRolesPermissions = function(id, cb) {
-    var resources = [this.makeACLName(id)];
+    var resources = [ this.makeACLName(id)];
 
     Modules.Dispatcher.query('acl', { type: 'allowedRolesPermissions', resources: resources }, function (data) {
         if (cb != undefined) return cb(data);
@@ -73,7 +78,7 @@ ACLManagerClient.prototype.allowedRolesPermissions = function(id, cb) {
             content += '<p>';
             _.each(value, function (value2) {
                 content += '<p>';
-                content += '<span><b>Role:</b> ' +  value2.role + '</span>';
+                content += '<span><b>Role:</b> ' + value2.role + '</span>';
                 content += '<br>';
                 content += '<span><b>Permissions:</b> [';
 

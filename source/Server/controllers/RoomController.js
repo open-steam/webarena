@@ -96,7 +96,7 @@ RoomController.informAllInRoom = function (data, cb) {
     var connections = Modules.UserManager.getConnectionsForRoom(data.room);
 
     var connectionsList = [];
-    _.each(connections, function (value, key, list) {
+    _.each(connections, function (value) {
         var uID = value.socket.handshake.session.passport ? value.socket.handshake.session.passport.user :
                                                             value.socket.deviceID;
 
@@ -111,12 +111,23 @@ RoomController.informAllInRoom = function (data, cb) {
 
         var userId = socket.handshake.session.passport.user;
         var resource = Modules.ACLManager.makeACLName(resourceID);
+        var permissions = ['show', 'couple'];
 
-        Modules.ACLManager.isAllowed(userId, resource, "show", function(err, allowed) {
+        Modules.ACLManager.isAllowed2(userId, resource, permissions, function(err, allowed) {
+            var SocketServer = Modules.SocketServer;
+
             if (!err && allowed) {
-                Modules.SocketServer.sendToSocket(socket, 'inform', data);
+                SocketServer.sendToSocket(socket, 'inform', data);
             } else {
-               //console.info("++ informAllInRoom:: userId: " + userId + " is not allowed to show resource: " + resource);
+                if (err) console.warn("++ informAllInRoom:: Error: " + err);
+                else {
+                    // We always inform about deselection
+                    if (data.message.deselection) SocketServer.sendToSocket(socket, 'inform', data);
+                    else {
+                        console.info("++ informAllInRoom:: userId: " + userId + " is not allowed to show resource: " + resource);
+                        //console.info(data);
+                    }
+                }
             }
 
             callback(err);

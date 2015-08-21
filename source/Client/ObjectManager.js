@@ -70,7 +70,13 @@ ObjectManager.init = function() {
     })
 
     Modules.Dispatcher.registerCall('objectDelete', function(data) {
-        ObjectManager.getObject(data.id).deleteLinks();  //delete all links which ends or starts in this object
+        // deselect first
+        GUI.userMarker.deselect({
+            "objectId": data.id,
+            "identifier": data.userId,
+        });
+
+        ObjectManager.getObject(data.id).deleteLinks();  // delete all links which ends or starts in this object
         ObjectManager.removeLocally(data);
     });
 
@@ -117,6 +123,7 @@ ObjectManager.init = function() {
 
         if (data.message.deselection) {
             if (data.userId != ObjectManager.user.id) { // do not display own selections
+
                 GUI.userMarker.deselect({
                     "objectId": data.message.deselection,
                     "identifier": data.userId,
@@ -127,12 +134,11 @@ ObjectManager.init = function() {
     });
 
     Modules.Dispatcher.registerCall('askForChoice', function(data) {
-
         var dialogTitle = data.title;
         var choices = data.choices;
 
         var onSave = function() {
-            var responseEvent = 'response::askForChoice::' + data.responseID
+            var responseEvent = 'response::askForChoice::' + data.responseID;
             var choice = $(dialog).find('input:radio:checked').val();
             var n = $("input:checked").length;
 
@@ -141,6 +147,7 @@ ObjectManager.init = function() {
 
             Modules.Socket.emit(responseEvent, {choice: choice});
         }
+
         var onExit = function() {
             return false;
         };
@@ -174,12 +181,10 @@ ObjectManager.getTypes = function() {
 ObjectManager.getPrototype = function(objType) {
     var prototypes = this.prototypes;
 
-    if (prototypes[objType])
-        return prototypes[objType];
-    if (prototypes['UnknownObject'])
-        return prototypes['UnknownObject'];
-    if (prototypes['GeneralObject'])
-        return prototypes['GeneralObject'];
+    if (prototypes[objType]) return prototypes[objType];
+    if (prototypes['UnknownObject']) return prototypes['UnknownObject'];
+    if (prototypes['GeneralObject']) return prototypes['GeneralObject'];
+
     return;
 }
 
@@ -196,6 +201,7 @@ ObjectManager.getIndexOfObject = function(objectID) {
             return index;
         }
     }
+
     return false;
 }
 
@@ -215,9 +221,7 @@ ObjectManager.getObject = function(objectID) {
 }
 
 ObjectManager.buildObject = function(type, attributes) {
-
-    if (!type)
-        console.trace();
+    if (!type) console.trace();
 
     var proto = this.getPrototype(type);
     var object = Object.create(proto);
@@ -265,6 +269,7 @@ ObjectManager.getObjects = function(index) {
 
     return this.objects[index];
 }
+
 ObjectManager.getInventory = ObjectManager.getObjects;
 
 /**
@@ -444,7 +449,7 @@ ObjectManager.removeLocally = function(data) {
 
     this.onObjectRemove(object);
 
-    //remove representation
+    // remove representation
     if (object.removeRepresentation) {
         object.removeRepresentation();
     }
@@ -518,8 +523,9 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
 
     this.executeRoomChangeCallbacks();
 
-    if (!index)
+    if (!index) {
         var index = 'left';
+    }
 
     // in coupling mode: do not load room if it is already displayed
     var proceed = true;
@@ -761,12 +767,13 @@ ObjectManager.serverMemoryInfo = function() {
 
 ObjectManager.inform = function(type, content, index) {
     var data = {};
-    data.message = {};
-    data.message[type] = content;
-    data.room   = this.getRoomID(index);
-    data.user   = this.getUser().username;
-    data.color  = this.getUser().color;
-    data.userId = this.getUser().id;
+
+    data.message        = {};
+    data.message[type]  = content;
+    data.room           = this.getRoomID(index);
+    data.user           = this.getUser().username;
+    data.color          = this.getUser().color;
+    data.userId         = this.getUser().id;
 
     ObjectManager.Modules.Dispatcher.query('inform', data, function(result) {});
 }

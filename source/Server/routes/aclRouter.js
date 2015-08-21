@@ -17,8 +17,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/makeMeAdmin', ensureAuthenticated, function(req, res) {
         acl.addUserRoles(req.cookies.WADIV.WADIV, 'admin', function(err) {
             if(err) {
-                console.warn("ERROR!! by makeMeAdmin function" + err);
-                return res.status(500).send("ERROR!! by makeMeAdmin function" + err);
+                console.warn("ERROR!! by makeMeAdmin function: " + err);
+                return res.status(500).send("ERROR!! by makeMeAdmin function: " + err);
             }
 
             return res.status(200).send("now you are an Admin");
@@ -29,8 +29,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/addUserRoles/:userId/:roles', function(req, res) {
         acl.addUserRoles(req.params.userId, req.params.roles, function(err) {
             if(err) {
-                console.warn("ERROR!! by addUserRoles function" + err);
-                return res.status(500).send("ERROR!! by addUserRoles function" + err);
+                console.warn("ERROR!! by addUserRoles function: " + err);
+                return res.status(500).send("ERROR!! by addUserRoles function: " + err);
             }
 
             return res.status(200).send("role(s) added");
@@ -43,8 +43,8 @@ function ACLRouter(app, acl) {
 
         acl.removeUserRoles(user, req.params.roles, function(err) {
             if(err) {
-                console.warn("ERROR!! by removeUserRoles function" + err);
-                return res.status(500).send("ERROR!! by removeUserRoles function" + err);
+                console.warn("ERROR!! by removeUserRoles function: " + err);
+                return res.status(500).send("ERROR!! by removeUserRoles function: " + err);
             }
 
             return res.status(200).send("role(s): " + req.params.roles + " removed");
@@ -55,8 +55,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/removeRole/:role', function(req, res) {
         acl.removeRole(req.params.role, function(err) {
             if(err) {
-                console.warn("ERROR!! by removeRole function" + err);
-                return res.status(500).send("ERROR!! by removeRole function" + err);
+                console.warn("ERROR!! by removeRole function: " + err);
+                return res.status(500).send("ERROR!! by removeRole function: " + err);
             }
 
             return res.status(200).send("role removed");
@@ -67,8 +67,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/hasRole/:userId/:rolename', function(req, res) {
         acl.hasRole(req.params.userId, req.params.rolename, function(err, hasRole) {
             if(err) {
-                console.warn("ERROR!! by hasRole function" + err);
-                return res.status(500).send("ERROR!! by hasRole function" + err);
+                console.warn("ERROR!! by hasRole function: " + err);
+                return res.status(500).send("ERROR!! by hasRole function: " + err);
             }
 
             return res.status(200).send(hasRole);
@@ -83,8 +83,8 @@ function ACLRouter(app, acl) {
 
         acl.areAnyRolesAllowed(roles, resource, permissions, function(err, allowed) {
             if(err) {
-                console.warn("ERROR!! by areAnyRolesAllowed function" + err);
-                return res.status(500).send("ERROR!! by areAnyRolesAllowed function" + err);
+                console.warn("ERROR!! by areAnyRolesAllowed function: " + err);
+                return res.status(500).send("ERROR!! by areAnyRolesAllowed function: " + err);
             }
 
             return res.status(200).send(allowed);
@@ -95,8 +95,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/roleUsers/:rolename', function(req, res) {
         acl.roleUsers(req.params.rolename, function(err, users) {
             if(err) {
-                console.warn("ERROR!! by roleUsers function" + err);
-                return res.status(500).send("ERROR!! by roleUsers function" + err);
+                console.warn("ERROR!! by roleUsers function: " + err);
+                return res.status(500).send("ERROR!! by roleUsers function: " + err);
             }
 
             return res.status(200).send(users);
@@ -109,8 +109,22 @@ function ACLRouter(app, acl) {
 
         acl.userRoles(user, function(err, roles) {
             if(err) {
-                console.warn("ERROR!! by userRoles function" + err);
-                return res.status(500).send("ERROR!! by userRoles function" + err);
+                console.warn("ERROR!! by userRoles function: " + err);
+                return res.status(500).send("ERROR!! by userRoles function: " + err);
+            }
+
+            return res.status(200).send(roles);
+        });
+    });
+
+    // Return the roles of a user
+    acl_router.get('/whatIsMyRole', ensureAuthenticated, function(req, res) {
+        var user = req.cookies.WADIV.WADIV;
+
+        acl.userRoles(user, function(err, roles) {
+            if(err) {
+                console.warn("ERROR!! by whatIsMyRole function: " + err);
+                return res.status(500).send("ERROR!! by whatIsMyRole function: " + err);
             }
 
             return res.status(200).send(roles);
@@ -121,8 +135,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/whatResources/:role', function(req, res) {
         acl.whatResources(req.params.role, function(err, resources) {
             if(err) {
-                console.warn("ERROR!! by whatResources function" + err);
-                return res.status(500).send("ERROR!! by whatResources function" + err);
+                console.warn("ERROR!! by whatResources function: " + err);
+                return res.status(500).send("ERROR!! by whatResources function: " + err);
             }
 
             return res.status(200).send(resources);
@@ -133,8 +147,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/removeResource/:resource', function(req, res) {
         acl.removeResource(req.params.resource, function(err) {
             if(err) {
-                console.warn("ERROR!! by removeResource function" + err);
-                return res.status(500).send("ERROR!! by removeResource function" + err);
+                console.warn("ERROR!! by removeResource function: " + err);
+                return res.status(500).send("ERROR!! by removeResource function: " + err);
             }
 
             return res.status(200).send("resource removed");
@@ -145,8 +159,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/resourcePermissions/:roles/:resource', function(req, res) {
         acl.resourcePermissions(req.params.roles, req.params.resource, function(resource_Permissions) {
             if(err) {
-                console.warn("ERROR!! by resourcePermissions function" + err);
-                return res.status(500).send("ERROR!! by resourcePermissions function" + err);
+                console.warn("ERROR!! by resourcePermissions function: " + err);
+                return res.status(500).send("ERROR!! by resourcePermissions function: " + err);
             }
 
             return res.status(200).send(resource_Permissions);
@@ -161,11 +175,44 @@ function ACLRouter(app, acl) {
 
         acl.allow(roles, resources, permissions, function(err) {
             if(err) {
-                console.warn("ERROR!! by allow function" + err);
-                return res.status(500).send("ERROR!! by allow function" + err);
+                console.warn("ERROR!! by allow function: " + err);
+                return res.status(500).send("ERROR!! by allow function: " + err);
             }
 
             return res.status(200).send("allowed");
+        });
+    });
+
+    // Checks if the given user is allowed to access the resource for the given permissions
+    // (NOTE: it must fulfill all the permissions).
+    acl_router.get('/isAllowed/:resource/:permissions/:userId?', function(req, res) {
+        var userId      = req.params.userId ? req.params.userId : req.cookies.WADIV.WADIV;
+        var resource    = req.params.resource;
+        var permissions = req.params.permissions;
+
+        acl.isAllowed(userId, resource, permissions, function(err, allowed) {
+            if(err) {
+                console.warn("ERROR!! by isAllowed function: " + err);
+                return res.status(500).send("ERROR!! by isAllowed function: " + err);
+            }
+
+            return res.status(200).send(allowed);
+        });
+    });
+
+    // Like isAllowed but these method return true if any permission ist fulfill
+    acl_router.get('/isAllowed2/:resource/:permissions/:userId?', function(req, res) {
+        var userId      = req.params.userId ? req.params.userId : req.cookies.WADIV.WADIV;
+        var resource    = req.params.resource;
+        var permissions = req.params.permissions;
+
+        acl.isAllowed2(userId, resource, permissions, function(err, allowed) {
+            if(err) {
+                console.warn("ERROR!! by isAllowed2 function: " + err);
+                return res.status(500).send("ERROR!! by isAllowed2 function: " + err);
+            }
+
+            return res.status(200).send(allowed);
         });
     });
 
@@ -176,8 +223,8 @@ function ACLRouter(app, acl) {
 
         acl.allowedPermissions(user, resources, function(err, obj) {
             if(err) {
-                console.warn("ERROR!! by allowedPermissions function" + err);
-                return res.status(500).send("ERROR!! by allowedPermissions function" + err);
+                console.warn("ERROR!! by allowedPermissions function: " + err);
+                return res.status(500).send("ERROR!! by allowedPermissions function: " + err);
             }
 
             return res.status(200).send(obj);
@@ -187,8 +234,8 @@ function ACLRouter(app, acl) {
     acl_router.get('/rolesCollection', function(req, res) {
         acl.rolesCollection(function(err, roles) {
             if(err) {
-                console.warn("ERROR!! by rolesCollection function" + err);
-                return res.status(500).send("ERROR!! by rolesCollection function" + err);
+                console.warn("ERROR!! by rolesCollection function: " + err);
+                return res.status(500).send("ERROR!! by rolesCollection function: " + err);
             }
 
             return res.status(200).send(roles);
@@ -204,8 +251,8 @@ function ACLRouter(app, acl) {
 
         acl.allowedRolesPermissions(resources, function(err, obj) {
             if(err) {
-                console.warn("ERROR!! by allowedRolesPermissions function" + err);
-                return res.status(500).send("ERROR!! by allowedRolesPermissions function" + err);
+                console.warn("ERROR!! by allowedRolesPermissions function: " + err);
+                return res.status(500).send("ERROR!! by allowedRolesPermissions function: " + err);
             }
 
             return res.status(200).send(obj);
@@ -218,8 +265,8 @@ function ACLRouter(app, acl) {
 
         acl.isUser(user, function(err, result) {
             if(err) {
-                console.warn("ERROR!! by isUser function" + err);
-                return res.status(500).send("ERROR!! by isUser function" + err);
+                console.warn("ERROR!! by isUser function: " + err);
+                return res.status(500).send("ERROR!! by isUser function: " + err);
             }
 
             return res.status(200).send(result);

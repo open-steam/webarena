@@ -8,6 +8,8 @@
 
 var _ = require('underscore');
 
+var ObjectController = require('./ObjectController.js');
+
 function AccessController(my_acl) {
     this.acl = my_acl;
 }
@@ -37,6 +39,16 @@ AccessController.prototype.query = function(data, cb) {
         case 'allow':
             this.acl.allow(data.roles, data.resources, data.permissions, function(err) {
                 var result = err ? false : true;
+
+                if ((data.permissions == 'couple') && data.extras) {
+                    _.each(data.extras, function(element){
+                        var room = element.room;
+                        var objectID = element.objectID;
+                        var context = { user: { username: "acl_username" } };
+
+                        ObjectController.pokeObject(room.id, objectID, context);
+                    });
+                }
 
                 cb(err, result);
             });

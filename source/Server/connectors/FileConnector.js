@@ -8,19 +8,19 @@
 
 "use strict";
 
-var fileConnector={};
+var fileConnector = {};
 var fs = require('fs');
 var async = require('async');
 
 var Q = require('q');
-var Modules=false;
+var Modules = false;
 
-fileConnector.init=function(theModules){
-	this.Modules=theModules;
-	Modules=theModules;
+fileConnector.init = function(theModules) {
+	this.Modules = theModules;
+	Modules = theModules;
 }
 
-fileConnector.info=function(){
+fileConnector.info = function() {
 	return "FileConnector 1.5";
 }
 
@@ -36,30 +36,27 @@ fileConnector.info=function(){
 *	response function.
 *
 */
-fileConnector.login=function(username,password,externalSession,context, callback){
+fileConnector.login = function(username, password, externalSession, context, callback) {
+	this.Modules.Log.debug("Login request for user '" + username + "'");
 	
-	this.Modules.Log.debug("Login request for user '"+username+"'");
+	var data = {};
 	
-	var data={};
-	
-	data.username=username.toLowerCase();
-	data.password=password;
-	data.home= "public";
+	data.username = username.toLowerCase();
+	data.password = password;
+	data.home = "public";
 	
 	if (this.Modules.Config.fileConnectorUsers) {
 		
 		if (this.Modules.Config.fileConnectorUsers[data.username] == data.password) {
-			this.Modules.Log.debug("Login successfull for user '"+username+"'");
+			this.Modules.Log.debug("Login successfull for user '" + username + "'");
 			callback(data);
 		} else {
-			this.Modules.Log.debug("Login failed for user '"+username+"'");
+			this.Modules.Log.debug("Login failed for user '" + username + "'");
 			callback(false);
 		}
-		
 	} else {
 		callback(data);
 	}
-	
 }
 
 /**
@@ -68,33 +65,32 @@ fileConnector.login=function(username,password,externalSession,context, callback
  * @param callback
  * @returns {*}
  */
-fileConnector.getTrashRoom = function(context, callback){
+fileConnector.getTrashRoom = function(context, callback) {
     return this.getRoomData("trash", context, false, callback);
 }
 
-
-fileConnector.listRooms = function(callback){
-	
+fileConnector.listRooms = function(callback) {
 	var filebase = fileConnector.Modules.Config.filebase;
-	fs.readdir(filebase, function(err, files){
-		if(err){
+	fs.readdir(filebase, function(err, files) {
+		if (err) {
 			//TODO
 		}
 
-		var isRoom = function(file, callback){
-			if(/^\./.exec(file)){
+		var isRoom = function(file, callback) {
+			if (/^\./.exec(file)) {
 				return callback(false);
 			}
+
 			file = filebase + file;
-			fs.stat(file, function(err, result){
-				if(err){
+			fs.stat(file, function(err, result) {
+				if (err) {
 					return callback(err, null);
 				}
 				callback(result.isDirectory());
 			});
 		}
 
-		async.filter(files,isRoom, function( directories){
+		async.filter(files, isRoom, function( directories) {
 			callback(null, directories);
 		});
 	});
@@ -129,10 +125,9 @@ fileConnector.mayEnter = function(roomID, connection, callback) {
  * @param connection
  * @param {Function} callback
  */
-fileConnector.mayInsert=function(roomID,connection,callback) {
+fileConnector.mayInsert = function(roomID, connection, callback) {
 	callback(null, true);
 }
-
 
 /**
 *	getInventory
@@ -146,7 +141,7 @@ fileConnector.getInventory = function(roomID, context, callback) {
 	
 	if (!context) throw new Error('Missing context in getInventory');
 	
-	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+ roomID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
+	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '" + roomID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
 	
 	var filebase = this.Modules.Config.filebase;
 	var inventory = [];
@@ -239,8 +234,8 @@ fileConnector.getRoomData = function(roomID, context, oldRoomId, callback) {
 *	returns the room hierarchy starting by given roomID as root
 *
 */
-fileConnector.getRoomHierarchy=function(roomID,context,callback){
-	var self=this;
+fileConnector.getRoomHierarchy = function(roomID, context, callback) {
+	var self = this;
 	var result = {
 		'rooms' : {},
 		'relation' : {},
@@ -248,17 +243,17 @@ fileConnector.getRoomHierarchy=function(roomID,context,callback){
 	};
 
 	//filter only "accessible" rooms
-	var filter = function(folders, cb){
+	var filter = function(folders, cb) {
 		async.filter(folders,
-			//Filter function
-			function(folder, cb1){
-				self.mayEnter(folder, context, function(err, res){
+			// Filter function
+			function(folder, cb1) {
+				self.mayEnter(folder, context, function(err, res) {
 					if(err) cb1(false);
 					else cb1(res);
 				});
 			},
-			//Response function
-			function(results){
+			// Response function
+			function(results) {
 				cb(null, results);
 			}
 		);
@@ -743,26 +738,21 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 
 }
 
-
 /**
 *	getObjectData
 *
-*	returns the attribute set of an object
-*
+*	returns the attribute set of an object.
 */
-fileConnector.getObjectData=function(roomID,objectID,context){
-	
-	this.Modules.Log.debug("Get object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
-	if (!context) this.Modules.Log.error("Missing context");
-	
-	var obj = this.getObjectDataByFile(roomID,objectID);
+fileConnector.getObjectData = function(roomID, objectID, context) {
+    if (!context) this.Modules.Log.error("Missing context");
+
+	this.Modules.Log.debug("Get object data (roomID: '" + roomID + "', objectID: '" + objectID +
+                                              "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
+
+	var obj = this.getObjectDataByFile(roomID, objectID);
 	
 	return obj;
-	
 }
-
-
 
 /**
 *	internal
@@ -1116,5 +1106,4 @@ fileConnector.inlinePreviewProviders = {
 				}
 }
 
-
-module.exports=fileConnector;
+module.exports = fileConnector;

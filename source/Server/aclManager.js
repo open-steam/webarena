@@ -79,6 +79,21 @@ ACLManager.prototype.isAllowed = function(userId, resource, permissions, cb) {
     acl.isAllowed(userId, resource, permissions, cb);
 };
 
+// Like isAllowed but these method return true if any permission ist fulfill
+ACLManager.prototype.isAllowed2 = function(userId, resource, permissions, cb) {
+    this.allowedPermissions(userId, resource, function(err, obj) {
+        if (err) return cb(err, false);
+
+        var userPermissions = obj[resource];
+
+        permissions = _.isArray(permissions) ? permissions : [permissions];
+        if (_.intersection(userPermissions, permissions).length > 0) return cb(null, true);
+        if (_.contains(userPermissions, "*")) return cb(null, true);
+
+        return cb(null, false);
+    });
+};
+
 ACLManager.prototype.areAnyRolesAllowed = function(roles, resource, permissions, cb) {
     acl.areAnyRolesAllowed(roles, resource, permissions, cb);
 };

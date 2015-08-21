@@ -432,13 +432,13 @@ GeneralObject.select = function(multiple, groupSelect) {
  */
 GeneralObject.deselect = function() {
 
-    if (!this.selected)
+    if (!this.selected) {
         return;
+    }
 
     this.selected = false;
 
-
-    //hide invisible object after deselection
+    // hide invisible object after deselection
     var visible = true;
     if (!this.getAttribute("visible")) {
         var rep = this.getRepresentation();
@@ -447,20 +447,21 @@ GeneralObject.deselect = function() {
         visible = false;
     }
 
-    //remove ghost mode for linked + invisible objects
+    // remove ghost mode for linked + invisible objects
     var objectID = this.getId();
     var room = this.getRoom();
     var linkedObjects = this.getAttribute("link");
+
     $.each(linkedObjects, function(index, value) {
         var targetID = value.destination;
         var target = ObjectManager.getObject(targetID);
+
         if (!target) {
             //console.log(objectID+' has missing linked objects');
             return;
         }
 
         if (!target.getAttribute("visible") && room.getAttribute("showLinks")) {
-
             var rep = target.getRepresentation();
             $(rep).css("opacity", 0);
             $(rep).css("visibility", "hidden");
@@ -468,40 +469,34 @@ GeneralObject.deselect = function() {
 
             GUI.showLink(objectID, targetID, false);
         }
+
         if (!visible) {
             GUI.showLink(objectID, targetID, false);
         }
     });
 
-
     this.removeControls();
     this.unmakeMovable();
-
     this.removeSelectedIndicator();
-
     this.deselectHandler();
-
     this.startNoAnimationTimer();
-
     this.draw();
 
     /* inform all clients about the deselection */
     ObjectManager.informAboutDeselection(this.id);
-
 }
-
 
 /**
  * Adjusts the positions of all GUI controls of the object
  */
 GeneralObject.adjustControls = function() {
-
     var self = this;
 
     var rep = this.getRepresentation();
 
     var couplingX = 0;
     var couplingY = 0;
+
     if (GUI.couplingModeActive) {
         if (ObjectManager.getIndexOfObject(this.id) != 'left') {
             couplingX = parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX('right');
@@ -575,14 +570,12 @@ GeneralObject.adjustControls = function() {
     }
 
     GUI.userMarker.setPosition(this.id);
-
 }
 
 /**
  * Adds all possible controls for the object
  */
 GeneralObject.addControls = function() {
-
     var self = this;
 
     this.controls = {};
@@ -823,7 +816,6 @@ GeneralObject.addControls = function() {
                 }
 
             });
-
 }
 
 /**
@@ -868,9 +860,7 @@ GeneralObject.onMoveEnd = function() {
  * @param {Function} resizeFunction The function called when resizing the object
  */
 GeneralObject.addControl = function(type, resizeFunction) {
-
     var self = this;
-
     var rep = this.getRepresentation();
 
     if (GUI.isTouchDevice) {
@@ -898,12 +888,9 @@ GeneralObject.addControl = function(type, resizeFunction) {
     $(control).attr("layer", 10000000);
 
     control.moving = false;
-
     control.type = type;
 
-
     var start = function(event) {
-
         event.preventDefault();
         event.stopPropagation();
 
@@ -916,6 +903,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
             control.startMouseX = event.targetTouches[0].pageX;
             control.startMouseY = event.targetTouches[0].pageY;
         }
+
         control.objectStartWidth = self.getViewWidth();
         control.objectStartHeight = self.getViewHeight();
         control.objectStartX = self.getViewX();
@@ -924,7 +912,6 @@ GeneralObject.addControl = function(type, resizeFunction) {
         control.moving = true;
 
         var move = function(event) {
-
             if (!control.moving) return;
 
             event.preventDefault();
@@ -943,19 +930,15 @@ GeneralObject.addControl = function(type, resizeFunction) {
             resizeFunction(dx, dy, control.objectStartWidth, control.objectStartHeight, rep, control.objectStartX, control.objectStartY);
 
             self.adjustControls();
-
         };
 
         var end = function(event) {
-		
             event.preventDefault();
 
             control.moving = false;
 
             self.adjustControls();
-
             self.resizeHandler();
-
             self.onMoveEnd();
 
             GUI.moveLinks(self);
@@ -984,7 +967,6 @@ GeneralObject.addControl = function(type, resizeFunction) {
 
     };
 
-
     if (GUI.isTouchDevice) {
         /* touch */
         control.addEventListener("touchstart", start, false);
@@ -994,11 +976,8 @@ GeneralObject.addControl = function(type, resizeFunction) {
     }
 
     this.controls[type] = control;
-
     this.adjustControls();
-
 }
-
 
 /**
  * Saves the current position of the object
@@ -1019,7 +998,6 @@ GeneralObject.saveMoveStartPosition = function() {
     }
 }
 
-
 /**
  * Start moving an object
  * @param {DomEvent} event The DOM event
@@ -1032,8 +1010,9 @@ GeneralObject.moveStart = function(event) {
         var self = ObjectManager.getObject(this.id);
     }
 
-    if (!self.selected)
+    if (!self.selected) {
         self.select();
+    }
 
     var contentPosition = $("#content").offset();
 
@@ -1126,6 +1105,7 @@ GeneralObject.moveStart = function(event) {
             type: "moveend.wa",
             objectId: self.id
         })
+
         var cut = !(event.ctrlKey || event.metaKey);
 
         var movedBetweenRooms = false;
@@ -1273,15 +1253,12 @@ GeneralObject.moveStart = function(event) {
         $("#content").bind("mousemove.webarenaMove", move);
         $("#content").bind("mouseup.webarenaMove", end);
     }
-
 }
-
 
 /**
  * Sets event handlers to make the objects representation movable
  */
 GeneralObject.makeMovable = function() {
-
     var self = this;
     var rep;
 
@@ -1301,7 +1278,6 @@ GeneralObject.makeMovable = function() {
 
 }
 
-
 /**
  * Moves the object relative to the saved position of GeneralObject.saveMoveStartPosition
  * (used when moving groups of objects)
@@ -1309,8 +1285,9 @@ GeneralObject.makeMovable = function() {
  * @param {int} dy Moved x distance
  */
 GeneralObject.moveRelative = function(dx, dy) {
-    if (this.getAttribute("locked"))
+    if (this.getAttribute("locked")) {
         return;
+    }
 
     this.setViewX(this.moveObjectStartX + dx);
     this.setViewY(this.moveObjectStartY + dy);
@@ -1330,27 +1307,23 @@ GeneralObject.moveRelative = function(dx, dy) {
  * @param {int} y Movement in y direction
  */
 GeneralObject.moveBy = function(x, y) {
-
     this.setViewX(this.getViewX() + x);
     this.setViewY(this.getViewY() + y);
-
     this.adjustControls();
-
     this.moveHandler();
 
     GUI.moveLinks(this);
 
     //GUI.hideLinks(this);
     //GUI.showLinks(this);
-
 }
 
 /**
  * Removes all event handles for moving the object
  */
 GeneralObject.unmakeMovable = function() {
-
     var rep;
+
     if (this.restrictedMovingArea) {
         rep = $(this.getRepresentation()).find(".moveArea").get(0);
     } else {
@@ -1361,10 +1334,9 @@ GeneralObject.unmakeMovable = function() {
 
     //rep.removeEventListener("touchstart", self.moveStart, false);
     rep.ontouchstart = function() {
+
     };
-
 }
-
 
 /* view getter */
 
@@ -1402,7 +1374,6 @@ GeneralObject.getViewHeight = function() {
  * get the x position of the objects bounding box (this is the left position of the object)
  */
 GeneralObject.getViewBoundingBoxX = function() {
-
     return this.getViewX();
 
     var rep = this.getRepresentation();
@@ -1412,14 +1383,12 @@ GeneralObject.getViewBoundingBoxX = function() {
     } else {
         return this.getRepresentation().getBBox().x;
     }
-
 }
 
 /**
  * get the y position of the objects bounding box (this is the top position of the object)
  */
 GeneralObject.getViewBoundingBoxY = function() {
-
     return this.getViewY();
 
     var rep = this.getRepresentation();
@@ -1437,7 +1406,6 @@ GeneralObject.getViewBoundingBoxY = function() {
  * @deprecated Some kind of deprecated because the objects width should be equal
  */
 GeneralObject.getViewBoundingBoxWidth = function() {
-
     if (!this.getRepresentation().getBBox) {
         //return the saved with if no bounding box can be found (Internet Explorer)
         return this.getAttribute('width');
@@ -1451,7 +1419,6 @@ GeneralObject.getViewBoundingBoxWidth = function() {
  * @deprecated Some kind of deprecated because the objects width should be equal
  */
 GeneralObject.getViewBoundingBoxHeight = function() {
-
     if (!this.getRepresentation().getBBox) {
         //return the saved height if no bounding box can be found (Internet Explorer)
         return this.getAttribute('heigth');
@@ -1460,9 +1427,6 @@ GeneralObject.getViewBoundingBoxHeight = function() {
     return parseInt(this.getRepresentation().getBBox().height);
 }
 
-
-
-
 /* view setter */
 
 /**
@@ -1470,9 +1434,7 @@ GeneralObject.getViewBoundingBoxHeight = function() {
  * @param {int} value The new X position
  */
 GeneralObject.setViewX = function(value) {
-
     var self = this;
-
     var rep = this.getRepresentation();
 
     if (this.moveByTransform()) {
@@ -1489,9 +1451,7 @@ GeneralObject.setViewX = function(value) {
     $(rep).attr("x", value);
 
     GUI.adjustContent(this);
-
     GUI.moveLinks(this);
-
 }
 
 /**
@@ -1499,9 +1459,7 @@ GeneralObject.setViewX = function(value) {
  * @param {int} value The new Y position
  */
 GeneralObject.setViewY = function(value) {
-
     var self = this;
-
     var rep = this.getRepresentation();
 
     if (this.moveByTransform()) {
@@ -1518,9 +1476,7 @@ GeneralObject.setViewY = function(value) {
     $(rep).attr("y", value);
 
     GUI.adjustContent(this);
-
     GUI.moveLinks(this);
-
 }
 
 /**
@@ -1550,8 +1506,6 @@ GeneralObject.setViewXYAnimated = function(x, y) {
 
 }
 
-
-
 /**
  * Sets the objects width
  * @param {int} value The new width
@@ -1570,7 +1524,6 @@ GeneralObject.setViewHeight = function(value) {
     GUI.adjustContent(this);
 }
 
-
 /**
  * Used by GeneralObject.click
  */
@@ -1582,7 +1535,6 @@ GeneralObject.clickTimeout = false;
  * @param {DomEvent} event The DOM click event
  */
 GeneralObject.click = function(event) {
-
     var self = this;
 
 	/*
@@ -1593,8 +1545,9 @@ GeneralObject.click = function(event) {
 	*/
 
     /* stop when the clicked object is the SVG canvas */
-    if (event.target == $("#content>svg").get(0))
+    if (event.target == $("#content>svg").get(0)) {
         return;
+    }
 
     if (self.clickTimeout) {
         /* second click */
@@ -1602,32 +1555,25 @@ GeneralObject.click = function(event) {
         window.clearTimeout(self.clickTimeout);
         self.clickTimeout = false;
 
-        if (GUI.shiftKeyDown)
+        if (GUI.shiftKeyDown) {
             return;
+        }
 
         //perform dblclick action
         self.clickRevertHandler(event);
-
         self.dblclickHandler(event);
-
     } else {
         /* first click */
 
         /* set a timer (if another click is called while the timer is active, a second click is performed) */
         self.clickTimeout = window.setTimeout(function() {
-
             self.clickTimeout = false;
-
         }, 600);
 
         self.clickTimeout = true;
-
         self.clickHandler(event);
-
     }
-
 }
-
 
 /* HANDLER FUNCTIONS */
 
@@ -1669,7 +1615,8 @@ GeneralObject.clickHandler = function(event) {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.clickRevertHandler = function(event) {
-    /* for a faster feeling the click event is called when the first click is recognized, even if there will be a second (double) click. In case of a double click we have to revert the click action */
+    /* for a faster feeling the click event is called when the first click is recognized, even if there will be a second
+      (double) click. In case of a double click we have to revert the click action */
     this.deselect();
 }
 
@@ -1700,7 +1647,7 @@ GeneralObject.selectHandler = function() {
  * Called after object deselection
  */
 GeneralObject.deselectHandler = function() {
-    //GUI.hideLinks(this);
+    // GUI.hideLinks(this);
 }
 
 /**
@@ -1708,11 +1655,9 @@ GeneralObject.deselectHandler = function() {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.dblclickHandler = function(event) {
-
-	if(this.getAttribute("open destination on double-click")){
+	if (this.getAttribute("open destination on double-click")) {
 		this.follow(this.getAttribute("open in"));
-	}
-	else{
+	} else {
 		this.execute(event);
 	}
 	
@@ -1730,9 +1675,10 @@ GeneralObject.selectedClickHandler = function(event) {
         var x = this.getViewBoundingBoxX() + this.getViewBoundingBoxWidth();
         var y = this.getViewBoundingBoxY();
 
-        //line/arrow: show the actionsheet on the right end of the line/arrow
+        // line/arrow: show the actionsheet on the right end of the line/arrow
         if (this.type == 'Line' || this.type == 'Arrow') {
             var direction = this.getAttribute('direction');
+
             if (direction == 1 || direction == 3) {
                 y += this.getViewBoundingBoxHeight();
             }
@@ -1743,17 +1689,18 @@ GeneralObject.selectedClickHandler = function(event) {
 
         if (GUI.couplingModeActive) {
             var index = ObjectManager.getIndexOfObject(this.getId());
+
             if (index === 'right') {
                 x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
             } else {
                 x += GUI.getPanX(index);
             }
+
             y += GUI.getPanY(index);
         }
 
         GUI.showActionsheet(x, y, this);
     }
-
 }
 
 /**
@@ -1775,8 +1722,9 @@ GeneralObject.checkTransparency = function(attribute, value) {
 
     if (fillcolor === 'rgba(0, 0, 0, 0)' && linecolor === 'rgba(0, 0, 0, 0)') {
         return false;
-    } else
+    } else  {
         return true;
+    }
 }
 
 /**
@@ -1827,10 +1775,9 @@ GeneralObject.IntersectionObjectLine = function(a1, a2) {
     }
 
     return "no intersection";
-
 }
 
-//calculate the Intersection Point between two lines (endpoints are defined by a1, a2 and b1, b2)
+// calculate the Intersection Point between two lines (endpoints are defined by a1, a2 and b1, b2)
 GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
 
     var result = new Object();
@@ -1850,8 +1797,7 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
         else {
             result = "no intersection";
         }
-    }
-    else {
+    } else {
         if (t1 == 0 || t2 == 0) {
             result = "coincident";
         }
@@ -1860,8 +1806,7 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
     return result;
 };
 
-
-//checks if the object is currently visible in the browser window of the user
+// checks if the object is currently visible in the browser window of the user
 GeneralObject.checkBrowserVisibility = function() {
 
     var documentViewTop = $(window).scrollTop();
@@ -1873,5 +1818,4 @@ GeneralObject.checkBrowserVisibility = function() {
 	var result = ((objectBottom <= documentViewBottom) && (objectTop >= documentViewTop));
 	
     return result;
-	
 }

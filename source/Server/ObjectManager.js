@@ -168,21 +168,22 @@ function buildObjectFromObjectData(objectData, roomID, type) {
  *  gets an Object by a given id and its context (context is user credentials)
  *
  *  Attention. EVERY call of getObject returns a different object on every call.
- *   The consequence of this is, that you cannot add properties to the object!
- *   If you want to save runtime data, use the runtimeData property.
+ *  The consequence of this is, that you cannot add properties to the object!
+ *  If you want to save runtime data, use the runtimeData property.
  */
 ObjectManager.getObject = function(roomID, objectID, context) {
 
-    if (!context)
+    if (!context) {
         throw new Error('Missing context in ObjectManager.getObject');
+    }
 
     var objectData = Modules.Connector.getObjectData(roomID, objectID, context);
 
-    if (!objectData)
+    if (!objectData) {
         return false;
+    }
 
     var object = buildObjectFromObjectData(objectData, roomID);
-
     object.context = context;
 
     return object;

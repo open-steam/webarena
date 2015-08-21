@@ -11,60 +11,57 @@
 
 // The server side defintion of the object extends the common parts
 
-var theObject=Object.create(require('./common.js'));
+var theObject = Object.create(require('./common.js'));
 
 // The Modules variable provides access to server modules such as
 // Module.ObjectManager
 
-var Modules=require('../../../server.js');
+var Modules = require('../../../server.js');
 var _ = require('lodash');
 var async = require("async");
 
 // Make the object public
-module.exports=theObject;
+module.exports = theObject;
 
 
 // ****************************************************************
 // * MAKE SENSITIVE ***********************************************
 // ****************************************************************
 
-theObject.makeSensitive=function(){
-	this.isSensitiveFlag=true;
+theObject.makeSensitive = function() {
+	this.isSensitiveFlag = true;
+	var theObject = this;
 	
-	var theObject=this;
+	this.onObjectMove = function(changeData) {
 	
-	this.onObjectMove=function(changeData){
-	
-		//complete data
+		// complete data
+		var oldData = {};
+		var newData = {};
+		var fields = ['x','y','width','height'];
 		
-		var oldData={};
-		var newData={};
-		var fields=['x','y','width','height'];
-		
-		for (var i=0;i<4;i++){
-			var field=fields[i];
-			oldData[field]=changeData['old'][field] || this.getAttribute(field);
-			newData[field]=changeData['new'][field] || this.getAttribute(field);
+		for (var i = 0; i < 4; i++) {
+			var field = fields[i];
+			oldData[field] = changeData['old'][field] || this.getAttribute(field);
+			newData[field] = changeData['new'][field] || this.getAttribute(field);
 		}
 		
-		var that=this;
+		var that = this;
 		
-		this.getRoomAsync(function(){
-			//error
-		}, function(room){
-			room.getInventoryAsync(function(inventory){
-				for (var i in inventory){
-			
-					var object=inventory[i];
+		this.getRoomAsync(function() {
+			// error
+		}, function(room) {
+			room.getInventoryAsync(function(inventory) {
+				for (var i in inventory) {
+					var object = inventory[i];
 					
-					if(object.id==that.id) continue;
+					if (object.id == that.id) continue;
 					
-					var bbox=object.getBoundingBox();
+					var bbox = object.getBoundingBox();
 					
-					//determine intersections
+					// determine intersections
 				
-					var oldIntersects=that.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-					var newIntersects=that.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+					var oldIntersects = that.bBoxIntersects(oldData.x, oldData.y, oldData.width, oldData.height, bbox.x, bbox.y, bbox.width, bbox.height);
+					var newIntersects = that.bBoxIntersects(newData.x, newData.y, newData.width, newData.height, bbox.x, bbox.y, bbox.width, bbox.height);
 					
 					//handle move
 					
@@ -76,76 +73,69 @@ theObject.makeSensitive=function(){
 			});
 		})
 	}
-	
-	
-	theObject.bBoxIntersects=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
+
+	theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
 		
-		if ((otherX+otherWidth)<thisX) {
+		if ((otherX + otherWidth) < thisX) {
 			//console.log('too far left');
 			return false;
 		}
-		if ((otherY+otherHeight)<thisY) {
+		if ((otherY + otherHeight) < thisY) {
 			//console.log('too far up');
 			return false;
 		}
-		if (otherX>(thisX+thisWidth)) {
+		if (otherX > (thisX + thisWidth)) {
 			//console.log('too far right');
 			return false;
 		}
-		if (otherY>(thisY+thisHeight)) {
+		if (otherY > (thisY + thisHeight)) {
 			//console.log('too far bottom');
 			return false;
 		}
 		
 		//console.log('intersects');
-		return true;	
-		
+		return true;
 	}
-	
-	
+
 	/**
 	*	intersects
 	*
 	*	determines, if this Active object intersects another object.
 	*	In this simple implementation, this is done by bounding box comparison.
 	**/
-	theObject.intersects=function(otherX,otherY,otherWidth,otherHeight){
+	theObject.intersects = function(otherX, otherY, otherWidth, otherHeight) {
 		
 		if (typeof otherX == 'object'){
-			var other=otherX.getBoundingBox();
-			otherX=other.x;
-			otherY=other.y;
-			otherWidth=other.width;
-			otherHeight=other.height;
+			var other = otherX.getBoundingBox();
+			otherX = other.x;
+			otherY = other.y;
+			otherWidth = other.width;
+			otherHeight = other.height;
 		}
 		
-		var bbox=this.getBoundingBox();
+		var bbox = this.getBoundingBox();
 		
-		return this.bBoxIntersects(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
-		
+		return this.bBoxIntersects(bbox.x, bbox.y, bbox.width, bbox.height, otherX, otherY, otherWidth, otherHeight);
 	}
-	
 	
 	/**
 	*	getOverlappingObjectsAsync
 	*
 	*	get an array of all overlapping objects
 	**/
-	theObject.getOverlappingObjectsAsync=function(callback){
+	theObject.getOverlappingObjectsAsync = function(callback) {
 		
-		this.getRoomAsync(function(){
+		this.getRoomAsync(function() {
 			//error
-		}, function(room){
+		}, function(room) {
 			if (!room) return;
-			room.getInventoryAsync(function(inventory){
+			room.getInventoryAsync(function(inventory) {
+				var result = [];
 			
-				var result=[];
-			
-				for (var i in inventory){
-		
-					var test=inventory[i];
-					if (test.id==this.id) continue;
-					if (this.intersects(test)){
+				for (var i in inventory) {
+					var test = inventory[i];
+					if (test.id == this.id) continue;
+					if (this.intersects(test)) {
 						result.push(test);
 					}
 				}
@@ -155,32 +145,27 @@ theObject.makeSensitive=function(){
 		});
 	}
 	
-	
 	/**
 	*	getOverlappingObjects
 	*
 	*	get an array of all overlapping objects
 	**/
-	theObject.getOverlappingObjects=function(){
-		
+	theObject.getOverlappingObjects = function() {
 		console.log('>>>> Synchronous getOverlappingObjects in GeneralObject');
+		var result = [];
 		
-		var result=[];
-		
-		var inventory=this.getRoom().getInventory();
+		var inventory = this.getRoom().getInventory();
 	
-		for (var i in inventory){
-			var test=inventory[i];
-			if (test.id==this.id) continue;
-			if (this.intersects(test)){
+		for (var i in inventory) {
+			var test = inventory[i];
+			if (test.id == this.id) continue;
+			if (this.intersects(test)) {
 				result.push(test);
 			}
 		}
 		
 		return result;
-	
 	}
-	
 	
 	/**
 	*	SensitiveObjects evaluate other objects in respect to themselves.
@@ -188,100 +173,91 @@ theObject.makeSensitive=function(){
 	*	object the object that shall be evaluated
 	*	changeData old and new values of positioning (e.g. changeData.old.x) 
 	**/
-	theObject.evaluateObject=function(object,changeData){
+	theObject.evaluateObject = function(object, changeData) {
 		
-		//complete data
+		// complete data
+		var oldData = {};
+		var newData = {};
+		var fields = ['x','y','width','height'];
 		
-		var oldData={};
-		var newData={};
-		var fields=['x','y','width','height'];
-		
-		for (var i=0;i<4;i++){
-			var field=fields[i];
-			oldData[field]=changeData['old'][field] || object.getAttribute(field);
-			newData[field]=changeData['new'][field] || object.getAttribute(field);
+		for (var i=0; i < 4; i++) {
+			var field = fields[i];
+			oldData[field] = changeData['old'][field] || object.getAttribute(field);
+			newData[field] = changeData['new'][field] || object.getAttribute(field);
 		}
 		
-		//determine intersections
+		// determine intersections
+		var oldIntersects = this.intersects(oldData.x, oldData.y, oldData.width, oldData.height);
+		var newIntersects = this.intersects(newData.x, newData.y, newData.width, newData.height);
 		
-		var oldIntersects=this.intersects(oldData.x,oldData.y,oldData.width,oldData.height);
-		var newIntersects=this.intersects(newData.x,newData.y,newData.width,newData.height);
-		
-		//handle move
-		
-		if (oldIntersects && newIntersects) return this.onMoveWithin(object,newData);
-		if (!oldIntersects && !newIntersects) return this.onMoveOutside(object,newData);
-		if (oldIntersects && !newIntersects) return this.onLeave(object,newData);
-		if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
+		// handle move
+		if (oldIntersects && newIntersects) return this.onMoveWithin(object, newData);
+		if (!oldIntersects && !newIntersects) return this.onMoveOutside(object, newData);
+		if (oldIntersects && !newIntersects) return this.onLeave(object, newData);
+		if (!oldIntersects && newIntersects) return this.onEnter(object, newData);
 	}
 	
-	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
-		this.fireEvent('object::'+this.id+'::moveWithin',object.id);
+	if (!theObject.onMoveWithin) theObject.onMoveWithin = function(object, data) {
+		this.fireEvent('object::' + this.id + '::moveWithin', object.id);
 	};
 	
-	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
-		this.fireEvent('object::'+this.id+'::moveOutside',object.id);
+	if (!theObject.onMoveOutside) theObject.onMoveOutside = function(object,data) {
+		this.fireEvent('object::' + this.id + '::moveOutside', object.id);
 	};
 	
-	if (!theObject.onLeave) theObject.onLeave=function(object,data){
-		this.fireEvent('object::'+this.id+'::leave',object.id);
+	if (!theObject.onLeave) theObject.onLeave = function(object, data) {
+		this.fireEvent('object::' + this.id + '::leave', object.id);
 	};
 	
-	if (!theObject.onEnter) theObject.onEnter=function(object,data){
-		this.fireEvent('object::'+this.id+'::enter',object.id);
+	if (!theObject.onEnter) theObject.onEnter = function(object, data) {
+		this.fireEvent('object::' + this.id + '::enter', object.id);
 	};
 	
-	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
-		
-		this.fireEvent('object::'+this.id+'::drop',objectId);
+	if (!theObject.onDrop) theObject.onDrop = function(objectId, data) {
+		this.fireEvent('object::' + this.id + '::drop', objectId);
 	};
 
-	theObject.onDrop.public=true;
-
+	theObject.onDrop.public = true;
 }
-
 
 // ****************************************************************
 // * MAKE STRUCTURING *********************************************
 // ****************************************************************
 
-theObject.makeStructuring=function(){
-	this.isStructuringFlag=true;
+theObject.makeStructuring = function() {
+	this.isStructuringFlag = true;
 	this.makeSensitive();
-	this.isSensitiveFlag=false;
+	this.isSensitiveFlag = false;
 	
-	this.onObjectMove=function(changeData){
+	this.onObjectMove = function(changeData) {
 		
 		//when a structuring object is moved, every active object may be in need of repositioning
 		
-		console.log('onObjectMove on structuring object '+this);
+		console.log('onObjectMove on structuring object ' + this);
 		
 		//this.getRoom().placeActiveObjects();
-		this.getRoomAsync(function(){
+		this.getRoomAsync(function() {
 			//error
-		}, function(room){
+		}, function(room) {
 			if(!room) return;
 			room.placeActiveObjectsAsync();
 		});
 	}
 	
-	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
+	if (!this.getPositioningDataFor) this.getPositioningDataFor = function(activeObject) {
 		
-		var result={reference:'ignore'};
+		var result = {reference:'ignore'};
 		
-		//reference: must, mustnot, ignore
-		//minX
-		//maxX
-		//minY
-		//maxY
+		// reference: must, mustnot, ignore
+		// minX
+		// maxX
+		// minY
+		// maxY
 		
 		return result;
-		
 	}
 
 }
-
-
 
 /**
 *	getAttributeSet
@@ -320,16 +296,30 @@ theObject.updateClient = function(socket, mode) {
 	var object = this.getAttributeSet();
 
 	process.nextTick(function() {
-        var userId = socket.handshake.session.passport ? socket.handshake.session.passport.user : socket.deviceID;
+        var userId = socket.deviceID ? socket.deviceID : socket.handshake.session.passport.user;
         var resource = Modules.ACLManager.makeACLName(object.id, object.type);
+		var permissions = ['show', 'couple'];
 
-        Modules.ACLManager.isAllowed(userId, resource, "show", function(err, allowed) {
-           if (allowed) {
-               var SocketServer = Modules.SocketServer;
+        Modules.ACLManager.isAllowed2(userId, resource, permissions , function(err, allowed) {
+			var SocketServer = Modules.SocketServer;
+
+			if (allowed) {
                 SocketServer.sendToSocket(socket, mode, object);
-           } else {
-               //console.info("++ updateClient:: userId: " + userId + " is not allowed to show resource: " + resource);
-           }
+           	} else {
+			   if (err) console.warn("++ updateClient:: Error: " + err);
+			   else {
+				   // UGLY PATCH: if we just deleted some object than notify the user
+				   // even if isAllowed2 denied it, this is because the resource does not exist
+				   // in the system anymore (already deleted), and isAllowed2 report that
+				   // as not allowed
+				   if (mode == 'objectDelete') SocketServer.sendToSocket(socket, mode, object);
+				   else {
+					   console.info("++ updateClient:: userId: " + userId + " is not allowed to show resource: "
+					                                                                  + resource + " in mode: " + mode);
+					   //console.info(object);
+				   }
+			   }
+           	}
         });
 	});
 }
@@ -371,16 +361,16 @@ theObject.setContent = function(content, callback) {
 	
 	if ((typeof content) != "object" && content.substr(0,22 )== 'data:image/png;base64,') {
 		
-		var base64Data = content.replace(/^data:image\/png;base64,/,""),
+		var base64Data = content.replace(/^data:image\/png;base64, /, ""),
 		content = new Buffer(base64Data, 'base64');
 	}
 
 	Modules.Connector.saveContent(this.inRoom, this.id, content, this.context, false, callback);
 	
 	this.set('hasContent',!!content);
-	this.set('contentAge',new Date().getTime());
+	this.set('contentAge', new Date().getTime());
 
-	//send object update to all listeners
+	// send object update to all listeners
 	this.persist();
 	this.updateClients('contentUpdate');
 }
@@ -391,20 +381,18 @@ theObject.setContent.neededRights = {
     write : true
 }
 
-theObject.copyContentFromFile=function(filename,callback) {
-
+theObject.copyContentFromFile = function(filename, callback) {
 	Modules.Connector.copyContentFromFile(this.inRoom, this.id, filename, this.context, callback);
 	
-	this.set('hasContent',true);
-	this.set('contentAge',new Date().getTime());
+	this.set('hasContent', true);
+	this.set('contentAge', new Date().getTime());
 
-	//send object update to all listeners
+	// send object update to all listeners
 	this.persist();
 	this.updateClients('contentUpdate');
-	
 }
 
-theObject.getCurrentUserName=function(){
+theObject.getCurrentUserName = function() {
 	if (!this.context) return 'root';
 	return this.context.user.username;
 }
@@ -414,11 +402,11 @@ theObject.getCurrentUserName=function(){
 *
 *	get the object's content
 */
-theObject.getContent=function(callback){
+theObject.getContent = function(callback) {
 	if (!this.context) throw new Error('Missing context in GeneralObject.getContent');
 	
-	if(_.isFunction(callback)) {
-    	Modules.Connector.getContent(this.inRoom, this.id, this.context,callback);
+	if (_.isFunction(callback)) {
+    	Modules.Connector.getContent(this.inRoom, this.id, this.context, callback);
     }
     else {
 		console.log('>>>> Synchronous getContent in GeneralObject');
@@ -537,7 +525,6 @@ theObject.getRoom=function(callback){
 	
 	return false;
 }
-
 
 theObject.getRoomAsync=function(error,cb){
 	if (!this.context) error();

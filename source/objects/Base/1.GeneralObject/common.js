@@ -73,14 +73,18 @@ GeneralObject.utf8 = {};
 
 GeneralObject.utf8.toByteArray = function(str) {
     var byteArray = [];
-    for (var i = 0; i < str.length; i++)
-        if (str.charCodeAt(i) <= 0x7F)
+
+    for (var i = 0; i < str.length; i++) {
+
+        if (str.charCodeAt(i) <= 0x7F) {
             byteArray.push(str.charCodeAt(i));
-        else {
+        } else {
             var h = encodeURIComponent(str.charAt(i)).substr(1).split('%');
-            for (var j = 0; j < h.length; j++)
+            for (var j = 0; j < h.length; j++) {
                 byteArray.push(parseInt(h[j], 16));
+            }
         }
+    }
 
     return byteArray;
 };
@@ -89,13 +93,15 @@ GeneralObject.utf8.parse = function(byteArray) {
     var str = '';
     for (var i = 0; i < byteArray.length; i++)
         str += byteArray[i] <= 0x7F ?
-                byteArray[i] === 0x25 ? "%25" : // %
+               byteArray[i] === 0x25 ? "%25" : // %
                 String.fromCharCode(byteArray[i]) :
                 "%" + byteArray[i].toString(16).toUpperCase();
     try {
         return decodeURIComponent(str);
     } catch (e) {
+        console.info("GeneralObject.utf8.parse Error: " + e);
     }
+
     return '';
 };
 
@@ -166,47 +172,40 @@ GeneralObject.register = function(type) {
     this.registerAttribute('x', {type: 'number', min: 0, category: 'Dimensions', mobile: false});
     this.registerAttribute('y', {type: 'number', min: 0, category: 'Dimensions', mobile: false});
     this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
-
             if (object.resizeProportional()) {
                 object.setAttribute("height", object.getAttribute("height") * (value / object.getAttribute("width")));
             }
 
             return true;
-
         }, mobile: false});
 
     this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
-
             if (object.resizeProportional()) {
                 object.setAttribute("width", object.getAttribute("width") * (value / object.getAttribute("height")));
             }
 
             return true;
-
         }, mobile: false});
 
     this.registerAttribute('fillcolor', {type: 'color', standard: 'rgba(0, 0, 0, 0)', category: 'Appearance', checkFunction: function(object, value) {
-
             if (object.checkTransparency('fillcolor', value)) {
                 return true;
-            } else
+            } else {
                 return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
-
+            }
         }});
 
     this.registerAttribute('linecolor', {type: 'color', standard: 'rgba(0, 0, 0, 0)', category: 'Appearance', checkFunction: function(object, value) {
-
             if (object.checkTransparency('linecolor', value)) {
                 return true;
-            } else
+            } else {
                 return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
-
+            }
         }});
 
-    this.registerAttribute('linesize', {type: 'number', min: 1, standard: 1, category: 'Appearance'});
+    this.registerAttribute('linesize', { type: 'number', min: 1, standard: 1, category: 'Appearance' });
 
-    this.registerAttribute('locked', {type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
-
+    this.registerAttribute('locked', { type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
             window.setTimeout(function() {
                 object.deselect();
                 object.select();
@@ -243,7 +242,6 @@ GeneralObject.register = function(type) {
         }, mobile: false});
 
     this.registerAttribute('link', {multiple: true, hidden: true, standard: [], category: 'Functionality', changedFunction: function(object, value) {
-
             var objects = ObjectManager.getObjects();
 
             GUI.drawLinks(object);
@@ -257,26 +255,23 @@ GeneralObject.register = function(type) {
             }
 
             return true;
-
         }});
 
-    this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
+    this.registerAttribute('group', { type: 'group', readonly: false, category: 'Basic', standard: 0 });
 
-	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
+	this.registerAttribute('destination', { type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
             object.showExitDialog()
         }, category: 'Functionality', changedFunction: function(object) {
             if(object.updateIcon){object.updateIcon()};
         }});
 
-    this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
+    this.registerAttribute('destinationObject', { type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
             object.showExitDialog()
         }, category: 'Functionality'});
 
-    this.registerAttribute('filterObjects', {type: 'boolean', standard: false, hidden: true});
-	
-	this.registerAttribute('open destination on double-click',{type:'boolean',standard:false,category:'Functionality'});
-	
-	this.registerAttribute('open in',{type:'selection',standard:'same Tab',options:['same Tab','new Tab','new Window'],category:'Functionality'});
+    this.registerAttribute('filterObjects', { type: 'boolean', standard: false, hidden: true });
+	this.registerAttribute('open destination on double-click', { type:'boolean', standard:false, category:'Functionality' } );
+	this.registerAttribute('open in', { type:'selection', standard:'same Tab', options:['same Tab','new Tab','new Window'], category:'Functionality' } );
 	
     //this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 
@@ -322,9 +317,7 @@ GeneralObject.register = function(type) {
     this.registerAction(
             'Link',
             function(lastClicked) {
-
                 var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
-
                 GUI.showLinkPropertyDialog(lastClicked, lastClicked, linkProperties, true);
 
             },
@@ -387,7 +380,6 @@ GeneralObject.register = function(type) {
         }
 
     }, false, function() {
-
         var selected = ObjectManager.getSelected();
 
         /* prevent ungrouping if no selected element is in a group */
@@ -453,22 +445,26 @@ GeneralObject.register = function(type) {
 
     this.registerAction('object.coupling.action', function() {
         var selectedObjects = ObjectManager.getSelected();
+
         Modules.CouplingManager.getConnectedUsers(function (err, devices) {
             var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
             objectDevCoupDialog.show();
+
             $(objectDevCoupDialog).on("objectDevCoupling::selections", function(event) {
                 var choices = event.payLoad;
                 var roles = [];
                 var resources = [];
+                var extras = [];
                 $.each(choices, function(index, choice) {
                     roles.push(choice.id);
                 });
 
                 $.each(selectedObjects, function(index, obj) {
                     resources.push(Modules.ACLManager.makeACLName(obj.id));
+                    extras.push( { room: { id: obj.getRoomID()}, objectID: obj.id } );
                 });
 
-                Modules.ACLManager.allow(roles, resources, "couple", function(result) {
+                Modules.ACLManager.allow(roles, resources, "couple", extras, function(result) {
                     if (result) {
                         $().toastmessage('showToast', {
                             text: GUI.translate("Couple succeed"),
@@ -948,14 +944,12 @@ GeneralObject.changeLink = function(targetId, arrowheadOtherEnd, arrowheadThisEn
 /**
 *	delete all Links between this object and all other object (by removing the entries from the link-attribute)
 */
-GeneralObject.deleteLinks = function(){
-
+GeneralObject.deleteLinks = function() {
 	var links = this.getAttribute('link');
 	
 	for(var i = 0; i<links.length; i++){
 		this.deleteLink(links[i].destination);
 	}
-
 }
 
 /**
