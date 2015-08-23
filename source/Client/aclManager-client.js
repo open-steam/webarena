@@ -9,7 +9,8 @@
 // This list contains actions that should be check for authorization
 ACLManagerClient.prototype.notForEveryOne = ['Delete',
                                             'object.show.roles.permissions',
-                                            'object.coupling.action'];
+                                            'object.coupling.action',
+                                            'object.decoupling.action'];
 
 function ACLManagerClient() {
 
@@ -17,6 +18,35 @@ function ACLManagerClient() {
 
 ACLManagerClient.prototype.makeACLName = function(id) {
     return 'ui_dynamic_object_' + id;
+};
+
+ACLManagerClient.prototype.getIdFromACLName = function(aclName) {
+    return aclName.replace('ui_dynamic_object_', '');
+};
+
+ACLManagerClient.prototype.removeAllow = function(roles, resources, permissions, extras, cb) {
+    if (_.isFunction(extras) && !cb) {
+        cb = extras;
+    }
+
+    Modules.Dispatcher.query('acl', { type: 'removeAllow', roles: roles, resources: resources,
+                                                           permissions: permissions, extras: extras }, function(result) {
+        cb(result);
+    });
+};
+
+ACLManagerClient.prototype.roleUsers = function(rolenames, cb) {
+    Modules.Dispatcher.query('acl', { type: 'roleUsers', rolenames: rolenames }, function(users) {
+        cb(users);
+    });
+};
+
+ACLManagerClient.prototype.whatRolesAllowed = function(resource, permission, cb) {
+    Modules.Dispatcher.query('acl', { type: 'whatRolesAllowed',
+                                      resource: resource,
+                                      permission: permission }, function(roles) {
+        cb(roles);
+    });
 };
 
 ACLManagerClient.prototype.allow = function(roles, resources, permissions, extras, cb) {
@@ -41,12 +71,7 @@ ACLManagerClient.prototype.grantFullRights = function(resources, cb) {
 
 // userId got in server side using the session
 ACLManagerClient.prototype.isAllowed = function(resource, permissions, cb) {
-    //console.log("ACLManagerClient.isAllowed resource: " + resource);
-    //console.log("ACLManagerClient.isAllowed permissions: " + permissions);
     Modules.Dispatcher.query('acl', { type: 'isAllowed', resource: resource, permissions: permissions }, function (data) {
-        //console.log("ACLManagerClient.prototype.isAllowed -> ");
-        //console.log(data);
-
         cb(null, data);
     });
 };

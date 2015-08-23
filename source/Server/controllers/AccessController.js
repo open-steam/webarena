@@ -6,16 +6,31 @@
  */
 "use strict";
 
-var _ = require('underscore');
+var _     = require('underscore');
+var async = require('async');
 
 var ObjectController = require('./ObjectController.js');
 
-function AccessController(my_acl) {
+function AccessController(my_acl, my_CouplingManager) {
     this.acl = my_acl;
+    this.couplingManager = my_CouplingManager;
 }
 
 AccessController.prototype.query = function(data, cb) {
     switch(data.type) {
+        case 'removeAllow':
+            this._removeAllow(data.roles, data.resources, data.permissions, data.extras, function(err) {
+                cb(err, true);
+            });
+            break;
+        case 'roleUsers':
+            this._roleUsers(data.rolenames, cb);
+            break;
+        case 'whatRolesAllowed':
+            this.acl.whatRolesAllowed(data.resource, data.permission, function(err, roles) {
+                cb(err, roles);
+            });
+            break;
         case 'isAllowed':
             this.acl.isAllowed(data.passport.user, data.resource, data.permissions, function(err, allowed) {
                 cb(err, allowed);
@@ -41,7 +56,7 @@ AccessController.prototype.query = function(data, cb) {
                 var result = err ? false : true;
 
                 if ((data.permissions == 'couple') && data.extras) {
-                    _.each(data.extras, function(element){
+                    _.each(data.extras, function(element) {
                         var room = element.room;
                         var objectID = element.objectID;
                         var context = { user: { username: "acl_username" } };
@@ -58,6 +73,62 @@ AccessController.prototype.query = function(data, cb) {
     }
 
 }
+
+AccessController.prototype._removeAllow = function(roles, resources, permissions, extras, cb) {
+    var that = this;
+
+    var context = { user: { username: "acl_username" } };
+
+    // we assumed that all the objects are in the same room
+    var room = extras[0].room;
+    permissions = _.isArray(permissions) ? permissions : [permissions];
+
+    async.each(roles, function(role, callback) {
+        that.acl.removeAllow(role, resources, permissions, function(err) {
+            if (_.contains(permissions, 'couple') && !err) {
+
+                _.each(resources, function(resource) {
+
+                    // Delete the object in the clients
+                    var objectId = that.acl.getIdFromACLName(resource);
+                    var socket = that.couplingManager.getSocket(role);
+                    ObjectController.deleteFromClient(room.id, objectId, context, socket);
+                });
+            }
+
+            callback(err);
+        });
+    }, function(err) {
+        if (err) {
+            console.warn("Error by AccessController._removeAllow: " + err);
+
+            return cb(err, null);
+        }
+
+        return cb(null, 'OK');
+    });
+};
+
+AccessController.prototype._roleUsers = function(rolenames, cb) {
+    var usersCollection = [];
+
+    var that = this;
+    async.each(rolenames, function(rolename, callback) {
+        that.acl.roleUsers(rolename, function(err, users)  {
+            if (!err) usersCollection.push(users);
+
+            callback(err);
+        });
+    }, function(err) {
+        if (err) {
+            console.warn("Error by AccessController._roleUsers: " + err);
+
+            return cb(err, null);
+        }
+
+        return cb(null, _.flatten(usersCollection));
+    });
+};
 
 AccessController.prototype._grantFullRights = function(roles, resources, cb) {
     this.acl.allow(roles, resources, "*", function(err) {

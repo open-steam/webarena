@@ -12,6 +12,7 @@ function UserInfo() {
     this.inspectorArea;
 
     this.isAdmin = false;
+    this.wadiv   = undefined;
 };
 
 UserInfo.prototype.init = function() {
@@ -33,19 +34,21 @@ UserInfo.prototype.init = function() {
     name.setValue(cookie['name']);
     name.setInactive();
 
-    var wadiv = section.addElement("WADIV");
-    wadiv.setValue(cookie['WADIV']);
-    wadiv.setInactive();
+    this.wadiv = cookie['WADIV'];
 
-    var wadiv = section.addElement("Role");
+    var wadivInfo = section.addElement("WADIV");
+    wadivInfo.setValue(this.wadiv);
+    wadivInfo.setInactive();
+
+    var role = section.addElement("Role");
 
     var that = this;
     Modules.ACLManager.userRoles(function (err, result) {
         var user = _.contains(result, 'admin') ? "admin" : "user";
         that.isAdmin = (user == 'admin');
 
-        wadiv.setValue(user);
-        wadiv.setInactive();
+        role.setValue(user);
+        role.setInactive();
     });
 };
 

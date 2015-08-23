@@ -109,7 +109,7 @@ RoomController.informAllInRoom = function (data, cb) {
         // Inform only the clients who have permissions over the resource
         var resourceID = data.message.selection ? data.message.selection : data.message.deselection;
 
-        var userId = socket.handshake.session.passport.user;
+        var userId = socket.handshake.session.passport ? socket.handshake.session.passport.user : socket.deviceID;
         var resource = Modules.ACLManager.makeACLName(resourceID);
         var permissions = ['show', 'couple'];
 

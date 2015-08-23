@@ -19,12 +19,17 @@ ObjectController.init = function(theModules) {
 	AclManager    = Modules.ACLManager;
 };
 
-ObjectController.pokeObject = function(roomID, objectID, context) {
-    var object = ObjectManager.getObject(roomID, objectID, context);
+ObjectController.deleteFromClient = function(roomID, objectID, context, socket) {
+    var obj = ObjectManager.getObject(roomID, objectID, context);
+	obj.updateClient(socket, 'objectDelete');
+};
 
-    if (object) {
-        object.persist();
-    }
+ObjectController.pokeObject = function(roomID, objectID, context) {
+	var object = ObjectManager.getObject(roomID, objectID, context);
+
+	if (object) {
+		object.persist();
+	}
 };
 
 ObjectController.createObject = function(data, context, callback) {

@@ -52,6 +52,7 @@
     <script src="/aclManager-client.js"></script>
     <script src="/socketClient.js"></script>
     <script src="/dialogs/objectDeviceCoupling-dialog.js"></script>
+    <script src="/dialogs/objectDeviceDeCoupling-dialog.js"></script>
     <script src="/couplingManager-client.js"></script>
 
 	<script>
@@ -288,7 +289,27 @@
             </tbody>
         </table>
     </div>
-</script>
+  </script>
+  <script type="text/template" id="decoupling-dialog-template">
+    <div class="coupling-device">
+        <table>
+            <thead>
+            <tr>
+                <th><span>Select</span></th>
+                <th><span>WADIV</span></th>
+            </tr>
+            </thead>
+            <tbody>
+            <% _(devices).each(function(device) { %>
+            <tr>
+                <td><input type="checkbox" name="devices" value="<%= device %>" id="<%= device %>"></td>
+                <td><%= device %></td>
+            </tr>
+            <% }); %>
+            </tbody>
+        </table>
+    </div>
+  </script>
   <!-- END: Underscore Template Definition. -->
 
 {{/extend}}

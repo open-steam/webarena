@@ -94,7 +94,7 @@ ObjectManager.remove = function(obj) {
     // Send remove to connector
     Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
 
-    //Inform clients about remove.
+    // Inform clients about remove.
     obj.updateClients('objectDelete');
 }
 
@@ -104,10 +104,14 @@ ObjectManager.remove = function(obj) {
  *  gets the prototype (the class) of an object.
  */
 ObjectManager.getPrototype = function(objType) {
-    if (prototypes[objType])
+    if (prototypes[objType]) {
         return prototypes[objType];
-    if (prototypes['GeneralObject'])
+    }
+
+    if (prototypes['GeneralObject']) {
         return prototypes['GeneralObject'];
+    }
+
     return;
 }
 
@@ -343,15 +347,19 @@ ObjectManager.getEnabledObjectTypes = function() {
                 var index = fileinfo[0];
                 var objName = fileinfo[1];
 
-                if (!index)
+                if (!index) {
                     return;
-                if (!objName)
+                }
+
+                if (!objName) {
                     return;
+                }
 
                 if (blackList[objName]) {
                     console.log('Object type ' + objName + ' is blacklisted.');
                     return;
                 }
+
                 result.push({'category': category, 'filename': filename});
             });
 
@@ -405,7 +413,6 @@ ObjectManager.undo = function(data, context, callback) {
         }
     } else {
         callback(null, 'info.undo.nothing');
-
     }
 };
 
@@ -432,10 +439,12 @@ ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
 ObjectManager.countSubrooms = function(roomID, context) {
     var counter = 1;
 
-    if (roomID === undefined)
+    if (roomID === undefined) {
         return counter;
+    }
 
     var inventory = Modules.Connector.getInventory(roomID, context);
+
     for (var inventoryKey in inventory) {
         var inventoryObject = inventory[inventoryKey];
         if (inventoryObject.type === "Subroom") {
@@ -445,7 +454,6 @@ ObjectManager.countSubrooms = function(roomID, context) {
 
     return counter;
 }
-
 
 /**
  *
@@ -458,12 +466,13 @@ ObjectManager.countSubrooms = function(roomID, context) {
  */
 var falseToError = function(message, cb) {
     return function(err, res) {
-        if (err)
+        if (err) {
             cb(err, null);
-        else if (!res)
+        } else if (!res) {
             cb(new Error(message), null);
-        else
+        } else {
             cb(null, res);
+        }
     }
 }
 
@@ -484,10 +493,11 @@ var mayReadMultiple = function(fromRoom, files, context, cb) {
     });
 
     async.parallel(checks, function(err, res) {
-        if (err)
+        if (err) {
             cb(err, null);
-        else
+        } else {
             cb(null, true);
+        }
     });
 }
 

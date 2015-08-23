@@ -155,18 +155,6 @@ function ACLRouter(app, acl) {
         });
     });
 
-    // Returns the permissions for the given resource and set of roles
-    acl_router.get('/resourcePermissions/:roles/:resource', function(req, res) {
-        acl.resourcePermissions(req.params.roles, req.params.resource, function(resource_Permissions) {
-            if(err) {
-                console.warn("ERROR!! by resourcePermissions function: " + err);
-                return res.status(500).send("ERROR!! by resourcePermissions function: " + err);
-            }
-
-            return res.status(200).send(resource_Permissions);
-        });
-    });
-
     // Adds the given permissions to the given roles over the given resources.
     acl_router.get('/allow/:roles/:resources/:permissions', function(req, res) {
         var roles       = req.params.roles;
@@ -180,6 +168,22 @@ function ACLRouter(app, acl) {
             }
 
             return res.status(200).send("allowed");
+        });
+    });
+
+    // Remove permissions from the given roles owned by the given role.
+    acl_router.get('/removeAllow/:role/:resources/:permissions', function(req, res) {
+        var role        = req.params.role;
+        var resources   = req.params.resources;
+        var permissions = req.params.permissions;
+
+        acl.removeAllow(role, resources, permissions, function(err) {
+            if(err) {
+                console.warn("ERROR!! by removeAllow function: " + err);
+                return res.status(500).send("ERROR!! by removeAllow function: " + err);
+            }
+
+            return res.status(200).send("allow removed");
         });
     });
 
@@ -218,7 +222,7 @@ function ACLRouter(app, acl) {
 
     // Returns all the allowable permissions a given user have to access the given resources.
     acl_router.get('/allowedPermissions/:resources/:userId?', function(req, res) {
-        var user = req.params.userId ? req.params.userId : req.cookies.WADIV.WADIV;
+        var user        = req.params.userId ? req.params.userId : req.cookies.WADIV.WADIV;
         var resources   = req.params.resources;
 
         acl.allowedPermissions(user, resources, function(err, obj) {
@@ -256,6 +260,23 @@ function ACLRouter(app, acl) {
             }
 
             return res.status(200).send(obj);
+        });
+    });
+
+    /// Returns which roles have the given permission over the given resource
+    ///
+    /// It returns an array of roles
+    acl_router.get('/whatRolesAllowed/:resource/:permission', function(req, res) {
+        var resource    = req.params.resource;
+        var permission  = req.params.permission;
+
+        acl.whatRolesAllowed(resource, permission, function(err, roles) {
+            if(err) {
+                console.warn("ERROR!! by whatRolesAllowed function: " + err);
+                return res.status(500).send("ERROR!! by whatRolesAllowed function: " + err);
+            }
+
+            return res.status(200).send(roles);
         });
     });
 

@@ -119,6 +119,8 @@ ACLManager.prototype.rolesCollection = function(cb) {
 };
 
 ACLManager.prototype.allowedRolesPermissions = function(resources, cb) {
+    resources = _.isArray(resources) ? resources : [resources];
+
     this.rolesCollection(function(err, roles) {
         if(err) {
            return cb(err, null);
@@ -147,13 +149,32 @@ ACLManager.prototype.allowedRolesPermissions = function(resources, cb) {
         }, function(err) {
             if (err) return cb(err, null);
             else {
-                result = _.omit(result, function(value, key) {
+                result = _.omit(result, function(value) {
                     return value.length == 0;
                 });
 
                 return cb(null, result);
             }
         });
+    });
+};
+
+ACLManager.prototype.whatRolesAllowed = function(resource, permission, cb) {
+    this.allowedRolesPermissions(resource, function (err, obj) {
+        if (err) return cb(err, null);
+        else {
+            var roles = [];
+
+            _.each(obj, function (resourceObj) {
+                _.each(resourceObj, function (element) {
+                    if (_.contains(element.permissions, permission)) {
+                        roles.push(element.role);
+                    }
+                });
+            });
+
+            return cb(null, roles);
+        }
     });
 };
 
@@ -168,6 +189,10 @@ ACLManager.prototype.makeACLName = function(id, type) {
 
     if ((type != null) && _.contains(omitTypes, type)) return id;
     else return 'ui_dynamic_object_' + id;
+};
+
+ACLManager.prototype.getIdFromACLName = function(aclName) {
+    return aclName.replace('ui_dynamic_object_', '');
 };
 
 function mongo_connected() {

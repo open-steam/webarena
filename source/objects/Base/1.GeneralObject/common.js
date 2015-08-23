@@ -447,6 +447,9 @@ GeneralObject.register = function(type) {
         var selectedObjects = ObjectManager.getSelected();
 
         Modules.CouplingManager.getConnectedUsers(function (err, devices) {
+            // remove this client
+            devices = _.filter(devices, function(device) { return device.WADIV != GUI.userInfo.wadiv; });
+
             var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
             objectDevCoupDialog.show();
 
@@ -455,6 +458,7 @@ GeneralObject.register = function(type) {
                 var roles = [];
                 var resources = [];
                 var extras = [];
+
                 $.each(choices, function(index, choice) {
                     roles.push(choice.id);
                 });
@@ -477,6 +481,65 @@ GeneralObject.register = function(type) {
             });
         });
     }, true);
+
+    this.registerAction('object.decoupling.action', function() {
+        var selectedObjects = ObjectManager.getSelected();
+        var resource = Modules.ACLManager.makeACLName(selectedObjects[0].getAttribute("id"));
+
+        Modules.ACLManager.whatRolesAllowed(resource, 'couple', function(roles) {
+            if (roles.length > 0) {
+                Modules.ACLManager.roleUsers(roles, function(devices) {
+                    // remove this client
+                    devices = _.filter(devices, function(device) { return device != GUI.userInfo.wadiv; });
+
+                    var objectDevDecoupDialog = new ObjectDeviceDeCouplingDialog(devices);
+                    objectDevDecoupDialog.show();
+
+                    $(objectDevDecoupDialog).on("objectDevDecoupling::selections", function(event) {
+                        var choices = event.payLoad;
+                        var resources = [];
+                        var roles = [];
+                        var extras = [];
+
+                        $.each(choices, function(index, obj) {
+                            roles.push(obj.defaultValue);
+                        });
+
+                        $.each(selectedObjects, function(index, obj) {
+                            resources.push(Modules.ACLManager.makeACLName(obj.id));
+                            extras.push( { room: { id: obj.getRoomID()}, objectID: obj.id } );
+                        });
+
+                        Modules.ACLManager.removeAllow(roles, resources, "couple", extras, function(result) {
+                            if (result) {
+
+                                _.each(resources, function(resource) {
+                                    var id = Modules.ACLManager.getIdFromACLName(resource);
+                                    ObjectManager.inform('deselection', id, ObjectManager.getIndexOfObject(id));
+                                });
+
+                                $().toastmessage('showToast', {
+                                    text: GUI.translate("Decouple succeed"),
+                                    sticky: false,
+                                    position: 'top-left',
+                                    type    : 'success'
+                                });
+                            }
+                        });
+
+                    });
+                });
+            } else {
+                $().toastmessage('showToast', {
+                    text: GUI.translate("This object is not coupled with any device yet"),
+                    sticky: false,
+                    position: 'top-left',
+                    type    : 'error'
+                });
+            }
+        });
+    }, true);
+
 }
 
 GeneralObject.get = function(key) {
@@ -774,20 +837,18 @@ GeneralObject.getGroupMembers = function() {
     return list;
 }
 
-//update the links after duplicate an object
+// update the links after duplicate an object
 GeneralObject.updateLinkIds = function(idTranslationList) {
-
     var links = this.getAttribute('link');
-
     var that = this;
 
     links.forEach(function(link) {
+
         if (typeof idTranslationList[link.destination] != 'undefined') { // this destination was also copied
             link.destination = idTranslationList[link.destination];
             that.setAttribute('link', links);
             that.persist();
-        }
-        else { //this destination was not copied		
+        } else { //this destination was not copied
             var dest = Modules.ObjectManager.getObject(that.inRoom, link.destination, that.context);
 
             if (typeof dest.inRoom === 'undefined') { //the object and the destination are in different rooms now, so remove the links
@@ -795,8 +856,7 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
                     return element.destination !== link.destination;
                 });
                 that.setAttribute('link', links);
-            }
-            else {
+            } else {
 
                 var newLink = {
                     destination: that.id,
@@ -806,6 +866,7 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
                     style: link.style,
                     padding: link.padding
                 }
+
                 var destLinks = dest.getAttribute('link');
                 destLinks.push(newLink);
                 dest.setAttribute('link', destLinks);
@@ -816,7 +877,6 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 }
 
 GeneralObject.follow = function(openMethod) {
-
     var destination = this.getAttribute('destination');
 	
     if (!destination || destination == "choose") {
@@ -845,40 +905,40 @@ GeneralObject.follow = function(openMethod) {
         }
 
 		
-        if(openMethod == 'new Tab'){
+        if (openMethod == 'new Tab') {
             window.open(destination);
 			return;
 		}
-        if(openMethod == 'new Window'){
-			var newWindow = window.open(destination, Modules.Config.projectTitle, "height="+window.outerHeight+", width="+window.outerWidth);
+
+        if (openMethod == 'new Window') {
+			var newWindow = window.open(destination, Modules.Config.projectTitle, "height=" + window.outerHeight
+                                                                                     + ", width=" + window.outerWidth);
 			return;
         }
 	
-		//open in same tab
-		if(String(destination).indexOf("http://www.") != 0){
+		// open in same tab
+		if (String(destination).indexOf("http://www.") != 0) {
 			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
-		}
-		else{
+		} else {
 			window.open(destination,"_self")
 		}
     }
 }
 
 /**
-*	create Links between this object and other object (by adding entries in the link-attribute of all objects)
-* @param {array} targetIds    array with ids of the target objects
-* @param {boolean} arrowheadOtherEnd    Show an arrow on the distant end of the link. Default value: false (if not specified)
-* @param {boolean} arrowheadThisEnd    Show an arrow on the near end of the link. Default value: false (if not specified) 
-* @param {int} width    Width of the link. Default value: 5 (if not specified) 
-* @param {string} style    Style of the link. Possibilities: stroke, dotted, dashed. Default value: stroke (if not specified) 
-* @param {int} padding    Space between the objects and the link. Default value: 5 (if not specified) 
+* create Links between this object and other object (by adding entries in the link-attribute of all objects)
+ *
+*  @param {array} targetIds    array with ids of the target objects
+*  @param {boolean} arrowheadOtherEnd    Show an arrow on the distant end of the link. Default value: false (if not specified)
+*  @param {boolean} arrowheadThisEnd    Show an arrow on the near end of the link. Default value: false (if not specified)
+*  @param {int} width    Width of the link. Default value: 5 (if not specified)
+*  @param {string} style    Style of the link. Possibilities: stroke, dotted, dashed. Default value: stroke (if not specified)
+*  @param {int} padding    Space between the objects and the link. Default value: 5 (if not specified)
 */
-GeneralObject.createLinks = function(targetIds, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
-
-	for(var i = 0; i<targetIds.length; i++){
+GeneralObject.createLinks = function(targetIds, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding) {
+	for (var i = 0; i<targetIds.length; i++) {
 		this.createLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
 	}
-	
 }
 
 /**
@@ -887,15 +947,13 @@ GeneralObject.createLinks = function(targetIds, arrowheadOtherEnd, arrowheadThis
 *  other parameters: see above 
 */
 GeneralObject.createLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding) {
-
 	var target;
 	var object;
 
-	if(typeof this.context == "undefined"){ //client side call
+	if (typeof this.context == "undefined") { //client side call
 		target = ObjectManager.getObject(targetId);
 		object = this;
-	}
-	else{ //server side call
+	} else { //server side call
 		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
 		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
 	}
@@ -911,11 +969,9 @@ GeneralObject.createLink = function(targetId, arrowheadOtherEnd, arrowheadThisEn
 *  other parameters: see above 
 */
 GeneralObject.changeLinks = function(targetIds, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
-
-	for(var i = 0; i<targetIds.length; i++){
+	for (var i = 0; i < targetIds.length; i++){
 		this.changeLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
 	}
-
 }
 
 /**
@@ -924,15 +980,13 @@ GeneralObject.changeLinks = function(targetIds, arrowheadOtherEnd, arrowheadThis
 *  other parameters: see above 
 */
 GeneralObject.changeLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
-
 	var target;
 	var object;
 
-	if(typeof this.context == "undefined"){ //client side call
+	if (typeof this.context == "undefined") { //client side call
 		target = ObjectManager.getObject(targetId);
 		object = this;
-	}
-	else{ //server side call
+	} else { //server side call
 		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
 		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
 	}
@@ -947,7 +1001,7 @@ GeneralObject.changeLink = function(targetId, arrowheadOtherEnd, arrowheadThisEn
 GeneralObject.deleteLinks = function() {
 	var links = this.getAttribute('link');
 	
-	for(var i = 0; i<links.length; i++){
+	for (var i = 0; i<links.length; i++) {
 		this.deleteLink(links[i].destination);
 	}
 }
@@ -981,13 +1035,12 @@ GeneralObject.deleteLink = function(targetId){
 *   set the Link attribute of this object
 */
 GeneralObject.setLinkAttribute = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
-
 	var newLinks = [];
 	var oldLinks = this.getAttribute('link');
 	
-	//check if there already existing links, if yes: reinsert them
-	if(oldLinks.length != 0){
-		for(var i = 0; i<oldLinks.length; i++){
+	// check if there already existing links, if yes: reinsert them
+	if (oldLinks.length != 0) {
+		for (var i = 0; i<oldLinks.length; i++) {
 			newLinks.push(oldLinks[i]);
 		}
 	}
@@ -1002,47 +1055,44 @@ GeneralObject.setLinkAttribute = function(targetId, arrowheadOtherEnd, arrowhead
 		padding: 5
 	};
 	
-	for(var i = 0; i<newLinks.length; i++){
-		if(newLinks[i].destination == targetId){ //link is already specified-->overwrite the default values with the existing values
-			for (var attribute in newLinks[i]){
+	for (var i = 0; i<newLinks.length; i++) {
+		if (newLinks[i].destination == targetId) { //link is already specified-->overwrite the default values with the existing values
+			for (var attribute in newLinks[i]) {
 				link[attribute] = newLinks[i][attribute]; 
 			}
 			newLinks.splice(i, 1);
 		}
 	}
 	
-	if(arrowheadOtherEnd == true || arrowheadOtherEnd == false){
+	if (arrowheadOtherEnd == true || arrowheadOtherEnd == false) {
 		link.arrowheadOtherEnd = arrowheadOtherEnd;
 	}
 	
-	if(arrowheadThisEnd == true || arrowheadThisEnd == false){
+	if (arrowheadThisEnd == true || arrowheadThisEnd == false) {
 		link.arrowheadThisEnd = arrowheadThisEnd;
 	}
 		
-	if(typeof width == "number" && width > 0){
+	if (typeof width == "number" && width > 0) {
 		link.width = width;
 	}
 	
-	if(style == "stroke" || style == "dashed" || style == "dotted"){
+	if (style == "stroke" || style == "dashed" || style == "dotted") {
 		link.style = style;
 	}
 		
-	if(typeof padding == "number" && padding > -1){
+	if (typeof padding == "number" && padding > -1) {
 		link.padding = padding;
 	}	
 
 	newLinks.push(link);
-	
     this.setAttribute("link", newLinks); 
 
-	if(typeof this.context == "undefined"){ //client side call
-		//show all links (if 'showLinks' is deactivated, activate it)
+	if (typeof this.context == "undefined") { //client side call
+		// show all links (if 'showLinks' is deactivated, activate it)
 		var room = this.getRoom(); 
 		room.setAttribute('showLinks', true); 
 	}
-	
 }
-
 
 /**
 *
@@ -1050,22 +1100,20 @@ GeneralObject.setLinkAttribute = function(targetId, arrowheadOtherEnd, arrowhead
 *
 *   remove an entry from the Link attribute of this object
 */
-GeneralObject.removeLinkAttribute = function(targetId){
-
+GeneralObject.removeLinkAttribute = function(targetId) {
 	var newLinks = [];
 	var oldLinks = this.getAttribute('link');
 
-	//check if there already existing links, if yes and they are unequal to the targetId: reinsert them
-	if(oldLinks.length != 0){
-		for(var i = 0; i<oldLinks.length; i++){
-			if(oldLinks[i].destination != targetId){
+	// check if there already existing links, if yes and they are unequal to the targetId: reinsert them
+	if (oldLinks.length != 0) {
+		for (var i = 0; i<oldLinks.length; i++) {
+			if (oldLinks[i].destination != targetId) {
 				newLinks.push(oldLinks[i]);
 			}
 		}
 	}
 	
     this.setAttribute("link", newLinks);
-
 }
 
 GeneralObject.deleteIt = GeneralObject.remove;

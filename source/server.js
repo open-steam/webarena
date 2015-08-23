@@ -142,8 +142,9 @@ db.once('open', function (callback) {
     console.info("connection to MongoDB succeed.");
 
     Modules.ACLManager 		 = new aclManager(mongoDBConfig.getURI());
-    Modules.AccessController = new accessController(Modules.ACLManager);
     Modules.CouplingManager  = new couplingManager(Modules.UserManager);
+    Modules.AccessController = new accessController(Modules.ACLManager, Modules.CouplingManager);
+
 
     // Initialize all Modules if there is a init-function
     for (var name in Modules) {

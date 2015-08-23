@@ -76,8 +76,13 @@ ObjectManager.init = function() {
             "identifier": data.userId,
         });
 
-        ObjectManager.getObject(data.id).deleteLinks();  // delete all links which ends or starts in this object
-        ObjectManager.removeLocally(data);
+        try {
+            ObjectManager.getObject(data.id).deleteLinks();  // delete all links which ends or starts in this object
+            ObjectManager.removeLocally(data);
+        } catch(e) {
+            console.log("Error in ObjectManager: line 79: " + e);
+            throw e;
+        }
     });
 
     Modules.Dispatcher.registerCall('contentUpdate', function(data) {
@@ -854,7 +859,6 @@ ObjectManager.cutObjects = function(objects) {
 }
 
 ObjectManager.pasteObjects = function() {
-
     if (ObjectManager.clipBoard.objects != undefined && ObjectManager.clipBoard.objects.length > 0) {
 
         var paste = false;
@@ -1039,7 +1043,6 @@ ObjectManager.grantFullRights = function() {
 }
 
 ObjectManager.paintingUpdate = function(data) {
-
     if (!ObjectManager.getCurrentRoom().getAttribute("showUserPaintings")) {
         return;
     }

@@ -16,4 +16,10 @@ CouplingManager.prototype.getConnectedUsers = function(cb) {
     cb(null, connectedUsersCollection);
 };
 
+CouplingManager.prototype.getSocket = function(userId) {
+    var socket = this.userManager.getConnectionByUserID(userId).socket;
+
+    return socket;
+};
+
 exports = module.exports = CouplingManager;

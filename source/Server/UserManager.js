@@ -42,7 +42,7 @@ UserManager.getConnectedUsers = function() {
 *	in case of a new connection, a new entry is created.
 **/
 UserManager.socketConnect = function(socket) {
-	this.connections[socket.id] = ({'socket':socket, 'user':false, 'rooms':{'left':false, 'right':false}});
+	this.connections[socket.id] = ({ 'socket':socket, 'user':false, 'rooms': { 'left':false, 'right':false } });
 };
 
 /**
@@ -101,6 +101,7 @@ UserManager.login = function(socketOrUser, data) {
     var userID = (typeof socketOrUser.id == 'string') ? socketOrUser.id : socketOrUser;
 	
 	var connection = UserManager.connections[userID];
+
 	if (!connection) {
 		Modules.Log.error("UserManager", "+login", "There is no connection for this user (user: '" + userID + "')");
 		return;
@@ -216,7 +217,7 @@ UserManager.enterRoom = function(socketOrUser, data, responseID) {
 	});
 };
 
-UserManager.leaveRoom = function(socket,data,responseID) {
+UserManager.leaveRoom = function(socket, data, responseID) {
     var index = (data.index === undefined) ? 'right' : data.index;
 
 	var roomID = data.roomID;
@@ -329,6 +330,15 @@ UserManager.getConnectionByUserHash = function(userHash) {
 	}
 
 	return false;
+};
+
+UserManager.getConnectionByUserID = function(userID) {
+    for (var i in this.connections) {
+        var connection = this.connections[i];
+        if (connection.user.WADIV == userID) return connection;
+    }
+
+    return false;
 };
 
 module.exports = UserManager;

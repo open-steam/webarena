@@ -54,15 +54,26 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
             var resource = Modules.ACLManager.makeACLName(webarenaObject.id);
 
             Modules.ACLManager.isAllowed(resource, action, function (err, result) {
-                if(!err && result) {
-                    actionsCollection.push(action);
-                }
+                if (!err && result) {
+                    if (action == 'object.decoupling.action') {
+                        Modules.ACLManager.whatRolesAllowed(resource, 'couple', function(roles) {
+                            if (roles.length > 0) {
+                                actionsCollection.push(action);
+                            }
 
-                callback();
+                            callback(null);
+                        });
+                    } else {
+                        actionsCollection.push(action);
+                        callback(null);
+                    }
+                } else {
+                    callback(err);
+                }
             });
         } else {
             actionsCollection.push(action);
-            callback();
+            callback(null);
         }
     }, function (err) {
 

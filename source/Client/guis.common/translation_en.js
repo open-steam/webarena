@@ -18,7 +18,8 @@ function TranslationEN() {
             'tagManager.maintagcreation.error' : "An unexpected error occurred during the creation of the main tag",
             'tagManager.sectagdeletion.duplicate.error' : "",
             'grantFullRights.button': "Grant Full Rights",
-            'object.device.coupling.dialog.tittle': "Object-device coupling"
+            'object.device.coupling.dialog.tittle': "Object-device coupling",
+            'object.device.decoupling.dialog.tittle': "Object-device decoupling"
         }
     );
 };
