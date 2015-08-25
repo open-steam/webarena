@@ -18,6 +18,7 @@ var theObject = Object.create(require('./common.js'));
 
 var Modules = require('../../../server.js');
 var _ = require('lodash');
+var underscore = require('underscore');
 var async = require("async");
 
 // Make the object public
@@ -80,14 +81,17 @@ theObject.makeSensitive = function() {
 			//console.log('too far left');
 			return false;
 		}
+
 		if ((otherY + otherHeight) < thisY) {
 			//console.log('too far up');
 			return false;
 		}
+
 		if (otherX > (thisX + thisWidth)) {
 			//console.log('too far right');
 			return false;
 		}
+
 		if (otherY > (thisY + thisHeight)) {
 			//console.log('too far bottom');
 			return false;
@@ -178,9 +182,9 @@ theObject.makeSensitive = function() {
 		// complete data
 		var oldData = {};
 		var newData = {};
-		var fields = ['x','y','width','height'];
+		var fields = ['x', 'y', 'width', 'height'];
 		
-		for (var i=0; i < 4; i++) {
+		for (var i = 0; i < 4; i++) {
 			var field = fields[i];
 			oldData[field] = changeData['old'][field] || object.getAttribute(field);
 			newData[field] = changeData['new'][field] || object.getAttribute(field);
@@ -296,11 +300,20 @@ theObject.updateClient = function(socket, mode) {
 	var object = this.getAttributeSet();
 
 	process.nextTick(function() {
+
+		var condition = function(id, type) {
+			if (type == 'Room' && id == 'public')  return true;
+
+			return false;
+		}
+
         var userId = socket.deviceID ? socket.deviceID : socket.handshake.session.passport.user;
-        var resource = Modules.ACLManager.makeACLName(object.id, object.type);
+        var resource = Modules.ACLManager.makeACLName(object.id, underscore.partial(condition, object.id, object.type));
 		var permissions = ['show', 'couple'];
 
-        Modules.ACLManager.isAllowed2(userId, resource, permissions , function(err, allowed) {
+		//resource = _.isString(resource) ? resource : resource.toString();
+
+        Modules.ACLManager.isAllowed2(userId, resource, permissions, function(err, allowed) {
 			var SocketServer = Modules.SocketServer;
 
 			if (allowed) {
@@ -421,23 +434,24 @@ theObject.getContent.neededRights = {
     read : true
 }
 
-theObject.getContentAsString=function(callback){
+theObject.getContentAsString = function(callback) {
 	if (callback === undefined) {
 		console.log('>>>> Synchronous getContentAsString in GeneralObject');
 		return GeneralObject.utf8.parse(this.getContent());
 	} else {
-		this.getContent(function(content){
+		this.getContent(function(content) {
 			callback(GeneralObject.utf8.parse(content));
 		});
 	}
 }
 
-theObject.getContentFromApplication = function(applicationName, callback){
+theObject.getContentFromApplication = function(applicationName, callback) {
     var eventName = "applicationevent::" + applicationName + "::getContent"
     var event = {
         objectID : this.getID(),
         callback : callback
     }
+
     Modules.EventBus.emit(eventName, event);
 }
 
@@ -446,7 +460,7 @@ theObject.getContentFromApplication = function(applicationName, callback){
 *
 *	get the object's inline preview
 */
-theObject.getInlinePreview=function(mimeType, callback){
+theObject.getInlinePreview = function(mimeType, callback) {
 	return Modules.Connector.getInlinePreview(this.inRoom, this.id, mimeType, this.context, callback);
 }
 
@@ -457,36 +471,36 @@ theObject.getInlinePreviewMimeType=function(callback) {
 
 theObject.evaluatePosition=function(key,value,oldvalue){
 
-	if (this.runtimeData.evaluatePositionData===undefined) {
-		this.runtimeData.evaluatePositionData={};
-		this.runtimeData.evaluatePositionData.old={};
-		this.runtimeData.evaluatePositionData.new={};
+	if (this.runtimeData.evaluatePositionData === undefined) {
+		this.runtimeData.evaluatePositionData = {};
+		this.runtimeData.evaluatePositionData.old = {};
+		this.runtimeData.evaluatePositionData.new = {};
 	}
 	
 	if (this.runtimeData.evaluatePositionData.delay) {
 		clearTimeout(this.runtimeData.evaluatePositionData.delay);
-		this.runtimeData.evaluatePositionData.delay=false;
+		this.runtimeData.evaluatePositionData.delay = false;
 	}
 	
-	this.runtimeData.evaluatePositionData['new'][key]=value;
+	this.runtimeData.evaluatePositionData['new'][key] = value;
+
 	if (!this.runtimeData.evaluatePositionData['old'][key]) {
-		this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
+		this.runtimeData.evaluatePositionData['old'][key] = oldvalue;
 		//if there yet is a value here, we have concurrent modifications
 	}
 	
-	var posData=this.runtimeData.evaluatePositionData;
-	var self=this;
+	var posData = this.runtimeData.evaluatePositionData;
+	var self = this;
 	
 	//Within this time, we collect data for evaluation. This is important
 	//as often data that logically belongs together is sent seperately
 	
-	var timerLength=200;
+	var timerLength = 200;
 	
-	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
-		
-		var data={};
-		data.old=posData.old;
-		data.new=posData.new;
+	this.runtimeData.evaluatePositionData.delay=setTimeout(function() {
+		var data = {};
+		data.old = posData.old;
+		data.new = posData.new;
 		
 		self.evaluatePositionInt(data);
 		self.runtimeData.evaluatePositionData=undefined;
@@ -494,30 +508,28 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 	
 }
 
-theObject.evaluatePositionInt=function(data){
-	
-	var that=this;
+theObject.evaluatePositionInt = function(data) {
+	var that = this;
 
-	this.getRoomAsync(function(){
+	this.getRoomAsync(function() {
 		//error
-	},function(room){
+	}, function(room) {
 		if (!room) return;
 		room.evaluatePositionFor(that,data);
 	});
 	
 }
 
-
-theObject.getRoom=function(callback){
-	
+theObject.getRoom = function(callback) {
 	console.log('>>>> Synchronous getRoom in GeneralObject');
 	
 	if (!this.context) return;
 	
 	//search the room in the context and return the room this object is in
 	
-	for (var index in this.context.rooms){
-		var test=this.context.rooms[index];
+	for (var index in this.context.rooms) {
+		var test = this.context.rooms[index];
+
 		if (test && test.hasObject && test.hasObject(this)) {
 			return test;
 		}
@@ -526,13 +538,13 @@ theObject.getRoom=function(callback){
 	return false;
 }
 
-theObject.getRoomAsync=function(error,cb){
+theObject.getRoomAsync = function(error,cb) {
 	if (!this.context) error();
 	
 	//search the room in the context and return the room this object is in
 	
-	for (var index in this.context.rooms){
-		var test=this.context.rooms[index];
+	for (var index in this.context.rooms) {
+		var test = this.context.rooms[index];
 		if (test && test.hasObjectAsync) {
 			test.hasObjectAsync(this,function(){
 				cb(test);
@@ -543,19 +555,15 @@ theObject.getRoomAsync=function(error,cb){
 	error();
 }
 
-
-theObject.getBoundingBox=function(){
-	
-	var x=this.getAttribute('x');
-	var y=this.getAttribute('y');
-	var width=this.getAttribute('width');
-	var height=this.getAttribute('height');
-	return {'x':x,'y':y,'width':width,'height':height};
-	
+theObject.getBoundingBox = function() {
+	var x = this.getAttribute('x');
+	var y = this.getAttribute('y');
+	var width = this.getAttribute('width');
+	var height = this.getAttribute('height');
+	return {'x':x, 'y':y, 'width':width, 'height':height};
 }
 
-theObject.fireEvent=function(name,data){
-	
+theObject.fireEvent = function(name, data) {
 	//console.log('event fired',name,data);
 	
 	if (!data) {
@@ -568,11 +576,9 @@ theObject.fireEvent=function(name,data){
 	Modules.EventBus.emit(name, data);
 }
 
-theObject.fireEvent.public=true; //Function can be accessed by customObjectFunctionCall
+theObject.fireEvent.public = true; //Function can be accessed by customObjectFunctionCall
 
-
-theObject.getLinkedObjectsAsync=function(callback) {
-	
+theObject.getLinkedObjectsAsync = function(callback) {
 	var self = this;
 	
 	var getObject = function(id) {
@@ -594,12 +600,9 @@ theObject.getLinkedObjectsAsync=function(callback) {
 	}
 	
 	callback(links);
-	
 }
 
-
-theObject.getLinkedObjects=function() {
-	
+theObject.getLinkedObjects = function() {
 	console.log('>>>> Synchronous GETLINKEDOBJECTS');
 	
 	var self = this;
@@ -625,19 +628,16 @@ theObject.getLinkedObjects=function() {
 	return links;
 }
 
-theObject.getObjectsToDuplicateAsync = function(list,callback) {
-	
+theObject.getObjectsToDuplicateAsync = function(list, callback) {
 	if (list == undefined) {
 		/* init new list */
 		
 		/* list of objects which will be duplicated */
 		var list = {};
-		
 	}	
 
-	this.getLinkedObjectsAsync(function(linkedObjects){
-		
-		var temp=[];
+	this.getLinkedObjectsAsync(function(linkedObjects) {
+		var temp = [];
 		
 		for (var id in linkedObjects) {
 			var target = linkedObjects[id];
@@ -648,11 +648,11 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 			}
 		}
 		
-		temp.push=function(list,callback){
-			list[self.getAttribute('id')] = true; //add this object to list
+		temp.push = function(list,callback) {
+			list[self.getAttribute('id')] = true; // add this object to list
 		}
 		
-		async.applyEachSeries(temp, list, function(){
+		async.applyEachSeries(temp, list, function() {
 			var arrList = [];
 	
 			for (var objectId in list) {
@@ -666,9 +666,7 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 	
 }
 
-
 theObject.getObjectsToDuplicate = function(list) {
-	
 	console.log('>>>> Synchronous GETOBJECTSTODUPLICATE');
 	
 	var self = this;
@@ -678,7 +676,6 @@ theObject.getObjectsToDuplicate = function(list) {
 		
 		/* list of objects which will be duplicated */
 		var list = {};
-		
 	}
 	
 	list[self.getAttribute('id')] = true; //add this object to list
@@ -698,15 +695,11 @@ theObject.getObjectsToDuplicate = function(list) {
 	var arrList = [];
 	
 	for (var objectId in list) {
-
 		arrList.push(objectId);
-		
 	}
 	
 	return arrList;
-	
 }
-
 
 /**
 *	returns the hierachy of rooms and objects (special format for JSTree!)
@@ -766,6 +759,7 @@ theObject.browse = function(data, callback) {
                     id : hierarchy.roots[key],
                     title : hierarchy.rooms[hierarchy.roots[key]]
                 });
+
                 if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
                     node.state = "closed";
                 }
@@ -773,8 +767,7 @@ theObject.browse = function(data, callback) {
             }
             callback(result);
         });
-    } 
-	else{
+    } else {
         Modules.Connector.mayEnter(roomId, this.context, function(err, mayEnter) {
             if (mayEnter) {
                 // get inventory of room with roomId
@@ -881,18 +874,16 @@ theObject.filterObject = function(obj) {
     } else return false;
 }
 
-
 /**
 *	returns the inventory of the given room (special format for JSTree!)
 */
-theObject.getRoomInventory = function(room, cb){
+theObject.getRoomInventory = function(room, cb) {
 
-    Modules.ObjectManager.getObjects(room.id, this.context, function(objects){
+    Modules.ObjectManager.getObjects(room.id, this.context, function(objects) {
 		
 		var objectArray = new Array();
 		
-		for(var i = 0; i<objects.length; i++){
-		
+		for (var i = 0; i < objects.length; i++){
 			var id = objects[i].getAttribute('id');
 			var type = objects[i].getAttribute('type');
 			var name = objects[i].getAttribute('name');

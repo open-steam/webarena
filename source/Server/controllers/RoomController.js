@@ -3,7 +3,6 @@
  */
 
 var async = require('async');
-var lodash = require('lodash');
 var _ = require('underscore');
 
 var RoomController = {}
@@ -29,19 +28,17 @@ RoomController.getCommunicationChannel = function(data, context, callback){
 
 //TODO: should be implemented on Connector lvl. because it may be different
 RoomController.createRoom = function (data, context, callback) {
-
     var roomID = data.roomID;
 
     var obj = {};
     obj.id = roomID;
     obj.name = roomID;
 
-    //create callback with first parameter always null (otherwise would throw
-    //error
-    var cb = lodash.partial(callback, null);
+    // create callback with first parameter always null (otherwise would throw
+    // error
+    var cb = _.partial(callback, null);
 
     Modules.Connector.saveObjectData(roomID, roomID, obj, context, true, cb)
-
 }
 
 //TODO: should be implemented on Connector lvl. because it may be different
@@ -58,11 +55,11 @@ RoomController.duplicateRoom = function (data, context, callback) {
     var parent = data.parentRoom;
     var roomName = data.roomName;
 
-    //TODO: it is really ugly that getRoomData is used to create a room
-    //If parent is set.
-    //Create subroom item in parent.
+    // TODO: it is really ugly that getRoomData is used to create a room
+    // If parent is set.
+    // Create subroom item in parent.
     if (parent) {
-        Modules.Connector.getRoomData(newRoomID, context, parent, undefined); //TODO: set parent if necessary
+        Modules.Connector.getRoomData(newRoomID, context, parent, undefined); // TODO: set parent if necessary
         //TODO add subroom object to parent
 
         //Subroom item
@@ -75,7 +72,7 @@ RoomController.duplicateRoom = function (data, context, callback) {
             }
         }
     } else {
-        Modules.Connector.getRoomData(newRoomID, context, false, undefined); //TODO: set parent if necessary
+        Modules.Connector.getRoomData(newRoomID, context, false, undefined); // TODO: set parent if necessary
     }
 
     var requestData = {
@@ -83,6 +80,7 @@ RoomController.duplicateRoom = function (data, context, callback) {
         fromRoom: roomID,
         toRoom: newRoomID
     };
+
     Modules.ObjectManager.duplicateNew(requestData, context, callback);
 }
 

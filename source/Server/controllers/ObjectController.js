@@ -57,7 +57,8 @@ ObjectController.createObject = function(data, context, callback) {
 						});
 					},
 					function(obj, roles, callback) {
-						var completeRoles = _.union(_.without(roles, 'user'), ['admin']);
+						//var completeRoles = _.union(_.without(roles, 'user'), ['admin']);
+						var completeRoles = ['admin'];
 						var resource = AclManager.makeACLName(obj.id);
 
 						AclManager.allow(completeRoles, resource, '*', function (err) {

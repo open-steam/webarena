@@ -81,7 +81,8 @@ ACLManager.prototype.isAllowed = function(userId, resource, permissions, cb) {
 
 // Like isAllowed but these method return true if any permission ist fulfill
 ACLManager.prototype.isAllowed2 = function(userId, resource, permissions, cb) {
-    this.allowedPermissions(userId, resource, function(err, obj) {
+    var that = this;
+    that.allowedPermissions(userId, resource, function(err, obj) {
         if (err) return cb(err, false);
 
         var userPermissions = obj[resource];
@@ -90,7 +91,11 @@ ACLManager.prototype.isAllowed2 = function(userId, resource, permissions, cb) {
         if (_.intersection(userPermissions, permissions).length > 0) return cb(null, true);
         if (_.contains(userPermissions, "*")) return cb(null, true);
 
-        return cb(null, false);
+        // PATCH:
+        // before returning false, check if the user hat the role admin.
+        that.hasRole(userId, 'admin', function(err, hasRole) {
+            return cb(err, hasRole);
+        })
     });
 };
 
@@ -182,13 +187,12 @@ ACLManager.prototype.whatRolesAllowed = function(resource, permission, cb) {
 
 ACLManager.prototype.logError = logError;
 
-ACLManager.prototype.makeACLName = function(id, type) {
-    var omitTypes = [ 'Room' ];
-
+ACLManager.prototype.makeACLName = function(id, condition) {
     if (id == undefined || id == null) new Error("id by makeACLName function must not be null");
 
-    if ((type != null) && _.contains(omitTypes, type)) return id;
-    else return 'ui_dynamic_object_' + id;
+    if (_.isFunction(condition) && condition()) {
+        return id;
+    } else return 'ui_dynamic_object_' + id;
 };
 
 ACLManager.prototype.getIdFromACLName = function(aclName) {

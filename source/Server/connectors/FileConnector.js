@@ -194,11 +194,10 @@ fileConnector.getInventory = function(roomID, context, callback) {
  * @returns {*}
  */
 fileConnector.getRoomData = function(roomID, context, oldRoomId, callback) {
-	this.Modules.Log.debug("Get data for room (roomID: '" + roomID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
-	
 	if (!context) this.Modules.Log.error("Missing context");
-	
-	var filebase = this.Modules.Config.filebase;
+
+	this.Modules.Log.debug("Get data for room (roomID: '" + roomID + "', user: '" + this.Modules.Log.getUserFromContext(context) + "')");
+
 	var obj = this.getObjectDataByFile(roomID, roomID);
 	
 	if (!obj) {
@@ -211,7 +210,7 @@ fileConnector.getRoomData = function(roomID, context, oldRoomId, callback) {
 		}
 
 		var self = this;
-		this.saveObjectData(roomID, roomID, obj ,context, true, function() {
+		this.saveObjectData(roomID, roomID, obj, context, true, function() {
 			self.Modules.Log.debug("Created room (roomID: '" + roomID + "', user: '" + self.Modules.Log.getUserFromContext(context) + "', parent:'" + oldRoomId + "')");
 		})
 		
@@ -223,7 +222,7 @@ fileConnector.getRoomData = function(roomID, context, oldRoomId, callback) {
 			return obj;
 		} else {
 			/* async */
-			process.nextTick(function(){callback(obj);});
+			process.nextTick(function() { callback(obj); });
 		}
 	}
 }
@@ -288,36 +287,39 @@ fileConnector.getRoomHierarchy = function(roomID, context, callback) {
 *	save the object (by given data)
 *
 *	if a callback function is specified, it is called after saving
-*
-*
 */
-//TODO: async
-fileConnector.saveObjectData=function(roomID,objectID,data,context,createIfNotExists, callback){
-	this.Modules.Log.debug("Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+// TODO: async
+fileConnector.saveObjectData = function(roomID, objectID, data, context, createIfNotExists, callback) {
+    if (!context)   this.Modules.Log.error("Missing context");
+    if (!data)      this.Modules.Log.error("Missing data");
 
-	if (!context) this.Modules.Log.error("Missing context");
-	if (!data) this.Modules.Log.error("Missing data");
+	this.Modules.Log.debug("Save object data (roomID: '" + roomID + "', objectID: '" + objectID + "', user: '"
+                                                                + this.Modules.Log.getUserFromContext(context) + "')");
 	
-	var filebase=this.Modules.Config.filebase;
+	var filebase = this.Modules.Config.filebase;
+	var foldername = filebase + '/' + roomID;
 	
-	var foldername=filebase+'/'+roomID;
+	try {
+        fs.mkdirSync(foldername)
+    } catch(e) {
+        if (e.code != 'EEXIST') console.warn("Error by fileConnector.saveObjectData " + e);
+    };
 	
-	try {fs.mkdirSync(foldername)} catch(e){};
+	var filename = filebase + '/' + roomID + '/' + objectID + '.object.txt';
+	data = JSON.stringify(data);
 	
-	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
-	data=JSON.stringify(data);
-	
-	//TODO Change to asynchronous access
-	
-	if (!createIfNotExists){
-		if (!fs.existsSync(filename)){
+	// TODO Change to asynchronous access
+	if (!createIfNotExists) {
+		if (!fs.existsSync(filename)) {
 			this.Modules.Log.error("File does not exist")
 		}
 	}
 
-	fs.writeFileSync(filename, data,'utf-8');
-	if (callback) callback(objectID);
-	
+	fs.writeFileSync(filename, data, 'utf-8');
+
+	if (callback) {
+        callback(objectID);
+    }
 }
 
 /**
@@ -326,7 +328,7 @@ fileConnector.saveObjectData=function(roomID,objectID,data,context,createIfNotEx
 *	if a callback function is specified, it is called after saving
 *
 */
-fileConnector.saveContent=function(roomID,objectID,content,context, inputIsStream,callback){
+fileConnector.saveContent = function(roomID, objectID, content, context, inputIsStream, callback) {
 	this.Modules.Log.debug("Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	var that = this;
 

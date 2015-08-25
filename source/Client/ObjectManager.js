@@ -211,7 +211,7 @@ ObjectManager.getIndexOfObject = function(objectID) {
 }
 
 ObjectManager.getObject = function(objectID) {
-    //room?
+    // room?
     for (var index in this.currentRoomID) {
         if (objectID == this.currentRoomID[index]) {
             return this.currentRoom[index];
@@ -223,6 +223,8 @@ ObjectManager.getObject = function(objectID) {
             return ObjectManager.objects[index][objectID];
         }
     }
+
+    return false;
 }
 
 ObjectManager.buildObject = function(type, attributes) {
@@ -414,7 +416,12 @@ ObjectManager.registerAttributeChangedFunction = function(theFunction) {
 
 ObjectManager.contentUpdate = function(data) {
     var object = ObjectManager.getObject(data.id);
-    object.contentUpdated();
+
+    if (object) {
+        object.contentUpdated();
+    } else {
+        console.warn("ObjectManager.contentUpdate:: Object with id: " + data.id + " was not found");
+    }
 }
 
 ObjectManager.remove = function(object) {
