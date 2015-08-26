@@ -256,7 +256,8 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 		var historyEntry = {
 			'roomID': roomID,
             'objectID': id,
-            'action': 'create Object'
+            'action': 'create Object',
+			'name' : object.getAttribute('name')
         }
 
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
@@ -764,7 +765,8 @@ ObjectManager.deleteObject = function(data, context, callback) {
                 var historyEntry = {
                     'roomID': roomID,
                     'objectID': objectID,
-                    'action': 'delete Object'
+                    'action': 'delete Object',
+					'name' : object.getAttribute('name')
                 }
 				
 				var transactionId = data.transactionId;
@@ -776,14 +778,15 @@ ObjectManager.deleteObject = function(data, context, callback) {
                     Modules.Connector.duplicateObject(roomID, toRoom.id, objectID, context, function(err, newId, oldId) {
 						var newObject = Modules.ObjectManager.getObject(toRoom.id, newId, context);
 						newObject.setAttribute("oldRoomID", roomID);
-                        object.remove();
 
 						historyEntry = {
 							'roomID': 'trash',
 							'objectID': newId,
-							'action': 'create Object'
+							'action': 'create Object',
+							'name' : object.getAttribute('name')
 						}
 						
+						object.remove();
                         that.history.add(new Date().getTime(), data.userId, historyEntry);
 						Modules.RoomController.informAllInRoom({"room": 'trash', 'message': {'change': 'change'}}, null); 
                     });

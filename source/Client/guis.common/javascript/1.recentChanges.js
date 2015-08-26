@@ -17,10 +17,10 @@ GUI.recentChanges.addChange = function(room, change) {
 	}
 	
 	$("#recent_changes").prepend(
-		'<div class="recent_change_other">'+
+		'<div class="recent_change">'+
 		'<span style="color:  #000000">'+change.user+' ('+change.date+')</span>'+
+		'<span style="color:  #000000; font-weight: normal;">'+change.name+'</span>'+
 		action+
-		'<span style="color:  #000000; font-weight: normal; font-size: 9px">'+change.objectID+'</span>'+
 		'</div>'
 	);
 }

@@ -262,7 +262,8 @@ WebServer.init = function (theModules) {
 				var historyEntry = {
 					'objectID' : objectID,
 					'roomID' : roomID,
-					'action' : 'set Content'
+					'action' : 'set Content',
+					'name' : object.getAttribute('name')
 				}
 				
 				Modules.ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);

@@ -167,7 +167,8 @@ WebDavConnector.setWebDavFileAsContent = function(host, user, pw, path, objectID
 					var historyEntry = {
 						'objectID' : objectID,
 						'roomID' : roomID,
-						'action' : 'set Content'
+						'action' : 'set Content',
+						'name' : obj.getAttribute('name')
 					}
 					
 					that.Modules.ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);

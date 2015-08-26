@@ -1063,27 +1063,14 @@ html>body #sortable1 li { height: 1.5em; line-height: 1.2em;}
 
 #recent_changes>div>span {
     display: block;
-    font-size: 11px;
+    font-size: 12px;
     margin-bottom: 2px;
     color: #5F5F5F;
     font-weight: bold;
 }
 
-#recent_changes>div.recent_change_mine {
-    background: -moz-linear-gradient(
-        center top ,
-        #E7F1FF 0%,
-        #B5D4FD 100%) repeat scroll 0 0 transparent;	
-    background: -webkit-gradient(
-        linear,
-        left top,
-        left bottom,
-        color-stop(0, #E7F1FF),
-        color-stop(1, #B5D4FD)
-        );
-}
 
-#recent_changes>div.recent_change_other {
+#recent_changes>div.recent_change {
     background: -moz-linear-gradient(
         center top ,
         #FEFEFE 0%,

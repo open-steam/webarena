@@ -145,13 +145,14 @@ FTPConnector.setFTPFileAsContent = function(host, user, pw, path, objectID, sock
 		socket.pipe(fs.createWriteStream(that.Modules.Config.filebase + '/' + roomID + '/' + objectID + '.content'));
 		socket.resume();
 		var obj = that.Modules.ObjectManager.getObject(roomID, objectID, context);
-		
+
 		socket.on('end', function(){
 
 			var historyEntry = {
 				'objectID' : objectID,
 				'roomID' : roomID,
-				'action' : 'set Content'
+				'action' : 'set Content',
+				'name' : obj.getAttribute('name')
 			}
 			
 			that.Modules.ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);

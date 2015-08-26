@@ -114,7 +114,8 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 				'roomID': roomID,
 				'attribute': serverFunctionParams[0],
 				'old': oldValue,
-				'new': serverFunctionParams[1]
+				'new': serverFunctionParams[1],
+				'name' : object.getAttribute('name')
 			}
 			
 			ObjectManager.history.add(new Date().getTime(), probableTransactionInfo.userId, historyEntry);
@@ -124,7 +125,8 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 			var historyEntry = {
 				'objectID': objectID,
 				'roomID': roomID,
-				'action': 'set Content'
+				'action': 'set Content',
+				'name' : object.getAttribute('name')
 			}
 			
 			ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);
