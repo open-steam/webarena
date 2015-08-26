@@ -46,7 +46,7 @@ module.exports={
 	
 	trash: true,
 	
-	cloud: true,
+	cloud: false,
 	
 	recentChanges: true,
 	
