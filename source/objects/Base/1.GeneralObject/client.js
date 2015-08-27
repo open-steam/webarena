@@ -99,7 +99,8 @@ GeneralObject.fetchContent = function(worker, forced) {
 GeneralObject.getContentAsString = function(callback) {
     if (callback === undefined) {
         if (!this.contentFetched) {
-            alert('Synchronous content access before it has been fetched! Inform the programmer about this issue!');
+            //alert('Synchronous content access before it has been fetched! Inform the programmer about this issue!');
+            console.warn('Synchronous content access before it has been fetched! Inform the programmer about this issue!');
             return false;
         }
         return GeneralObject.utf8.parse(this.content);

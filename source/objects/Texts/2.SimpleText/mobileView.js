@@ -84,10 +84,12 @@ SimpleText.drawPreview = function(previewContainer) {
 	if (content == this.translate(this.currentLanguage, 'No text yet!')) {
 		content = "";
 	}
+
+	if (content) {
+		content = content.replace(/"/g, "&quot;");
+	}
 	
-	previewContainer.find('#showroom')
-		.attr('style', style)
-		.html(content.replace(/"/g, "&quot;"));
+	previewContainer.find('#showroom').attr('style', style).html(content);
 }
 
 SimpleText.drawContentPane = function(pane) {

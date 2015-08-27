@@ -54,6 +54,8 @@
 
 	$(document).ready(function() {
         // DUI
+		Modules.MobileDetect = new MobileDetect(window.navigator.userAgent);
+
         Modules.SocketClient = new SocketClient();
         Modules.ACLManager =   new ACLManagerClient();
 

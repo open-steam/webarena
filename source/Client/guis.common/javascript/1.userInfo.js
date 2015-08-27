@@ -44,10 +44,10 @@ UserInfo.prototype.init = function() {
 
     var that = this;
     Modules.ACLManager.userRoles(function (err, result) {
-        var user = _.contains(result, 'admin') ? "admin" : "user";
-        that.isAdmin = (user == 'admin');
+        var role = _.contains(result, 'admin') ? "admin" : "user";
+        that.isAdmin = (role == 'admin');
 
-        role.setValue(user);
+        role.setValue(role);
         role.setInactive();
     });
 };

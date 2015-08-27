@@ -5,38 +5,32 @@
 *
 */
 
-Textarea.draw=function(external){
-
+Textarea.draw = function(external) {
 	if (!this.isVisible()) {
 		return;
 	}
-	var rep=this.getRepresentation();
+	var rep = this.getRepresentation();
 	
 	this.drawPreview($(rep).find('.preview'));
 	this.drawContentPane($(rep).find('.objectcontent'));
 	/*
 	this.drawDimensions(external);
-	
-	
+
 	$(rep).attr("width", this.getAttribute('width'));
 	$(rep).attr("height", this.getAttribute('height'));
 
 	var linesize = this.getAttribute('linesize')-1+1;
 	
 	if (linesize > 0) {
-		
 		$(rep).find("body>div").css("border-color", this.getAttribute('linecolor'));
 		$(rep).find("body>div").css("border-width", this.getAttribute('linesize'));
 		$(rep).find("body>div").css("border-style", "solid");
 		$(rep).find("body>div>div").css("padding", "5px");
-		
 	} else {
-		
 		$(rep).find("body>div").css("border-color", "none");
 		$(rep).find("body>div").css("border-width", "0px");
 		$(rep).find("body>div").css("border-style", "solid");
 		$(rep).find("body>div>div").css("padding", "0px");
-		
 	}
 	
 	$(rep).find("body>div").css("background-color", this.getAttribute('fillcolor'));
@@ -55,19 +49,15 @@ Textarea.draw=function(external){
 		}
 	}
 
-	var that=this;
+	var that = this;
 	
 	this.getContentAsString(function(text){
-
 		//if(text!=that.oldContent){
-
             text = htmlEncode(text);
-
 			$(rep).find("body>div>div").html(text);
 		//}
 		
 		that.oldContent=text;
-		
 	});
 	
 	this.updateInnerHeight();
@@ -91,10 +81,12 @@ Textarea.drawPreview = function(previewContainer) {
 	
 	var showroom = previewContainer.find('#showroom');
 	showroom.attr('style', style);
-	
-	showroom
-		.find('div > div')
-		.html(htmlEncode(content.replace(/"/g, "&quot;")));
+
+	if (content) {
+		content = content.replace(/"/g, "&quot;");
+	}
+
+	showroom.find('div > div').html(htmlEncode(content));
 }
 
 Textarea.drawContentPane = function(pane) {
@@ -120,7 +112,6 @@ Textarea.updateInnerHeight = function() {
 	$(rep).find("body>div").css("height", ($(rep).attr("height")-(2*parseInt(this.getAttribute('linesize'))))+"px");
 	
 }
-
 
 Textarea.createRepresentation = function(parent) {
 	
@@ -258,16 +249,19 @@ Textarea.checkTransparency = function(attribute, value) {
 	} else {
 		var fillcolor = this.getAttribute('fillcolor');
 	}
+
 	if (attribute === 'font-color') {
 		var fontcolor = value;
 	} else {
 		var fontcolor = this.getAttribute('font-color');
 	}
+
 	if (attribute === 'linecolor') {
 		var linecolor = value;
 	} else {
 		var linecolor = this.getAttribute('linecolor');
 	}
+
 	if ((fillcolor === 'rgba(0, 0, 0, 0)' && linecolor === 'rgba(0, 0, 0, 0)' && fontcolor === 'rgba(0, 0, 0, 0)') || (fillcolor === 'rgba(0, 0, 0, 0)' && linecolor === 'rgba(0, 0, 0, 0)' && this.getContentAsString().trim() === '')) {
 		return false;
 	} else return true;

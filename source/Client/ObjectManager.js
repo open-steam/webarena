@@ -80,8 +80,8 @@ ObjectManager.init = function() {
             ObjectManager.getObject(data.id).deleteLinks();  // delete all links which ends or starts in this object
             ObjectManager.removeLocally(data);
         } catch(e) {
-            console.log("Error in ObjectManager: line 79: " + e);
-            throw e;
+            console.log("Error in ObjectManager: line 84: " + e);
+            //throw e;
         }
     });
 
@@ -263,7 +263,6 @@ ObjectManager.buildObject = function(type, attributes) {
     }
 
     return object;
-
 }
 
 /**
@@ -446,12 +445,16 @@ ObjectManager.remove = function(object) {
 
     Modules.Dispatcher.query('deleteObject', data, function(result) {
        if (!result.deleted) {
-           $().toastmessage('showToast', {
-               text: GUI.translate(result.msg),
-               sticky: false,
-               position: 'top-left',
-               type    : 'error'
-           });
+           if (!Modules.MobileDetect.phone()) {
+               $().toastmessage('showToast', {
+                   text: GUI.translate(result.msg),
+                   sticky: false,
+                   position: 'top-left',
+                   type    : 'error'
+               });
+           } else {
+                alert(GUI.translate(result.msg));
+           }
        }
     });
 }
@@ -722,13 +725,19 @@ ObjectManager.getActionsForSelected = function() {
 }
 
 ObjectManager.performActionForSelected = function(actionName, clickedObject) {
-
     var selectedObjects = this.getSelected();
 
-    if (!selectedObjects)
+    if (!selectedObjects) {
         return;
+    }
 
-    selectedObjects[0].performAction(actionName, clickedObject);
+    var selectedObject = selectedObjects[0];
+
+    if (selectedObject) {
+        selectedObject.performAction(actionName, clickedObject);
+    } else {
+        console.warn("ObjectManager.performActionForSelected:: no object selected.");
+    }
 }
 
 ObjectManager.renumberLayers = function(noUpdate) {

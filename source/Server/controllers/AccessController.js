@@ -89,10 +89,13 @@ AccessController.prototype._removeAllow = function(roles, resources, permissions
 
                 _.each(resources, function(resource) {
 
-                    // Delete the object in the clients
-                    var objectId = that.acl.getIdFromACLName(resource);
+                    // Delete the object in the clients if they are online
                     var socket = that.couplingManager.getSocket(role);
-                    ObjectController.deleteFromClient(room.id, objectId, context, socket);
+
+                    if (socket) {
+                        var objectId = that.acl.getIdFromACLName(resource);
+                        ObjectController.deleteFromClient(room.id, objectId, context, socket);
+                    }
                 });
             }
 

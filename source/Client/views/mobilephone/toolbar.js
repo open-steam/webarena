@@ -7,7 +7,8 @@ Toolbar.init = function() {
 	var types = {};
 	
 	/* Get types of creatable objects. */
-	$.each(ObjectManager.getTypes(), function(key, object) { 
+	$.each(ObjectManager.getTypes(), function(key, object) {
+
 		// Check if object is creatable on mobile.
 		if (object.isCreatableOnMobile && object.onMobile) {
 			if (object.category == undefined) {
@@ -74,6 +75,38 @@ Toolbar.init = function() {
 	
 	// Hide main menu on startup.
 	$("#createmenu").hide();
+
+	/* Create a button a botton for showing user info. */
+	var userInfoButton = document.createElement("img");
+	$(userInfoButton).attr("src", "../../guis.common/images/userinfo.png").attr("alt", "");
+	$(userInfoButton).attr("width", "24").attr("height", "24");
+
+	$(userInfoButton).attr("id", "userinfo_button");
+	$(userInfoButton).addClass("sidebar_button");
+
+	$(userInfoButton).attr("title", GUI.translate("User Info"));
+
+	$("#header > .header_right").append(userInfoButton);
+
+	var cookie = JSON.parse($.cookie('WADIV').replace("j:", ""));
+
+	var click = function() {
+		var content = "Name: " + cookie['name'] + "\n";
+		content += "WADIV: " + cookie['WADIV'] + "\n";
+
+		Modules.ACLManager.userRoles(function (err, result) {
+			var role = _.contains(result, 'admin') ? "admin" : "user";
+			content += "Role: " + role;
+
+			alert(content);
+		});
+	}
+
+	if (GUI.isTouchDevice) {
+		$(userInfoButton).bind("touchstart", click);
+	} else {
+		$(userInfoButton).bind("mousedown", click);
+	}
 	
 	/* Create button for switching to the parent room. */
 	var parentButton = document.createElement("img");
