@@ -25,6 +25,8 @@ ObjectController.deleteFromClient = function(roomID, objectID, context, socket) 
 };
 
 ObjectController.pokeObject = function(roomID, objectID, context) {
+	context = context ? context : { user: { username: 'acl' } };
+
 	var object = ObjectManager.getObject(roomID, objectID, context);
 
 	if (object) {
@@ -57,12 +59,16 @@ ObjectController.createObject = function(data, context, callback) {
 						});
 					},
 					function(obj, roles, callback) {
-						//var completeRoles = _.union(_.without(roles, 'user'), ['admin']);
-						var completeRoles = ['admin'];
+						var completeRoles = _.without(roles, 'user', 'admin');
 						var resource = AclManager.makeACLName(obj.id);
 
-						AclManager.allow(completeRoles, resource, '*', function (err) {
-							callback(err, obj);
+						AclManager.allow('admin', resource, '*', function (err) {
+							if (!err) {
+								AclManager.allow(completeRoles, resource, ['couple', 'delete'], function (err2) {
+									if (!err2) ObjectController.pokeObject(roomID, obj.id);
+									callback(err2, obj);
+								});
+							} else callback(err, obj);
 						});
 					}
 				], function (err, obj) {

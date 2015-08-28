@@ -452,6 +452,10 @@ GeneralObject.register = function(type) {
 
             if (devices.length > 0) {
 
+                devices = _.uniq(devices, false, function(device) {
+                    return device.WADIV;
+                });
+
                 var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
                 objectDevCoupDialog.show();
 

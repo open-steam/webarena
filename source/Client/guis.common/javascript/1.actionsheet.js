@@ -53,7 +53,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
         if (_.contains(Modules.ACLManager.notForEveryOne, action)) {
             var resource = Modules.ACLManager.makeACLName(webarenaObject.id);
 
-            Modules.ACLManager.isAllowed(resource, action, function (err, result) {
+            Modules.ACLManager.isAllowed(resource, action.toLowerCase(), function (err, result) {
                 if (!err && result) {
                     if (action == 'object.decoupling.action') {
                         Modules.ACLManager.whatRolesAllowed(resource, 'couple', function(roles) {

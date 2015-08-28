@@ -12,6 +12,8 @@ var _ = require('underscore');
 var node_acl = require('acl');
 var mongoose = require('mongoose');
 
+var ResourceManager = require('./resourceManager');
+
 // The actual acl will reside here
 var acl = undefined;
 
@@ -215,33 +217,11 @@ function mongo_connected() {
 // This creates a set of roles which have permissions on
 // different resources.
 function set_roles() {
-
-    // This array contains all the static (not dynamically created) objects/resources
-    // which can be accessed by the admin role
-    var staticUIList = ['ui_static_graphical_ellipse',
-                        'ui_static_graphical_line',
-                        'ui_static_graphical_polygon',
-                        'ui_static_graphical_rectangle',
-                        'ui_static_graphical_arrow',
-                        'ui_static_graphical_coordinatesystem',
-                        'ui_static_graphical_table',
-                        'ui_static_graphical_timeline',
-                        'ui_static_texts_simpletext',
-                        'ui_static_texts_textarea',
-                        'ui_static_connections_exit',
-                        'ui_static_connections_subroom',
-                        'ui_static_content_file',
-                        'ui_static_tools_coupling',
-                        'ui_static_tools_chatIcon',
-                        'ui_static_tools_grantFullRightsIcon',
-
-                        // mobile UI
-                        'mb_ui_static_graphical_menu'
-                        ];
+    var resources = _.union(ResourceManager.staticUIResources, ResourceManager.staticUIOnlyAdminResources);
 
     // Create the 'admin' Role
     // Create roles implicitly by giving them permissions:
-    acl.allow('admin', staticUIList, '*', logError);
+    acl.allow('admin', resources, '*', logError);
 
     // Create the 'user' Role
     acl.allow('user','public' , '*', logError);

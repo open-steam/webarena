@@ -53,8 +53,7 @@ try {
     console.log('The old config.local files which are located IN the Client or Server folder can be removed.');
 }
 
-
-//store the general config/client config in an own variable
+// store the general config/client config in an own variable
 var clientConfig = {};
 for (var prop in config) {
     if (prop != "server") {
@@ -62,7 +61,7 @@ for (var prop in config) {
     }
 }
 
-//mix the exclusive server config with the General/Client config
+// mix the exclusive server config with the General/Client config
 for (var key in config.server) {
     var value = config.server[key];
     config[key] = value;
@@ -143,7 +142,9 @@ db.once('open', function (callback) {
 
     Modules.ACLManager 		 = new aclManager(mongoDBConfig.getURI());
     Modules.CouplingManager  = new couplingManager(Modules.UserManager);
-    Modules.AccessController = new accessController(Modules.ACLManager, Modules.CouplingManager);
+    Modules.AccessController = new accessController(Modules.ACLManager,
+                                                    Modules.CouplingManager,
+                                                    Modules.Config);
 
 
     // Initialize all Modules if there is a init-function

@@ -5,7 +5,7 @@ var Toolbar = {};
 Toolbar.init = function() {
 	var resource = 'mb_ui_static_graphical_menu';
 
-	Modules.ACLManager.isAllowed(resource, "create", function (err, result) {
+	Modules.ACLManager.isAllowed(resource, 'create', function (err, result) {
 		if (!err && result) {
 
 			/* Create main menu and add it to the header. */

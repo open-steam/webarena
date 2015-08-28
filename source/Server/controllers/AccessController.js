@@ -10,10 +10,12 @@ var _     = require('underscore');
 var async = require('async');
 
 var ObjectController = require('./ObjectController.js');
+var ResourceManager  = require('../resourceManager');
 
-function AccessController(my_acl, my_CouplingManager) {
+function AccessController(my_acl, my_CouplingManager, my_config) {
     this.acl = my_acl;
     this.couplingManager = my_CouplingManager;
+    this.config = my_config;
 }
 
 AccessController.prototype.query = function(data, cb) {
@@ -32,7 +34,7 @@ AccessController.prototype.query = function(data, cb) {
             });
             break;
         case 'isAllowed':
-            this.acl.isAllowed(data.passport.user, data.resource, data.permissions, function(err, allowed) {
+            this._isAllowed(data.passport.user, data.resource, data.permissions, function(err, allowed) {
                 cb(err, allowed);
             });
             break;
@@ -73,6 +75,23 @@ AccessController.prototype.query = function(data, cb) {
     }
 
 }
+
+AccessController.prototype._isAllowed = function(userId, resource, permissions, cb) {
+    var that = this;
+    permissions = _.isArray(permissions) ? permissions : [permissions];
+
+    this.acl.isAllowed2(userId, resource, permissions, function(err, allowed) {
+
+        if (!allowed) {
+
+            if (that.config.usersCanCreateObjects && _.contains(permissions, 'create')) {
+                allowed = _.contains(ResourceManager.staticUIResources, resource);
+            }
+        }
+
+        cb(err, allowed);
+    });
+};
 
 AccessController.prototype._removeAllow = function(roles, resources, permissions, extras, cb) {
     var that = this;
