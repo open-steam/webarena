@@ -450,35 +450,45 @@ GeneralObject.register = function(type) {
             // remove this client
             devices = _.filter(devices, function(device) { return device.WADIV != GUI.userInfo.wadiv; });
 
-            var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
-            objectDevCoupDialog.show();
+            if (devices.length > 0) {
 
-            $(objectDevCoupDialog).on("objectDevCoupling::selections", function(event) {
-                var choices = event.payLoad;
-                var roles = [];
-                var resources = [];
-                var extras = [];
+                var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
+                objectDevCoupDialog.show();
 
-                $.each(choices, function(index, choice) {
-                    roles.push(choice.id);
+                $(objectDevCoupDialog).on("objectDevCoupling::selections", function(event) {
+                    var choices = event.payLoad;
+                    var roles = [];
+                    var resources = [];
+                    var extras = [];
+
+                    $.each(choices, function(index, choice) {
+                        roles.push(choice.id);
+                    });
+
+                    $.each(selectedObjects, function(index, obj) {
+                        resources.push(Modules.ACLManager.makeACLName(obj.id));
+                        extras.push( { room: { id: obj.getRoomID()}, objectID: obj.id } );
+                    });
+
+                    Modules.ACLManager.allow(roles, resources, "couple", extras, function(result) {
+                        if (result) {
+                            $().toastmessage('showToast', {
+                                text: GUI.translate("Couple succeed"),
+                                sticky: false,
+                                position: 'top-left',
+                                type    : 'success'
+                            });
+                        }
+                    });
                 });
-
-                $.each(selectedObjects, function(index, obj) {
-                    resources.push(Modules.ACLManager.makeACLName(obj.id));
-                    extras.push( { room: { id: obj.getRoomID()}, objectID: obj.id } );
+            } else {
+                $().toastmessage('showToast', {
+                    text: GUI.translate("noDeviesToCoupleWith"),
+                    sticky: false,
+                    position: 'top-left',
+                    type    : 'warning'
                 });
-
-                Modules.ACLManager.allow(roles, resources, "couple", extras, function(result) {
-                    if (result) {
-                        $().toastmessage('showToast', {
-                            text: GUI.translate("Couple succeed"),
-                            sticky: false,
-                            position: 'top-left',
-                            type    : 'success'
-                        });
-                    }
-                });
-            });
+            }
         });
     }, true);
 

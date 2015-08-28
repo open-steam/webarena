@@ -19,7 +19,8 @@ function TranslationEN() {
             'tagManager.sectagdeletion.duplicate.error' : "",
             'grantFullRights.button': "Grant Full Rights",
             'object.device.coupling.dialog.tittle': "Object-device coupling",
-            'object.device.decoupling.dialog.tittle': "Object-device decoupling"
+            'object.device.decoupling.dialog.tittle': "Object-device decoupling",
+            'noDeviesToCoupleWith': "There are no Devices to couple this object with."
         }
     );
 };

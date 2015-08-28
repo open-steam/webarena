@@ -15,9 +15,12 @@ function ObjectDeviceCouplingDialog(objects, devices) {
     var that = this;
     var onSave = function() {
         var choices = $(that.dialog).find('input:checkbox:checked');
-        var event = jQuery.Event("objectDevCoupling::selections");
-        event.payLoad = choices;
-        $(that).trigger(event);
+
+        if (choices.length > 0) {
+            var event = jQuery.Event("objectDevCoupling::selections");
+            event.payLoad = choices;
+            $(that).trigger(event);
+        }
     };
 
     var onExit = function() {
