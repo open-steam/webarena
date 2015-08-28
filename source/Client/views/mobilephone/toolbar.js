@@ -3,80 +3,66 @@
 var Toolbar = {};
 
 Toolbar.init = function() {
-	/* Create entries for creatable objects. */
-	var types = {};
-	
-	/* Get types of creatable objects. */
-	$.each(ObjectManager.getTypes(), function(key, object) {
+	var resource = 'mb_ui_static_graphical_menu';
 
-		// Check if object is creatable on mobile.
-		if (object.isCreatableOnMobile && object.onMobile) {
-			if (object.category == undefined) {
-				object.category = "default";
+	Modules.ACLManager.isAllowed(resource, "create", function (err, result) {
+		if (!err && result) {
+
+			/* Create main menu and add it to the header. */
+			var menu = document.createElement("img");
+			$(menu).attr("src", "../../guis/mobilephone/images/menu.png");
+			$(menu).attr("width", "24").attr("height", "24");
+			$(menu).attr("style", "margin-left: 4px; margin-right: 4px; padding-left: 0px");
+			$("#header>div.header_left").append(menu);
+
+			/* Build the main menu and its entries. */
+			Toolbar.buildMenu();
+
+			/* Build event handler for the main menu. */
+			if (GUI.isTouchDevice) {
+				$(menu).bind("touchstart", function toggleCreateMenu(event) {
+					// Toggle main menu.
+					if (toggleCreateMenu.isVisible == undefined) {
+						toggleCreateMenu.isVisible = false;
+					}
+
+					if (toggleCreateMenu.isVisible) {
+						$("#objectlist").fadeIn("slow");
+						$("#createmenu").fadeOut("slow");
+					} else {
+						$("#objectlist").fadeOut("slow");
+						$("#createmenu").fadeIn("slow");
+					}
+
+					toggleCreateMenu.isVisible = !toggleCreateMenu.isVisible;
+					event.stopImmediatePropagation();
+				});
+			} else {
+				$(menu).bind("mousedown", function toggleCreateMenu(event) {
+					// Toggle main menu.
+					if (toggleCreateMenu.isVisible == undefined) {
+						toggleCreateMenu.isVisible = false;
+					}
+
+					if (toggleCreateMenu.isVisible) {
+						$("#objectlist").fadeIn("slow");
+						$("#createmenu").fadeOut("slow");
+					} else {
+						$("#objectlist").fadeOut("slow");
+						$("#createmenu").fadeIn("slow");
+					}
+
+					toggleCreateMenu.isVisible = !toggleCreateMenu.isVisible;
+					event.stopImmediatePropagation();
+				});
 			}
-			if (types[object.category] == undefined) {
-				types[object.category] = [];
-			}
-			types[object.category].push(object);
+
+			// Hide main menu on startup.
+			$("#createmenu").hide();
 		}
-	
 	});
-	
-	var toolbar_locked_elements = {};
-	
-	/* Create main menu and add it to the header. */
-	var menu = document.createElement("img");
-	$(menu).attr("src", "../../guis/mobilephone/images/menu.png");
-	$(menu).attr("width", "24").attr("height", "24");
-	$(menu).attr("style", "margin-left: 4px; margin-right: 4px; padding-left: 0px");
-	$("#header>div.header_left").append(menu);
-	
-	/* Build the main menu and its entries. */
-	Toolbar.buildMenu();
-	
-	/* Build event handler for the main menu. */
-	if (GUI.isTouchDevice) {
-		$(menu).bind("touchstart", function toggleCreateMenu(event) {
-			// Toggle main menu.
-			if (toggleCreateMenu.isVisible == undefined) {
-				toggleCreateMenu.isVisible = false;
-			}
-			
-			if (toggleCreateMenu.isVisible) {
-				$("#objectlist").fadeIn("slow");
-				$("#createmenu").fadeOut("slow");
-			} else {
-				$("#objectlist").fadeOut("slow");
-				$("#createmenu").fadeIn("slow");
-			}
-			
-			toggleCreateMenu.isVisible = !toggleCreateMenu.isVisible;
-			event.stopImmediatePropagation();
-		});
-	} else {
-		$(menu).bind("mousedown", function toggleCreateMenu(event) {
-			// Toggle main menu.
-			if (toggleCreateMenu.isVisible == undefined) {
-				toggleCreateMenu.isVisible = false;
-			}
-			
-			if (toggleCreateMenu.isVisible) {
-				$("#objectlist").fadeIn("slow");
-				$("#createmenu").fadeOut("slow");
-			} else {
-				$("#objectlist").fadeOut("slow");
-				$("#createmenu").fadeIn("slow");
-			}
-			
-			toggleCreateMenu.isVisible = !toggleCreateMenu.isVisible;
-			event.stopImmediatePropagation();
-		});
-	}
-	
-	// Hide main menu on startup.
-	$("#createmenu").hide();
 
-	/* Create a button a botton for showing user info. */
+	/* Create a button a for showing user info. */
 	var userInfoButton = document.createElement("img");
 	$(userInfoButton).attr("src", "../../guis.common/images/userinfo.png").attr("alt", "");
 	$(userInfoButton).attr("width", "24").attr("height", "24");

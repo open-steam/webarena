@@ -260,38 +260,6 @@ function initToolbarAux(types) {
             var page = popover.addPage(GUI.translate("Welcome") + " " + Modules.Helper.capitalize(GUI.username));
             var section = page.addSection();
 
-            ///* add paste button */
-            //var pasteButton = document.createElement("img");
-            //$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
-            //$(pasteButton).attr("width", "24").attr("height", "24");
-            //$(pasteButton).attr("id", "paste_button");
-            //$(pasteButton).addClass("sidebar_button");
-            //$(pasteButton).attr("title", GUI.translate("Paste"));
-            //var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
-            //$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
-            //numberOfIcons++;
-            //$("#header > .header_right").append(pasteButton); //add header icon
-            //var clickPaste = function() { //click handler
-            //    Modules.ObjectManager.pasteObjects();
-            //    popover.hide();
-            //};
-
-            ///* add undo button */
-            //var undoButton = document.createElement("img");
-            //$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
-            //$(undoButton).attr("width", "24").attr("height", "24");
-            //$(undoButton).attr("id", "undo_button");
-            //$(undoButton).addClass("sidebar_button");
-            //$(undoButton).attr("title", GUI.translate("Undo"));
-            //var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
-            //$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");
-            //numberOfIcons++;
-            //$("#header > .header_right").append(undoButton); //add header icon
-            //var clickUndo = function() { //click handler
-            //    Modules.Dispatcher.query("undo", {"userID": GUI.userid});
-            //    popover.hide();
-            //};
-
             /* add coupling button */
             if (Modules.Config.couplingMode) {
                 Modules.ACLManager.isAllowed('ui_static_tools_coupling', "create", function (err, result) {

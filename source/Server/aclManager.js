@@ -92,7 +92,7 @@ ACLManager.prototype.isAllowed2 = function(userId, resource, permissions, cb) {
         if (_.contains(userPermissions, "*")) return cb(null, true);
 
         // PATCH:
-        // before returning false, check if the user hat the role admin.
+        // before returning false, check if the user hat the admin role.
         that.hasRole(userId, 'admin', function(err, hasRole) {
             return cb(err, hasRole);
         })
@@ -233,7 +233,10 @@ function set_roles() {
                         'ui_static_content_file',
                         'ui_static_tools_coupling',
                         'ui_static_tools_chatIcon',
-                        'ui_static_tools_grantFullRightsIcon'
+                        'ui_static_tools_grantFullRightsIcon',
+
+                        // mobile UI
+                        'mb_ui_static_graphical_menu'
                         ];
 
     // Create the 'admin' Role
