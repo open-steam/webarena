@@ -5,35 +5,34 @@
 *
 */
 
-var Modules=require('../../../server.js');
+var Modules = require('../../../server.js');
 
-var IconObject=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
+var IconObject = Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
-IconObject.isCreatable=false;
-
+IconObject.isCreatable = false;
 IconObject.onMobile = true;
 IconObject.hasMobileRep = true;
+IconObject.category = 'Objects';
 
-IconObject.category='Objects';
-
-IconObject.register=function(type){
+IconObject.register = function(type) {
 	
 	// Registering the object
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
-	GeneralObject.register.call(this,type); //super call
+	GeneralObject.register.call(this, type); //super call
 	
-	this.attributeManager.registerAttribute('layer',{hidden: true});
-	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { if(object) {object.updateIcon();} }, mobile: false});
-	this.registerAttribute('width',{hidden:true});
-	this.registerAttribute('height',{hidden:true});
+	this.attributeManager.registerAttribute('layer', {hidden: true});
+	this.registerAttribute('bigIcon', { type:'boolean', standard:true, changedFunction: function(object) { if (object) { object.updateIcon();} }, mobile: false } );
+	this.registerAttribute('width', { hidden:true } );
+	this.registerAttribute('height', { hidden:true } );
 	this.registerAttribute('fillcolor',{hidden:true});
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
-	this.registerAttribute('linecolor',{hidden:true});
-	this.registerAttribute('linesize',{hidden:true});
+	this.registerAttribute('linecolor', { hidden:true } );
+	this.registerAttribute('linesize', { hidden:true } );
+
 	this.unregisterAction('to back');
 	this.unregisterAction('to front');
         
-        this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+    this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
             if (object.resizeProportional()) {
                 object.setAttribute("height", object.getAttribute("height") * (value / object.getAttribute("width")));
@@ -48,8 +47,7 @@ IconObject.register=function(type){
             } else {
                 return "32";
             }
-        },
-        mobile: false});
+        }, mobile: false});
 
     this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
@@ -67,15 +65,11 @@ IconObject.register=function(type){
                 return "32";
             }
         }, mobile: false});
-
-	
 }
 
-
-IconObject.isResizable=function(){
+IconObject.isResizable = function() {
 	return false;
 }
-
 
 IconObject.input = false;
 
@@ -85,4 +79,4 @@ IconObject.alwaysOnTop = function() {return true;};
 
 IconObject.register('IconObject');
 
-module.exports=IconObject;
+module.exports = IconObject;

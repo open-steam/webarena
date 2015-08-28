@@ -5,16 +5,15 @@
 *
 */
 
-var Modules=require('../../../server.js');
+var Modules = require('../../../server.js');
 
-var WAFile=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
+var WAFile = Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
-WAFile.register=function(type){
+WAFile.register = function(type) {
 	
 	// Registering the object
-	
-	IconObject=Modules.ObjectManager.getPrototype('IconObject');
-	IconObject.register.call(this,type);
+	IconObject = Modules.ObjectManager.getPrototype('IconObject');
+	IconObject.register.call(this, type);
 	
 	this.registerAttribute('bigIcon',{type:'boolean',standard:true,changedFunction: function(object) { 
 		object.updateIcon(); 
@@ -92,7 +91,7 @@ WAFile.register=function(type){
         , mobile: false});
    
 	
-	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
+	this.registerAttribute('onMobile', {type:'boolean', standard:true, category:'Basic', mobile: false});
 	
 	this.registerAction('to front',function(){
 	
@@ -183,36 +182,31 @@ WAFile.register=function(type){
 	
 }
 
-WAFile.execute=function(){
-
+WAFile.execute = function() {
 	if (this.hasContent() == true) {
-		
 		if (this.getAttribute('preview')) return;
-		
 		this.openFile();
-		
 	} else {
 		this.upload();
 	}
-
 }
 
-WAFile.isProportional=function(){
+WAFile.isProportional = function() {
 	return true;
 }
 
-WAFile.resizeProportional=function(){
+WAFile.resizeProportional = function() {
 	return true;
 }
 
-WAFile.isResizable=function(){
+WAFile.isResizable = function() {
 	if (this.hasContent() == true && this.getAttribute("preview") == true) {
 		return GeneralObject.isResizable.call(this);
 	} else return false; 
 }
 
 WAFile.register('File');
-WAFile.isCreatable=true;
+WAFile.isCreatable = true;
 WAFile.isCreatableOnMobile = true;
 WAFile.onMobile = true;
 
@@ -224,4 +218,4 @@ WAFile.alwaysOnTop = function () {
 	} else return true;
 };
 
-module.exports=WAFile;
+module.exports = WAFile;

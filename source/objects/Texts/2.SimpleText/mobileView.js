@@ -101,10 +101,12 @@ SimpleText.drawContentPane = function(pane) {
 	} else {
 		placeholder = "";
 	}
+
+	if (content) {
+		content = content.replace(/"/g, "&quot;");
+	}
 	
-	pane.find('#simpleTextInput')
-		.attr('value', content.replace(/"/g, "&quot;"))
-		.attr('placeholder', placeholder);
+	pane.find('#simpleTextInput').attr('value', content).attr('placeholder', placeholder);
 }
 
 SimpleText.createRepresentation = function(parent) {

@@ -40,15 +40,15 @@ UserInfo.prototype.init = function() {
     wadivInfo.setValue(this.wadiv);
     wadivInfo.setInactive();
 
-    var role = section.addElement("Role");
+    var roleInfo = section.addElement("Role");
 
     var that = this;
     Modules.ACLManager.userRoles(function (err, result) {
         var role = _.contains(result, 'admin') ? "admin" : "user";
         that.isAdmin = (role == 'admin');
 
-        role.setValue(role);
-        role.setInactive();
+        roleInfo.setValue(role);
+        roleInfo.setInactive();
     });
 };
 

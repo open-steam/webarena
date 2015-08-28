@@ -5,20 +5,19 @@
 *
 */
 
-var Modules=require('../../../server.js');
+var Modules = require('../../../server.js');
 
-var SimpleText=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
+var SimpleText = Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
-SimpleText.register=function(type){
-	
+SimpleText.register = function(type) {
 	// Registering the object
 	
-	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
-	GeneralObject.register.call(this,type);
+	GeneralObject = Modules.ObjectManager.getPrototype('GeneralObject');
+	GeneralObject.register.call(this, type);
 	
-	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
-	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,max:80,unit:'px',category:'Appearance'});
-	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance',checkFunction: function(object,value) {
+	this.registerAttribute('font-family', { type:'font', standard:'Arial', category:'Appearance' } );
+	this.registerAttribute('font-size', { type:'fontsize', min:10, standard:22, max:80, unit:'px', category:'Appearance' } );
+	this.registerAttribute('font-color', { type:'color', standard:'black', category:'Appearance', checkFunction: function(object, value) {
 
 		if (object.checkTransparency('font-color', value)) {
 			return true;
@@ -26,14 +25,14 @@ SimpleText.register=function(type){
 
 	}});
 	
-	this.attributeManager.registerAttribute('width',{hidden:true});
-	this.attributeManager.registerAttribute('height',{hidden:true});
-	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
+	this.attributeManager.registerAttribute('width', { hidden:true } );
+	this.attributeManager.registerAttribute('height', { hidden:true } );
+	this.attributeManager.registerAttribute('fillcolor', { hidden:true } );
 
-    this.registerAttribute('rotation', {type:'number', category: 'Dimensions', mobile: false});
-	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
+    this.registerAttribute('rotation', {type:'number', category: 'Dimensions', mobile: false } );
+	this.registerAttribute('onMobile', {type:'boolean', standard:true, category:'Basic', mobile: false } );
 	
-	this.registerAction('Edit',function(){
+	this.registerAction('Edit', function(){
 		$.each(ObjectManager.getSelected(), function(key, object) {
 			object.execute();
 		});
@@ -42,31 +41,33 @@ SimpleText.register=function(type){
 	
 }
 
-SimpleText.execute=function(){
-	
-	if(!this.input){
+SimpleText.execute = function() {
+	if (!this.input) {
 		this.editText();
 	}
 }
 
-SimpleText.isResizable=function(){
+SimpleText.isResizable = function() {
 	return false;
 }
 
-SimpleText.intelligentRename=function(newValue){
+SimpleText.intelligentRename = function(newValue) {
 	var objectName = this.getAttribute("name");
 	var that = this;
-	this.getContentAsString(function(oldValue){
-		if ( newValue.length > 30 )
-		{ newValue = newValue.substring(0, 30); }
+
+	this.getContentAsString(function(oldValue) {
+		if ( newValue.length > 30 ) {
+            newValue = newValue.substring(0, 30);
+        }
 	
-		if ( objectName == "SimpleText" || objectName == oldValue )
-		{ that.setAttribute("name", newValue); }
+		if ( objectName == "SimpleText" || objectName == oldValue ) {
+            that.setAttribute("name", newValue);
+        }
 	});
 }
 
 SimpleText.register('SimpleText');
-SimpleText.isCreatable=true;
+SimpleText.isCreatable = true;
 SimpleText.onMobile = true;
 SimpleText.input = false;
 SimpleText.isCreatableOnMobile = true;
@@ -74,11 +75,11 @@ SimpleText.isCreatableOnMobile = true;
 SimpleText.hasEditableMobileContent = true;
 SimpleText.contentURLOnly = false; //content is only accessible via URL
 
-SimpleText.content='Neuer Text';
+SimpleText.content = 'Neuer Text';
 
-SimpleText.moveByTransform = function(){return true;};
+SimpleText.moveByTransform = function() { return true; };
 
-SimpleText.justCreated=function(){
+SimpleText.justCreated = function() {
 	this.setContent(this.translate(this.currentLanguage, 'No text yet!'));
 }
 
