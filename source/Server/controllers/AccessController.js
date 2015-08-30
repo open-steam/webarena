@@ -10,7 +10,8 @@ var _     = require('underscore');
 var async = require('async');
 
 var ObjectController = require('./ObjectController.js');
-var ResourceManager  = require('../resourceManager');
+var ResourceManager  = require('../resourceManager.js');
+var Objects = require('../db/objects.js');
 
 function AccessController(my_acl, my_CouplingManager, my_config) {
     this.acl = my_acl;
@@ -54,19 +55,7 @@ AccessController.prototype.query = function(data, cb) {
             });
             break;
         case 'allow':
-            this.acl.allow(data.roles, data.resources, data.permissions, function(err) {
-                var result = err ? false : true;
-
-                if ((data.permissions == 'couple') && data.extras) {
-                    _.each(data.extras, function(element) {
-                        var room = element.room;
-                        var objectID = element.objectID;
-                        var context = { user: { username: "acl_username" } };
-
-                        ObjectController.pokeObject(room.id, objectID, context);
-                    });
-                }
-
+            this._allow(data.roles, data.resources, data.permissions, function(err, result) {
                 cb(err, result);
             });
             break;
@@ -76,6 +65,49 @@ AccessController.prototype.query = function(data, cb) {
 
 }
 
+AccessController.prototype._allow = function(roles, resources, permissions, cb) {
+    resources   = _.isArray(resources)   ? resources   : [resources];
+    permissions = _.isArray(permissions) ? permissions : [permissions];
+
+    var context = { user: { username: "acl_username" } };
+    var that = this;
+    async.each(resources, function(resource, callback) {
+        var objectId = that.acl.getIdFromACLName(resource);
+
+        Objects.findOne( { objectID: objectId }, function(err, obj) {
+            if (err) return callback(err);
+
+            if (obj) {
+                that.acl.allow(roles, resource, permissions, function(error) {
+                    if (error) return callback(error);
+
+                    if (_.contains(permissions, 'couple')) {
+                        var room = obj.room;
+
+                        ObjectController.pokeObject(room, objectId, context);
+                    }
+
+                    return callback(null);
+                });
+            } else {
+                var myError = new Error("Object with id: " + objectId + " not found");
+                myError.myCode = -1;
+
+                return callback(myError);
+            }
+        });
+    }, function(err) {
+        if (err) {
+            console.warn("Error by AccessController._allow: " + err);
+
+            if (err.myCode !== undefined) return cb(null, false);
+            else return cb(err, false);
+        }
+
+        return cb(null, true);
+    });
+};
+
 AccessController.prototype._isAllowed = function(userId, resource, permissions, cb) {
     var that = this;
     permissions = _.isArray(permissions) ? permissions : [permissions];
@@ -84,7 +116,13 @@ AccessController.prototype._isAllowed = function(userId, resource, permissions, 
 
         if (!allowed) {
 
-            if (that.config.usersCanCreateObjects && _.contains(permissions, 'create')) {
+            if (that.config.usersCanCreateObjects && _.contains(permissions, 'create') &&
+                                                            resource !== 'ui_static_tools_canUsersRequestCoupling') {
+                allowed = _.contains(ResourceManager.staticUIResources, resource);
+            }
+
+            if (that.config.canUsersRequestCoupling && _.contains(permissions, 'create') &&
+                                                            resource === 'ui_static_tools_canUsersRequestCoupling') {
                 allowed = _.contains(ResourceManager.staticUIResources, resource);
             }
         }

@@ -7,6 +7,8 @@
 var async = require("async");
 var _	  = require("underscore");
 
+var Objects = require('../db/objects.js');
+
 var ObjectController = {}
 
 var Modules = false;
@@ -50,7 +52,13 @@ ObjectController.createObject = function(data, context, callback) {
 				async.waterfall([
 					function(callback) {
 						Modules.ObjectManager.createObject(roomID, type, attributes, content, context, function (err, obj) {
-							callback(err, obj);
+							if (!err) {
+								var object = new Objects({ objectID: obj.id, room: roomID, type: type });
+								object.save(function (error) {
+									if (error) return callback(error, null);
+									else callback(null, obj);
+								});
+							} else callback(err, null);
 						});
 					},
 					function(obj, callback) {

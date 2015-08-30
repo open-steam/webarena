@@ -52,16 +52,17 @@ GUI.initToolbar = function() {
  */
 GUI.flashNewUserIcon = function(newUser) {
 	
-	if(newUser){
+	if (newUser) {
 		$("#new_user_icon").attr("src", "../../guis.common/images/newUser.png").attr("alt", "");
 		$("#new_user_icon").attr("title", GUI.translate("A user entered this room"));
-	} else{
+	} else {
 		$("#new_user_icon").attr("src", "../../guis.common/images/lostUser.png").attr("alt", "");
 		$("#new_user_icon").attr("title", GUI.translate("A user left this room"));
 	}
 	
 	var flashes = 5;
 	var counter = 0;
+
 	function blink() {
 		counter ++;
 		if (counter <= flashes){
@@ -70,40 +71,39 @@ GUI.flashNewUserIcon = function(newUser) {
 			$("#new_user_icon").attr("title", "");
 		}
 	}
+
 	blink();
 }
 
 /**
  * decides which icons are shown in the toolbar, depending on the free space  
  */
-GUI.resizeToolbar = function(){
+GUI.resizeToolbar = function() {
 
-	if(!GUI.paintModeActive && !GUI.couplingModeActive){
+	if (!GUI.paintModeActive && !GUI.couplingModeActive) {
 
 		var space = $(window).width();
 		space = space - (numberOfIcons*44); //subtract icons
 
-		if(space < -10){
-			if(GUI.sidebar.open){
+		if (space < -10) {
+			if (GUI.sidebar.open) {
 				GUI.sidebar.saveStateAndHide();
 			}
 			$("#header_toggle_sidebar_show").hide();
-		}
-		else{
-			if(GUI.sidebar.open){
+		} else {
+			if (GUI.sidebar.open) {
 				$("#header_toggle_sidebar_hide").show();
 				$("#header_toggle_sidebar_show").hide();
-			}
-			else{
+			} else {
 				$("#header_toggle_sidebar_show").show();
 				$("#header_toggle_sidebar_hide").hide();
 			}
 		}
-		if((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)){
+
+		if((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)) {
 			$("#header > .header_right > img").hide();
 			$("#menu_button").show();
-		}
-		else{
+		} else {
 			$("#header > .header_right > img").show();
 			$("#menu_button").hide();
 		}
@@ -262,7 +262,7 @@ function initToolbarAux(types) {
 
             /* add coupling button */
             if (Modules.Config.couplingMode) {
-                Modules.ACLManager.isAllowed('ui_static_tools_coupling', "create", function (err, result) {
+                Modules.ACLManager.isAllowed('ui_static_tools_coupling', 'create', function (err, result) {
                     if (!err && result) {
                         var couplingButton = document.createElement("img");
                         $(couplingButton).attr("src", "../../guis.common/images/coupling_grey.png").attr("alt", "");
@@ -290,6 +290,52 @@ function initToolbarAux(types) {
                 })
             }
 
+            if (Modules.Config.canUsersRequestCoupling) {
+                Modules.ACLManager.isAllowed('ui_static_tools_canUsersRequestCoupling', 'create', function (err, result) {
+                    if (!err && result) {
+                        var canUsersRequestCouplingButton = document.createElement("img");
+                        $(canUsersRequestCouplingButton).attr("src", "../../guis.common/images/couple.png").attr("alt", "");
+                        $(canUsersRequestCouplingButton).attr("width", "24").attr("height", "24");
+                        $(canUsersRequestCouplingButton).attr("id", "canUsersRequestCoupling_button");
+                        $(canUsersRequestCouplingButton).addClass("sidebar_button");
+                        $(canUsersRequestCouplingButton).attr("title", GUI.translate("canUsersRequestCoupling.button"));
+                        var btnGrantFullRights = section.addElement($(canUsersRequestCouplingButton).prop('outerHTML') + GUI.translate("Coupling")); // add menu icon
+                        numberOfIcons++;
+                        $("#header > .header_right").append(canUsersRequestCouplingButton); //add header icon
+                        var clickRequestCoupling = function() { //click handler
+                            var dialog = new ObjectDeviceCouplingRequestDialog();
+                            dialog.show();
+
+                            $(dialog).on('objectDevCoupling::request', function(event) {
+                                var objectID = event.payLoad;
+                                var resources = Modules.ACLManager.makeACLName(objectID);
+
+                                Modules.ACLManager.allow(GUI.userInfo.wadiv, resources, 'couple', function(result) {
+                                    if (!result) {
+                                        $().toastmessage('showToast', {
+                                            text: GUI.translate("Object with id " + objectID + " not found."),
+                                            sticky: false,
+                                            position: 'top-left',
+                                            type    : 'error'
+                                        });
+                                    }
+                                });
+                            });
+
+                            popover.hide();
+                        };
+
+                        if (GUI.isTouchDevice) {
+                            $(canUsersRequestCouplingButton).bind("touchstart", clickRequestCoupling);
+                            $(btnGrantFullRights.getDOM()).bind("touchstart", clickRequestCoupling);
+                        } else {
+                            $(btnGrantFullRights.getDOM()).bind("mousedown", clickRequestCoupling);
+                            $(canUsersRequestCouplingButton).bind("mousedown", clickRequestCoupling);
+                        }
+                    }
+                })
+            }
+
             // This button grant full rights (including delete) to the admin role for the
             // selected object(s)
             // This is a fix for objects that other ways could not be touched
@@ -304,7 +350,6 @@ function initToolbarAux(types) {
                         $(grantFullRightsButton).addClass("sidebar_button");
                         $(grantFullRightsButton).attr("title", GUI.translate("grantFullRights.button"));
                         var btnGrantFullRights = section.addElement($(grantFullRightsButton).prop('outerHTML') + GUI.translate("Coupling")); // add menu icon
-                        $(grantFullRightsButton).attr("src", "../../guis.common/images/fix_me.png").attr("alt", "");
                         numberOfIcons++;
                         $("#header > .header_right").append(grantFullRightsButton); //add header icon
                         var clickGrantFullRights = function() { //click handler
@@ -375,17 +420,10 @@ function initToolbarAux(types) {
 
             if (GUI.isTouchDevice) {
                 // header:
-                //$(pasteButton).bind("touchstart", clickPaste);
-                //$(undoButton).bind("touchstart", clickUndo);
-
                 $(parentButton).bind("touchstart", clickParent);
                 $(homeButton).bind("touchstart", clickHome);
 
                 if(Modules.Config.paintIcon) $(paintButton).bind("touchstart", clickPaint);
-
-                // menu:
-                //$(btnPaste.getDOM()).bind("touchstart", clickPaste);
-                //$(btnUndo.getDOM()).bind("touchstart", clickUndo);
 
                 $(btnParent.getDOM()).bind("touchstart", clickParent);
                 $(btnHome.getDOM()).bind("touchstart", clickHome);
@@ -400,10 +438,6 @@ function initToolbarAux(types) {
                 $(homeButton).bind("mousedown", clickHome);
 
                 if (Modules.Config.paintIcon) $(paintButton).bind("mousedown", clickPaint);
-
-                // menu:
-                //$(btnPaste.getDOM()).bind("mousedown", clickPaste);
-                //$(btnUndo.getDOM()).bind("mousedown", clickUndo);
 
                 $(btnParent.getDOM()).bind("mousedown", clickParent);
                 $(btnHome.getDOM()).bind("mousedown", clickHome);

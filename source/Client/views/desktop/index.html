@@ -51,6 +51,7 @@
     <script src="/socketClient.js"></script>
     <script src="/dialogs/objectDeviceCoupling-dialog.js"></script>
     <script src="/dialogs/objectDeviceDeCoupling-dialog.js"></script>
+    <script src="/dialogs/objectDeviceCouplingRequest-dialog.js"></script>
     <script src="/couplingManager-client.js"></script>
 
 	<script>
@@ -106,6 +107,7 @@
 	<link type="text/css" href="/guis.common/css/studiolo.css" rel="Stylesheet" />
     <link type="text/css" href="/guis.common/css/userInfo.css" rel="Stylesheet" />
     <link type="text/css" href="/guis.common/css/object-device-couplingDialog.css" rel="Stylesheet" />
+    <link type="text/css" href="/guis.common/css/object-device-request-dialog.css" rel="Stylesheet" />
 
     <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 
@@ -310,6 +312,12 @@
         </table>
     </div>
   </script>
+  <script type="text/template" id="coupling-request-dialog-template">
+        <div class="coupling-device-request">
+            <span>Enter the Id of the object to couple with.</span><br>
+            <input id="objectID" type="text" name="idObject" value="">
+        </div>
+   </script>
   <!-- END: Underscore Template Definition. -->
 
 {{/extend}}

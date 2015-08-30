@@ -200,6 +200,26 @@
 	cursor: pointer;
 }
 
+#objectdevreqcouplingview {
+	/*z-index: 11002;*/
+	width: auto;
+	margin: 0px auto;
+	padding: 0px;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	background-color: #DDE0E5;
+	/*border: 1px solid #000000;*/
+	padding-top: 33px;
+}
+
+#objectdevreqcouplingview>div
+{
+	margin: 0px;
+	padding: 0px;
+}
+
 input.login_input {
 	border: 1px solid #DFDFE1;
 	background-color: #FFFFFF;

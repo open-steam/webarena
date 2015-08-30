@@ -828,8 +828,8 @@ GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
     $.each(buttons, function(title, callback) {
 
         buttons2[title] = function() {
-            callback(dialogContent);
-            $(this).dialog("close");
+            var result = callback(dialogContent);
+            if(result) $(this).dialog("close");
         }
     });
 
@@ -877,10 +877,12 @@ GUI.error = function(heading, message, webarenaObject, fatal) {
     if (fatal) {
         errorButtons[GUI.translate("Reload")] = function() {
             window.location.reload();
+			return true;
         }
     } else {
         errorButtons[GUI.translate("Close Dialog")] = function() {
             $(this).dialog("close");
+			return true;
         }
     }
 

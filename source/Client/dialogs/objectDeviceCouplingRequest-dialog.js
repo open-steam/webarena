@@ -6,18 +6,17 @@
 
 "use strict";
 
-function ObjectDeviceDeCouplingDialog(devices) {
-    this.devices = devices;
-    this.compiledTemplate = _.template($('script#decoupling-dialog-template').html());
+function ObjectDeviceCouplingRequestDialog() {
+    this.compiledTemplate = _.template($('script#coupling-request-dialog-template').html());
     this.dialog = null;
 
     var that = this;
     var onSave = function() {
-        var choices = $(that.dialog).find('input:checkbox:checked');
+        var object = $(that.dialog).find('input:text').val();
 
-        if (choices.length > 0) {
-            var event = jQuery.Event("objectDevDecoupling::selections");
-            event.payLoad = choices;
+        if (object !== "") {
+            var event = jQuery.Event('objectDevCoupling::request');
+            event.payLoad = object.trim();
             $(that).trigger(event);
 
             return true;
@@ -31,18 +30,19 @@ function ObjectDeviceDeCouplingDialog(devices) {
     };
 
     this.buttons = {
-        "Decouple": onSave,
+        "Couple": onSave,
         "Cancel": onExit
     };
 
     this.content = this.compiledTemplate({ devices : this.devices });
 };
 
-ObjectDeviceDeCouplingDialog.prototype.show = function() {
+ObjectDeviceCouplingRequestDialog.prototype.show = function() {
     this.dialog = GUI.dialog(
-        GUI.translate('object.device.decoupling.dialog.tittle'),
+        GUI.translate('object.device.couplingrequest.dialog.tittle'),
         this.content,
         this.buttons,
-        400
+        350
     );
 };
+

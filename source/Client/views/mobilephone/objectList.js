@@ -181,7 +181,7 @@ ObjectList.buildObjectEntry = function(object, categoryID) {
             ObjectView.build(object);
             ObjectList.settings.visible = false;
             ObjectView.settings.visible = true;
-			window.scrollTo(0, 0);
+            window.scrollTo(0, 0);
             $("#objectlist").fadeOut("slow");
             $("#objectview").fadeIn("slow");
         });

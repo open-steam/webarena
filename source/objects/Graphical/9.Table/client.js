@@ -17,7 +17,7 @@ Table.showFormatDialog = function(selected) {
         GUI.updateInspector();
     };
     dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
-        return false;
+        return true;
     };
     var dialog_width = 400;
     var attributes = that.getAttributes();

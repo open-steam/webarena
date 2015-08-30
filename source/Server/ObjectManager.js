@@ -11,6 +11,8 @@
 var fs = require('fs');
 var async = require("async");
 
+var Objects = require('./db/objects.js');
+
 var Modules = false;
 var runtimeData = {};
 var prototypes = {};
@@ -298,9 +300,9 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
  */
 ObjectManager.getEnabledObjectTypes = function() {
 
-
-    if (this.enabledObjectTypeCache)
+    if (this.enabledObjectTypeCache) {
         return this.enabledObjectTypeCache;
+    }
 
     var configCategories = Modules.config.enabledCategories;
     var categories = [];
@@ -766,6 +768,10 @@ ObjectManager.deleteObject = function(data, context, callback) {
 
                 Modules.ACLManager.removeResource(resource, function(err) {
                     if (err) console.warn("Error while removing resource: " + resource + " err: " + err);
+
+                    Objects.remove({ objectID: objectID }, function(error) {
+                        if (err) console.warn("Error while removing objectID: " + objectID + " err: " + error);
+                    });
                 });
 
             } else {

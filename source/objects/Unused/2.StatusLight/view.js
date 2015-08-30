@@ -49,9 +49,11 @@ StatusLight.execute = function() {
                     //TODO: give some visual feedback
                     that.draw();
                 })
+
+                return true;
             },
 
-            "Verwerfen" : function() { return false; }
+            "Verwerfen" : function() { return true; }
         }
 
         var dialog = GUI.dialog(

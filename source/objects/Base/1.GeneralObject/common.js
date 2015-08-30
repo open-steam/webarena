@@ -501,11 +501,11 @@ GeneralObject.register = function(type) {
         var resource = Modules.ACLManager.makeACLName(selectedObjects[0].getAttribute("id"));
 
         Modules.ACLManager.whatRolesAllowed(resource, 'couple', function(roles) {
-            if (roles.length > 0) {
-                Modules.ACLManager.roleUsers(roles, function(devices) {
-                    // remove this client
-                    devices = _.filter(devices, function(device) { return device != GUI.userInfo.wadiv; });
+            Modules.ACLManager.roleUsers(roles, function(devices) {
+                // remove this client
+                devices = _.filter(devices, function(device) { return device != GUI.userInfo.wadiv; });
 
+                if (devices.length > 0) {
                     var objectDevDecoupDialog = new ObjectDeviceDeCouplingDialog(devices);
                     objectDevDecoupDialog.show();
 
@@ -542,15 +542,15 @@ GeneralObject.register = function(type) {
                         });
 
                     });
-                });
-            } else {
-                $().toastmessage('showToast', {
-                    text: GUI.translate("This object is not coupled with any device yet"),
-                    sticky: false,
-                    position: 'top-left',
-                    type    : 'error'
-                });
-            }
+                } else {
+                    $().toastmessage('showToast', {
+                        text: GUI.translate("This object is not coupled with any device yet"),
+                        sticky: false,
+                        position: 'top-left',
+                        type    : 'error'
+                    });
+                }
+            });
         });
     }, true);
 

@@ -20,6 +20,7 @@ ResourceManager.staticUIResources = ['ui_static_graphical_ellipse',
                                     'ui_static_connections_exit',
                                     'ui_static_connections_subroom',
                                     'ui_static_content_file',
+                                    'ui_static_tools_canUsersRequestCoupling',
 
                                     // mobile UI
                                     'mb_ui_static_graphical_menu'

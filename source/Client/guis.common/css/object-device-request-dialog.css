@@ -1,0 +1,9 @@
+
+.coupling-device-request {
+    padding: 5px 5px 5px 5px;
+}
+
+.coupling-device-request #objectID {
+    margin: 5px 5px 5px 0px;
+    width: 280px;
+}

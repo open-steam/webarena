@@ -57,6 +57,8 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
                 if (!err && result) {
                     if (action == 'object.decoupling.action') {
                         Modules.ACLManager.whatRolesAllowed(resource, 'couple', function(roles) {
+                            roles = _.without(roles, 'admin', GUI.userInfo.wadiv);
+
                             if (roles.length > 0) {
                                 actionsCollection.push(action);
                             }

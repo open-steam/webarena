@@ -52,6 +52,7 @@ ACLManagerClient.prototype.whatRolesAllowed = function(resource, permission, cb)
 ACLManagerClient.prototype.allow = function(roles, resources, permissions, extras, cb) {
     if (_.isFunction(extras) && !cb) {
         cb = extras;
+        extras = null;
     }
 
     Modules.Dispatcher.query('acl', { type: 'allow',
@@ -95,7 +96,6 @@ ACLManagerClient.prototype.allowedRolesPermissions = function(id, cb) {
     Modules.Dispatcher.query('acl', { type: 'allowedRolesPermissions', resources: resources }, function (data) {
         if (cb != undefined) return cb(data);
 
-        var buttons = {};
         var content = '<div id="allowedRolesPermissions_group">';
 
         _.each(data, function (value, key) {
@@ -123,6 +123,14 @@ ACLManagerClient.prototype.allowedRolesPermissions = function(id, cb) {
         });
 
         content += '</div>';
+
+        var onExit = function() {
+            return true;
+        };
+
+        var buttons = {
+            "Accept": onExit
+        };
 
         GUI.dialog("Roles and Permissions", $(content), buttons, undefined, false);
     });

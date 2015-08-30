@@ -125,27 +125,30 @@ Polygon.setViewHeight = function(value) {
 	this.drawPolygon();
 }
 
-Polygon.getPoints = function(){
-
+Polygon.getPoints = function() {
 	var rep = this.getRepresentation();
+	var pointsString = $(rep).attr("points");
 
-	var pointsString = $(rep).attr("points");	
-	var pointsArr = pointsString.split(" ");
-	
-	var P = new Array();
-	var x = parseInt($(rep).attr("x"));	
-	var y = parseInt($(rep).attr("y"));	
-	
-	for(var i = 0; i< pointsArr.length; i++){
-		var values = pointsArr[i].split(",");
-		P[i] = {
-			x : (parseInt(values[0])+x),
-			y : (parseInt(values[1])+y)
+	if (pointsString) {
+		var pointsArr = pointsString.split(" ");
+
+		var P = new Array();
+		var x = parseInt($(rep).attr("x"));
+		var y = parseInt($(rep).attr("y"));
+
+		for(var i = 0; i< pointsArr.length; i++){
+			var values = pointsArr[i].split(",");
+			P[i] = {
+				x : (parseInt(values[0])+x),
+				y : (parseInt(values[1])+y)
+			}
 		}
-	}
 
-	return P;
-	
+		return P;
+	} else {
+		console.warn("Polygon.getPoints:: pointsString is undefined");
+		return null;
+	}
 }
 
 //calculate the Intersection point between a polygon object and a line (described by a1 and a2)

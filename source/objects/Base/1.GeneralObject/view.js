@@ -143,7 +143,6 @@ GeneralObject.getRepresentation = function() {
         var parent = $('#room_' + ObjectManager.getIndexOfObject(this.getAttribute("inRoom")));
         var rep = this.createRepresentation(parent);
         this.representationCreated();
-
     }
 
     rep.dataObject = this;

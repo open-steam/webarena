@@ -193,6 +193,7 @@ Plotter.editValueTable = function() {
 		content.yAxis.scale.max = yMax;
 		
 		that.setContentAsJSON(content);
+		return true;
 	};
 	
 	GUI.dialog("Plotter Configuration", dom, buttons)

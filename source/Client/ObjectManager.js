@@ -151,10 +151,11 @@ ObjectManager.init = function() {
             console.log(choice);
 
             Modules.Socket.emit(responseEvent, {choice: choice});
+            return true;
         }
 
         var onExit = function() {
-            return false;
+            return true;
         };
 
         var dialogButtons = {
@@ -671,14 +672,18 @@ ObjectManager.createObject = function(type, attributes, content, callback, index
 }
 
 ObjectManager.getRoomID = function(index) {
-    if (!index)
+    if (!index) {
         var index = 'left';
+    }
+
     return this.currentRoomID[index];
 }
 
 ObjectManager.getCurrentRoom = function(index) {
-    if (!index)
+    if (!index) {
         var index = 'left';
+    }
+
     return this.currentRoom[index];
 }
 

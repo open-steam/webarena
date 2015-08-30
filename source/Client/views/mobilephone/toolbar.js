@@ -29,8 +29,12 @@ Toolbar.init = function() {
 					if (toggleCreateMenu.isVisible) {
 						$("#objectlist").fadeIn("slow");
 						$("#createmenu").fadeOut("slow");
+						$("#objectview").fadeOut("slow");
+						$("#objectdevreqcouplingview").fadeOut("slow");
 					} else {
 						$("#objectlist").fadeOut("slow");
+						$("#objectview").fadeOut("slow");
+						$("#objectdevreqcouplingview").fadeOut("slow");
 						$("#createmenu").fadeIn("slow");
 					}
 
@@ -47,9 +51,13 @@ Toolbar.init = function() {
 					if (toggleCreateMenu.isVisible) {
 						$("#objectlist").fadeIn("slow");
 						$("#createmenu").fadeOut("slow");
+						$("#objectview").fadeOut("slow");
+						$("#objectdevreqcouplingview").fadeOut("slow");
 					} else {
 						$("#objectlist").fadeOut("slow");
 						$("#createmenu").fadeIn("slow");
+						$("#objectview").fadeOut("slow");
+						$("#objectdevreqcouplingview").fadeOut("slow");
 					}
 
 					toggleCreateMenu.isVisible = !toggleCreateMenu.isVisible;
@@ -59,6 +67,40 @@ Toolbar.init = function() {
 
 			// Hide main menu on startup.
 			$("#createmenu").hide();
+		}
+	});
+
+	Modules.ACLManager.isAllowed('ui_static_tools_canUsersRequestCoupling', 'create', function (err, result) {
+		if (!err && result) {
+			/* Create button for requesting coupling. */
+			var couplingReqButton = document.createElement("img");
+			$(couplingReqButton).attr("src", "../../guis.common/images/couple.png").attr("alt", "");
+			$(couplingReqButton).attr("width", "24").attr("height", "24");
+
+			$(couplingReqButton).attr("id", "coupleReq_button");
+			$(couplingReqButton).addClass("sidebar_button");
+
+			$(couplingReqButton).attr("title", GUI.translate("Couple object"));
+
+			$("#header > .header_right").append(couplingReqButton);
+
+			var click = function() {
+				ObjectDevCouplingReqView.build();
+				ObjectList.settings.visible = false;
+				ObjectView.settings.visible = false;
+				ObjectDevCouplingReqView.settings.visible = true;
+				window.scrollTo(0, 0);
+				$("#objectlist").fadeOut("slow");
+				$("#objectview").fadeOut("slow");
+				$("#createmenu").fadeOut("slow");
+				$("#objectdevreqcouplingview").fadeIn("slow");
+			}
+
+			if (GUI.isTouchDevice) {
+				$(couplingReqButton).bind("touchstart", click);
+			} else {
+				$(couplingReqButton).bind("mousedown", click);
+			}
 		}
 	});
 
@@ -75,10 +117,11 @@ Toolbar.init = function() {
 	$("#header > .header_right").append(userInfoButton);
 
 	var cookie = JSON.parse($.cookie('WADIV').replace("j:", ""));
+	GUI.userInfo.wadiv = cookie['WADIV'];
 
 	var click = function() {
 		var content = "Name: " + cookie['name'] + "\n";
-		content += "WADIV: " + cookie['WADIV'] + "\n";
+		content += "WADIV: " + GUI.userInfo.wadiv + "\n";
 
 		Modules.ACLManager.userRoles(function (err, result) {
 			var role = _.contains(result, 'admin') ? "admin" : "user";

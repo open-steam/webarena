@@ -20,11 +20,15 @@ function ObjectDeviceCouplingDialog(objects, devices) {
             var event = jQuery.Event("objectDevCoupling::selections");
             event.payLoad = choices;
             $(that).trigger(event);
+
+            return true;
+        } else {
+            return false;
         }
     };
 
     var onExit = function() {
-        return false;
+        return true;
     };
 
     this.buttons = {

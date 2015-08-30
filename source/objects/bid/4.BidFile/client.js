@@ -175,6 +175,7 @@ BidFile.upload = function() {
 	var buttons = {};
 	buttons[self.translate(GUI.currentLanguage, "Close")] = function() {
 		$(this).dialog("close");
+		return true;
 	}
 	
 	self.dialog = GUI.dialog(self.translate(GUI.currentLanguage, "Select file"), content.get(0), buttons, 500);

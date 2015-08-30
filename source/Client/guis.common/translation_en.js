@@ -20,7 +20,9 @@ function TranslationEN() {
             'grantFullRights.button': "Grant Full Rights",
             'object.device.coupling.dialog.tittle': "Object-device coupling",
             'object.device.decoupling.dialog.tittle': "Object-device decoupling",
-            'noDeviesToCoupleWith': "There are no Devices to couple this object with."
+            'object.device.couplingrequest.dialog.tittle': "Object-device coupling",
+            'noDeviesToCoupleWith': "There are no Devices to couple this object with.",
+            'canUsersRequestCoupling.button': "Couple object"
         }
     );
 };

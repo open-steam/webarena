@@ -4,7 +4,12 @@
  *    @author Alejandro Sandoval, University of Paderborn, 2015
  *
  */
+
 "use strict";
+
+/*
+ * @Deprecated: this class ist not used anymore
+ */
 
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
