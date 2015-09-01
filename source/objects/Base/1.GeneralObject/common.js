@@ -396,16 +396,6 @@ GeneralObject.register = function(type) {
         return hasGroups;
     });
 
-    //this.registerAction('copy format', function(lastClicked) {
-    //    var selected = ObjectManager.getSelected();
-    //    //console.log(lastClicked);
-    //    if(selected.length > 1) {
-    //        lastClicked.showFormatDialog(selected);
-    //    } else {
-    //        alert("Es muss mehr als ein Objekt selektiert sein. Ansonsten gibt es keine Objekte, auf die die Formatierung übertragen werden kann!");
-    //    }
-    //});
-
     this.registerAction('to front', function() {
 
         /* set a very high layer for all selected objects (keeping their order) */
@@ -433,10 +423,6 @@ GeneralObject.register = function(type) {
 
         ObjectManager.renumberLayers();
     }, false);
-
-    //this.registerAction('Open destination', function(object) {
-    //    object.follow(object.getAttribute("open in"));
-    //}, true);
 
     this.registerAction('object.show.roles.permissions', function() {
         var selected = ObjectManager.getSelected();
@@ -552,6 +538,24 @@ GeneralObject.register = function(type) {
                 }
             });
         });
+    }, true);
+
+    this.registerAction('object.coupling.qr.show', function() {
+        var selected = ObjectManager.getSelected();
+        var id = selected[0].getAttribute("id");
+        var url = '/qr/create/' + id;
+
+        var buttons = {};
+        var content = '<div id="qr-code">';
+        content += '<img src=' + url + ' alt="' + id + '" height="145" width="145">';
+        content += '</div>';
+
+        GUI.dialog(
+            GUI.translate('QR Code'),
+            content,
+            buttons,
+            175
+        );
     }, true);
 
 }

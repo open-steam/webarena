@@ -156,17 +156,16 @@ function AppRouter(modules, app) {
             if (objStream == undefined) {
                 res.send(404, 'Image not found ');
             } else {
+                res.set({
+                    'Content-Type' : 'image/png',
+                    'Content-Disposition': 'attachment',
+                    'filename': req.params.user + '.png'
+                });
+
                 objStream.pipe(res);
                 objStream.on("end", function() {
                     try {
-
-    //					res.set({
-    //						'Content-Type' : 'image/png',
-    //						'Content-Disposition': 'attachment',
-    //						'filename': req.params.user + '.png'
-    //					});umstreiten
-    //
-    //		            res.status(200).end();
+    		            res.status(200).end();
                     } catch (err) {
                         console.error("paintings ex: " + err);
                     }

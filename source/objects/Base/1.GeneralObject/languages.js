@@ -74,6 +74,7 @@ GeneralObject.setTranslations('en',{
         'External' : 'External',
         'object.show.roles.permissions': "Show roles and permissions",
 		'object.coupling.action': "Couple with device(s)",
-		'object.decoupling.action': "Decouple from device"
+		'object.decoupling.action': "Decouple from device",
+		'object.coupling.qr.show': "Show QR code"
     }
 );

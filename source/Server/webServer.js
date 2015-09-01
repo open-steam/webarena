@@ -36,10 +36,12 @@ var app = express();
 var hbs = require('hbs');
 var blocks = {};
 
+var LogginRouter = require('./routes/loginRouter.js');
+var AppRouter    = require('./routes/appRouter.js');
+var ACLRouter    = require('./routes/aclRouter.js');
+var QRRouter     = require('./routes/qrRouter.js');
+
 var Modules = false;
-var LogginRouter = require('./routes/loginRouter');
-var AppRouter = require('./routes/appRouter');
-var ACLRouter = require('./routes/aclRouter');
 
 /**
  * @class WebServer
@@ -55,6 +57,7 @@ var WebServer = {};
 WebServer.init = function(theModules) {
     Modules = theModules;
 
+    new QRRouter(app);
     new AppRouter(theModules, app);
     new ACLRouter(app, theModules.ACLManager);
     new LogginRouter(app, theModules.ACLManager, theModules.UserManager);

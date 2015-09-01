@@ -34,7 +34,8 @@
     "socket.io-express-session": "*",
     "underscore": "*",
     "underscore.string": "~2.3.3",
-    "winston": "0.8.0"
+    "winston": "0.8.0",
+    "qr-image": "*"
   },
   "devDependencies": {
     "superagent": "~0.15.7",
