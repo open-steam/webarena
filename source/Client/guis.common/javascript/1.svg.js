@@ -64,38 +64,35 @@ GUI.updateLayers = function() {
 		/* check if layers must be updated */
 		var oldOrder = "";
 		
-		$("#room_"+index).children().each(function(i, el) {
-		
+		$("#room_" + index).children().each(function(i, el) {
 			var id = $(el).attr("id");
 			
 			if (id !== undefined && id != "") {
 				oldOrder += id+"###";
 			}
-			
 		});
 		
 		var newOrder = "";
 		
-		var objectsArray = ObjectManager.getObjectsByLayer(index); //get all objects ordered by layer
+		var objectsArray = ObjectManager.getObjectsByLayer(index); // get all objects ordered by layer
 
-		for (var i in objectsArray){
+		for (var i in objectsArray) {
 			var obj = objectsArray[i];
 			
-			newOrder += obj.id+"###";
-			
+			newOrder += obj.id + "###";
 		}
 		
 		if (oldOrder == newOrder) continue; //no change of order
 
 		var objectsArray = ObjectManager.getObjectsByLayerInverted(index); //get all objects ordered by layer
 
-		for (var i in objectsArray){
+		for (var i in objectsArray) {
 			var obj = objectsArray[i];
-			
-			var rep = obj.getRepresentation();
-			
-			$(rep).prependTo("#room_"+index);
-			
+
+			if (_.isFunction(obj.getRepresentation)) {
+				var rep = obj.getRepresentation();
+				$(rep).prependTo("#room_"+index);
+			}
 		}
 	}
 	

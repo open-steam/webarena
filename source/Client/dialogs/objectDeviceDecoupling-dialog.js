@@ -43,6 +43,6 @@ ObjectDeviceDeCouplingDialog.prototype.show = function() {
         GUI.translate('object.device.decoupling.dialog.tittle'),
         this.content,
         this.buttons,
-        400
+        350
     );
 };

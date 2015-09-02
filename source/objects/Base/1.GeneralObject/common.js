@@ -91,11 +91,13 @@ GeneralObject.utf8.toByteArray = function(str) {
 
 GeneralObject.utf8.parse = function(byteArray) {
     var str = '';
-    for (var i = 0; i < byteArray.length; i++)
+    for (var i = 0; i < byteArray.length; i++)  {
         str += byteArray[i] <= 0x7F ?
                byteArray[i] === 0x25 ? "%25" : // %
                 String.fromCharCode(byteArray[i]) :
                 "%" + byteArray[i].toString(16).toUpperCase();
+    }
+
     try {
         return decodeURIComponent(str);
     } catch (e) {
@@ -225,13 +227,11 @@ GeneralObject.register = function(type) {
 
             var linkedObjects = object.getLinkedObjects();
 
-            for (var i in linkedObjects) {
-                var linkedObject = linkedObjects[i];
-
+            _.each(linkedObjects, function (linkedObject) {
                 if (linkedObject.object.getAttribute("visible") == true) {
                     linkedVisibleObjectsCounter++;
                 }
-            }
+            });
 
             if (linkedVisibleObjectsCounter == 0) {
                 return object.translate(GUI.currentLanguage, "you need at least one link from or to this object to hide it");
@@ -246,13 +246,11 @@ GeneralObject.register = function(type) {
 
             GUI.drawLinks(object);
 
-            for (var index in objects) {
-                var object = objects[index];
-
+             _.each(objects, function (object) {
                 if (!object.hasLinkedObjects() && object.getAttribute("visible") != true) {
                     object.setAttribute("visible", true);
                 }
-            }
+            });
 
             return true;
         }});
@@ -286,126 +284,85 @@ GeneralObject.register = function(type) {
 
     // ------------------------------------- Actions -----------------------------------------------------------------------------------------
 
-    //this.registerAction('Duplicate', function() {
-    //    ObjectManager.duplicateObjects(ObjectManager.getSelected());
-    //}, false);
-
-    //this.registerAction('Copy', function() {
-    //    ObjectManager.copyObjects(ObjectManager.getSelected());
-    //}, false);
-
-    //this.registerAction('Cut', function() {
-    //    ObjectManager.cutObjects(ObjectManager.getSelected());
-    //}, false);
-
-    /*this.registerAction('paste format', function(){
-     var selected = ObjectManager.getSelected();
-     ObjectManager.pasteFormatAttributes(selected);
-     }); */
-
     this.registerAction('Delete', function() {
         var selected = ObjectManager.getSelected();
 
-        for (var i in selected) {
-            var object = selected[i];
-
+        _.each(selected, function (object) {
             object.deleteIt();
-        }
+        });
 
     }, false);
 
-    this.registerAction(
-            'Link',
-            function(lastClicked) {
-                var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
-                GUI.showLinkPropertyDialog(lastClicked, lastClicked, linkProperties, true);
+    //this.registerAction('Group', function() {
+    //    var selected = ObjectManager.getSelected();
+    //
+    //    var date = new Date();
+    //    var groupID = date.getTime();
+    //
+    //    _.each(selected, function (obj) {
+    //        obj.setAttribute("group", groupID);
+    //    });
+    //
+    //}, false, function() {
+    //    var selected = ObjectManager.getSelected();
+    //
+    //    /* only one object --> no group */
+    //    if (selected.length == 1)
+    //        return false;
+    //
+    //    /* prevent creating a group if all objects are in the same group */
+    //    var group = undefined;
+    //
+    //    _.each(selected, function (obj) {
+    //        if (group == undefined) {
+    //            group = obj.getAttribute("group");
+    //        } else {
+    //
+    //            if (group != obj.getAttribute("group")) {
+    //                return true;
+    //            }
+    //        }
+    //    });
+    //
+    //    /* if the common group is 0 there is no group */
+    //    if (group == 0) {
+    //        return true;
+    //    }
+    //
+    //    return false;
+    //});
 
-            },
-            false,
-            function() {
-                return (ObjectManager.getSelected().length > 1)
-            }
-    );
-
-    this.registerAction('Group', function() {
-        var selected = ObjectManager.getSelected();
-
-        var date = new Date();
-        var groupID = date.getTime();
-
-        for (var i in selected) {
-            var obj = selected[i];
-
-            obj.setAttribute("group", groupID);
-        }
-
-    }, false, function() {
-        var selected = ObjectManager.getSelected();
-
-        /* only one object --> no group */
-        if (selected.length == 1)
-            return false;
-
-        /* prevent creating a group if all objects are in the same group */
-        var group = undefined;
-
-        for (var i in selected) {
-            var obj = selected[i];
-
-            if (group == undefined) {
-                group = obj.getAttribute("group");
-            } else {
-
-                if (group != obj.getAttribute("group")) {
-                    return true;
-                }
-            }
-        }
-
-        /* if the common group is 0 there is no group */
-        if (group == 0) {
-            return true;
-        }
-
-        return false;
-    });
-
-    this.registerAction('Ungroup', function() {
-        var selected = ObjectManager.getSelected();
-
-        for (var i in selected) {
-            var obj = selected[i];
-
-            obj.setAttribute("group", 0);
-        }
-
-    }, false, function() {
-        var selected = ObjectManager.getSelected();
-
-        /* prevent ungrouping if no selected element is in a group */
-        var hasGroups = false;
-
-        for (var i in selected) {
-            var obj = selected[i];
-
-            if (obj.getAttribute("group") != 0) {
-                hasGroups = true;
-            }
-        }
-
-        return hasGroups;
-    });
+    //this.registerAction('Ungroup', function() {
+    //    var selected = ObjectManager.getSelected();
+    //
+    //    _.each(selected, function (obj) {
+    //        obj.setAttribute("group", 0);
+    //    });
+    //
+    //}, false, function() {
+    //    var selected = ObjectManager.getSelected();
+    //
+    //    /* prevent ungrouping if no selected element is in a group */
+    //    var hasGroups = false;
+    //
+    //    _.each(selected, function (obj) {
+    //        if (_.isFunction(obj.getAttribute)) {
+    //            if (obj.getAttribute("group") != 0) {
+    //                hasGroups = true;
+    //            }
+    //        }
+    //    });
+    //
+    //    return hasGroups;
+    //});
 
     this.registerAction('to front', function() {
-
         /* set a very high layer for all selected objects (keeping their order) */
         var selected = ObjectManager.getSelected();
 
-        for (var i in selected) {
-            var obj = selected[i];
-
+        _.each(selected, function (obj) {
             obj.setAttribute("layer", obj.getAttribute("layer") + 999999);
-        }
+        });
 
         ObjectManager.renumberLayers();
     }, false);
@@ -415,11 +372,9 @@ GeneralObject.register = function(type) {
         /* set a very low layer for all selected objects (keeping their order) */
         var selected = ObjectManager.getSelected();
 
-        for (var i in selected) {
-            var obj = selected[i];
-
+        _.each(selected, function (obj) {
             obj.setAttribute("layer", obj.getAttribute("layer") - 999999);
-        }
+        });
 
         ObjectManager.renumberLayers();
     }, false);
@@ -632,6 +587,7 @@ GeneralObject.getAttributes = function() {
         info.value = this.getAttribute(i);
         attInfo[i] = info;
     }
+
     return attInfo;
 }
 
@@ -818,7 +774,7 @@ GeneralObject.remove = function() {
     Modules.ObjectManager.remove(this);
 }
 
-//returns if an object has links to other objects or not
+// returns if an object has links to other objects or not
 GeneralObject.hasLinkedObjects = function() {
 
     var counter = 0;
@@ -843,14 +799,12 @@ GeneralObject.getGroupMembers = function() {
 
     var objects = ObjectManager.getObjects();
 
-    for (var i in objects) {
-        var obj = objects[i];
-
-        if (obj.get('id') != this.get('id') && obj.getAttribute("group") == this.getAttribute("group")) {
+    var that = this;
+    _.each(objects, function (obj) {
+        if (obj.get('id') != that.get('id') && obj.getAttribute("group") == that.getAttribute("group")) {
             list.push(obj);
         }
-
-    }
+    });
 
     return list;
 }
@@ -1036,8 +990,7 @@ GeneralObject.deleteLink = function(targetId){
 	if(typeof this.context == "undefined"){ //client side call
 		target = ObjectManager.getObject(targetId);
 		object = this;
-	}
-	else{ //server side call
+	} else{ //server side call
 		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
 		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
 	}

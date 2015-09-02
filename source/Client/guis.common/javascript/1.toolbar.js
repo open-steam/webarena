@@ -294,7 +294,7 @@ function initToolbarAux(types) {
                 Modules.ACLManager.isAllowed('ui_static_tools_canUsersRequestCoupling', 'create', function (err, result) {
                     if (!err && result) {
                         var canUsersRequestCouplingButton = document.createElement("img");
-                        $(canUsersRequestCouplingButton).attr("src", "../../guis.common/images/couple.png").attr("alt", "");
+                        $(canUsersRequestCouplingButton).attr("src", "../../guis.common/images/view_QR_code.png").attr("alt", "");
                         $(canUsersRequestCouplingButton).attr("width", "24").attr("height", "24");
                         $(canUsersRequestCouplingButton).attr("id", "canUsersRequestCoupling_button");
                         $(canUsersRequestCouplingButton).addClass("sidebar_button");
@@ -303,7 +303,7 @@ function initToolbarAux(types) {
                         numberOfIcons++;
                         $("#header > .header_right").append(canUsersRequestCouplingButton); //add header icon
                         var clickRequestCoupling = function() { //click handler
-                            var dialog = new ObjectDeviceCouplingRequestDialog();
+                            var dialog = new ObjectDeviceCouplingRequestQRDialog();
                             dialog.show();
 
                             $(dialog).on('objectDevCoupling::request', function(event) {

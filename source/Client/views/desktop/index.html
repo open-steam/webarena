@@ -52,6 +52,7 @@
     <script src="/dialogs/objectDeviceCoupling-dialog.js"></script>
     <script src="/dialogs/objectDeviceDeCoupling-dialog.js"></script>
     <script src="/dialogs/objectDeviceCouplingRequest-dialog.js"></script>
+    <script src="/dialogs/objectDeviceCouplingRequestQR-dialog.js"></script>
     <script src="/couplingManager-client.js"></script>
 
 	<script>
@@ -317,7 +318,45 @@
             <span>Enter the Id of the object to couple with.</span><br>
             <input id="objectID" type="text" name="idObject" value="">
         </div>
-   </script>
+  </script>
+  <script type="text/template" id="coupling-request-qr-dialog-template">
+      <div class="container" id="QR-Code">
+          <div class="panel panel-info">
+              <div class="panel-heading">
+                  <h4>Scan the QR code of the desired object</h4>
+                  <div style="float:right;text-align: right;">
+                      <select class="form-control" id="camera-select"></select>
+                      <!--<button title="Image shoot" class="btn btn-info btn-sm disabled" id="grab-img" type="button" data-toggle="tooltip"><span class="glyphicon glyphicon-picture"></span></button>-->
+                      <!--<button title="Play" class="btn btn-success btn-sm" id="play" type="button" data-toggle="tooltip"><span class="glyphicon glyphicon-play"></span></button>-->
+                      <!--<button title="Pause" class="btn btn-warning btn-sm" id="pause" type="button" data-toggle="tooltip"><span class="glyphicon glyphicon-pause"></span></button>-->
+                      <!--<button title="Stop streams" class="btn btn-danger btn-sm" id="stop" type="button" data-toggle="tooltip"><span class="glyphicon glyphicon-stop"></span></button>-->
+            </div>
+        </div>
+        <div class="panel-body text-center">
+            <div class="col-md-6">
+                <div class="well" style="position: relative;display: inline-block;">
+                    <canvas width="320" height="240" id="webcodecam-canvas"></canvas>
+                    <div class="scanner-laser laser-rightBottom" style="opacity: 0.5;"></div>
+                    <div class="scanner-laser laser-rightTop" style="opacity: 0.5;"></div>
+                    <div class="scanner-laser laser-leftBottom" style="opacity: 0.5;"></div>
+                    <div class="scanner-laser laser-leftTop" style="opacity: 0.5;"></div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="thumbnail" id="result">
+                    <!--<div class="well">
+                        <img width="160" height="120" id="scanned-img" src="">
+                    </div>-->
+                    <div class="caption">
+                        <h5>Scanned result</h5>
+                        <p id="scanned-QR"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</script>
   <!-- END: Underscore Template Definition. -->
 
 {{/extend}}

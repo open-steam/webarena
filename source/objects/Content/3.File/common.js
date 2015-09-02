@@ -97,13 +97,10 @@ WAFile.register = function(type) {
 	
 		/* set a very high layer for all selected objects (keeping their order) */
 		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected){
-			var obj = selected[i];
-			
-			obj.setAttribute("layer", obj.getAttribute("layer")+999999);
-			
-		}
+
+        _.each(selected, function (obj) {
+			obj.setAttribute("layer", obj.getAttribute("layer") + 999999);
+		});
 		
 		ObjectManager.renumberLayers();
 		
@@ -113,13 +110,10 @@ WAFile.register = function(type) {
 		
 		/* set a very low layer for all selected objects (keeping their order) */
 		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected){
-			var obj = selected[i];
-			
-			obj.setAttribute("layer", obj.getAttribute("layer")-999999);
-			
-		}
+
+        _.each(selected, function (obj) {
+			obj.setAttribute("layer", obj.getAttribute("layer") - 999999);
+		});
 		
 		ObjectManager.renumberLayers();
 		
@@ -128,55 +122,42 @@ WAFile.register = function(type) {
 	this.registerAction(this.translate(this.currentLanguage, "Upload file"),function(){
 		
 		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
+
+        _.each(selected, function (obj) {
 			obj.upload();
-			
-		}
+		});
 		
 	},true, function() {
 		return (ObjectManager.getSelected()[0].hasContent() === false);
 	});
 	
-	this.registerAction(this.translate(this.currentLanguage, "Change content"),function(){
+	this.registerAction(this.translate(this.currentLanguage, "Change content"),function() {
 		
 		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
+
+		_.each(selected, function (obj) {
 			obj.upload();
-			
-		}
+		});
 		
 	},true, function() {
 		return (ObjectManager.getSelected()[0].hasContent() === true);
 	});
 	
 	
-	this.registerAction(this.translate(this.currentLanguage, "Download"),function(){
-		
+	this.registerAction(this.translate(this.currentLanguage, "Download"),function() {
 		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
+
+        _.each(selected, function (obj) {
 			obj.openFile();
-			
-		}
+		});
 		
 	},true, function() {
 		
 		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
+
+        _.each(selected, function (obj) {
 			return (obj.hasContent() == true);
-			
-		}
+		});
 		
 	});
 	

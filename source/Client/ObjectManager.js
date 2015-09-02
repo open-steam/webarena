@@ -287,10 +287,9 @@ ObjectManager.getObjectsByLayer = function(index) {
 
     var objectsArray = [];
 
-    for (var i in objects) {
-        var obj = objects[i];
+    _.each(objects, function (obj) {
         objectsArray.push(obj);
-    }
+    });
 
     objectsArray.sort(function(a, b) {
 
@@ -554,10 +553,10 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
 
             if (error !== true) {
                 var objects = self.getObjects(index);
-                for (var i in objects) {
-                    var obj = objects[i];
+
+                _.each(objects, function (obj) {
                     ObjectManager.removeLocally(obj);
-                }
+                });
 
                 if (!roomid) roomid = 'public';
 
@@ -567,8 +566,7 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
 
                 if (GUI.couplingModeActive) {
                     GUI.defaultZoomPanState(index, true);
-                }
-				else{
+                } else {
 					ObjectManager.previousRoomID = self.currentRoomID['left'];
 				}
 
@@ -600,23 +598,21 @@ ObjectManager.leaveRoom = function(roomid, index, serverCall) {
             if (error !== true) {
 
                 var objects = self.getObjects(index);
-                for (var i in objects) {
-                    var obj = objects[i];
+
+                _.each(objects, function (obj) {
                     ObjectManager.removeLocally(obj);
-                }
+                });
 
                 self.currentRoomID[index] = false;
                 self.currentRoom[index] = false;
-
             }
 
         });
     } else {
         var objects = self.getObjects(index);
-        for (var i in objects) {
-            var obj = objects[i];
+        _.each(objects, function (obj) {
             ObjectManager.removeLocally(obj);
-        }
+        });
 
         self.currentRoomID[index] = false;
         self.currentRoom[index] = false;
@@ -705,26 +701,27 @@ ObjectManager.getSelected = function() {
 
 ObjectManager.getActionsForSelected = function() {
     var selectedObjects = this.getSelected();
-
     var actions = new Array();
 
-    for (var key in selectedObjects) {
-        var object = selectedObjects[key];
-
+    _.each(selectedObjects, function (object) {
         var objActions = new Array();
 
-        var a = object.getActions();
+        if (_.isFunction(object.getActions)) {
+            var a = object.getActions();
 
-        for (var actionName in a) {
-            var actionData = a[actionName];
+            for (var actionName in a) {
+                var actionData = a[actionName];
 
-            if ((!actionData.single || selectedObjects.length == 1) && (!actionData.visibilityFunc || actionData.visibilityFunc())) {
-                objActions.push(actionName);
+                if ((!actionData.single || selectedObjects.length == 1) && (!actionData.visibilityFunc || actionData.visibilityFunc())) {
+                    objActions.push(actionName);
+                }
             }
         }
 
-        actions = Helper.getIntersectionOfArrays(actions, objActions);
-    }
+        //actions = Helper.getIntersectionOfArrays(actions, objActions);
+        //actions = _.union(actions, objActions);
+        actions = objActions;
+    });
 
     return actions;
 }
@@ -752,10 +749,9 @@ ObjectManager.renumberLayers = function(noUpdate) {
 
     var objectsArray = [];
 
-    for (var i in objects) {
-        var obj = objects[i];
+    _.each(objects, function (obj) {
         objectsArray.push(obj);
-    }
+    });
 
     objectsArray.sort(function(a, b) {
 
@@ -770,13 +766,10 @@ ObjectManager.renumberLayers = function(noUpdate) {
     /* set new layers */
     var layer = 1;
 
-    for (var i in objectsArray) {
-        var obj = objectsArray[i];
-
+    _.each(objectsArray, function (obj) {
         obj.setAttribute("layer", layer);
         layer++;
-
-    }
+    });
 
     if (noUpdate === undefined) {
         GUI.updateLayers();
@@ -837,10 +830,9 @@ ObjectManager.reportBug = function(data, callback) {
 ObjectManager.showAll = function() {
     var objects = ObjectManager.getObjects();
 
-    for (var i in objects) {
-        var obj = objects[i];
+    _.each(objects, function (obj) {
         obj.setAttribute("visible", true);
-    }
+    });
 }
 
 ObjectManager.clientErrorMessage = function(data, callback) {
@@ -853,10 +845,9 @@ ObjectManager.copyObjects = function(objects) {
 
         var array = new Array();
 
-        for (var key in objects) {
-            var object = objects[key];
+        _.each(objects, function (object) {
             array.push(object.getId());
-        }
+        });
 
         ObjectManager.clipBoard.room = objects[0].getCurrentRoom();
         ObjectManager.clipBoard.objects = array;
@@ -869,10 +860,9 @@ ObjectManager.cutObjects = function(objects) {
 
         var array = new Array();
 
-        for (var key in objects) {
-            var object = objects[key];
+        _.each(objects, function (object) {
             array.push(object.getId());
-        }
+        });
 
         ObjectManager.clipBoard.room = objects[0].getCurrentRoom();
         ObjectManager.clipBoard.objects = array;
@@ -930,10 +920,9 @@ ObjectManager.duplicateObjects = function(objects) {
         if (duplicate) {
             var array = new Array();
 
-            for (var key in objects) {
-                var object = objects[key];
+            _.each(objects, function (object) {
                 array.push(object.getId());
-            }
+            });
 
             var requestData = {};
             requestData.fromRoom = objects[0].getCurrentRoom();
@@ -1004,14 +993,14 @@ ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
         var array = new Array();
 
         var positions = {};
-        for (var key in objects) {
-            var object = objects[key];
+
+        _.each(objects, function (object) {
             array.push(object.getId());
 
             positions[object.getId()] = {};
             positions[object.getId()]['x'] = object.getViewX();
             positions[object.getId()]['y'] = object.getViewY();
-        }
+        });
 
         var requestData = {};
         requestData.fromRoom = fromRoom;
@@ -1043,10 +1032,9 @@ ObjectManager.grantFullRights = function() {
 
         var resources = new Array();
 
-        for (var key in objects) {
-            var object = objects[key];
+        _.each(objects, function (object) {
             resources.push(Modules.ACLManager.makeACLName(object.getId()));
-        }
+        });
 
         Modules.ACLManager.grantFullRights(resources, function(result) {
             if (result.err) {
