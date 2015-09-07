@@ -5,6 +5,16 @@
 *
 */
 
+Ellipse.setViewWidth = function(value) {
+	GeneralObject.setViewWidth.call(this, value);
+	this.updateInnerObject();
+}
+
+Ellipse.setViewHeight = function(value) {
+	GeneralObject.setViewHeight.call(this, value);
+	this.updateInnerObject();
+}
+
 Ellipse.createRepresentation = function(parent) {
 	var rep = GUI.svg.group(parent, this.getAttribute('id'));
 	
@@ -22,6 +32,8 @@ Ellipse.createRepresentation = function(parent) {
 }
 
 Ellipse.draw = function(external) {
+    //console.log("Ellipse.draw");
+
 	var rep = this.getRepresentation();
 	GeneralObject.draw.call(this, external);
 
@@ -42,34 +54,26 @@ Ellipse.draw = function(external) {
 }
 
 Ellipse.updateInnerObject = function() {
+    //console.log("Ellipse.updateInnerObject");
+
 	var rep = this.getRepresentation();
-	
+
 	var w = parseInt(this.getViewWidth() / 2);
 	var h = parseInt(this.getViewHeight() / 2);
-	
+
 	if (isNaN(w)) {
 		w = 0;
 	}
-	
+
 	if (isNaN(h)) {
 		h = 0;
 	}
 
 	$(rep).find("ellipse").attr("cx", w);
 	$(rep).find("ellipse").attr("cy", h);
-	
+
 	$(rep).find("ellipse").attr("rx", w);
 	$(rep).find("ellipse").attr("ry", h);
-}
-
-Ellipse.setViewWidth = function(value) {
-	GeneralObject.setViewWidth.call(this,value);
-	this.updateInnerObject();
-}
-
-Ellipse.setViewHeight = function(value) {
-	GeneralObject.setViewHeight.call(this,value);
-	this.updateInnerObject();
 }
 
 // calculate the Intersection point between an ellipse object and a line (which ends in the middle of the ellipse,

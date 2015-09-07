@@ -12,7 +12,7 @@ var _ = require('underscore');
 var node_acl = require('acl');
 var mongoose = require('mongoose');
 
-var ResourceManager = require('./resourceManager');
+var ResourceManager = require('./resourceManager.js');
 
 // The actual acl will reside here
 var acl = undefined;
@@ -224,7 +224,10 @@ function set_roles() {
     acl.allow('admin', resources, '*', logError);
 
     // Create the 'user' Role
-    acl.allow('user','public' , '*', logError);
+    acl.allow('user', 'public' , '*', logError);
+
+    // Create the 'shared-surface' Role
+    acl.allow('shared-surface', 'public' , '*', logError);
 
     // Inherit roles
     // Every admin is allowed to do what users do
@@ -233,11 +236,6 @@ function set_roles() {
 
 function logError(err) {
     if (err) console.warn("Error!!! -> " + err);
-};
-
-// Provide logic for getting the logged-in user
-function get_user_id(req, res) {
-    return req.user != undefined? req.user.id : undefined;
 };
 
 // Generic debug logger for node_acl

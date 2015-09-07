@@ -94,18 +94,19 @@ GUI.adjustContent = function(webarenaObject) {
 		/* check if new position of webarenaObject needs a new room width/height */
 
 		var currentRoom = ObjectManager.getCurrentRoom();
-		
-		var maxX = Math.round(webarenaObject.getViewBoundingBoxX() + webarenaObject.getViewBoundingBoxWidth())  + 300;
-		var maxY = Math.round(webarenaObject.getViewBoundingBoxY() + webarenaObject.getViewBoundingBoxHeight()) + 300;
 
-		if (maxX > currentRoom.getAttribute("width")) {
-			GUI.setRoomWidth(maxX);
-		}
+		if (_.isFunction(currentRoom.getAttribute)) {
+			var maxX = Math.round(webarenaObject.getViewBoundingBoxX() + webarenaObject.getViewBoundingBoxWidth())  + 300;
+			var maxY = Math.round(webarenaObject.getViewBoundingBoxY() + webarenaObject.getViewBoundingBoxHeight()) + 300;
 
-		if (maxY > currentRoom.getAttribute("height")) {
-			GUI.setRoomHeight(maxY);
+			if (maxX > currentRoom.getAttribute("width")) {
+				GUI.setRoomWidth(maxX);
+			}
+
+			if (maxY > currentRoom.getAttribute("height")) {
+				GUI.setRoomHeight(maxY);
+			}
 		}
-		
 	} else {
 		/* set room width/height */
 		var currentRoom = ObjectManager.getCurrentRoom();

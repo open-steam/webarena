@@ -81,7 +81,7 @@ AccessController.prototype._allow = function(roles, resources, permissions, cb) 
                 that.acl.allow(roles, resource, permissions, function(error) {
                     if (error) return callback(error);
 
-                    if (_.contains(permissions, 'couple')) {
+                    if (_.intersection(permissions, ['couple', 'publish']).length > 0) {
                         var room = obj.room;
 
                         ObjectController.pokeObject(room, objectId, context);
@@ -116,18 +116,25 @@ AccessController.prototype._isAllowed = function(userId, resource, permissions, 
 
         if (!allowed) {
 
-            if (that.config.usersCanCreateObjects && _.contains(permissions, 'create') &&
-                                                            resource !== 'ui_static_tools_canUsersRequestCoupling') {
-                allowed = _.contains(ResourceManager.staticUIResources, resource);
-            }
+            that.acl.userRoles(userId, function(err, roles) {
+                var isSharedSurface = _.contains(roles, 'shared-surface');
 
-            if (that.config.canUsersRequestCoupling && _.contains(permissions, 'create') &&
-                                                            resource === 'ui_static_tools_canUsersRequestCoupling') {
-                allowed = _.contains(ResourceManager.staticUIResources, resource);
-            }
-        }
+                if (!isSharedSurface) {
 
-        cb(err, allowed);
+                    if (that.config.usersCanCreateObjects && _.contains(permissions, 'create') &&
+                        resource !== 'ui_static_tools_canUsersRequestCoupling') {
+                        allowed = _.contains(ResourceManager.staticUIResources, resource);
+                    }
+
+                    if (that.config.canUsersRequestCoupling && _.contains(permissions, 'create') &&
+                        resource === 'ui_static_tools_canUsersRequestCoupling') {
+                        allowed = _.contains(ResourceManager.staticUIResources, resource);
+                    }
+                }
+
+                cb(err, allowed);
+            });
+        } else cb(err, allowed);
     });
 };
 

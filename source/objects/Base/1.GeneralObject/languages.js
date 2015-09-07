@@ -74,7 +74,8 @@ GeneralObject.setTranslations('en',{
         'External' : 'External',
         'object.show.roles.permissions': "Show roles and permissions",
 		'object.coupling.action': "Couple with device(s)",
-		'object.decoupling.action': "Decouple from device",
-		'object.coupling.qr.show': "Show QR code"
+		'object.decoupling.action': "Decouple from device(s)",
+		'object.coupling.qr.show': "Show QR code",
+		'object.publish.share': "Publish to shared board"
     }
 );

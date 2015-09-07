@@ -309,7 +309,7 @@ theObject.updateClient = function(socket, mode) {
 
         var userId = socket.deviceID ? socket.deviceID : socket.handshake.session.passport.user;
         var resource = Modules.ACLManager.makeACLName(object.id, underscore.partial(condition, object.id, object.type));
-		var permissions = ['show', 'couple'];
+		var permissions = ['show', 'couple', 'publish'];
 
 		//resource = _.isString(resource) ? resource : resource.toString();
 
@@ -323,12 +323,12 @@ theObject.updateClient = function(socket, mode) {
 			   else {
 				   // UGLY PATCH: if we just deleted some object than notify the user
 				   // even if isAllowed2 denied it, this is because the resource does not exist
-				   // in the system anymore (already deleted), and isAllowed2 report that
+				   // in the system anymore (already deleted), and the isAllowed2 report this
 				   // as not allowed
 				   if (mode == 'objectDelete') SocketServer.sendToSocket(socket, mode, object);
 				   else {
-					   //console.info("++ updateClient:: userId: " + userId + " is not allowed to show resource: "
-					   //                                                               + resource + " in mode: " + mode);
+					   console.info("++ updateClient:: userId: " + userId + " is not allowed to show resource: "
+					                                                                  + resource + " in mode: " + mode);
 					   //console.info(object);
 				   }
 			   }

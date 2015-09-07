@@ -13,6 +13,7 @@ function UserInfo() {
 
     this.isAdmin = false;
     this.wadiv   = undefined;
+    this.role    = undefined;
 };
 
 UserInfo.prototype.init = function() {
@@ -44,8 +45,9 @@ UserInfo.prototype.init = function() {
 
     var that = this;
     Modules.ACLManager.userRoles(function (err, result) {
-        var role = _.contains(result, 'admin') ? "admin" : "user";
+        var role = _.contains(result, 'admin') ? "admin" : _.contains(result, 'shared-surface') ? 'shared-surface' : 'user';
         that.isAdmin = (role == 'admin');
+        that.role = role;
 
         roleInfo.setValue(role);
         roleInfo.setInactive();

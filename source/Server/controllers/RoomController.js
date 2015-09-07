@@ -109,7 +109,7 @@ RoomController.informAllInRoom = function (data, cb) {
 
         var userId = socket.handshake.session.passport ? socket.handshake.session.passport.user : socket.deviceID;
         var resource = Modules.ACLManager.makeACLName(resourceID);
-        var permissions = ['show', 'couple'];
+        var permissions = ['show', 'couple', 'publish'];
 
         Modules.ACLManager.isAllowed2(userId, resource, permissions, function(err, allowed) {
             var SocketServer = Modules.SocketServer;

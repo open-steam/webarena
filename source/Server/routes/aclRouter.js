@@ -26,8 +26,10 @@ function ACLRouter(app, acl) {
     });
 
     // Adds roles to a given user id.
-    acl_router.get('/addUserRoles/:userId/:roles', function(req, res) {
-        acl.addUserRoles(req.params.userId, req.params.roles, function(err) {
+    acl_router.get('/addUserRoles/:roles/:userId?', function(req, res) {
+        var userId = req.params.userId ? req.params.userId : req.cookies.WADIV.WADIV;
+
+        acl.addUserRoles(userId, req.params.roles, function(err) {
             if(err) {
                 console.warn("ERROR!! by addUserRoles function: " + err);
                 return res.status(500).send("ERROR!! by addUserRoles function: " + err);

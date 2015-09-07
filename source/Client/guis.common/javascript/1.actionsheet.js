@@ -50,6 +50,15 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
     var actionsCollection = new Array();
 
     async.forEachOfSeries(ObjectManager.getActionsForSelected(), function (action, key, callback) {
+
+        if (action === 'object.publish.share') {
+            if (GUI.userInfo.role !== 'shared-surface') {
+                actionsCollection.push(action);
+            }
+
+            return callback(null);
+        }
+
         if (_.contains(Modules.ACLManager.notForEveryOne, action)) {
             var resource = Modules.ACLManager.makeACLName(webarenaObject.id);
 

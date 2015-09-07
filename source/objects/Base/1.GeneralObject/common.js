@@ -293,69 +293,6 @@ GeneralObject.register = function(type) {
 
     }, false);
 
-    //this.registerAction('Group', function() {
-    //    var selected = ObjectManager.getSelected();
-    //
-    //    var date = new Date();
-    //    var groupID = date.getTime();
-    //
-    //    _.each(selected, function (obj) {
-    //        obj.setAttribute("group", groupID);
-    //    });
-    //
-    //}, false, function() {
-    //    var selected = ObjectManager.getSelected();
-    //
-    //    /* only one object --> no group */
-    //    if (selected.length == 1)
-    //        return false;
-    //
-    //    /* prevent creating a group if all objects are in the same group */
-    //    var group = undefined;
-    //
-    //    _.each(selected, function (obj) {
-    //        if (group == undefined) {
-    //            group = obj.getAttribute("group");
-    //        } else {
-    //
-    //            if (group != obj.getAttribute("group")) {
-    //                return true;
-    //            }
-    //        }
-    //    });
-    //
-    //    /* if the common group is 0 there is no group */
-    //    if (group == 0) {
-    //        return true;
-    //    }
-    //
-    //    return false;
-    //});
-
-    //this.registerAction('Ungroup', function() {
-    //    var selected = ObjectManager.getSelected();
-    //
-    //    _.each(selected, function (obj) {
-    //        obj.setAttribute("group", 0);
-    //    });
-    //
-    //}, false, function() {
-    //    var selected = ObjectManager.getSelected();
-    //
-    //    /* prevent ungrouping if no selected element is in a group */
-    //    var hasGroups = false;
-    //
-    //    _.each(selected, function (obj) {
-    //        if (_.isFunction(obj.getAttribute)) {
-    //            if (obj.getAttribute("group") != 0) {
-    //                hasGroups = true;
-    //            }
-    //        }
-    //    });
-    //
-    //    return hasGroups;
-    //});
-
     this.registerAction('to front', function() {
         /* set a very high layer for all selected objects (keeping their order) */
         var selected = ObjectManager.getSelected();
@@ -511,6 +448,23 @@ GeneralObject.register = function(type) {
             buttons,
             175
         );
+    }, true);
+
+    this.registerAction('object.publish.share', function() {
+        var selectedObjects = ObjectManager.getSelected();
+        var resource = Modules.ACLManager.makeACLName(selectedObjects[0].getAttribute("id"));
+
+        Modules.ACLManager.allow(['shared-surface'], resource, "publish", function(result) {
+            if (result) {
+
+                $().toastmessage('showToast', {
+                    text: GUI.translate("publish action succeed"),
+                    sticky: false,
+                    position: 'top-left',
+                    type    : 'success'
+                });
+            }
+        });
     }, true);
 
 }
