@@ -79,7 +79,7 @@ GUI.cloud.buildContent = function() {
 		"plugins": ["themes", "json_data", "ui"]
 	}).bind("loaded.jstree after_open.jstree", function() {
 		$(this).find('a > .jstree-icon').css({'background-size': 'contain'});
-		$(this).find('.jstree-leaf').attr("title", "Double click or drag to copy object");
+		$(this).find('.jstree-leaf').attr("title", GUI.translate("Double click or drag to copy object"));
 		$(this).find('.jstree-leaf').find("a").draggable({
 			helper: function(event) { 
 				return $(this).html().replace("&nbsp;", "").replace("jstree-icon", "jstree-icon file");

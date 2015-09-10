@@ -147,6 +147,8 @@ GUI.setTranslations('de',{
 	'delete Object' : 'Objekt gelöscht',
 	'Release the mouse button to delete' : 'Zum Löschen die Maustaste loslassen',
 	'The trash basket is empty. You can delete objects with the contextmenu, the Escape-Button or by dragging them into the trash basket.' : 'Der Papierkorb ist leer. Objekte können mithilfe des Kontextmenüs, dem Escape-Button oder durch Ablegen im Papierkorb gelöscht werden.',
-	'There are no recent changes' : 'Es existieren keine letzten Änderungen'
+	'There are no recent changes' : 'Es existieren keine letzten Änderungen',
+	'Double click or drag to copy object' : 'Kopieren per Doppelklick oder Drag and Drop',
+	'Double click or drag to restore object' : 'Wiederherstellen per Doppelklick oder Drag and Drop'
 	}
 );

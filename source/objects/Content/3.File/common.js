@@ -108,7 +108,7 @@ WAFile.register=function(type){
 		}
 	});
 	
-	this.registerAction('to front',function(){
+	this.registerAction('To front',function(){
 	
 		/* set a very high layer for all selected objects (keeping their order) */
 		var selected = ObjectManager.getSelected();
@@ -124,7 +124,7 @@ WAFile.register=function(type){
 		
 	}, false);
 	
-	this.registerAction('to back',function(){
+	this.registerAction('To back',function(){
 		
 		/* set a very low layer for all selected objects (keeping their order) */
 		var selected = ObjectManager.getSelected();

@@ -30,8 +30,8 @@ IconObject.register=function(type){
 	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
-	this.unregisterAction('to back');
-	this.unregisterAction('to front');
+	this.unregisterAction('To back');
+	this.unregisterAction('To front');
         
         this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 

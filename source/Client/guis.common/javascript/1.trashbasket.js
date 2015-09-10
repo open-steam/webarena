@@ -45,7 +45,7 @@ GUI.trashbasket.update = function() {
 		"plugins": ["themes", "json_data", "ui"]
 	}).bind("loaded.jstree", function() {
 		$(this).find('a > .jstree-icon').css({'background-size': 'contain'});
-		$(this).find('.jstree-leaf').attr("title", "Double click or drag to restore object");
+		$(this).find('.jstree-leaf').attr("title", GUI.translate("Double click or drag to restore object"));
 		$(this).find('.jstree-leaf').find("a").draggable({
 			helper: function(event) { 
 				return $(this).html().replace("&nbsp;", "");
