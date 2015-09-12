@@ -205,13 +205,13 @@ GUI.chat.addChatIcon = function(userId, video){
 	if(video){
 		$(icon).attr("id", "VideoIconUser"+userId);
 		$(icon).attr("src", "../../guis.common/images/startVideochat.png").attr("alt", "");
-		$(icon).attr("title", "start video call");
+		$(icon).attr("title", GUI.translate("start video chat"));
 		$(icon).css("margin-left", "190px");
 	}
 	else{
 		$(icon).attr("id", "AudioIconUser"+userId);
 		$(icon).attr("src", "../../guis.common/images/startAudiochat.png").attr("alt", "");
-		$(icon).attr("title", "start voice call");
+		$(icon).attr("title", GUI.translate("start audio chat"));
 		$(icon).css("margin-left", "160px");
 	}
 	
@@ -251,11 +251,11 @@ GUI.chat.addChatIcon = function(userId, video){
 			var targetname = $(this).parent()[0].nextSibling.data;
 			var targetId = $(this).parent().attr("id");
 			
-			if(title == "start video call"){
+			if(title == GUI.translate("start video chat")){
 				WebRTCManager.startCall(true, targetId, targetname);
 				return;
 			}
-			if(title == "start voice call"){
+			if(title == GUI.translate("start audio chat")){
 				WebRTCManager.startCall(false, targetId, targetname);
 				return;
 			}
@@ -270,11 +270,11 @@ GUI.chat.addChatIcon = function(userId, video){
 			var targetname = $(this).parent()[0].nextSibling.data;
 			var targetId = $(this).parent().attr("id");
 			
-			if(title == "start video call"){
+			if(title == GUI.translate("start video chat")){
 				WebRTCManager.startCall(true, targetId, targetname);
 				return;
 			}
-			if(title == "start voice call"){
+			if(title == GUI.translate("start audio chat")){
 				WebRTCManager.startCall(false, targetId, targetname);
 				return;
 			}
@@ -294,11 +294,11 @@ GUI.chat.changeAudioVideoIcon = function(startOrLeave){
 	
 	if(WebRTCManager.constraints.video){
 		$("#VideoIconUser"+WebRTCManager.callerId).attr("src", "../../guis.common/images/"+startOrLeave+"Videochat.png").attr("alt", "");
-		$("#VideoIconUser"+WebRTCManager.callerId).attr("title", startOrLeave+" video call");
+		$("#VideoIconUser"+WebRTCManager.callerId).attr("title", GUI.translate(startOrLeave+" video chat"));
 	}
 	else{
 		$("#AudioIconUser"+WebRTCManager.callerId).attr("src", "../../guis.common/images/"+startOrLeave+"Audiochat.png").attr("alt", "");
-		$("#AudioIconUser"+WebRTCManager.callerId).attr("title", startOrLeave+" voice call");
+		$("#AudioIconUser"+WebRTCManager.callerId).attr("title", GUI.translate(startOrLeave+" audio chat"));
 	}
 
 }
