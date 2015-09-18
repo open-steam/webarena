@@ -59,7 +59,9 @@ function AppRouter(modules, app) {
             return res.send(404, 'Object not found ' + req.params.objectType);
         }
 
-        res.sendFile(path.resolve(__dirname, obj.localIconPath(req.params.section)));
+        var iconPath = obj.localIconPath(req.params.section);
+
+        res.sendFile(path.resolve(__dirname, iconPath));
     });
 
     app.get('/categoryIcons/:category', passport.ensureAuthenticated, function(req, res) {

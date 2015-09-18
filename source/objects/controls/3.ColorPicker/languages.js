@@ -1,0 +1,2 @@
+
+ColorPicker.setTranslations('de',{});

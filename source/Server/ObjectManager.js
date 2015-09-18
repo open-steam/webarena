@@ -314,8 +314,10 @@ ObjectManager.getEnabledObjectTypes = function() {
 
     for (var i in configCategories) {
         var temp = configCategories[i];
-        if (temp !== 'Base')
+
+        if (temp !== 'Base') {
             categories.push(temp);
+        }
     }
 
     var result = [];
@@ -323,6 +325,7 @@ ObjectManager.getEnabledObjectTypes = function() {
     for (var i in categories) {
         var category = categories[i];
         var path = __dirname + '/../objects/' + category;
+
         if (!fs.existsSync(path) || !fs.lstatSync(path).isDirectory()) {
             console.log('Config error: Category ' + category + ' not found!');
             continue;

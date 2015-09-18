@@ -34,23 +34,26 @@ GeneralObject.serverCall = function() {
     var args = Array.prototype.slice.call(arguments);
     var callback = false;
 
-    //Look if last element is function 
-    //don't use pop directly, because function
-    //can be called without callback.
+    // Look if last element is function
+    // don't use pop directly, because function
+    // can be called without callback.
     var lastArg = args[args.length - 1];
     if (_.isFunction(lastArg)) {
         callback = lastArg;
         args.pop();
     }
 
-    //check if all needed arguments are present
-    //and of right type
+    // check if all needed arguments are present
+    // and of right type
     var remoteFnName = args.shift();
 
-    if (remoteFnName === undefined)
+    if (remoteFnName === undefined) {
         throw "Function name is missing.";
-    if (remoteFnName && !_.isString(remoteFnName))
+    }
+
+    if (remoteFnName && !_.isString(remoteFnName)) {
         throw "Function names can be strings only.";
+    }
 
     var remoteCall = {
         roomID: this.getRoomID(),
@@ -61,22 +64,24 @@ GeneralObject.serverCall = function() {
         }
     }
 
-    if (callback)
+    if (callback) {
         Modules.Dispatcher.query('serverCall', remoteCall, callback);
-    else
+    } else {
         Modules.Dispatcher.query('serverCall', remoteCall);
-
+    }
 }
 
 GeneralObject.fetchContent = function(worker, forced) {
 
-    if (this.contentURLOnly)
+    if (this.contentURLOnly) {
         return;
+    }
 
-    if (!worker)
+    if (!worker) {
         worker = function(data) {
             //console.log(data);
         }
+    }
 
     if (this.contentFetched && forced !== true) {
         worker(this.content);
@@ -103,6 +108,7 @@ GeneralObject.getContentAsString = function(callback) {
             console.warn('Synchronous content access before it has been fetched! Inform the programmer about this issue!');
             return false;
         }
+
         return GeneralObject.utf8.parse(this.content);
     } else {
         this.fetchContent(function(content) {
@@ -123,19 +129,20 @@ GeneralObject.contentUpdated = function() {
     }, true);
 }
 
-
-//triggered by non local change of values
+// triggered by non local change of values
 GeneralObject.refresh = function() {
 
-    //do not trigger a draw if the refreshed object is the room object
-    if (this.id == this.getAttribute('inRoom'))
+    // do not trigger a draw if the refreshed object is the room object
+    if (this.id == this.getAttribute('inRoom')) {
         return;
+    }
 
-    if (this.moving)
+    if (this.moving) {
         return;
+    }
+
     this.draw(true);
 }
-
 
 GeneralObject.getPreviewContentURL = function() {
     return "/getPreviewContent/" + this.getRoomID() + "/" + this.id + "/" + this.getAttribute('contentAge') + "/" + ObjectManager.userHash;
@@ -156,15 +163,11 @@ GeneralObject.create = function(attributes) {
 }
 
 GeneralObject.removeRepresentation = function() {
-
     var rep = this.getRepresentation();
-
     this.deselect();
 
     $(rep).remove();
-
 }
-
 
 GeneralObject.getIconPath = function() {
     return "/objectIcons/" + this.getType();
@@ -186,8 +189,9 @@ GeneralObject.getCurrentUserName = function() {
  *	determine if the object's bounding box intersects with the square x,y,width,height
  */
 GeneralObject.boxIntersectsWith = function(otherx, othery, otherwidth, otherheight) {
-    if (!this.isGraphical)
+    if (!this.isGraphical) {
         return false;
+    }
 
     var thisx = this.getViewBoundingBoxX();
     var thisy = this.getViewBoundingBoxY();
@@ -204,7 +208,6 @@ GeneralObject.boxIntersectsWith = function(otherx, othery, otherwidth, otherheig
         return false;
 
     return true;
-
 }
 
 /**

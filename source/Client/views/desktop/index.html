@@ -55,6 +55,9 @@
     <script src="/dialogs/objectDeviceCouplingRequestQR-dialog.js"></script>
     <script src="/couplingManager-client.js"></script>
 
+    <script src="/guis.common/libraries/spectrum/spectrum.js"></script>
+    <link type="text/css" rel="Stylesheet" href="/guis.common/libraries/spectrum/spectrum.css" />
+
 	<script>
 	var  Modules = {
 		'Log':Log,
@@ -356,6 +359,13 @@
         </div>
     </div>
 </div>
+</script>
+<script type="text/template" id="color-picker-dialog-template">
+    <div class="color-picker-request">
+        <span>Set the color of the Object with Id:</span><br>
+        <span><%= objectID %></span><br>
+        <p><input type='text' id="picker" /></p>
+    </div>
 </script>
   <!-- END: Underscore Template Definition. -->
 

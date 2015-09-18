@@ -21,8 +21,8 @@ BuildTool.addToClientCode = function(filename) {
 	try {
 		fileContent = fs.readFileSync(filename, 'UTF8');
 
-		//Add line numbers as in file
-		if(showDebugLineNumbers){
+		// Add line numbers as in file
+		if (showDebugLineNumbers){
 			fileContent = fileContent.split(enter).reduce(function(soFar, line, index){
 				return soFar + line + " //" + (index +1) + enter;
 			}, "");
@@ -37,11 +37,11 @@ BuildTool.buildClientCode = function(guiType) {
 	var that = this;
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
 	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
-                //TODO: Insert code for the server sided transmission of client errors
-        this.clientCode += enter + "window.onerror = function(message, uri, line){var data={};\n\
-    data.message=message;data.uri=uri;data.line=line;data.nav = navigator.userAgent;\n\
-data.roomID=ObjectManager.getRoomID();data.user = ObjectManager.getUser().username;\n\
-ObjectManager.clientErrorMessage(data,function(){});}";
+                // TODO: Insert code for the server sided transmission of client errors
+                this.clientCode += enter + "window.onerror = function(message, uri, line){var data={};\n\
+                data.message=message;data.uri=uri;data.line=line;data.nav = navigator.userAgent;\n\
+                data.roomID=ObjectManager.getRoomID();data.user = ObjectManager.getUser().username;\n\
+                ObjectManager.clientErrorMessage(data,function(){});}";
 
 	files.forEach(function (data) {
 		
@@ -51,11 +51,12 @@ ObjectManager.clientErrorMessage(data,function(){});}";
 		var fileinfo = filename.split('.');
 		var index = fileinfo[0];
 		var objName = fileinfo[1];
+
 		if (!index) return;
 		if (!objName) return;
 		
 		if (objName == 'File') {
-			var temp = 'WAFile'; //TODO This is a hot fix. Implement proper namespaces instead
+			var temp = 'WAFile'; // TODO This is a hot fix. Implement proper namespaces instead
 		} else temp = objName;
 
 		var filebase = __dirname + '/../objects/' + category + '/' + filename;
@@ -83,6 +84,7 @@ ObjectManager.clientErrorMessage(data,function(){});}";
  **/
 BuildTool.getClientCode = function (guiType) {
 	this.buildClientCode(guiType);
+
 	return this.clientCode;
 }
 

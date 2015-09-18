@@ -271,12 +271,12 @@ AttributeManager.setAttribute = function(object, attribute, value, forced, noeva
             	'userId' : GUI.userid
             })
 		} else {
-			saveDelays[identifier]= window.setTimeout(function() {
+			saveDelays[identifier] = window.setTimeout(function() {
                 object.serverCall('setAttribute', attribute, value, false, {
                 	'transactionId': that.transactionId,
                 	'userId' : GUI.userid
             	})
-			},theTimer);
+			}, theTimer);
 		}
 		
 	}

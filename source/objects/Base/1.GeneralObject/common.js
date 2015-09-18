@@ -257,19 +257,19 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('group', { type: 'group', readonly: false, category: 'Basic', standard: 0 });
 
-	this.registerAttribute('destination', { type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
-            object.showExitDialog()
-        }, category: 'Functionality', changedFunction: function(object) {
-            if(object.updateIcon){object.updateIcon()};
-        }});
+	//this.registerAttribute('destination', { type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
+     //       object.showExitDialog()
+     //   }, category: 'Functionality', changedFunction: function(object) {
+     //       if(object.updateIcon){object.updateIcon()};
+     //   }});
 
     this.registerAttribute('destinationObject', { type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
             object.showExitDialog()
         }, category: 'Functionality'});
 
     this.registerAttribute('filterObjects', { type: 'boolean', standard: false, hidden: true });
-	this.registerAttribute('open destination on double-click', { type:'boolean', standard:false, category:'Functionality' } );
-	this.registerAttribute('open in', { type:'selection', standard:'same Tab', options:['same Tab','new Tab','new Window'], category:'Functionality' } );
+	//this.registerAttribute('open destination on double-click', { type:'boolean', standard:false, category:'Functionality' } );
+	//this.registerAttribute('open in', { type:'selection', standard:'same Tab', options:['same Tab','new Tab','new Window'], category:'Functionality' } );
 	
     //this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 
@@ -499,13 +499,14 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
 GeneralObject.setAttribute = function(attribute, value, forced, transactionId) {
     if (this.mayChangeAttributes()) {
 
-        //rights could also be checked in the attribute manager but HAVE to
-        //be checked on the server side.
+        // rights could also be checked in the attribute manager but HAVE to
+        // be checked on the server side.
 
         var ret = this.attributeManager.setAttribute(this, attribute, value, forced);
 
-        if (this.afterSetAttribute)
+        if (this.afterSetAttribute) {
             this.afterSetAttribute();
+        }
 
         return ret;
 
@@ -514,6 +515,7 @@ GeneralObject.setAttribute = function(attribute, value, forced, transactionId) {
         return false;
     }
 }
+
 GeneralObject.setAttribute.public = true;
 GeneralObject.setAttribute.neededRights = {
     write: true
