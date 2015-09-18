@@ -40,6 +40,7 @@ ColorPicker.chooseColor = function() {
 		}
 
 		Modules.Dispatcher.query('serverCall', remoteCall);
+
 		return true;
 	};
 

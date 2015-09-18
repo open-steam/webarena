@@ -327,8 +327,8 @@ theObject.updateClient = function(socket, mode) {
 				   // as not allowed
 				   if (mode == 'objectDelete') SocketServer.sendToSocket(socket, mode, object);
 				   else {
-					   console.info("++ updateClient:: userId: " + userId + " is not allowed to show resource: "
-					                                                                  + resource + " in mode: " + mode);
+					   //console.info("++ updateClient:: userId: " + userId + " is not allowed to show resource: "
+					   //                                                               + resource + " in mode: " + mode);
 					   //console.info(object);
 				   }
 			   }

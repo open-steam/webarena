@@ -1,7 +1,7 @@
 /**
  *    Webarena - A web application for responsive graphical knowledge work
  *
- *    @author Alejandro Sandoval, University of Paderborn, 2015
+ *    @author Alejandro Sandoval Parra, University of Paderborn, 2015
  *
  */
 
@@ -21,6 +21,8 @@ ResourceManager.staticUIResources = ['ui_static_graphical_ellipse',
                                     'ui_static_connections_subroom',
                                     'ui_static_content_file',
                                     'ui_static_tools_canUsersRequestCoupling',
+                                    'ui_static_controls_colorpicker',
+                                    'ui_static_controls_opacitycontroler',
 
                                     // mobile UI
                                     'mb_ui_static_graphical_menu'
@@ -29,7 +31,7 @@ ResourceManager.staticUIResources = ['ui_static_graphical_ellipse',
 ResourceManager.staticUIOnlyAdminResources = [
                                                 'ui_static_tools_coupling',
                                                 'ui_static_tools_chatIcon',
-                                                'ui_static_tools_grantFullRightsIcon',
+                                                'ui_static_tools_grantFullRightsIcon'
                                             ];
 
 exports = module.exports = ResourceManager;

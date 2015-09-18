@@ -5,7 +5,7 @@
 *
 */
 
-ColorPicker.draw = function(external) {
+OpacityControler.draw = function(external) {
 	
 	GeneralObject.draw.call(this, external);
 	
@@ -46,22 +46,22 @@ ColorPicker.draw = function(external) {
 }
 
 /* get the width of the objects bounding box */
-ColorPicker.getViewBoundingBoxWidth = function() {
+OpacityControler.getViewBoundingBoxWidth = function() {
 	//return GeneralObject.getViewBoundingBoxWidth.call(this);
 	return 64;
 }
 
 /* get the height of the objects bounding box */
-ColorPicker.getViewBoundingBoxHeight = function() {
+OpacityControler.getViewBoundingBoxHeight = function() {
 	//return GeneralObject.getViewBoundingBoxHeight.call(this);
 	return 64;
 }
 
-ColorPicker.getStatusIcon = function() {
+OpacityControler.getStatusIcon = function() {
 	//return this.hasContent() ? this.getIconPath() + "/color" : this.getIconPath() + "/black";
 	return this.getIconPath() + "/black"
 }
 
-ColorPicker.getIconText = function() {
+OpacityControler.getIconText = function() {
     return this.getAttribute("Object ID"); // to show a text under the icon
 }

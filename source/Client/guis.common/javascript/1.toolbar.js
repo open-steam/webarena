@@ -23,7 +23,7 @@ GUI.initToolbar = function() {
             var resource = ('ui_static_' + object.category + '_' + object.type).toLowerCase();
 
             Modules.ACLManager.isAllowed(resource, "create", function (err, result) {
-                if(!err && result) {
+                if (!err && result) {
                         if (object.category == undefined) {
                             object.category = "default";
                         }
@@ -292,6 +292,7 @@ function initToolbarAux(types) {
 
             if (Modules.Config.canUsersRequestCoupling) {
                 Modules.ACLManager.isAllowed('ui_static_tools_canUsersRequestCoupling', 'create', function (err, result) {
+
                     if (!err && result) {
                         var canUsersRequestCouplingButton = document.createElement("img");
                         $(canUsersRequestCouplingButton).attr("src", "../../guis.common/images/view_QR_code.png").attr("alt", "");

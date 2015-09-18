@@ -71,6 +71,7 @@ AccessController.prototype._allow = function(roles, resources, permissions, cb) 
 
     var context = { user: { username: "acl_username" } };
     var that = this;
+
     async.each(resources, function(resource, callback) {
         var objectId = that.acl.getIdFromACLName(resource);
 
