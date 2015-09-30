@@ -27,6 +27,10 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			widget.valueBox.children("input").attr("max", max);
 		}
 		
+		this.setStepsize = function(stepsize) {
+			widget.valueBox.children("input").attr("step", stepsize);
+		}
+		
 		widget.valueBox.html('<input type="number" id="inspector_" />');
 		
 		widget.valueBox.children("input").bind("change", function() {
@@ -92,6 +96,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		});
 		
 	}
+	
+
 	
 	
 	/* point widget */
@@ -282,7 +288,6 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		formButtons[GUI.translate("save")] = function() {
 			self.callChange();
 			$(this).dialog("close");
-			GUI.updateLinks();
 		}
 
 		
@@ -332,8 +337,8 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 		}
 		
 		this.setValue = function(value) {
-
-			widget.valueBox.find("option[value="+value+"]").attr("selected", "selected");
+		
+			widget.valueBox.find("option[value='"+value+"']").attr("selected", "selected");
 			
 		}
 		
@@ -343,7 +348,9 @@ var jDesktopInspectorWidget = function(type, el, valueBox, inspector, title, pag
 			
 			$.each(options, function(key, value) {
 			
-				newHtml += '<option value="'+value+'">'+value+'</option>';
+				var val = GUI.translate(value);
+			
+				newHtml += '<option value="'+value+'">'+val+'</option>';
 				
 			});
 			
@@ -954,8 +961,16 @@ $(function() { });
 					
 				}
 				
-				this.setInactive = function() {
+				this.setVal = function(value) {
+					
+					var val = GUI.translate('choose');
 
+					$(newElement).children().text(val);
+					
+				}
+				
+				this.setInactive = function() {
+				
 					$(newElement).children("div.jDesktopInspector_button_right").addClass("jDesktopInspector_button_inactive");
 					
 				}

@@ -32,9 +32,18 @@ Ellipse.draw=function(external){
 
 	$(rep).find("ellipse").attr("fill", this.getAttribute('fillcolor'));
 	
+	$(rep).css("opacity", (this.getAttribute('opacity')/100));
+	
 	if (!$(rep).hasClass("selected")) {
-		$(rep).find("ellipse").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("ellipse").attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).find("ellipse").removeAttr("stroke");
+			$(rep).find("ellipse").removeAttr("stroke-width");
+		}
+		else{
+			$(rep).find("ellipse").attr("stroke", linecolor);
+			$(rep).find("ellipse").attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 
 }
@@ -93,8 +102,9 @@ Ellipse.IntersectionObjectLine = function(a1, a2){
 		P.x = P.x + a2.x;
 		P.y = P.y + a2.y;
 	}
-												
+			
 	return P;
+	
 }
 
 //calculate the Intersection point between an ellipse (described by rx, ry and a1) and a line (which ends in the middle of the ellipse, described by a1 and a2)
@@ -104,10 +114,6 @@ Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2){
 	
 	var dy = a2.y-a1.y;
 	var dx = a2.x-a1.x;
-		
-	//padding	
-	rx = rx+20;
-	ry = ry+20;
 		
 	var phi = Math.atan(dy/dx);
 
@@ -120,6 +126,10 @@ Ellipse.IntersectionLineEllipse = function(rx, ry, a1, a2){
 	var P = new Object();
 	P.x = rx * Math.cos(t);
 	P.y = ry * Math.sin(t);
+				
+	if(dy==0 && dx<0){ //special case (because t can be null on the left side and on the right side of the ellipse) 
+		P.x = P.x-2*rx;
+	}	
 				
 	return P;
 

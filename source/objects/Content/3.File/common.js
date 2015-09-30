@@ -7,9 +7,9 @@
 
 var Modules=require('../../../server.js');
 
-var File=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
+var WAFile=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
-File.register=function(type){
+WAFile.register=function(type){
 	
 	// Registering the object
 	
@@ -20,15 +20,14 @@ File.register=function(type){
 		object.updateIcon(); 
 	}, checkFunction: function(object, value) {
 		if (object.getAttribute("preview")) return "icon size not changeable when preview is shown";
-	}});
+	}, mobile: false});
 
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
 
 	this.registerAttribute('fillcolor',{hidden: true});
-	this.registerAttribute('width',{hidden: true});
-	this.registerAttribute('height',{hidden: true});
 	
-
+	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
+	
 	this.registerAttribute('preview',{type:'boolean',standard:false,category:'Basic',changedFunction: function(object, value, local) {
 		if (local) {
 			object.updateIcon();
@@ -46,7 +45,54 @@ File.register=function(type){
 			return "this file is not previewable";
 		}
 		
-	}});
+	}, mobile: false});
+    
+     this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+
+            if (object.resizeProportional()) {
+                object.setAttribute("height", object.getAttribute("height") * (value / object.getAttribute("width")));
+            }
+
+            return true;
+
+        }, getFunction: function(object) {
+            var preview = object.getAttribute("preview");
+            if ((!preview)) {
+                var bigIcon = object.getAttribute("bigIcon");
+                if (bigIcon) {
+                    return "64"
+                } else {
+                    return "32";
+                }
+            }
+            return object.get('width');
+        },
+        mobile: false});
+
+    this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
+
+            if (object.resizeProportional()) {
+                object.setAttribute("width", object.getAttribute("width") * (value / object.getAttribute("height")));
+            }
+
+            return true;
+
+        }, getFunction: function(object) {
+            var preview = object.getAttribute("preview");
+            if ((!preview)) {
+                var bigIcon = object.getAttribute("bigIcon");
+                if (bigIcon) {
+                    return "64"
+                } else {
+                    return "32";
+                }
+            }
+            return object.get('height');
+        }
+        , mobile: false});
+   
+	
+	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
 	this.registerAction('to front',function(){
 	
@@ -66,7 +112,7 @@ File.register=function(type){
 	
 	this.registerAction('to back',function(){
 		
-		/* set a very high layer for all selected objects (keeping their order) */
+		/* set a very low layer for all selected objects (keeping their order) */
 		var selected = ObjectManager.getSelected();
 		
 		for (var i in selected){
@@ -137,7 +183,7 @@ File.register=function(type){
 	
 }
 
-File.execute=function(){
+WAFile.execute=function(){
 
 	if (this.hasContent() == true) {
 		
@@ -151,29 +197,31 @@ File.execute=function(){
 
 }
 
-File.isProportional=function(){
+WAFile.isProportional=function(){
 	return true;
 }
 
-File.resizeProportional=function(){
+WAFile.resizeProportional=function(){
 	return true;
 }
 
-File.isResizable=function(){
+WAFile.isResizable=function(){
 	if (this.hasContent() == true && this.getAttribute("preview") == true) {
 		return GeneralObject.isResizable.call(this);
 	} else return false; 
 }
 
-File.register('File');
-File.isCreatable=true;
+WAFile.register('File');
+WAFile.isCreatable=true;
+WAFile.isCreatableOnMobile = true;
+WAFile.onMobile = true;
 
-File.moveByTransform = function(){return true;};
+WAFile.moveByTransform = function(){return true;};
 
-File.alwaysOnTop = function () {
+WAFile.alwaysOnTop = function () {
 	if (this.hasContent() == true && this.getAttribute("preview") == true) {
 		return false;
 	} else return true;
 };
 
-module.exports=File;
+module.exports=WAFile;

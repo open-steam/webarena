@@ -18,6 +18,7 @@ var theObject=Object.create(require('./common.js'));
 
 var Modules=require('../../../server.js');
 var _ = require('lodash');
+var async = require("async");
 
 // Make the object public
 module.exports=theObject;
@@ -46,29 +47,34 @@ theObject.makeSensitive=function(){
 			newData[field]=changeData['new'][field] || this.getAttribute(field);
 		}
 		
-		var inventory=this.getRoom().getInventory();
+		var that=this;
 		
-		for (var i in inventory){
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			room.getInventoryAsync(function(inventory){
+				for (var i in inventory){
 			
-			var object=inventory[i];
-			
-			if(object.id==this.id) continue;
-			
-			var bbox=object.getBoundingBox();
-			
-			//determine intersections
-		
-			var oldIntersects=this.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-			var newIntersects=this.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-			
-			//handle move
-			
-			if (oldIntersects && newIntersects)  this.onMoveWithin(object,newData);
-			if (!oldIntersects && !newIntersects)  this.onMoveOutside(object,newData);
-			if (oldIntersects && !newIntersects)  this.onLeave(object,newData);
-			if (!oldIntersects && newIntersects)  this.onEnter(object,newData);
-		}
-		
+					var object=inventory[i];
+					
+					if(object.id==that.id) continue;
+					
+					var bbox=object.getBoundingBox();
+					
+					//determine intersections
+				
+					var oldIntersects=that.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+					var newIntersects=that.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+					
+					//handle move
+					
+					if (oldIntersects && newIntersects)  that.onMoveWithin(object,newData);
+					if (!oldIntersects && !newIntersects)  that.onMoveOutside(object,newData);
+					if (oldIntersects && !newIntersects)  that.onLeave(object,newData);
+					if (!oldIntersects && newIntersects)  that.onEnter(object,newData);
+				}
+			});
+		})
 	}
 	
 	
@@ -96,6 +102,7 @@ theObject.makeSensitive=function(){
 		
 	}
 	
+	
 	/**
 	*	intersects
 	*
@@ -117,25 +124,61 @@ theObject.makeSensitive=function(){
 		return this.bBoxIntersects(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
 		
 	}
+	
+	
 	/**
-	*	getOverlappingObjcts
+	*	getOverlappingObjectsAsync
+	*
+	*	get an array of all overlapping objects
+	**/
+	theObject.getOverlappingObjectsAsync=function(callback){
+		
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			if (!room) return;
+			room.getInventoryAsync(function(inventory){
+			
+				var result=[];
+			
+				for (var i in inventory){
+		
+					var test=inventory[i];
+					if (test.id==this.id) continue;
+					if (this.intersects(test)){
+						result.push(test);
+					}
+				}
+			
+				callback(result);
+			});
+		});
+	}
+	
+	
+	/**
+	*	getOverlappingObjects
 	*
 	*	get an array of all overlapping objects
 	**/
 	theObject.getOverlappingObjects=function(){
+		
+		console.log('>>>> Synchronous getOverlappingObjects in GeneralObject');
+		
 		var result=[];
 		
 		var inventory=this.getRoom().getInventory();
-		
+	
 		for (var i in inventory){
-			 var test=inventory[i];
-			 if (test.id==this.id) continue;
-			 if (this.intersects(test)){
-			 	result.push(test);
-			 }
+			var test=inventory[i];
+			if (test.id==this.id) continue;
+			if (this.intersects(test)){
+				result.push(test);
+			}
 		}
 		
 		return result;
+	
 	}
 	
 	
@@ -213,7 +256,13 @@ theObject.makeStructuring=function(){
 		
 		console.log('onObjectMove on structuring object '+this);
 		
-		this.getRoom().placeActiveObjects();
+		//this.getRoom().placeActiveObjects();
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			if(!room) return;
+			room.placeActiveObjectsAsync();
+		});
 	}
 	
 	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
@@ -270,7 +319,7 @@ theObject.updateClient=function(socket,mode){
 theObject.persist=function(){
 	var data=this.get();
 	if (data){
-		Modules.Connector.saveObjectData(this.inRoom, this.id, data, false, this.context);
+		Modules.Connector.saveObjectData(this.inRoom, this.id, data, this.context, false, undefined);
 		this.updateClients();
 	} 
 }
@@ -318,7 +367,7 @@ theObject.setContent=function(content,callback){
 		content = new Buffer(base64Data, 'base64');
 	}
 
-	Modules.Connector.saveContent(this.inRoom, this.id, content, callback, this.context);
+	Modules.Connector.saveContent(this.inRoom, this.id, content, this.context, false, callback);
 	
 	this.set('hasContent',!!content);
 	this.set('contentAge',new Date().getTime());
@@ -327,7 +376,9 @@ theObject.setContent=function(content,callback){
 	this.persist();
 	this.updateClients('contentUpdate');
 }
+
 theObject.setContent.public = true;
+
 theObject.setContent.neededRights = {
     write : true
 }
@@ -359,19 +410,25 @@ theObject.getCurrentUserName=function(){
 theObject.getContent=function(callback){
 	if (!this.context) throw new Error('Missing context in GeneralObject.getContent');
 	
-	var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
-
-    if(_.isFunction(callback)) callback(content);
-    else return content;
-
+	if(_.isFunction(callback)) {
+    	Modules.Connector.getContent(this.inRoom, this.id, this.context,callback);
+    }
+    else {
+		console.log('>>>> Synchronous getContent in GeneralObject');
+		var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
+		return content;
+    }
 }
+
 theObject.getContent.public = true;
+
 theObject.getContent.neededRights = {
     read : true
 }
 
 theObject.getContentAsString=function(callback){
 	if (callback === undefined) {
+		console.log('>>>> Synchronous getContentAsString in GeneralObject');
 		return GeneralObject.utf8.parse(this.getContent());
 	} else {
 		this.getContent(function(content){
@@ -394,7 +451,7 @@ theObject.getContentFromApplication = function(applicationName, callback){
 *
 *	get the object's inline preview
 */
-theObject.getInlinePreview=function(callback,mimeType){
+theObject.getInlinePreview=function(mimeType, callback){
 	return Modules.Connector.getInlinePreview(this.inRoom, this.id, mimeType, this.context, callback);
 }
 
@@ -444,16 +501,21 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 
 theObject.evaluatePositionInt=function(data){
 	
-	var room=this.getRoom();
-	
-	if (!room) return;
-	
-	room.evaluatePositionFor(this,data);
+	var that=this;
 
+	this.getRoomAsync(function(){
+		//error
+	},function(room){
+		if (!room) return;
+		room.evaluatePositionFor(that,data);
+	});
+	
 }
 
 
 theObject.getRoom=function(callback){
+	
+	console.log('>>>> Synchronous getRoom in GeneralObject');
 	
 	if (!this.context) return;
 	
@@ -468,6 +530,25 @@ theObject.getRoom=function(callback){
 	
 	return false;
 }
+
+
+theObject.getRoomAsync=function(error,cb){
+	if (!this.context) error();
+	
+	//search the room in the context and return the room this object is in
+	
+	for (var index in this.context.rooms){
+		var test=this.context.rooms[index];
+		if (test && test.hasObjectAsync) {
+			test.hasObjectAsync(this,function(){
+				cb(test);
+			});
+		}
+	}
+	
+	error();
+}
+
 
 theObject.getBoundingBox=function(){
 	
@@ -494,3 +575,353 @@ theObject.fireEvent=function(name,data){
 }
 
 theObject.fireEvent.public=true; //Function can be accessed by customObjectFunctionCall
+
+
+theObject.getLinkedObjectsAsync=function(callback) {
+	
+	var self = this;
+	
+	var getObject = function(id) {
+		return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
+	}
+	
+	var linkedObjects = this.getAttribute('link');
+	
+	var links = {};
+		
+	for(var i = 0; i<linkedObjects.length; i++){
+			
+		var targetID = linkedObjects[i].destination;
+		var target = getObject(targetID);
+
+		links[targetID] = {
+			object : target,
+		}
+	}
+	
+	callback(links);
+	
+}
+
+
+theObject.getLinkedObjects=function() {
+	
+	console.log('>>>> Synchronous GETLINKEDOBJECTS');
+	
+	var self = this;
+	
+	var getObject = function(id) {
+		return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
+	}
+	
+	var linkedObjects = this.getAttribute('link');
+	
+	var links = {};
+		
+	for(var i = 0; i<linkedObjects.length; i++){
+			
+		var targetID = linkedObjects[i].destination;
+		var target = getObject(targetID);
+
+		links[targetID] = {
+			object : target,
+		}
+	}
+
+	return links;
+}
+
+theObject.getObjectsToDuplicateAsync = function(list,callback) {
+	
+	if (list == undefined) {
+		/* init new list */
+		
+		/* list of objects which will be duplicated */
+		var list = {};
+		
+	}	
+
+	this.getLinkedObjectsAsync(function(linkedObjects){
+		
+		var temp=[];
+		
+		for (var id in linkedObjects) {
+			var target = linkedObjects[id];
+			var targetObject = target.object;
+			
+			if (targetObject && !list[targetObject.get('id')]) {
+				temp.push(targetObject.getObjectsToDuplicateAsync);
+			}
+		}
+		
+		temp.push=function(list,callback){
+			list[self.getAttribute('id')] = true; //add this object to list
+		}
+		
+		async.applyEachSeries(temp, list, function(){
+			var arrList = [];
+	
+			for (var objectId in list) {
+		
+				arrList.push(objectId);
+				
+			}
+			
+			callback(arrList);
+		});
+		
+	});
+	
+}
+
+
+theObject.getObjectsToDuplicate = function(list) {
+	
+	console.log('>>>> Synchronous GETOBJECTSTODUPLICATE');
+	
+	var self = this;
+	
+	if (list == undefined) {
+		/* init new list */
+		
+		/* list of objects which will be duplicated */
+		var list = {};
+		
+	}
+	
+	list[self.getAttribute('id')] = true; //add this object to list
+	
+	var linkedObjects = this.getLinkedObjects();
+
+	for (var id in linkedObjects) {
+		var target = linkedObjects[id];
+		var targetObject = target.object;
+		
+		if (targetObject && !list[targetObject.get('id')]) {
+			targetObject.getObjectsToDuplicate(list);
+		}
+		
+	}
+
+	var arrList = [];
+	
+	for (var objectId in list) {
+
+		arrList.push(objectId);
+		
+	}
+	
+	return arrList;
+	
+}
+
+
+/**
+*	returns the hierachy of rooms and objects (special format for JSTree!)
+*   
+*   data.id == -1: return the root rooms
+*   data.id == roomid: return the inventory of this room
+*/
+theObject.browse = function(data, callback) {
+	var roomId = data.id;
+	var result = [];
+    var self = this;
+
+    var createSubroomNode = function(){
+        var args = arguments[0];
+        var defaults = {
+            'icon' : "/objectIcons/Subroom",
+            'name' : args["title"],
+            'type' : "Room"
+        }
+        args = _.defaults(args, defaults)
+
+        return createNode(args);
+    }
+
+    var createNode = function(){
+        var node = {};
+        var args = arguments[0];
+        var defaults = {
+            icon : "/objectIcons/" + args.type
+        }
+        args = _.defaults(args, defaults);
+
+        node.data = {
+            "title" : args.title,
+            "icon" : args.icon
+        };
+
+        node.metadata = {
+            "id" : args.id,
+            "name" : args.name,
+            "type" : args.type
+        };
+
+        if(args.inRoom){
+            node.metadata["inRoom"] = args.inRoom;
+        }
+
+        return node;
+    }
+	
+	
+    if (roomId === -1) {
+    	// get root rooms
+        Modules.Connector.getRoomHierarchy(roomId, this.context, function(hierarchy) {
+            for (var key in hierarchy.roots) {
+                var node = createSubroomNode({
+                    id : hierarchy.roots[key],
+                    title : hierarchy.rooms[hierarchy.roots[key]]
+                });
+                if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
+                    node.state = "closed";
+                }
+                result.push(node);
+            }
+            callback(result);
+        });
+    } 
+	else{
+        Modules.Connector.mayEnter(roomId, this.context, function(err, mayEnter) {
+            if (mayEnter) {
+                // get inventory of room with roomId
+                var room = Modules.ObjectManager.getObject(roomId, roomId, self.context);
+            	//var inventory = room.getInventory();
+				room.getInventoryAsync(function(inventory){
+				
+					var resultCounter = 0;
+					var returnResults = function() {
+						resultCounter++;
+						if (resultCounter === inventory.length) {
+							callback(result);
+						}
+					}
+
+					for (var key in inventory) {
+					
+						var node = {};
+
+						if (self.filterObject(inventory[key])) {
+							returnResults();
+							continue;
+						}
+
+						if (inventory[key].getAttribute("type") === "Subroom" && inventory[key].getAttribute("destination") !== undefined) {
+							Modules.Connector.mayEnter(inventory[key].getAttribute("destination"), self.context, function(err, mayEnter) {
+								if (mayEnter) {
+									var object = Modules.ObjectManager.getObject(inventory[key].getAttribute("destination"), inventory[key].getAttribute("destination"), self.context);
+
+									if (object) {
+										node = createSubroomNode({
+											id : object.getAttribute("id"),
+											title: object.getAttribute("name")
+										});
+
+										//var subInventory = object.getInventory();
+										object.getInventoryAsync(function(subInventory){
+										
+											for (var subKey in subInventory) {
+											
+												if (self.filterObject(subInventory[subKey])) {
+													continue;
+												} else {
+													// subroom: check if room object exists
+													if (subInventory[subKey].type === "Subroom") {
+														if (subInventory[subKey].getAttribute("destination") !== undefined) {
+															var subObject = Modules.ObjectManager.getObject(subInventory[subKey].getAttribute("destination"), subInventory[subKey].getAttribute("destination"), self.context);
+															if (subObject) {
+																node.state = "closed";
+																break;
+															}
+														}
+													} else {
+														node.state = "closed";
+														break;
+													}
+												}
+											}
+											result.push(node);
+											returnResults();
+										});
+									}
+									else{
+										returnResults();
+									}
+								}
+								else{
+									returnResults();
+								}
+							});
+						} else {
+							node = createNode({
+								"title" : "" + inventory[key].getAttribute("name"),
+								"id" : "" + inventory[key].getAttribute("id"),
+								"name" : "" + inventory[key].getAttribute("name"),
+								"type" : "" + inventory[key].getAttribute("type"),
+								"inRoom" : "" + inventory[key].getAttribute("inRoom")
+							})
+
+							result.push(node);
+							returnResults();
+						}
+					}
+				});
+            } else {
+				callback(result);
+			}
+        });
+    }
+}
+
+
+theObject.browse.public = true;
+
+
+/**
+*	used by the browse-function (if objects should not be displayed, filter them)
+*/
+theObject.filterObject = function(obj) {
+    if (this.getAttribute("filterObjects")) {
+        if (obj.type != "Subroom") {
+            return true;
+        } else return false;
+    } else return false;
+}
+
+
+/**
+*	returns the inventory of the given room (special format for JSTree!)
+*/
+theObject.getRoomInventory = function(room, cb){
+
+    Modules.ObjectManager.getObjects(room.id, this.context, function(objects){
+		
+		var objectArray = new Array();
+		
+		for(var i = 0; i<objects.length; i++){
+		
+			var id = objects[i].getAttribute('id');
+			var type = objects[i].getAttribute('type');
+			var name = objects[i].getAttribute('name');
+			var inRoom = objects[i].getAttribute('inRoom');
+			
+			var node = {
+				data : {
+					title : name,
+					icon : '/objectIcons/'+type
+				},
+				metadata : {
+					id : id,
+					name : name,
+					type : type,
+					inRoom : inRoom
+				}
+			}
+			objectArray.push(node);
+		}
+		cb(objectArray);
+	});
+}
+
+theObject.getRoomInventory.public = true;

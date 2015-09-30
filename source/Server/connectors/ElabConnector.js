@@ -14,7 +14,8 @@ elabConnector.login=function(username,password,externalSession,context, rp){
 	var home = "";
 
 	if (externalSession === true) {
-		if (self.externalSessions[password] === undefined) rp(false);
+		
+		if (self.externalSessions[password] === undefined) return rp(false);
 		home = self.externalSessions[password].home;
 		password = self.externalSessions[password].password; //get real password from external session
 	} else {
@@ -97,7 +98,7 @@ elabConnector.mayWrite=function(roomID,objectID,connection,callback) {
 		  		callback(null, false);
 		  	}
 		} else {
-			self.getRoomData(roomID, connection, function(obj) { 
+			self.getRoomData(roomID, connection, false, function(obj) { 
 				if (obj.attributes.parent !== undefined) {
 					self.mayWrite(obj.attributes.parent, null, connection, callback);
 		  		} else {

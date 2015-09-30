@@ -22,7 +22,7 @@ RoomController.getCommunicationChannel = function(data, context, callback){
         callback(null, roomName)
     }
 
-    Modules.Connector.getRoomData(roomName, context, cb);
+    Modules.Connector.getRoomData(roomName, context, false, cb);
 }
 
 //TODO: should be implemented on Connector lvl. because it may be different
@@ -38,7 +38,7 @@ RoomController.createRoom = function (data, context, callback) {
     //error
     var cb = _.partial(callback, null);
 
-    Modules.Connector.saveObjectData(roomID, roomID, obj, cb, context, true)
+    Modules.Connector.saveObjectData(roomID, roomID, obj, context, true, cb)
 
 }
 
@@ -60,7 +60,7 @@ RoomController.duplicateRoom = function (data, context, callback) {
     //If parent is set.
     //Create subroom item in parent.
     if (parent) {
-        Modules.Connector.getRoomData(newRoomID, context, undefined, parent); //TODO: set parent if necessary
+        Modules.Connector.getRoomData(newRoomID, context, parent, undefined); //TODO: set parent if necessary
         //TODO add subroom object to parent
 
         //Subroom item
@@ -73,7 +73,7 @@ RoomController.duplicateRoom = function (data, context, callback) {
             }
         }
     } else {
-        Modules.Connector.getRoomData(newRoomID, context, undefined); //TODO: set parent if necessary
+        Modules.Connector.getRoomData(newRoomID, context, false, undefined); //TODO: set parent if necessary
     }
 
     var requestData = {
@@ -111,7 +111,7 @@ RoomController.informAllInRoom = function (data, callback) {
 RoomController.sendRoom = function (socket, roomID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
 
-    Modules.ObjectManager.getRoom(roomID, context, function (room) { //the room object
+    Modules.ObjectManager.getRoom(roomID, context, false, function (room) { //the room object
 
         room.updateClient(socket);				//and send it to the client
 

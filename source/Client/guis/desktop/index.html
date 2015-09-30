@@ -15,12 +15,18 @@
 	<script src="/socket.io/socket.io.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.migrate.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jsTree/jquery.jstree.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.toastmessage.js"></script>
+     
+    <script type="text/javascript" src="/guis.common/libraries/calc.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/parser.js"></script>
+    <script type="text/javascript" src="/guis.common/libraries/fooplot.js"></script>
 
     <script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/lodash.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/adapter.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.autogrow.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.autogrow.js"></script>
@@ -33,19 +39,23 @@
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
+	
+	<!-- Library for creating data driven complex svg graphs. -->
+	<script type="text/javascript" src="/guis.common/libraries/d3/d3.min.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
-
-
+	
 	<script src="/config.js"></script>
 	<script src="/Helper.js"></script>
 	<script src="/Dispatcher.js"></script>
 	<script src="/ObjectManager.js"></script>
 	<script src="/SocketClient.js"></script>
 
+	<script src="/WebRTCManager.js"></script>
+	
 	<script src="/Common/Log.js"></script>
 	<script src="/Common/DataSet.js"></script>
 	<script src="/Common/ActionManager.js"></script>
@@ -88,13 +98,7 @@
 
 	<script src="/objects"></script>
 
-
-
-
-
 	<script type="text/javascript" src="/defaultJavascripts"></script>
-
-
 
 	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 
@@ -106,7 +110,6 @@
 
   <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
 	
-
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jDesktopInspector.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
@@ -149,20 +152,22 @@
 <body>
 	
 	<div id="header">
-		
-		<div class="header_right">
-			
-		</div>
-		
-		<div class="header_left">
-		
+		<div class="header_right"></div>
+		<div class="header_left"></div>
+		<div class="header_tabs_sidebar animate">
+			<div id="header_toggle_sidebar">
+				<img id="header_toggle_sidebar_hide" src="/guis.common/images/arrow-right.png" alt="" style="width: 18px; height: 18px;">
+				<img id="header_toggle_sidebar_show" src="/guis.common/images/arrow-left.png" alt="" style="width: 18px; height: 18px; display: none;">
+			</div>
 		</div>
 		
 	</div>
 
 	<div id="couplingNavigation"></div>
 	
-	<div id="content"></div>
+	<div id="content">
+		<p style="z-index:10; position:fixed;" id="besideMouse"></p>
+	</div>
 	
 	<div id="sidebar">
 		<div id="sidebar_title"><span></span></div>
@@ -199,6 +204,7 @@
 					<div id="bug_result"></div>
 					
 				</div>
+                <div id="pad"><iframe name="padframe"></iframe></div>
 			</div>
 		</div>
 	</div>

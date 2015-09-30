@@ -47,6 +47,23 @@ GUI.translate=function(text){
 GUI.isTouchDevice = false;
 
 
+/**
+ * Variable indicates the type of gui which is currently used.
+ * Default value is 'desktop'.
+ */
+GUI.guiType = 'desktop';
+
+/**
+ * Sets the gui type on startup.
+ */
+$(function() {
+    var userAgent = navigator.userAgent;
+    if (userAgent.indexOf('iPhone') > 0 ||
+		(userAgent.indexOf('Android') > 0 && userAgent.indexOf('Mobile') > 0)) {
+		GUI.guiType = 'mobilephone';
+    }
+});
+
 
 /**
  * @deprecated still needed?
@@ -74,6 +91,9 @@ GUI.initResizeHandler = function() {
  */
 GUI.adjustContent = function(webarenaObject) {
 	
+	if (GUI.guiType != 'desktop') {
+	  return;
+	}
 	if (webarenaObject != undefined) {
 
 		if (!webarenaObject.isGraphical) return;
@@ -139,6 +159,11 @@ GUI.adjustContent = function(webarenaObject) {
 }
 
 
+//the current canvas size (depending on the leftmost and the bottommost objects)
+GUI.maxWidth = 0;
+GUI.maxHeight = 0;
+
+
 /**
  * set width of room / svg area
  * @param {int} width new width of the room
@@ -148,14 +173,19 @@ GUI.setRoomWidth = function(width) {
 	var currentRoom = ObjectManager.getCurrentRoom();
 	if (!currentRoom) return;
 	
-	currentRoom.setAttribute("width", width);
+	if(width > GUI.maxWidth){
+		GUI.maxWidth = width;
+		
+		currentRoom.setAttribute("width", width);
 	
-	if (width < $(window).width()) {
-		width = $(window).width();
-	}
+		if (width < $(window).width()) {
+			width = $(window).width();
+		}
 
-	$("#content").css("width", width );
-	$("#content > svg").css("width", width );
+		$("#content").css("width", width );
+		$("#content > svg").css("width", width );
+	}	
+
 }
 
 /**
@@ -167,14 +197,18 @@ GUI.setRoomHeight = function(height) {
 	var currentRoom = ObjectManager.getCurrentRoom();
 	if (!currentRoom) return;
 	
-	currentRoom.setAttribute("height", height);
-
-	if (height < $(window).height()) {
-		height = $(window).height();
-	}
+	if(height > GUI.maxHeight){
+		GUI.maxHeight = height;
 	
-	$("#content").css("height", height);
-	$("#content > svg").css("height", height);
+		currentRoom.setAttribute("height", height);
+
+		if (height < $(window).height()) {
+			height = $(window).height();
+		}
+	
+		$("#content").css("height", height);
+		$("#content > svg").css("height", height);
+	}
 }
 
 
@@ -243,51 +277,86 @@ GUI.initShiftKeyHandling = function() {
  */
 GUI.blockKeyEvents = false;
 
+
+/**
+ * set to true if a client arrow key is pressed
+ */
+GUI.arrowKeyDown = false;
+
 /**
  * add event handlers for object movement by arrow-keys
  */
 GUI.initMoveByKeyboard = function() {
 
+	var interval;
+
 	$(document).bind("keydown", function(event) {
-		
+	
 		if ($("input:focus,textarea:focus").get(0) != undefined) return;
 	
-		if (GUI.shiftKeyDown) {
-			var d = 10;
+		if (event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 38 || event.keyCode == 40) {
+			event.preventDefault();
 		} else {
-			var d = 1;
+			return;
 		}
 	
-		$.each(ObjectManager.getSelected(), function(index, object) {
-			
-			if (event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 38 || event.keyCode == 40) {
-				event.preventDefault();
+		if(GUI.arrowKeyDown){
+			return;
+		}
+		else{
+			GUI.arrowKeyDown = true;
+	
+			if (GUI.shiftKeyDown) {
+				var d = 10;
 			} else {
-				return;
+				var d = 1;
 			}
-			
+	
 			GUI.hideActionsheet();
-			
+	
+			var x = 0;
+			var y = 0;
+	
 			if (event.keyCode == 37) {
-				object.moveBy(d*(-1), 0);
+				x = d*(-1);
 			}
-			
+				
 			if (event.keyCode == 39) {
-				object.moveBy(d, 0);
+				x = d;
 			}
-			
+				
 			if (event.keyCode == 38) {
-				object.moveBy(0, d*(-1));
+				y = d*(-1);
 			}
-			
+				
 			if (event.keyCode == 40) {
-				object.moveBy(0, d);
+				y = d;
 			}
+	
+			interval = setInterval(function () {
+				$.each(ObjectManager.getSelected(), function(index, object) {
 			
-		});
+					object.moveBy(x, y);
+			
+				});
+			}, 30);
+			
+		}
 		
 	});
 	
+	
+	$(document).bind("keyup", function(event) {
+		
+		if (event.keyCode == 37 || event.keyCode == 39 || event.keyCode == 38 || event.keyCode == 40) {
+			event.preventDefault();
+			GUI.arrowKeyDown = false;
+			clearInterval(interval);
+		} else {
+			return;
+		}
+		
+	});
 }
 
 GUI.initUndoByKeyboard = function(){
@@ -315,29 +384,56 @@ GUI.initObjectDeletionByKeyboard = function() {
 			if (event.which == 8 || event.which == 46) {
 
 				event.preventDefault();
+				
+				//the cursor shows an object --> change the cursor to the default one	
+				var cursor = $("body").css('cursor');
+				if(cursor != "auto"){ 
+						
+					$("body").css( 'cursor', 'auto' );
+				}
+				else{
+					var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
 
-				var result = confirm(GUI.translate('Do you really want to delete the selected objects?'));
+					if (result) {
+						/* delete selected objects */
+						$.each(ObjectManager.getSelected(), function(key, object) {
 
-				if (result) {
-					/* delete selected objects */
-					$.each(ObjectManager.getSelected(), function(key, object) {
+							object.deleteIt();
 
-						if ($(object.getRepresentation()).data("jActionsheet")) {
-							$(object.getRepresentation()).data("jActionsheet").remove();
-						}
-
-						object.deleteIt();
-
-					});
+						});
+					}
 				}
 			}
-			
 		}
 		
 	});
 	
 }
 
+
+/**
+ * add event handler for removing the cursor which represents an object by pressing the Escape-key
+ */
+GUI.initCursorDeletionByKeyboard = function() {
+	
+	$(document).bind("keydown", function(event) {
+		
+		if ($("input:focus,textarea:focus").get(0) == undefined) {
+		
+			if (event.which == 27) {
+
+				event.preventDefault();
+				
+				//remove objects from cursor 
+				var cursor = $("body").css('cursor');
+				if(cursor != "auto"){ 
+						
+					$("body").css( 'cursor', 'auto' );
+				}
+			}
+		}
+	});
+}
 
 
 /**
@@ -414,10 +510,78 @@ GUI.initMouseHandler = function() {
 		
 		var mousedown = function(event) {
 			jPopoverManager.hideAll();
+			
+			GUI.saveChanges(event);
 
 			var contentPosition = $("#content").offset();
 			
 			var temp=event.target;
+				
+			//object creation via object symbols
+			var cursor = $("body").css('cursor');	
+			if(cursor != "auto"){
+				
+				var t = cursor.split("/");
+				var s = t[4].split(")");
+				var r = s[0];
+				
+				//special case for Firefox
+				if(r.charCodeAt(r.length-1)==34){
+					r = r.slice(0,r.length-1);
+				}
+				
+				var proto = ObjectManager.getPrototype(r);
+			
+				GUI.startNoAnimationTimer();
+						
+				proto.create({
+						"x" : event.pageX-30, 
+						"y" : event.pageY-65
+				});
+			
+				$("body").css( 'cursor', 'auto' );			
+			}
+			
+			//arrow/line: after selecting the startpoint change the cursor text to choose endpoint
+			if(GUI.getCursorText().indexOf("Start") > -1){
+				if(GUI.getCursorText()==GUI.translate('Choose Arrow-Startpoint')){
+					GUI.setCursorText(GUI.translate("Choose Arrow-Endpoint"));
+				}
+				else{
+					GUI.setCursorText(GUI.translate("Choose Line-Endpoint"));
+				}
+							
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', position.left+','+position.top);
+				
+			}
+			
+			//arrow/line: after selecting the endpoint create the object and set the position with GUI.setFinalPosition
+			if(GUI.getCursorText().indexOf("End") > -1){
+				var proto;
+				if(GUI.getCursorText()==GUI.translate('Choose Arrow-Endpoint')){
+					proto = ObjectManager.getPrototype('Arrow');
+				}
+				else{
+					proto = ObjectManager.getPrototype('Line');
+				}
+			
+				GUI.setCursorText("");
+			
+				GUI.startNoAnimationTimer();
+				
+				var title = $('#besideMouse').attr('title');
+				
+				var position = $('#besideMouse').position();
+				
+				$('#besideMouse').attr('title', title+','+position.left+','+position.top);
+										
+				var attributes;
+				var content;			
+					
+				ObjectManager.createObject(proto.type,attributes,content,GUI.setFinalPosition);	
+			}
 			
 			while (temp && !temp.dataObject) {
 				temp=$(temp).parent()[0];
@@ -444,8 +608,13 @@ GUI.initMouseHandler = function() {
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
 				// should be prevented
                 if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
-                    event.preventDefault();
-                    event.stopPropagation();
+					if(clickedObject.input != true){
+						event.preventDefault();
+						event.stopPropagation();
+					}
+					else{
+						return;
+					}
                 }
 
 				clickedObject.click(event);
@@ -494,6 +663,102 @@ GUI.initMouseHandler = function() {
 
 
 /**
+ * initialize the return key handling (save changes during the inplace editing)
+ */
+GUI.initReturnKeyHandler = function(){
+
+	$(document).bind("keyup", function(event) {
+		
+		if (event.keyCode == 13){
+			if(GUI.input){
+				var object = ObjectManager.getObject(GUI.input);
+				object.saveChanges();
+			}
+		}
+		
+	});
+
+}
+
+
+/**
+ * set the final position of an arrow or line after creation via the selecting-points-method
+ */
+GUI.setFinalPosition = function(object){
+	
+	var title = $('#besideMouse').attr('title');
+	
+	var point = title.split(',');
+	
+	var x1 = parseInt(point[0])-15;
+	var y1 = parseInt(point[1])-35; 
+	var x2 = parseInt(point[2])-15;
+	var y2 = parseInt(point[3])-35; 
+		
+	var direction1;
+	var direction2;	
+	
+	var x;
+	var y;
+	var width;
+	var height;
+	
+	//calculate x,y, width and height
+	if(x1>x2){
+		x = x2;
+		width = x1-x2;
+		direction1 = false;
+	}
+	else{
+		x = x1;
+		width = x2-x1
+		direction1 = true;
+	}
+	if(y1>y2){
+		y = y2;
+		height = y1-y2;
+		direction2 = false;
+	}
+	else{
+		y = y1;
+		height = y2-y1;
+		direction2 = true;
+	}
+	
+	//calculate and set direction
+	if(direction1){
+		if(direction2){
+			object.setAttribute("direction", 1);
+		}
+		else{
+			object.setAttribute("direction", 4);
+		}
+	}
+	else{
+		if(direction2){
+			object.setAttribute("direction", 2);
+		}
+		else{
+			object.setAttribute("direction", 3);
+		}
+	}
+	
+	//set x,y, width and height
+	object.setAttribute('x', x);
+	object.setAttribute('y', y);
+	object.setAttribute('width', width);
+	object.setAttribute('height', height);
+	object.setViewWidth(width);
+	object.setViewHeight(height); 
+	
+	$('#besideMouse').attr('title', "");
+	
+}
+
+
+
+
+/**
  * get the topmost object at point x,y which is visible
  * @param {int} x x position
  * @param {int} y y position
@@ -518,10 +783,6 @@ GUI.getObjectAt = function(x,y) {
 	return clickedObject;
 	
 }
-
-
-
-
 
 
 /**
@@ -727,4 +988,42 @@ GUI.startNoAnimationTimer = function() {
  */
 GUI.confirm = function(message) {
 	return confirm(message);
+}
+
+/**
+ * set text which is displayed near to the cursor
+ */
+GUI.setCursorText = function(text){
+	$(document).mousemove(function(e){
+		var cpos = { top: e.pageY + 15, left: e.pageX + 15 };
+		$('#besideMouse').offset(cpos);
+		$('#besideMouse').html(text);	
+	});
+}
+
+/**
+ * get text which is displayed near to the cursor
+ */
+GUI.getCursorText = function(){
+	return $('#besideMouse').html();	
+}
+
+
+//id of the current inplace editing object (or false if the inplace editing is not active)
+GUI.input = false;
+
+/**
+ * if inplace editing is active, call the saveChanges method of the related object 
+ */
+GUI.saveChanges = function(event){
+	
+	if(GUI.input){
+		if(event.target.localName == "input" || event.target.localName == "textarea"){ 
+			return;
+		}
+		else{	//mouseclick outside of the inplace editing field
+			var object = ObjectManager.getObject(GUI.input);
+			object.saveChanges();
+		}
+	}
 }

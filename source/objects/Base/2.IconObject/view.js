@@ -18,6 +18,14 @@ IconObject.createRepresentation = function(parent) {
 
 	rep.dataObject=this;
 
+	var SVGforeign = GUI.svg.other(rep,"foreignObject");
+	
+	var body = document.createElement("body");
+	
+	$(rep).find("foreignObject").append(body);
+	
+	$(rep).find("foreignObject").hide();
+	
 	this.initGUI(rep);
 	
 	return rep;
@@ -44,8 +52,15 @@ IconObject.draw=function(external){
 	if (this.getIconText()) this.renderText(this.getIconText());
 
 	if (!$(rep).hasClass("selected")) {
-		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).find("rect").removeAttr("stroke");
+			$(rep).find("rect").removeAttr("stroke-width");
+		}
+		else{
+			$(rep).find("rect").attr("stroke", linecolor);
+			$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 
 	if (!$(rep).hasClass("webarena_ghost")) {
@@ -115,8 +130,22 @@ IconObject.setViewHeight = function(value) {
 
 }
 
-IconObject.dblclickHandler = function() {
-	this.execute();
+IconObject.dblclickHandler = function(event) {
+
+	if(!this.input){
+		if(event.target.localName == "image"){
+			if(this.getAttribute("open destination on double-click")){
+				this.follow(this.getAttribute("open in"));
+			}
+			else{
+				this.execute(event);
+			}
+		}
+	
+		if(event.target.localName == "tspan"){
+			this.editText();
+		}
+	}
 }
 
 IconObject.createPixelMap=function(SVGImage){
@@ -170,6 +199,27 @@ IconObject.createPixelMap=function(SVGImage){
 			for (var i = 0, n = pix.length; i < n; i += 4) {
 			    if(pix[i+3]) isThere=true;
 			}
+			
+			return(isThere);
+		}
+		
+		SVGImage.hasPixelAt=function(absX,absY){
+			
+			var bbox=SVGImage.getBoundingClientRect();
+			
+			var x=absX-bbox.left;
+			var y=absY-bbox.top;
+			var isThere=false;
+			
+			if (x<0) return false;
+			if (y<0) return false;
+			if (x>bbox.width) return false;
+			if (y>bbox.height) return false;
+			
+			var imgd = ctx.getImageData(x, y, 1, 1);
+			var pix = imgd.data;
+			
+			if(pix[2] != 255) isThere=true;
 			
 			return(isThere);
 		}
@@ -228,6 +278,7 @@ IconObject.renderText = function (text){
     }
     var text = GUI.svg.text(rep, 0, 75, cTexts);
     $(text).attr("font-size", 12);
+	$(text).attr('pointer-events','fill');
 
 	/* center text */
 	$(rep).find("text").find("tspan").each(function() {
@@ -266,4 +317,61 @@ IconObject.updateIcon=function(){
 	if (this.getIconText()) this.renderText(this.getIconText());
 
 	this.createPixelMap();
+}
+
+
+/**
+ * Called after a double click on the text, enables the inplace editing
+ */
+IconObject.editText = function(){
+
+	var rep = this.getRepresentation();
+	
+	$(rep).find("foreignObject").show();
+	
+	$(rep).find("body").append('<input type="text" name="newContent" value="'+this.getIconText()+'" style="font-size: 12px;">');
+	
+	$(rep).find("foreignObject").attr("x", -66); 
+	$(rep).find("foreignObject").attr("y", 75); 
+	$(rep).find("foreignObject").attr("height", 22);
+	$(rep).find("foreignObject").attr("width", 200);
+	$(rep).find("foreignObject").attr('pointer-events','fill');
+	
+	$(rep).find("input").css("width", "194px"); 
+	
+	$(rep).find("text").hide();
+	
+	$(rep).find("input").focus();
+	
+	this.input = true;
+	GUI.input = this.id;
+	
+	var self = this;
+
+}
+
+
+/**
+ * Called after hitting the Enter key during the inplace editing
+ */
+IconObject.saveChanges = function() {
+
+	if(this.input){
+		var rep = this.getRepresentation();
+	
+		var newContent = $(rep).find("input").val()
+
+		$(rep).find("input").remove();
+		
+		$(rep).find("foreignObject").hide();
+	
+		$(rep).find("text").show();
+	
+		this.input = false;
+		GUI.input = false;
+	
+		this.setAttribute("name", newContent);
+	
+		this.draw();	
+	}
 }

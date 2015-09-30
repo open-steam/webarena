@@ -28,17 +28,21 @@ module.exports={
 	
 	enabledCategories: ['graphical','texts','collaboration','connections','content'],
 	
-	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
+	objectBlacklist: ['HtmlTest','CollText'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
 	
 // Functional restrictions
 	
 	couplingMode:true,
+	
+	collaborativeEditor:false, //sidebar
 	
 	paintIcon:true,
 	
 	chatIcon:true,
 	
 	bugreportIcon:true,
+	
+	WebRTC: false,
 	
 // Development
 	
@@ -70,7 +74,7 @@ module.exports={
 		// http server configuration
 		port: 8080,     // HTTP Port for server
 		
-	// Connector configuration.
+		// Connector configuration.
 		
 		// FileConnector
 		connector:require('./Server/connectors/FileConnector.js'), // The chosen connector
@@ -94,9 +98,20 @@ module.exports={
 		}
 		*/
 		
-	 // API Server
+		// API Server
 	 
-		tcpApiServer: false
+		tcpApiServer: false,
+		
+		//configuration of etherpad (cooperative writing)
+		etherpadlite : {
+			apikey: "", //can be found in the APIKEY.txt in the etherpad folder
+			host: "localhost",
+			port: 9001,
+        
+			// Right now just for Windows
+			startFilePath: "path\\to\\etherpad_folder", //for example C:\\Program Files\\etherpad\\etherpad-lite-develop
+			startFile: "start.bat"
+		},
 		
 	}
 };

@@ -22,3 +22,35 @@ Line.hasPixelAt=function(x,y){
 	
 	return false;
 }
+
+
+/**
+*	determine if the Line (not only the bounding box) intersects with the square x,y,width,height
+*/
+Line.objectIntersectsWith = function(ox, oy, ow, oh){
+
+	if (!this.isGraphical) return false;
+
+	//check if the square surrounds the Line completely (by checking if the square contains all points of the Line)
+	var P = this.getPoints();
+	
+	var counter = 0;
+	for(var j = 0; j< P.length; j++){
+		if(P[j].x > ox && P[j].x < (ox+ow) && P[j].y > oy && P[j].y < (oy+oh)) counter++;
+	}
+	
+	if(counter == P.length) return true;
+	
+	var cornerpoints = [{ x:ox, y:oy}, { x:(ox+ow), y:oy}, { x:(ox+ow), y:(oy+oh)}, { x:ox, y:(oy+oh)}];
+	
+	var c;
+	for(var i = 0; i<cornerpoints.length; i++){
+		c = i+1;
+		if(c == cornerpoints.length) c = 0;
+		var Int = this.IntersectionObjectLine(cornerpoints[i], cornerpoints[c]);
+		if(Int != "no intersection") return true;
+	}
+	
+	return false;
+	
+}

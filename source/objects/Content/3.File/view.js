@@ -5,7 +5,7 @@
 *
 */
 
-File.draw = function(external) {
+WAFile.draw = function(external) {
 	
 	GeneralObject.draw.call(this,external);
 	
@@ -29,16 +29,25 @@ File.draw = function(external) {
         $(rep).find("text").remove();
     }
 	
+	$(rep).css("opacity", (this.getAttribute('opacity')/100));
+	
 	if (!$(rep).hasClass("selected")) {
-		$(rep).find("rect").attr("stroke", this.getAttribute('linecolor'));
-		$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		var linecolor = this.getAttribute('linecolor');
+		if(linecolor == "rgba(0, 0, 0, 0)"){
+			$(rep).find("rect").removeAttr("stroke");
+			$(rep).find("rect").removeAttr("stroke-width");
+		}
+		else{
+			$(rep).find("rect").attr("stroke", linecolor);
+			$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
+		}
 	}
 	
 	this.createPixelMap();
 }
 
 /* get the width of the objects bounding box */
-File.getViewBoundingBoxWidth = function() {
+WAFile.getViewBoundingBoxWidth = function() {
 	if (this.hasContent() == false || this.getAttribute("preview") == false) {
 		if (this.getAttribute("bigIcon")) {
 			return 64;
@@ -49,7 +58,7 @@ File.getViewBoundingBoxWidth = function() {
 }
 
 /* get the height of the objects bounding box */
-File.getViewBoundingBoxHeight = function() {
+WAFile.getViewBoundingBoxHeight = function() {
 	if (this.hasContent() == false || this.getAttribute("preview") == false) {
 		if (this.getAttribute("bigIcon")) {
 			return 64;
@@ -59,7 +68,7 @@ File.getViewBoundingBoxHeight = function() {
 	}
 }
 
-File.getStatusIcon = function() {
+WAFile.getStatusIcon = function() {
 	if (this.hasContent() == false) {
 		return this.getIconPath() + "/upload";
 	} else if (this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {	
@@ -83,7 +92,7 @@ File.getStatusIcon = function() {
 	}
 }
 
-File.getIconText = function() {
+WAFile.getIconText = function() {
     if ((this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) && this.hasContent()) {
         return this.getAttribute("name");
     } else return false;

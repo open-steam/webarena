@@ -15,6 +15,8 @@ Line.draw=function(external){
 		$(rep).children("line").attr("stroke", this.getAttribute('linecolor'));
 	}
 	
+	$(rep).css("opacity", (this.getAttribute('opacity')/100));
+	
 	$(rep).children("line").attr("stroke-width", this.getAttribute('linesize'));
 	
 	switch (this.getAttribute('linestyle')){
@@ -198,7 +200,105 @@ Line.checkTransparency = function(attribute, value) {
 	} else {
 		var linecolor = this.getAttribute('linecolor');
 	}
-	if (linecolor === 'transparent') {
+	if (linecolor === 'rgba(0, 0, 0, 0)') {
 		return false;
 	} else return true;
+}
+
+
+Line.getPoints = function(){
+
+	var dir = this.getAttribute("direction");
+	var bbx = this.getViewBoundingBoxX();
+	var bby = this.getViewBoundingBoxY();
+	var bbw = this.getViewBoundingBoxWidth();
+	var bbh = this.getViewBoundingBoxHeight();
+	var P1;
+	var P2;
+	
+	if(dir == 1 || dir == 3){
+	
+		P1 = {
+			x : bbx,
+			y : bby
+		}
+		
+		P2 = {
+			x : (bbx+bbw),
+			y : (bby+bbh)
+		}
+		
+	}
+	if(dir == 2 || dir == 4){
+	
+		P1 = {
+			x : (bbx+bbw),
+			y : bby
+		}
+		
+		P2 = {
+			x : bbx,
+			y : (bby+bbh)
+		}
+	
+	}
+	
+	var LS = this.getAttribute('linesize');
+	
+	if(LS == 1){	
+		return [P1, P2]
+	}
+
+	var dx = P1.x - P2.x;
+	var dy = P1.y - P2.y;
+					
+	var absval = Math.sqrt(Math.pow(dy, 2) + Math.pow(dx, 2));
+			
+	dy = dy/absval;
+	dx = dx/absval;
+	
+	var C1 = {
+		x : P1.x + (dy)*LS/2,
+		y : P1.y + (-dx)*LS/2
+	}
+	
+	var C2 = {
+		x : P1.x + (-dy)*LS/2,
+		y : P1.y + (dx)*LS/2
+	}
+	
+	var C3 = {
+		x : P2.x + (-dy)*LS/2,
+		y : P2.y + (dx)*LS/2
+	}
+	
+	var C4 = {
+		x : P2.x + (dy)*LS/2,
+		y : P2.y + (-dx)*LS/2
+	}
+	
+	return [C1, C2, C3, C4];
+
+}
+
+
+//calculate the Intersection point between a line object and a line (described by a1 and a2)
+//this method will only return the first intersection point
+Line.IntersectionObjectLine = function(a1, a2){
+
+	var P = this.getPoints();
+			
+	var t;		
+	for(var j = 0; j< P.length; j++){
+		t = j+1;
+		if(t == P.length) t = 0;
+		var Int = this.IntersectionLineLine(a1, a2, P[j], P[t]);
+		if(typeof Int.x != 'undefined' && typeof Int.y != 'undefined'){
+			return Int;
+		}
+		if(Int == "coincident") return Int;
+	}
+	
+	return "no intersection";
+	
 }

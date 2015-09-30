@@ -9,6 +9,7 @@ GUI.showLogin = function(err) {
 	/* check for an external session login request in the URL hash */
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession') > -1) {
 		GUI.login();
+		return;
 	}
 	
 	/* true if the login process is active */
@@ -34,13 +35,13 @@ GUI.showLogin = function(err) {
 	
 	$("#login_username").focus();
 	
-	$("#login_submit").click(GUI.login);
-       
-	$("#login input").keyup( function(event) {
-		if (event.keyCode == 13) {
-			GUI.login();
-		}
-	});
+	$("#login_submit").click(GUI.login);  
+	
+	var userDataObject = GUI.retrieveUserData();
+
+	if(userDataObject){
+		GUI.login();
+	}
 	
 }
 
@@ -86,6 +87,7 @@ GUI.loginFailed = function(err) {
 	GUI.loginProcessActive = false;
 	GUI.username = undefined;
 	GUI.password = undefined;
+	GUI.clearUserStorage();
 }
 
 
@@ -114,6 +116,7 @@ GUI.login = function() {
 	$("#login_username").blur();
 	$("#login_password").blur();
 	
+	GUI.externalSession = false;
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession/') > -1) {
 		
 		var hashData = window.location.hash.substr(1).split("/")
@@ -124,6 +127,8 @@ GUI.login = function() {
 			GUI.password = hashData[2];
 			
 			GUI.externalSession = true;
+			
+			GUI.storeUserData();
 			window.location.replace('#');
 		
 		}
@@ -131,6 +136,17 @@ GUI.login = function() {
 	}
 	
 	if (GUI.username == "") GUI.username = "User";
+	
+	var userDataObject = GUI.retrieveUserData();
+
+	if(userDataObject){
+		GUI.username = userDataObject.username;
+		GUI.password = userDataObject.password;
+		GUI.externalSession = userDataObject.external;
+	}
+	else{
+		GUI.storeUserData();
+	}
 	
 	GUI.userid = GUI.username;
         
@@ -145,4 +161,49 @@ GUI.login = function() {
 	
 	GUI.loadGUI(); //reload GUI
 	
+}
+
+
+/**
+ * stores the user data in the local storage
+ */
+GUI.storeUserData = function() {
+
+	var userDataObject = {'username': GUI.username, 'password': GUI.password, 'external': GUI.externalSession};
+
+	if (typeof(Storage) != "undefined") {
+		localStorage.setItem('webarena', JSON.stringify(userDataObject));
+	} 
+}
+
+/**
+ * remove local storage of user data
+ */
+GUI.clearUserStorage = function() {
+
+	if (typeof(Storage) != "undefined") {
+		localStorage.clear();
+	} 
+}
+
+
+/**
+ * reads out the user data from the local storage
+ */
+GUI.retrieveUserData = function() {
+
+	var userDataObject = localStorage.getItem('webarena');
+	
+	return JSON.parse(userDataObject);
+
+}
+
+
+/**
+ * deletes the user data from the local storage
+ */
+GUI.deleteUserData = function() {
+
+	localStorage.removeItem('webarena');
+
 }

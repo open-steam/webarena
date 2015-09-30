@@ -1,0 +1,4 @@
+TunnelEndpoint.setTranslations('de',{
+
+}
+);

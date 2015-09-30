@@ -10,14 +10,14 @@ var Modules=require('../../../server.js');
 var Exit=Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
 Exit.register=function(type){
-	
 	// Registering the object
 	IconObject=Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this,type);
 	
-	this.registerAttribute('destination',{type:'text',standard:'',category:'Functionality',changedFunction: function(object) { object.updateIcon(); }});
-	this.registerAttribute('destinationObject',{type:'text',standard:'',category:'Functionality'});
-	this.registerAttribute('filterObjects',{type:'boolean',standard:true,category:'Functionality'});
+	this.registerAttribute('open destination on double-click',{type:'boolean',standard:true,hidden:true,category:'Functionality'});
+	/*this.registerAttribute('destination',{type:'Hyperlink', standard: "choose", linkFunction: function(object){object.showDialog()}, category:'Functionality', changedFunction: function(object) { object.updateIcon(); }});
+	this.registerAttribute('destinationObject',{type:'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object){object.showDialog()}, category:'Functionality'});
+	this.registerAttribute('filterObjects',{type:'boolean',standard:false, hidden:true});
 
 	this.registerAction('Follow',function(object){
 		object.execute();
@@ -25,19 +25,15 @@ Exit.register=function(type){
 	
 	this.registerAction('Open in new window',function(object){	
 		object.execute(true);
-	},true);
+	},true); */
 
-	this.registerAction(this.translate(this.currentLanguage, "Open Object Selection"), function(object) { 
-		object.showDialog(); 
-	},true);
+};
 
-}
-
-Exit.execute=function(openInNewWindow){
+/*Exit.execute=function(openInNewWindow){
 
     var destination=this.getAttribute('destination');
 	
-	if (!destination) {
+	if (!destination || destination == "choose") {
 		return this.showDialog();
 	} else {
 		var self=this;
@@ -63,19 +59,19 @@ Exit.execute=function(openInNewWindow){
 		}
 
 		if (openInNewWindow) {
-			console.log("new window");
+			//console.log("new window");
 			window.open(destination);
 		} else {
-			console.log("follow");
+			//console.log("follow");
 			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
 		}
 
 		//window.location.href = "/room/"+destination;
 	}
 }
-
+*/
 Exit.register('Exit');
 Exit.isCreatable=true;
 Exit.moveByTransform = function(){return true;};
 
-module.exports=Exit;
+module.exports=Exit; 

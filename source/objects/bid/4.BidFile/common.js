@@ -23,6 +23,7 @@ BidFile.register=function(type){
 
 BidFile.register('BidFile');
 BidFile.isCreatable=true;
+BidFile.onMobile = false;
 
 BidFile.moveByTransform = function(){return true;};
 

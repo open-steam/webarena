@@ -15,6 +15,8 @@ var mime = require('mime');
 mime.default_type = 'text/plain';
 var Q = require('q');
 
+WebServer.guiType = 'desktop';
+
 /*
  *	init
  *
@@ -37,11 +39,19 @@ WebServer.init = function (theModules) {
 		var url = req.url.replace('%20', ' ');
 		var agent = req.headers['user-agent'];
 
-		if (agent && agent.indexOf('MSIE') > 0) {
+		if (!Modules.config.debugMode && agent && agent.indexOf('Trident') > 0) {
 			res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
 			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
 			res.end(data);
 			return;
+		}
+		
+		/* Check if the client is on a mobile phone or not. */
+		if (agent && (agent.indexOf('iPhone') > 0 ||
+			(agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0))) {
+			WebServer.guiType = 'mobilephone';
+		} else {
+			WebServer.guiType = 'desktop';
 		}
 
 		/* get userHash */
@@ -70,7 +80,13 @@ WebServer.init = function (theModules) {
 
 				var roomId = url.substr(6);
 
-				var indexFilename = '/../Client/guis/desktop/index.html';
+				/* Get the most suitable index file in dependency to the given gui type. */
+				var indexFilename = '';
+				if (WebServer.guiType == 'mobilephone') {
+					indexFilename = '/../Client/guis/mobilephone/index.html';
+				} else {
+					indexFilename = '/../Client/guis/desktop/index.html';
+				}
 
 				fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
 
@@ -97,9 +113,22 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
-        // room hierarchy for coupling navigation (returns child notes of given room in jstree json structure)
-        if (url.substr(0, 17) == "/getRoomHierarchy") {
+        // roomlist for coupling navigation
+        if (url.substr(0, 9) == "/getRooms") {
 
+			Modules.RoomController.listRooms(function(err, rooms){
+			
+				if(err){
+					console.log("Error during listRooms");
+				}
+				else{
+					res.writeHead(200, {'Content-Type': "application/json"});
+					res.end(JSON.stringify(rooms));
+				}
+			});
+		
+			return;
+			/*
             var roomId = url.substr(21);
 
             var hierarchy = Modules.Connector.getRoomHierarchy(roomId, false, function(hierarchy) {
@@ -132,6 +161,7 @@ WebServer.init = function (theModules) {
             });
 
             return;
+			*/
         }
 
 
@@ -430,7 +460,7 @@ WebServer.init = function (theModules) {
 
 				object.getInlinePreviewMimeType(function (mimeType) {
 
-					object.getInlinePreview(function (data) {
+					object.getInlinePreview(mimeType, function (data) {
 
 						if (!data) {
 
@@ -461,7 +491,7 @@ WebServer.init = function (theModules) {
 							res.end(new Buffer(data));
 						}
 
-					}, mimeType, true);
+					});
 
 				});
 
@@ -585,7 +615,6 @@ WebServer.init = function (theModules) {
 		else if (url == '/objects') {
 
 			try {
-
 				var code = Modules.BuildTool.getClientCode();
 
 				var mimeType = 'application/javascript';

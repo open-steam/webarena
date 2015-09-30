@@ -742,7 +742,7 @@ $(function() {
 
 			this.el = document.createElement('div');
 			$(this.el).addClass("jPopover");
-			$("body").append(this.el);
+			$( "body:first" ).append(this.el);
 
 			this.hide(true);
 
@@ -1135,14 +1135,15 @@ $(function() {
 				/* positioning of popup and arrow */
 
 				var x = $(self.target).position().left+self.options.positionOffsetX;
-				var y = $(self.target).position().top+$(self.target).outerHeight()+self.options.positionOffsetY;
-
+				var y = $(self.target).position().top+$(self.target).outerHeight()+self.options.positionOffsetY;       
+        
 				if (x+$(self.el).width() > $(window).width()) {
 
 					x = $(window).width()-$(self.el).width()-4;
 
 					/* arrow right */
 
+					$("div[class*='jPopover_arrow']").css("left", "");
 					var arrowPos = $(window).width()-$(self.target).position().left-self.options.arrowOffsetRight;
 
 					$(self.el).find("div.jPopover_arrow").css("right", arrowPos+"px");
@@ -1153,6 +1154,8 @@ $(function() {
 				} else {
 					/* arrow left */
 
+					$("div[class*='jPopover_arrow']").css("right", "");
+          
 					$(self.el).find("div.jPopover_arrow").css("left", "8px");
 					$(self.el).find("div.jPopover_arrow_border").css("left", "8px");
 					$(self.el).find("div.jPopover_arrow_border_inner").css("left", "8px");
