@@ -13,19 +13,38 @@ Graphboard.draw=function(external){
 	var rep=this.getRepresentation();
 	this.drawDimensions(external);
 	
-	var that=this;
-	this.getContentAsString(function(data){
-		if(data!=that.oldContent){
-			if ((!data && !that.oldContent) || data == "") {
-				$(rep).find("text").get(0).textContent='';
-			} else {
-				$(rep).find("text").get(0).textContent=data;
-			}
-		}
-		
-		that.oldContent=data;	
-		console.log(data);
-	});
+/*
+* TODO: gedraw ohne refresh? hier immer die neuen graphen erzeugen? plot wird richtig eingefügt aber nicht sichtbar in der WA.
+ */
+//$(rep).find('body').find('g').append()
+//	var color = "#000000";
+//	var functions = 0;
+//	var linkedObjects = this.getAttribute("link");
+//	console.log(linkedObjects);
+//    $.each(linkedObjects, function(index, value) {
+//    	
+//        var targetID = value.destination;
+//        var target = ObjectManager.getObject(targetID);
+//        if (!target) {
+//            //console.log(objectID+' has missing linked objects');
+//            return;
+//        }
+//        
+//        if (target.type == "FunctionText") {
+//        	color = "#000000";
+//        	color = color.substr(0,1+functions)+"f"+color.substr((functions)+2);
+//        	functions++;
+//            myPlot.addPlot(target.getContentAsString(),FOOPLOT_TYPE_FUNCTION,{'color':color});
+//            setTimeout(null, 3000);
+//        }
+//	});
+//    
+//	svg = myPlot.getSVGBody();
+//	
+//	console.log($(rep));
+//	$(rep).find('body>svg').append(svg);
+//	console.log($(rep));				
+	
 }
 
 Graphboard.createRepresentation = function(parent) {
@@ -33,6 +52,7 @@ Graphboard.createRepresentation = function(parent) {
 	rep = GUI.svg.group(parent, this.getAttribute('id'));
 	rep.foreign = GUI.svg.other(rep,"foreignObject",{x: 0, y: 30, width: 500, height: 500});	
 	
+	rep.dataObject=this;
 	
 	var body = document.createElement("body");
 	var div = document.createElement("div");
@@ -44,16 +64,29 @@ Graphboard.createRepresentation = function(parent) {
 	$(body).append(div);
 	$(rep.foreign).append(body);
 	
-	myPlot = new Fooplot(document.getElementById('plot-'+this.getAttribute('id')));
+	/*
+     * TODO: Punkte an charakteristischen Punkten zum bewegen und stauchen des graphen? erstmal nur für quadratische Funktionen
+     * nicht an dieser stelle.
+     */
 //	var point = [];
 //	var pointplot = '1,1';
 //	var coordinates = pointplot.split(',');
 //	point.push([coordinates[0], coordinates[1]]);
 //	myPlot.addPlot(point, FOOPLOT_TYPE_POINTS, {'color':'#000' });
+	
+     
+	myPlot = new Fooplot(document.getElementById('plot-'+this.getAttribute('id')));
+	
+	myPlot.xmin=Number(this.getAttribute('x-min'));
+	myPlot.xmax=Number(this.getAttribute('x-max'));
+	myPlot.ymin=Number(this.getAttribute('y-min'));
+	myPlot.ymax=Number(this.getAttribute('y-max'));
+	
 	var color = "#000000";
 	var functions = 0;
 	var linkedObjects = this.getAttribute("link");
     $.each(linkedObjects, function(index, value) {
+    	
         var targetID = value.destination;
         var target = ObjectManager.getObject(targetID);
         if (!target) {
@@ -65,17 +98,18 @@ Graphboard.createRepresentation = function(parent) {
         	color = "#000000";
         	color = color.substr(0,1+functions)+"f"+color.substr((functions)+2);
         	functions++;
-        	console.log(target);
-            myPlot.addPlot(target.getContentAsString(),FOOPLOT_TYPE_FUNCTION,{'color':color});
-            setTimeout(null, 3000);
+        	if(target.getAttribute("term")==undefined){
+        		myPlot.addPlot("1".FOOPLOT_TYPE_FUNCTION,{'color':'#FFF000'});
+        	}
+        	else
+        		myPlot.addPlot(target.getAttribute("term"),FOOPLOT_TYPE_FUNCTION,{'color':color});
         }
-    });
+	});
 	
-	
-	myPlot.xmin=-20;
-	myPlot.xmax=20;
-	myPlot.ymin=-20;
-	myPlot.ymax=20;
+    /*
+     * TODO: gedraw ohne refresh? nur rahmen erzeugen?
+     */
+//	svg = myPlot.getSVGFrame();
 	svg = myPlot.getSVG();
 	$(body).html(svg);
 	
@@ -84,7 +118,6 @@ Graphboard.createRepresentation = function(parent) {
 	
 
 	this.initGUI(rep);
-	
 	
 	return rep;
 }
@@ -115,22 +148,4 @@ Graphboard.checkTransparency = function(attribute, value) {
 	} else return true;
 }
 
-///**
-// * Called after a double click on the text, enables the inplace editing
-// */
-//Graphboard.editText = function(){
-//	rep.input.innerHTML='<input type="text" name="newContent" value="'+this.oldContent+'" style="font-size: '+this.getAttribute('font-size')+'px; font-family: '+this.getAttribute('font-family')+'; color: '+this.getAttribute('font-color')+'; width: '+(rep.text.getBoundingClientRect().width+15)+'px; height: '+(rep.text.getBoundingClientRect().height)+'px;">';
-//	
-//	$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
-//	
-//	$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+60);
-//	$(rep).find("text").hide();
-//	
-//	$(rep).find("input").focus();
-//	
-//	this.input = true;
-//	GUI.input = this.id;
-//	
-//	var self = this;
-//	this.draw();
-//}
+

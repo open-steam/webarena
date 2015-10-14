@@ -19,16 +19,21 @@ FunctionText.register=function(type){
 	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
 	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,max:80,unit:'px',category:'Appearance'});
 	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance',checkFunction: function(object,value) {
-
 		if (object.checkTransparency('font-color', value)) {
 			return true;
 		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
 
 	}});
 	
+	//term auf den sich das graphboard bezieht um den graphen zu zeichnen (workaround. sollte über name laufen aber ich weiß nicht wie ich name dafür nutzen kann
+	//da der name anfangs immer mit dem objecttyp initialisiert wird Oo
+	this.attributeManager.registerAttribute('term',{hidden:false, standard:"x^2"});
+	
 	this.attributeManager.registerAttribute('width',{hidden:true});
 	this.attributeManager.registerAttribute('height',{hidden:true});
 	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
+
+	
 
     this.registerAttribute('rotation', {type:'number', category: 'Dimensions'});
 	
@@ -68,12 +73,12 @@ FunctionText.isCreatable=true;
 
 FunctionText.contentURLOnly = false; //content is only accessible via URL
 
-FunctionText.content='Neuer Text';
+FunctionText.content='x^2';
 
 FunctionText.moveByTransform = function(){return true;};
 
 FunctionText.justCreated=function(){
-	this.setContent(this.translate(this.currentLanguage, 'No text yet!'));
+	this.setContent("x^2");
 }
 
 module.exports=FunctionText;

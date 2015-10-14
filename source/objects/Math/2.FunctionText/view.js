@@ -82,6 +82,8 @@ FunctionText.createRepresentation = function(parent) {
 FunctionText.editText = function() {
 	
 	GUI.editText(this);
+	//TODO: hier ist ein bug ich muss mehrfach einen text bearbeiten damit das attribut gesetzt wird Oo
+	this.setAttribute("term",this.getContentAsString());
 	
 }
 

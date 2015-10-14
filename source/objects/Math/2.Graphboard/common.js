@@ -18,7 +18,10 @@ Graphboard.register=function(type){
 	this.attributeManager.registerAttribute('width',{hidden:true});
 	this.attributeManager.registerAttribute('height',{hidden:true});
 	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
-	
+	this.attributeManager.registerAttribute('x-min',{hidden:false, standard:'-20'});
+	this.attributeManager.registerAttribute('x-max',{hidden:false, standard:'20'});
+	this.attributeManager.registerAttribute('y-min',{hidden:false, standard:'-20'});
+	this.attributeManager.registerAttribute('y-max',{hidden:false, standard:'20'});
 	
 	this.standardData.width=200;
     this.standardData.height=100;

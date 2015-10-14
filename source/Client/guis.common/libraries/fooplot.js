@@ -93,6 +93,19 @@ function FooplotSVGRecorder() {
     _svg+='</g></svg>';
     return _svg;
   }
+  
+  this.getSVGFrame=function() {
+    var _svg='';
+    _svg+='<?xml version="1.0" standalone="no"?>';
+    _svg+='<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">';
+    _svg+='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 '+this.width+' '+this.height+'" version="1.1">';
+    _svg+='<clipPath id="box"><rect x="0" y="0" width="'+this.width+'" height="'+this.height+'" style="fill:none;stroke:none;" /></clipPath>';
+    _svg+='</svg>';
+    return _svg;
+  }
+  this.getSVGBody=function(){
+	  return this.svgBody;  
+  }
 }
 
 function Fooplot(container,options) {
@@ -1158,7 +1171,66 @@ function Fooplot(container,options) {
       this.context.stroke();
     }
   }
+  
+  this.reDrawFrame=function() {
+	    //this.hideIntersection();
+	    //this.hideTrace();
+	    this.clear();
+	    if(this.showGrid) {
+	      this.context.strokeStyle=this.gridColor;
+	      this.context.fillStyle=this.gridColor;
+	      this.drawGrid();
+	    }
+	    if(this.showAxes) {
+	      this.context.strokeStyle=this.axesColor;
+	      this.context.fillStyle=this.axesColor;
+	      this.drawAxes();
+	    }
+	    if(this.showLabels) {
+	      this.context.fillStyle=this.labelsColor;
+	      this.drawLabels();
+	    }
+	    
+	    if(FOOPLOT_MSIE) {
+	      // hack for MSIE + excanvas which sometimes sporadically does not display the last-drawn path
+	      // so we draw a dummy path
+	      this.context.beginPath();
+	      this.context.moveTo(0,-1);
+	      this.context.lineTo(-1,-1);
+	      this.context.stroke();
+	    }
+  }
+  
+  this.reDrawBody=function() {
+	    //this.hideIntersection();
+	    //this.hideTrace();
+	    this.clear();
+	    
+	    for(var i in this.plots) {
+	      this.context.strokeStyle='#000000';
+	      switch(this.plots[i].type) {
+	        case FOOPLOT_TYPE_FUNCTION:
+	          this.context.strokeStyle=this.plots[i].options.color;
+	          this.drawFunction(this.plots[i].jeq);
+	          break;
+	        case FOOPLOT_TYPE_POLAR:
+	          this.context.strokeStyle=this.plots[i].options.color;
+	          this.drawPolar(this.plots[i].jeq,this.plots[i].options.thetamin,this.plots[i].options.thetamax,this.plots[i].options.thetastep);
+	          break;
+	        case FOOPLOT_TYPE_PARAMETRIC:
+	          this.context.strokeStyle=this.plots[i].options.color;
+	          this.drawParametric(this.plots[i].jeqx,this.plots[i].jeqy,this.plots[i].options.smin,this.plots[i].options.smax,this.plots[i].options.sstep);
+	          break;
+	        case FOOPLOT_TYPE_POINTS:
+	          this.context.fillStyle=this.plots[i].options.color;
+	          this.drawPoints(this.plots[i].eq);
+	          break;
+	      }
+	    }
+  }
 
+
+ 
   this.addPlot=function(eq,type,options) {
     if(!type)    type=FOOPLOT_TYPE_FUNCTION;
     if(!options) options={};
@@ -1303,7 +1375,18 @@ function Fooplot(container,options) {
     this.context=this.canvas.getContext('2d');
     return this.recorder.getSVG();
   }
-
+  this.getSVGBody=function() {
+	    this.context=this.recorder;
+	    this.reDrawBody();
+	    this.context=this.canvas.getContext('2d');
+	    return this.recorder.getSVGBody();
+	  }
+  this.getSVGFrame=function() {
+	    this.context=this.recorder;
+	    this.reDrawFrame();
+	    this.context=this.canvas.getContext('2d');
+	    return this.recorder.getSVG();
+	  }
   // EVENTS (user-settable functions)
   this.onWindowChange=function(w) {};
 }
