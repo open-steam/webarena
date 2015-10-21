@@ -395,7 +395,7 @@ ObjectManager.undo = function(data, context, callback) {
     var that = this;
     var userID = data.userID;
     var lastChange = that.history.getLastChangeForUser(userID);
-
+    
     if (lastChange) {
         if (!lastChange.blocked) {
             var changeSet = lastChange.changeSet;
@@ -411,18 +411,21 @@ ObjectManager.undo = function(data, context, callback) {
                         });
                         undoMessage = 'info.undo.delete';
 
-                    } else if (e.action === 'setAttribute') {
+                    } else if (e.action === 'setAttribute' || e.action === 'set Attribute') {
                         object.setAttribute(e.attribute, e.old);
                         undoMessage = 'info.undo.attribute';
                     } else if (e.action === 'duplicate') {
                         object.remove();
                         undoMessage = 'info.undo.duplication';
-                    } else if (e.action === 'setContent') {
+                    } else {
                         undoMessage = "Undo of the action isn't supported";
                     }
                 });
                 callback(null, undoMessage);
             } catch (e) {
+            	
+            	console.log('Undo error');
+            	
                 callback(null, "info.error");
             }
 
