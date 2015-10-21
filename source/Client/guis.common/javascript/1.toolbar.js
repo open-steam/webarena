@@ -432,7 +432,7 @@ GUI.initToolbar = function() {
 				if(Modules.Config.couplingMode) $(couplingButton).bind("touchstart", clickCoupling);
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
-				if(Modules.Config.paintIcon) $(paintButton).bind("touchstart", clickPaint);
+				if(Modules.Config.paintMode) $(paintButton).bind("touchstart", clickPaint);
 				$(logoutButton).bind("touchstart", clickLogout);
 				//menu:
 				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
@@ -440,7 +440,7 @@ GUI.initToolbar = function() {
 				if(Modules.Config.couplingMode) $(btnCoupling.getDOM()).bind("touchstart", clickCoupling);
 				$(btnParent.getDOM()).bind("touchstart", clickParent);
 				$(btnHome.getDOM()).bind("touchstart", clickHome);
-				if(Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
+				if(Modules.Config.paintMode) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
                 $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
 				//header:
@@ -449,7 +449,7 @@ GUI.initToolbar = function() {
 				if(Modules.Config.couplingMode) $(couplingButton).bind("mousedown", clickCoupling);
 				$(parentButton).bind("mousedown", clickParent);
 				$(homeButton).bind("mousedown", clickHome);
-				if(Modules.Config.paintIcon) $(paintButton).bind("mousedown", clickPaint);
+				if(Modules.Config.paintMode) $(paintButton).bind("mousedown", clickPaint);
 				$(logoutButton).bind("mousedown", clickLogout);
 				//menu:
 				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
@@ -457,7 +457,7 @@ GUI.initToolbar = function() {
 				if(Modules.Config.couplingMode) $(btnCoupling.getDOM()).bind("mousedown", clickCoupling);
 				$(btnParent.getDOM()).bind("mousedown", clickParent);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
-				if(Modules.Config.paintIcon) $(btnPaint.getDOM()).bind("mousedown", clickPaint);
+				if(Modules.Config.paintMode) $(btnPaint.getDOM()).bind("mousedown", clickPaint);
                 $(btnLogout.getDOM()).bind("mousedown", clickLogout);
             }
         }
