@@ -9,7 +9,6 @@
     "mime": "*",
     "q": "~0.9.6",
     "underscore.string": "~2.3.3",
-    "eventemitter2": "~0.4.13",
     "async": "~0.2.9",
     "lodash": "~2.2.1",
     "winston": "0.8.0",
