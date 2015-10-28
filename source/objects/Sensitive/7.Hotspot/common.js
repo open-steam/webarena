@@ -19,6 +19,6 @@ Hotspot.register=function(type){
 
 }
 
-Hotspot.isCreatable=true; 
+Hotspot.isCreatable=false; 
 
 module.exports=Hotspot;

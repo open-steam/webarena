@@ -250,17 +250,17 @@ GeneralObject.register = function(type) {
 
 	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
             object.showExitDialog()
-        }, category: 'Functionality', changedFunction: function(object) {
+        }, category: 'Hyperlink', changedFunction: function(object) {
             if(object.updateIcon){object.updateIcon()};
         }});
     this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
             object.showExitDialog()
-        }, category: 'Functionality'});
+        }, category: 'Hyperlink'});
     this.registerAttribute('filterObjects', {type: 'boolean', standard: false, hidden: true});
 	
-	this.registerAttribute('open destination on double-click',{type:'boolean',standard:false,category:'Functionality'});
+	this.registerAttribute('open destination on double-click',{type:'boolean',standard:false,category:'Hyperlink'});
 	
-	this.registerAttribute('open in',{type:'selection',standard:'same Tab',options:['same Tab','new Tab','new Window'],category:'Functionality'});
+	this.registerAttribute('open in',{type:'selection',standard:'same Tab',options:['same Tab','new Tab','new Window'],category:'Hyperlink'});
 	
     //this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 

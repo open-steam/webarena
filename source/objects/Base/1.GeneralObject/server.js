@@ -549,14 +549,17 @@ theObject.getBoundingBox=function(){
 	
 }
 
+//gets an object within the same room
+theObject.getObject=function(id){
+	var self = this;
+	
+	return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
+}
+
 
 theObject.getLinkedObjectsAsync=function(callback) {
 	
-	var self = this;
 	
-	var getObject = function(id) {
-		return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
-	}
 	
 	var linkedObjects = this.getAttribute('link');
 	
@@ -565,7 +568,7 @@ theObject.getLinkedObjectsAsync=function(callback) {
 	for(var i = 0; i<linkedObjects.length; i++){
 			
 		var targetID = linkedObjects[i].destination;
-		var target = getObject(targetID);
+		var target = this.getObject(targetID);
 
 		links[targetID] = {
 			object : target,

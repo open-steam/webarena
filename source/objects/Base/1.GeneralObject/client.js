@@ -293,11 +293,12 @@ GeneralObject.showExitDialog = function() {
 		var active = $('#tabs').tabs('option', 'active');
 		var tab = $("#tabs ul>li a").eq(active).attr("href");
 	
-		var jstree_selected_item = $('.js-tree').jstree('get_selected');
+		var jstree_selected_item = $('#jsTargetTree').jstree('get_selected');
 		
 		var textareaInput = $('#external_URL').val();
 		
 		if(jstree_selected_item.length == 0 & textareaInput == ""){
+			
 			alert(that.translate(GUI.currentLanguage, "Please select a destination or enter a URL"));
 			setTimeout(function(){ that.showExitDialog() }, 10);
 		}
@@ -348,7 +349,7 @@ GeneralObject.showExitDialog = function() {
     var dialog_width = 600;
     var additional_dialog_options = {
         create: function() {
-            var renderedTree = $("<div class='js-tree objectBrowserTree'></div>").jstree({
+            var renderedTree = $("<div class='js-tree objectBrowserTree' id='jsTargetTree'></div>").jstree({
                 "json_data": {
                     "data": function(object, callback) {
                         if (object !== -1) {
