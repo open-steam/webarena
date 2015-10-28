@@ -558,15 +558,14 @@ theObject.getBoundingBox=function(){
 	
 }
 
-theObject.fireEvent=function(name,data){
+theObject.fireEvent=function(name,id){
 	
-	//console.log('event fired',name,data);
-	
-	if (!data) {
-		console.log('#### NO DATA');
+	if (!id) {
+		console.log('#### NO ID');
 		return;
 	}
-	
+	data={};
+	data.id = id;
     data.context = this.context;
 
 	Modules.EventBus.emit(name, data);
