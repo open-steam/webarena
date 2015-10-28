@@ -46,7 +46,7 @@ module.exports={
 	
 	trash: true,
 	
-	cloud: true,
+	cloud: false,
 	
 	recentChanges: true,
 	
@@ -69,8 +69,6 @@ module.exports={
 	},
 	
 // Other settings
-
-	bidURL:'',
 	
 	server: { 
 		
@@ -85,15 +83,7 @@ module.exports={
 		// FileConnector
 		connector:require('./Server/connectors/FileConnector.js'), // The chosen connector
 		filebase:'/path/to/data_folder', // The path where object data is saved
-		
-		/*
-		// BidConnector - Connecting WebArena to a bid server
-		connector:require('./Server/connectors/BidConnector.js'), // The chosen connector
-		filebase:'/path/to/data_folder', // The path where object data is saved
-		bidServer: 'www.bid-owl.de.localhost',
-		bidPort: 80,
-		*/
-		
+				
 		/*
 		// eLabConnector - Connecting WebArena to an eLab user manager
 		connector:require('./Server/connectors/ElabConnector.js'), // The chosen connector
@@ -104,15 +94,13 @@ module.exports={
 		}
 		*/
 		
+		/*
 		// FTPConnector - Connecting WebArena to an FTP server
 		connector:require('./Server/connectors/FTPConnector.js'), // The chosen connector
 		
 		// WebDavConnector - Connecting WebArena to a WebDav server
 		connector:require('./Server/connectors/WebDavConnector.js'), // The chosen connector
-		
-		// API Server
-	 
-		tcpApiServer: false,
+		*/
 		
 		//configuration of etherpad (cooperative writing)
 		etherpadlite : {

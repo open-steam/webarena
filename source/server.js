@@ -108,7 +108,6 @@ Modules.SocketServer = require('./Server/SocketServer.js');
 Modules.UserManager = require('./Server/UserManager.js');
 Modules.Helper = require('./Server/Helper.js');
 Modules.EventBus = require("./Server/EventBus.js");
-/*Modules.TokenChecker = require("./Server/TokenChecker");*/
 Modules.BuildTool = require('./Server/BuildTool.js');
 
 // These object exist for every object type or every single object. They shall not be
@@ -117,11 +116,6 @@ Modules.DataSet = require('./Common/DataSet.js');
 Modules.AttributeManager = require('./Common/AttributeManager.js');
 Modules.TranslationManager = require('./Common/TranslationManager.js');
 Modules.ActionManager = require('./Common/ActionManager.js');
-
-
-if (Modules.config.tcpApiServer) {
-    Modules['TcpEventServer'] = require("./Server/TcpSocketServer.js").create();
-}
 
 Modules.Connector = Modules.config.connector; //shortcut
 
