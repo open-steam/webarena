@@ -98,7 +98,6 @@ Modules.WebServer = require('./Server/WebServer.js');
 Modules.SocketServer = require('./Server/SocketServer.js');
 Modules.UserManager = require('./Server/UserManager.js');
 Modules.Helper = require('./Server/Helper.js');
-Modules.EventBus = require("./Server/EventBus.js");
 Modules.BuildTool = require('./Server/BuildTool.js');
 
 // These object exist for every object type or every single object. They shall not be
@@ -115,8 +114,7 @@ Modules.RoomController = require('./Server/controllers/RoomController.js');
 Modules.ObjectController = require('./Server/controllers/ObjectController.js');
 Modules.ServerController = require('./Server/controllers/ServerController.js');
 
-Modules.InternalDispatcher = require('./Server/apihandler/InternalDispatcher.js');
-Modules.Dispatcher = require('./Server/apihandler/Dispatcher.js');
+Modules.Dispatcher = require('./Server/Dispatcher.js');
 
 // Objects can gain access to the Modules (on the server side) by requiring this file
 module.exports = Modules;
@@ -127,12 +125,4 @@ for (var name in Modules) {
     if (module.init) {
         module.init(Modules);
     }
-}
-
-
-
-//load plugins
-if (Modules.config.plugins) {
-    Modules.PluginManager = require('./Server/PluginManager.js').create();
-    Modules.PluginManager.init(Modules, Modules.config.plugins);
 }

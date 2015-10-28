@@ -216,24 +216,23 @@ theObject.makeSensitive=function(){
 	}
 	
 	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
-		this.fireEvent('object::'+this.id+'::moveWithin',object.id);
+		
 	};
 	
 	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
-		this.fireEvent('object::'+this.id+'::moveOutside',object.id);
+		
 	};
 	
 	if (!theObject.onLeave) theObject.onLeave=function(object,data){
-		this.fireEvent('object::'+this.id+'::leave',object.id);
+		
 	};
 	
 	if (!theObject.onEnter) theObject.onEnter=function(object,data){
-		this.fireEvent('object::'+this.id+'::enter',object.id);
+		
 	};
 	
 	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
 		
-		this.fireEvent('object::'+this.id+'::drop',objectId);
 	};
 
 	theObject.onDrop.public=true;
@@ -435,14 +434,6 @@ theObject.getContentAsString=function(callback){
 	}
 }
 
-theObject.getContentFromApplication = function(applicationName, callback){
-    var eventName = "applicationevent::" + applicationName + "::getContent"
-    var event = {
-        objectID : this.getID(),
-        callback : callback
-    }
-    Modules.EventBus.emit(eventName, event);
-}
 
 /**
 *	getInlinePreview
@@ -557,21 +548,6 @@ theObject.getBoundingBox=function(){
 	return {'x':x,'y':y,'width':width,'height':height};
 	
 }
-
-theObject.fireEvent=function(name,id){
-	
-	if (!id) {
-		console.log('#### NO ID');
-		return;
-	}
-	data={};
-	data.id = id;
-    data.context = this.context;
-
-	Modules.EventBus.emit(name, data);
-}
-
-theObject.fireEvent.public=true; //Function can be accessed by customObjectFunctionCall
 
 
 theObject.getLinkedObjectsAsync=function(callback) {

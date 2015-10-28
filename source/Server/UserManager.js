@@ -144,8 +144,6 @@ UserManager.login=function(socketOrUser,data){
 				home: connection.user.home
 			});
 
-			Modules.EventBus.emit("server::user::login", {username : connection.user.username});
-			
 		} else {
 			socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
 		}
@@ -201,8 +199,6 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 			//ObjectManager.sendChatMessages(roomID,socket);
 			
 			Modules.Dispatcher.respond(socket,responseID,false);
-
-			Modules.EventBus.emit("room::"+roomID+"::userEntered", {username : connection.user.username});
 
 		} else {
 			socketServer.sendToSocket(socket,'error', 'User '+user.username+' may not enter '+roomID);

@@ -250,8 +250,6 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         if (content) {
             object.setContent(content);
         }
-
-        Modules.EventBus.emit("room::" + roomID + "::action::createObject", {objectID: id});
 		
 		var historyEntry = {
 			'roomID': roomID,
@@ -762,7 +760,6 @@ ObjectManager.deleteObject = function(data, context, callback) {
                     return;
                 }
 				
-                Modules.EventBus.emit("room::" + roomID + "::" + objectID + "::delete", data);
 				
                 var historyEntry = {
                     'roomID': roomID,

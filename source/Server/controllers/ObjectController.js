@@ -63,8 +63,6 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 		serverFunctionParams.pop();
 	}
 
-	Modules.EventBus.emit("room::" + roomID + "::" + objectID, data);
-
 	var responseCallback = function(data){
         cb(null, data);
     }
