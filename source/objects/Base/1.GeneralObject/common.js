@@ -248,20 +248,6 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
 
-	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
-            object.showExitDialog()
-        }, category: 'Hyperlink', changedFunction: function(object) {
-            if(object.updateIcon){object.updateIcon()};
-        }});
-    this.registerAttribute('destinationObject', {type: 'Hyperlink', standard: "choose", hidden: true, linkFunction: function(object) {
-            object.showExitDialog()
-        }, category: 'Hyperlink'});
-    this.registerAttribute('filterObjects', {type: 'boolean', standard: false, hidden: true});
-	
-	this.registerAttribute('open destination on double-click',{type:'boolean',standard:false,category:'Hyperlink'});
-	
-	this.registerAttribute('open in',{type:'selection',standard:'same Tab',options:['same Tab','new Tab','new Window'],category:'Hyperlink'});
-	
     //this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 
     this.registerAction('Delete', function() {
@@ -820,57 +806,7 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
     });
 }
 
-GeneralObject.follow = function(openMethod) {
 
-    var destination = this.getAttribute('destination');
-	
-    if (!destination || destination == "choose") {
-        return this.showExitDialog();
-    } else {
-        var self = this;
-
-        var callback = false;
-        if (self.getAttribute("destinationObject") !== '') {
-            callback = function() {
-                if (document.getElementById(self.getAttribute("destinationObject"))) {
-                    if (!GUI.couplingModeActive) {
-                        $(document).scrollTo(
-                                $('#' + self.getAttribute("destinationObject")),
-                                1000,
-                                {
-                                    offset: {
-                                        top: (self.getAttribute("height") / 2) - ($(window).height() / 2),
-                                        left: (self.getAttribute("width") / 2) - ($(window).width() / 2)
-                                    }
-                                }
-                        );
-                    }
-                }
-            }
-        }
-
-		
-        if(openMethod == 'new Tab'){
-            window.open(destination);
-			return;
-		}
-        if(openMethod == 'new Window'){
-			var newWindow = window.open(destination, Modules.Config.projectTitle, "height="+window.outerHeight+", width="+window.outerWidth);
-			return;
-        }
-	
-		//open in same tab
-		if(String(destination).indexOf("http://www.") != 0){
-			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
-		}
-		else{
-			window.open(destination,"_self")
-		}
-    }
-
-	
-	
-}
 
 
 /**

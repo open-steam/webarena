@@ -57,7 +57,6 @@ GeneralObject.setTranslations('de',{
     'Create new Subroom' : 'Neuen Unterraum erstellen',
     'Cancel' : 'Abbrechen',
     'Okay' : 'Auswählen',
-	'open destination on double-click' : 'Ziel mit Doppelklick öffnen',
 	'open in' : 'Ziel öffnen in',
 	'Open destination' : 'Ziel öffnen',
 	'Target Selection' : 'Zielauswahl',

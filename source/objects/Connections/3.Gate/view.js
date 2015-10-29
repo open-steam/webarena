@@ -6,11 +6,11 @@
 */
 
 
-Exit.getIconText = function() {
+Gate.getIconText = function() {
 	return this.getAttribute("name");
 }
 
-Exit.getStatusIcon = function() {
+Gate.getStatusIcon = function() {
 	var destination=this.getAttribute('destination');
 	
 	if (!destination) {

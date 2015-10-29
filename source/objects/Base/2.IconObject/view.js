@@ -134,12 +134,7 @@ IconObject.dblclickHandler = function(event) {
 
 	if(!this.input){
 		if(event.target.localName == "image"){
-			if(this.getAttribute("open destination on double-click")){
-				this.follow(this.getAttribute("open in"));
-			}
-			else{
-				this.execute(event);
-			}
+			this.execute(event);
 		}
 	
 		if(event.target.localName == "tspan"){

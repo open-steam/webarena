@@ -17,9 +17,6 @@ Subroom.register=function(type){
 	IconObject.register.call(this,type);
 	IconObject.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	
-	this.registerAttribute('destination', {type:'metadata', category: 'Functionality'});
-	this.registerAttribute('open destination on double-click',{type:'boolean',standard:true,hidden:true,category:'Functionality'});
-	
 	var self=this;
 	
 	this.registerAction('Open destination', function(object) {

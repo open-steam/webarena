@@ -27,3 +27,5 @@ Subroom.deleteIt=function() {
 Subroom.justCreated=function(){
 	this.setAttribute('destination', new Date().getTime()-1296055327011);
 }
+
+Subroom.follow=Gate.follow;

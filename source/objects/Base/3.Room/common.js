@@ -35,9 +35,6 @@ Room.register=function(type){
 	this.registerAttribute('bigIcon',{hidden:true, changedFunction: function(object) {}});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
-	this.registerAttribute('destination', {hidden:'true'});
-	this.registerAttribute('open destination on double-click',{type:'boolean',hidden:true,standard:false,category:'Functionality'});
-	this.registerAttribute('open in',{type:'selection',standard:'same Tab',hidden:true,options:['same Tab','new Tab','new Window'],category:'Functionality'});
 	
 	this.registerAttribute('showUserPaintings',{type:"boolean", standard:true, changedFunction: function(object, value) {object.showUserPaintings(value);}});
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});

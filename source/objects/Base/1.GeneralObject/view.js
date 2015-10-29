@@ -1717,13 +1717,7 @@ GeneralObject.deselectHandler = function() {
  */
 GeneralObject.dblclickHandler = function(event) {
 
-	if(this.getAttribute("open destination on double-click")){
-		this.follow(this.getAttribute("open in"));
-	}
-	else{
 		this.execute(event);
-	}
-	
 }
 
 /**

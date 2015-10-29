@@ -1,5 +1,5 @@
-Exit.setTranslations('de',{
-	'Exit':'Verknüpfung',
+Gate.setTranslations('de',{
+	'Gate':'Verknüpfung',
 	'destination':'Ziel',
 	'destinationObject':'Zielobjekt',
 	'Open in new window':'In neuem Fenster öffnen',
