@@ -325,7 +325,7 @@ theObject.hasObjectAsync=function(obj,trueCB,falseCB){
 
 
 theObject.createObject=function(type,callback){	
-    return Modules.ObjectManager.createObject(this.id, type, false, false, this.context.socket, false, callback);
+    return Modules.ObjectManager.createObject(this.id, type, false, false, this.context, callback);
 }
 
 theObject.saveUserPaintingData=function(content,callback){
