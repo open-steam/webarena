@@ -171,7 +171,7 @@ GeneralObject.representationCreated = function() {
 
     var intersectMode = false;
 
-    $("body").on("moveObject.wa", function(e) {
+    $("html").on("moveObject.wa", function(e) {
         if (e.objectId !== that.getID()) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
@@ -189,7 +189,8 @@ GeneralObject.representationCreated = function() {
 
     });
 
-    $("body").on("moveend.wa", function(e) {
+    $("html").on("moveend.wa", function(e) {
+    	
         if (e.objectId !== that.getID()) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
@@ -209,8 +210,8 @@ GeneralObject.representationCreated = function() {
     });
 
     ObjectManager.registerRoomChangeCallbacks(function() {
-        $("body").unbind("moveObject.wa");
-        $("body").unbind("moveend.wa");
+        $("html").unbind("moveObject.wa");
+        $("html").unbind("moveend.wa");
     })
 
 }
@@ -1094,7 +1095,7 @@ GeneralObject.moveStart = function(event) {
 			}
 		}
 
-        $("body").trigger({
+        $("html").trigger({
             type: "moveObject.wa",
             objectId: self.id
         });
@@ -1128,7 +1129,7 @@ GeneralObject.moveStart = function(event) {
 
     var end = function(event) {
 	
-        $("body").trigger({
+        $("html").trigger({
             type: "moveend.wa",
             objectId: self.id
         })
