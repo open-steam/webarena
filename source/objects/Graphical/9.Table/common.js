@@ -26,9 +26,27 @@ Table.register = function(type) {
         lastClicked.showFormatDialog(selected);
 
     });
+    
+    this.registerAction('Edit',function(){
+		$.each(ObjectManager.getSelected(), function(key, object) {
+            console.info("Table common.js - register each EDIT");
+			object.execute();
+		});
+	}, true);
+}
+
+Table.execute=function(){
+	console.info("Table common.js -this.input: "+this.input);
+	if(!this.input){
+        console.info("Table common.js - execute editText()"); 
+		this.editText();
+	}
+	
 }
 
 Table.isCreatable = true;
+Table.input = false;
+console.info("table common.js: Table.input ="+Table.input);
 
 Table.decideIfActive = function(object) {
     return true;
