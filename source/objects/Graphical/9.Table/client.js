@@ -83,7 +83,7 @@ Table.showFormatDialog = function(selected) {
 
     var attributesY = that.getAttribute("Row");
     html += '<div id="sortableDiv"><h2>Zeilen:</h2><div class="sortable-inner"><div onclick="Table.insertFirstRow(this);"><span style="font-weight:bold;font-size:1.44em;position:relative;left:-9px;top:5px;">+</span></div>';
-    html += '<ul id="sortable">';
+    html += '<ul id="sortable" style="width:235px">';
     for (var i in attributesY) {
         html += '<li class="ui-state-default"><input class="input-row-column" type="text" value="' + attributesY[i] + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div></li>';
     }
@@ -93,7 +93,7 @@ Table.showFormatDialog = function(selected) {
 
     var attributesX = that.getAttribute("Column");
     html += '<div id="sortable1Div"><h2>Spalten:</h2><div class="sortable-inner"><div onclick="Table.insertFirstColumn(this);"><span style="font-weight:bold;font-size:1.44em;position:relative;left:-9px;top:5px;">+</span></div>';
-    html += '<ul id="sortable1">';
+    html += '<ul id="sortable1" style="width:235px;">';
     for (var j in attributesX) {
         html += '<li class="ui-state-default"><input class="input-row-column" type="text" value="' + attributesX[j] + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div></li>';
     }

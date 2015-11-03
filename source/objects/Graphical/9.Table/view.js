@@ -117,28 +117,42 @@ Table.draw = function(external) {
             $(cell).attr("fill", this.getAttribute('fillcolor'));
             $(cell).attr("stroke", "black");
             $(cell).attr("stroke-width", this.getAttribute('linecolor'));
+
             if (i == 0 && j > 0) {
                 var textcontent = columns[j - 1];
+                var fontSize= 22;
                 var currentTextElement = group.getElementsByTagName("text")[textElementCounter];
                 currentTextElement.textContent = textcontent;
                 //$(currentTextElement).attr('x', cellXPos + 5);
                 //$(currentTextElement).attr('y', cellYPos + 5);
-                $(currentTextElement).attr('font-size', 22);
+                $(currentTextElement).attr('font-size', fontSize);
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
                 var textLength = currentTextElement.getComputedTextLength();
+                while(cellWidth<textLength+10){
+                    fontSize=fontSize-1;
+                    $(currentTextElement).attr('font-size', fontSize);
+                    textLength = currentTextElement.getComputedTextLength();
+                }
                 $(currentTextElement).attr('x', cellXPos + (cellWidth / 2) - (textLength / 2));
                 $(currentTextElement).attr('y', cellYPos + (cellHeight / 2) + 5);
                 textElementCounter++;
 
+
             } else if (i > 0 && j == 0) {
                 var textcontent = rows[i - 1];
+                var fontSize= 22;
                 var currentTextElement = group.getElementsByTagName("text")[textElementCounter];
                 currentTextElement.textContent = textcontent;
-                $(currentTextElement).attr('font-size', 22);
+                $(currentTextElement).attr('font-size', fontSize);
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
                 var textLength = currentTextElement.getComputedTextLength();
+                while(cellWidth<textLength+10){
+                    fontSize=fontSize-1;
+                    $(currentTextElement).attr('font-size', fontSize);
+                    textLength = currentTextElement.getComputedTextLength();
+                }
                 $(currentTextElement).attr('x', cellXPos + (cellWidth / 2) - (textLength / 2));
                 $(currentTextElement).attr('y', cellYPos + (cellHeight / 2) + 5);
 
@@ -178,6 +192,7 @@ Table.createRepresentation = function(parent) {
     return rep;
 
 }
+
 Table.setViewHeight = function(value) {
 
 
@@ -219,7 +234,6 @@ Table.setViewHeight = function(value) {
 
     }
 }
-
 
 Table.setViewWidth = function(value) {
 
@@ -263,4 +277,34 @@ Table.setViewWidth = function(value) {
         table.style.textAlign = this.getAttribute('horizontal-align');
 
     GUI.adjustContent(this);
+}
+
+/**
+ * Called after a double click on the text, enables the inplace editing
+ */
+Table.editText = function() {
+	
+	var rep = this.getRepresentation();
+	console.log("Tabke view.js : function editText");
+//
+//		$(rep).find("foreignObject").show();
+//	
+//		$(rep).find("body").append('<input type="text">');
+//		$(rep).find("body").attr("name", "newContent");
+//		$(rep).find("body").attr("value", this.oldContent);
+//		$(rep).find("body").css("font-size", this.getAttribute('font-size')+"px");
+//		$(rep).find("body").css("font-family", this.getAttribute('font-family')); 
+//		$(rep).find("body").css("color", this.getAttribute('font-color'));
+//		$(rep).find("body").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
+//		$(rep).find("body").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
+//		$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
+//		$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+26);
+//		
+//		$(rep).find("text").hide();
+//		
+//		$(rep).find("input").focus();
+		
+		this.input = true;
+		GUI.input = this.id;
+	
 }

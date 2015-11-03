@@ -210,7 +210,7 @@ CoordinateSystem.draw = function(external) {
     var labelX = this.getAttribute('labelX');
     if (!labelX)
         labelX = '';
-    rep.textX.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + 'bottom' + ';text-align:' + 'right' + '">' + labelX + '</td></tr></table>';
+    rep.textX.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:'+this.calculateLabelXDistance(labelX) +'px;padding-top:'+((this.getAttribute('height')/2)-40) +'px;height:' + this.getAttribute('height') + 'px;'+';text-align:' + 'right' + '">' + labelX + '</td></tr></table>';
     rep.textX.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.textX.style.fontFamily = this.getAttribute('font-family');
     rep.textX.style.color = this.getAttribute('font-color');
@@ -219,10 +219,12 @@ CoordinateSystem.draw = function(external) {
     if (!labelY)
         labelY = '';
 
-    rep.textY.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + labelY + '</td></tr></table>';
+    rep.textY.innerHTML = '<table style="width:100%;"><tr><td style="padding-top:40px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + labelY + '</td></tr></table>';
     rep.textY.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.textY.style.fontFamily = this.getAttribute('font-family');
     rep.textY.style.color = this.getAttribute('font-color');
+    
+    
 
 }
 
@@ -243,6 +245,8 @@ CoordinateSystem.createRepresentation = function(parent) {
     rep.rect = rect;
 
     this.initGUI(rep);
+    this.setAttribute("height",330);
+    this.setAttribute("width",330);
     return rep;
 
 }
@@ -504,4 +508,12 @@ CoordinateSystem.setViewHeight = function(value) {
         table.style.textAlign = this.getAttribute('horizontal-align');
 
     GUI.adjustContent(this);
+}
+
+CoordinateSystem.calculateLabelXDistance = function(labelX) {
+ var numberOfChars = labelX.length;
+ 
+      return (this.getAttribute('width')-(numberOfChars*12)-30);
+  
+    
 }

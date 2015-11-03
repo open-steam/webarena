@@ -21,6 +21,7 @@ CoordinateSystem.register = function(type) {
     this.registerAttribute('linestyleY', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
 
 
+    
     this.registerAttribute('minX', {type: 'number', standard: 1, category: 'Scale2'});
     this.registerAttribute('maxX', {type: 'number', standard: 5, category: 'Scale2'});
 
@@ -41,6 +42,7 @@ CoordinateSystem.register = function(type) {
     
     this.standardData.fillcolor = 'white';
     this.standardData.linecolor = 'black';
+
 
 }
 

@@ -170,7 +170,7 @@ TimeLine.draw = function(external) {
     }
 
     //Setze die Pfeilspitze
-    var markerId = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
+    var markerId = GUI.getSvgMarkerId("arrow", "black", true);
     $(line).attr("marker-end", "url(#" + markerId + ")");
 
 
@@ -197,6 +197,11 @@ TimeLine.createRepresentation = function(parent) {
     rep.rect = rect;
 
     this.initGUI(rep);
+    if(this.getAttribute("height")===100){
+          this.setAttribute("height",120);
+    this.setAttribute("width",250);  
+    }
+
     return rep;
 }
 
