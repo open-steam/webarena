@@ -105,7 +105,7 @@ Dispatcher.registerCall('undo', function(socket, data, responseID) {
 
 Dispatcher.registerCall('duplicateObjects', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
-    Modules.ObjectManager.duplicateNew(data, context, resultCallbackWrapper(socket, responseID));
+    Modules.ObjectManager.duplicate(data, context, resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('serverCall', function(socket, data, responseID) {

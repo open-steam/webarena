@@ -81,7 +81,7 @@ RoomController.duplicateRoom = function (data, context, callback) {
         fromRoom: roomID,
         toRoom: newRoomID
     };
-    Modules.ObjectManager.duplicateNew(requestData, context, callback);
+    Modules.ObjectManager.duplicate(requestData, context, callback);
 }
 
 

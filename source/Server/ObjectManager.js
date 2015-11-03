@@ -520,6 +520,11 @@ var mayReadMultiple = function(fromRoom, files, context, cb) {
 
 
 /**
+ *
+ * Duplicates a number of object (generally called by the client)
+ *
+ * complicated stuff is done here. For serverside programming refer to copy and move functions
+ *
  * 1. Get specified objects (or all of room)
  * 2. Get related objects
  * 3. Copy objects to target room /recursive
@@ -528,7 +533,7 @@ var mayReadMultiple = function(fromRoom, files, context, cb) {
  * 4. Change destinations
  * 5. Update object link targets
  */
-ObjectManager.duplicateNew = function(data, context, cbo) {
+ObjectManager.duplicate = function(data, context, cbo) {
     var cut = data.cut;
 
     var attributes = data.attributes || {};
