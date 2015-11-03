@@ -518,6 +518,33 @@ var mayReadMultiple = function(fromRoom, files, context, cb) {
     });
 }
 
+/**
+* callback (error,newObject);
+*/
+ObjectManager.moveObject=function(object, destination, context, callback,copy){
+	
+	var roomID=object.inRoom;
+	var toRoom=destination;
+	var objectID=object.id;
+	
+	Modules.Connector.moveObject(roomID,toRoom, objectID, context, function(error,newID,oldID){
+		var newObject=ObjectManager.getObject(destination,newID,context);
+		
+		if (!copy){
+			object.updateClients('objectDelete');
+			//object.inRoom=toRoom;
+			//object.set('inRoom',toRoom);
+		}
+		newObject.updateClients('objectUpdate');
+
+		if (callback) callback(false,newObject);
+	},copy);
+}
+
+ObjectManager.copyObject=function(object, destination, context, callback){
+	this.moveObject(object, destination, context, callback, true);
+}
+
 
 /**
  *

@@ -666,25 +666,34 @@ fileConnector.createObject=function(roomID,type,data, context, callback){
 
 
 /**
-*	duplicateObject
+*	moveObject
 *
-*	duplicate an object on the persistence layer
+*	move an object on the persistence layer
 *
-*	to direcly work on the new object, specify an after function
+*	to direcly work on the new object, specify a callback function
 *
-*	after(objectID)
+*	callback(error,newObjectID, oldObjectID)
 *
 */
-fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callback){
+fileConnector.moveObject=function(roomID,toRoom, objectID, context,  callback, copy){
 
-	this.Modules.Log.debug("Duplicate object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', toRoom: '"+toRoom+"')");
+	this.Modules.Log.debug("Move object (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"', toRoom: '"+toRoom+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var self = this;
-
-	var uuid = require('node-uuid');
-	var newObjectID = uuid.v4();
+	
+	if (copy) {
+		var uuid = require('node-uuid');
+		var newObjectID = uuid.v4();
+	} else {
+		var newObjectID = objectID;
+	}
+	
+	if (roomID==toRoom && objectID==newObjectID){
+		//stop here if we move the object to itself
+		return callback(false,objectID,objectID);
+	}
 	
 	var filebase=this.Modules.Config.filebase;
 	
@@ -700,28 +709,22 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 
 	var fs = require("fs");
 	
-	var copyFunc = function(source, dest, callback) {
+	var moveFunc = function(source, dest, callback) {
 		
 		var content=fs.readFileSync(source);
 		fs.writeFileSync(dest, content);
-		callback();
+		if (!copy) fs.unlinkSync(source);
 		
-		/*
-		var read = fs.createReadStream(source);
-		var write = fs.createWriteStream(dest);
-
-		read.on("end", callback);
-		read.pipe(write);
-		*/
+		callback();
 	}
 	
-	/* callback function after duplicating files */
+	/* callback function after moving files */
 	var cb = function() {
 		if (callback) callback(null, newObjectID, objectID);
 	}
 	
 	/* copy object data */
-	copyFunc(objectFilename, objectFilenameNew, function() {
+	moveFunc(objectFilename, objectFilenameNew, function() {
 		/* object data copied */
 
 		var path = require('path');
@@ -730,13 +733,13 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 		if (fs.existsSync(contentFilename)) {
 
 			/* copy content */
-			copyFunc(contentFilename, contentFilenameNew, function() {
+			moveFunc(contentFilename, contentFilenameNew, function() {
 				/* object content copied */
 
 				/* check if preview exists */
 				if (fs.existsSync(previewFilename)) {
 					/* copy preview */
-					copyFunc(previewFilename, previewFilenameNew, function() {
+					moveFunc(previewFilename, previewFilenameNew, function() {
 						/* object preview copied */
 						cb();
 						return true;
@@ -752,6 +755,23 @@ fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callba
 		}
 	});
 
+}
+
+
+
+/**
+*	duplicateObject
+*
+*	duplicate an object on the persistence layer
+*
+*	to direcly work on the new object, specify an after function
+*
+*	callback(error,newObjectID,oldObjectID);
+*
+*/
+fileConnector.duplicateObject=function(roomID,toRoom, objectID, context,  callback){
+
+	this.moveObject(roomID,toRoom,objectID,context,callback,true);
 }
 
 

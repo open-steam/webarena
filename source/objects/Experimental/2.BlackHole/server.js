@@ -44,7 +44,10 @@ theObject.onDrop=function(droppedID){
 			}
 			
 			var moveToEndPoint=function(endPoint){
-				console.log('moving '+droppedObject+' to '+ endPoint);
+				droppedObject.moveToRoom(endPoint.inRoom,function(error,newObject){
+					newObject.setAttribute('x',endPoint.getAttribute('x'));
+					newObject.setAttribute('y',endPoint.getAttribute('y'));
+				});
 			}
 			
 			//create a new EndPoint if none was found
