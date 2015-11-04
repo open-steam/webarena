@@ -34,7 +34,7 @@ Discussion.register=function(type){
 
             return true;
 
-        }, mobile: false
+        }
 	});
 	
 	this.registerAttribute("embedded-height",{type: 'number', min: 5, standard: 500, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
@@ -45,7 +45,7 @@ Discussion.register=function(type){
 
             return true;
 
-        }, mobile: false
+        }
 	});
 	
 	this.registerAttribute('name', {

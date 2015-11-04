@@ -20,7 +20,7 @@ WAFile.register=function(type){
 		object.updateIcon(); 
 	}, checkFunction: function(object, value) {
 		//if (object.getAttribute("preview")) return "icon size not changeable when preview is shown";
-	}, mobile: false});
+	}});
 
 	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
 
@@ -46,7 +46,7 @@ WAFile.register=function(type){
 			return "this file is not previewable";
 		}
 		
-	}, mobile: false});
+	}});
     */
 	
      this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
@@ -68,8 +68,7 @@ WAFile.register=function(type){
             }
             //}
             return object.get('width');
-        },
-        mobile: false});
+        }});
 
     this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
@@ -91,10 +90,7 @@ WAFile.register=function(type){
             //}
             return object.get('height');
         }
-        , mobile: false});
-   
-	
-	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
+        });
 	
 	this.registerAttribute('CloudConnection', {type:'list', hidden: true, standard: ["", "", "", ""]});
 	
@@ -253,8 +249,6 @@ WAFile.isResizable=function(){
 
 WAFile.register('File');
 WAFile.isCreatable=true;
-WAFile.isCreatableOnMobile = true;
-WAFile.onMobile = true;
 
 WAFile.moveByTransform = function(){return true;};
 

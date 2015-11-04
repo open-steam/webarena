@@ -22,6 +22,5 @@ BlackHole.execute=function(){
 
 
 BlackHole.isCreatable=true;
-BlackHole.onMobile = false;
 
 module.exports=BlackHole;

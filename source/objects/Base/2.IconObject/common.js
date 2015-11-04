@@ -11,8 +11,6 @@ var IconObject=Object.create(Modules.ObjectManager.getPrototype('GeneralObject')
 
 IconObject.isCreatable=false;
 
-IconObject.onMobile = true;
-IconObject.hasMobileRep = true;
 
 IconObject.category='Objects';
 
@@ -23,11 +21,10 @@ IconObject.register=function(type){
 	GeneralObject.register.call(this,type); //super call
 	
 	this.attributeManager.registerAttribute('layer',{hidden: true});
-	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { if(object) {object.updateIcon();} }, mobile: false});
+	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { if(object) {object.updateIcon();} }});
 	this.registerAttribute('width',{hidden:true});
 	this.registerAttribute('height',{hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});
-	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
 	this.unregisterAction('to back');
@@ -48,8 +45,8 @@ IconObject.register=function(type){
             } else {
                 return "32";
             }
-        },
-        mobile: false});
+          }
+        });
 
     this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
@@ -66,7 +63,7 @@ IconObject.register=function(type){
             } else {
                 return "32";
             }
-        }, mobile: false});
+        }});
 
 	
 }

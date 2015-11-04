@@ -30,8 +30,7 @@ SimpleText.register=function(type){
 	this.attributeManager.registerAttribute('height',{hidden:true});
 	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
 
-    this.registerAttribute('rotation', {type:'number', category: 'Dimensions', mobile: false});
-	this.registerAttribute('onMobile', {type:'boolean', standard:false, category:'Basic', mobile: false});
+    this.registerAttribute('rotation', {type:'number', category: 'Dimensions'});
 	
 	this.registerAction('Edit',function(){
 		$.each(ObjectManager.getSelected(), function(key, object) {
@@ -67,11 +66,8 @@ SimpleText.intelligentRename=function(newValue){
 
 SimpleText.register('SimpleText');
 SimpleText.isCreatable=true;
-SimpleText.onMobile = true;
 SimpleText.input = false;
-SimpleText.isCreatableOnMobile = true;
-//SimpleText.hasMobileRep = true;
-SimpleText.hasEditableMobileContent = true;
+
 SimpleText.contentURLOnly = false; //content is only accessible via URL
 
 SimpleText.content='Neuer Text';

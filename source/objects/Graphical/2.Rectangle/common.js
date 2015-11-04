@@ -31,7 +31,6 @@ Rectangle.execute=function(){
 
 Rectangle.register('Rectangle');
 Rectangle.isCreatable=true;
-Rectangle.onMobile = true;
 Rectangle.input = false;
 
 Rectangle.moveByTransform = function(){return true;}

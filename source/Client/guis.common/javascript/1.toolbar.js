@@ -560,33 +560,6 @@ GUI.initToolbar = function() {
 
     }
 
-
-    /* add etherpad toggle */
-    if (!Modules.Config.presentationMode && Modules.config.collaborativeEditor) {
-
-        var padButton = document.createElement("img");
-        $(padButton).attr("src", "../../guis.common/images/etherpad.png").attr("alt", "");
-        $(padButton).attr("width", "24").attr("height", "24");
-
-        $(padButton).attr("id", "pad_button");
-        $(padButton).addClass("sidebar_button header_tab");
-
-        $(padButton).attr("title", GUI.translate("Description"));
-
-        var click = function() {
-            GUI.sidebar.openPage("pad", padButton);
-        }
-
-        if (GUI.isTouchDevice) {
-            $(padButton).bind("touchstart", click);
-        } else {
-            $(padButton).bind("mousedown", click);
-        }
-
-        $("#header > .header_tabs_sidebar").append(padButton);
-
-    }
-
 	
 	/* add trashbasket toggle */
     if (!Modules.Config.presentationMode && Modules.config.trash) {

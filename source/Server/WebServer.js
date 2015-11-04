@@ -15,8 +15,6 @@ var mime = require('mime');
 mime.default_type = 'text/plain';
 var Q = require('q');
 
-WebServer.guiType = 'desktop';
-
 /*
  *	init
  *
@@ -39,22 +37,15 @@ WebServer.init = function (theModules) {
 		var url = req.url.replace('%20', ' ');
 		var agent = req.headers['user-agent'];
 
-		/*
+
 		if (!Modules.config.debugMode && agent && agent.indexOf('Trident') > 0) {
 			res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
 			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
 			res.end(data);
 			return;
 		}
-		*/
+	
 		
-		/* Check if the client is on a mobile phone or not. */
-		if (agent && (agent.indexOf('iPhone') > 0 || (agent.indexOf('Android') > 0 && agent.indexOf('Mobile') > 0))) {
-			WebServer.guiType = 'mobilephone';
-		} else {
-			WebServer.guiType = 'desktop';
-		}
-
 		/* get userHash */
 		var userHashIndex = url.indexOf("/___");
 		if (userHashIndex > -1) {
@@ -81,13 +72,7 @@ WebServer.init = function (theModules) {
 
 				var roomId = url.substr(6);
 
-				/* Get the most suitable index file in dependency to the given gui type. */
-				var indexFilename = '';
-				if (WebServer.guiType == 'mobilephone') {
-					indexFilename = '/../Client/guis/mobilephone/index.html';
-				} else {
-					indexFilename = '/../Client/guis/desktop/index.html';
-				}
+				var indexFilename = '/../Client/guis/desktop/index.html';
 
 				fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
 
@@ -129,40 +114,7 @@ WebServer.init = function (theModules) {
 			});
 		
 			return;
-			/*
-            var roomId = url.substr(21);
 
-            var hierarchy = Modules.Connector.getRoomHierarchy(roomId, false, function(hierarchy) {
-                var result = [];
-
-                if (roomId === "") {
-                    for (var key in hierarchy.roots) {
-                        var node = {};
-                        node.data = hierarchy.rooms[hierarchy.roots[key]];
-                        node.attr = { "id" : hierarchy.roots[key] };
-                        if (hierarchy.relation[hierarchy.roots[key]] != undefined) {
-                            node.state = "closed";
-                        }
-                        result.push(node);
-                    }
-                } else {
-                    for (var key in hierarchy.relation[roomId]) {
-                        var node = {};
-                        node.data = hierarchy.rooms[hierarchy.relation[roomId][key]];
-                        node.attr = { "id" : hierarchy.relation[roomId][key]};
-                        if (hierarchy.relation[hierarchy.relation[roomId][key]] != undefined) {
-                            node.state = "closed";
-                        }
-                        result.push(node);
-                    }
-                }
-
-                res.writeHead(200, {'Content-Type': "application/json"});
-                res.end(JSON.stringify(result));
-            });
-
-            return;
-			*/
         }
 
 

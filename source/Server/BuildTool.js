@@ -61,13 +61,7 @@ ObjectManager.clientErrorMessage(data,function(){});}";
 		var filebase = __dirname + '/../objects/' + category + '/' + filename;
 		that.addToClientCode(filebase + '/common.js');
 		that.addToClientCode(filebase + '/client.js');
-		
-		/* Objects which has a mobile representation must have a file named mobileView.js. */
-		if (Modules.WebServer.guiType == "desktop") {
-			that.addToClientCode(filebase + '/view.js');
-		} else {
-			that.addToClientCode(filebase + '/mobileView.js');
-		}
+		that.addToClientCode(filebase + '/view.js');
 		
 		that.clientCode += enter + temp + '.register("' + objName + '");' + enter + enter;
 		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;

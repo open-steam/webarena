@@ -29,12 +29,7 @@ GUI.loadGUI = function(step) {
 	if (!GUI.username) {
 		
 		/* setup svg area */
-		if (GUI.guiType == 'mobilephone') {
-			Canvas.init();
-		} else {
-			//build svg area using div #content //needs: nothing
-			GUI.initSVG();
-		}
+		GUI.initSVG();
 		
 		GUI.showLogin();
 		return;
@@ -43,12 +38,11 @@ GUI.loadGUI = function(step) {
 	if (step == undefined || step == 1) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
-		if (GUI.guiType == 'desktop') {
-			if (!GUI.loaded) GUI.chat.init();
-			GUI.chat.clear(); //clear chats messages
-		
-			if (!GUI.loaded) GUI.sidebar.init(); //init sidebar
-		}
+		if (!GUI.loaded) GUI.chat.init();
+		GUI.chat.clear(); //clear chats messages
+	
+		if (!GUI.loaded) GUI.sidebar.init(); //init sidebar
+
 
 		/* login to server */
 		ObjectManager.login(GUI.username, GUI.password, GUI.externalSession);
@@ -70,52 +64,40 @@ GUI.loadGUI = function(step) {
 
 		
 		GUI.startNoAnimationTimer(); //timer to prevent "flying" objects when getting the new list of objects for the room
-		
 
-		if (GUI.guiType == 'desktop') {
-			if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
-		
-			/* key handling */
-			if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
-			if (!GUI.loaded) GUI.initUndoByKeyboard();
-		
-			if (!GUI.loaded) GUI.initCursorDeletionByKeyboard(); //handle Escape-Key events, currently only deletion of cursors which represents objects
-		
-			if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
+		if (!GUI.loaded) GUI.initInspectorAttributeUpdate(); //init updating of attributes in inspector
+	
+		/* key handling */
+		if (!GUI.loaded) GUI.initObjectDeletionByKeyboard(); //handle delete key events to delete selected objects //needs: ObjectManager.getSelected on keydown
+		if (!GUI.loaded) GUI.initUndoByKeyboard();
+	
+		if (!GUI.loaded) GUI.initCursorDeletionByKeyboard(); //handle Escape-Key events, currently only deletion of cursors which represents objects
+	
+		if (!GUI.loaded) GUI.initShiftKeyHandling(); //handle shift key events //needs: nothing
 
-			if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown		
-		
-			if (!GUI.loaded) GUI.initReturnKeyHandler(); //handle return key events to save changes during the inplace editing
-		
-			if (!GUI.loaded) GUI.initObjectCopyCutPasteHandlingByKeyboard(); //handle ctrl+c, ctrl+x, ctrl+v for copy, cut and paste objects //needs: ObjectManager.cutObjects, ObjectManager.copyObjects, ObjectManager.pasteObjets, ObjectManager.getSelected on keydown
-		}
+		if (!GUI.loaded) GUI.initMoveByKeyboard(); //handle arrow key events to move objects //needs: ObjectManager.getSelected on keydown		
+	
+		if (!GUI.loaded) GUI.initReturnKeyHandler(); //handle return key events to save changes during the inplace editing
+	
+		if (!GUI.loaded) GUI.initObjectCopyCutPasteHandlingByKeyboard(); //handle ctrl+c, ctrl+x, ctrl+v for copy, cut and paste objects //needs: ObjectManager.cutObjects, ObjectManager.copyObjects, ObjectManager.pasteObjets, ObjectManager.getSelected on keydown
+	
 		
 		/* toolbar */
 		if (!GUI.loaded) {
 			//needs: ObjectManager
-			if (GUI.guiType == 'mobilephone') {
-				Toolbar.init();
-			} else {
-				GUI.initToolbar();
-			}
+			GUI.initToolbar();
 		}
 		
-		if (GUI.guiType == 'desktop') {
-			/* adjust svg area */
-			GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
 
-			/* window resizing */
-			if (!GUI.loaded) GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
+		/* adjust svg area */
+		GUI.adjustContent(); //first scaling of svg area (>= viewport) //needs: ObjectManager.getCurrentRoom
 
-			/* inspector */
-			if (!GUI.loaded) GUI.setupInspector(); //add inspector buttons, ...
-		}
-		
-		if (GUI.guiType == 'mobilephone') {
-			/* create object list for mobile view */
-			if (!GUI.loaded) ObjectList.init();	// create a categorized list of objects in the current room
-		}
+		/* window resizing */
+		if (!GUI.loaded) GUI.initResizeHandler(); //scale up room if it's too small //needs: ObjectManager.getCurrentRoom on document resize
 
+		/* inspector */
+		if (!GUI.loaded) GUI.setupInspector(); //add inspector buttons, ...
+	
 		window.setTimeout(function() {
 			GUI.loadGUI(4);
 		}, 200);
@@ -124,9 +106,7 @@ GUI.loadGUI = function(step) {
 		
 		GUI.progressBarManager.updateProgress("login", 80, GUI.translate('rendering objects'));
 		
-		if (GUI.guiType == 'desktop') {
-			if (!GUI.loaded) GUI.initMouseHandler();
-		}
+		if (!GUI.loaded) GUI.initMouseHandler();
 		
 		window.setTimeout(function() {
 			GUI.loadGUI(5);
@@ -135,20 +115,19 @@ GUI.loadGUI = function(step) {
 	} else if (step == 5) {
 		
 		GUI.progressBarManager.updateProgress("login", 90, GUI.translate('aligning objects'));
-		if (GUI.guiType == 'desktop') {
-			GUI.updateLayers(); //update z-order by layer-attribute
-			GUI.updateInspector();
-			GUI.trashbasket.update();
-		}
+
+		GUI.updateLayers(); //update z-order by layer-attribute
+		GUI.updateInspector();
+		GUI.trashbasket.update();
+
 		
 		GUI.loaded = true;
 		GUI.hideLogin();
 		WebRTCManager.init();
 		
-		if (GUI.guiType == 'desktop') {
-			ObjectManager.paintingUpdate();
-			GUI.drawAllLinks(); //draw all existing links in the new room
-		}
+		ObjectManager.paintingUpdate();
+		GUI.drawAllLinks(); //draw all existing links in the new room
+
 	
 	} else {
 		console.error("unknown load step");

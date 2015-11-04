@@ -65,10 +65,6 @@ GUI.userMarker = {
 	 * @param {String} data.title The title of the marker (e.g. the username)
 	 */
 	"select" : function(data) {
-		// We do not want user markers on mobile gui.
-		if (GUI.guiType == "mobilephone") {
-			return;
-		}
 		
 		if (GUI.userMarker.markers[data.objectId] && GUI.userMarker.markers[data.objectId]["markers"][data.identifier]) {
 			$(GUI.userMarker.markers[data.objectId]["markers"][data.identifier]).remove();

@@ -86,16 +86,5 @@ module.exports={
 		connector:require('./Server/connectors/WebDavConnector.js'), // The chosen connector
 		*/
 		
-		//configuration of etherpad (cooperative writing)
-		etherpadlite : {
-			apikey: "", //can be found in the APIKEY.txt in the etherpad folder
-			host: "localhost",
-			port: 9001,
-        
-			// Right now just for Windows
-			startFilePath: "path\\to\\etherpad_folder", //for example C:\\Program Files\\etherpad\\etherpad-lite-develop
-			startFile: "start.bat"
-		},
-		
 	}
 };
