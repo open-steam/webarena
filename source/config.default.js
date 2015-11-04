@@ -15,45 +15,31 @@ module.exports={
 // Appearance
 	
 	homepage: '/index.html', // The page that is shown when the server is called in a browsers
-	
 	projectTitle:'WebArena Development', // The WebArena title
-	
 	language:'de',	// The client language 
-	
 	presentationMode:false, // If set to true, no new objects can be created and the sidebar is hidden
-	
 	showSidebarbydefault:true, // Toggle the inital state of the sidebar
 	
 // Object handling
 	
 	enabledCategories: ['graphical','texts','collaboration','connections','content'],
-	
 	objectBlacklist: ['HtmlTest','CollText'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
 	
 // Functional restrictions
 	
 	couplingMode:true,
-	
 	collaborativeEditor:false, //sidebar
-	
 	paintMode:true,
-	
 	chat:true,
-	
 	bugReport:true,
-	
 	WebRTC: false,
-	
 	trash: true,
-	
 	cloud: false,
-	
 	recentChanges: true,
 	
 // Development
 	
 	debugMode: false,
-	
 	logLevels : {
 			"warn" : true,
 			"debug" : false,
@@ -63,7 +49,6 @@ module.exports={
 // Upload settings
 	
 	maxFilesizeInMB:10,
-	
 	imageUpload: {
 			maxDimensions: 400
 	},
@@ -72,10 +57,9 @@ module.exports={
 	
 	server: { 
 		
-	// Server only configuration
+		// Server only configuration
 		// the following values are not sent to the client.
 		
-		// http server configuration
 		port: 8080,     // HTTP Port for server
 		
 		// Connector configuration.

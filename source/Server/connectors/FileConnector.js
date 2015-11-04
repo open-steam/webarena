@@ -1,7 +1,7 @@
 /**
 *    Webarena - A web application for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
+*    @author Felix Winkelnkemper, University of Paderborn, 2015
 *
 */
 
@@ -183,12 +183,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 	});
 
-	if (callback === undefined) {
-		/* sync */
-		console.log('>>>> Synchronous return on getInventory (fileConnector)');
-		console.trace();
-		return inventory;
-	} else {
+	if (callback) {
 		/* async */
 		process.nextTick(function(){callback(inventory);});
 	}
@@ -231,11 +226,7 @@ fileConnector.getRoomData=function(roomID,context,oldRoomId,callback){
 		return self.getRoomData(roomID,context,oldRoomId,callback);
 		
 	} else {
-    	if (callback === undefined) {
-			/* sync */
-			console.log('>>>> Synchronous return on getRoomData (fileConnector)');
-			return obj;
-		} else {
+    	if (callback) {
 			/* async */
 			process.nextTick(function(){callback(obj);});
 		}
@@ -305,7 +296,6 @@ fileConnector.getRoomHierarchy=function(roomID,context,callback){
 *
 *
 */
-//TODO: async
 fileConnector.saveObjectData=function(roomID,objectID,data,context,createIfNotExists, callback){
 	this.Modules.Log.debug("Save object data (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 
@@ -320,8 +310,6 @@ fileConnector.saveObjectData=function(roomID,objectID,data,context,createIfNotEx
 	
 	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
 	data=JSON.stringify(data);
-	
-	//TODO Change to asynchronous access
 	
 	if (!createIfNotExists){
 		if (!fs.existsSync(filename)){
@@ -489,12 +477,7 @@ fileConnector.getPaintings=function(roomID,context,callback){
 		paintings.push(user);
     });
 
-	if (callback === undefined) {
-		/* sync */
-		console.log('>>>> Synchronous return on getPaintings (fileConnector)');
-		console.trace();
-		return paintings;
-	} else {
+	if (callback !== undefined) {
 		/* async */
 		process.nextTick(function(){callback(paintings);});
 	}
@@ -551,24 +534,14 @@ fileConnector.getContent=function(roomID,objectID,context,callback){
 			
 		}
 
-		if (callback == undefined) {
-			//sync
-			console.log('>>>> Synchronous return on getContent (fileConnector)');
-			console.trace();
-			return byteArray;
-		} else {
+		if (callback) {
 			//async
 			process.nextTick(function(){callback(byteArray);});
 		}
 		
 	} catch (e) {
 		this.Modules.Log.debug("Could not read content from file (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-		if (callback == undefined) {
-			//sync
-			console.log('>>>> Synchronous return on getContent (fileConnector)');
-			console.trace();
-			return false;
-		} else {
+		if (callback) {
 			//async
 			process.nextTick(function(){callback(false);});
 		}

@@ -11,7 +11,6 @@
 var fs = require('fs');
 var _ = require('lodash');
 var async = require("async");
-var Q = require("q");
 
 var Modules = false;
 var ObjectManager = {};
@@ -20,8 +19,6 @@ var prototypes = {};
 
 ObjectManager.isServer = true;
 ObjectManager.history = require("./HistoryTracker.js").HistoryTracker(100);
-
-var enter = String.fromCharCode(10);
 
 ObjectManager.toString = function() {
     return 'ObjectManager (server)';
@@ -43,14 +40,10 @@ ObjectManager.registerType = function(type, constr) {
  *  deletes an object and informs clients about the deletion
  */
 ObjectManager.remove = function(obj) {
-
-    //Send remove to connector
-
+	
     Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
-
-    //Inform clients about remove.
     obj.updateClients('objectDelete');
-
+    
 }
 
 /**
@@ -61,6 +54,9 @@ ObjectManager.remove = function(obj) {
 ObjectManager.getPrototype = function(objType) {
     if (prototypes[objType])
         return prototypes[objType];
+        
+    // fallback. Return the GeneralObject protoype instead    
+        
     if (prototypes['GeneralObject'])
         return prototypes['GeneralObject'];
     return;
@@ -80,6 +76,8 @@ ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
  *  of this is, that you cannot add properties to the object! If you
  *  want to save runtime data, use the runtimeData property.
  *
+ *  (internal)
+ *
  */
 function buildObjectFromObjectData(objectData, roomID, type) {
 
@@ -89,16 +87,18 @@ function buildObjectFromObjectData(objectData, roomID, type) {
 
     var type = type || objectData.type;
 
-    //get the object's prototype
+    // get the object's prototype
 
     var proto = ObjectManager.getPrototypeFor(type);
 
-    //build a new object
+    // build a new object
 
     var obj = Object.create(proto);
     obj.init(objectData.id);
 
-    //set the object's attributes and rights
+    // set the object's attributes and rights
+    // as well as the object type and its room
+    // attributes
     obj.setAll(objectData.attributes);
     obj.rights = objectData.rights;
     obj.id = objectData.id;
@@ -106,10 +106,18 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     obj.inRoom = roomID;
     obj.set('type', type);
 
+    // runtimeData is an array that containts variables
+    // an object gets in server side programs which should be
+    // available on every instance of the object
+    // but are not persisted, so here the runtime data is restored
+    // for the new object
+    
     if (!runtimeData[obj.id])
         runtimeData[obj.id] = {}; //create runtime data for this object if there is none
 
     obj.runtimeData = runtimeData[obj.id];
+
+	// if the object has an afterCreation function, it is called here
 
     if (typeof obj.afterCreation == "function") {
         obj.afterCreation();
