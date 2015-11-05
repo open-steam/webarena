@@ -111,8 +111,7 @@ fileConnector.isLoggedIn=function(context) {
 /* RIGHTS */
 
 fileConnector.mayWrite=function(roomID,objectID,connection,callback) {
-	console.log('calling mayWrite');
-	callback(null, false);
+	callback(null, true);
 }
 
 fileConnector.mayRead=function(roomID,objectID,connection,callback) {
