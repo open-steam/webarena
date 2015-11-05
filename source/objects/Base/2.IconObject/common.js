@@ -27,8 +27,7 @@ IconObject.register=function(type){
 	this.registerAttribute('fillcolor',{hidden:true});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
-	this.unregisterAction('to back');
-	this.unregisterAction('to front');
+
         
         this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
@@ -78,7 +77,7 @@ IconObject.input = false;
 
 IconObject.moveByTransform = function(){return true;};
 
-IconObject.alwaysOnTop = function() {return true;};
+IconObject.alwaysOnTop = true;
 
 IconObject.register('IconObject');
 

@@ -30,13 +30,6 @@ Textarea.register=function(type){
 	this.standardData.linecolor='rgb(0,0,0)';
     this.standardData.width=250;
     this.standardData.height=100;
-
-	
-	this.registerAction('Edit',function(){
-		$.each(ObjectManager.getSelected(), function(key, object) {
-			object.execute();
-		});
-	}, true);
 	
 }
 

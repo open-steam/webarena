@@ -1,3 +1,13 @@
+Gate.clientRegister=function(){
+	
+	Gate.parent.clientRegister.call(this);
+	
+	this.registerAction('Follow',function(object){
+		object.execute();
+	},true);
+}
+
+
 Gate.follow = function(openMethod) {
 
     var destination = this.getAttribute('destination');

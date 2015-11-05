@@ -5,6 +5,8 @@
  *
  */
 
+Rectangle.moveByTransform = function(){return true;}
+
 Rectangle.draw = function(external) {
     var rep = this.getRepresentation();
 

@@ -55,15 +55,7 @@ Discussion.register=function(type){
         }
 	})
 	
-	this.registerAction('open/close',function(){
-	
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected){
-			var obj = selected[i];
-			obj.switchState();
-		}
-	});
+
 
 }
 

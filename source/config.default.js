@@ -23,7 +23,7 @@ module.exports={
 // Object handling
 	
 	enabledCategories: ['graphical','texts','collaboration','connections','content'],
-	objectBlacklist: ['HtmlTest','CollText'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
+	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
 	
 // Functional restrictions
 	

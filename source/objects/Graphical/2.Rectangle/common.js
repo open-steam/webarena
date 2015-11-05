@@ -33,6 +33,4 @@ Rectangle.register('Rectangle');
 Rectangle.isCreatable=true;
 Rectangle.input = false;
 
-Rectangle.moveByTransform = function(){return true;}
-
 module.exports=Rectangle;

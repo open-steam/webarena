@@ -18,60 +18,6 @@ ImageObject.register=function(type){
 	
 	this.registerAttribute('mimeType',{type:'text',standard:'image/png',readonly:true});
 
-	this.registerAction(this.translate(this.currentLanguage, "Upload"),function(){
-		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
-			obj.upload();
-			
-		}
-		
-	},true, function() {
-		return (ObjectManager.getSelected()[0].hasContent() === false);
-	});
-	
-	this.registerAction(this.translate(this.currentLanguage, "Change"),function(){
-		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
-			obj.upload();
-			
-		}
-		
-	},true, function() {
-		return (ObjectManager.getSelected()[0].hasContent() === true);
-	});
-	
-	
-	this.registerAction(this.translate(this.currentLanguage, "Download"),function(){
-		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
-			obj.downloadImage();
-			
-		}
-		
-	},true, function() {
-		
-		var selected = ObjectManager.getSelected();
-		
-		for (var i in selected) {
-			var obj = selected[i];
-			
-			return (obj.hasContent() == true);
-			
-		}
-		
-	});
 	
 }
 
@@ -96,7 +42,5 @@ ImageObject.isResizable=function(){
 
 ImageObject.register('ImageObject');
 ImageObject.isCreatable=true;
-
-ImageObject.moveByTransform = function(){return true;};
 
 module.exports=ImageObject;

@@ -13,6 +13,335 @@ GeneralObject.contentFetched = false;
 GeneralObject.hasContent = false;
 GeneralObject.normalOpacity = 1;
 
+GeneralObject.clientRegister = function (){
+	
+	// ActionManager: handles actions that can be executed on the object
+    
+    this.currentLanguage = Modules.Config.language; // The currrent language
+    
+    this.actionManager = Object.create(Modules.ActionManager);
+    this.actionManager.init(this);
+    
+    this.translationManager = Object.create(Modules.TranslationManager);
+    this.translationManager.init(this);
+
+	    this.registerAction('Delete', function() {
+
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            var object = selected[i];
+
+            object.deleteIt();
+
+        }
+
+    }, false);
+
+    this.registerAction('Duplicate', function() {
+
+        ObjectManager.duplicateObjects(ObjectManager.getSelected());
+
+    }, false);
+
+    this.registerAction('Copy', function() {
+
+        ObjectManager.copyObjects(ObjectManager.getSelected());
+
+    }, false);
+
+    this.registerAction('Cut', function() {
+
+        ObjectManager.cutObjects(ObjectManager.getSelected());
+
+    }, false);
+
+    this.registerAction(
+            'Link',
+            function(lastClicked) {
+
+                var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
+
+                GUI.showLinkPropertyDialog(lastClicked, lastClicked, linkProperties, true);
+
+            },
+            false,
+            function() {
+                return (ObjectManager.getSelected().length > 1)
+            }
+    );
+
+
+    this.registerAction('Group', function() {
+
+        var selected = ObjectManager.getSelected();
+
+        var date = new Date();
+        var groupID = date.getTime();
+
+        for (var i in selected) {
+            var obj = selected[i];
+
+            obj.setAttribute("group", groupID);
+
+        }
+
+    }, false, function() {
+
+        var selected = ObjectManager.getSelected();
+
+        /* only one object --> no group */
+        if (selected.length == 1)
+            return false;
+
+        /* prevent creating a group if all objects are in the same group */
+        var group = undefined;
+
+        for (var i in selected) {
+            var obj = selected[i];
+
+            if (group == undefined) {
+                group = obj.getAttribute("group");
+            } else {
+
+                if (group != obj.getAttribute("group")) {
+                    return true;
+                }
+
+            }
+
+        }
+
+        /* if the common group is 0 there is no group */
+        if (group == 0)
+            return true;
+
+        return false;
+
+    });
+
+
+    this.registerAction('Ungroup', function() {
+
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            var obj = selected[i];
+
+            obj.setAttribute("group", 0);
+
+        }
+
+    }, false, function() {
+
+        var selected = ObjectManager.getSelected();
+
+        /* prevent ungrouping if no selected element is in a group */
+        var hasGroups = false;
+
+        for (var i in selected) {
+            var obj = selected[i];
+
+            if (obj.getAttribute("group") != 0) {
+                hasGroups = true;
+            }
+
+        }
+
+        return hasGroups;
+
+    });
+	
+    this.registerAction('Transfer attributes', function(lastClicked){
+        var selected = ObjectManager.getSelected();
+		
+		lastClicked.showAttributeTransferDialog(selected);
+		
+	}, false, function(){
+		var selected = ObjectManager.getSelected();
+
+        /* only one object --> no group */
+        if (selected.length == 1){
+            return false;
+		}
+		
+		return true;
+	});
+    this.registerAction('To front', function() {
+
+        /* set a very high layer for all selected objects (keeping their order) */
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            var obj = selected[i];
+
+            obj.setAttribute("layer", obj.getAttribute("layer") + 999999);
+
+        }
+
+        ObjectManager.renumberLayers();
+
+    }, false);
+
+    this.registerAction('To back', function() {
+
+        /* set a very low layer for all selected objects (keeping their order) */
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            var obj = selected[i];
+
+            obj.setAttribute("layer", obj.getAttribute("layer") - 999999);
+
+        }
+
+        ObjectManager.renumberLayers();
+
+    }, false);
+
+}
+
+
+GeneralObject.registerAction = function(name, func, single, visibilityFunc) {
+    return this.actionManager.registerAction(name, func, single, visibilityFunc);
+}
+
+GeneralObject.unregisterAction = function(name) {
+    return this.actionManager.unregisterAction(name);
+}
+
+GeneralObject.performAction = function(name, clickedObject) {
+    return this.actionManager.performAction(name, clickedObject);
+}
+
+GeneralObject.getActions = function() {
+    return this.actionManager.getActions();
+}
+
+GeneralObject.translate = function(language, text) {
+    if (!this.translationManager)
+        return text;
+    return this.translationManager.get(language, text);
+}
+
+GeneralObject.setLanguage = function(currentLanguage) {
+    this.currentLanguage = currentLanguage;
+}
+
+GeneralObject.setTranslations = function(language, data) {
+    return this.translationManager.addTranslations(language, data);
+}
+
+GeneralObject.setTranslation = GeneralObject.setTranslations;
+
+
+/**
+ *	put the top left edge of the bounding box to x,y
+ */
+GeneralObject.setPosition = function(x, y) {
+
+    this.setAttribute('position', {'x': x, 'y': y});
+}
+
+/**
+ *	update the object's width and height
+ */
+GeneralObject.setDimensions = function(width, height) {
+    if (height === undefined)
+        height = width;
+    this.setAttribute('width', width);
+    this.setAttribute('height', height);
+}
+
+
+GeneralObject.toFront = function() {
+    ObjectManager.performAction("toFront");
+}
+
+GeneralObject.toBack = function() {
+    ObjectManager.performAction("toBack");
+}
+
+
+GeneralObject.isMovable = function() {
+    return true;
+}
+
+GeneralObject.isResizable = function() {
+    return this.isMovable();
+}
+
+GeneralObject.resizeProportional = function() {
+    return false;
+}
+
+
+/* following functions are used by the GUI. (because the three functions above will be overwritten) */
+GeneralObject.mayMove = function() {
+    if (this.getAttribute('locked')) {
+        return false;
+    } else {
+        return this.isMovable();
+    }
+}
+
+GeneralObject.mayResize = function() {
+    if (this.getAttribute('locked')) {
+        return false;
+    } else {
+        return this.isResizable();
+    }
+}
+
+GeneralObject.mayResizeProportional = function() {
+    if (this.getAttribute('locked')) {
+        return false;
+    } else {
+        return this.resizeProportional();
+    }
+}
+
+
+GeneralObject.execute = function() {
+    this.select();
+    this.selectedClickHandler();
+}
+
+GeneralObject.isSelected = function() {
+    return this.selected;
+}
+
+GeneralObject.refresh = function() {
+    //This should be overwritten for GUI updates and object repainting
+}
+
+GeneralObject.refreshDelayed = function() {
+    if (this.refreshDelay) {
+        clearTimeout(this.refreshDelay);
+    }
+
+    var that = this;
+
+    //this timer is the time in which changes on the same object are discarded
+    var theTimer = 400;
+
+    this.refreshDelay = setTimeout(function() {
+        //If the current room has changed in the meantime, do not refresh at all
+        if (GUI.couplingModeActive) {
+            if (that.getAttribute('inRoom') != ObjectManager.getRoomID('left') && that.getAttribute('inRoom') != ObjectManager.getRoomID('right')) {
+                return;
+            }
+        } else {
+            if (that.getAttribute('inRoom') != ObjectManager.getRoomID()) {
+                return;
+            }
+        }
+
+        that.refresh();
+    }, theTimer);
+}
+
+
 GeneralObject.setContent = function(content) {
     this.content = content;
     this.contentFetched = true;
@@ -102,10 +431,10 @@ GeneralObject.getContentAsString = function(callback) {
             alert('Synchronous content access before it has been fetched! Inform the programmer about this issue!');
             return false;
         }
-        return GeneralObject.utf8.parse(this.content);
+        return Helper.utf8.parse(this.content);
     } else {
         this.fetchContent(function(content) {
-            callback(GeneralObject.utf8.parse(content));
+            callback(Helper.utf8.parse(content));
         });
     }
 }

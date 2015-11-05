@@ -32,11 +32,7 @@ SimpleText.register=function(type){
 
     this.registerAttribute('rotation', {type:'number', category: 'Dimensions'});
 	
-	this.registerAction('Edit',function(){
-		$.each(ObjectManager.getSelected(), function(key, object) {
-			object.execute();
-		});
-	}, true);
+
 
 	
 }
@@ -71,8 +67,6 @@ SimpleText.input = false;
 SimpleText.contentURLOnly = false; //content is only accessible via URL
 
 SimpleText.content='Neuer Text';
-
-SimpleText.moveByTransform = function(){return true;};
 
 SimpleText.justCreated=function(){
 	this.setContent(this.translate(this.currentLanguage, 'No text yet!'));

@@ -5,6 +5,8 @@
 *
 */
 
+SimpleText.moveByTransform = function(){return true;};
+
 SimpleText.draw=function(external){
 	
 	var rep=this.getRepresentation();

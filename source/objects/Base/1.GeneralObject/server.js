@@ -255,27 +255,6 @@ theObject.makeStructuring=function(){
 		
 		console.log('onObjectMove on structuring object '+this);
 		
-		//this.getRoom().placeActiveObjects();
-		this.getRoomAsync(function(){
-			//error
-		}, function(room){
-			if(!room) return;
-			room.placeActiveObjectsAsync();
-		});
-	}
-	
-	if (!this.getPositioningDataFor) this.getPositioningDataFor=function(activeObject){
-		
-		var result={reference:'ignore'};
-		
-		//reference: must, mustnot, ignore
-		//minX
-		//maxX
-		//minY
-		//maxY
-		
-		return result;
-		
 	}
 
 }
@@ -426,10 +405,10 @@ theObject.getContent.neededRights = {
 theObject.getContentAsString=function(callback){
 	if (callback === undefined) {
 		console.log('>>>> Synchronous getContentAsString in GeneralObject');
-		return GeneralObject.utf8.parse(this.getContent());
+		return Helper.utf8.parse(this.getContent());
 	} else {
 		this.getContent(function(content){
-			callback(GeneralObject.utf8.parse(content));
+			callback(Helper.utf8.parse(content));
 		});
 	}
 }
@@ -913,4 +892,8 @@ theObject.copyToRoom = function (roomID, callback){
 	
 	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
 	
+}
+
+theObject.registerAction=function(){
+	console.log(this + ' still calls registerAction on the server side');
 }

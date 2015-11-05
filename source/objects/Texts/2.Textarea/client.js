@@ -5,16 +5,16 @@
 *
 */
 
-/*
-Textarea.afterSetContent=function(){
 
-	GUI.updateLayers();
+Textarea.clientRegister=function(){
+	
+	
+	    Textarea.parent.clientRegister.call(this);
+
+		this.registerAction('Edit',function(){
+		$.each(ObjectManager.getSelected(), function(key, object) {
+			object.execute();
+		});
+	}, true);
 
 }
-
-Textarea.afterSetAttribute=function(){
-
-	GUI.updateLayers();
-
-}
-*/

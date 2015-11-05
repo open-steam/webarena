@@ -5,6 +5,8 @@
 *
 */
 
+Ellipse.moveByTransform = function(){return true;}
+
 Ellipse.createRepresentation = function(parent) {
 	var rep = GUI.svg.group(parent,this.getAttribute('id'));
 	

@@ -9,12 +9,6 @@ var Modules=require('../../../server.js');
 
 var Triangle=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
-/**
- * TODO: remove, is not used any more
- */
-Triangle.duplicateWithLinkedObjects = false; //duplicate this object if a linked object gets duplicated
-Triangle.duplicateLinkedObjects = true; //duplicate linked objects if this object gets duplicated
-
 
 Triangle.register=function(type){
 	

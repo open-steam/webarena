@@ -64,6 +64,7 @@ ObjectManager.clientErrorMessage(data,function(){});}";
 		that.addToClientCode(filebase + '/view.js');
 		
 		that.clientCode += enter + temp + '.register("' + objName + '");' + enter + enter;
+		that.clientCode += enter + temp + '.clientRegister();' + enter + enter;
 		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
 
 		that.addToClientCode(filebase + '/languages.js');

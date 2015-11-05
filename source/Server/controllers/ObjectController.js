@@ -85,52 +85,48 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 		return;
 	}
 
-	var callbackStack = [];
+    // TODO: extend this for more rights
+    // TODO: has to be changed to correct rights names
+    // TODO: should not call the Connector but the ObjectManager or the ObjectController itself
 
-	//check needed rights
-	if (fn.neededRights && fn.neededRights.write) callbackStack.push(function (cb) {
-		Modules.Connector.mayWrite(roomID, objectID, context, cb)
-	})
-	if (fn.neededRights && fn.neededRights.read) callbackStack.push(function (cb) {
-		Modules.Connector.mayRead(roomID, objectID, context, cb)
-	})
-	if (fn.neededRights && fn.neededRights.delete) callbackStack.push(function (cb) {
-		Modules.Connector.mayDelete(roomID, objectID, context, cb)
-	})
-
-	async.series(callbackStack, function(err, res){
-		if(err){
-			console.log(err);
-			cb(err, null);
-			return;
-		}
-		if (serverFunction === "setAttribute"){
-			var oldValue = object.getAttribute(serverFunctionParams[0]);
-			var historyEntry = {
-				'action': 'set Attribute',
-				'objectID': objectID,
-				'roomID': roomID,
-				'attribute': serverFunctionParams[0],
-				'old': oldValue,
-				'new': serverFunctionParams[1]
+	if (fn.neededRights && fn.neededRights.write) {
+		Modules.Connector.mayWrite(roomID, objectID, context, function(error,result){
+			
+			if (result==false){  //Right check returned false
+				cb(new Error("You do not have rights on object: " + objectID), null);
+				return false;
 			}
 			
-			ObjectManager.history.add(new Date().getTime(), probableTransactionInfo.userId, historyEntry);
-			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+				if (serverFunction === "setAttribute"){
+				var oldValue = object.getAttribute(serverFunctionParams[0]);
+				var historyEntry = {
+					'action': 'set Attribute',
+					'objectID': objectID,
+					'roomID': roomID,
+					'attribute': serverFunctionParams[0],
+					'old': oldValue,
+					'new': serverFunctionParams[1]
+				}
+				
+				ObjectManager.history.add(new Date().getTime(), probableTransactionInfo.userId, historyEntry);
+				Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 			
-		} else if (serverFunction === "setContent") {
-			var historyEntry = {
-				'objectID': objectID,
-				'roomID': roomID,
-				'action': 'set Content'
+			} else if (serverFunction === "setContent") {
+				var historyEntry = {
+					'objectID': objectID,
+					'roomID': roomID,
+					'action': 'set Content'
+				}
+				
+				ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);
+				Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+				
 			}
+			fn.apply(object, serverFunctionParams);
 			
-			ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);
-			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
-			
-		}
-		fn.apply(object, serverFunctionParams);
-	});
+		});
+	}
+
 };
 
 module.exports = ObjectController;

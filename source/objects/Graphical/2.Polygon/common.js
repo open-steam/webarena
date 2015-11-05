@@ -9,12 +9,6 @@ var Modules=require('../../../server.js');
 
 var Polygon=Object.create(Modules.ObjectManager.getPrototype('GeneralObject'));
 
-/**
- * TODO: remove, is not used any more
- */
-Polygon.duplicateWithLinkedObjects = false; //duplicate this object if a linked object gets duplicated
-Polygon.duplicateLinkedObjects = true; //duplicate linked objects if this object gets duplicated
-
 
 Polygon.register=function(type){
 	

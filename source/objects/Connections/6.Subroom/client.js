@@ -1,3 +1,13 @@
+Subroom.clientRegister=function(){
+	
+	Subroom.parent.clientRegister.call(this);
+	
+		this.registerAction('Open destination', function(object) {
+        object.follow(object.getAttribute("open in"));
+    }, true);
+}
+
+
 Subroom.filterObject = function(obj) {
 	
 }

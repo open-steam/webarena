@@ -6,6 +6,11 @@
 */
 
 
+Ellipse.clientRegister=function(){
+	
+	Ellipse.parent.clientRegister.call(this);
+}
+
 /**
 *	determine if the Ellipse (not only the bounding box) intersects with the square x,y,width,height
 */

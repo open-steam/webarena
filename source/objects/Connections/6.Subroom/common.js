@@ -18,9 +18,7 @@ Subroom.register=function(type){
 	
 	var self=this;
 	
-	this.registerAction('Open destination', function(object) {
-        object.follow(object.getAttribute("open in"));
-    }, true);
+
 	
 }
 

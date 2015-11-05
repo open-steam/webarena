@@ -8,6 +8,20 @@
  */
 
 /**
+ * Checks if an objects is moved by transform
+ * @returns {bool} True if moved by transform
+ */
+GeneralObject.moveByTransform = function() {
+    return false;
+}
+
+/**
+ * True if the object has a special area where it can be moved
+ */
+GeneralObject.restrictedMovingArea = false;
+
+
+/**
  * Updates the representation using the attributes
  * @param {bool} external True if triggered externally (and not by the object itself)
  */

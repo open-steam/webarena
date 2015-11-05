@@ -28,13 +28,7 @@ Gate.register=function(type){
 		
 	this.registerAttribute('filterObjects',{type:'boolean',standard:false, hidden:true});
 
-	this.registerAction('Follow',function(object){
-		object.execute();
-	},true);
-	
-	this.registerAction('Open in new window',function(object){	
-		object.execute(true);
-	},true); 
+
 
 };
 

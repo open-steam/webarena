@@ -5,6 +5,7 @@
 *
 */
 
+ImageObject.moveByTransform = function(){return true;};
 
 ImageObject.createRepresentation=function(parent) {
 

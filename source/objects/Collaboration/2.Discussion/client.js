@@ -1,3 +1,18 @@
+Discussion.clientRegister=function(){
+	
+	    Discussion.parent.clientRegister.call(this);
+	
+		this.registerAction('open/close',function(){
+	
+		var selected = ObjectManager.getSelected();
+		
+		for (var i in selected){
+			var obj = selected[i];
+			obj.switchState();
+		}
+	});
+}
+
 Discussion.formatTimestamp = function(time){
     return moment(time).format('DD.MM.YYYY HH:mm');
 }

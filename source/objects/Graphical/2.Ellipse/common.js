@@ -21,6 +21,5 @@ Ellipse.register=function(type){
 
 Ellipse.register('Ellipse');
 Ellipse.isCreatable=true;
-Ellipse.moveByTransform = function(){return true;}
 
 module.exports=Ellipse;

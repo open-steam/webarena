@@ -138,11 +138,11 @@ ObjectManager.getObjectsByLayer = function(index) {
 
     objectsArray.sort(function(a, b) {
 
-        if (a.alwaysOnTop() === true) {
+        if (a.alwaysOnTop) {
             return 1;
         }
 
-        if (b.alwaysOnTop() === true) {
+        if (b.alwaysOnTop) {
             return -1;
         }
 
@@ -192,18 +192,6 @@ ObjectManager.objectUpdate = function(data) {
 
         object.setAll(data);
 
-        /**
-         
-         TODO Room updated come with no object type. Why?
-         
-         if (!data.type){
-         console.log('No type');
-         console.log(data);
-         console.trace();
-         }
-         **/
-
-
         for (var key in oldData) {
             var oldValue = oldData[key];
             var newValue = data[key];
@@ -223,7 +211,7 @@ ObjectManager.objectUpdate = function(data) {
 				GUI.trashbasket.update();
 			}
 			else{
-				GUI.showNotification(false, "trash");
+				//GUI.showNotification(false, "trash");
 			}
 		}
 		
