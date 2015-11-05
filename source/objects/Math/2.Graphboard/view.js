@@ -83,7 +83,6 @@ Graphboard.createRepresentation = function(parent) {
 	myPlot.ymax=Number(this.getAttribute('y-max'));
 	
 	var color = "#000000";
-	var functions = 0;
 	var linkedObjects = this.getAttribute("link");
     $.each(linkedObjects, function(index, value) {
     	
@@ -95,11 +94,10 @@ Graphboard.createRepresentation = function(parent) {
         }
         
         if (target.type == "FunctionText") {
-        	color = "#000000";
-        	color = color.substr(0,1+functions)+"f"+color.substr((functions)+2);
-        	functions++;
+        	color = target.getAttribute("font-color");
         	if(target.getAttribute("term")==undefined){
         		myPlot.addPlot("1".FOOPLOT_TYPE_FUNCTION,{'color':'#FFF000'});
+        		console.log("fehler beim erkennen einer verknüpften funktion");
         	}
         	else
         		myPlot.addPlot(target.getAttribute("term"),FOOPLOT_TYPE_FUNCTION,{'color':color});

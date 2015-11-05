@@ -15,38 +15,19 @@ Valuetable.register=function(type){
 	
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type);
+
 	
-	this.registerAttribute('font-family',{type:'font',standard:'Arial',category:'Appearance'});
-	this.registerAttribute('font-size',{type:'fontsize',min:10,standard:22,max:80,unit:'px',category:'Appearance'});
-	this.registerAttribute('font-color',{type:'color',standard:'black',category:'Appearance',checkFunction: function(object,value) {
-
-		if (object.checkTransparency('font-color', value)) {
-			return true;
-		} else return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
-
-	}});
+	this.attributeManager.registerAttribute('x-min',{hidden:false, standard:'-5', category:'Table-Settings'});
+	this.attributeManager.registerAttribute('x-max',{hidden:false, standard:'5', category:'Table-Settings'});
+	this.attributeManager.registerAttribute('interval',{hidden:false, standard:'1', category:'Table-Settings'});
+	this.attributeManager.registerAttribute('highlighted X-Value',{hidden:false, standard:'x value', category:'Table-Settings'});
 	
 	this.attributeManager.registerAttribute('width',{hidden:true});
 	this.attributeManager.registerAttribute('height',{hidden:true});
-	this.attributeManager.registerAttribute('fillcolor',{hidden:true});
 
-    this.registerAttribute('rotation', {type:'number', category: 'Dimensions'});
-	
-	this.registerAction('Edit',function(){
-		$.each(ObjectManager.getSelected(), function(key, object) {
-			object.execute();
-		});
-	}, true);
 
 	
 }
-
-Valuetable.execute=function(){
-	
-	this.editText();
-	
-}
-
 Valuetable.isResizable=function(){
 	return false;
 }
@@ -68,12 +49,9 @@ Valuetable.isCreatable=true;
 
 Valuetable.contentURLOnly = false; //content is only accessible via URL
 
-Valuetable.content='Neuer Text';
-
 Valuetable.moveByTransform = function(){return true;};
 
 Valuetable.justCreated=function(){
-	this.setContent(this.translate(this.currentLanguage, 'No text yet!'));
 }
 
 module.exports=Valuetable;
