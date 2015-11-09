@@ -299,13 +299,13 @@ GeneralObject.getID = function() {
 GeneralObject.getId = GeneralObject.getID;
 
 
-
-
-
+//function for deleting the current object
 
 GeneralObject.remove = function() {
     Modules.ObjectManager.remove(this);
 }
+
+GeneralObject.deleteIt = GeneralObject.remove;
 
 
 //returns if an object has links to other objects or not
@@ -330,7 +330,9 @@ GeneralObject.hasLinkedObjects = function() {
 
 }
 
-
+//getGroupMembers
+//
+//returns an array of object which belong to the same group
 GeneralObject.getGroupMembers = function() {
 
     var list = [];
@@ -352,6 +354,7 @@ GeneralObject.getGroupMembers = function() {
 
 
 //update the links after duplicate an object
+//TODO: This should maybe be transferred to the object duplacation code as it is never used elsewhere
 GeneralObject.updateLinkIds = function(idTranslationList) {
 
     var links = this.getAttribute('link');
@@ -392,6 +395,10 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
     });
 }
 
+
+/**
+*     LINK HANDLING
+*/
 
 
 
@@ -609,7 +616,15 @@ GeneralObject.removeLinkAttribute = function(targetId){
 
 }
 
-GeneralObject.deleteIt = GeneralObject.remove;
+
+/**
+*
+*	 SENSITIVE AND STRUCTURING OBJECTS
+*
+*	 here in the common.js, only flags are set. Actual logic is provided in the client and server files
+*
+*/
+
 
 GeneralObject.makeSensitive = function() {this.isSensitiveFlag = true;}
 GeneralObject.makeStructuring = function() {this.isStructuringFlag = true;}

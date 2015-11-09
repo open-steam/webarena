@@ -104,8 +104,6 @@ Modules.BuildTool = require('./Server/BuildTool.js');
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
 Modules.DataSet = require('./Common/DataSet.js');
 Modules.AttributeManager = require('./Common/AttributeManager.js');
-Modules.TranslationManager = require('./Common/TranslationManager.js');
-Modules.ActionManager = require('./Common/ActionManager.js');
 
 Modules.Connector = Modules.config.connector; //shortcut
 
