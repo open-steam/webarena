@@ -1,9 +1,12 @@
 /**
  *    Webarena - A web application for responsive graphical knowledge work
  *
- *    @author Felix Winkelnkemper, University of Paderborn, 2012
+ *    @author Felix Winkelnkemper, University of Paderborn, 2015
  *
- *	 GeneralObject client component
+ *	  As every webArena object type inherits from GeneralObject, GeneralObject/common.js,
+ *	  GeneralObject/server.js etc. contain very basic code for object interaction.
+ *
+ *	  This client.js file contains code which runs only on the client side.
  *
  */
 
@@ -13,6 +16,15 @@ GeneralObject.contentFetched = false;
 GeneralObject.hasContent = false;
 GeneralObject.normalOpacity = 1;
 
+
+/**
+ * ClientRegister
+ *
+ * While on the server side, only the common register function (in common.js) is run
+ * the client also runs the clientRegister function directly afterwards.
+ *
+ * @param {ObjectType} type The type of the object
+ */
 GeneralObject.clientRegister = function (){
 	
 	// ActionManager: handles actions that can be executed on the object
