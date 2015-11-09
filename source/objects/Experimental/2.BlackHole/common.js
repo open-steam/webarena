@@ -13,10 +13,17 @@ BlackHole.register=function(type){
 	// Registering the object
 	GeneralObject=Modules.ObjectManager.getPrototype('Hotspot');
 	GeneralObject.register.call(this,type);
+	
+	
+	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
+           object.showExitDialog()
+       }, category: 'Hyperlink', changedFunction: function(object) {
+           if(object.updateIcon){object.updateIcon()};
+    }});
 }
 
 BlackHole.execute=function(){
-	alert('Und nun?');
+	
 }
 
 
