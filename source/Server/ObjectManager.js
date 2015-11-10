@@ -233,7 +233,7 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 
 	var that = this;
 
-    //TODO send error to client if there is a rights issue here
+    //TODO check for rights right here
 
     var proto = this.getPrototypeFor(type);
 
@@ -703,7 +703,7 @@ ObjectManager.duplicate = function(data, context, cbo) {
             //check permissions and if successful
             //go on with further work
             async.series([innerReadCheck2, toWriteCheck], function(err) {
-                //TODO send error to cb
+                
                 if (err)
                     cbi(err, null);
                 else {
@@ -731,7 +731,7 @@ ObjectManager.duplicate = function(data, context, cbo) {
                                 });
                             });
                         }
-                        //need function scope because "looping problem" //TODO: link to example
+                        //need function scope because "looping problem"
                         (function(id) {
                             objectCopyTasks.push(function(callback) {
                                 Modules.Connector.duplicateObject(fromRoom, toRoom, id, context, function(err, newId, oldId) {
@@ -747,7 +747,7 @@ ObjectManager.duplicate = function(data, context, cbo) {
 
                                     newObjects.push(obj);
                                     idTranslationList[oldId] = newId;
-                                    //TODO: remove reverseIdTranslationList can be constructed afterwards
+                                 
                                     reverseIdTranslationList[newId] = oldId;
 
                                     callback();

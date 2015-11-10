@@ -532,8 +532,7 @@ WebServer.init = function (theModules) {
 			});
 
 		}
-
-        //TODO: only cache if in production mode
+		
 		else if (url == '/defaultJavascripts') {
 
 			//combine all javascript files in guis.common/javascript

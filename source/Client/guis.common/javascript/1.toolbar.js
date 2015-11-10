@@ -658,9 +658,6 @@ GUI.initToolbar = function() {
  */
 GUI.showNotification = function(add, icon){
 	
-	console.trace();
-	console.log('showNotification '+add+' '+icon);
-	
 	var button = "";
 	var IconEnter = "";
 	var IconLeft = "";

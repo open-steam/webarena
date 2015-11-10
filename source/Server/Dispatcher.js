@@ -27,9 +27,8 @@ Dispatcher.call = function(socket, message) {
     if (calls[type]) {
         process.nextTick(function() {
 
-            var response = calls[type](socket, data, responseID); 		//TODO: this is still blocking, swtich to callbacks if necessary
+            var response = calls[type](socket, data, responseID);
 
-            //TODO: Fire an event
             /**
              *	Clients can provide a unique responseID when calling a function on the server. If the
              *	function called has a result other than undefined and a responseID is given, the response

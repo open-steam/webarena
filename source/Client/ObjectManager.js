@@ -240,13 +240,9 @@ ObjectManager.attributeChanged = function(object, key, newValue, local) {
 
     var changedFunction = object.attributeManager.getAttributes()[key].changedFunction;
 
-    if (changedFunction)
-        changedFunction(object, newValue, local);
+    if (changedFunction) changedFunction(object, newValue, local);
 
-    if (this.informGUI)
-        this.informGUI(object, key, newValue, local)
-    else
-        console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
+    if (this.informGUI) this.informGUI(object, key, newValue, local)
 
 }
 
@@ -276,12 +272,12 @@ ObjectManager.remove = function(object) {
 
     var that = this;
     if (!this.transactionId) {
-        that.transactionId = new Date().getTime();
+        var uuid = require('node-uuid');
+	    that.transactionId = uuid.v4();
     } else {
         window.transactionTimer = window.setTimeout(function() {
-            //calculate new transactionId
-            //TODO: isn't safe - concurrent users may result in same timestamp
-            that.transactionId = new Date().getTime();
+            var uuid = require('node-uuid');
+		    that.transactionId = uuid.v4();
         }, this.transactionTimeout);
     }
 	
@@ -478,7 +474,7 @@ ObjectManager.createObject = function(type, attributes, content, callback, index
         var object = false;
         var interval = setInterval(function() {
             if (runs == 50) {
-                console.log('ERROR: Timeout while waiting for the object');
+                //console.log('ERROR: Timeout while waiting for the object');
                 clearTimeout(interval);
                 return;
             }
@@ -646,7 +642,6 @@ ObjectManager.init = function() {
 
         var content = '<form>';
         content = _(choices).reduce(function(accum, choice) {
-            //TODO perhaps need to escape whitesapces in choice
             return accum + "<input type='radio' name='some-choice' value='" + choice + "'>" + choice + "<br/>";
         }, content)
         content += "</form>";
@@ -773,10 +768,6 @@ ObjectManager.renumberLayers = function(noUpdate) {
 
 ObjectManager.getUser = function() {
     return this.user;
-}
-
-ObjectManager.serverMemoryInfo = function() {
-    ObjectManager.Modules.Dispatcher.query('memoryUsage', '', console.log);
 }
 
 ObjectManager.inform = function(type, content, index) {

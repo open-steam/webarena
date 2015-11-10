@@ -136,7 +136,7 @@ SimpleText.getViewBoundingBoxY = function() {
 /* get the height of the objects bounding box */
 SimpleText.getViewBoundingBoxHeight = function() {
 	var rep = this.getRepresentation();
-	return this.getRepresentation().getBBox().height; //<--TODO: this value is too high
+	return this.getRepresentation().getBBox().height;
 }
 
 

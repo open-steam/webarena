@@ -36,12 +36,11 @@ BuildTool.addToClientCode = function(filename) {
 BuildTool.buildClientCode = function(){
 	var that = this;
 	var files = Modules.ObjectManager.getEnabledObjectTypes();
-	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;
-                //TODO: Insert code for the server sided transmission of client errors
-        this.clientCode += enter + "window.onerror = function(message, uri, line){var data={};\n\
+	this.clientCode = '"use strict";' + enter + '//Object Code for WebArena Client ' + enter;          
+    this.clientCode += enter + "window.onerror = function(message, uri, line){var data={};\n\
     data.message=message;data.uri=uri;data.line=line;data.nav = navigator.userAgent;\n\
-data.roomID=ObjectManager.getRoomID();data.user = ObjectManager.getUser().username;\n\
-ObjectManager.clientErrorMessage(data,function(){});}";
+	data.roomID=ObjectManager.getRoomID();data.user = ObjectManager.getUser().username;\n\
+	ObjectManager.clientErrorMessage(data,function(){});}";
 
 	files.forEach(function (data) {
 		
@@ -55,7 +54,7 @@ ObjectManager.clientErrorMessage(data,function(){});}";
 		if (!objName) return;
 		
 		if (objName=='File') {
-			var temp='WAFile'; //TODO This is a hot fix. Implement proper namespaces instead
+			var temp='WAFile'; //This is a hot fix to avoid overwriting the browser side File object
 		} else temp=objName;
 
 		var filebase = __dirname + '/../objects/' + category + '/' + filename;

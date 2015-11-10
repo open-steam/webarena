@@ -48,9 +48,8 @@ try {
     }
 } catch (e) {
     console.log(e);
-    console.log('Attention: No local config found!');
+    console.log('Attention: No local config found or the file could not be read.');
     console.log('Solution: Copy the content of the config.default and create a new config.local in the same directory! Don\'t forget to update the filebase property to your desired folder!');
-    console.log('The old config.local files which are located IN the Client or Server folder can be removed.');
 }
 
 

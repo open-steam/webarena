@@ -26,9 +26,7 @@ var AttributeManager=new function(){
 	var attributeData={};
 
 	this.transactionId = false;
-	//var transactionTimer = false; 
 	this.transactionTimeout = 500;
-	//this.transactionHistory = {};
 	
 	//setters and getter for attribute data. For conveiniance, object.set
 	//and object.get can be used instead.
@@ -42,13 +40,13 @@ var AttributeManager=new function(){
 	
 	this.set=function(id,key,value){
 		if (id==undefined || value==undefined){
-			console.log('undefined set',id,key,value);
+			console.log('ERROR: undefined set',id,key,value);
 			console.trace();
 			return;
 		}
 		
 		if (parseInt(key,10)==key){
-			console.log('numberic key in set',id,key,value);
+			console.log('ERROR: numberic key in set',id,key,value);
 			console.trace();
 			return;
 		}
@@ -68,7 +66,7 @@ var AttributeManager=new function(){
 	
 	this.setAll=function(id,data){
 		if (id==undefined){
-			console.log('undefined setAll',id,data);
+			console.log('ERROR: undefined setAll',id,data);
 			console.trace();
 			return;
 		}
@@ -227,9 +225,9 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	
 	// check if the attribute is read only
 	if (this.attributes[attribute] && this.attributes[attribute].readonly) {
-		console.log('Attribute '+attribute+' is read only for '+this.proto);
+		console.log('ERROR: Attribute '+attribute+' is read only for '+this.proto);
 		if(attribute=='id'){
-			console.log('TRIED TO SET ID');
+			console.log('ERROR: TRIED TO SET ID');
 			console.trace();
 		}
 		return undefined;
@@ -261,8 +259,8 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		} else {
 			window.transactionTimer = window.setTimeout(function(){
 				//calculate new transactionId
-		        //TODO: isn't safe - concurrent users may result in same timestamp
-				that.transactionId = new Date().getTime();
+		        var uuid = require('node-uuid');
+		    	that.transactionId = uuid.v4();
 			}, this.transactionTimeout);
 		}
 		

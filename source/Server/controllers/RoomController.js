@@ -25,7 +25,7 @@ RoomController.getCommunicationChannel = function(data, context, callback){
     Modules.Connector.getRoomData(roomName, context, false, cb);
 }
 
-//TODO: should be implemented on Connector lvl. because it may be different
+//TODO: createRoom should exist on the connector level as object creation may be different
 RoomController.createRoom = function (data, context, callback) {
 
     var roomID = data.roomID;
@@ -42,47 +42,6 @@ RoomController.createRoom = function (data, context, callback) {
 
 }
 
-//TODO: should be implemented on Connector lvl. because it may be different
-RoomController.roomExists = function (data, context, callback) {
-    var roomID = data.roomID;
-    var obj= Modules.Connector.getObjectDataByFile(roomID,roomID);
-
-    callback(null, !!obj);
-}
-
-RoomController.duplicateRoom = function (data, context, callback) {
-    var roomID = data.fromRoom;
-    var newRoomID = data.toRoom;
-    var parent = data.parentRoom;
-    var roomName = data.roomName;
-
-    //TODO: it is really ugly that getRoomData is used to create a room
-    //If parent is set.
-    //Create subroom item in parent.
-    if (parent) {
-        Modules.Connector.getRoomData(newRoomID, context, parent, undefined); //TODO: set parent if necessary
-        //TODO add subroom object to parent
-
-        //Subroom item
-        var subRoomItemData = {
-            roomID: parent,
-            type: "Subroom",
-            attributes: {
-                name: roomName || newRoomID,
-                destination: newRoomID
-            }
-        }
-    } else {
-        Modules.Connector.getRoomData(newRoomID, context, false, undefined); //TODO: set parent if necessary
-    }
-
-    var requestData = {
-        objects: "ALL",
-        fromRoom: roomID,
-        toRoom: newRoomID
-    };
-    Modules.ObjectManager.duplicate(requestData, context, callback);
-}
 
 
 //TODO: remove? combine with "browse" of exit object

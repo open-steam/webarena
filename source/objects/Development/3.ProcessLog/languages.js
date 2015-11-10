@@ -1,4 +1,0 @@
-ProcessLog.setTranslations('de',{
-
-}
-);

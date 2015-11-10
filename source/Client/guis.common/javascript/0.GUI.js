@@ -558,8 +558,6 @@ GUI.initMouseHandler = function() {
 			}
 			
 			var clickedObject=(temp)?temp.dataObject:false;
-			
-			//TODO check if this can be done similarly for touch devices
 
 			if (GUI.couplingModeActive) {
 				if (event.pageX > $('#couplingBar').attr('x1') && $('#couplingBar:hover').length == 0) {

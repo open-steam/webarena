@@ -78,7 +78,6 @@ fileConnector.listRooms = function(callback){
 	var filebase = fileConnector.Modules.Config.filebase;
 	fs.readdir(filebase, function(err, files){
 		if(err){
-			//TODO
 		}
 
 		var isRoom = function(file, callback){
@@ -876,7 +875,7 @@ fileConnector.trimImage=function(roomID, objectID, context, callback) {
 							});
 							
 						} else {
-							//TODO: delete temp. file
+							
 							self.Modules.Log.error("Error while trimming "+roomID+"/"+objectID);
 						}
 					});
@@ -1110,7 +1109,7 @@ fileConnector.inlinePreviewProviders = {
 		'preview' : function(roomID, objectID, context, callback) {
 			
 			if (!context) throw new Error('Missing context in preview for image');
-//TODO: change image orientation
+
 			fileConnector.getContent(roomID,objectID,context,function(content) {
 				
 				callback(content);

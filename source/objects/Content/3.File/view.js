@@ -77,7 +77,6 @@ WAFile.getStatusIcon = function() {
 		var typeIcon = "file";
 		var mimeType = this.getAttribute("mimeType");
 	
-		//TODO: extend
 		if (mimeType) {
 			if (mimeType.indexOf('image') != -1) typeIcon = "image";
 			if (mimeType.indexOf('msexcel') != -1 || mimeType.indexOf('ms-excel') != -1 || mimeType.indexOf('officedocument.spreadsheetml') != -1) typeIcon = "excel";

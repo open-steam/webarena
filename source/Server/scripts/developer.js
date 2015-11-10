@@ -78,6 +78,7 @@ function traverse(folder){
 			
 			if (filename.search('svn')!=-1) return;
 			if (filename.search('libraries')!=-1) return;
+			if (filename.search('developer.js')!=-1) return;
 			
 			filename=folder+filename;
 			
@@ -93,7 +94,7 @@ function traverse(folder){
 					var line=contents[i];
 					var lineNr=i+1;
 					
-					if (line.search('=function')!=-1) {
+					if (line.search('=function')!=-1 || line.search('= function')!=-1) {
 						context=line;
 					};
 					
@@ -119,6 +120,7 @@ function traverseLog(folder){
 			
 			if (filename.search('svn')!=-1) return;
 			if (filename.search('libraries')!=-1) return;
+			//if (filename.search('WebRTCManager.js')!=-1) return;
 			
 			filename=folder+filename;
 			
@@ -134,12 +136,14 @@ function traverseLog(folder){
 					var line=contents[i];
 					var lineNr=i+1;
 					
-					if (line.search('=function')!=-1) {
+					if (line.search('=function')!=-1 || line.search('= function')!=-1) {
 						context=line;
 					};
 					
 					
 					if (line.search('console.log')==-1) continue;
+					if (line.search('//')!==-1) continue;
+					if (line.search('ERROR:')!==-1) continue;
 					
 					tempLog.push({'filename':filename,'lineNr':lineNr,'line':line,'context':context});
 					

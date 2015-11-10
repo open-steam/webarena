@@ -170,8 +170,7 @@ GUI.chat.addMessage = function(username, text, userColor, read) {
 GUI.chat.opened = function() {
 	GUI.chat.newMessages = 0;
 	GUI.chat.hideNotifier();
-		
-	//$("#chat_message_input").focus(); //TODO: chrome bug
+
 }
 
 
