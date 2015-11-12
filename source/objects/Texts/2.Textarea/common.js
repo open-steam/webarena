@@ -59,8 +59,8 @@ Textarea.justCreated = function() {
 
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
-Textarea.input = false;
 
+Textarea.input = false;
 
 Textarea.contentURLOnly = false; //content is only accessible via URL
 

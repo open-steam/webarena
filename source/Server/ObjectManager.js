@@ -363,7 +363,7 @@ ObjectManager.init = function(theModules) {
 
         var filename = data.filename;
         var category = data.category;
-
+        
         var fileinfo = filename.split('.');
         var objName = fileinfo[1];
         var filebase = __dirname + '/../objects/' + category + '/' + filename;

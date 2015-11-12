@@ -106,10 +106,12 @@ Table.draw = function(external) {
     var cellYPos = 0;
 
     var allRects = group.getElementsByTagName('rect');
+    var LabelID = 1;
 
     for (var i = 0; i < rows.length + 1; i++) {
         for (var j = 0; j < columns.length + 1; j++) {
             var cell = allRects[counter];
+            $(cell).attr('x', cellXPos);
             $(cell).attr('x', cellXPos);
             $(cell).attr('y', cellYPos);
             $(cell).attr('width', cellWidth);
@@ -117,17 +119,16 @@ Table.draw = function(external) {
             $(cell).attr("fill", this.getAttribute('fillcolor'));
             $(cell).attr("stroke", "black");
             $(cell).attr("stroke-width", this.getAttribute('linecolor'));
-
             if (i == 0 && j > 0) {
                 var textcontent = columns[j - 1];
                 var fontSize= 22;
                 var currentTextElement = group.getElementsByTagName("text")[textElementCounter];
                 currentTextElement.textContent = textcontent;
-                //$(currentTextElement).attr('x', cellXPos + 5);
-                //$(currentTextElement).attr('y', cellYPos + 5);
                 $(currentTextElement).attr('font-size', fontSize);
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
+                $(currentTextElement).attr('id', 'label'+LabelID);
+                LabelID++;
                 var textLength = currentTextElement.getComputedTextLength();
                 while(cellWidth<textLength+10){
                     fontSize=fontSize-1;
@@ -138,7 +139,6 @@ Table.draw = function(external) {
                 $(currentTextElement).attr('y', cellYPos + (cellHeight / 2) + 5);
                 textElementCounter++;
 
-
             } else if (i > 0 && j == 0) {
                 var textcontent = rows[i - 1];
                 var fontSize= 22;
@@ -147,6 +147,8 @@ Table.draw = function(external) {
                 $(currentTextElement).attr('font-size', fontSize);
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
+                $(currentTextElement).attr('id', 'label'+LabelID);
+                LabelID++;
                 var textLength = currentTextElement.getComputedTextLength();
                 while(cellWidth<textLength+10){
                     fontSize=fontSize-1;
@@ -192,7 +194,6 @@ Table.createRepresentation = function(parent) {
     return rep;
 
 }
-
 Table.setViewHeight = function(value) {
 
 
@@ -234,6 +235,7 @@ Table.setViewHeight = function(value) {
 
     }
 }
+
 
 Table.setViewWidth = function(value) {
 
@@ -279,32 +281,41 @@ Table.setViewWidth = function(value) {
     GUI.adjustContent(this);
 }
 
-/**
- * Called after a double click on the text, enables the inplace editing
- */
-Table.editText = function() {
-	
-	var rep = this.getRepresentation();
-	console.log("Tabke view.js : function editText");
-//
-//		$(rep).find("foreignObject").show();
-//	
-//		$(rep).find("body").append('<input type="text">');
-//		$(rep).find("body").attr("name", "newContent");
-//		$(rep).find("body").attr("value", this.oldContent);
-//		$(rep).find("body").css("font-size", this.getAttribute('font-size')+"px");
-//		$(rep).find("body").css("font-family", this.getAttribute('font-family')); 
-//		$(rep).find("body").css("color", this.getAttribute('font-color'));
-//		$(rep).find("body").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
-//		$(rep).find("body").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
+ Table.editText= function(event){
+     var rep = this.getRepresentation();
+     
+     console.log("Table view.js Tabellenobjekte:");
+     console.log($(rep).find("#"+this.getAttribute("id")+"-1")[0].childNodes);
+     
+     var labelObject = $(rep).find('#label1');
+     
+     console.log("Table view.js label1-Objekt:");
+     console.log(labelObject);
+     
+     var element = document.getElementById("label1");
+     var elementHtml = "<input x='"+element.getAttribute("x")+"' y='"+element.getAttribute("x")+"' class='text' font-size='"+element.getAttribute("font-size")+"' stroke='"+element.getAttribute("stroke")+"' stroke-width'"+element.getAttribute("stroke-width")+"' id='"+element.getAttribute("id")+"' value='"+element.innerHTML+"'>";
+     console.log("Table view.js label1-HTML:   "+element.outerHTML);
+     console.log("Table view.js label1-HTML modified:   "+elementHtml);
+
+     element = document.createElement(elementHtml);
+     console.log(elementHtml);
+     
+//		$(rep).find("input").attr("name", "newContent");
+//		$(rep).find("input").attr("value", this.oldContent);
+//		$(rep).find("input").css("font-size", this.getAttribute('font-size')+"px");
+//		$(rep).find("input").css("font-family", this.getAttribute('font-family')); 
+//		$(rep).find("input").css("color", this.getAttribute('font-color'));
+//		$(rep).find("input").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
+//		$(rep).find("input").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
 //		$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
 //		$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+26);
 //		
 //		$(rep).find("text").hide();
 //		
 //		$(rep).find("input").focus();
-		
+//		
 		this.input = true;
 		GUI.input = this.id;
-	
-}
+     
+ }
+ 

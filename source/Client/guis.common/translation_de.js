@@ -11,6 +11,7 @@ GUI.setTranslations('de',{
 	'Dimensions':'Dimensionen',
 	'Appearance':'Aussehen',
 	'graphical':'Grafische Elemente',
+    'structures':'Strukturelemente',
 	'collaboration':'Zusammenarbeit',
 	'content':'Inhalt',
 	'connections':'Verbindungen',

@@ -24,7 +24,7 @@ TimeLine.register = function(type) {
 
             return true;
 
-        }});
+        }, mobile: false});
 
     this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
@@ -34,7 +34,7 @@ TimeLine.register = function(type) {
 
             return true;
 
-        }});
+        }, mobile: false});
 
     this.registerAttribute('min', {type: 'number', standard: 1, category: 'TimeLine'});
     this.registerAttribute('max', {type: 'number', standard: 5, category: 'TimeLine'});

@@ -38,7 +38,6 @@ SimpleText.register=function(type){
 }
 
 SimpleText.execute=function(){
-	
 	if(!this.input){
 		this.editText();
 	}
