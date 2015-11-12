@@ -1,11 +1,14 @@
 /**
-*    Webarena - A web application for responsive graphical knowledge work
-*
-*    @author Felix Winkelnkemper, University of Paderborn, 2012
-*
-*	 GeneralObject server component
-*
-*/
+ *    Webarena - A web application for responsive graphical knowledge work
+ *
+ *    @author Felix Winkelnkemper, University of Paderborn, 2015
+ *
+ *	  As every webArena object type inherits from GeneralObject, GeneralObject/common.js,
+ *	  GeneralObject/server.js etc. contain very basic code for object interaction.
+ *
+ *	  This server.js file contains code which runs only on the server side.
+ *
+ */
 
 "use strict";
 
@@ -359,7 +362,7 @@ theObject.setContent.neededRights = {
     write : true
 }
 
-
+//TODO: On this lever, we should not care about files at all!
 theObject.copyContentFromFile=function(filename,callback) {
 
 	Modules.Connector.copyContentFromFile(this.inRoom, this.id, filename, this.context, callback);
@@ -481,25 +484,6 @@ theObject.evaluatePositionInt=function(data){
 }
 
 
-theObject.getRoom=function(callback){
-	
-	console.log('>>>> Synchronous getRoom in GeneralObject');
-	
-	if (!this.context) return;
-	
-	//search the room in the context and return the room this object is in
-	
-	for (var index in this.context.rooms){
-		var test=this.context.rooms[index];
-		if (test && test.hasObject && test.hasObject(this)) {
-			return test;
-		}
-	}
-	
-	return false;
-}
-
-
 theObject.getRoomAsync=function(error,cb){
 	if (!this.context) error();
 	
@@ -559,33 +543,6 @@ theObject.getLinkedObjectsAsync=function(callback) {
 }
 
 
-theObject.getLinkedObjects=function() {
-	
-	console.log('>>>> Synchronous GETLINKEDOBJECTS');
-	
-	var self = this;
-	
-	var getObject = function(id) {
-		return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
-	}
-	
-	var linkedObjects = this.getAttribute('link');
-	
-	var links = {};
-		
-	for(var i = 0; i<linkedObjects.length; i++){
-			
-		var targetID = linkedObjects[i].destination;
-		var target = getObject(targetID);
-
-		links[targetID] = {
-			object : target,
-		}
-	}
-
-	return links;
-}
-
 theObject.getObjectsToDuplicateAsync = function(list,callback) {
 	
 	if (list == undefined) {
@@ -629,46 +586,6 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 	
 }
 
-
-theObject.getObjectsToDuplicate = function(list) {
-	
-	console.log('>>>> Synchronous GETOBJECTSTODUPLICATE');
-	
-	var self = this;
-	
-	if (list == undefined) {
-		/* init new list */
-		
-		/* list of objects which will be duplicated */
-		var list = {};
-		
-	}
-	
-	list[self.getAttribute('id')] = true; //add this object to list
-	
-	var linkedObjects = this.getLinkedObjects();
-
-	for (var id in linkedObjects) {
-		var target = linkedObjects[id];
-		var targetObject = target.object;
-		
-		if (targetObject && !list[targetObject.get('id')]) {
-			targetObject.getObjectsToDuplicate(list);
-		}
-		
-	}
-
-	var arrList = [];
-	
-	for (var objectId in list) {
-
-		arrList.push(objectId);
-		
-	}
-	
-	return arrList;
-	
-}
 
 
 /**

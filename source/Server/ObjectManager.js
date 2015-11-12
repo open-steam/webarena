@@ -627,24 +627,6 @@ ObjectManager.duplicate = function(data, context, cbo) {
         });
 
 
-        /*
-         //find all unique objects - also traverse the linked objects
-         var findUniqueRelatedObjectsIds = function (objectId) {
-         var object = ObjectManager.getObject(fromRoom, objectId, context);
-         if (!object) return;
-         if (! (objectId in uniqueObjects)) {
-         uniqueObjects[objectId] = object;
-         object.getObjectsToDuplicateAsync(function(linkedObjects){
-         
-         return linkedObjects.forEach(findUniqueRelatedObjectsIds);
-         
-         });
-         
-         }
-         }
-         //objectKeys.forEach(findUniqueRelatedObjectsIds);
-         */
-
         //is called after call object were copied
         //updated some properties + visual arrangement
         var updateObj = function(callback) {

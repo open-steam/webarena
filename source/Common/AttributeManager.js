@@ -259,8 +259,8 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		} else {
 			window.transactionTimer = window.setTimeout(function(){
 				//calculate new transactionId
-		        var uuid = require('node-uuid');
-		    	that.transactionId = uuid.v4();
+		        //TODO: isn't safe - concurrent users may result in same timestamp
+				that.transactionId = new Date().getTime();
 			}, this.transactionTimeout);
 		}
 		
