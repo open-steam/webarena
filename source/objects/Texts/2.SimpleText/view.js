@@ -124,6 +124,8 @@ SimpleText.editText = function() {
 		this.input = true;
 		GUI.input = this.id;
 	}
+    
+        
 }
 
 
@@ -165,17 +167,18 @@ SimpleText.checkTransparency = function(attribute, value) {
 /**
  * Called after hitting the Enter key during the inplace editing
  */
-SimpleText.saveChanges = function() {
+SimpleText.saveChanges =  function() {
 
 	if(this.input){
 
 		var rep = this.getRepresentation();
 	
 		var newContent = $(rep).find("input").val()
-
+        this.fitTextBox(newContent);
 		$(rep).find("input").remove();
 	
 		$(rep).find("foreignObject").hide();
+        
 	
 		$(rep).find("text").show();
 	
@@ -185,7 +188,20 @@ SimpleText.saveChanges = function() {
 		this.setContent(newContent);
 
 		this.draw();
-	
+        
+        
+	   
 	}
 	
+}
+
+SimpleText.fitTextBox = function(txt){
+        var rep = this.getRepresentation();
+        console.log(txt);
+        var c=document.createElement('canvas');
+        var ctx=c.getContext('2d');
+        ctx.font = this.getAttribute('font-size') + 'px' + this.getAttribute('font-family');
+        var length = ctx.measureText(txt).width;
+        console.log(length);
+        this.setAttribute('width',length);
 }

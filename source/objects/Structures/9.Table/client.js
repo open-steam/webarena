@@ -19,6 +19,18 @@
  }
  return y;
  } */
+
+Table.clientRegister=function(){
+	
+	Table.parent.clientRegister.call(this);
+    
+    this.registerAction('Zeilen und Spalten anpassen', function(lastClicked) {
+        var selected = ObjectManager.getSelected();
+        lastClicked.showFormatDialog(selected);
+
+    });
+}
+
 Table.insertElement = function(obj) {
     var insertHtml = '<li class="ui-state-default"><input class="input-row-column" type="text" value="' + 'Neue Zeile' + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div><div style="position:relative;left:-20px;top:-8px;font-size:1.2em;" onclick="Table.insertElement(this);">+</div></li>';
     $($(insertHtml)).insertAfter($(obj).parent());

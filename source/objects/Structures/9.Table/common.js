@@ -21,11 +21,7 @@ Table.register = function(type) {
     this.standardData.width = 400;
     this.standardData.height = 200;
 
-    this.registerAction('Zeilen und Spalten anpassen', function(lastClicked) {
-        var selected = ObjectManager.getSelected();
-        lastClicked.showFormatDialog(selected);
-
-    });
+    
 }
 
 
