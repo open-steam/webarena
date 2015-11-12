@@ -124,7 +124,24 @@ SimpleText.editText = function() {
 		this.input = true;
 		GUI.input = this.id;
 	}
-    
+    var that = this;
+    var charWidth=0;
+    var boxWidth = that.getRepresentation().getBBox().width;
+    document.onkeydown = function(event){ 
+            if(event.keyCode == 8){
+                
+            }else{
+                console.log(String.fromCharCode(event.keyCode));
+                var inputChar = String.fromCharCode(event.keyCode);
+                charWidth = that.getCharWidth(inputChar);
+                console.log("charWidth "+charWidth);
+                console.log("boxWidth "+boxWidth);
+                var newWidth =boxWidth+charWidth;
+                $(rep).find("input").css("width", newWidth+"px");
+                console.log("boxWidth+charWidth "+newWidth);
+                boxWidth=newWidth;
+            }
+        }
         
 }
 
@@ -173,8 +190,9 @@ SimpleText.saveChanges =  function() {
 
 		var rep = this.getRepresentation();
 	
-		var newContent = $(rep).find("input").val()
-        this.fitTextBox(newContent);
+		var newContent = $(rep).find("input").val();
+        
+        
 		$(rep).find("input").remove();
 	
 		$(rep).find("foreignObject").hide();
@@ -188,20 +206,15 @@ SimpleText.saveChanges =  function() {
 		this.setContent(newContent);
 
 		this.draw();
-        
-        
-	   
+
 	}
 	
 }
 
-SimpleText.fitTextBox = function(txt){
-        var rep = this.getRepresentation();
-        console.log(txt);
+SimpleText.getCharWidth = function(txt){
         var c=document.createElement('canvas');
         var ctx=c.getContext('2d');
         ctx.font = this.getAttribute('font-size') + 'px' + this.getAttribute('font-family');
         var length = ctx.measureText(txt).width;
-        console.log(length);
-        this.setAttribute('width',length);
+        return length;
 }
