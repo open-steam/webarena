@@ -308,6 +308,30 @@
       <input class="discussion-input" placeholder=Texteingabe>
     </div>
   </script>
+
+   <script type="text/template" id="survey-base">
+  		<div data-role="main" class="ui-content">
+			    Bewerten Sie die folgenden Aussagen auf einer Skala von minValue bis maxValue
+			    <br>
+			    <br>
+			    <form method="post" action="#">
+			    	Diese Aussage ist super. <br>
+			    	<input type="range" name="slider_1"  oninput="SurveyTest.sliderChange(1, slider_1.value); display_1.value = slider_1.value"  min="-5" max="5" standard="0">
+			    	Punkte: <output name="display_1"></output>
+			    	<br>
+			    	Diese Aussage ist okay. <br>
+			    	<input type="range" name="slider_2" min="-5" max="5" standard="0">
+			    	Punkte: <output name="display_2"></output>
+			    	<br>
+			    	Diese Aussage ist schlecht. <br>
+			    	<input type="range" name="slider_3" min="-5" max="5" standard="0">
+			    	Punkte: <output name="display_3"></output>
+			    	<br>
+			    	<input type="submit" data-inline="true" value="Ergebnis absenden">
+			   	</form>
+			</div>
+  </script>
+
   <!-- END: Underscore Template Definition. -->
 
 </body>
