@@ -14,9 +14,9 @@ HtmlTest.updateContent = function() {
 
 		if(text!=self.oldContent || !text){
 			if (text == "") {
-				$(rep).find("body").html("<span class=\"moveArea\">Move me here</span> EMPTY HTML OBJECT - <span onclick=\"HtmlTest.onclick(this);\">Click me</span>");
+				self.setHTML("<span class=\"moveArea\">Move me here</span> EMPTY HTML OBJECT - <span onclick=\"HtmlTest.onclick(this);\">Click me</span>");
 			} else {
-				$(rep).find("body").html(text);
+				self.setHTML(text);
 			}
 		}
 		

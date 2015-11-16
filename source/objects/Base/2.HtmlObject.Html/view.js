@@ -75,3 +75,15 @@ HtmlObject.getArenaObject=function(htmlobject){
 	return this.getArenaObject(htmlobject.parentNode);
 	
 }
+
+/**
+*
+*  setHTML
+*
+*  sets the html code of the HTMLObject
+*
+*/
+HtmlObject.setHTML=function(text){
+	var rep=this.getRepresentation();
+	$(rep).find("body").html(text);
+}
