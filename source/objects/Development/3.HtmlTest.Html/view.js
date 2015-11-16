@@ -14,7 +14,7 @@ HtmlTest.updateContent = function() {
 
 		if(text!=self.oldContent || !text){
 			if (text == "") {
-				$(rep).find("body").html("<span class=\"moveArea\">Move me here</span> EMPTY HTML OBJECT");
+				$(rep).find("body").html("<span class=\"moveArea\">Move me here</span> EMPTY HTML OBJECT - <span onclick=\"HtmlTest.onclick(this);\">Click me</span>");
 			} else {
 				$(rep).find("body").html(text);
 			}
@@ -25,3 +25,13 @@ HtmlTest.updateContent = function() {
 	});
 	
 }
+
+HtmlTest.onclick=function(htmlobject){
+	var object=this.getArenaObject(htmlobject);
+	
+	alert(object);
+}
+
+
+
+

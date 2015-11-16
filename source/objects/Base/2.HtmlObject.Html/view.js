@@ -47,6 +47,8 @@ HtmlObject.createRepresentation = function(parent) {
 	rep.dataObject=this;
 	
 	var body = document.createElement("body");
+	
+	body.dataObject=this;
 
 	$(rep).append(body);
 
@@ -55,5 +57,21 @@ HtmlObject.createRepresentation = function(parent) {
 	this.initGUI(rep);
 	
 	return rep;
+	
+}
+
+
+/**
+*   getArenaObject
+*
+*	gets the WebArenaObject for a given htmlobject by going through the dom structure
+*/
+HtmlObject.getArenaObject=function(htmlobject){
+	
+	if (!htmlobject) return undefined;
+	
+	if (htmlobject.dataObject) return htmlobject.dataObject;
+	
+	return this.getArenaObject(htmlobject.parentNode);
 	
 }
