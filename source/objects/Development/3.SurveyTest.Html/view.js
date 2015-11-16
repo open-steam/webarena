@@ -13,34 +13,24 @@ SurveyTest.updateContent = function() {
 	this.setAttribute("width", 400);
 	this.setAttribute("height", 400);
 
-	this.getContentAsString(function(text){
-		if(text!=self.oldContent || !text){
-			if (text == "") {
-				$(rep).find("body").html($('#survey-base').html());
-			} else {
-				$(rep).find("body").html(text);
-			}
-		}
+    //this.setAttribute('init',true);
 
-		self.oldContent=text;
 
-	});
+	if(!this.initialised){
+		$(rep).find("body").html($('#survey-base').html());		
+		this.initialised = true;
+	}
+	
+	$(rep).find("#slider_1").attr('oninput', self.sliderChange(1, $(rep).find("#slider_1").val())); 
+	$(rep).find("#display_1").value =  $(rep).find("#slider_1").val();
+	$(rep).find("#slider_2").attr('oninput', self.sliderChange(2, $(rep).find("#slider_2").val())); 
+	$(rep).find("#display_2").value =  $(rep).find("#slider_2").val();
+	$(rep).find("#slider_3").attr('oninput', self.sliderChange(3, $(rep).find("#slider_3").val())); 
+	$(rep).find("#display_3").value =  $(rep).find("#slider_3").val();
 
-	this.unmakeMovable = function() {
-	    var rep;
-	    if (this.restrictedMovingArea) {
-	        rep = $(this.getRepresentation()).find(".moveArea").get(0);
-	    } else {
-	        rep = this.getRepresentation();
-	    }
 
-	    $(rep).unbind("mousedown");
-
-	//caused errors ("ontouchstart" is undefined in ...), deleted because the function itself was empty
-	//rep.removeEventListener("touchstart", self.moveStart, false);
-    //rep.ontouchstart = function() {
-    //};
-
+	this.saveChanges = function(){
+					
 	}
 
 }

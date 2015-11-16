@@ -27,7 +27,6 @@ SurveyTest.sliderChange = function(sliderID, value){
 	var attribute = 'points_'+sliderID;
 	var value = value;
 
-	//$(display).value = value;
 	this.setAttribute(attribute, value);
 }
 

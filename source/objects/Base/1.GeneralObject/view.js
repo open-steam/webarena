@@ -1053,6 +1053,11 @@ GeneralObject.moveStart = function(event) {
         var self = ObjectManager.getObject(this.id);
     }
 
+    if (!self){
+        console.log('Could not get object for '+this);
+        console.trace();
+    }
+
     if (!self.selected)
         self.select();
 
@@ -1378,6 +1383,11 @@ GeneralObject.unmakeMovable = function() {
         rep = $(this.getRepresentation()).find(".moveArea").get(0);
     } else {
         rep = this.getRepresentation();
+    }
+
+    if (!rep){
+        console.log('No representation in '+this);
+        console.trace();
     }
 
     $(rep).unbind("mousedown");
