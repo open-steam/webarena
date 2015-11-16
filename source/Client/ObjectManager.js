@@ -272,12 +272,14 @@ ObjectManager.remove = function(object) {
 
     var that = this;
     if (!this.transactionId) {
-        var uuid = require('node-uuid');
-	    that.transactionId = uuid.v4();
+        //calculate new transactionId
+		//TODO: isn't safe - concurrent users may result in same timestamp
+		that.transactionId = new Date().getTime();
     } else {
         window.transactionTimer = window.setTimeout(function() {
-            var uuid = require('node-uuid');
-		    that.transactionId = uuid.v4();
+            //calculate new transactionId
+		    //TODO: isn't safe - concurrent users may result in same timestamp
+			that.transactionId = new Date().getTime();
         }, this.transactionTimeout);
     }
 	
