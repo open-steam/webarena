@@ -60,22 +60,6 @@ HtmlObject.createRepresentation = function(parent) {
 	
 }
 
-
-/**
-*   getArenaObject
-*
-*	gets the WebArenaObject for a given htmlobject by going through the dom structure
-*/
-HtmlObject.getArenaObject=function(htmlobject){
-	
-	if (!htmlobject) return undefined;
-	
-	if (htmlobject.dataObject) return htmlobject.dataObject;
-	
-	return this.getArenaObject(htmlobject.parentNode);
-	
-}
-
 /**
 *
 *  setHTML

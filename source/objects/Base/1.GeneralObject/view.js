@@ -1053,15 +1053,40 @@ GeneralObject.saveMoveStartPosition = function() {
 
 
 /**
+*   getArenaObject
+*
+*	gets the WebArenaObject for a given htmlobject by going through the dom structure
+*/
+GeneralObject.getArenaObject=function(htmlobject){
+	
+	if (!htmlobject) return undefined;
+	
+	if (htmlobject.dataObject) return htmlobject.dataObject;
+	
+	return this.getArenaObject(htmlobject.parentNode);
+	
+}
+
+/**
  * Start moving an object
  * @param {DomEvent} event The DOM event
  */
 GeneralObject.moveStart = function(event) {
+	
+	//TODO Why in hell is moveStart called on a context different than the object context?
 
     if (!this.id || this.id == "") {
         var self = ObjectManager.getObject($(this).closest("svg>*").attr("id"));
     } else {
         var self = ObjectManager.getObject(this.id);
+    }
+
+    if (!self) self=(GeneralObject.getArenaObject(this));
+
+    if (!self){
+        console.log('Could not get object for '+this);
+        console.log(this);
+        console.trace();
     }
 
     if (!self.selected)
@@ -1389,6 +1414,11 @@ GeneralObject.unmakeMovable = function() {
         rep = $(this.getRepresentation()).find(".moveArea").get(0);
     } else {
         rep = this.getRepresentation();
+    }
+
+    if (!rep){
+        console.log('No representation in '+this);
+        console.trace();
     }
 
     $(rep).unbind("mousedown");
