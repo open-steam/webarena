@@ -33,3 +33,8 @@ pluginApplications/VerwaltungsApp/config.local.js
 error.log
 usertool/application/config/config.php
 usertool/application/config/platform.php
+source/error/error5.log
+source/error/error1.log
+source/error/error2.log
+source/error/error3.log
+source/error/error4.log
