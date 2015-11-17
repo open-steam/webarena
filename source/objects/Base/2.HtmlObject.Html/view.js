@@ -57,3 +57,21 @@ HtmlObject.createRepresentation = function(parent) {
 	return rep;
 	
 }
+<<<<<<< HEAD
+=======
+
+
+
+
+/**
+*
+*  setHTML
+*
+*  sets the html code of the HTMLObject
+*
+*/
+HtmlObject.setHTML=function(text){
+	var rep=this.getRepresentation();
+	$(rep).find("body").html(text);
+}
+>>>>>>> 40c356ef77b4f514b29de18a33d093e36e446e6f
