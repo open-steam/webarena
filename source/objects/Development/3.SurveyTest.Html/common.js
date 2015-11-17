@@ -16,9 +16,9 @@ SurveyTest.register=function(type){
 	HtmlObject=Modules.ObjectManager.getPrototype('HtmlObject');
 	HtmlObject.register.call(this,type);
 
+	this.registerAttribute('points_0',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
 	this.registerAttribute('points_1',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
 	this.registerAttribute('points_2',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
-	this.registerAttribute('points_3',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
 }
 
 SurveyTest.sliderChange = function(sliderID, value){
