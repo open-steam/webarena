@@ -1,0 +1,25 @@
+TODO:
+- prevent values from resetting when SurveyTestObject is deselected (values not synced with the server, therefore only clientsided)
+- line 1385 in GeneralObject View.js causes error for SurveyTest Object
+GeneralObject.unmakeMovable = function() {
+
+    var rep;
+    if (this.restrictedMovingArea) {
+        rep = $(this.getRepresentation()).find(".moveArea").get(0);
+    } else {
+        rep = this.getRepresentation();
+    }
+
+    $(rep).unbind("mousedown");
+
+    //rep.removeEventListener("touchstart", self.moveStart, false);
+    rep.ontouchstart = function() {
+    };
+
+}
+
+
+- client.js von gate object (für erklärung siehe general object)
+- console.log / console.trace
+- object.serverCall("my function", atrributes) (clientside)
+	<=> this.myfunction = function(input){} (serverside) + theObject.myFunction.public = true;
