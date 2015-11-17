@@ -29,7 +29,7 @@ SurveyTest.updateContent = function() {
 	$(rep).find("#display_3").value =  $(rep).find("#slider_3").val();
 
 
-	theObject.saveChanges = function(){
+	this.saveChanges = function(){
 					
 	}
 
