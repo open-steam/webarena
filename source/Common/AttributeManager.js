@@ -58,6 +58,10 @@ var AttributeManager=new function(){
 	this.get=function(id,key){
 		if (!attributeData[id]) return undefined;
 		if (!key) return attributeData[id];
+        if(typeof attributeData[id][key] ==="object"){
+            var dup_object = JSON.parse(JSON.stringify(attributeData[id][key]));
+            return dup_object;
+        }
 		return attributeData[id][key];
 	}
 	
@@ -210,7 +214,9 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	}	
 	
 	// do nothing, if value has not changed
-	if (object.get(attribute)===value) return false;
+	if (object.get(attribute)===value){
+        return false;
+    } 
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
@@ -286,7 +292,6 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	}
 	
 	if (object.ObjectManager.attributeChanged) object.ObjectManager.attributeChanged(object,attribute,this.getAttribute(object, attribute),true);
-	
 	return true;
 }
 
