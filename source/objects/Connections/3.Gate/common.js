@@ -33,9 +33,7 @@ Gate.register=function(type){
 };
 
 Gate.execute=function(){
-
 		this.follow(this.getAttribute("open in"));
-
 }
 
 Gate.isCreatable=true;

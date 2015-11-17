@@ -30,7 +30,6 @@ SurveyTest.sliderChange = function(sliderID, value){
 	this.setAttribute(attribute, value);
 }
 
-
 SurveyTest.register('SurveyTest');
 SurveyTest.isCreatable=true;
 SurveyTest.contentURLOnly = false;

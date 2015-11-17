@@ -15,10 +15,11 @@ SurveyTest.updateContent = function() {
 	if(!this.getAttribute("initialised")){
 		this.setAttribute("initialised", false);
 	}
+	//for convenience
 	var initialised = this.getAttribute("initialised");
 
 
-	
+	//Initial load of the SurveyBase with standard values and sliders at 0
 	this.surveyBaseHtmlInit = function(){
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
@@ -44,7 +45,7 @@ SurveyTest.updateContent = function() {
 			'</div>'
 			return string;
 	}
-
+	//called when the page has been reloaded
 	this.surveyBaseHtmlReload = function(){
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
@@ -78,6 +79,8 @@ SurveyTest.updateContent = function() {
 	//Else check if the content of the SurveyTest-Object differs from what is currently loaded in the room 
 	//if so: reload it, else keep the old content
 	//This prevents the range-sliders from resetting or the HTML-Content not rendering after refreshing the page
+	//TODO (probably) Keep not only the attributes synced, but also the position of the range slider 
+	//(currently causes problems with multiple users in 1 room)
 	}else{ 
 		this.getContentAsString(function(text){
 

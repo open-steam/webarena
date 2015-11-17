@@ -26,7 +26,6 @@ HtmlObject.draw=function(external){
 HtmlObject.updateContent = function() {
 	
 	var rep=this.getRepresentation();
-	var that = this;
 	
 	this.getContentAsString(function(text){
 
