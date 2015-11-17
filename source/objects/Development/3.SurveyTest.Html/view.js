@@ -25,7 +25,7 @@ SurveyTest.updateContent = function() {
 			    	'Diese Aussage ist super. '+
 			    	'<br>'+
 			    	'<input type="range" id="slider_0"   min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output i="display_0"></output>'+
+			    	'Punkte: <output id="display_0"></output>'+
 			    	'<br>'+
 			    	'Diese Aussage ist okay. <br>'+
 			    	'<input type="range" id="slider_1" min="-5" max="5" class="surveyslider">'+
@@ -46,22 +46,11 @@ SurveyTest.updateContent = function() {
 		this.initialised = true;
 	}
 	
-	// for(var i = 0; i < 3; i++){
-	// 	$(rep).find('#slider_'+i).attr('oninput', self.sliderChange(1, $(rep).find('#slider_'+i).val())); 
-	// 	$(rep).find('#display_'+i).value =  $(rep).find('#slider_'+i).val();
-	// }
+	//Send slidervalues to the server and update the attributes, then update the display values as well.
 	$('.surveyslider').each(function (index, Element) {
 		$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
-		$(rep).find('#display_'+index).value =  $(Element).val();
+		$(rep).find('#display_'+index).val($(Element).val()); 
 	});
-
-	// $(rep).find("#slider_1").attr('oninput', self.sliderChange(1, $(rep).find("#slider_1").val())); 
-	// $(rep).find("#display_1").value =  $(rep).find("#slider_1").val();
-	// $(rep).find("#slider_2").attr('oninput', self.sliderChange(2, $(rep).find("#slider_2").val())); 
-	// $(rep).find("#display_2").value =  $(rep).find("#slider_2").val();
-	// $(rep).find("#slider_3").attr('oninput', self.sliderChange(3, $(rep).find("#slider_3").val())); 
-	// $(rep).find("#display_3").value =  $(rep).find("#slider_3").val();
-// 
 
 	this.saveChanges = function(){
 					
