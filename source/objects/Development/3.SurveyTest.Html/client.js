@@ -14,5 +14,8 @@ SurveyTest.clientRegister=function(){
 }
 
 SurveyTest.send = function(object) {
-	object.serverCall("copyToRoom", "public2");
+	var roomID = prompt("Bitte RaumID eingeben", "public2");
+	if (roomID != null) {
+		object.serverCall("sendToRoom", roomID);
+	}
 }

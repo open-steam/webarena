@@ -11,4 +11,20 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 module.exports=theObject;
 
-theObject.copyToRoom.public = true;
+
+theObject.sendToRoom = function (roomID, callback){
+	var data = {};
+	data.roomID = roomID;
+
+	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
+	/* case differentiation checks if room exists already or if it needs to 
+	be created.
+	 if(Modules.RoomController.roomExists(data, this)){
+		Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
+	}else{
+		Modules.RoomController.createRoom(data, this);
+		Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
+	}
+	*/
+}
+theObject.sendToRoom.public = true;
