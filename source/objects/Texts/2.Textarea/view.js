@@ -47,6 +47,8 @@ Textarea.draw=function(external){
 			$(rep).css("visibility", "hidden");
 		}
 	}
+	
+	this.showOrHide();
 
 	var that=this;
 	

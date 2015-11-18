@@ -6,3 +6,5 @@ IconObject.clientRegister=function(){
 	this.unregisterAction('to front');
 	
 }
+
+IconObject.isBackgroundObject = function(){	return false;}

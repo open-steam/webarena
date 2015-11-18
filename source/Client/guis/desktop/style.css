@@ -35,6 +35,8 @@ body {
     border-right: 1px solid #000000;
 }
 
+#header.bgmode, #sidebar_title.bgmode {	background:#254773;}
+
 #header img {
     opacity: 0.6;
     cursor: pointer;
@@ -395,6 +397,9 @@ div.header_menu form {
     z-index: 11002;
     padding-top: 0px;
 }
+
+#sidebar.bgmode {	background:#91bbf2;}#sidebar_content.bgmode, #sidebar_content.fgmode {	bottom:40px;}#sidebar #switchbutton {	position:fixed;	bottom:7px;	left:8px;	width:215px;	height:24px;}
+
 
 #sidebar_title {
     z-index: 11000;

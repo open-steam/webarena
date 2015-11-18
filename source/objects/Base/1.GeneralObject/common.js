@@ -117,7 +117,7 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('linesize', {type: 'number', min: 1, standard: 1, category: 'Appearance'});
 
-    this.registerAttribute('locked', {type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
+    this.registerAttribute('fixed', {type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
 
             window.setTimeout(function() {
                 object.deselect();

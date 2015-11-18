@@ -64,7 +64,7 @@ IconObject.register=function(type){
             }
         }});
 
-	
+	  this.registerAttribute('positionStatus', {type: 'string', standard: 'unpositioned', category: 'Basic', mobile: false});  /*  this.registerAction('Evaluate Position', function(object) {        ObjectManager.evaluatePositions(ObjectManager.getSelected());    });    //TODO: Just activate this method, if evalStatus != unevaluated.    this.registerAction('Reposition', function(object) {        ObjectManager.reposition(ObjectManager.getSelected());        //get context        //get all structures of this context        //getValidPositionsForAllStructures        //if o is associated with this structure --> must        //if o isn't associated with this structure -->must not        //intersection of all must, known as res1        // res1 diff m, for all    }); */
 }
 
 

@@ -452,6 +452,11 @@ ObjectManager.undo = function(data, context, callback) {
  *
  **/
 ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
+	
+	if (!callback){
+		console.log('Called getRoom without callback.');
+		console.trace();
+	}
 
     if (!context)
         throw new Error('Missing context in ObjectManager.getRoom');

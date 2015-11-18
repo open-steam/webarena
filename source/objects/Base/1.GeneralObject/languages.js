@@ -21,7 +21,7 @@ GeneralObject.setTranslations('de',{
 	'To back':'Nach hinten',
 	'open File':'Datei öffnen',
 	'open/close':'Öffnen/Schließen',
-	'locked':'Angeheftet',
+	'fixed':'Fixiert',
 	'visible':'Sichtbar',
 	'group':'Gruppe',
 	'Group':'Gruppieren',

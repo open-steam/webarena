@@ -247,18 +247,209 @@ theObject.makeSensitive=function(){
 // * MAKE STRUCTURING *********************************************
 // ****************************************************************
 
-theObject.makeStructuring=function(){
-	this.isStructuringFlag=true;
-	this.makeSensitive();
-	this.isSensitiveFlag=false;
-	
-	this.onObjectMove=function(changeData){
-		
-		//when a structuring object is moved, every active object may be in need of repositioning
-		
-		console.log('onObjectMove on structuring object '+this);
-		
-	}
+theObject.makeStructuring = function() {
+
+    if (!Modules.config.structuringMode) {
+        console.log('Cannot make ' + this + ' structuring because structuring is turned off in config.');
+    } else {
+        console.log(this + ' is now structuring');
+    }
+
+    this.isStructuringFlag = true;
+
+    var theObject = this;
+
+    this.onObjectMove = function(changeData) {
+    	console.log('onObectMove on '+this);
+        this.getRoom().setAttribute('repositionNeeded', true);
+    }
+
+    theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
+
+        if ((otherX + otherWidth) < thisX) {
+            //console.log('too far left');
+            return false;
+        }
+        if ((otherY + otherHeight) < thisY) {
+            //console.log('too far up');
+            return false;
+        }
+        if (otherX > (thisX + thisWidth)) {
+            //console.log('too far right');
+            return false;
+        }
+        if (otherY > (thisY + thisHeight)) {
+            //console.log('too far bottom');
+            return false;
+        }
+
+        //console.log('intersects');
+        return true;
+
+    }
+
+    /**
+     *	intersects
+     *
+     *	determines, if this Active object intersects another object.
+     *	In this simple implementation, this is done by bounding box comparison.
+     **/
+    theObject.intersects = function(otherX, otherY, otherWidth, otherHeight) {
+
+        if (typeof otherX == 'object') {
+            var other = otherX.getBoundingBox();
+            otherX = other.x;
+            otherY = other.y;
+            otherWidth = other.width;
+            otherHeight = other.height;
+        }
+
+        var bbox = this.getBoundingBox();
+
+        return this.bBoxIntersects(bbox.x, bbox.y, bbox.width, bbox.height, otherX, otherY, otherWidth, otherHeight);
+
+    }
+    /**
+     *	getOverlappingObjcts
+     *
+     *	get an array of all overlapping objects
+     **/
+    theObject.getOverlappingObjects = function() {
+        var result = [];
+
+        var inventory = this.getRoom().getInventory();
+
+        for (var i in inventory) {
+            var test = inventory[i];
+            if (test.id == this.id)
+                continue;
+            if (this.intersects(test)) {
+                result.push(test);
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     *	Structuring Objects evaluate other objects in respect to themselves.
+     *
+     *	object the object that shall be evaluated
+     *	changeData old and new values of positioning (e.g. changeData.old.x) 
+     **/
+    theObject.evaluateObject = function(object, changeData) {
+        object.setAttribute("linecolor", "transparent");
+        //complete data
+        var oldData = {};
+        var newData = {};
+        var fields = ['x', 'y', 'cx', 'cy', 'width', 'height'];
+
+        for (var i in fields) {
+            var field = fields[i];
+            oldData[field] = changeData['old'][field] || object.getAttribute(field);
+            newData[field] = changeData['new'][field] || object.getAttribute(field);
+        }
+
+        //determine intersections
+
+        var oldIntersects = this.intersects(oldData.x, oldData.y, oldData.width, oldData.height);
+        var newIntersects = this.intersects(newData.x, newData.y, newData.width, newData.height);
+
+        //handle move
+        if (oldIntersects && newIntersects)
+            return this.onMoveWithin(object, newData);
+        if (!oldIntersects && !newIntersects)
+            return this.onMoveOutside(object, newData);
+        if (oldIntersects && !newIntersects)
+            return this.onLeave(object, newData);
+        if (!oldIntersects && newIntersects)
+            return this.onEnter(object, newData);
+    }
+
+    if (!theObject.onMoveWithin)
+        theObject.onMoveWithin = function(object, data) {
+            this.fireEvent('object::' + this.id + '::moveWithin', object.id);
+        };
+
+    if (!theObject.onMoveOutside)
+        theObject.onMoveOutside = function(object, data) {
+            this.fireEvent('object::' + this.id + '::moveOutside', object.id);
+        };
+
+    if (!theObject.onLeave)
+        theObject.onLeave = function(object, data) {
+            this.fireEvent('object::' + this.id + '::leave', object.id);
+        };
+
+    if (!theObject.onEnter)
+        theObject.onEnter = function(object, data) {
+            this.fireEvent('object::' + this.id + '::enter', object.id);
+        };
+
+
+    if (!this.structures)
+        this.structures = function(obj) {
+
+            //determines, if a given object is to be structured by this structuring object
+
+            if (this.id == obj.id)
+                return false;
+
+            if (obj.isStructuring())
+                return false;
+            if (obj.isIllustrating())
+                return false;
+
+            return true;
+        }
+
+    theObject.evaluateObjectNoData = function(object) {
+        var x = object.getAttribute('x');
+        var y = object.getAttribute('y');
+        var width = object.getAttribute('width');
+        var height = object.getAttribute('height');
+        var intersects = this.intersects(x, y, width, height);
+
+        if (intersects) {
+            this.onEnter(object);
+            return true;
+        } else {
+            this.onLeave(object);
+            return false;
+        }
+    }
+    theObject.getInvalidPositions = function(object) {
+        //Holen der notwendigen attribute
+        var startX = this.getAttribute('x');
+        var startY = this.getAttribute('y');
+        var width = this.getAttribute('width');
+        var height = this.getAttribute('height');
+
+        var aoWidth = object.getAttribute('width');
+        var aoHeight = object.getAttribute('height');
+
+        //koordinaten duerfen nicht negativ werden
+        var x1;
+        if (startX - aoWidth < 0) {
+            x1 = 0;
+        } else {
+            x1 = startX - aoWidth;
+        }
+        var y1;
+        if (startY - aoHeight < 0) {
+            y1 = 0;
+        } else {
+            y1 = startY - aoHeight;
+        }
+        //Ausgabe des Rechtecks
+        var p1 = {X: x1, Y: y1};
+        var p2 = {X: startX + width, Y: y1};
+        var p3 = {X: startX + width, Y: startY + height};
+        var p4 = {X: x1, Y: startY + height};
+        return [[p1, p2, p3, p4]];
+    }
+
 
 }
 
@@ -464,12 +655,14 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 		data.old=posData.old;
 		data.new=posData.new;
 		
-		self.evaluatePositionInt(data);
+		//self.evaluatePositionInt(data);
+		self.updateEvaluationStatus(data);
 		self.runtimeData.evaluatePositionData=undefined;
 	},timerLength);
 	
 }
 
+/*
 theObject.evaluatePositionInt=function(data){
 	
 	var that=this;
@@ -482,7 +675,15 @@ theObject.evaluatePositionInt=function(data){
 	});
 	
 }
+*/
 
+theObject.evaluateCurrentPosition = function() {    var room = this.getRoom();    if (!room)        return;    room.evaluateCurrentPosition(this);}
+
+theObject.updateEvaluationStatus = function(data) {    this.getRoomAsync(function(){},function(room){
+    	
+    	if (!room)        return;    	room.updateEvaluationStatus(this, data);
+    	
+    });}
 
 theObject.getRoomAsync=function(error,cb){
 	if (!this.context) error();

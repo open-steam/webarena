@@ -18,6 +18,8 @@ HtmlObject.draw=function(external){
 
 	var that=this;
 	
+	this.showOrHide();
+	
 	this.updateContent();
 	
 }

@@ -39,6 +39,7 @@ Room.register=function(type){
 	this.registerAttribute('showUserPaintings',{type:"boolean", standard:true, changedFunction: function(object, value) {object.showUserPaintings(value);}});
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
     
+    if (Modules.Config.structuringMode) {        this.attributeManager.registerAttribute('mode', {type: 'selection', standard: 'foreground', options: ['background', 'foreground'], category: 'Structure', hidden: true, changedFunction: function(room) {                GUI.deselectAllObjects();                room.redraw();                GUI.setMode(room.getAttribute('mode'));            }});    }
 }
 
 /*
@@ -66,6 +67,8 @@ Room.showUserPaintings = function(value)
 	else
 	{ $('img[id^="userPainting_"]').remove(); }
 }
+
+Room.isInBackgroundMode = function() {    var mode = this.getAttribute('mode');    if (mode == 'background')        return true;    return false;}Room.switchMode = function(mode) {    if (mode == 'background')        this.setAttribute('mode', 'background');    else        this.setAttribute('mode', 'foreground');}
 
 Room.register('Room');
 Room.isCreatable=false;

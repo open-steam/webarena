@@ -25,70 +25,7 @@ GeneralObject.restrictedMovingArea = false;
  * Updates the representation using the attributes
  * @param {bool} external True if triggered externally (and not by the object itself)
  */
-GeneralObject.draw = function(external) {
-
-    if (!this.isGraphical)
-        return;
-
-    var rep = this.getRepresentation();
-
-    this.setViewWidth(this.getAttribute('width'));
-    this.setViewHeight(this.getAttribute('height'));
-
-    this.drawPosition(external);
-
-    $(rep).attr("layer", this.getAttribute('layer'));
-
-    if (!$(rep).hasClass("webarena_ghost")) {
-
-        if (this.selected) {
-            $(rep).css("visibility", "visible");
-        } else {
-
-            if (this.getAttribute("visible")) {
-
-                if (external) {
-                    if ($(rep).css("visibility") == "hidden") {
-                        /* fade in */
-                        $(rep).css("opacity", 0);
-                        $(rep).css("visibility", "visible");
-                        $(rep).animate({
-                            "opacity": 1
-                        }, {queue: false, duration: 500});
-                    }
-                } else {
-                    $(rep).css("visibility", "visible");
-                }
-
-            } else {
-
-                if (external) {
-                    if ($(rep).css("visibility") == "visible") {
-                        /* fade out */
-                        $(rep).css("opacity", 1);
-                        $(rep).animate({
-                            "opacity": 0
-                        }, {queue: false,
-                            complete: function() {
-                                $(rep).css("visibility", "hidden");
-                            }
-                        });
-                    }
-                } else {
-                    $(rep).css("visibility", "hidden");
-                }
-
-            }
-
-        }
-
-
-    }
-
-    this.adjustControls();
-
-}
-
+GeneralObject.draw=function(external){	if (!this.isGraphical) return;			var rep=this.getRepresentation();	this.setViewWidth(this.getAttribute('width'));	this.setViewHeight(this.getAttribute('height'));		this.drawPosition(external);				$(rep).attr("layer", this.getAttribute('layer'));		this.showOrHide();		this.adjustControls();	}GeneralObject.showOrHide=function(external){			var rep=this.getRepresentation();			if (!$(rep).hasClass("webarena_ghost")) {				if (this.selected) {			$(rep).css("visibility", "visible");		} else {						if (this.isVisible()) {							if (external) {					if ($(rep).css("visibility") == "hidden") {						/* fade in */						$(rep).css("opacity", 0);						$(rep).css("visibility", "visible");						$(rep).animate({							"opacity" : 1						}, {queue:false, duration:500});					}				} else {					$(rep).css("visibility", "visible");					$(rep).css("opacity", 1);				}							} else {											if (external) {					if ($(rep).css("visibility") == "visible") {									/* fade out */						$(rep).css("opacity", 1);						$(rep).animate({							"opacity" : 0						}, {queue:false, 							complete:function() {								$(rep).css("visibility", "hidden");								$(rep).css("opacity", 1);							}							});					}				} else {					$(rep).css("visibility", "hidden");				}							}					}	}}
 /**
  * Updates the position of the representation
  * @param {bool} external True if triggered externally (and not by the object itself)
@@ -366,6 +303,9 @@ GeneralObject.hideActivationMarker = function() {
  * @param {bool} groupSelect ?
  */
 GeneralObject.select = function(multiple, groupSelect) {
+	
+	if (!this.isAccessible()) return;   // refuse selecting if not in the right mode	if (this.selected) return;
+
 
     if (this.selected)
         return;
@@ -386,7 +326,7 @@ GeneralObject.select = function(multiple, groupSelect) {
 
     //show invisible object if selected
     var visible = true;
-    if (!this.getAttribute("visible")) {
+    if (!this.isVisible()) {
         var rep = this.getRepresentation();
         $(rep).css("opacity", 1);
         $(rep).css("visibility", "visible");
@@ -472,7 +412,7 @@ GeneralObject.deselect = function() {
 
     //hide invisible object after deselection
     var visible = true;
-    if (!this.getAttribute("visible")) {
+    if (!this.isVisible()) {
         var rep = this.getRepresentation();
         $(rep).css("opacity", 0);
         $(rep).css("visibility", "hidden");
@@ -491,7 +431,7 @@ GeneralObject.deselect = function() {
             return;
         }
 
-        if (!target.getAttribute("visible") && room.getAttribute("showLinks")) {
+        if (!target.isVisible() && room.getAttribute("showLinks")) {
 
             var rep = target.getRepresentation();
             $(rep).css("opacity", 0);
@@ -1368,7 +1308,7 @@ GeneralObject.makeMovable = function() {
  * @param {int} dy Moved x distance
  */
 GeneralObject.moveRelative = function(dx, dy) {
-    if (this.getAttribute("locked"))
+    if (this.getAttribute("fixed"))
         return;
 
     this.setViewX(this.moveObjectStartX + dx);
