@@ -9,10 +9,10 @@ SurveyTest.clientRegister=function(){
 	SurveyTest.parent.clientRegister.call(this);
 	
 	this.registerAction('Send to users',function(object){
-		that.send();
+		that.send(object);
 	},true);
 }
 
-SurveyTest.send = function() {
-		alert("works");
+SurveyTest.send = function(object) {
+	object.serverCall("copyToRoom", "public2");
 }

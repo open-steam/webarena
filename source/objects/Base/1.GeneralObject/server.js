@@ -889,7 +889,6 @@ theObject.moveToRoom = function (roomID, callback){
 }
 
 theObject.copyToRoom = function (roomID, callback){
-	
 	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
 	
 }
