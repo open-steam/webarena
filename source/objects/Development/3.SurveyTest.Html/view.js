@@ -30,15 +30,15 @@ SurveyTest.updateContent = function() {
 			    	'Diese Aussage ist super. '+
 			    	'<br>'+
 			    	'<input type="range" id="slider_0" min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_0"></output>'+
+			    	'Punkte: <output id="display_0">0</output>'+
 			    	'<br>'+
 			    	'Diese Aussage ist okay. <br>'+
 			    	'<input  type="range" id="slider_1" min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_1"></output>'+
+			    	'Punkte: <output id="display_1">0</output>'+
 			    	'<br>'+
 			    	'Diese Aussage ist schlecht. <br>'+
 			    	'<input type="range" id="slider_2" min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_2"></output>'+
+			    	'Punkte: <output id="display_2">0</output>'+
 			    	'<br>'+
 			    	'<input type="submit" data-inline="true" value="Ergebnis absenden">'+
 			   	'</form>'+
@@ -56,15 +56,15 @@ SurveyTest.updateContent = function() {
 			    	'Diese Aussage ist super. '+
 			    	'<br>'+
 			    	'<input type="range" id="slider_0" value='+this.getAttribute('points_0')+' min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_0"></output>'+
+			    	'Punkte: <output id="display_0">'+this.getAttribute('points_0')+'</output>'+
 			    	'<br>'+
 			    	'Diese Aussage ist okay. <br>'+
 			    	'<input type="range" id="slider_1" value='+this.getAttribute('points_1')+' min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_1"></output>'+
+			    	'Punkte: <output id="display_1">'+this.getAttribute('points_1')+'</output>'+
 			    	'<br>'+
 			    	'Diese Aussage ist schlecht. <br>'+
 			    	'<input type="range" id="slider_2" value='+this.getAttribute('points_2')+' min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_2"></output>'+
+			    	'Punkte: <output id="display_2">'+this.getAttribute('points_2')+'</output>'+
 			    	'<br>'+
 			    	'<input type="submit" data-inline="true" value="Ergebnis absenden">'+
 			   	'</form>'+
@@ -100,7 +100,4 @@ SurveyTest.updateContent = function() {
 
 	this.setAttribute("initialised", true);
 
-	this.saveChanges = function(){
-					
-	}
 }
