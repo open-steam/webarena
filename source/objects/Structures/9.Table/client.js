@@ -126,3 +126,63 @@ Table.showFormatDialog = function(selected) {
             );
 
 }
+
+
+// find selected cell, open dialog and change the labelName through input
+Table.showLabelDialog = function(selectedObject,labelList,labelType,position) {
+    var that = this;
+    var dialog_buttons = {};
+    
+    var changeName = function(){
+        var oldName = selectedObject[0].innerHTML;
+        var newName = document.getElementById("inputField").value;
+        for (var i = 0; i <= labelList.length; i++){
+            if(labelList[i]==oldName && i+1 == position){
+                labelList[i]=newName;
+                
+            }
+        }
+        console.log(labelType);
+        console.log(labelList);
+        that.setAttribute(labelType,labelList);
+        GUI.updateInspector();
+    }
+    
+    dialog_buttons[that.translate(GUI.currentLanguage, "Namen übernehmen")] = function() {
+        changeName();
+    };
+    
+
+   
+    
+    dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
+        return false;
+    };
+    
+    var dialog_width = 300;
+    var content = [];
+    var html = "<p>Tragen im unteren Eingabefeld einen neuen Namen ein.</p>";
+    html+="<p>Mit der Eingabe-Taste &#9166 übernehmen Sie den Namen</p>";
+    html+="<input id='inputField' type='text' style='width:100%' value='"+selectedObject[0].innerHTML+"'>";
+    
+var js = '$(document).ready(function(){document.getElementById("inputField").select();});';
+
+    html += '<script>' + js + '</script>';
+    
+    content.push(html);
+    var dialog = GUI.dialog(
+            that.translate(GUI.currentLanguage, "Zeilen- und Spaltennamen überarbeiten"),
+            content,
+            dialog_buttons,
+            dialog_width,
+            null
+            );
+    
+     document.onkeydown = function(event){ 
+            if(event.keyCode ==13){
+                changeName();
+                dialog.dialog("close");
+            }
+        }
+
+}

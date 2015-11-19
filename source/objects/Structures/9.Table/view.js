@@ -281,41 +281,73 @@ Table.setViewWidth = function(value) {
     GUI.adjustContent(this);
 }
 
+//find cell and open LabelDialog for changing name
  Table.editText= function(event){
+     var objectX = this.getAttribute('x');
+     var objectY = this.getAttribute('y');
+     var objectWidth = this.getAttribute('width');
+     var objectHeight = this.getAttribute('height');
+     var rows = this.getAttribute('Row');
+     var columns = this.getAttribute('Column');
+     
+     var cellWidth = objectWidth/(columns.length+1);
+     var cellHeight = objectHeight/(rows.length+1);
+    
+     var labellist= null;
+     var labelType =null;
+     var counter=0;
+     var LabelIdNumber=null;
+     if((objectX+objectWidth/(columns.length+1))<event.clientX){
+         // in oberster Zeile suchen (COLUMN)
+         console.log('Column selected');
+         var labelFound=false;
+         while(!labelFound){
+             counter++;
+             console.log('counter: '+counter);
+             if(objectX+cellWidth*(counter+1)>= event.clientX && objectX+cellWidth*(counter)<= event.clientX){
+                 labelFound=true;
+                 labellist=columns;
+                 labelType='Column';
+                 LabelIdNumber=counter;
+             }
+         }
+         
+     }else{
+         // in erster Spalte suchen (ROW)
+         console.log('Row selected');
+         var labelFound=false;
+         while(!labelFound){
+             counter++;
+             console.log('counter: '+counter);
+             if(objectY+cellHeight*(counter+1)>= event.clientY && objectY+cellHeight*(counter)<= event.clientY){
+                 labelFound=true;
+                 labellist=rows;
+                 labelType='Row';
+                 counter--;
+                 LabelIdNumber=columns.length+counter;
+             }
+         }
+     }
+     
      var rep = this.getRepresentation();
-     
-     console.log("Table view.js Tabellenobjekte:");
-     console.log($(rep).find("#"+this.getAttribute("id")+"-1")[0].childNodes);
-     
-     var labelObject = $(rep).find('#label1');
-     
-     console.log("Table view.js label1-Objekt:");
-     console.log(labelObject);
-     
-     var element = document.getElementById("label1");
-     var elementHtml = "<input x='"+element.getAttribute("x")+"' y='"+element.getAttribute("x")+"' class='text' font-size='"+element.getAttribute("font-size")+"' stroke='"+element.getAttribute("stroke")+"' stroke-width'"+element.getAttribute("stroke-width")+"' id='"+element.getAttribute("id")+"' value='"+element.innerHTML+"'>";
-     console.log("Table view.js label1-HTML:   "+element.outerHTML);
-     console.log("Table view.js label1-HTML modified:   "+elementHtml);
-
-     element = document.createElement(elementHtml);
-     console.log(elementHtml);
-     
-//		$(rep).find("input").attr("name", "newContent");
-//		$(rep).find("input").attr("value", this.oldContent);
-//		$(rep).find("input").css("font-size", this.getAttribute('font-size')+"px");
-//		$(rep).find("input").css("font-family", this.getAttribute('font-family')); 
-//		$(rep).find("input").css("color", this.getAttribute('font-color'));
-//		$(rep).find("input").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
-//		$(rep).find("input").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
-//		$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
-//		$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+26);
-//		
-//		$(rep).find("text").hide();
-//		
-//		$(rep).find("input").focus();
-//		
+     console.log('LabelIdNumber '+LabelIdNumber);
+     var labelObject = $(rep).find('#label'+LabelIdNumber);
+     this.showLabelDialog(labelObject,labellist,labelType,counter);
+	
 		this.input = true;
 		GUI.input = this.id;
      
  }
+ 
+ /**
+ * Called after hitting the Enter key during the inplace editing
+ */
+Table.saveChanges = function() {
+    this.draw();
+	if(this.input){
+	    this.input = false;
+		GUI.input = false;
+	}
+	
+}
  

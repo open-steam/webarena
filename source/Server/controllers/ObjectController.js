@@ -98,7 +98,7 @@ ObjectController.executeServersideAction = function (data, context, cb) {
     
     var rightCheckFunction=rightDummyFunction;
     
-    if (fn.neededRights && fn.neededRights.write) rightCheckFunction=Modules.Connector.mayWrite;
+    if (fn.neededRights && fn.neededRights.write) rightCheckFunction=function(roomID,objetID,context,callback){Modules.Connector.mayWrite(roomID,objetID,context,callback)};
 
 	rightCheckFunction(roomID, objectID, context, function(error,result){
 		

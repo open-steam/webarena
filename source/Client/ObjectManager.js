@@ -1032,6 +1032,8 @@ ObjectManager.evaluatePositions = function(objects) {
 
 ObjectManager.paintingUpdate = function(data) {
 
+    if (!Modules.Config.paintMode) return;
+
     if (!ObjectManager.getCurrentRoom().getAttribute("showUserPaintings"))
         return;
 

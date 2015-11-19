@@ -57,6 +57,7 @@ ServerController.bugreport = function(data, socket, responseID, callback) {
                         if (err === null) {
                             Modules.Dispatcher.respond(socket, responseID, true); //ok
                         } else {
+                        	console.log('Problem sending the bug report ',err);
                             Modules.Dispatcher.respond(socket, responseID, false); //error sending mail
                         }
 

@@ -10,7 +10,6 @@ class Course extends CI_Model {
     var $applied = array();
     var $memberStatus = "";
     var $frozen = false;
-    var $deleted = false;
 
     function __construct() {
         // Call the Model constructor
@@ -60,18 +59,14 @@ class Course extends CI_Model {
     function getMemberStatus() {
         return $this->memberStatus;
     }
-
+    
     function isFrozen() {
         return $this->frozen;
     }
 
-    function isDeleted() {
-        return $this->deleted;
-    }
-
     function loadCourseData($id) {
-        log_message("debug", "course loadCourseData: id = " . $id);
-
+        log_message("debug", "course loadCourseData: id = ".$id);
+        
         $filename = $this->config->item('courseFolder') . "/" . $id;
         if (!file_exists($filename)) {
             return false;
@@ -82,7 +77,7 @@ class Course extends CI_Model {
                 $course = json_decode(file_get_contents($filename . "/info.txt"), true);
                 flock($courseData, LOCK_UN); // release the lock
             } else {
-                log_message("error", "course loadCourseData: filename = " . $filename);
+                log_message("error", "course loadCourseData: filename = ".$filename);
                 return false;
             }
             fclose($courseData);
@@ -92,20 +87,18 @@ class Course extends CI_Model {
             $this->description = $course["description"];
             $this->room = $course["room"];
             $this->frozen = $course["frozen"];
-            if (array_key_exists("deleted", $course)) {
-                $this->deleted = $course["deleted"];
-            }
+
             return true;
         }
     }
 
     function loadMemberData($loadUserData = false) {
-        log_message("debug", "course loadMemberData: id = " . $this->id . " loadUserData = " . $loadUserData);
-
+        log_message("debug", "course loadMemberData: id = ".$this->id." loadUserData = ".$loadUserData);
+        
         if (!class_exists('User')) {
             require_once(APPPATH . 'models/User.php');
         }
-
+        
         $filename = $this->config->item('courseFolder') . "/" . $this->id;
         $this->members = array();
         $members = scandir($filename . "/verified");
@@ -141,8 +134,8 @@ class Course extends CI_Model {
     }
 
     function checkUserAccess($member = "") {
-        log_message("debug", "course checkUserAccess: id = " . $this->id . " member = " . $member);
-
+        log_message("debug", "course checkUserAccess: id = ".$this->id." member = ".$member);
+        
         $userAccessFile = $this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $member . ".txt";
         $userAccess = fopen($userAccessFile, "r");
         if (flock($userAccess, LOCK_SH)) { // do a shared lock
@@ -152,7 +145,7 @@ class Course extends CI_Model {
             }
             flock($userAccess, LOCK_UN); // release the lock
         } else {
-            log_message("error", "course checkUserAccess: id = " . $this->id . " userAccessFile = " . $userAccessFile);
+            log_message("error", "course checkUserAccess: id = ".$this->id." userAccessFile = ".$userAccessFile);
             return false;
         }
         fclose($userAccess);
@@ -160,8 +153,8 @@ class Course extends CI_Model {
     }
 
     function verifyUser($username = "") {
-        log_message("debug", "course verifyUser: id = " . $this->id . " username = " . $username);
-
+        log_message("debug", "course verifyUser: id = ".$this->id." username = ".$username);
+        
         $userAppliedFile = $this->config->item('courseFolder') . "/" . $this->id . "/applied/" . $username . ".txt";
         if (file_exists($userAppliedFile)) {
             unlink($userAppliedFile);
@@ -171,7 +164,7 @@ class Course extends CI_Model {
                 fwrite($userAccess, "write");
                 flock($userAccess, LOCK_UN); // release the lock
             } else {
-                log_message("error", "course verifyUser: id = " . $this->id . " userAppliedFile = " . $userAppliedFile);
+                log_message("error", "course verifyUser: id = ".$this->id." userAppliedFile = ".$userAppliedFile);
                 return false;
             }
             fclose($userAccess);
@@ -182,8 +175,8 @@ class Course extends CI_Model {
     }
 
     function changeWriteAccessUser($username = "", $writeAccess = false) {
-        log_message("debug", "course changeWriteAccessUser: id = " . $this->id . " username = " . $username . " writeAccess = " . $writeAccess);
-
+        log_message("debug", "course changeWriteAccessUser: id = ".$this->id." username = ".$username." writeAccess = ".$writeAccess);
+        
         $userAccessFile = $this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $username . ".txt";
         $userAccess = fopen($userAccessFile, "w+");
         if (flock($userAccess, LOCK_EX)) { // do an exclusive lock
@@ -194,7 +187,7 @@ class Course extends CI_Model {
             }
             flock($userAccess, LOCK_UN); // release the lock
         } else {
-            log_message("error", "course changeWriteAccessUser: id = " . $this->id . " userAccessFile = " . $userAccessFile);
+            log_message("error", "course changeWriteAccessUser: id = ".$this->id." userAccessFile = ".$userAccessFile);
             return false;
         }
         fclose($userAccess);
@@ -202,8 +195,8 @@ class Course extends CI_Model {
     }
 
     function checkMemberStatus($member = "") {
-        log_message("debug", "course checkMemberStatus: id = " . $this->id . " member = " . $member);
-
+        log_message("debug", "course checkMemberStatus: id = ".$this->id." member = ".$member);
+        
         $filename = $this->config->item('courseFolder') . "/" . $this->id;
 
         $members = scandir($filename . "/verified");
@@ -238,8 +231,8 @@ class Course extends CI_Model {
     }
 
     function apply($username = "") {
-        log_message("debug", "course apply: id = " . $this->id . " username = " . $username);
-
+        log_message("debug", "course apply: id = ".$this->id." username = ".$username);
+        
         if (file_exists($this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $username . ".txt") || file_exists($this->config->item('courseFolder') . "/" . $this->id . "/applied/" . $username . ".txt")) {
             return false;
         } else {
@@ -249,7 +242,7 @@ class Course extends CI_Model {
                 fwrite($userData, "applied");
                 flock($userData, LOCK_UN); // release the lock
             } else {
-                log_message("error", "course apply: id = " . $this->id . " username = " . $username);
+                log_message("error", "course apply: id = ".$this->id." username = ".$username);
                 return false;
             }
             fclose($userData);
@@ -265,26 +258,9 @@ class Course extends CI_Model {
         }
     }
 
-    function deleteCourse() {
-        log_message("debug", "course createCourse: id = " . $this->id);
-        $this->load->library('session');
-
-        $filename = $this->config->item('courseFolder') . "/" . $this->id;
-        if (file_exists($filename)) {
-            $this->deleted = true;
-            if ($this->saveCourseData()) {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return true;
-        }
-    }
-
     function createCourse() {
-        log_message("debug", "course createCourse: id = " . $this->id);
-
+        log_message("debug", "course createCourse: id = ".$this->id);
+        
         $this->load->library('session');
 
         $filename = $this->config->item('courseFolder') . "/" . $this->id;
@@ -297,7 +273,7 @@ class Course extends CI_Model {
             $course["description"] = $this->description;
             $course["room"] = $this->room;
             $course["frozen"] = $this->frozen;
-            $course["deleted"] = $this->deleted;
+
             // create folders
             mkdir($filename);
             mkdir($filename . "/applied");
@@ -309,7 +285,7 @@ class Course extends CI_Model {
                 fwrite($adminData, "write");
                 flock($adminData, LOCK_UN); // release the lock
             } else {
-                log_message("debug", "course createCourse: id = " . $this->id . " admin = " . $this->session->userdata('username'));
+                log_message("debug", "course createCourse: id = ".$this->id." admin = ".$this->session->userdata('username'));
                 return false;
             }
             fclose($adminData);
@@ -329,7 +305,7 @@ class Course extends CI_Model {
                 fwrite($courseData, json_encode($course));
                 flock($courseData, LOCK_UN); // release the lock
             } else {
-                log_message("debug", "course createCourse: id = " . $this->id . " filename = " . $filename);
+                log_message("debug", "course createCourse: id = ".$this->id." filename = ".$filename);
                 return false;
             }
             fclose($courseData);
@@ -338,8 +314,8 @@ class Course extends CI_Model {
     }
 
     function saveCourseData() {
-        log_message("debug", "course saveCourseData: id = " . $this->id);
-
+        log_message("debug", "course saveCourseData: id = ".$this->id);
+        
         $this->load->library('session');
 
         $filename = $this->config->item('courseFolder') . "/" . $this->id;
@@ -350,7 +326,6 @@ class Course extends CI_Model {
         $course["description"] = $this->description;
         $course["room"] = $this->room;
         $course["frozen"] = $this->frozen;
-        $course["deleted"] = $this->deleted;
 
         // save general information of the course
         $filename = $filename . "/info.txt";
@@ -359,30 +334,30 @@ class Course extends CI_Model {
             fwrite($courseData, json_encode($course));
             flock($courseData, LOCK_UN); // release the lock
         } else {
-            log_message("error", "course saveCourseData: id = " . $this->id . " filename = " . $filename);
+            log_message("error", "course saveCourseData: id = ".$this->id." filename = ".$filename);
             return false;
         }
         fclose($courseData);
         return true;
     }
-
+    
     function freeze() {
-        log_message("debug", "course freeze: id = " . $this->id);
-
+        log_message("debug", "course freeze: id = ".$this->id);
+        
         // change rights to read only for all verified members
         foreach ($this->members as $member) {
             if (!($this->changeWriteAccessUser($member))) {
                 return false;
             }
         }
-
+        
         // delete not verified members from this course
         foreach ($this->applied as $applied) {
             if (!($this->deleteUser($applied))) {
                 return false;
             }
         }
-
+        
         // save frozen status
         $this->frozen = true;
         if ($this->saveCourseData()) {
@@ -391,10 +366,10 @@ class Course extends CI_Model {
             return false;
         }
     }
-
+    
     function deleteUser($username) {
-        log_message("debug", "course deleteUser: id = " . $this->id . " username = " . $username);
-
+        log_message("debug", "course deleteUser: id = ".$this->id." username = ".$username);
+        
         $userAppliedFile = $this->config->item('courseFolder') . "/" . $this->id . "/applied/" . $username . ".txt";
         $userVerifiedFile = $this->config->item('courseFolder') . "/" . $this->id . "/verified/" . $username . ".txt";
         if (file_exists($userAppliedFile)) {
@@ -404,7 +379,7 @@ class Course extends CI_Model {
         } else {
             return false;
         }
-
+        
         // delete course from user data
         $this->load->model('user');
         $this->user->loadUserData($username);
@@ -423,10 +398,9 @@ class Course extends CI_Model {
             return false;
         }
     }
-
-    function unfreeze() {
-        log_message("debug", "course unfreeze: id = " . $this->id);
-
+    function unfreeze(){
+        log_message("debug", "course unfreeze: id = ".$this->id);
+        
         // save frozen status
         $this->frozen = false;
         if ($this->saveCourseData()) {
@@ -435,7 +409,5 @@ class Course extends CI_Model {
             return false;
         }
     }
-
 }
-
 ?>

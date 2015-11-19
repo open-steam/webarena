@@ -124,25 +124,20 @@ SimpleText.editText = function() {
 		this.input = true;
 		GUI.input = this.id;
 	}
+    
+    // Simple text box will be expanded (width)
     var that = this;
     var charWidth=0;
     var boxWidth = that.getRepresentation().getBBox().width;
     document.onkeydown = function(event){ 
-            if(event.keyCode == 8){
-                
-            }else{
-                console.log(String.fromCharCode(event.keyCode));
+            if(event.keyCode != 8){
                 var inputChar = String.fromCharCode(event.keyCode);
                 charWidth = that.getCharWidth(inputChar);
-                console.log("charWidth "+charWidth);
-                console.log("boxWidth "+boxWidth);
                 var newWidth =boxWidth+charWidth;
                 $(rep).find("input").css("width", newWidth+"px");
-                console.log("boxWidth+charWidth "+newWidth);
                 boxWidth=newWidth;
             }
         }
-        
 }
 
 

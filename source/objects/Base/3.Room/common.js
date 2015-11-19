@@ -70,6 +70,14 @@ Room.showUserPaintings = function(value)
 
 Room.isInBackgroundMode = function() {    var mode = this.getAttribute('mode');    if (mode == 'background')        return true;    return false;}Room.switchMode = function(mode) {    if (mode == 'background')        this.setAttribute('mode', 'background');    else        this.setAttribute('mode', 'foreground');}
 
+Room.getRoomID = function() {
+	
+	//This is a fix where in cases where a room was just loading, the getRoomId of the room responded with a wrong answer.
+	//TODO: Check, where the inRoom property is set which should have had the correct value
+	
+    return this.id;
+}
+
 Room.register('Room');
 Room.isCreatable=false;
 
