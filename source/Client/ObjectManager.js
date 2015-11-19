@@ -1022,6 +1022,8 @@ ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
 
 ObjectManager.paintingUpdate = function(data) {
 
+    if (!Modules.Config.paintMode) return;
+
     if (!ObjectManager.getCurrentRoom().getAttribute("showUserPaintings"))
         return;
 
