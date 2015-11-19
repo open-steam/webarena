@@ -67,6 +67,14 @@ Room.showUserPaintings = function(value)
 	{ $('img[id^="userPainting_"]').remove(); }
 }
 
+Room.getRoomID = function() {
+	
+	//This is a fix where in cases where a room was just loading, the getRoomId of the room responded with a wrong answer.
+	//TODO: Check, where the inRoom property is set which should have had the correct value
+	
+    return this.id;
+}
+
 Room.register('Room');
 Room.isCreatable=false;
 
