@@ -339,6 +339,9 @@ theObject.makeStructuring = function() {
      *	changeData old and new values of positioning (e.g. changeData.old.x) 
      **/
     theObject.evaluateObject = function(object, changeData) {
+    	
+    	console.log('Called evaluateObject on '+object)
+    	
         object.setAttribute("linecolor", "transparent");
         //complete data
         var oldData = {};
@@ -623,6 +626,10 @@ theObject.getInlinePreviewMimeType=function(callback) {
 
 
 theObject.evaluatePosition=function(key,value,oldvalue){
+	
+    console.log('evaluatePosition called on '+this);
+    
+    //TODO HERE WE ARE
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};

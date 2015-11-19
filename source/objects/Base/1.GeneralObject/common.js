@@ -625,10 +625,10 @@ GeneralObject.removeLinkAttribute = function(targetId){
 *
 */
 
+GeneralObject.makeSensitive=function(){	this.isSensitiveFlag=true;}
 
-GeneralObject.makeSensitive = function() {this.isSensitiveFlag = true;}
-GeneralObject.makeStructuring = function() {this.isStructuringFlag = true;}
-GeneralObject.isSensitive = function() {return this.isSensitiveFlag || false;}
-GeneralObject.isStructuring = function() {return this.isStructuringFlag || false;}
+GeneralObject.makeStructuring=function(){	this.isStructuringFlag=true;}GeneralObject.makeActive=function(){	this.isActiveFlag=true;}GeneralObject.isActive=function(){	return this.isActiveFlag||false;}GeneralObject.isIllustrating=function(){	return !(this.isActive());}GeneralObject.isStructuring=function(){	return this.isStructuringFlag||false;}
+
+GeneralObject.isSensitive=function(){	return this.isSensitiveFlag||false;}
 
 module.exports = GeneralObject;

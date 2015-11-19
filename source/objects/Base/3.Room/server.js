@@ -10,32 +10,20 @@
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 
-/*
-//is called when ANY object is repositioned within a room
-theObject.evaluatePositionFor=function(object,data){
+//is called when ANY object is repositioned within a roomtheObject.evaluatePositionFor = function(object, data) {
 	
-	console.log('calling evaluatePositionFor on '+this+' with '+object);
-	
-	//when the object is structuring or sensitive ("the background"), its onObjectMove function is called
-	
-	if (object.onObjectMove) return object.onObjectMove(data);
-	
-	//let the moved object be evaluated by every structuring or sensitive object in the room
-	
-	this.getInventoryAsync(function(inventory){
-		for (var i in inventory){
-			var obj=inventory[i];
-			if (obj.isStructuring() || obj.isSensitive()) {
-				obj.evaluateObject(object,data);
-			}
-		}
-	});
-	
-}
-*/
+	console.log('theObject.evaluatePositionFor',object,data);
+	    //when the object is structuring, its onObjectMove function is called    if (object.onObjectMove) {        return object.onObjectMove(data);    } else {        console.log("room eval position for");    }}
 
 
-theObject.updateEvaluationStatus = function(object, data) {    ////    //    //Prüfe, ob der Kontext derselbe ist. Oder ob ein anderer Kntext vorliegt!?!?!!    //Annahme erstmal: Es gibt immer nur ein Kontext    //Also das Objekt wird immer innerhalb des Kontextes bewegt.    //Falls das bewegte Objekt eine Struktur oder ein Kontext ist, dann wird gespeichert, dass es bewegt wurde.    //Wenn der Hintergrund verändert wurde, wissen wir, dass die Objekte zu repositionieren sind.    if (object.onObjectMove) {        //Vielleicht sollte ich das am Raum speichern        return object.onObjectMove(data);    } else if (object.isActive && object.isActive()) {        //Dieser Teil ist wird bei Bewegung von Anwendungsobjekten ausgeführt.        var allObjects = this.getInventory();        for (var i in allObjects) {            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {                allObjects[i].evaluateObject(object, data);            }        }    }}theObject.evaluateCurrentPosition = function(object, data) {    if (object.onObjectMove) {        return object.onObjectMove(data);    } else {        var inventory = this.getInventory();        var isPositioned = false;        for (var key in inventory) {            var obj = inventory[key];            if (obj.isStructuring()) {                var bool = obj.evaluateObjectNoData(object);                isPositioned = isPositioned || bool;            }        }        if (isPositioned) {            object.setAttribute('positionStatus', 'positioned');        } else {            object.setAttribute('positionStatus', 'unpositioned');        }    }}
+theObject.updateEvaluationStatus = function(object, data) {
+	
+	
+	console.log('theObject.updateEvaluationStatus',object,data);
+	    ////    //    //Prüfe, ob der Kontext derselbe ist. Oder ob ein anderer Kntext vorliegt!?!?!!    //Annahme erstmal: Es gibt immer nur ein Kontext    //Also das Objekt wird immer innerhalb des Kontextes bewegt.    //Falls das bewegte Objekt eine Struktur oder ein Kontext ist, dann wird gespeichert, dass es bewegt wurde.    //Wenn der Hintergrund verändert wurde, wissen wir, dass die Objekte zu repositionieren sind.    if (object.onObjectMove) {        //Vielleicht sollte ich das am Raum speichern        return object.onObjectMove(data);    } else if (object.isActive && object.isActive()) {        //Dieser Teil ist wird bei Bewegung von Anwendungsobjekten ausgeführt.        var allObjects = this.getInventory();        for (var i in allObjects) {            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {                allObjects[i].evaluateObject(object, data);            }        }    }}theObject.evaluateCurrentPosition = function(object, data) {
+	
+	console.log('theObject.evaluateCurrentPosition',object,data);
+	    if (object.onObjectMove) {        return object.onObjectMove(data);    } else {        var inventory = this.getInventory();        var isPositioned = false;        for (var key in inventory) {            var obj = inventory[key];            if (obj.isStructuring()) {                var bool = obj.evaluateObjectNoData(object);                isPositioned = isPositioned || bool;            }        }        if (isPositioned) {            object.setAttribute('positionStatus', 'positioned');        } else {            object.setAttribute('positionStatus', 'unpositioned');        }    }}
 
 
 theObject.getInventory=function(){
