@@ -12,15 +12,6 @@ var Modules = require('../../../server.js');
 module.exports = theObject;
 
 theObject.onLeave = function(object, data) {
-
-    //if (this.checkData(object)) {
-    //  var data = this.getData(object);
-
-    //if (object.getAttribute(data.attribute) === data.value) {
-    //  object.setAttribute(data.attribute, false);
-
-    // }
-    //}
     var attributeName = this.getAttribute("attribute");
     if (attributeName && object.getAttribute(attributeName)) {
         object.setAttribute(attributeName, false);
@@ -78,7 +69,7 @@ theObject.positionToValueX = function(object) {
     var v = (objX - pixelStart) / distancePerStepInPixel;
 
     var value = minVal + v * stepping;
-    console.log(this.getAttribute('attribute') + " " + value);
+    
     return value;
 }
 
@@ -90,8 +81,6 @@ theObject.positionToValueY = function(object) {
     var objY = object.getAttribute('cy');
 
     var v = (pixelStart - objY) / distancePerStepInPixel;
-    var value = minVal + v * stepping;
-    console.log(this.getAttribute('attribute') + " " + value);
 
     return value;
 }

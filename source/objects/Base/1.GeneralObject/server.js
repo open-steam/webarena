@@ -340,7 +340,7 @@ theObject.makeStructuring = function() {
      **/
     theObject.evaluateObject = function(object, changeData) {
     	
-    	console.log('Called evaluateObject on '+object)
+    	console.log(this+' now evaluating '+object);
     	
         object.setAttribute("linecolor", "transparent");
         //complete data
@@ -372,22 +372,22 @@ theObject.makeStructuring = function() {
 
     if (!theObject.onMoveWithin)
         theObject.onMoveWithin = function(object, data) {
-            this.fireEvent('object::' + this.id + '::moveWithin', object.id);
+            
         };
 
     if (!theObject.onMoveOutside)
         theObject.onMoveOutside = function(object, data) {
-            this.fireEvent('object::' + this.id + '::moveOutside', object.id);
+            
         };
 
     if (!theObject.onLeave)
         theObject.onLeave = function(object, data) {
-            this.fireEvent('object::' + this.id + '::leave', object.id);
+            
         };
 
     if (!theObject.onEnter)
         theObject.onEnter = function(object, data) {
-            this.fireEvent('object::' + this.id + '::enter', object.id);
+            
         };
 
 
@@ -658,37 +658,26 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 	
 	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
 		
+		
 		var data={};
 		data.old=posData.old;
 		data.new=posData.new;
 		
-		//self.evaluatePositionInt(data);
 		self.updateEvaluationStatus(data);
 		self.runtimeData.evaluatePositionData=undefined;
 	},timerLength);
 	
 }
 
-/*
-theObject.evaluatePositionInt=function(data){
-	
-	var that=this;
-
-	this.getRoomAsync(function(){
-		//error
-	},function(room){
-		if (!room) return;
-		room.evaluatePositionFor(that,data);
-	});
-	
-}
-*/
-
 theObject.evaluateCurrentPosition = function() {    var room = this.getRoom();    if (!room)        return;    room.evaluateCurrentPosition(this);}
 
-theObject.updateEvaluationStatus = function(data) {    this.getRoomAsync(function(){},function(room){
+theObject.updateEvaluationStatus = function(data) {
+	
+	console.log('updateEvaluationStatu called on '+this+' with ',data);
+	var self=this;
+	    this.getRoomAsync(function(){},function(room){
     	
-    	if (!room)        return;    	room.updateEvaluationStatus(this, data);
+    	if (!room)        return;    	room.updateEvaluationStatus(self, data);
     	
     });}
 
@@ -700,8 +689,9 @@ theObject.getRoomAsync=function(error,cb){
 	for (var index in this.context.rooms){
 		var test=this.context.rooms[index];
 		if (test && test.hasObjectAsync) {
-			test.hasObjectAsync(this,function(){
-				cb(test);
+			var room=test;
+			test.hasObjectAsync(this,function(result){
+				cb(room);
 			});
 		}
 	}
