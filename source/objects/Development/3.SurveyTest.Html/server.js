@@ -11,20 +11,24 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 module.exports=theObject;
 
-
 theObject.sendToRoom = function (roomID, callback){
 	var data = {};
 	data.roomID = roomID;
+	var that = this;
 
-	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
 	/* case differentiation checks if room exists already or if it needs to 
 	be created.
-	 if(Modules.RoomController.roomExists(data, this)){
-		Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
-	}else{
-		Modules.RoomController.createRoom(data, this);
-		Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
-	}
 	*/
+	Modules.RoomController.roomExists(data, this.context, function(error, exists){
+			if(exists){
+				console.log('The room exists');
+			}else{
+				Modules.RoomController.createRoom(data, that.context, function(error, success){
+					console.log('Room created');
+				});
+			}
+			Modules.ObjectManager.copyObject(that, roomID, that.context, callback);
+	});
 }
+
 theObject.sendToRoom.public = true;
