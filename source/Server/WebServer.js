@@ -243,7 +243,6 @@ WebServer.init = function (theModules) {
 						/* check if content is inline displayable */
 						if (Modules.Connector.isInlineDisplayable(files.file.type)) {
 
-							object.set('preview', true);
 							object.persist();
 
 							/* get dimensions */
@@ -262,7 +261,6 @@ WebServer.init = function (theModules) {
 							});
 
 						} else {
-							object.set('preview', false);
 
 							//send object update to all listeners
 							object.persist();
