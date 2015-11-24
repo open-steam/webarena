@@ -104,6 +104,9 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     obj.id = objectData.id;
     obj.attributeManager.set(objectData.id, 'id', objectData.id);
     obj.inRoom = roomID;
+    obj.attributeManager.set(objectData.id, 'inRoom', roomID);
+
+    
     obj.set('type', type);
 
     // runtimeData is an array that containts variables
