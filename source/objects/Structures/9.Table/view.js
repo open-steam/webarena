@@ -297,14 +297,15 @@ Table.setViewWidth = function(value) {
      var labelType =null;
      var counter=0;
      var LabelIdNumber=null;
-     if((objectX+objectWidth/(columns.length+1))<event.clientX){
+
+     if((objectX+cellWidth)<event.clientX){
          // in oberster Zeile suchen (COLUMN)
          console.log('Column selected');
          var labelFound=false;
          while(!labelFound){
              counter++;
-             console.log('counter: '+counter);
-             if(objectX+cellWidth*(counter+1)>= event.clientX && objectX+cellWidth*(counter)<= event.clientX){
+             console.log('counter        '+counter);
+             if(objectX+cellWidth*(counter+1)>= event.clientX ){
                  labelFound=true;
                  labellist=columns;
                  labelType='Column';
@@ -319,7 +320,7 @@ Table.setViewWidth = function(value) {
          while(!labelFound){
              counter++;
              console.log('counter: '+counter);
-             if(objectY+cellHeight*(counter+1)>= event.clientY && objectY+cellHeight*(counter)<= event.clientY){
+             if(objectY+cellHeight*(counter+1)>= event.clientY){
                  labelFound=true;
                  labellist=rows;
                  labelType='Row';
@@ -350,4 +351,3 @@ Table.saveChanges = function() {
 	}
 	
 }
- 
