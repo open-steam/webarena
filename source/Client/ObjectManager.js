@@ -1020,14 +1020,8 @@ ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
     }
 }
 
-ObjectManager.evaluatePositions = function(objects) {
-	
-	console.log('ObjectManager.evaluatePositions' +objects);
-	    //create array and push all objects    var array = new Array();    for (var key in objects) {        var object = objects[key];        array.push(object.getId());    }    var requestData = {};    requestData.room = objects[0].getCurrentRoom();    requestData.objects = array;    Modules.Dispatcher.query('evaluatePositions', requestData, function() {          GUI.deselectAllObjects();    });}ObjectManager.reposition = function(room, objects) {
-	
-	console.log('ObjectManager.reposition' +room + objects);
-	console.trace();
-	    //create array and push all objects    var requestData = {};    requestData.room = room.id;    var objIDs = [];    if(objects && objects.length > 0){        for(var i in objects){            objIDs.push(objects[i].id);        }    }    requestData.objects = objIDs;    Modules.Dispatcher.query('reposition', requestData, function() {           GUI.deselectAllObjects();    });}
+ObjectManager.repositionObjects = function(room) {
+	    //create array and push all objects    var requestData = {};    requestData.room = room.id;    Modules.Dispatcher.query('repositionObjects', requestData, function() {           GUI.deselectAllObjects();    });}
 
 ObjectManager.paintingUpdate = function(data) {
 

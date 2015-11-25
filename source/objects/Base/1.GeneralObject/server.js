@@ -260,8 +260,8 @@ theObject.makeStructuring = function() {
 
     var theObject = this;
 
+    //is called on when the structuring object is moved. Setting the repositionNeeded flag on the room then.
     this.onObjectMove = function(changeData) {
-    	console.log('onObectMove on '+this);
     	this.getRoomAsync(function(){},function(room){
     		room.setAttribute('repositionNeeded', true);
     	});
@@ -343,9 +343,6 @@ theObject.makeStructuring = function() {
      **/
     theObject.evaluateObject = function(object, changeData) {
     	
-    	console.log(this+' now evaluating '+object);
-    	
-        object.setAttribute("linecolor", "transparent");
         //complete data
         var oldData = {};
         var newData = {};
@@ -363,68 +360,18 @@ theObject.makeStructuring = function() {
         var newIntersects = this.intersects(newData.x, newData.y, newData.width, newData.height);
 
         //handle move
-        if (oldIntersects && newIntersects)
-            return this.onMoveWithin(object, newData);
-        if (!oldIntersects && !newIntersects)
-            return this.onMoveOutside(object, newData);
-        if (oldIntersects && !newIntersects)
-            return this.onLeave(object, newData);
-        if (!oldIntersects && newIntersects)
-            return this.onEnter(object, newData);
+	    if (!theObject.onMoveWithin) theObject.onMoveWithin = function(object, data) {};
+	    if (!theObject.onMoveOutside) theObject.onMoveOutside = function(object, data) {};
+	    if (!theObject.onLeave) theObject.onLeave = function(object, data) { };
+	    if (!theObject.onEnter) theObject.onEnter = function(object, data) { };
+
+        if (oldIntersects && newIntersects)   return this.onMoveWithin(object, newData);
+        if (!oldIntersects && !newIntersects) return this.onMoveOutside(object, newData);
+        if (oldIntersects && !newIntersects)  return this.onLeave(object, newData);
+        if (!oldIntersects && newIntersects)  return this.onEnter(object, newData);
     }
 
-    if (!theObject.onMoveWithin)
-        theObject.onMoveWithin = function(object, data) {
-            
-        };
 
-    if (!theObject.onMoveOutside)
-        theObject.onMoveOutside = function(object, data) {
-            
-        };
-
-    if (!theObject.onLeave)
-        theObject.onLeave = function(object, data) {
-            
-        };
-
-    if (!theObject.onEnter)
-        theObject.onEnter = function(object, data) {
-            
-        };
-
-
-    if (!this.structures)
-        this.structures = function(obj) {
-
-            //determines, if a given object is to be structured by this structuring object
-
-            if (this.id == obj.id)
-                return false;
-
-            if (obj.isStructuring())
-                return false;
-            if (obj.isIllustrating())
-                return false;
-
-            return true;
-        }
-
-    theObject.evaluateObjectNoData = function(object) {
-        var x = object.getAttribute('x');
-        var y = object.getAttribute('y');
-        var width = object.getAttribute('width');
-        var height = object.getAttribute('height');
-        var intersects = this.intersects(x, y, width, height);
-
-        if (intersects) {
-            this.onEnter(object);
-            return true;
-        } else {
-            this.onLeave(object);
-            return false;
-        }
-    }
     theObject.getInvalidPositions = function(object) {
         //Holen der notwendigen attribute
         var startX = this.getAttribute('x');
@@ -627,12 +574,10 @@ theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
 }
 
-
+//this is typically called when an object has been moved
+//data is collected and then handed over to the room which holds information
+//about structuring objects and thus does further processing
 theObject.evaluatePosition=function(key,value,oldvalue){
-	
-    console.log('evaluatePosition called on '+this);
-    
-    //TODO HERE WE ARE
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};
@@ -666,23 +611,17 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 		data.old=posData.old;
 		data.new=posData.new;
 		
-		self.updateEvaluationStatus(data);
-		self.runtimeData.evaluatePositionData=undefined;
+		self.getRoomAsync(function(){},function(room){
+    	
+	    	if (!room)	        return;		    	room.updateEvaluationStatus(self, data);
+	    	self.runtimeData.evaluatePositionData=undefined;
+    	
+    	});
+   
 	},timerLength);
 	
 }
 
-theObject.evaluateCurrentPosition = function() {    var room = this.getRoom();    if (!room)        return;    room.evaluateCurrentPosition(this);}
-
-theObject.updateEvaluationStatus = function(data) {
-	
-	console.log('updateEvaluationStatu called on '+this+' with ',data);
-	var self=this;
-	    this.getRoomAsync(function(){},function(room){
-    	
-    	if (!room)        return;    	room.updateEvaluationStatus(self, data);
-    	
-    });}
 
 theObject.getRoomAsync=function(error,cb){
 	if (!this.context) error();

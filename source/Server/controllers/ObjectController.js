@@ -139,11 +139,8 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 
 };
 
-ObjectController.evaluatePositions = function(data, context, cb) {    var roomID = data.room;    var objIDs = data.objects;
-    
-    console.log('ObjectController.evaluatePositions',data);    for (var key in objIDs) {        var obj = ObjectManager.getObject(roomID, objIDs[key], context);        obj.evaluateCurrentPosition();    }}ObjectController.reposition = function(data, context, cb) {
-	
-	console.log('ObjectController.reposition',data);
-	    var roomID = data.room;    var objects = [];    for(var i in data.objects){       var obj = ObjectManager.getObject(roomID, data.objects[i], context);       objects.push(obj);    }    Modules.ObjectManager.getRoom(roomID, context, roomID, function(room) { //the room object        room.repositionAllObjects(objects);    });}
+ObjectController.repositionObjects = function(data, context, cb) {
+	    var roomID = data.room;    Modules.ObjectManager.getRoom(roomID, context, roomID, function(room) { //the room object        room.repositionAllObjects();    });}
+
 
 module.exports = ObjectController;
