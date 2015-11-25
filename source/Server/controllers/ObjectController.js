@@ -140,7 +140,7 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 };
 
 ObjectController.repositionObjects = function(data, context, cb) {
-	    var roomID = data.room;    Modules.ObjectManager.getRoom(roomID, context, roomID, function(room) { //the room object        room.repositionAllObjects();    });}
+	    var roomID = data.room;    Modules.ObjectManager.getRoom(roomID, context, roomID, function(room) { //the room object        room.repositionObjects();    });}
 
 
 module.exports = ObjectController;

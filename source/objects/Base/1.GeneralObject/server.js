@@ -260,11 +260,9 @@ theObject.makeStructuring = function() {
 
     var theObject = this;
 
-    //is called on when the structuring object is moved. Setting the repositionNeeded flag on the room then.
+    //is called on when the structuring object itself is moved. Doing nothing at the moment
     this.onObjectMove = function(changeData) {
-    	this.getRoomAsync(function(){},function(room){
-    		room.setAttribute('repositionNeeded', true);
-    	});
+
     }
 
     theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
@@ -372,8 +370,8 @@ theObject.makeStructuring = function() {
     }
 
 
-    theObject.getInvalidPositions = function(object) {
-        //Holen der notwendigen attribute
+    theObject.getDisplacementArea = function(object) {
+    	
         var startX = this.getAttribute('x');
         var startY = this.getAttribute('y');
         var width = this.getAttribute('width');
@@ -382,7 +380,6 @@ theObject.makeStructuring = function() {
         var aoWidth = object.getAttribute('width');
         var aoHeight = object.getAttribute('height');
 
-        //koordinaten duerfen nicht negativ werden
         var x1;
         if (startX - aoWidth < 0) {
             x1 = 0;
@@ -395,11 +392,12 @@ theObject.makeStructuring = function() {
         } else {
             y1 = startY - aoHeight;
         }
-        //Ausgabe des Rechtecks
-        var p1 = {X: x1, Y: y1};
-        var p2 = {X: startX + width, Y: y1};
+        
+        var p1 = {X: startX, Y: startY};
+        var p2 = {X: startX + width, Y: startY};
         var p3 = {X: startX + width, Y: startY + height};
-        var p4 = {X: x1, Y: startY + height};
+        var p4 = {X: startX , Y: startY + height};
+        
         return [[p1, p2, p3, p4]];
     }
 
@@ -613,7 +611,7 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 		
 		self.getRoomAsync(function(){},function(room){
     	
-	    	if (!room)	        return;		    	room.updateEvaluationStatus(self, data);
+	    	if (!room)	        return;		    	room.evaluatePositionFor(self, data);
 	    	self.runtimeData.evaluatePositionData=undefined;
     	
     	});

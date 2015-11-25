@@ -58,7 +58,7 @@ theObject.checkData = function() {
 
     return true;
 }
-theObject.getValidPositions = function(object) {
+theObject.getPlacementArea = function(object) {
     var startX = this.getAttribute('x');
     var startY = this.getAttribute('y');
     var width = this.getAttribute('width');
