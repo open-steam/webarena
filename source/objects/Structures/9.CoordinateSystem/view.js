@@ -10,7 +10,6 @@ CoordinateSystem.moveByTransform = function() {
 };
 
 CoordinateSystem.draw = function(external) {
-
     //hole rep
     var rep = this.getRepresentation();
 
@@ -200,10 +199,10 @@ CoordinateSystem.draw = function(external) {
     //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + label + '</td></tr></table>';
 
     //Setze die Pfeilspitze
-    var markerId = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
+    var markerId = GUI.getSvgMarkerId("arrow", 'black', true);
     $(line).attr("marker-end", "url(#" + markerId + ")");
 
-    var markerIdY = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
+    var markerIdY = GUI.getSvgMarkerId("arrow", 'black', true);
     $(lineY).attr("marker-end", "url(#" + markerIdY + ")");
 
     //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + 30 + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + '40' + '">' + label + '</td></tr></table>';
@@ -343,10 +342,10 @@ CoordinateSystem.setViewWidth = function(value) {
         //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + label + '</td></tr></table>';
 
         //Setze die Pfeilspitze
-        var markerId = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
+        var markerId = GUI.getSvgMarkerId("arrow", 'black', true);
         $(line).attr("marker-end", "url(#" + markerId + ")");
 
-        var markerIdY = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
+        var markerIdY = GUI.getSvgMarkerId("arrow", 'black', true);
         $(lineY).attr("marker-end", "url(#" + markerIdY + ")");
 
         //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + 30 + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + '40' + '">' + label + '</td></tr></table>';
@@ -475,10 +474,10 @@ CoordinateSystem.setViewHeight = function(value) {
         //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + label + '</td></tr></table>';
 
         //Setze die Pfeilspitze
-        var markerId = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
+        var markerId = GUI.getSvgMarkerId("arrow", 'black', true);
         $(line).attr("marker-end", "url(#" + markerId + ")");
 
-        var markerIdY = GUI.getSvgMarkerId("arrow", this.getAttribute("linecolor"), true);
+        var markerIdY = GUI.getSvgMarkerId("arrow", 'black', true);
         $(lineY).attr("marker-end", "url(#" + markerIdY + ")");
 
         //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + 30 + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + '40' + '">' + label + '</td></tr></table>';
@@ -511,9 +510,6 @@ CoordinateSystem.setViewHeight = function(value) {
 }
 
 CoordinateSystem.calculateLabelXDistance = function(labelX) {
- var numberOfChars = labelX.length;
- 
-      return (this.getAttribute('width')-(numberOfChars*12)-30);
-  
-    
+      return (this.getAttribute('width')-(labelX.length*this.getAttribute('font-size')/3)-30);
 }
+

@@ -61,7 +61,8 @@ ObjectManager.getObject = function(objectID) {
     //room?
     for (var index in this.currentRoomID) {
         if (objectID == this.currentRoomID[index]) {
-            return this.currentRoom[index];
+        	var temp=this.currentRoom[index];
+        	if(temp.id==objectID) return this.currentRoom[index];
         }
     }
 
@@ -70,6 +71,8 @@ ObjectManager.getObject = function(objectID) {
             return ObjectManager.objects[index][objectID];
         }
     }
+    
+    return undefined;
 }
 
 ObjectManager.getObjectByName = function(name) {    var objects = ObjectManager.getObjects();    for (var i in objects) {        var object = objects[i];        if (object.getAttribute('name') == name)            return object;    }}
@@ -409,12 +412,7 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
 
 				self.currentRoomID[index] = roomid;
 				
-                if (callback)
-                    setTimeout(callback, 1200);
-
-                // Create and display an annotation pad for the room
-                if (Modules.config.collaborativeEditor)
-                    ObjectManager.Pads.createRoomPad(ObjectManager.getRoomID());
+                if (callback) setTimeout(callback, 1200);
             }
         });
     } else {

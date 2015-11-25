@@ -13,7 +13,8 @@
     "lodash": "~2.2.1",
     "winston": "0.8.0",
     "jsftp": "*",
-    "node-dav": "*"
+    "node-dav": "*",
+    "fast-image-size":"*"
 
   },
   "devDependencies": {

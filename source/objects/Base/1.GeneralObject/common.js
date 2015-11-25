@@ -298,7 +298,7 @@ GeneralObject.getCurrentRoom=GeneralObject.getRoomID;
 
 
 GeneralObject.getID = function() {
-    return this.id;
+    return this.get('id');
 }
 GeneralObject.getId = GeneralObject.getID;
 

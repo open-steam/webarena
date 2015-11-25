@@ -252,11 +252,13 @@ IconObject.renderText = function (text){
     var temp=text;
     
     while(temp){
+    	if (!temp.substring) temp='';
+    	
     	var test=temp.substring(0,lineLength);
     	var length=0;
     	
     	if (test.lastIndexOf(' ')>0 && test.lastIndexOf(' ')>length) length=test.lastIndexOf(' ')+1;
-    	if (test.lastIndexOf('.')>0 && test.lastIndexOf('.')>length) length=test.lastIndexOf('.')+1;
+    	if (test.lastIndexOf('. ')>0 && test.lastIndexOf('. ')>length) length=test.lastIndexOf('. ')+2;
     	if (test.lastIndexOf('-')>0 && test.lastIndexOf('-')>length) length=test.lastIndexOf('-')+1;
     	
     	if (length==0) length=lineLength;

@@ -1073,16 +1073,16 @@ fileConnector.inlinePreviewProviders = {
 				 	if (err) throw err;
 					
 						/* temp. file saved */
-
-					var im = require('imagemagick');
-
-					im.identify(filename, function(err, features) {
-
-						if (err) throw err;
-
-						var width = features.width;
-						var height = features.height;
-
+						
+					
+					var fast_image_size = require('fast-image-size');
+						
+					fast_image_size ( filename, function ( ret_obj ) {
+				        
+				        
+				        var width = ret_obj.width;
+						var height = ret_obj.height;
+						
 						if (width > fileConnector.Modules.config.imageUpload.maxDimensions) {
 							height = height*(fileConnector.Modules.config.imageUpload.maxDimensions/width);
 							width = fileConnector.Modules.config.imageUpload.maxDimensions;
@@ -1098,7 +1098,8 @@ fileConnector.inlinePreviewProviders = {
 						
 						callback(width, height);
 
-					});
+				        
+				    });	
 
 				});
 				
