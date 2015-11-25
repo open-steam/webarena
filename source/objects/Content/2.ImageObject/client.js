@@ -86,6 +86,9 @@ ImageObject.downloadImage=function(){
 */
 ImageObject.objectIntersectsWith = function(ox,oy,ow,oh){
 	
+	//first check for bounding box intersection. If the bounding box does not 
+	//intersect with the given coordinates, it is not even possible the image in general does
+	
 	var thisx = this.getViewBoundingBoxX();
 	var thisy = this.getViewBoundingBoxY();
 	var thisw = this.getViewBoundingBoxWidth();
@@ -138,9 +141,12 @@ ImageObject.objectIntersectsWith = function(ox,oy,ow,oh){
 	y = y + 33;
 	h = h + 33; 
 	
+	
+	var theImage=$(rep).find("image")[0];
+	
 	for(var i = x; i < w; i++){
 		for(var j = y; j < h; j++){
-			if($(rep).find("image")[0].hasPixelAt(i, j)) return true;
+			if(theImage.hasPixelAt(i, j)) return true;
 		}
 	}
 	

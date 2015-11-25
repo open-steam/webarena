@@ -98,6 +98,9 @@ ImageObject.createPixelMap=function(SVGImage){
 			if (x>bbox.width) return false;
 			if (y>bbox.height) return false;
 			
+			return true;
+			//TODO: Find a faster solution for this. Temporary disabled
+			
 			var imgd = ctx.getImageData(x, y, 1, 1);
 			var pix = imgd.data;
 			
