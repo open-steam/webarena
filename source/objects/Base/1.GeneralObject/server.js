@@ -251,6 +251,7 @@ theObject.makeStructuring = function() {
 
     if (!Modules.config.structuringMode) {
         console.log('Cannot make ' + this + ' structuring because structuring is turned off in config.');
+        return;
     } else {
         console.log(this + ' is now structuring');
     }
@@ -261,7 +262,9 @@ theObject.makeStructuring = function() {
 
     this.onObjectMove = function(changeData) {
     	console.log('onObectMove on '+this);
-        this.getRoom().setAttribute('repositionNeeded', true);
+    	this.getRoomAsync(function(){},function(room){
+    		room.setAttribute('repositionNeeded', true);
+    	});
     }
 
     theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
