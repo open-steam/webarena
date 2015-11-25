@@ -113,6 +113,8 @@ Modules.ServerController = require('./Server/controllers/ServerController.js');
 
 Modules.Dispatcher = require('./Server/Dispatcher.js');
 
+Modules.Clipper = require('./Server/Clipper.js');
+
 // Objects can gain access to the Modules (on the server side) by requiring this file
 module.exports = Modules;
 
