@@ -79,21 +79,21 @@ fileConnector.listRooms = function(context,callback){
 	
 	var filebase = fileConnector.Modules.Config.filebase;
 	fs.readdir(filebase, function(err, files){
-		if(err){
-		}
 
-		var isAccessibleRoom = function(file, callback){
-			if(/^\./.exec(file)){
+		var isAccessibleRoom = function(room, callback){
+			
+			if(/^\./.exec(room)){
 				return callback(false);
 			}
-			file = filebase + file;
+			var file = filebase +'/'+room;
 			fs.stat(file, function(err, result){
 				if(err){
-					return callback(err, null);
+					return callback(false);
 				}
 				
 				if (result.isDirectory()){
-					self.mayEnter(file,context,function(error,mayEnter){
+					self.mayEnter(room,context,function(error,mayEnter){
+						
 						if (error) {
 							callback(false)
 						} else {
