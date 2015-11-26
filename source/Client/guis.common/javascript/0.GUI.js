@@ -920,7 +920,12 @@ GUI.connected = function() {
 		if (GUI.couplingModeActive) {
 			GUI.closeCouplingMode();
 		}
-
+		
+		window.setTimeout(function(){
+			$("#disconnected_message")[0].style.display='none';
+		 	$("#disconnected_message")[0].remove(); //get rid of the disconnected message
+		},1000);
+		
 		GUI.relogin = false;
 
 		GUI.login();
@@ -932,9 +937,9 @@ GUI.connected = function() {
  * display a error message on disconnect
  */
 GUI.showDisconnected = function() {
-	
+
 	if ($("#disconnected_message").length == 0)
-	$("body").append('<div id="disconnected_message"><div>Die Verbindung wurde getrennt.</div></div>');
+	$("body").append('<div id="disconnected_message"><div>'+GUI.translate('Lost connection to the server.')+'</div></div>');
 
 	GUI.isLoggedIn = false;
 	GUI.relogin = true;
