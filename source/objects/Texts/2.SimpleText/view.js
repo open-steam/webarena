@@ -37,7 +37,7 @@ SimpleText.draw=function(external){
     $(rep).find("text").attr("transform", "rotate(" + rotation + " 0 0)");
 
 	if (!$(rep).hasClass("webarena_ghost")) {
-		if (this.getAttribute("visible") || this.selected) {
+		if (this.isVisible() || this.selected) {
 			$(rep).css("visibility", "visible");
 		} else {
 			$(rep).css("visibility", "hidden");
