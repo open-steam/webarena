@@ -34,9 +34,7 @@ Table.decideIfActive = function(object) {
 }
 
 Table.execute = function(event) {
-    //TODO: Hier die GUI für die Tabellenspalten aufrufen.
-    //GUI.dialog
-    if(!this.input){
+    if(!this.inPlaceEditingMode){
 		this.editText(event);
 	}
 }

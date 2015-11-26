@@ -638,9 +638,9 @@ GUI.initReturnKeyHandler = function(){
 	$(document).bind("keyup", function(event) {
 		
 		if (event.keyCode == 13){
-			if(GUI.input){
-				var object = ObjectManager.getObject(GUI.input);
-				object.saveChanges();
+			if(GUI.inPlaceEditingObject){
+				var object = ObjectManager.getObject(GUI.inPlaceEditingObject);
+				if (!object.doNotSaveOnEnterKey) object.saveChanges();
 			}
 		}
 		
@@ -978,19 +978,19 @@ GUI.getCursorText = function(){
 
 
 //id of the current inplace editing object (or false if the inplace editing is not active)
-GUI.input = false;
+GUI.inPlaceEditingObject = false;
 
 /**
  * if inplace editing is active, call the saveChanges method of the related object 
  */
 GUI.saveChanges = function(event){
 	
-	if(GUI.input){
+	if(GUI.inPlaceEditingObject){
 		if(event.target.localName == "input" || event.target.localName == "textarea"){ 
 			return;
 		}
 		else{	//mouseclick outside of the inplace editing field
-			var object = ObjectManager.getObject(GUI.input);
+			var object = ObjectManager.getObject(GUI.inPlaceEditingObject);
 			object.saveChanges();
 		}
 	}

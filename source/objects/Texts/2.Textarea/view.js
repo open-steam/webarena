@@ -122,8 +122,8 @@ Textarea.editText = function() {
 	
 	$(rep).find("textarea").focus();
 
-	this.input = true;
-	GUI.input = this.id;
+	this.inPlaceEditingMode = true;
+	GUI.inPlaceEditingObject = this.id;
 	
 }
 
@@ -161,18 +161,18 @@ Textarea.checkTransparency = function(attribute, value) {
 
 
 /**
- * Called after hitting the Enter key during the inplace editing
+ * Called when inplace editing ends
  */
 Textarea.saveChanges = function() {
 
-	if(this.input){
+	if(this.inPlaceEditingMode){
 
 		var rep = this.getRepresentation();
 	
 		var newContent = $(rep).find("textarea").val();
 	
-		this.input = false;
-		GUI.input = false;
+		this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
 	
 		this.setContent(newContent);
 	
@@ -183,3 +183,5 @@ Textarea.saveChanges = function() {
 	}
 	
 }
+
+Textarea.doNotSaveOnEnterKey=true;

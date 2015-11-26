@@ -335,8 +335,8 @@ Table.setViewWidth = function(value) {
      var labelObject = $(rep).find('#label'+LabelIdNumber);
      this.showLabelDialog(labelObject,labellist,labelType,counter);
 	
-		this.input = true;
-		GUI.input = this.id;
+		this.inPlaceEditingMode = true;
+		GUI.inPlaceEditionObject = this.id;
      
  }
  
@@ -345,9 +345,9 @@ Table.setViewWidth = function(value) {
  */
 Table.saveChanges = function() {
     this.draw();
-	if(this.input){
-	    this.input = false;
-		GUI.input = false;
+	if(this.inPlaceEditingMode){
+	    this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
 	}
 	
 }
