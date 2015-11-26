@@ -72,7 +72,8 @@ Dispatcher.registerCall('createObject', function(socket, data, responseID) {
 });
 
 Dispatcher.registerCall('roomlist', function(socket, data, responseID) {
-    Modules.RoomController.listRooms(resultCallbackWrapper(socket, responseID));
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+    Modules.RoomController.listRooms(context,resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('getPreviewableMimeTypes', function(socket, data, responseID) {

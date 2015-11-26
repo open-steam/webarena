@@ -45,8 +45,8 @@ RoomController.createRoom = function (data, context, callback) {
 
 
 //TODO: remove? combine with "browse" of exit object
-RoomController.listRooms = function (callback) {
-    Modules.Connector.listRooms(callback)
+RoomController.listRooms = function (context,callback) {
+    Modules.Connector.listRooms(context,callback)
 }
 
 //Information are sent to all clients in the same room

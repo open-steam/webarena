@@ -73,28 +73,43 @@ fileConnector.getTrashRoom = function(context, callback){
 }
 
 
-fileConnector.listRooms = function(callback){
+fileConnector.listRooms = function(context,callback){
+	
+	var self=this;
 	
 	var filebase = fileConnector.Modules.Config.filebase;
 	fs.readdir(filebase, function(err, files){
-		if(err){
-		}
 
-		var isRoom = function(file, callback){
-			if(/^\./.exec(file)){
+		var isAccessibleRoom = function(room, callback){
+			
+			if(/^\./.exec(room)){
 				return callback(false);
 			}
-			file = filebase + file;
+			var file = filebase +'/'+room;
 			fs.stat(file, function(err, result){
 				if(err){
-					return callback(err, null);
+					return callback(false);
 				}
-				callback(result.isDirectory());
+				
+				if (result.isDirectory()){
+					self.mayEnter(room,context,function(error,mayEnter){
+						
+						if (error) {
+							callback(false)
+						} else {
+							if (mayEnter) callback(true); 
+							        else  callback(false);
+						}
+					});
+				} else {
+					callback(false);
+				}
+				
 			});
 		}
 
-		async.filter(files,isRoom, function( directories){
-			callback(null, directories);
+		async.filter(files,isAccessibleRoom, function( rooms){
+			callback(null, rooms);
 		});
 	});
 
@@ -109,19 +124,19 @@ fileConnector.isLoggedIn=function(context) {
 
 /* RIGHTS */
 
-fileConnector.mayWrite=function(roomID,objectID,connection,callback) {
+fileConnector.mayWrite=function(roomID,objectID,context,callback) {
 	callback(null, true);
 }
 
-fileConnector.mayRead=function(roomID,objectID,connection,callback) {
+fileConnector.mayRead=function(roomID,objectID,context,callback) {
 	callback(null, true);
 }
 
-fileConnector.mayDelete=function(roomID,objectID,connection,callback) {
+fileConnector.mayDelete=function(roomID,objectID,context,callback) {
 	callback(null, true);
 }
 
-fileConnector.mayEnter=function(roomID,connection,callback) {
+fileConnector.mayEnter=function(roomID,context,callback) {
 	callback(null, true);
 }
 
@@ -239,6 +254,7 @@ fileConnector.getRoomData=function(roomID,context,oldRoomId,callback){
 *
 */
 fileConnector.getRoomHierarchy=function(roomID,context,callback){
+	
 	var self=this;
 	var result = {
 		'rooms' : {},
