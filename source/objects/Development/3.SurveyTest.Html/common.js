@@ -32,7 +32,7 @@ SurveyTest.sliderChange = function(sliderID, value){
 SurveyTest.sendSurveyResult = function(){
 	console.log('function called');
 	for(var i = 0; i < this.getAttribute('surveyLength'); i++){
-		// console.log('this works');
+		//get point_i and save it in a new object (surveyResult) to gather all data
 	}
 }
 
