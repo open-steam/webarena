@@ -18,7 +18,6 @@ SurveyTest.updateContent = function() {
 	//for convenience
 	var initialised = this.getAttribute("initialised");
 
-
 	//Initial load of the SurveyBase with standard values and sliders at 0
 	this.surveyBaseHtmlInit = function(){
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
@@ -26,7 +25,6 @@ SurveyTest.updateContent = function() {
 			    'Bewerten Sie die folgenden Aussagen auf einer Skala von minValue bis  maxValue'+
 			    '<br>'+
 			    '<br>'+
-			    '<form method="post" action="#">'+
 			    	'Diese Aussage ist super. '+
 			    	'<br>'+
 			    	'<input type="range" id="slider_0" min="-5" max="5" class="surveyslider">'+
@@ -40,11 +38,11 @@ SurveyTest.updateContent = function() {
 			    	'<input type="range" id="slider_2" min="-5" max="5" class="surveyslider">'+
 			    	'Punkte: <output id="display_2">0</output>'+
 			    	'<br>'+
-			    	'<input type="submit" data-inline="true" value="Ergebnis absenden">'+
-			   	'</form>'+
+			    	'<input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden">'+
 			'</div>'
 			return string;
 	}
+
 	//called when the page has been reloaded
 	this.surveyBaseHtmlReload = function(){
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
@@ -52,7 +50,6 @@ SurveyTest.updateContent = function() {
 			    'Bewerten Sie die folgenden Aussagen auf einer Skala von minValue bis  maxValue'+
 			    '<br>'+
 			    '<br>'+
-			    '<form method="post" action="#">'+
 			    	'Diese Aussage ist super. '+
 			    	'<br>'+
 			    	'<input type="range" id="slider_0" value='+this.getAttribute('points_0')+' min="-5" max="5" class="surveyslider">'+
@@ -66,8 +63,7 @@ SurveyTest.updateContent = function() {
 			    	'<input type="range" id="slider_2" value='+this.getAttribute('points_2')+' min="-5" max="5" class="surveyslider">'+
 			    	'Punkte: <output id="display_2">'+this.getAttribute('points_2')+'</output>'+
 			    	'<br>'+
-			    	'<input type="submit" data-inline="true" value="Ergebnis absenden">'+
-			   	'</form>'+
+			    	'<input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden">'+
 			'</div>'
 			return string;
 	}
@@ -75,7 +71,19 @@ SurveyTest.updateContent = function() {
 
 	//If the SurveyTest-Object is loaded the first time, it is created initially
 	if(!initialised){
+		console.log("!initialised, surveyBaseHtmlInit");
 		self.setHTML(self.surveyBaseHtmlInit());
+		//Send slidervalues to the server and update the attributes, then update the display values as well.
+		$('.surveyslider').each(function (index, Element) {
+			$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
+			$(rep).find('#display_'+index).val($(Element).val()); 
+		});
+
+		//Attach functions to send buttons
+		$('.surveysend').each(function (index, Element){
+			$(Element).bind('click', self.sendSurveyResult);
+		});
+		
 	//Else check if the content of the SurveyTest-Object differs from what is currently loaded in the room 
 	//if so: reload it, else keep the old content
 	//This prevents the range-sliders from resetting or the HTML-Content not rendering after refreshing the page
@@ -83,20 +91,22 @@ SurveyTest.updateContent = function() {
 	//(currently causes problems with multiple users in 1 room)
 	}else{ 
 		this.getContentAsString(function(text){
+			if(text!=that.oldContent){
+				self.setHTML(self.surveyBaseHtmlReload());
+					//Send slidervalues to the server and update the attributes, then update the display values as well.
+					$('.surveyslider').each(function (index, Element) {
+						$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
+						$(rep).find('#display_'+index).val($(Element).val()); 
+					});
 
-		if(text!=that.oldContent){
-			self.setHTML(self.surveyBaseHtmlReload());
-		}
-		that.oldContent=text;
-	});
+					//Attach functions to send buttons
+					$('.surveysend').each(function (index, Element){
+						$(Element).bind('click', self.sendSurveyResult);
+					});
+				}
+			that.oldContent=text;
+		});
 	}
-
-	
-	//Send slidervalues to the server and update the attributes, then update the display values as well.
-	$('.surveyslider').each(function (index, Element) {
-		$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
-		$(rep).find('#display_'+index).val($(Element).val()); 
-	});
 
 	this.setAttribute("initialised", true);
 

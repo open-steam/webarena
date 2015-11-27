@@ -10,15 +10,14 @@ var Modules=require('../../../server.js');
 var SurveyTest=Object.create(Modules.ObjectManager.getPrototype('HtmlObject'));
 
 SurveyTest.register=function(type){
-
 	// Registering the object
-
 	HtmlObject=Modules.ObjectManager.getPrototype('HtmlObject');
 	HtmlObject.register.call(this,type);
 
 	this.registerAttribute('points_0',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
 	this.registerAttribute('points_1',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
 	this.registerAttribute('points_2',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
+	this.registerAttribute('surveyLength', {hidden: true, standard: 3});
 }
 
 SurveyTest.sliderChange = function(sliderID, value){
@@ -28,6 +27,13 @@ SurveyTest.sliderChange = function(sliderID, value){
 	var value = value;
 
 	this.setAttribute(attribute, value);
+}
+
+SurveyTest.sendSurveyResult = function(){
+	console.log('function called');
+	for(var i = 0; i < this.getAttribute('surveyLength'); i++){
+		// console.log('this works');
+	}
 }
 
 SurveyTest.register('SurveyTest');
