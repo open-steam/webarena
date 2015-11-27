@@ -134,7 +134,7 @@ IconObject.setViewHeight = function(value) {
 
 IconObject.dblclickHandler = function(event) {
 
-	if(!this.input){
+	if(!this.inPlaceEditingMode){
 		if(event.target.localName == "image"){
 			this.execute(event);
 		}
@@ -345,8 +345,8 @@ IconObject.editText = function(){
 	
 	$(rep).find("input").focus();
 	
-	this.input = true;
-	GUI.input = this.id;
+	this.inPlaceEditingMode = true;
+	GUI.inPlaceEditingObject = this.id;
 
 }
 
@@ -355,8 +355,10 @@ IconObject.editText = function(){
  * Called after hitting the Enter key during the inplace editing
  */
 IconObject.saveChanges = function() {
+	
+	console.log('In saveChanges');
 
-	if(this.input){
+	if(this.inPlaceEditingMode){
 		var rep = this.getRepresentation();
 	
 		var newContent = $(rep).find("input").val()
@@ -367,8 +369,8 @@ IconObject.saveChanges = function() {
 	
 		$(rep).find("text").show();
 	
-		this.input = false;
-		GUI.input = false;
+		this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
 	
 		this.setAttribute("name", newContent);
 	

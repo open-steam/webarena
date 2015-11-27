@@ -15,7 +15,7 @@ Subroom.getIconText = function() {
 
 Subroom.dblclickHandler = function(event) {
 
-	if(!this.input){
+	if(!this.inPlaceEditingMode){
 		if(event.target.localName == "image"){
 			this.follow(this.getAttribute("open in"));
 		}

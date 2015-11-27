@@ -74,7 +74,7 @@ IconObject.isResizable=function(){
 }
 
 
-IconObject.input = false;
+IconObject.inPlaceEditingMode = false;
 
 IconObject.moveByTransform = function(){return true;};
 

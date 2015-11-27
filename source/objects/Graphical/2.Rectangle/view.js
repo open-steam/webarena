@@ -138,8 +138,8 @@ Rectangle.editText = function() {
 
     $(rep).find("textarea").focus();
 
-    this.input = true;
-    GUI.input = this.id;
+    this.inPlaceEditingMode = true;
+    GUI.inPlaceEditingObject = this.id;
 
 }
 
@@ -149,7 +149,7 @@ Rectangle.editText = function() {
  */
 Rectangle.saveChanges = function() {
 
-    if (this.input) {
+    if (this.inPlaceEditingMode) {
         var rep = this.getRepresentation();
 
         var newContent = $(rep).find("textarea").val()
@@ -159,8 +159,8 @@ Rectangle.saveChanges = function() {
             this.setAttribute("label", newContent);
         }
 
-        this.input = false;
-        GUI.input = false;
+        this.inPlaceEditingMode = false;
+        GUI.inPlaceEditingObject = false;
 
         $(rep).find("textarea").remove();
 

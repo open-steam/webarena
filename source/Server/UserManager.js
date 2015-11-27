@@ -67,6 +67,9 @@ function loggedInInfo(){
    	var userInfo='';
    	for (var i in connections){
    		var data=connections[i];
+   		
+   		if (!data.user.username) continue;
+   		
    		count++;
    		if (count>1) userInfo+='; ';
    		userInfo+=data.user.username+' in ';

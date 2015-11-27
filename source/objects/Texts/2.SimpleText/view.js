@@ -121,8 +121,8 @@ SimpleText.editText = function() {
 		
 		$(rep).find("input").focus();
 		
-		this.input = true;
-		GUI.input = this.id;
+		this.inPlaceEditingMode = true;
+		GUI.inPlaceEditingObject = this.id;
 	}
     
     // Simple text box will be expanded (width)
@@ -181,7 +181,7 @@ SimpleText.checkTransparency = function(attribute, value) {
  */
 SimpleText.saveChanges =  function() {
 
-	if(this.input){
+	if(this.inPlaceEditingMode){
 
 		var rep = this.getRepresentation();
 	
@@ -195,8 +195,8 @@ SimpleText.saveChanges =  function() {
 	
 		$(rep).find("text").show();
 	
-		this.input = false;
-		GUI.input = false;
+		this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
 	
 		this.setContent(newContent);
 

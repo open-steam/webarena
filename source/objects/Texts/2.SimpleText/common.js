@@ -38,7 +38,7 @@ SimpleText.register=function(type){
 }
 
 SimpleText.execute=function(){
-	if(!this.input){
+	if(!this.inPlaceEditingMode){
 		this.editText();
 	}
 }
@@ -61,7 +61,7 @@ SimpleText.intelligentRename=function(newValue){
 
 SimpleText.register('SimpleText');
 SimpleText.isCreatable=true;
-SimpleText.input = false;
+SimpleText.inPlaceEditingMode = false;
 
 SimpleText.contentURLOnly = false; //content is only accessible via URL
 
