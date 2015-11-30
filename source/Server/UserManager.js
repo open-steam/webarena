@@ -14,6 +14,7 @@
 "use strict";
 
 var Modules=false;
+var async = require('async');
 
 var UserManager={};
 
@@ -320,6 +321,57 @@ UserManager.getConnectionByUserHash=function(userHash){
 		if (connection.user.hash==userHash) return connection;
 	}
 	return false;
+}
+
+UserManager.getUserLocations=function(){
+	
+	var connections=UserManager.connections;
+
+   	var userData=[];
+   	for (var i in connections){
+   		var data=connections[i];
+   		
+   		if (!data.user.username) continue;
+   		
+   		var obj={}
+   		obj.username=data.user.username;
+   		obj.room=data.rooms['left'];
+   		
+   		userData.push(obj);
+   	} 
+   	
+   	return userData;
+	
+}
+
+UserManager.getUserRooms=function(context,callback){
+	
+	var locations=this.getUserLocations();
+	
+	var mayAccess=function(element,callback){
+		
+		//There should be a rights check here. Not done so far for prototype purposes
+		
+		callback(true);
+	}
+	
+	async.filter(locations,mayAccess,function(results){
+		
+		var ret={};
+		
+		for (var i in results){
+			var element=results[i];
+			ret[element.username]=element.room;
+		}
+		
+		console.log(ret);
+		
+		callback(ret);
+	});
+	
+	
+	
+	
 }
 
 module.exports=UserManager;

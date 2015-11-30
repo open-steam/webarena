@@ -811,6 +811,10 @@ theObject.copyToRoom = function (roomID, callback){
 	
 }
 
+theObject.getUserRooms=function(callback){
+	Modules.UserManager.getUserRooms(this.context,callback);
+}
+
 theObject.registerAction=function(){
 	console.log(this + ' still calls registerAction on the server side');
 }
