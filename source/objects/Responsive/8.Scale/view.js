@@ -11,6 +11,9 @@ Scale.moveByTransform = function() {
 
 Scale.draw = function(external) {
 
+     console.log();
+
+
     //hole rep
     var rep = this.getRepresentation();
 

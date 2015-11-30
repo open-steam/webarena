@@ -46,9 +46,5 @@ Scale2.register = function(type) {
 
 Scale2.isCreatable = true;
 
-Scale2.decideIfActive = function(object) {
-    return true;
-}
-
 
 module.exports = Scale2;

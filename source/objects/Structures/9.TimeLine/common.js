@@ -60,10 +60,5 @@ TimeLine.register = function(type) {
 
 TimeLine.isCreatable = true;
 
-TimeLine.decideIfActive = function(object) {
-
-    return true;
-}
-
 
 module.exports = TimeLine;

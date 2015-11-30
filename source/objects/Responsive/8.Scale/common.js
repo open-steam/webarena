@@ -35,10 +35,5 @@ Scale.register = function(type) {
 
 Scale.isCreatable = true;
 
-Scale.decideIfActive = function(object) {
-
-    return true;
-}
-
 
 module.exports = Scale;

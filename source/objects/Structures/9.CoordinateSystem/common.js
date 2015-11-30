@@ -72,9 +72,6 @@ CoordinateSystem.register = function(type) {
 
 CoordinateSystem.isCreatable = true;
 
-CoordinateSystem.decideIfActive = function(object) {
-    return true;
-}
 
 CoordinateSystem.checkMinMax = function(){
     console.log('MINMAX');

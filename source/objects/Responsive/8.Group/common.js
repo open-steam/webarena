@@ -22,10 +22,5 @@ Group.register = function(type) {
 
 Group.isCreatable = true;
 
-Group.decideIfActive = function(object) {
-
-    return true;
-}
-
 
 module.exports = Group;

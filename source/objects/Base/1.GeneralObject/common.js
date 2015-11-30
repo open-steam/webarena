@@ -65,6 +65,14 @@ GeneralObject.register = function(type) {
     
     // Now registering basic attributes
     
+    
+    if (Modules.Config.debugMode){
+    	this.registerAttribute('debug1', {type: 'text', category: 'Debug'});
+    	this.registerAttribute('debug2', {type: 'text', category: 'Debug'});
+    	this.registerAttribute('debug3', {type: 'text', category: 'Debug'});
+    	this.registerAttribute('debug4', {type: 'text', category: 'Debug'});
+    }
+    
     this.registerAttribute('id', {type: 'number', readonly: true});
     this.registerAttribute('type', {type: 'text', readonly: true});
     this.registerAttribute('name', {type: 'text'});

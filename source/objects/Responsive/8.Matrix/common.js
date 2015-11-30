@@ -28,10 +28,5 @@ Matrix.register = function(type) {
 
 Matrix.isCreatable = true;
 
-Matrix.decideIfActive = function(object) {
-
-    return true;
-}
-
 
 module.exports = Matrix;
