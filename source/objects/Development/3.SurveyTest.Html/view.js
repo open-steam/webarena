@@ -90,7 +90,7 @@ SurveyTest.updateContent = function() {
 	//TODO (probably) Keep not only the attributes synced, but also the position of the range slider 
 	//(currently causes problems with multiple users in 1 room)
 	}else{ 
-		this.getContentAsString(function(text){
+		this.getContentAsString(function(text){ //Funktion tut nicht das, was vermutet wurde. Eigene Funktion schreiben (getAttributeHash)
 			if(text!=that.oldContent){
 				self.setHTML(self.surveyBaseHtmlReload());
 					//Send slidervalues to the server and update the attributes, then update the display values as well.

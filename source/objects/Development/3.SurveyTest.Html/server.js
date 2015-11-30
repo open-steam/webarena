@@ -23,6 +23,7 @@ theObject.sendToRoom = function (roomID, callback){
 			if(exists){
 				console.log('The room exists');
 			}else{
+				//Asynchroner Aufruf, dementsprechend lieber innerhalb der sucess function copyObject aufrufen
 				Modules.RoomController.createRoom(data, that.context, function(error, success){
 					console.log('Room created');
 				});
