@@ -211,6 +211,11 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
 			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
 		}
+		
+		if (attribute=='mode'){
+			if (object.modeSwitched) object.modeSwitched(value);
+		}
+		
 	}	
 	
 	// do nothing, if value has not changed

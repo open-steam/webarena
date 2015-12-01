@@ -33,6 +33,15 @@ Scale.register = function(type) {
 
 }
 
+Scale.getStructuringAttributes=function(){
+	
+	var result=[];
+	
+	var attribute=this.getAttribute('attribute');
+	if (attribute) result.push(attribute);
+	return result;
+}
+
 Scale.isCreatable = true;
 
 

@@ -20,6 +20,12 @@ Group.register = function(type) {
 
 }
 
+Group.getStructuringAttributes=function(){
+	var structuringAttribute=this.getAttribute('attribute');
+	if (structuringAttribute) return [structuringAttribute];
+	return [];
+}
+
 Group.isCreatable = true;
 
 

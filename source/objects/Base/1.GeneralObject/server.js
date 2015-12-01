@@ -130,62 +130,6 @@ theObject.makeSensitive=function(){
 	
 	
 	/**
-	*	getOverlappingObjectsAsync
-	*
-	*	get an array of all overlapping objects
-	**/
-	theObject.getOverlappingObjectsAsync=function(callback){
-		
-		this.getRoomAsync(function(){
-			//error
-		}, function(room){
-			if (!room) return;
-			room.getInventoryAsync(function(inventory){
-			
-				var result=[];
-			
-				for (var i in inventory){
-		
-					var test=inventory[i];
-					if (test.id==this.id) continue;
-					if (this.intersects(test)){
-						result.push(test);
-					}
-				}
-			
-				callback(result);
-			});
-		});
-	}
-	
-	
-	/**
-	*	getOverlappingObjects
-	*
-	*	get an array of all overlapping objects
-	**/
-	theObject.getOverlappingObjects=function(){
-		
-		console.log('>>>> Synchronous getOverlappingObjects in GeneralObject');
-		
-		var result=[];
-		
-		var inventory=this.getRoom().getInventory();
-	
-		for (var i in inventory){
-			var test=inventory[i];
-			if (test.id==this.id) continue;
-			if (this.intersects(test)){
-				result.push(test);
-			}
-		}
-		
-		return result;
-	
-	}
-	
-	
-	/**
 	*	SensitiveObjects evaluate other objects in respect to themselves.
 	*
 	*	object the object that shall be evaluated
@@ -400,6 +344,11 @@ theObject.makeStructuring = function() {
         
         return [[p1, p2, p3, p4]];
     }
+    
+    theObject.isPartOfContext=function(test){
+		console.log('TODO isPartOfContext '+test);
+		return true;
+	}
 
 
 }
@@ -948,6 +897,50 @@ theObject.copyToRoom = function (roomID, callback){
 	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
 	
 }
+
+theObject.determineContext=function(){
+	
+	//TODO determine Context here
+	
+	var context='all';
+	
+	this.setAttribute('context',context);
+	
+	return context;
+	
+}
+
+/**
+*	getOverlappingObjectsAsync
+*
+*	get an array of all overlapping objects
+**/
+theObject.getOverlappingObjectsAsync=function(callback){
+	
+	var self=this;
+	
+	this.getRoomAsync(function(){
+		//error
+	}, function(room){
+		if (!room) return;
+		room.getInventoryAsync(function(inventory){
+		
+			var result=[];
+		
+			for (var i in inventory){
+	
+				var test=inventory[i];
+				if (test.id==self.id) continue;
+				if (self.intersects(test)){
+					result.push(test);
+				}
+			}
+		
+			callback(result);
+		});
+	});
+}
+	
 
 theObject.registerAction=function(){
 	console.log(this + ' still calls registerAction on the server side');

@@ -46,5 +46,16 @@ Scale2.register = function(type) {
 
 Scale2.isCreatable = true;
 
+Scale2.getStructuringAttributes=function(){
+	
+	var result=[];
+	
+	var rowAttribute=this.getAttribute('attributeX');
+	var columnAttribute=this.getAttribute('attributeY');
+	if (rowAttribute) result.push(rowAttribute);
+	if (columnAttribute) result.push(columnAttribute);
+	return result;
+}
+
 
 module.exports = Scale2;

@@ -26,6 +26,17 @@ Matrix.register = function(type) {
 
 }
 
+Matrix.getStructuringAttributes=function(){
+	
+	var result=[];
+	
+	var rowAttribute=this.getAttribute('RowName');
+	var columnAttribute=this.getAttribute('ColumnName');
+	if (rowAttribute) result.push(rowAttribute);
+	if (columnAttribute) result.push(columnAttribute);
+	return result;
+}
+
 Matrix.isCreatable = true;
 
 
