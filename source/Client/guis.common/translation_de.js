@@ -29,6 +29,8 @@ GUI.setTranslations('de',{
 	'checking login information':'Anmeldedaten überprüfen',
 	'Add value' : 'Wert hinzufügen',
 	'multiple values' : 'Verschiedene Werte',
+    'all':'Alle',
+    'none':'Keine',
 	'Username' : 'Benutzername',
 	'Message' : 'Nachricht',
 	'unable to set value' : 'Wert konnte nicht gesetzt werden',
