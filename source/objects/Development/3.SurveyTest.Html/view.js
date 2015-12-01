@@ -90,20 +90,21 @@ SurveyTest.updateContent = function() {
 	//TODO (probably) Keep not only the attributes synced, but also the position of the range slider 
 	//(currently causes problems with multiple users in 1 room)
 	}else{ 
-		this.getContentAsString(function(text){ //Funktion tut nicht das, was vermutet wurde. Eigene Funktion schreiben (getAttributeHash)
+		this.getContentAsString(function(text){ //TODO: Function does not do what expected, new working function needs to be written (getAttributeHash)
 			if(text!=that.oldContent){
+				console.log("text != that.oldcontent");
 				self.setHTML(self.surveyBaseHtmlReload());
-					//Send slidervalues to the server and update the attributes, then update the display values as well.
-					$('.surveyslider').each(function (index, Element) {
-						$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
-						$(rep).find('#display_'+index).val($(Element).val()); 
-					});
+				//Attach functions to send buttons
+				$('.surveysend').each(function (index, Element){
+					$(Element).bind('click', self.sendSurveyResult);
+				});
+			}
+			//Send slidervalues to the server and update the attributes, then update the display values as well.
+			$('.surveyslider').each(function (index, Element) {
+				$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
+				$(rep).find('#display_'+index).val($(Element).val()); 
+			});
 
-					//Attach functions to send buttons
-					$('.surveysend').each(function (index, Element){
-						$(Element).bind('click', self.sendSurveyResult);
-					});
-				}
 			that.oldContent=text;
 		});
 	}
