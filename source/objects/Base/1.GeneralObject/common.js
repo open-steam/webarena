@@ -71,6 +71,7 @@ GeneralObject.register = function(type) {
     	this.registerAttribute('debug2', {type: 'text', category: 'Debug'});
     	this.registerAttribute('debug3', {type: 'text', category: 'Debug'});
     	this.registerAttribute('debug4', {type: 'text', category: 'Debug'});
+    	this.registerAttribute('context', {type: 'text', category: 'Debug'});
     }
     
     this.registerAttribute('id', {type: 'number', readonly: true});
@@ -252,7 +253,7 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
     return this.attributeManager.registerAttribute(attribute, setter, type, min, max);
 }
 
-GeneralObject.setAttribute = function(attribute, value, forced, transactionId) {
+GeneralObject.setAttribute = function(attribute, value, forced) {
 	
   return this.attributeManager.setAttribute(this, attribute, value, forced);
 

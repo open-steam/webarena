@@ -51,6 +51,30 @@ theObject.getStructuringObjects = function(cb){
 	});
 }
 
+theObject.getApplicationObjects = function(cb){
+	this.getInventoryAsync(function(allObjects){
+		
+		var filterFunction=function(item, callback){
+			
+			if (item.isActive && item.isActive()) {
+				callback(true);
+			} else {
+				callback(false);
+			}
+		
+			
+		}
+		
+		async.filter(allObjects, filterFunction, function(results){
+		    cb(results);
+		});		
+		
+		
+	});
+}
+
+theObject.getActiveObjects=theObject.getApplicationObjects;
+
 theObject.getInventoryAsync = function(cb){
     return Modules.ObjectManager.getObjects(this.id, this.context, cb);
 }
@@ -252,12 +276,52 @@ theObject.repositionObjects = function() {
 		
 	});}
 
-theObject.modeSwitched = function(value){
+theObject.modeChanged = function(value){
+	
+	var self=this;
+	
     if ((value)=='foreground'){
     	
-    	this.updateContexts();
+    	this.updateContexts(function(contexts){
+    		
+    		console.log('The contexts are ',contexts);
+    		
+    		
+    		//go through all applicationObjects and see if their contexts is still valid.
+    		//set it to neutral if it is not valid any more
+    		
+    		self.getActiveObjects(function(activeObjects){
+    			
+    			for (var i in activeObjects){
+    				var object=activeObjects[i];
+    				
+    				var context=object.getAttribute('context');
+    				
+    				if (context=='neutral') continue;
+    				
+    				var contextOK=false;
+    				
+    				for (var j in contexts){
+    					if (context==contexts[j]){
+    						contextOK=true;
+    						break;
+    					}
+    				}
+    				
+    				if (!contextOK){
+    					
+    					console.log('Context of '+object+' has to be changed!');
+    					object.setAttribute('context','neutral');
+    					
+    				}
+    				
+    			}
+    			
+    		});
+    		
+    		self.repositionObjects();
+    	});
     	
-		this.repositionObjects();
     }
 }
 
@@ -426,7 +490,7 @@ theObject.updateContexts = function(callback){
 		    }
 		    
 		    //save the new clusters to the clusters attribute on the room object
-		    self.setAttributes('clusters',clusters);
+		    self.setAttribute('clusters',clusters);
 		    
 		    //call the callback
 		    if (callback) callback(clusters);

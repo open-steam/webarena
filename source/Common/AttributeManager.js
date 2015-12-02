@@ -206,15 +206,21 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	} 	
 	var that = this;
 	
+	if (noevaluation){
+		
+		console.log('noevaluation for '+attribute+' on '+object);
+		console.trace();
+		
+	}
+	
 	if (object.ObjectManager.isServer && !noevaluation){	
 		
 		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
 			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
 		}
 		
-		if (attribute=='mode'){
-			if (object.modeSwitched) object.modeSwitched(value);
-		}
+		var fnName=attribute+'Changed';
+        if (object[fnName]) object[fnName](value);
 		
 	}	
 	
