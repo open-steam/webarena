@@ -58,7 +58,7 @@ ObjectManager.getIndexOfObject = function(objectID) {
 }
 
 ObjectManager.getObject = function(objectID) {
-    //room?
+    //room?  
     for (var index in this.currentRoomID) {
         if (objectID == this.currentRoomID[index]) {
         	var temp=this.currentRoom[index];

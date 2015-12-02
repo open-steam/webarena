@@ -6,46 +6,55 @@
 */
 
 WAFile.draw = function(external) {
+    var ObjectsListOfRoom =ObjectManager.getObjects();
+    var that=this;
+    
+    Object.keys(ObjectsListOfRoom).forEach(function(key) {
+        if(key == that.id){
+            GeneralObject.draw.call(that,external);
 	
-	GeneralObject.draw.call(this,external);
-	
-	//if (this.hasContent() == false || this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {
-		
-	if (this.getAttribute("bigIcon")) {
-		this.setViewWidth(64);
-		this.setViewHeight(64);
-	} else {
-		this.setViewWidth(32);
-		this.setViewHeight(32);
-	}
-		
-	//}
-	
-	var rep = this.getRepresentation();
+            //if (this.hasContent() == false || this.getAttribute("preview") == false || this.getAttribute("preview") == undefined) {
 
-    if (this.getIconText()) {
-        this.renderText(this.getIconText());
-    } else {
-        $(rep).find("text").remove();
-    }
+            if (that.getAttribute("bigIcon")) {
+                that.setViewWidth(64);
+                that.setViewHeight(64);
+            } else {
+                that.setViewWidth(32);
+                that.setViewHeight(32);
+            }
+
+            //}
+
+            var rep = that.getRepresentation();
+
+            if (that.getIconText()) {
+                that.renderText(that.getIconText());
+            } else {
+                $(rep).find("text").remove();
+            }
+
+            if ($("#FileContentDialog_"+that.id).dialog( "isOpen" ) != true){
+                $(rep).css("opacity", (that.getAttribute('opacity')/100));
+            }
+
+            if (!$(rep).hasClass("selected")) {
+                var linecolor = that.getAttribute('linecolor');
+                if(linecolor == "rgba(0, 0, 0, 0)"){
+                    $(rep).find("rect").removeAttr("stroke");
+                    $(rep).find("rect").removeAttr("stroke-width");
+                }
+                else{
+                    $(rep).find("rect").attr("stroke", linecolor);
+                    $(rep).find("rect").attr("stroke-width", that.getAttribute('linesize'));
+                }
+            }
+
+            that.createPixelMap();
+        }
+        
+    });
+
 	
-	if ($("#FileContentDialog_"+this.id).dialog( "isOpen" ) != true){
-		$(rep).css("opacity", (this.getAttribute('opacity')/100));
-	}
-	
-	if (!$(rep).hasClass("selected")) {
-		var linecolor = this.getAttribute('linecolor');
-		if(linecolor == "rgba(0, 0, 0, 0)"){
-			$(rep).find("rect").removeAttr("stroke");
-			$(rep).find("rect").removeAttr("stroke-width");
-		}
-		else{
-			$(rep).find("rect").attr("stroke", linecolor);
-			$(rep).find("rect").attr("stroke-width", this.getAttribute('linesize'));
-		}
-	}
-	
-	this.createPixelMap();
 }
 
 /* get the width of the objects bounding box */
@@ -154,6 +163,13 @@ WAFile.buildContentDialog = function(){
 		$("#FileContentDialog_"+this.id).on( "dialogbeforeclose", function(event, ui) {
 			that.closeContentDialog();
 		});
+        
+        //Event handler for the browser back function
+        $(window).on('popstate', function() {
+            console.log('in back handler');
+            that.closeContentDialog();
+            $("#FileContentDialog_"+this.id).dialog( "destroy" );
+        });
 	
 	}
 	else{
@@ -209,7 +225,7 @@ WAFile.openContentDialog = function(w, h){
 		var dialogHeight = maxHeight;
 		var dialogWidth = maxHeight*aspectRatio;
 	}
-	
+	console.log("#FileContentDialog_"+this.id);
 	$("#FileContentDialog_"+this.id).parent().animate({
 		width: dialogWidth+"px",
 		height: (dialogHeight+40)+"px",

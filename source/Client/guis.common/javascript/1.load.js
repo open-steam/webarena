@@ -24,7 +24,7 @@ GUI.entered = function() {
  * @param {int} step Loading step which should be performed
  */
 GUI.loadGUI = function(step) {
-
+    this.checkCurrentsGUIObjects();
 	/* not logged in? */
 	if (!GUI.username) {
 		
@@ -133,6 +133,10 @@ GUI.loadGUI = function(step) {
 		console.error("unknown load step");
 	}
 
+}
+
+GUI.checkCurrentsGUIObjects = function(){
+        $(".ui-dialog-content").dialog("close");
 }
 
 /**

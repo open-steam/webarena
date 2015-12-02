@@ -81,7 +81,6 @@ WAFile.execute=function(){
 	if (this.hasContent() == true) {
 		
 		//if (this.getAttribute('preview')) return;
-		
 		this.openFile();
 		
 	} else {
