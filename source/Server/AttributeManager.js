@@ -3,16 +3,16 @@
 /**
 *    Webarena - A webclient for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2012,2013
+*    @author Felix Winkelnkemper, University of Paderborn, 2015
 *
 */
 
 
 /**
-*	Each object type get its attribute manager. Attributes must be registred
-*   in the attribute manager before they can be set or got. This is necessary
-*   for GUIs to implement an object inspector as well as for channelling data
-*   access to the server.
+*	Each object type get its attribute manager. This is the server side
+*   AttributeManager which mainly is responsible for channeling through
+*   object changes to the data connector as well as for calling attribute
+*   evaluation code.
 *
 *   Note: Data is stored in the static attributeData member. This assures that
 *   even when several instances of the same object exist (which is common on
@@ -25,28 +25,19 @@ var AttributeManager=new function(){
 	
 	var attributeData={};
 
-	this.transactionId = false;
-	this.transactionTimeout = 500;
-	
-	//setters and getter for attribute data. For conveiniance, object.set
+	//setters and getter for attribute data. For convenience, object.set
 	//and object.get can be used instead.
 	
 	//Notice: These functions set and get unfiltered data. It is not checked
 	//if these data are within a specific range, of a certain type or even
 	//exist at all. Changes made this way are not automatically distributed
-	//to the server or other client. Use this.set only when you can be sure 
-	//the data you are storing fits range and type and make sure you persist
+	//to the client. Use this.set only when you can be sure the data you are 
+	//storing fits range and type and make sure you persist
 	//your data afterwards. In the general case use setAttribute instead.
 	
 	this.set=function(id,key,value){
 		if (id==undefined || value==undefined){
 			console.log('ERROR: undefined set',id,key,value);
-			console.trace();
-			return;
-		}
-		
-		if (parseInt(key,10)==key){
-			console.log('ERROR: numberic key in set',id,key,value);
 			console.trace();
 			return;
 		}
@@ -59,8 +50,7 @@ var AttributeManager=new function(){
 		if (!attributeData[id]) return undefined;
 		if (!key) return attributeData[id];
         if(typeof attributeData[id][key] ==="object"){
-            var dup_object = JSON.parse(JSON.stringify(attributeData[id][key]));
-            return dup_object;
+            return JSON.parse(JSON.stringify(attributeData[id][key]));
         }
 		return attributeData[id][key];
 	}
@@ -69,6 +59,7 @@ var AttributeManager=new function(){
 	//loaded data is accepted as is without any further checks.
 	
 	this.setAll=function(id,data){
+		
 		if (id==undefined){
 			console.log('ERROR: undefined setAll',id,data);
 			console.trace();
@@ -78,7 +69,7 @@ var AttributeManager=new function(){
 	}
 	
 	this.toString=function(){
-		return 'AttributeManager for '+this.proto;
+		return 'Server side AttributeManager for '+this.proto;
 	}
 	
 };
@@ -103,17 +94,12 @@ AttributeManager.init=function(proto){
 *	register an attribute for a prototype
 *
 *	data: 	type - 'text','number','color',...
-*			unit - '%','°',...
 *			min - integer
 *			max - integer
 *			standard
 *			setFunction - function
 *			getFunction - function
-*			checkFunction - function
-* 			changedFunction - function
 *			readonly - true, false
-*			hidden - true, false
-*			category - a block or tab this attribute should be displayed in
 *
 */
 AttributeManager.registerAttribute=function(attribute,data){
@@ -125,21 +111,15 @@ AttributeManager.registerAttribute=function(attribute,data){
 	// fill in old properties, if the attribute has yet been registred.
 	var oldData=this.attributes[attribute] || {};
 	
-	//if (oldData) console.log('Attribute '+attribute+' for '+this.proto+' type '+data.type+' has already been specified.');
-	
 	for (var key in oldData){
 		var oldValue=oldData[key];
 		if (data[key]===undefined) data[key]=oldValue;
 	}
 	
 	if (data.type===undefined) data.type='text';
-	if (data.description==undefined && data.readable==undefined) data.description=attribute;
-	if (data.readable!==undefined) data.description=data.readable;
-	if (data.unit===undefined) data.unit='';
 	if (data.min===undefined) data.min=-50000;
 	if (data.max===undefined) data.max=50000;
 	if (data.standard==undefined) data.standard=0;
-	if (data.category==undefined) data.category='Basic';
 	
 	
 	data.setter=function(object,value){	
@@ -173,16 +153,9 @@ AttributeManager.registerAttribute=function(attribute,data){
 		if (data.type=='number' && attribute!='id'){
 			result=parseInt(result,10);
 			if (isNaN(result)) result=data.standard;
-			if (result<data.min) {
-				result=data.min;
-			}
-			
-			if (result>data.max) {
-				result=data.max;
-			}
-		
-		}
-			
+			if (result<data.min) result=data.min;
+			if (result>data.max) result=data.max;
+		}			
 		
 		return result;
 	}
@@ -193,41 +166,39 @@ AttributeManager.registerAttribute=function(attribute,data){
 
 }
 
-var saveDelays={};
-
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluation){
-	if (attribute=='position'){
-		this.setAttribute(object,'x',value.x,forced);
-		this.setAttribute(object,'y',value.y,forced);
-		return true;
-	} 	
+AttributeManager.setAttribute=function(object,attribute,value,forced){
+
 	var that = this;
-	
-	if (noevaluation){
 		
-		console.log('noevaluation for '+attribute+' on '+object);
-		console.trace();
-		
-	}
-	
-	if (object.ObjectManager.isServer && !noevaluation){	
-		
-		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
-		}
-		
-		var fnName=attribute+'Changed';
-        if (object[fnName]) object[fnName](value);
-		
-	}	
-	
 	// do nothing, if value has not changed
 	if (object.get(attribute)===value){
         return false;
     } 
+    
+    if(attribute=='id'){
+		console.log('ERROR: TRIED TO SET ID');
+		console.trace();
+	}
+	
+	// evaluation
+	//
+	// if the position ob the object has changed. evaluatePosition is called. This function
+	// should wait and collect data for a while, as position and dimension information is hardly
+	// ever changed in only one aspect.
+		
+	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+		if (object.evaluatePosition)
+			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
+	}
+	
+	// for every other attribute which may have changed, a changed function is called
+	// (eg. if the attribute test has changed, we try to call testChanged on the server)
+	
+	var fnName=attribute+'Changed';
+    if (object[fnName]) object[fnName](value);
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
@@ -243,66 +214,13 @@ AttributeManager.setAttribute=function(object,attribute,value,forced,noevaluatio
 	// check if the attribute is read only
 	if (this.attributes[attribute] && this.attributes[attribute].readonly) {
 		console.log('ERROR: Attribute '+attribute+' is read only for '+this.proto);
-		if(attribute=='id'){
-			console.log('ERROR: TRIED TO SET ID');
-			console.trace();
-		}
 		return undefined;
 	}
 	
-	// call the setter function
+	// call the setter function and persist the results
 	setter(object,value);
+	object.persist();
 	
-	// persist the results
-	
-	if (object.ObjectManager.isServer){
-		object.persist();
-	} else {
-
-		var identifier=object.id+'#'+attribute;
-		
-		if (saveDelays[identifier]){
-			window.clearTimeout(saveDelays[identifier]);
-			delete(saveDelays[identifier]);
-		}
-
-		if (window.transactionTimer){
-			window.clearTimeout(window.transactionTimer);
-		}
-
-		
-		if(! this.transactionId){
-			that.transactionId = new Date().getTime();
-		} else {
-			window.transactionTimer = window.setTimeout(function(){
-				//calculate new transactionId
-		        //TODO: isn't safe - concurrent users may result in same timestamp
-				that.transactionId = new Date().getTime();
-			}, this.transactionTimeout);
-		}
-		
-
-
-		//this timer is the delay in which changes on the same object are discarded
-		var theTimer=200;
-		
-		if (forced) {
-            object.serverCall('setAttribute', attribute, value, false, {
-            	'transactionId': that.transactionId,
-            	'userId' : GUI.userid
-            })
-		} else {
-			saveDelays[identifier]=window.setTimeout(function(){
-                object.serverCall('setAttribute', attribute, value, false, {
-                	'transactionId': that.transactionId,
-                	'userId' : GUI.userid
-            	})
-			},theTimer);
-		}
-		
-	}
-	
-	if (object.ObjectManager.attributeChanged) object.ObjectManager.attributeChanged(object,attribute,this.getAttribute(object, attribute),true);
 	return true;
 }
 
