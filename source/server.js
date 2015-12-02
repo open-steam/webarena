@@ -102,7 +102,7 @@ Modules.BuildTool = require('./Server/BuildTool.js');
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
 Modules.DataSet = require('./Common/DataSet.js');
-Modules.AttributeManager = require('./Common/AttributeManager.js');
+Modules.AttributeManager = require('./Server/AttributeManager.js');
 
 Modules.Connector = Modules.config.connector; //shortcut
 
