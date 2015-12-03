@@ -300,11 +300,9 @@ Table.setViewWidth = function(value) {
 
      if((objectX+cellWidth)<event.clientX){
          // in oberster Zeile suchen (COLUMN)
-         console.log('Column selected');
          var labelFound=false;
          while(!labelFound){
              counter++;
-             console.log('counter        '+counter);
              if(objectX+cellWidth*(counter+1)>= event.clientX ){
                  labelFound=true;
                  labellist=columns;
@@ -315,27 +313,22 @@ Table.setViewWidth = function(value) {
          
      }else{
          // in erster Spalte suchen (ROW)
-         console.log('Row selected');
          var labelFound=false;
          while(!labelFound){
              counter++;
-             console.log('counter: '+counter);
              if(objectY+cellHeight*(counter+1)>= event.clientY){
                  labelFound=true;
                  labellist=rows;
                  labelType='Row';
-                 counter--;
                  LabelIdNumber=columns.length+counter;
              }
          }
      }
      
      var rep = this.getRepresentation();
-     console.log('LabelIdNumber '+LabelIdNumber);
      var labelObject = $(rep).find('#label'+LabelIdNumber);
      this.showLabelDialog(labelObject,labellist,labelType,counter);
 	
-		this.inPlaceEditingMode = true;
 		GUI.inPlaceEditionObject = this.id;
      
  }
