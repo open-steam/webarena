@@ -185,13 +185,13 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	
 	// evaluation
 	//
-	// if the position ob the object has changed. evaluatePosition is called. This function
+	// if the position ob the object has changed. collectPositioningData is called. This function
 	// should wait and collect data for a while, as position and dimension information is hardly
 	// ever changed in only one aspect.
 		
 	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-		if (object.evaluatePosition)
-			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
+		if (object.collectPositioningData)
+			object.collectPositioningData(attribute,value,object.getAttribute(attribute));
 	}
 	
 	// for every other attribute which may have changed, a changed function is called

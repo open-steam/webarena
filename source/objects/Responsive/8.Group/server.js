@@ -12,34 +12,22 @@ var Modules = require('../../../server.js');
 module.exports = theObject;
 
 
-theObject.onLeave = function(object, oldData, newData) {
+theObject.evaluatePosition = function(object, inside) {
     if (this.checkData()) {
         var data = this.getData();
-        if (object.getAttribute(data.attribute) === data.value) {
-            object.setAttribute(data.attribute, false);
-            console.log('Attribute ' + data.attribute + ' has been unset for ' + object);
+       
+        if (inside){
+        	if (object.getAttribute(data.attribute) !== data.value) {
+	            object.setAttribute(data.attribute, data.value);
+	            console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);
+	        }
+        } else {  //removed from the structure
+	        if (object.getAttribute(data.attribute) === data.value) {
+	            object.setAttribute(data.attribute, false);
+	            console.log('Attribute ' + data.attribute + ' has been unset for ' + object);
+	        }
         }
     }
-
-};
-
-theObject.onEnter = function(object, oldData, newData) {
-    if (this.checkData()) {
-        var data = this.getData();
-        if (object.getAttribute(data.attribute) !== data.value) {
-            object.setAttribute(data.attribute, data.value);
-            console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);
-        }
-    }
-};
-
-theObject.onMoveWithin = function(object, oldData, newData) {
-    return this.onEnter(object, oldData, newData);
-
-};
-
-theObject.onMoveOutside = function(object, oldData, newData) {
-    return this.onLeave(object, oldData, newData);
 
 };
 

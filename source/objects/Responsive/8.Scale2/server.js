@@ -11,57 +11,42 @@ var theObject = Object.create(require('./common.js'));
 var Modules = require('../../../server.js');
 module.exports = theObject;
 
-theObject.onLeave = function(object, data) {
+theObject.evaluatePosition = function(object, inside) {
 
-    var attributeNameX = this.getAttribute("attributeX");
-    var attributeNameY = this.getAttribute("attributeY");
-    if (attributeNameX && object.getAttribute(attributeNameX)) {
-        object.setAttribute(attributeNameX, false);
-        console.log('Attribute ' + attributeNameX + ' has been unset for ' + object);
-    }
-    if (attributeNameY && object.getAttribute(attributeNameY)) {
-        object.setAttribute(attributeNameY, false);
-        console.log('Attribute ' + attributeNameY + ' has been unset for ' + object);
-    }
+	if (!inside){
 
-};
-
-
-theObject.onEnter = function(object, data) {
-
-    if (this.checkData(object)) {
-        var data = this.getData(object);
-        var minX = this.getAttribute("minX");
-        var maxX = this.getAttribute("maxX");
-        var minY = this.getAttribute("minY");
-        var maxY = this.getAttribute("maxY");
-
-        if (minX > data.valueX || maxX < data.valueX || minY > data.valueY || maxY < data.valueY) {
-            console.log("obj is out of range!!!!!");
-            object.setAttribute(data.attributeX, false);
-            object.setAttribute(data.attributeY, false);
-        } else if (object.getAttribute(data.attributeX) !== data.valueX && object.getAttribute(data.attributeY) !== data.valueY) {
-            object.setAttribute(data.attributeX, data.valueX);
-            object.setAttribute(data.attributeY, data.valueY);
-            console.log('Attribute ' + data.attributeX + ' has been set to ' + data.valueX + ' for ' + object);
-            console.log('Furthermore, attribute ' + data.attributeY + ' has been set to ' + data.valueY + ' for ' + object);
-        }
-    }
-};
-
-
-
-theObject.onMoveWithin = function(object, oldData, newData) {
-
-    return this.onEnter(object, oldData, newData);
-
-};
-
-
-
-theObject.onMoveOutside = function(object, oldData, newData) {
-
-    return this.onLeave(object, oldData, newData);
+	    var attributeNameX = this.getAttribute("attributeX");
+	    var attributeNameY = this.getAttribute("attributeY");
+	    if (attributeNameX && object.getAttribute(attributeNameX)) {
+	        object.setAttribute(attributeNameX, false);
+	        console.log('Attribute ' + attributeNameX + ' has been unset for ' + object);
+	    }
+	    if (attributeNameY && object.getAttribute(attributeNameY)) {
+	        object.setAttribute(attributeNameY, false);
+	        console.log('Attribute ' + attributeNameY + ' has been unset for ' + object);
+	    }
+	} else {
+		
+		if (this.checkData(object)) {
+	        var data = this.getData(object);
+	        var minX = this.getAttribute("minX");
+	        var maxX = this.getAttribute("maxX");
+	        var minY = this.getAttribute("minY");
+	        var maxY = this.getAttribute("maxY");
+	
+	        if (minX > data.valueX || maxX < data.valueX || minY > data.valueY || maxY < data.valueY) {
+	            console.log("obj is out of range!!!!!");
+	            object.setAttribute(data.attributeX, false);
+	            object.setAttribute(data.attributeY, false);
+	        } else if (object.getAttribute(data.attributeX) !== data.valueX && object.getAttribute(data.attributeY) !== data.valueY) {
+	            object.setAttribute(data.attributeX, data.valueX);
+	            object.setAttribute(data.attributeY, data.valueY);
+	            console.log('Attribute ' + data.attributeX + ' has been set to ' + data.valueX + ' for ' + object);
+	            console.log('Furthermore, attribute ' + data.attributeY + ' has been set to ' + data.valueY + ' for ' + object);
+	        }
+	    }
+		
+	}
 
 };
 

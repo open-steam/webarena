@@ -36,50 +36,6 @@ theObject.makeSensitive=function(){
 	
 	var theObject=this;
 	
-	this.onObjectMove=function(changeData){
-	
-		//complete data
-		
-		var oldData={};
-		var newData={};
-		var fields=['x','y','width','height'];
-		
-		for (var i=0;i<4;i++){
-			var field=fields[i];
-			oldData[field]=changeData['old'][field] || this.getAttribute(field);
-			newData[field]=changeData['new'][field] || this.getAttribute(field);
-		}
-		
-		var that=this;
-		
-		this.getRoomAsync(function(){
-			//error
-		}, function(room){
-			room.getInventoryAsync(function(inventory){
-				for (var i in inventory){
-			
-					var object=inventory[i];
-					
-					if(object.id==that.id) continue;
-					
-					var bbox=object.getBoundingBox();
-					
-					//determine intersections
-				
-					var oldIntersects=that.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-					var newIntersects=that.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
-					
-					//handle move
-					
-					if (oldIntersects && newIntersects)  that.onMoveWithin(object,newData);
-					if (!oldIntersects && !newIntersects)  that.onMoveOutside(object,newData);
-					if (oldIntersects && !newIntersects)  that.onLeave(object,newData);
-					if (!oldIntersects && newIntersects)  that.onEnter(object,newData);
-				}
-			});
-		})
-	}
-	
 	
 	theObject.bBoxIntersects=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
 		
@@ -135,7 +91,7 @@ theObject.makeSensitive=function(){
 	*	object the object that shall be evaluated
 	*	changeData old and new values of positioning (e.g. changeData.old.x) 
 	**/
-	theObject.evaluateObject=function(object,changeData){
+	theObject.processPositioningData=function(object,changeData){
 		
 		//complete data
 		
@@ -203,11 +159,6 @@ theObject.makeStructuring = function() {
     this.isStructuringFlag = true;
 
     var theObject = this;
-
-    //is called on when the structuring object itself is moved. Doing nothing at the moment
-    this.onObjectMove = function(changeData) {
-
-    }
 
     theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
 
@@ -283,7 +234,7 @@ theObject.makeStructuring = function() {
      *	object the object that shall be evaluated
      *	changeData old and new values of positioning (e.g. changeData.old.x) 
      **/
-    theObject.evaluateObject = function(object, changeData) {
+    theObject.processPositioningData = function(object, changeData) {
     	
         //complete data
         var oldData = {};
@@ -300,17 +251,25 @@ theObject.makeStructuring = function() {
 
         var oldIntersects = this.intersects(oldData.x, oldData.y, oldData.width, oldData.height);
         var newIntersects = this.intersects(newData.x, newData.y, newData.width, newData.height);
+        
+        //TODO set appropriate context here
 
         //handle move
 	    if (!theObject.onMoveWithin) theObject.onMoveWithin = function(object, data) {};
 	    if (!theObject.onMoveOutside) theObject.onMoveOutside = function(object, data) {};
 	    if (!theObject.onLeave) theObject.onLeave = function(object, data) { };
 	    if (!theObject.onEnter) theObject.onEnter = function(object, data) { };
+	    
+	    if (this.evaluatePosition){
 
-        if (oldIntersects && newIntersects)   return this.onMoveWithin(object, newData);
-        if (!oldIntersects && !newIntersects) return this.onMoveOutside(object, newData);
-        if (oldIntersects && !newIntersects)  return this.onLeave(object, newData);
-        if (!oldIntersects && newIntersects)  return this.onEnter(object, newData);
+	        if (oldIntersects && newIntersects)   return this.evaluatePosition(object, newData);
+	        if (!oldIntersects && !newIntersects) return this.evaluatePosition(object, false);
+	        if (oldIntersects && !newIntersects)  return this.evaluatePosition(object, false);
+	        if (!oldIntersects && newIntersects)  return this.evaluatePosition(object, newData);
+	        
+	    } else {
+	    	console.log('ERROR: '+this+' is a structuring object which does not have the evaluatePosition function!');
+	    }
     }
 
 
@@ -524,7 +483,7 @@ theObject.getInlinePreviewMimeType=function(callback) {
 //this is typically called when an object has been moved
 //data is collected and then handed over to the room which holds information
 //about structuring objects and thus does further processing
-theObject.evaluatePosition=function(key,value,oldvalue){
+theObject.collectPositioningData=function(key,value,oldvalue){
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};

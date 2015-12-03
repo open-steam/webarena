@@ -11,29 +11,37 @@ var theObject = Object.create(require('./common.js'));
 var Modules = require('../../../server.js');
 module.exports = theObject;
 
-theObject.onLeave = function(object, data) {
-    var attributeName = this.getAttribute("attribute");
-    if (attributeName && object.getAttribute(attributeName)) {
-        object.setAttribute(attributeName, false);
-        console.log('Attribute ' + attributeName + ' has been unset for ' + object);
-    }
+theObject.evaluatePosition = function(object, inside) {
+	
+	if (!inside){
+	
+	    var attributeName = this.getAttribute("attribute");
+	    if (attributeName && object.getAttribute(attributeName)) {
+	        object.setAttribute(attributeName, false);
+	        console.log('Attribute ' + attributeName + ' has been unset for ' + object);
+	    }
+	} else {
+		
+		if (this.checkData(object)) {
+	        var data = this.getData(object);
+	        var min = this.getAttribute("min");
+	        var max = this.getAttribute("max");
+	        if (data.value < min || data.value > max) {
+	            console.log("object " + object.id + " width " + data.value + " is out of range!!!!!");
+	            object.setAttribute(data.attribute, false);
+	        } else if (object.getAttribute(data.attribute) !== data.value) {
+	            object.setAttribute(data.attribute, data.value);
+	            console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);
+	        }
+	    }	
+		
+	}
 
 };
 
 
 theObject.onEnter = function(object, data) {
-    if (this.checkData(object)) {
-        var data = this.getData(object);
-        var min = this.getAttribute("min");
-        var max = this.getAttribute("max");
-        if (data.value < min || data.value > max) {
-            console.log("object " + object.id + " width " + data.value + " is out of range!!!!!");
-            object.setAttribute(data.attribute, false);
-        } else if (object.getAttribute(data.attribute) !== data.value) {
-            object.setAttribute(data.attribute, data.value);
-            console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);
-        }
-    }
+
 };
 
 theObject.onMoveWithin = function(object, oldData, newData) {

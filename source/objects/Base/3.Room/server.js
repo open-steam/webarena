@@ -13,21 +13,15 @@ var async = require('async');
 
 theObject.evaluatePositionFor = function(object, data) {
 	
-	console.log('EvaluatePositionFor has been called');
-	    //TODO: Conext handling here    if (object.onObjectMove) {
-    	
-    	//for background objects save that they have been moved so a repositioning is needed.
-               return object.onObjectMove(data);
-        
-            } else if (object.isActive && object.isActive()) {       
+	console.log('EvaluatePositionFor has been called');    if (object.isActive && object.isActive()) {       
        //this is called when an application object has moved.
        
         var context=this.determineContext();
                this.getInventoryAsync(function(allObjects){
-        		        for (var i in allObjects) {		            if (allObjects[i].isStructuring && allObjects[i].isStructuring() && allObjects[i].isPartOfContext(context)) {		                allObjects[i].evaluateObject(object, data);		        }        }
+        		        for (var i in allObjects) {		            if (allObjects[i].isStructuring && allObjects[i].isStructuring() && allObjects[i].isPartOfContext(context)) {		                allObjects[i].processPositioningData(object, data);		        }        }
         	
         });
-           }}
+           }}
 
 theObject.getStructuringObjects = function(cb){
 	this.getInventoryAsync(function(allObjects){

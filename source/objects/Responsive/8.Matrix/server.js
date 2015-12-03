@@ -11,62 +11,60 @@ var theObject = Object.create(require('./common.js'));
 var Modules = require('../../../server.js');
 module.exports = theObject;
 
-theObject.onLeave = function(object, data) {
-    var columnName = this.getAttribute("ColumnName");
-    var rowName = this.getAttribute("RowName");
-    var attributeX = object.getAttribute(columnName);
-    var attributeY = object.getAttribute(rowName);
-    if (attributeX && attributeY) {
-        object.setAttribute(columnName, false);
-        object.setAttribute(rowName, false);
-    }
+theObject.evaluatePosition = function(object, inside) {
+	
+	if (!inside) {
+	
+	    var columnName = this.getAttribute("ColumnName");
+	    var rowName = this.getAttribute("RowName");
+	    var attributeX = object.getAttribute(columnName);
+	    var attributeY = object.getAttribute(rowName);
+	    if (attributeX && attributeY) {
+	        object.setAttribute(columnName, false);
+	        object.setAttribute(rowName, false);
+	    }
+	    
+	} else {
+		
+		var structureWidth = this.getAttribute('width');
+	    var structureHeigth = this.getAttribute('height');
+	    var structureX = this.getAttribute('x');
+	    var structureY = this.getAttribute('y');
+	    var rows = this.getAttribute('Row');
+	    var columns = this.getAttribute('Column');
+	    var columnName = this.getAttribute('ColumnName');
+	    var rowName = this.getAttribute("RowName");
+	
+	    var cellWidth = structureWidth / (columns.length + 1);
+	    var cellHeight = structureHeigth / (rows.length + 1);
+	
+	    var objCX = object.getAttribute("cx");
+	    var objCY = object.getAttribute("cy");
+	
+	    var vx = Math.floor((objCX - structureX) / cellWidth);
+	    var vy = Math.floor((objCY - structureY) / cellHeight);
+	
+	    if (vx < 1 || vy < 1) {
+	        console.log("position out of the valid area");
+	    } else {
+	        var attrX = columns[vx - 1];
+	        var attrY = rows[vy - 1];
+	        var currentXAttr = object.getAttribute(columnName);
+	        var currentYAttr = object.getAttribute(rowName);
+	        if (currentXAttr !== attrX) {
+	            object.setAttribute(columnName, attrX);
+	        }
+	        if (currentYAttr !== attrY) {
+	            object.setAttribute(rowName, attrY);
+	        }
+	        if (currentXAttr === attrX && currentYAttr === attrY) {
+	            console.log("position with the same meaning");
+	        }
+	    }
+		
+	}
 };
 
-theObject.onEnter = function(object, data) {
-    var structureWidth = this.getAttribute('width');
-    var structureHeigth = this.getAttribute('height');
-    var structureX = this.getAttribute('x');
-    var structureY = this.getAttribute('y');
-    var rows = this.getAttribute('Row');
-    var columns = this.getAttribute('Column');
-    var columnName = this.getAttribute('ColumnName');
-    var rowName = this.getAttribute("RowName");
-
-    var cellWidth = structureWidth / (columns.length + 1);
-    var cellHeight = structureHeigth / (rows.length + 1);
-
-    var objCX = object.getAttribute("cx");
-    var objCY = object.getAttribute("cy");
-
-    var vx = Math.floor((objCX - structureX) / cellWidth);
-    var vy = Math.floor((objCY - structureY) / cellHeight);
-
-    if (vx < 1 || vy < 1) {
-        console.log("position out of the valid area");
-    } else {
-        var attrX = columns[vx - 1];
-        var attrY = rows[vy - 1];
-        var currentXAttr = object.getAttribute(columnName);
-        var currentYAttr = object.getAttribute(rowName);
-        if (currentXAttr !== attrX) {
-            object.setAttribute(columnName, attrX);
-        }
-        if (currentYAttr !== attrY) {
-            object.setAttribute(rowName, attrY);
-        }
-        if (currentXAttr === attrX && currentYAttr === attrY) {
-            console.log("position with the same meaning");
-        }
-    }
-};
-
-theObject.onMoveWithin = function(object, oldData, newData) {
-    return this.onEnter(object, oldData, newData);
-};
-
-theObject.onMoveOutside = function(object, oldData, newData) {
-    return this.onLeave(object, oldData, newData);
-};
 
 theObject.getData = function(object) {
     var attribute = this.getAttribute('attribute');
