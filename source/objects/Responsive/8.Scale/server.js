@@ -13,12 +13,18 @@ module.exports = theObject;
 
 theObject.evaluatePosition = function(object, inside) {
 	
+	if (!this.checkData(object)){
+		//shout;
+		return false;
+	}
+	
 	if (!inside){
 	
 	    var attributeName = this.getAttribute("attribute");
 	    if (attributeName && object.getAttribute(attributeName)) {
 	        object.setAttribute(attributeName, false);
 	        console.log('Attribute ' + attributeName + ' has been unset for ' + object);
+	        console.log('TODO: this should only happen if attribute value in range!!');
 	    }
 	} else {
 		
@@ -40,21 +46,6 @@ theObject.evaluatePosition = function(object, inside) {
 };
 
 
-theObject.onEnter = function(object, data) {
-
-};
-
-theObject.onMoveWithin = function(object, oldData, newData) {
-    return this.onEnter(object, oldData, newData);
-};
-
-
-
-theObject.onMoveOutside = function(object, oldData, newData) {
-    return this.onLeave(object, oldData, newData);
-};
-
-
 theObject.getData = function(object) {
     var attribute = this.getAttribute('attribute');
     if (this.getAttribute("direction") === "horizontal") {
@@ -69,7 +60,6 @@ theObject.getData = function(object) {
 theObject.positionToValueX = function(object) {
     var minVal = this.getAttribute('min');
     var stepping = this.getAttribute('stepping');
-    //works
 
     var pixelStart = this.getAttribute("startX");
     var distancePerStepInPixel = this.getAttribute("distanceX");
@@ -107,14 +97,27 @@ theObject.getType = function() {
     return "scale1d";
 }
 
-theObject.isStructuringObject = function(object) {
+theObject.howToHandle = function(object) {
     var attributeName = this.getAttribute("attribute");
     var value = object.getAttribute(attributeName) || false;
-    if (value) {
-        return true;
+    if (value && this.valueInRange(object)) {
+        return 'attract';
     } else {
-        return false;
+        return 'distract';
     }
+    
+}
+
+theObject.valueInRange = function (object){
+	
+	if (!this.checkData(object)) return;
+	
+    var min = this.getAttribute('min');
+    var max = this.getAttribute('max');
+    var attribute = this.getAttribute('attribute');
+    var value = object.getAttribute(this.getAttribute("attribute"));
+	
+    return value>=min && value<=max;
 }
 
 theObject.getPlacementArea = function(object) {

@@ -247,6 +247,8 @@ theObject.repositionObjects = function() {
 		        	
 			        	var howToHandle=structures[i].howToHandle(ao);
 			        	
+			        	console.log(structures[i]+' handles '+ao+' with '+howToHandle);
+			        	
 			        	switch (howToHandle){
 			        		case 'attract': structuresHavingObject.push(structures[i]); break;
 			        		case 'distract': structuresNotHavingObject.push(structures[i]); break;
@@ -311,7 +313,7 @@ theObject.modeChanged = function(value){
     				var contextOK=false;
     				
     				for (var j in contexts){
-    					if (context==contexts[j]){
+    					if (context==contexts[j].toString()){
     						contextOK=true;
     						break;
     					}

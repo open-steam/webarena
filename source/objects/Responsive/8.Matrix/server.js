@@ -85,7 +85,7 @@ theObject.getType = function() {
     return "matrix";
 }
 
-theObject.isStructuringObject = function(object) {
+theObject.howToHandle = function(object) {
     var rows = this.getAttribute('Row');
     var columns = this.getAttribute('Column');
     var columnName = this.getAttribute('ColumnName');
@@ -109,7 +109,8 @@ theObject.isStructuringObject = function(object) {
             break;
         }
     }
-    return containsX && containsY;
+    if (containsX && containsY) return 'attract';
+    return 'distract';
 }
 
 theObject.getPlacementArea = function(object) {

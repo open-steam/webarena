@@ -106,15 +106,15 @@ theObject.checkData = function(object) {
 theObject.getType = function() {
     return "scale2d";
 }
-theObject.isStructuringObject = function(object) {
+theObject.howToHandle = function(object) {
     var attributeNameX = this.getAttribute("attributeX");
     var attributeNameY = this.getAttribute("attributeY");
     var valueX = object.getAttribute(attributeNameX) || false;
     var valueY = object.getAttribute(attributeNameY) || false;
     if (valueX && valueY) {
-        return true;
+        return 'attract';
     } else {
-        return false;
+        return 'distract';
     }
 }
 theObject.getValidPositions = function(object) {

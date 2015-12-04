@@ -317,10 +317,7 @@ theObject.makeStructuring = function() {
         return [[p1, p2, p3, p4]];
     }
 	
-	theObject.howToHandle=function(object){
-		console.log('ERROR: howToHandle is not implemented on '+this);
-		return 'distract';
-	}
+
 	
 	
 	theObject.isInContext=function(objectOrContext){
@@ -339,6 +336,11 @@ theObject.makeStructuring = function() {
 
 }
 
+
+theObject.howToHandle=function(object){
+	console.log('ERROR: howToHandle is not implemented on '+this);
+	return 'distract';
+}
 
 
 /**

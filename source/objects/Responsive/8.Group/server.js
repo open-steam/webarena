@@ -66,13 +66,13 @@ theObject.getType = function() {
     return "area";
 }
 
-theObject.isStructuringObject = function(object) {
+theObject.howToHandle = function(object) {
     var attributeName = this.getAttribute("attribute");
     var value = object.getAttribute(attributeName) || false;
     if (value && (this.getAttribute("value") === value)) {
-        return true;
+        return 'attract';
     } else {
-        return false;
+        return 'distract';
     }
 }
 
