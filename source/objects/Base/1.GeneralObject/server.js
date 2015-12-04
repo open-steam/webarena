@@ -265,18 +265,28 @@ theObject.makeStructuring = function() {
 	        	return 1;
 	        }
 	        
+	        var oldContext=object.getAttribute('context').toString();
+	        var newContext=false;
+	        
 	        if (!oldIntersects && newIntersects)  {//newly entered
 	        	
 	        	//Context switch: setting the context of the applicationObject to the context of the current
        		    //structuring object.
-        
-        		if (!oldIntersects && newIntersects) object.setAttribute('context',this.getAttribute('context'));
-	        	
+
+       			object.setAttribute('context',this.getAttribute('context'));
+       			newContext=this.getAttribute('context').toString();
+        	
 	        	this.evaluatePosition(object, newData);
 	        	return 1;
 	        }
 	        
-	        this.evaluatePosition(object, false);
+	        //remove attributes (only if we stay in the same context)
+	        
+	        console.log(oldContext);
+	        console.log(newContext);
+	        console.log('--------------------------');
+	        
+	        if(oldContext==newContext) this.evaluatePosition(object, false);
 	        return 0;
 	        
 	    } else {
