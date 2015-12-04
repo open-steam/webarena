@@ -11,14 +11,17 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 var async = require('async');
 
-theObject.evaluatePositionFor = function(object, data) {
-	
-	console.log('EvaluatePositionFor has been called');    if (object.isActive && object.isActive()) {       
+theObject.evaluatePositionFor = function(object, data) {    if (object.isActive && object.isActive()) {       
        //this is called when an application object has moved.
-       
-        var context=this.determineContext();
-               this.getInventoryAsync(function(allObjects){
-        		        for (var i in allObjects) {		            if (allObjects[i].isStructuring && allObjects[i].isStructuring() && allObjects[i].isPartOfContext(context)) {		                allObjects[i].processPositioningData(object, data);		        }        }
+               var inStructures=0;
+        
+        this.getInventoryAsync(function(allObjects){
+        		   for (var i in allObjects) {		            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {		                inStructures+=allObjects[i].processPositioningData(object, data);		        }        	}
+        
+        	//if not one of the structures could process the object, it must be sitting on neural ground
+        	if (!inStructures){
+        		object.setAttribute('context','neutral');
+        	}
         	
         });
            }}
@@ -236,7 +239,22 @@ theObject.repositionObjects = function() {
 		    			        //determine, which structuring objects have the current active object and
 		        //which don't. We have to care about both!
 		        
-		        var structuresHavingObject = [];		        var structuresNotHavingObject = [];		        		        for (var i in structures) {		            if (structures[i].isStructuringObject(ao)) {		                structuresHavingObject.push(structures[i]);		            } else {		                structuresNotHavingObject.push(structures[i]);		            }		        }		
+		        var structuresHavingObject = [];		        var structuresNotHavingObject = [];		        		        for (var i in structures) {
+		        	
+		        	if (structures[i].isInContext(ao)){  // Check if the structure even cares about the context
+		        										 // the application object is in. If this is not the case
+		        										 // if has to be distracted by it either way.
+		        	
+			        	var howToHandle=structures[i].howToHandle(ao);
+			        	
+			        	switch (howToHandle){
+			        		case 'attract': structuresHavingObject.push(structures[i]); break;
+			        		case 'distract': structuresNotHavingObject.push(structures[i]); break;
+			        	}
+		        	} else {
+		        		structuresNotHavingObject.push(structures[i]);
+		        	}
+		        			        }		
 		        // now building paths
 		        // the activeObject will later be placed within these paths
 		        // if there is no structure to be found which can position the activeObject
@@ -278,9 +296,6 @@ theObject.modeChanged = function(value){
     	
     	this.updateContexts(function(contexts){
     		
-    		console.log('The contexts are ',contexts);
-    		
-    		
     		//go through all applicationObjects and see if their contexts is still valid.
     		//set it to neutral if it is not valid any more
     		
@@ -304,7 +319,6 @@ theObject.modeChanged = function(value){
     				
     				if (!contextOK){
     					
-    					console.log('Context of '+object+' has to be changed!');
     					object.setAttribute('context','neutral');
     					
     				}
@@ -483,8 +497,36 @@ theObject.updateContexts = function(callback){
 		    	}
 		    }
 		    
-		    //save the new clusters to the clusters attribute on the room object
-		    self.setAttribute('clusters',clusters);
+		    //save the new clusters to the contexts attribute on the room object
+		    self.setAttribute('contexts',clusters);
+		    
+		    //save on every structuringObject, which context it is part of
+		    for (var i in structuringObjects){
+		
+				var structuring=structuringObjects[i];
+				
+				//we need one of the structuring attributes
+				var attribute=structuring.getStructuringAttributes()[0];
+				
+				for (var j in clusters){
+					var context=clusters[j];
+					var found=false;
+					
+					for (var k in context){
+						if (context[k]==attribute){
+							found=true;
+							break;
+						}
+					}
+					
+					if (found){
+						//console.log(structuring+' is in '+context);
+						structuring.setAttribute('context',context);
+						break;
+					}
+					
+				}
+		    }
 		    
 		    //call the callback
 		    if (callback) callback(clusters);

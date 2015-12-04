@@ -232,7 +232,9 @@ theObject.makeStructuring = function() {
      *	Structuring Objects evaluate other objects in respect to themselves.
      *
      *	object the object that shall be evaluated
-     *	changeData old and new values of positioning (e.g. changeData.old.x) 
+     *	changeData old and new values of positioning (e.g. changeData.old.x)
+     *
+     *	returns 1 if the object interdsets the current structure, 0 if it does not
      **/
     theObject.processPositioningData = function(object, changeData) {
     	
@@ -252,23 +254,34 @@ theObject.makeStructuring = function() {
         var oldIntersects = this.intersects(oldData.x, oldData.y, oldData.width, oldData.height);
         var newIntersects = this.intersects(newData.x, newData.y, newData.width, newData.height);
         
-        //TODO set appropriate context here
 
-        //handle move
-	    if (!theObject.onMoveWithin) theObject.onMoveWithin = function(object, data) {};
-	    if (!theObject.onMoveOutside) theObject.onMoveOutside = function(object, data) {};
-	    if (!theObject.onLeave) theObject.onLeave = function(object, data) { };
-	    if (!theObject.onEnter) theObject.onEnter = function(object, data) { };
+		//call evaluatePosition which does the actual evaluation. evaluatePosition does not have
+		//to care about setting the context any more.
 	    
 	    if (this.evaluatePosition){
 
-	        if (oldIntersects && newIntersects)   return this.evaluatePosition(object, newData);
-	        if (!oldIntersects && !newIntersects) return this.evaluatePosition(object, false);
-	        if (oldIntersects && !newIntersects)  return this.evaluatePosition(object, false);
-	        if (!oldIntersects && newIntersects)  return this.evaluatePosition(object, newData);
+	        if (oldIntersects && newIntersects)   {// moved inside
+	        	this.evaluatePosition(object, newData);
+	        	return 1;
+	        }
+	        
+	        if (!oldIntersects && newIntersects)  {//newly entered
+	        	
+	        	//Context switch: setting the context of the applicationObject to the context of the current
+       		    //structuring object.
+        
+        		if (!oldIntersects && newIntersects) object.setAttribute('context',this.getAttribute('context'));
+	        	
+	        	this.evaluatePosition(object, newData);
+	        	return 1;
+	        }
+	        
+	        this.evaluatePosition(object, false);
+	        return 0;
 	        
 	    } else {
 	    	console.log('ERROR: '+this+' is a structuring object which does not have the evaluatePosition function!');
+	    	return 0;
 	    }
     }
 
@@ -303,10 +316,24 @@ theObject.makeStructuring = function() {
         
         return [[p1, p2, p3, p4]];
     }
-    
-    theObject.isPartOfContext=function(test){
-		console.log('TODO isPartOfContext '+test);
-		return true;
+	
+	theObject.howToHandle=function(object){
+		console.log('ERROR: howToHandle is not implemented on '+this);
+		return 'distract';
+	}
+	
+	
+	theObject.isInContext=function(objectOrContext){
+		
+		var thisContext=this.getAttribute('context').toString();
+		
+		if (objectOrContext==thisContext) return true;
+		
+		var otherContext=objectOrContext.getAttribute('context').toString();
+		
+		var similar = thisContext==otherContext;
+		
+		return similar;
 	}
 
 
@@ -854,18 +881,6 @@ theObject.moveToRoom = function (roomID, callback){
 theObject.copyToRoom = function (roomID, callback){
 	
 	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
-	
-}
-
-theObject.determineContext=function(){
-	
-	//TODO determine Context here
-	
-	var context='all';
-	
-	this.setAttribute('context',context);
-	
-	return context;
 	
 }
 
