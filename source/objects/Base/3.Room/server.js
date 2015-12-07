@@ -11,20 +11,57 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 var async = require('async');
 
-theObject.evaluatePositionFor = function(object, data) {    if (object.isActive && object.isActive()) {       
+theObject.evaluatePositionFor = function(object, data) {
+	
+	var self=this    if (object.isActive && object.isActive()) {       
        //this is called when an application object has moved.
+       
+        var oldContext=object.getAttribute('context').toString();
                var inStructures=0;
         
-        this.getInventoryAsync(function(allObjects){
-        		   for (var i in allObjects) {		            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {		                inStructures+=allObjects[i].processPositioningData(object, data);		        }        	}
+        this.getInventoryAsync(function(allObjects){	
+        		   for (var i in allObjects) {		            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {		                inStructures+=allObjects[i].processPositioningData(object, data, self);		        }        	}
         
         	//if not one of the structures could process the object, it must be sitting on neural ground
         	if (!inStructures){
         		object.setAttribute('context','neutral');
         	}
         	
+        	//those evluation functions removing attribute values shall only be called if the content has
+        	//changed. If that is the case, only those evaluationFunctions of the current context are called.
+        	var newContext=object.getAttribute('context').toString();
+        
+	        if (oldContext!=newContext){
+	        	self.deleteRemoveEvaluations();
+	        } else {
+	        	self.performRemoveEvaluations(oldContext);
+	        }
+        	
         });
            }}
+
+theObject.removeEvaluationArray=[];
+
+theObject.addRemoveEvaluations=function(evalFunction){
+	this.removeEvaluationArray.push(evalFunction);
+}
+
+theObject.deleteRemoveEvaluations=function(){
+	this.removeEvaluationArray=[];
+}
+
+theObject.performRemoveEvaluations=function(oldContext){
+	for (var i in this.removeEvaluationArray){
+		var evaluationFunction=this.removeEvaluationArray[i];
+		if (evaluationFunction.context==oldContext){
+			evaluationFunction();
+		}
+	}
+	
+	this.deleteRemoveEvaluations();
+}
+
+
 
 theObject.getStructuringObjects = function(cb){
 	this.getInventoryAsync(function(allObjects){

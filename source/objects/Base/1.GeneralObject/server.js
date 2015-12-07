@@ -236,7 +236,7 @@ theObject.makeStructuring = function() {
      *
      *	returns 1 if the object interdsets the current structure, 0 if it does not
      **/
-    theObject.processPositioningData = function(object, changeData) {
+    theObject.processPositioningData = function(object, changeData, room) {
     	
         //complete data
         var oldData = {};
@@ -265,28 +265,30 @@ theObject.makeStructuring = function() {
 	        	return 1;
 	        }
 	        
-	        var oldContext=object.getAttribute('context').toString();
-	        var newContext=false;
-	        
 	        if (!oldIntersects && newIntersects)  {//newly entered
 	        	
 	        	//Context switch: setting the context of the applicationObject to the context of the current
        		    //structuring object.
-
-       			object.setAttribute('context',this.getAttribute('context'));
-       			newContext=this.getAttribute('context').toString();
-        	
+        
+        		if (!oldIntersects && newIntersects) object.setAttribute('context',this.getAttribute('context'));
+	        	
 	        	this.evaluatePosition(object, newData);
 	        	return 1;
 	        }
 	        
-	        //remove attributes (only if we stay in the same context)
-	        
-	        console.log(oldContext);
-	        console.log(newContext);
-	        console.log('--------------------------');
-	        
-	        if(oldContext==newContext) this.evaluatePosition(object, false);
+            //object removal should only be done if the repositioning has taken place within the same context
+            //and only for attributes of the current context. As we do not know that here, we fill an array
+            //on the room level. The room then calls those functions necessary.
+            
+            var self=this;
+            
+            var removeEvaluation=function(){
+            	self.evaluatePosition(object, false);
+            }
+            removeEvaluation.context=self.getAttribute('context');
+            
+            room.addRemoveEvaluations(removeEvaluation);
+
 	        return 0;
 	        
 	    } else {
