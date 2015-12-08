@@ -143,6 +143,11 @@ Dispatcher.registerCall('putBack', function(socket, data, responseID) {
 	}
 });
 
+Dispatcher.registerCall('shutdown', function(socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.Server.shutDown(context);
+});
+
 /**
  * Creates a callback function that sends the result as an info message to the client.
  *

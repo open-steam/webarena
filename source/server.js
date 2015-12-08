@@ -81,6 +81,8 @@ var logger = new (winston.Logger)({
 
 var Modules = {};
 
+Modules.Server = {};
+
 Modules.Log = require('./Common/Log.js');
 
 Modules.Logger = logger;
@@ -122,4 +124,18 @@ for (var name in Modules) {
     if (module.init) {
         module.init(Modules);
     }
+}
+
+Modules.Server.shutDown=function(context){
+	Modules.UserManager.isGod(context,function(){
+		shutDown(8);
+	});
+}
+
+function shutDown(counter){
+	if (counter<=0) process.exit();
+	Modules.ObjectManager.shout('The server is shutting down in '+(counter*5)+' seconds.');
+	setTimeout(function(){
+		shutDown(counter-1);
+	},5000)
 }

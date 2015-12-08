@@ -278,6 +278,7 @@ UserManager.sendAwarenessData=function(roomID){
 }
 
 /**
+*	getConnections
 *	getConnctionsForRoom
 *	getConnectionBySocket
 *	getConnectionBySocketID
@@ -285,6 +286,11 @@ UserManager.sendAwarenessData=function(roomID){
 *
 *	a number of getters to get access to connection information
 **/
+
+UserManager.getConnections=function(){
+	return this.connections;
+}
+
 UserManager.getConnectionsForRoom=function(roomID){
 	var result={};
 	for (var connectionID in this.connections){
@@ -369,9 +375,11 @@ UserManager.getUserRooms=function(context,callback){
 		callback(ret);
 	});
 	
-	
-	
-	
+}
+
+UserManager.isGod=function(context,callback){
+	//TODO: Check for god :D - down to the connector
+	callback(true);
 }
 
 module.exports=UserManager;

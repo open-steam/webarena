@@ -60,6 +60,22 @@ RoomController.informAllInRoom = function (data, callback) {
     }
 };
 
+RoomController.shout=function(message,room){
+	
+	if (room){
+		if (room.id) room=room.id;
+		
+	    var connections = Modules.UserManager.getConnectionsForRoom(room);
+	} else {
+		var connections = Modules.UserManager.getConnections();
+	}
+
+    for (var i in connections) {
+        var socket = connections[i].socket;
+        Modules.SocketServer.sendToSocket(socket, 'infotext', message);
+    }
+}
+
 /**
  *    sendRoom
  *

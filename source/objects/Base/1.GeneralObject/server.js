@@ -818,3 +818,12 @@ theObject.getUserRooms=function(callback){
 theObject.registerAction=function(){
 	console.log(this + ' still calls registerAction on the server side');
 }
+
+theObject.shout=function(text,toEveryone){
+	Modules.ObjectManager.shout(text,this,toEveryone);
+}
+
+theObject.pong=function(){
+	this.shout(this+' says Pong');
+}
+theObject.pong.public=true;

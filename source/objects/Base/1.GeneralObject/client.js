@@ -266,6 +266,10 @@ GeneralObject.translate = function(language, text) {
     return this.translationManager.get(language, text);
 }
 
+GeneralObject.ping=function(){
+	this.serverCall('pong');
+}
+
 // Translation handling
 
 GeneralObject.setLanguage = function(currentLanguage) {
