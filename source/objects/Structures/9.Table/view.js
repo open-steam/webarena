@@ -324,12 +324,16 @@ Table.setViewWidth = function(value) {
              }
          }
      }
-     
+     var positionMouse ={
+         x: event.clientX,
+         y: event.clientY
+     };
+
      var rep = this.getRepresentation();
      var labelObject = $(rep).find('#label'+LabelIdNumber);
-     this.showLabelDialog(labelObject,labellist,labelType,counter);
+     this.showLabelDialog(labelObject,labellist,labelType,positionMouse);
 	
-		GUI.inPlaceEditionObject = this.id;
+     GUI.inPlaceEditionObject = this.id;
      
  }
  

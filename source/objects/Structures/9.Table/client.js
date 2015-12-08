@@ -129,7 +129,7 @@ Table.showFormatDialog = function(selected) {
 
 
 // find selected cell, open dialog and change the labelName through input
-Table.showLabelDialog = function(selectedObject,labelList,labelType,position) {
+Table.showLabelDialog = function(selectedObject,labelList,labelType,positionMouse) {
     var that = this;
     var dialog_buttons = {};
     
@@ -170,12 +170,19 @@ var js = '$(document).ready(function(){document.getElementById("inputField").sel
     html += '<script>' + js + '</script>';
     
     content.push(html);
+    var position = {
+            open: function(event, ui) {
+            $(event.target).parent().css('position', 'fixed');
+            $(event.target).parent().css('top', (positionMouse.y)+'px');
+            $(event.target).parent().css('left', (positionMouse.x)+'px');
+        }
+    };
     var dialog = GUI.dialog(
             that.translate(GUI.currentLanguage, "Zeilen- und Spaltennamen überarbeiten"),
             content,
             dialog_buttons,
             dialog_width,
-            null
+            position
             );
     
      document.onkeydown = function(event){ 
