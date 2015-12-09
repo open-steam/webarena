@@ -171,7 +171,7 @@ AttributeManager.registerAttribute=function(attribute,data){
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced){
 
-    //console.log('setAttribute '+object+' '+attribute+' '+value);
+    console.log('setAttribute '+object+' '+attribute+' '+value);
 
 	var that = this;
 		

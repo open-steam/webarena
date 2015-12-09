@@ -153,7 +153,7 @@ theObject.makeStructuring = function() {
         console.log('Cannot make ' + this + ' structuring because structuring is turned off in config.');
         return;
     } else {
-        console.log(this + ' is now structuring');
+        //console.log(this + ' is now structuring');
     }
 
     this.isStructuringFlag = true;
@@ -525,6 +525,11 @@ theObject.getInlinePreviewMimeType=function(callback) {
 //data is collected and then handed over to the room which holds information
 //about structuring objects and thus does further processing
 theObject.collectPositioningData=function(key,value,oldvalue){
+
+	if (!Modules.Config.structuringMode){
+		console.trace();
+		return;
+	}
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};

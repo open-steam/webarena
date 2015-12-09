@@ -13,6 +13,12 @@ var async = require('async');
 
 theObject.evaluatePositionFor = function(object, data) {
 	
+	if (!Modules.Config.structuringMode){
+		console.log('evaluatePositionFor?');
+		console.trace();
+		return;
+	}
+	
 	var self=this    if (object.isActive && object.isActive()) {       
        //this is called when an application object has moved.
        
