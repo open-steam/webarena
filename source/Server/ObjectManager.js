@@ -828,6 +828,19 @@ ObjectManager.deleteObject = function(data, context, callback) {
     Modules.Connector.mayDelete(roomID, objectID, context, afterRightsCheck)
 }
 
+ObjectManager.shout=function(text,object,everyone){
+	
+	if(object){
+		if (everyone){
+			Modules.RoomController.shout(text,object.context.rooms.left.id);
+		} else {
+			console.log('Shouting to '+object.context.user.username+': '+text);
+			Modules.SocketServer.sendToSocket(object.context.socket, 'infotext', text);
+		}
+	} else {
+		Modules.RoomController.shout(text);
+	}
+}
 
 
 module.exports = ObjectManager;

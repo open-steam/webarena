@@ -209,7 +209,8 @@ CoordinateSystem.draw = function(external) {
     var labelX = this.getAttribute('labelX');
     if (!labelX)
         labelX = '';
-    rep.textX.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:'+this.calculateLabelXDistance(labelX) +'px;padding-top:'+((this.getAttribute('height')/2)-40) +'px;height:' + this.getAttribute('height') + 'px;'+';text-align:' + 'right' + '">' + labelX + '</td></tr></table>';
+    rep.textX.innerHTML = '<table style="width:100%;"><tr><td id="labelXID" style="padding-left:5px;padding-top:'+((this.getAttribute('height')/2)-40) +'px;height:' + this.getAttribute('height') + 'px;'+';text-align:' + 'right' + '">' + labelX + '</td></tr></table>';
+    this.calculateLabelXDistance(this.getAttribute('labelX'));
     rep.textX.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.textX.style.fontFamily = this.getAttribute('font-family');
     rep.textX.style.color = this.getAttribute('font-color');
@@ -218,7 +219,7 @@ CoordinateSystem.draw = function(external) {
     if (!labelY)
         labelY = '';
 
-    rep.textY.innerHTML = '<table style="width:100%;"><tr><td style="padding-top:40px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + labelY + '</td></tr></table>';
+    rep.textY.innerHTML = '<table style="width:100%;"><tr><td  style="padding-top:40px;padding-left:5px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + labelY + '</td></tr></table>';
     rep.textY.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.textY.style.fontFamily = this.getAttribute('font-family');
     rep.textY.style.color = this.getAttribute('font-color');
@@ -510,6 +511,7 @@ CoordinateSystem.setViewHeight = function(value) {
 }
 
 CoordinateSystem.calculateLabelXDistance = function(labelX) {
-      return (this.getAttribute('width')-(labelX.length*this.getAttribute('font-size')/3)-30);
+    var width = $('#labelXID').width();
+    $('#labelXID').css( "padding-left", this.getAttribute('width')-width-10);
 }
 

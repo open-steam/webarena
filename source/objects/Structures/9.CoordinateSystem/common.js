@@ -17,10 +17,10 @@ CoordinateSystem.register = function(type) {
     //this.registerAttribute('attributeX', {type: 'text', standard: '', category: 'Scale2'});
     //this.registerAttribute('attributeY', {type: 'text', standard: '', category: 'Scale2'});
 
-    this.registerAttribute('linestyleX', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
-    this.registerAttribute('linestyleY', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
+//    this.registerAttribute('linestyleX', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
+//    this.registerAttribute('linestyleY', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
 
-
+    this.registerAttribute('opacity', {type: 'number', min: 100, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
     
     this.registerAttribute('minX', {type: 'number', standard: 1, category: 'Scale2',checkFunction:function(object,value){
         if(value==object.getAttribute('maxX')){
@@ -73,7 +73,9 @@ CoordinateSystem.register = function(type) {
     //this.registerAttribute('distinctY', {type: 'boolean', standard: false, category: 'Scale2'});
     //this.registerAttribute('orientationY', {type: 'selection', standard: 'bottom', options: ['bottom', 'top', 'left', 'right'], category: 'Scale2'});
     
-    this.registerAttribute('labelX', {type: 'text',standard: '', category: 'Scale2'});
+    this.registerAttribute('labelX', {type: 'text',standard: '', category: 'Scale2',changedFunction:function(object,value){
+        
+    }});
     this.registerAttribute('labelY', {type: 'text', standard: '', category: 'Scale2'});
 
     

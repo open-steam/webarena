@@ -13,7 +13,7 @@ Table.register = function(type) {
     // Registering the object
     Modules.ObjectManager.getPrototype('Rectangle').register.call(this, type);
     //this.makeStructuring();
-
+    this.registerAttribute('opacity', {type: 'number', min: 100, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
     this.registerAttribute('Row', {type: 'list', category: 'Table', standard: ["row 1", "row 2"]});
     this.registerAttribute('Column', {type: 'list', category: 'Table', standard: ["column 1", "column 2"]});
     this.standardData.fillcolor = 'white';
