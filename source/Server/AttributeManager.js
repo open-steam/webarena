@@ -171,7 +171,7 @@ AttributeManager.registerAttribute=function(attribute,data){
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced){
 
-    console.log('setAttribute '+object+' '+attribute+' '+value);
+    //console.log('setAttribute '+object+' '+attribute+' '+value);
 
 	var that = this;
 		
@@ -185,38 +185,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 		console.trace();
 	}
 	
-	// evaluation
-	//
-	// if the position ob the object has changed. collectPositioningData is called. This function
-	// should wait and collect data for a while, as position and dimension information is hardly
-	// ever changed in only one aspect.
-		
-	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-		if (object.collectPositioningData)
-			object.collectPositioningData(attribute,value,object.getAttribute(attribute));
-	}
-	
-	// for every other attribute which may have changed, a changed function is called
-	// (eg. if the attribute test has changed, we try to call testChanged on the server)
-	
-	var fnName=attribute+'Changed';
-    if (object[fnName]) object[fnName](value);
-    
-    //check if the changed attribute value is one of those structured by the background.
-    //if this is the case, reposition the object.
-    
-    object.getRoomAsync(function(){
-    	console.log('ERROR: could not get room in serverside setAttribute');
-    },function(room){
-    	
-    	if (attribute=='context') return room.repositionObjects(object);
-    	
-    	room.getStructuringAttributes(function(attList){
-    		if (attList[attribute]){
-    			room.repositionObjects(object);
-    		}
-    	},true);
-    })
+	var oldValue=object.getAttribute(attribute);
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
@@ -239,6 +208,42 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	setter(object,value);
 	object.persist();
 	
+    // evaluation
+	//
+	// if the position ob the object has changed. collectPositioningData is called. This function
+	// should wait and collect data for a while, as position and dimension information is hardly
+	// ever changed in only one aspect.
+		
+	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+		if (object.collectPositioningData)
+			object.collectPositioningData(attribute,value,oldValue);
+	}
+	
+	// for every other attribute which may have changed, a changed function is called
+	// (eg. if the attribute test has changed, we try to call testChanged on the server)
+	
+	var fnName=attribute+'Changed';
+    if (object[fnName]) object[fnName](value);
+    
+    
+    //check if the changed attribute value is one of those structured by the background.
+    //if this is the case, reposition the object.
+    
+    if (object.isActive()){
+	    object.getRoomAsync(function(){
+	    	console.log('ERROR: could not get room in serverside setAttribute');
+	    },function(room){
+	    	
+	    	if (attribute=='context') return room.repositionObjects(object);
+	    	
+	    	room.getStructuringAttributes(function(attList){
+	    		if (attList[attribute]){
+	    			room.repositionObjects(object);
+	    		}
+	    	},true);
+	    })
+    }
+    
 	return true;
 }
 

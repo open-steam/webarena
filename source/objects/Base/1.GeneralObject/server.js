@@ -153,7 +153,7 @@ theObject.makeStructuring = function() {
         console.log('Cannot make ' + this + ' structuring because structuring is turned off in config.');
         return;
     } else {
-        //console.log(this + ' is now structuring');
+        console.log(this + ' is now structuring');
     }
 
     this.isStructuringFlag = true;
@@ -344,59 +344,6 @@ theObject.makeStructuring = function() {
 		
 		return similar;
 	}
-	
-	//this is typically called when an object has been moved
-	//data is collected and then handed over to the room which holds information
-	//about structuring objects and thus does further processing
-	theObject.collectPositioningData=function(key,value,oldvalue){
-	
-		if (!Modules.Config.structuringMode){
-			console.trace();
-			return;
-		}
-	
-		if (this.runtimeData.evaluatePositionData===undefined) {
-			this.runtimeData.evaluatePositionData={};
-			this.runtimeData.evaluatePositionData.old={};
-			this.runtimeData.evaluatePositionData.new={};
-		}
-		
-		if (this.runtimeData.evaluatePositionData.delay) {
-			clearTimeout(this.runtimeData.evaluatePositionData.delay);
-			this.runtimeData.evaluatePositionData.delay=false;
-		}
-		
-		this.runtimeData.evaluatePositionData['new'][key]=value;
-		if (!this.runtimeData.evaluatePositionData['old'][key]) {
-			this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
-			//if there yet is a value here, we have concurrent modifications
-		}
-		
-		var posData=this.runtimeData.evaluatePositionData;
-		var self=this;
-		
-		//Within this time, we collect data for evaluation. This is important
-		//as often data that logically belongs together is sent seperately
-		
-		var timerLength=200;
-		
-		this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
-			
-			
-			var data={};
-			data.old=posData.old;
-			data.new=posData.new;
-			
-			self.getRoomAsync(function(){},function(room){
-	    	
-		    	if (!room)		        return;				    	room.evaluatePositionFor(self, data);
-		    	self.runtimeData.evaluatePositionData=undefined;
-	    	
-	    	});
-	   
-		},timerLength);
-		
-	}
 
 
 }
@@ -572,6 +519,54 @@ theObject.getInlinePreview=function(mimeType, callback){
 
 theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
+}
+
+//this is typically called when an object has been moved
+//data is collected and then handed over to the room which holds information
+//about structuring objects and thus does further processing
+theObject.collectPositioningData=function(key,value,oldvalue){
+
+	if (this.runtimeData.evaluatePositionData===undefined) {
+		this.runtimeData.evaluatePositionData={};
+		this.runtimeData.evaluatePositionData.old={};
+		this.runtimeData.evaluatePositionData.new={};
+	}
+	
+	if (this.runtimeData.evaluatePositionData.delay) {
+		clearTimeout(this.runtimeData.evaluatePositionData.delay);
+		this.runtimeData.evaluatePositionData.delay=false;
+	}
+	
+	this.runtimeData.evaluatePositionData['new'][key]=value;
+	if (!this.runtimeData.evaluatePositionData['old'][key]) {
+		this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
+		//if there yet is a value here, we have concurrent modifications
+	}
+	
+	var posData=this.runtimeData.evaluatePositionData;
+	var self=this;
+	
+	//Within this time, we collect data for evaluation. This is important
+	//as often data that logically belongs together is sent seperately
+	
+	var timerLength=200;
+	
+	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
+		
+		
+		var data={};
+		data.old=posData.old;
+		data.new=posData.new;
+		
+		self.getRoomAsync(function(){},function(room){
+    	
+	    	if (!room)	        return;		    	room.evaluatePositionFor(self, data);
+	    	self.runtimeData.evaluatePositionData=undefined;
+    	
+    	});
+   
+	},timerLength);
+	
 }
 
 

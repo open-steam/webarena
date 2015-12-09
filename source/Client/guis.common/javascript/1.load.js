@@ -127,7 +127,7 @@ GUI.loadGUI = function(step) {
 		
 		ObjectManager.paintingUpdate();
 		GUI.drawAllLinks(); //draw all existing links in the new room
-		if (Config.structuringMode) GUI.setMode(ObjectManager.getCurrentRoom().getAttribute('mode'));
+		GUI.setMode(ObjectManager.getCurrentRoom().getAttribute('mode'));
 	
 	} else {
 		console.error("unknown load step");
