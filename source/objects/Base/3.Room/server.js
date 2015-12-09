@@ -85,6 +85,36 @@ theObject.getStructuringObjects = function(cb){
 	});
 }
 
+theObject.getStructuringAttributes = function(cb,asObject){
+	
+	this.getStructuringObjects(function(objects){
+		
+		var temp={};
+		
+		for(var i in objects){
+			var object=objects[i];
+			
+			var oAttributes=object.getStructuringAttributes();
+			
+			for (var j in oAttributes){
+				temp[oAttributes[j]]=true;
+			}	
+		}
+		
+		if (asObject) return cb(temp);
+		
+		var attributes=[];
+		
+		for (var i in temp){
+			attributes.push(i);
+		}
+		
+		cb(attributes);
+		
+	});
+	
+}
+
 theObject.getApplicationObjects = function(cb){
 	this.getInventoryAsync(function(allObjects){
 		
@@ -261,13 +291,21 @@ theObject.getRecentChanges = function(data, cb){
  * moves all active objects to their position according to the background structure
  *
  */
-theObject.repositionObjects = function() {
+theObject.repositionObjects = function(object) {
 	
 	this.getInventoryAsync(function(inventory){
 		
 		   //first determine, which objects are structuring objects and which ones are application (or active) objects
 	
-		    var structures = [];		    var activeObjects = [];			        for (var i in inventory) {	            if (inventory[i].isStructuring && inventory[i].isStructuring()) {	                structures.push(inventory[i]);	            } else if (inventory[i].isActive && inventory[i].isActive()) {	                activeObjects.push(inventory[i]);	            }	        }		
+		    var structures = [];		    var activeObjects = [];			        for (var i in inventory) {	            if (inventory[i].isStructuring && inventory[i].isStructuring()) {	                structures.push(inventory[i]);	            } else if (inventory[i].isActive && inventory[i].isActive()) {	                activeObjects.push(inventory[i]);	            }	        }
+	        
+	        //if an object has been passed to this function, only care about it and leave
+	        //the others alone.
+	        
+	        if (object) {
+	        	activeObjects = [];
+	        	activeObjects.push(object);
+	        }		
             //now we try to place every active object
             				    for (var index in activeObjects) {
 		    	
@@ -284,8 +322,6 @@ theObject.repositionObjects = function() {
 		        	
 			        	var howToHandle=structures[i].howToHandle(ao);
 			        	
-			        	console.log(structures[i]+' handles '+ao+' with '+howToHandle);
-			        	
 			        	switch (howToHandle){
 			        		case 'attract': structuresHavingObject.push(structures[i]); break;
 			        		case 'distract': structuresNotHavingObject.push(structures[i]); break;
@@ -298,7 +334,13 @@ theObject.repositionObjects = function() {
 		        // the activeObject will later be placed within these paths
 		        // if there is no structure to be found which can position the activeObject
 		        // the whole room or at least 1024x768 pixels are used 
-				        var solution;		        if (structuresHavingObject.length === 0) {		            var xStructMax = 0;		            var yStructMax = 0;		            for (var s in structures) {		                var xTemp = structures[s].getAttribute("x") + structures[s].getAttribute("width");		                var yTemp = structures[s].getAttribute("y") + structures[s].getAttribute("height");				                if (xStructMax < xTemp) {xStructMax = xTemp;}		                if (yStructMax < yTemp) {yStructMax = yTemp;}		            }				            var x1 = 0;		            var x2 = xStructMax < 1024 ? 1024 : xStructMax;		            var y1 = 0;		            var y2 = yStructMax < 768 ? 768 : yStructMax;				            solution = [[{X: x1, Y: y1}, {X: x2, Y: y1}, {X: x2, Y: y2}, {X: x1, Y: y2}]]		        } else {		            solution = structuresHavingObject[0].getPlacementArea(ao);
+				        var solution;		        if (structuresHavingObject.length === 0) {		            var xStructMax = 0;		            var yStructMax = 0;		            for (var s in structures) {		                var xTemp = structures[s].getAttribute("x") + structures[s].getAttribute("width");		                var yTemp = structures[s].getAttribute("y") + structures[s].getAttribute("height");				                if (xStructMax < xTemp) {xStructMax = xTemp;}		                if (yStructMax < yTemp) {yStructMax = yTemp;}		            }				            var x1 = 0;		            var x2 = xStructMax < 1024 ? 1024 : xStructMax;		            var y1 = 0;		            var y2 = yStructMax < 768 ? 768 : yStructMax;				            solution = [[{X: x1, Y: y1}, {X: x2, Y: y1}, {X: x2, Y: y2}, {X: x1, Y: y2}]]		        } else {
+		        	
+		        	if (!structuresHavingObject[0].getPlacementArea){
+		        		
+		        		console.log('ERROR: '+structuresHavingObject[0]+' has no getPlacementArea function');
+		        		
+		        	}		            solution = structuresHavingObject[0].getPlacementArea(ao);
 		            
 		            
 		            for (var i = 1; i < structuresHavingObject.length; i++) {			            var tempPositions = structuresHavingObject[i].getPlacementArea(ao);			            var cpr = new Modules.Clipper.Clipper();			            cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);			            cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);			            //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//			            var solution_paths = new Modules.Clipper.Paths();			            var succeeded = cpr.Execute(0, solution_paths, 0, 0);			            solution = solution_paths;						        }				        }		

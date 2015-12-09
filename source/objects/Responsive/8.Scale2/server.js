@@ -97,7 +97,7 @@ theObject.positionToValueY = function(object) {
 theObject.checkData = function(object) {
     var data = this.getData(object);
     if (!data.attributeX || !data.valueX || !data.attributeY || !data.valueY) {
-        console.log(this + ' has insufficient data.'); //TODO shout back to people in the room
+        this.shout(this + ' has insufficient data.');
         return false;
     }
 
@@ -117,7 +117,7 @@ theObject.howToHandle = function(object) {
         return 'distract';
     }
 }
-theObject.getValidPositions = function(object) {
+theObject.getPlacementArea = function(object) {
     var startX = this.getAttribute('x');
     var startY = this.getAttribute('y');
     var width = this.getAttribute('width');

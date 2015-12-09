@@ -14,7 +14,7 @@ module.exports = theObject;
 theObject.evaluatePosition = function(object, inside) {
 	
 	if (!this.checkData(object)){
-		//shout;
+		this.shout(this + ' has insufficient data for evaluation'); 
 		return false;
 	}
 	

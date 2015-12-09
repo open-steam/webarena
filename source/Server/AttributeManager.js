@@ -171,6 +171,8 @@ AttributeManager.registerAttribute=function(attribute,data){
 */
 AttributeManager.setAttribute=function(object,attribute,value,forced){
 
+    //console.log('setAttribute '+object+' '+attribute+' '+value);
+
 	var that = this;
 		
 	// do nothing, if value has not changed
@@ -199,6 +201,22 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	
 	var fnName=attribute+'Changed';
     if (object[fnName]) object[fnName](value);
+    
+    //check if the changed attribute value is one of those structured by the background.
+    //if this is the case, reposition the object.
+    
+    object.getRoomAsync(function(){
+    	console.log('ERROR: could not get room in serverside setAttribute');
+    },function(room){
+    	
+    	if (attribute=='context') return room.repositionObjects(object);
+    	
+    	room.getStructuringAttributes(function(attList){
+    		if (attList[attribute]){
+    			room.repositionObjects(object);
+    		}
+    	},true);
+    })
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the

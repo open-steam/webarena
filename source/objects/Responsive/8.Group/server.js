@@ -40,7 +40,7 @@ theObject.getData = function() {
 theObject.checkData = function() {
     var data = this.getData();
     if (!data.attribute || !data.value) {
-        console.log(this + ' has insufficient data.'); //TODO shout back to people in the room
+        this.shout(this + ' has insufficient data for evaluation.');
         return false;
     }
 

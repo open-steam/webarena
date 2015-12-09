@@ -584,8 +584,6 @@ theObject.getRoomAsync=function(error,cb){
 			});
 		}
 	}
-	
-	error();
 }
 
 
