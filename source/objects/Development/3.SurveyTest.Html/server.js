@@ -16,7 +16,7 @@ theObject.sendToRoom = function (roomID, callback){
 	data.roomID = roomID;
 	var that = this;
 
-	/* case differentiation checks if room exists already or if it needs to 
+	/* check if room exists already or if it needs to 
 	be created.
 	*/
 	Modules.RoomController.roomExists(data, this.context, function(error, exists){
@@ -24,19 +24,12 @@ theObject.sendToRoom = function (roomID, callback){
 				console.log('The room exists');
 				Modules.ObjectManager.copyObject(that, roomID, that.context, callback);
 			}else{
-				//Asynchroner Aufruf, dementsprechend lieber innerhalb der sucess function copyObject aufrufen
 				Modules.RoomController.createRoom(data, that.context, function(error, success){
-					console.log('Room created ' + that.context);
+					console.log('Room created, object will be copied');
 					Modules.ObjectManager.copyObject(that, roomID, that.context, callback);
 				});
 			}
-			
 	});
-}
-
-theObject.getUserRooms = function(callback){
-	console.log('Finally called getUserRooms()');
-	Modules.UserManager.getUserRooms(this.context,callback);
 }
 
 theObject.sendToRoom.public = true;
