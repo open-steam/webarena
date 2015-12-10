@@ -214,7 +214,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	// should wait and collect data for a while, as position and dimension information is hardly
 	// ever changed in only one aspect.
 		
-	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+	if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
 		if (object.collectPositioningData)
 			object.collectPositioningData(attribute,value,oldValue);
 	}

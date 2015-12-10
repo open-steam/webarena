@@ -962,7 +962,14 @@ GUI.confirm = function(message) {
 	return confirm(message);
 }
 
-GUI.setMode=function(mode){	//Eigenschaften des Vordergrunds	var className='fgmode';	var text='Edit background';	var toMode='background';	//Eigenschaften des Hintergrunds	if (mode=='background'){		className='bgmode';		text='Exit';		toMode='foreground';	}		var header=document.getElementById('header');	var sidebar=document.getElementById('sidebar');	var sidebar_title=document.getElementById('sidebar_title');
+GUI.setMode=function(mode){
+	
+	if (!Modules.Config.structuringMode){
+		console.log('setMode?');
+		console.trace();
+		return;
+	}
+		//Eigenschaften des Vordergrunds	var className='fgmode';	var text='Edit background';	var toMode='background';	//Eigenschaften des Hintergrunds	if (mode=='background'){		className='bgmode';		text='Exit';		toMode='foreground';	}		var header=document.getElementById('header');	var sidebar=document.getElementById('sidebar');	var sidebar_title=document.getElementById('sidebar_title');
 	var sidebarContent=document.getElementById('sidebar_content');	    //optical changes	if (header) header.className=className;	if (sidebar) sidebar.className=className;	if (sidebar_title) sidebar_title.className=className;		sidebarContent.className=className;	    //set the button	$( "#switchbutton" ).remove();		$( "<button id=\"switchbutton\">"+text+"</button>" ).appendTo(sidebar);		var switchbutton=document.getElementById('switchbutton');	switchbutton.onclick=function(){		GUI.setMode(toMode);	}		ObjectManager.getCurrentRoom().setAttribute('mode',mode);	}
 
 /**
