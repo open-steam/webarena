@@ -497,10 +497,9 @@ GUI.initMouseHandler = function() {
 			//object creation via object symbols
 			var cursor = $("body").css('cursor');	
 			if(cursor != "auto"){
-								
-				var url = cursor.split(".cur");
-				var arr = url[0].split("/");	
-				var proto = ObjectManager.getPrototype(arr[arr.length-1]);
+				
+				var objType=GUI.creatingObject;
+				var proto = ObjectManager.getPrototype(objType);
 			
 				GUI.startNoAnimationTimer();
 						

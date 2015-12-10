@@ -96,7 +96,8 @@ GUI.initToolbar = function() {
 										GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
 									}
 									else {
-										$("body").css('cursor', 'url(../../guis.common/images/cursor/'+object.type+'.cur), auto');
+										$("body").css('cursor', 'url(/objectIcons/'+object.type+'), auto');
+										GUI.creatingObject=object.type;
 									}
 								}
 							}

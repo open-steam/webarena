@@ -823,7 +823,7 @@ ObjectManager.showAll = function() {
 }
 
 ObjectManager.clientErrorMessage = function(data, callback) {
-    ObjectManager.Modules.Dispatcher.query('clientErrorMessage', data, callback);
+    Dispatcher.query('clientErrorMessage', data, callback);
 }
 
 
