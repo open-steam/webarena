@@ -121,9 +121,23 @@ SimpleText.editText = function() {
 		
 		$(rep).find("input").focus();
 		
-		this.input = true;
-		GUI.input = this.id;
+		this.inPlaceEditingMode = true;
+		GUI.inPlaceEditingObject = this.id;
 	}
+    
+    // Simple text box will be expanded (width)
+    var that = this;
+    var charWidth=0;
+    var boxWidth = that.getRepresentation().getBBox().width;
+    document.onkeydown = function(event){ 
+            if(event.keyCode != 8){
+                var inputChar = String.fromCharCode(event.keyCode);
+                charWidth = that.getCharWidth(inputChar);
+                var newWidth =boxWidth+charWidth;
+                $(rep).find("input").css("width", newWidth+"px");
+                boxWidth=newWidth;
+            }
+        }
 }
 
 
@@ -136,7 +150,7 @@ SimpleText.getViewBoundingBoxY = function() {
 /* get the height of the objects bounding box */
 SimpleText.getViewBoundingBoxHeight = function() {
 	var rep = this.getRepresentation();
-	return this.getRepresentation().getBBox().height; //<--TODO: this value is too high
+	return this.getRepresentation().getBBox().height;
 }
 
 
@@ -165,27 +179,37 @@ SimpleText.checkTransparency = function(attribute, value) {
 /**
  * Called after hitting the Enter key during the inplace editing
  */
-SimpleText.saveChanges = function() {
+SimpleText.saveChanges =  function() {
 
-	if(this.input){
+	if(this.inPlaceEditingMode){
 
 		var rep = this.getRepresentation();
 	
-		var newContent = $(rep).find("input").val()
-
+		var newContent = $(rep).find("input").val();
+        
+        
 		$(rep).find("input").remove();
 	
 		$(rep).find("foreignObject").hide();
+        
 	
 		$(rep).find("text").show();
 	
-		this.input = false;
-		GUI.input = false;
+		this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
 	
 		this.setContent(newContent);
 
 		this.draw();
-	
+
 	}
 	
+}
+
+SimpleText.getCharWidth = function(txt){
+        var c=document.createElement('canvas');
+        var ctx=c.getContext('2d');
+        ctx.font = this.getAttribute('font-size') + 'px' + this.getAttribute('font-family');
+        var length = ctx.measureText(txt).width;
+        return length;
 }

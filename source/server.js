@@ -48,9 +48,8 @@ try {
     }
 } catch (e) {
     console.log(e);
-    console.log('Attention: No local config found!');
+    console.log('Attention: No local config found or the file could not be read.');
     console.log('Solution: Copy the content of the config.default and create a new config.local in the same directory! Don\'t forget to update the filebase property to your desired folder!');
-    console.log('The old config.local files which are located IN the Client or Server folder can be removed.');
 }
 
 
@@ -82,6 +81,8 @@ var logger = new (winston.Logger)({
 
 var Modules = {};
 
+Modules.Server = {};
+
 Modules.Log = require('./Common/Log.js');
 
 Modules.Logger = logger;
@@ -103,7 +104,7 @@ Modules.BuildTool = require('./Server/BuildTool.js');
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
 Modules.DataSet = require('./Common/DataSet.js');
-Modules.AttributeManager = require('./Common/AttributeManager.js');
+Modules.AttributeManager = require('./Server/AttributeManager.js');
 
 Modules.Connector = Modules.config.connector; //shortcut
 
@@ -123,4 +124,18 @@ for (var name in Modules) {
     if (module.init) {
         module.init(Modules);
     }
+}
+
+Modules.Server.shutDown=function(context){
+	Modules.UserManager.isGod(context,function(){
+		shutDown(8);
+	});
+}
+
+function shutDown(counter){
+	if (counter<=0) process.exit();
+	Modules.ObjectManager.shout('The server is shutting down in '+(counter*5)+' seconds.');
+	setTimeout(function(){
+		shutDown(counter-1);
+	},5000)
 }

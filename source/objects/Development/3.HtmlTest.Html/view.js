@@ -31,7 +31,3 @@ HtmlTest.onclick=function(htmlobject){
 	
 	alert(object);
 }
-
-
-
-

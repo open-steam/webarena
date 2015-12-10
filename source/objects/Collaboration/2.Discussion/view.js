@@ -235,7 +235,7 @@ Discussion.createRepresentationEmbedded = function (parent) {
 			that.deleteStatement($(this).parent().attr("data-message-id"));
 		});
 		$(body).on("touchend", ".discussion-heading", function () {
-			if(!this.input){
+			if(!this.inPlaceEditingMode){
 				that.editTitle();
 			}
 		});
@@ -251,7 +251,7 @@ Discussion.createRepresentationEmbedded = function (parent) {
 			that.deleteStatement($(this).parent().attr("data-message-id"));
 		});
 		$(body).on("click", ".discussion-heading", function () {
-			if(!this.input){
+			if(!this.inPlaceEditingMode){
 				that.editTitle();
 			}
 		});
@@ -436,8 +436,8 @@ Discussion.editTitle = function(){
 	
 	$(rep).find("#discussion-heading-input").focus();
 	
-	this.input = true;
-	GUI.input = this.id;
+	this.inPlaceEditingMode = true;
+	GUI.inPlaceEditingObject = this.id;
 }
 
 
@@ -445,7 +445,7 @@ Discussion.editTitle = function(){
  * Called after hitting the Enter key during the inplace editing of the discussion title
  */
 Discussion.saveChanges = function(){
-	if(this.input){
+	if(this.inPlaceEditingMode){
 
 		var rep = this.getRepresentation();
 	
@@ -453,8 +453,8 @@ Discussion.saveChanges = function(){
 
 		$(rep).find("#discussion-heading-input").remove();
 	
-		this.input = false;
-		GUI.input = false;
+		this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
 	
 		$(rep).find(".discussion-heading").show();
 		

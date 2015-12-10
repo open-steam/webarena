@@ -22,10 +22,12 @@ SocketClient.init=function(){
 }
 
 SocketClient.sendCall=function(type, data, responseID){
+	if(!Modules.Socket){return;}
 	Modules.Socket.emit('message',{'type':type,'data':data,'responseID':responseID});
 }
 
 SocketClient.sendWebRTCCall=function(message, data, room){
+	if(!Modules.Socket){return;}
 	Modules.Socket.emit('WebRTC-message',{'message':message,'data':data, 'room':room});
 }
   

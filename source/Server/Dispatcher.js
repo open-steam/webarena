@@ -27,9 +27,8 @@ Dispatcher.call = function(socket, message) {
     if (calls[type]) {
         process.nextTick(function() {
 
-            var response = calls[type](socket, data, responseID); 		//TODO: this is still blocking, swtich to callbacks if necessary
+            var response = calls[type](socket, data, responseID);
 
-            //TODO: Fire an event
             /**
              *	Clients can provide a unique responseID when calling a function on the server. If the
              *	function called has a result other than undefined and a responseID is given, the response
@@ -73,7 +72,8 @@ Dispatcher.registerCall('createObject', function(socket, data, responseID) {
 });
 
 Dispatcher.registerCall('roomlist', function(socket, data, responseID) {
-    Modules.RoomController.listRooms(resultCallbackWrapper(socket, responseID));
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+    Modules.RoomController.listRooms(context,resultCallbackWrapper(socket, responseID));
 });
 
 Dispatcher.registerCall('getPreviewableMimeTypes', function(socket, data, responseID) {
@@ -141,6 +141,11 @@ Dispatcher.registerCall('putBack', function(socket, data, responseID) {
 	else{
 		Modules.Connector.uploadContentToWebDav(data.host, data.user, data.pw, data.path, data.object, data.room, resultCallbackWrapper(socket, responseID));
 	}
+});
+
+Dispatcher.registerCall('shutdown', function(socket, data, responseID) {
+	var context = Modules.UserManager.getConnectionBySocket(socket);
+	Modules.Server.shutDown(context);
 });
 
 /**

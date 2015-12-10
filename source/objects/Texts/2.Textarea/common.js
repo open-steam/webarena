@@ -35,7 +35,7 @@ Textarea.register=function(type){
 
 Textarea.execute=function(){
 	
-	if(!this.input){
+	if(!this.inPlaceEditingMode){
 		this.editText();
 	}
 	
@@ -59,8 +59,8 @@ Textarea.justCreated = function() {
 
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
-Textarea.input = false;
 
+Textarea.inPlaceEditingMode = false;
 
 Textarea.contentURLOnly = false; //content is only accessible via URL
 

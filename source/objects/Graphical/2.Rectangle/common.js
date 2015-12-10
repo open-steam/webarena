@@ -24,13 +24,13 @@ Rectangle.register=function(type){
 }
 
 Rectangle.execute=function(){
-	if(!this.input){
+	if(!this.inPlaceEditingMode){
 		this.editText();
 	}	
 }
 
 Rectangle.register('Rectangle');
 Rectangle.isCreatable=true;
-Rectangle.input = false;
+Rectangle.inPlaceEditingMode = false;
 
 module.exports=Rectangle;

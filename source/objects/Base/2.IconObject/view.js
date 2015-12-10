@@ -132,7 +132,7 @@ IconObject.setViewHeight = function(value) {
 
 IconObject.dblclickHandler = function(event) {
 
-	if(!this.input){
+	if(!this.inPlaceEditingMode){
 		if(event.target.localName == "image"){
 			this.execute(event);
 		}
@@ -250,11 +250,13 @@ IconObject.renderText = function (text){
     var temp=text;
     
     while(temp){
+    	if (!temp.substring) temp='';
+    	
     	var test=temp.substring(0,lineLength);
     	var length=0;
     	
     	if (test.lastIndexOf(' ')>0 && test.lastIndexOf(' ')>length) length=test.lastIndexOf(' ')+1;
-    	if (test.lastIndexOf('.')>0 && test.lastIndexOf('.')>length) length=test.lastIndexOf('.')+1;
+    	if (test.lastIndexOf('. ')>0 && test.lastIndexOf('. ')>length) length=test.lastIndexOf('. ')+2;
     	if (test.lastIndexOf('-')>0 && test.lastIndexOf('-')>length) length=test.lastIndexOf('-')+1;
     	
     	if (length==0) length=lineLength;
@@ -341,8 +343,8 @@ IconObject.editText = function(){
 	
 	$(rep).find("input").focus();
 	
-	this.input = true;
-	GUI.input = this.id;
+	this.inPlaceEditingMode = true;
+	GUI.inPlaceEditingObject = this.id;
 
 }
 
@@ -351,8 +353,10 @@ IconObject.editText = function(){
  * Called after hitting the Enter key during the inplace editing
  */
 IconObject.saveChanges = function() {
+	
+	console.log('In saveChanges');
 
-	if(this.input){
+	if(this.inPlaceEditingMode){
 		var rep = this.getRepresentation();
 	
 		var newContent = $(rep).find("input").val()
@@ -363,8 +367,8 @@ IconObject.saveChanges = function() {
 	
 		$(rep).find("text").show();
 	
-		this.input = false;
-		GUI.input = false;
+		this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
 	
 		this.setAttribute("name", newContent);
 	

@@ -104,6 +104,9 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     obj.id = objectData.id;
     obj.attributeManager.set(objectData.id, 'id', objectData.id);
     obj.inRoom = roomID;
+    obj.attributeManager.set(objectData.id, 'inRoom', roomID);
+
+    
     obj.set('type', type);
 
     // runtimeData is an array that containts variables
@@ -233,7 +236,7 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 
 	var that = this;
 
-    //TODO send error to client if there is a rights issue here
+    //TODO check for rights right here
 
     var proto = this.getPrototypeFor(type);
 
@@ -363,19 +366,29 @@ ObjectManager.init = function(theModules) {
 
         var filename = data.filename;
         var category = data.category;
-
+        
         var fileinfo = filename.split('.');
         var objName = fileinfo[1];
         var filebase = __dirname + '/../objects/' + category + '/' + filename;
 
-        var obj = require(filebase + '/server.js');
-        obj.ObjectManager = Modules.ObjectManager;
-        obj.register(objName);
-
-        obj.localIconPath = function(selection) {
-            selection = (selection) ? '_' + selection : '';
-            return filebase + '/icon' + selection + '.png';
-        }
+		var fs=require('fs');
+		
+		fs.stat(filebase + '/server.js', function(err, stat) {
+		    if(err == null) {
+		        var obj = require(filebase + '/server.js');
+		        obj.ObjectManager = Modules.ObjectManager;
+		        obj.register(objName);
+		
+		        obj.localIconPath = function(selection) {
+		            selection = (selection) ? '_' + selection : '';
+		            return filebase + '/icon' + selection + '.png';
+		        }
+		    } else if(err.code == 'ENOENT') {
+		        //likely an empty folder
+		    } else {
+		        console.log('ERROR: cannot load server.js for '+objName);
+		    }
+		});
     }
 
     var files = this.getEnabledObjectTypes();
@@ -627,24 +640,6 @@ ObjectManager.duplicate = function(data, context, cbo) {
         });
 
 
-        /*
-         //find all unique objects - also traverse the linked objects
-         var findUniqueRelatedObjectsIds = function (objectId) {
-         var object = ObjectManager.getObject(fromRoom, objectId, context);
-         if (!object) return;
-         if (! (objectId in uniqueObjects)) {
-         uniqueObjects[objectId] = object;
-         object.getObjectsToDuplicateAsync(function(linkedObjects){
-         
-         return linkedObjects.forEach(findUniqueRelatedObjectsIds);
-         
-         });
-         
-         }
-         }
-         //objectKeys.forEach(findUniqueRelatedObjectsIds);
-         */
-
         //is called after call object were copied
         //updated some properties + visual arrangement
         var updateObj = function(callback) {
@@ -703,7 +698,7 @@ ObjectManager.duplicate = function(data, context, cbo) {
             //check permissions and if successful
             //go on with further work
             async.series([innerReadCheck2, toWriteCheck], function(err) {
-                //TODO send error to cb
+                
                 if (err)
                     cbi(err, null);
                 else {
@@ -731,7 +726,7 @@ ObjectManager.duplicate = function(data, context, cbo) {
                                 });
                             });
                         }
-                        //need function scope because "looping problem" //TODO: link to example
+                        //need function scope because "looping problem"
                         (function(id) {
                             objectCopyTasks.push(function(callback) {
                                 Modules.Connector.duplicateObject(fromRoom, toRoom, id, context, function(err, newId, oldId) {
@@ -747,7 +742,7 @@ ObjectManager.duplicate = function(data, context, cbo) {
 
                                     newObjects.push(obj);
                                     idTranslationList[oldId] = newId;
-                                    //TODO: remove reverseIdTranslationList can be constructed afterwards
+                                 
                                     reverseIdTranslationList[newId] = oldId;
 
                                     callback();
@@ -838,5 +833,18 @@ ObjectManager.deleteObject = function(data, context, callback) {
     Modules.Connector.mayDelete(roomID, objectID, context, afterRightsCheck)
 }
 
+ObjectManager.shout=function(text,object,everyone){
+	
+	if(object){
+		if (everyone){
+			Modules.RoomController.shout(text,object.context.rooms.left.id);
+		} else {
+			console.log('Shouting to '+object.context.user.username+': '+text);
+			Modules.SocketServer.sendToSocket(object.context.socket, 'infotext', text);
+		}
+	} else {
+		Modules.RoomController.shout(text);
+	}
+}
 
 module.exports = ObjectManager;

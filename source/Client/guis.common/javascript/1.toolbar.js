@@ -96,7 +96,8 @@ GUI.initToolbar = function() {
 										GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
 									}
 									else {
-										$("body").css('cursor', 'url(../../guis.common/images/cursor/'+object.type+'.cur), auto');
+										$("body").css('cursor', 'url(/objectIcons/'+object.type+'), auto');
+										GUI.creatingObject=object.type;
 									}
 								}
 							}
@@ -657,9 +658,6 @@ GUI.initToolbar = function() {
  * add a notification if a user entered or left the room or if an object was deleted or restored
  */
 GUI.showNotification = function(add, icon){
-	
-	console.trace();
-	console.log('showNotification '+add+' '+icon);
 	
 	var button = "";
 	var IconEnter = "";

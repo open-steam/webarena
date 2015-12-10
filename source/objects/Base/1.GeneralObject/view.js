@@ -259,6 +259,17 @@ GeneralObject.createRepresentation = function() {
 
 }
 
+GeneralObject.removeRepresentation = function() {
+
+    var rep = this.getRepresentation();
+
+    this.deselect();
+
+    $(rep).remove();
+
+}
+
+
 
 /**
  * @deprecated ? (called by all createRepresentation functions)
@@ -1911,6 +1922,60 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
 
     return result;
 };
+
+/**
+ *	determine if the object's bounding box intersects with the square x,y,width,height
+ */
+GeneralObject.boxIntersectsWith = function(otherx, othery, otherwidth, otherheight) {
+    if (!this.isGraphical)
+        return false;
+
+    var thisx = this.getViewBoundingBoxX();
+    var thisy = this.getViewBoundingBoxY();
+    var thisw = this.getViewBoundingBoxWidth();
+    var thish = this.getViewBoundingBoxHeight();
+
+    if (otherx + otherwidth < thisx)
+        return false;
+    if (otherx > thisx + thisw)
+        return false;
+    if (othery + otherheight < thisy)
+        return false;
+    if (othery > thisy + thish)
+        return false;
+
+    return true;
+
+}
+
+/**
+ *	determine if the object or the object's bounding box intersects with another object's bounding box
+ */
+GeneralObject.intersectsWith = function(other) {
+    var otherx = other.getViewBoundingBoxX();
+    var othery = other.getViewBoundingBoxY();
+    var otherw = other.getViewBoundingBoxWidth();
+    var otherh = other.getViewBoundingBoxHeight();
+
+    if (typeof this.objectIntersectsWith == 'function') {
+        return this.objectIntersectsWith(otherx, othery, otherw, otherh);
+    }
+    else {
+        return this.boxIntersectsWith(otherx, othery, otherw, otherh);
+    }
+
+}
+
+GeneralObject.hasPixelAt = function(x, y) {
+
+    //assume, that the GeneralObject is full of pixels.
+    //override this if you can determine better, where there
+    //object is nontransparent
+
+    return this.boxIntersectsWith(x, y, 0, 0);
+}
+
+GeneralObject.boxContainsPoint = GeneralObject.hasPixelAt;
 
 
 //checks if the object is currently visible in the browser window of the user

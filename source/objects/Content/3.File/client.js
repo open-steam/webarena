@@ -117,7 +117,7 @@ WAFile.clientRegister=function(){
 	   /* check if there is at least one selected object which cannot put back due to missing cloud information */
 		var selected = ObjectManager.getSelected();
 		for(var i = 0; i<selected.length; i++){
-			if(selected[i].getAttribute("CloudConnection")[0] == ""){
+			if(!selected[i].getAttribute("CloudConnection") || selected[i].getAttribute("CloudConnection")[0] == ""){
 				return false;
 			}
 		}
@@ -146,14 +146,12 @@ WAFile.downloadFile=function(){
 
 
 WAFile.openFile=function(){
-	
 	var type = this.getAttribute("mimeType");
 	
 	if(type.indexOf("image") > -1 || type.indexOf("text") > -1 || type.indexOf("pdf") > -1){
 		this.buildContentDialog();
 		return;
 	}
-
 	window.open(this.getContentURL(), "_blank");
 	
 }

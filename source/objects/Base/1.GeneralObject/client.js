@@ -27,46 +27,69 @@ GeneralObject.normalOpacity = 1;
  */
 GeneralObject.clientRegister = function (){
 	
+	// inheriting object types have to call this function in their own instance
+	// (super call)
+	//
+	// which can be done like this: InheritingObject.parent.clientRegister.call(this);
+	
 	// ActionManager: handles actions that can be executed on the object
     
     this.currentLanguage = Modules.Config.language; // The currrent language
     
+    // the action manager takes care about actions that can be performed on an object type
+    // actions are called on the client by clicking on them in an object's context menu
+    
     this.actionManager = Object.create(Modules.ActionManager);
     this.actionManager.init(this);
+    
+    // the translationmanager for an object handles translations to the client language
     
     this.translationManager = Object.create(Modules.TranslationManager);
     this.translationManager.init(this);
 
-	    this.registerAction('Delete', function() {
+    // now very basic actions are registered.
+    
+    // register action specifies an action name and a function that is called when the action
+    // is invoked. This function gets the object the action is called on as parameter.
+    //
+    // Note: This object only is the the specific object the action is called on which in a lot
+    // of cases is not what you are intersted in. In the following delete action for example,
+    // the user expects all selected elements to be deleted, not only the very last one.
+    // That's why in this case, the clickedObject itself is not uesed at all.
+    //
+    // Additionally, if the single flag is set to true, the action is only shown when a single
+    // object is selected. If you need a more complex decision on when an action should be shown
+    // or not, add a visibilityFunction (see Link for example)
+    //
+    // registerAction(name,func,single,visibilityFunc)
 
-        var selected = ObjectManager.getSelected();
+    this.registerAction('Delete', function(clickedObject) {
 
-        for (var i in selected) {
-            var object = selected[i];
+	   // it does not matter which object has been clicked on
+	   // get all selected objects instead.
 
-            object.deleteIt();
+       var selected = ObjectManager.getSelected();
 
-        }
+       for (var i in selected) {
+           var object = selected[i];
 
-    }, false);
+           object.deleteIt();
 
-    this.registerAction('Duplicate', function() {
+       }
 
-        ObjectManager.duplicateObjects(ObjectManager.getSelected());
+    });
 
-    }, false);
+    // Copy paste functionality
 
-    this.registerAction('Copy', function() {
+    this.registerAction('Duplicate', function() {ObjectManager.duplicateObjects(ObjectManager.getSelected());});
 
-        ObjectManager.copyObjects(ObjectManager.getSelected());
+    this.registerAction('Copy', function() {ObjectManager.copyObjects(ObjectManager.getSelected());});
 
-    }, false);
+    this.registerAction('Cut', function() {ObjectManager.cutObjects(ObjectManager.getSelected());});
 
-    this.registerAction('Cut', function() {
-
-        ObjectManager.cutObjects(ObjectManager.getSelected());
-
-    }, false);
+    // Linking
+    //
+    // Linking actions are only shown when more than one object is selected
 
     this.registerAction(
             'Link',
@@ -83,6 +106,7 @@ GeneralObject.clientRegister = function (){
             }
     );
 
+    // Grouping and ungrouping
 
     this.registerAction('Group', function() {
 
@@ -164,6 +188,8 @@ GeneralObject.clientRegister = function (){
 
     });
 	
+	// Transfer attributes, only shown when more than one object is selected
+	
     this.registerAction('Transfer attributes', function(lastClicked){
         var selected = ObjectManager.getSelected();
 		
@@ -179,6 +205,9 @@ GeneralObject.clientRegister = function (){
 		
 		return true;
 	});
+	
+	//Object layer handling
+	
     this.registerAction('To front', function() {
 
         /* set a very high layer for all selected objects (keeping their order) */
@@ -193,7 +222,7 @@ GeneralObject.clientRegister = function (){
 
         ObjectManager.renumberLayers();
 
-    }, false);
+    });
 
     this.registerAction('To back', function() {
 
@@ -209,10 +238,11 @@ GeneralObject.clientRegister = function (){
 
         ObjectManager.renumberLayers();
 
-    }, false);
+    });
 
 }
 
+// For convenience, action manager functions can be called directly on the object.
 
 GeneralObject.registerAction = function(name, func, single, visibilityFunc) {
     return this.actionManager.registerAction(name, func, single, visibilityFunc);
@@ -236,6 +266,12 @@ GeneralObject.translate = function(language, text) {
     return this.translationManager.get(language, text);
 }
 
+GeneralObject.ping=function(){
+	this.serverCall('pong');
+}
+
+// Translation handling
+
 GeneralObject.setLanguage = function(currentLanguage) {
     this.currentLanguage = currentLanguage;
 }
@@ -245,6 +281,9 @@ GeneralObject.setTranslations = function(language, data) {
 }
 
 GeneralObject.setTranslation = GeneralObject.setTranslations;
+
+
+// Set object position and dimensions
 
 
 /**
@@ -265,6 +304,7 @@ GeneralObject.setDimensions = function(width, height) {
     this.setAttribute('height', height);
 }
 
+// send objects to back or to front
 
 GeneralObject.toFront = function() {
     ObjectManager.performAction("toFront");
@@ -274,6 +314,8 @@ GeneralObject.toBack = function() {
     ObjectManager.performAction("toBack");
 }
 
+// the following functions should be overwritten by the inheriting object types
+// They should not care about the lock status which is handeled by mayMove, mayResize
 
 GeneralObject.isMovable = function() {
     return true;
@@ -305,14 +347,11 @@ GeneralObject.mayResize = function() {
     }
 }
 
-GeneralObject.mayResizeProportional = function() {
-    if (this.getAttribute('locked')) {
-        return false;
-    } else {
-        return this.resizeProportional();
-    }
-}
+/*
 
+the execute function is called when an object is doubleclicked
+
+*/
 
 GeneralObject.execute = function() {
     this.select();
@@ -323,11 +362,9 @@ GeneralObject.isSelected = function() {
     return this.selected;
 }
 
-GeneralObject.refresh = function() {
-    //This should be overwritten for GUI updates and object repainting
-}
 
 GeneralObject.refreshDelayed = function() {
+	
     if (this.refreshDelay) {
         clearTimeout(this.refreshDelay);
     }
@@ -409,9 +446,16 @@ GeneralObject.serverCall = function() {
 
 }
 
+/*
+*   fetchContent
+*
+*   fetches the object content and stores it locally in the content
+*   variable.
+*/
+
 GeneralObject.fetchContent = function(worker, forced) {
 
-    if (this.contentURLOnly)
+    if (this.contentURLOnly)   //return immediately when the contentURLOnly flag is set
         return;
 
     if (!worker)
@@ -455,6 +499,13 @@ GeneralObject.hasContent = function() {
     return this.getAttribute('hasContent');
 }
 
+/*
+*   contentUpdated
+*
+*	is called by the objectManager when content has changed.
+*
+*/
+
 GeneralObject.contentUpdated = function() {
     var that = this;
     this.contentFetched = false;
@@ -464,7 +515,7 @@ GeneralObject.contentUpdated = function() {
 }
 
 
-//triggered by non local change of values
+//triggered by non local change of values (ob the object manager)
 GeneralObject.refresh = function() {
 
     //do not trigger a draw if the refreshed object is the room object
@@ -492,23 +543,13 @@ GeneralObject.getDownloadURL = function() {
 GeneralObject.create = function(attributes) {
 
     if (attributes === undefined) {
-        var attributes = {
+        attributes = {
         };
     } else {
 
     }
 
     ObjectManager.createObject(this.type, attributes);
-
-}
-
-GeneralObject.removeRepresentation = function() {
-
-    var rep = this.getRepresentation();
-
-    this.deselect();
-
-    $(rep).remove();
 
 }
 
@@ -529,59 +570,7 @@ GeneralObject.getCurrentUserName = function() {
     return Modules.ObjectManager.getUser().username;
 }
 
-/**
- *	determine if the object's bounding box intersects with the square x,y,width,height
- */
-GeneralObject.boxIntersectsWith = function(otherx, othery, otherwidth, otherheight) {
-    if (!this.isGraphical)
-        return false;
 
-    var thisx = this.getViewBoundingBoxX();
-    var thisy = this.getViewBoundingBoxY();
-    var thisw = this.getViewBoundingBoxWidth();
-    var thish = this.getViewBoundingBoxHeight();
-
-    if (otherx + otherwidth < thisx)
-        return false;
-    if (otherx > thisx + thisw)
-        return false;
-    if (othery + otherheight < thisy)
-        return false;
-    if (othery > thisy + thish)
-        return false;
-
-    return true;
-
-}
-
-/**
- *	determine if the object or the object's bounding box intersects with another object's bounding box
- */
-GeneralObject.intersectsWith = function(other) {
-    var otherx = other.getViewBoundingBoxX();
-    var othery = other.getViewBoundingBoxY();
-    var otherw = other.getViewBoundingBoxWidth();
-    var otherh = other.getViewBoundingBoxHeight();
-
-    if (typeof this.objectIntersectsWith == 'function') {
-        return this.objectIntersectsWith(otherx, othery, otherw, otherh);
-    }
-    else {
-        return this.boxIntersectsWith(otherx, othery, otherw, otherh);
-    }
-
-}
-
-GeneralObject.hasPixelAt = function(x, y) {
-
-    //assume, that the GeneralObject is full of pixels.
-    //override this if you can determine better, where there
-    //object is nontransparent
-
-    return this.boxIntersectsWith(x, y, 0, 0);
-}
-
-GeneralObject.boxContainsPoint = GeneralObject.hasPixelAt;
 
 GeneralObject.getLinkedObjects = function() {
     var self = this;
@@ -615,7 +604,9 @@ GeneralObject.showExitDialog = function() {
     var that = this;
 
     var dialog_buttons = {};
-
+  
+    /*
+  
     dialog_buttons[that.translate(GUI.currentLanguage, "Create new Subroom")] = function() {
 
         var random = new Date().getTime() - 1296055327011;
@@ -624,12 +615,14 @@ GeneralObject.showExitDialog = function() {
         that.setAttribute("destinationObject", "choose");
         GUI.updateInspector();
     };
+    
+    */
 
-    dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Close")] = function() {
         return false;
     };
 
-    dialog_buttons[that.translate(GUI.currentLanguage, "Okay")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Select")] = function() {
 	
 		var active = $('#tabs').tabs('option', 'active');
 		var tab = $("#tabs ul>li a").eq(active).attr("href");

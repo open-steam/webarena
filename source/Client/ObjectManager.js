@@ -58,10 +58,11 @@ ObjectManager.getIndexOfObject = function(objectID) {
 }
 
 ObjectManager.getObject = function(objectID) {
-    //room?
+    //room?  
     for (var index in this.currentRoomID) {
         if (objectID == this.currentRoomID[index]) {
-            return this.currentRoom[index];
+        	var temp=this.currentRoom[index];
+        	if(temp.id==objectID) return this.currentRoom[index];
         }
     }
 
@@ -70,6 +71,8 @@ ObjectManager.getObject = function(objectID) {
             return ObjectManager.objects[index][objectID];
         }
     }
+    
+    return undefined;
 }
 
 ObjectManager.buildObject = function(type, attributes) {
@@ -240,13 +243,9 @@ ObjectManager.attributeChanged = function(object, key, newValue, local) {
 
     var changedFunction = object.attributeManager.getAttributes()[key].changedFunction;
 
-    if (changedFunction)
-        changedFunction(object, newValue, local);
+    if (changedFunction) changedFunction(object, newValue, local);
 
-    if (this.informGUI)
-        this.informGUI(object, key, newValue, local)
-    else
-        console.log('GUI is not listening to attribute changes. (use Modules.ObjectManager.registerAttributeChangedFunction)');
+    if (this.informGUI) this.informGUI(object, key, newValue, local)
 
 }
 
@@ -276,12 +275,14 @@ ObjectManager.remove = function(object) {
 
     var that = this;
     if (!this.transactionId) {
-        that.transactionId = new Date().getTime();
+        //calculate new transactionId
+		//TODO: isn't safe - concurrent users may result in same timestamp
+		that.transactionId = new Date().getTime();
     } else {
         window.transactionTimer = window.setTimeout(function() {
             //calculate new transactionId
-            //TODO: isn't safe - concurrent users may result in same timestamp
-            that.transactionId = new Date().getTime();
+		    //TODO: isn't safe - concurrent users may result in same timestamp
+			that.transactionId = new Date().getTime();
         }, this.transactionTimeout);
     }
 	
@@ -409,12 +410,7 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
 
 				self.currentRoomID[index] = roomid;
 				
-                if (callback)
-                    setTimeout(callback, 1200);
-
-                // Create and display an annotation pad for the room
-                if (Modules.config.collaborativeEditor)
-                    ObjectManager.Pads.createRoomPad(ObjectManager.getRoomID());
+                if (callback) setTimeout(callback, 1200);
             }
         });
     } else {
@@ -478,7 +474,7 @@ ObjectManager.createObject = function(type, attributes, content, callback, index
         var object = false;
         var interval = setInterval(function() {
             if (runs == 50) {
-                console.log('ERROR: Timeout while waiting for the object');
+                //console.log('ERROR: Timeout while waiting for the object');
                 clearTimeout(interval);
                 return;
             }
@@ -646,7 +642,6 @@ ObjectManager.init = function() {
 
         var content = '<form>';
         content = _(choices).reduce(function(accum, choice) {
-            //TODO perhaps need to escape whitesapces in choice
             return accum + "<input type='radio' name='some-choice' value='" + choice + "'>" + choice + "<br/>";
         }, content)
         content += "</form>";
@@ -775,10 +770,6 @@ ObjectManager.getUser = function() {
     return this.user;
 }
 
-ObjectManager.serverMemoryInfo = function() {
-    ObjectManager.Modules.Dispatcher.query('memoryUsage', '', console.log);
-}
-
 ObjectManager.inform = function(type, content, index) {
     var data = {};
     data.message = {};
@@ -830,7 +821,7 @@ ObjectManager.showAll = function() {
 }
 
 ObjectManager.clientErrorMessage = function(data, callback) {
-    ObjectManager.Modules.Dispatcher.query('clientErrorMessage', data, callback);
+    Dispatcher.query('clientErrorMessage', data, callback);
 }
 
 
@@ -1028,6 +1019,8 @@ ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
 }
 
 ObjectManager.paintingUpdate = function(data) {
+
+    if (!Modules.Config.paintMode) return;
 
     if (!ObjectManager.getCurrentRoom().getAttribute("showUserPaintings"))
         return;

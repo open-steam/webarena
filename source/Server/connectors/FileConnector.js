@@ -73,29 +73,43 @@ fileConnector.getTrashRoom = function(context, callback){
 }
 
 
-fileConnector.listRooms = function(callback){
+fileConnector.listRooms = function(context,callback){
+	
+	var self=this;
 	
 	var filebase = fileConnector.Modules.Config.filebase;
 	fs.readdir(filebase, function(err, files){
-		if(err){
-			//TODO
-		}
 
-		var isRoom = function(file, callback){
-			if(/^\./.exec(file)){
+		var isAccessibleRoom = function(room, callback){
+			
+			if(/^\./.exec(room)){
 				return callback(false);
 			}
-			file = filebase + file;
+			var file = filebase +'/'+room;
 			fs.stat(file, function(err, result){
 				if(err){
-					return callback(err, null);
+					return callback(false);
 				}
-				callback(result.isDirectory());
+				
+				if (result.isDirectory()){
+					self.mayEnter(room,context,function(error,mayEnter){
+						
+						if (error) {
+							callback(false)
+						} else {
+							if (mayEnter) callback(true); 
+							        else  callback(false);
+						}
+					});
+				} else {
+					callback(false);
+				}
+				
 			});
 		}
 
-		async.filter(files,isRoom, function( directories){
-			callback(null, directories);
+		async.filter(files,isAccessibleRoom, function( rooms){
+			callback(null, rooms);
 		});
 	});
 
@@ -110,19 +124,19 @@ fileConnector.isLoggedIn=function(context) {
 
 /* RIGHTS */
 
-fileConnector.mayWrite=function(roomID,objectID,connection,callback) {
+fileConnector.mayWrite=function(roomID,objectID,context,callback) {
 	callback(null, true);
 }
 
-fileConnector.mayRead=function(roomID,objectID,connection,callback) {
+fileConnector.mayRead=function(roomID,objectID,context,callback) {
 	callback(null, true);
 }
 
-fileConnector.mayDelete=function(roomID,objectID,connection,callback) {
+fileConnector.mayDelete=function(roomID,objectID,context,callback) {
 	callback(null, true);
 }
 
-fileConnector.mayEnter=function(roomID,connection,callback) {
+fileConnector.mayEnter=function(roomID,context,callback) {
 	callback(null, true);
 }
 
@@ -240,6 +254,7 @@ fileConnector.getRoomData=function(roomID,context,oldRoomId,callback){
 *
 */
 fileConnector.getRoomHierarchy=function(roomID,context,callback){
+	
 	var self=this;
 	var result = {
 		'rooms' : {},
@@ -876,7 +891,7 @@ fileConnector.trimImage=function(roomID, objectID, context, callback) {
 							});
 							
 						} else {
-							//TODO: delete temp. file
+							
 							self.Modules.Log.error("Error while trimming "+roomID+"/"+objectID);
 						}
 					});
@@ -1074,16 +1089,16 @@ fileConnector.inlinePreviewProviders = {
 				 	if (err) throw err;
 					
 						/* temp. file saved */
-
-					var im = require('imagemagick');
-
-					im.identify(filename, function(err, features) {
-
-						if (err) throw err;
-
-						var width = features.width;
-						var height = features.height;
-
+						
+					
+					var fast_image_size = require('fast-image-size');
+						
+					fast_image_size ( filename, function ( ret_obj ) {
+				        
+				        
+				        var width = ret_obj.width;
+						var height = ret_obj.height;
+						
 						if (width > fileConnector.Modules.config.imageUpload.maxDimensions) {
 							height = height*(fileConnector.Modules.config.imageUpload.maxDimensions/width);
 							width = fileConnector.Modules.config.imageUpload.maxDimensions;
@@ -1099,7 +1114,8 @@ fileConnector.inlinePreviewProviders = {
 						
 						callback(width, height);
 
-					});
+				        
+				    });	
 
 				});
 				
@@ -1110,7 +1126,7 @@ fileConnector.inlinePreviewProviders = {
 		'preview' : function(roomID, objectID, context, callback) {
 			
 			if (!context) throw new Error('Missing context in preview for image');
-//TODO: change image orientation
+
 			fileConnector.getContent(roomID,objectID,context,function(content) {
 				
 				callback(content);
