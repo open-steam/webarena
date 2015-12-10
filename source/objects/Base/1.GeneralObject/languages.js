@@ -60,7 +60,6 @@ GeneralObject.setTranslations('de',{
 	'Open destination' : 'Ziel öffnen',
 	'Target Selection' : 'Zielauswahl',
 	'Show objects' : 'Objekte anzeigen',
-	'Transfer attributes' : 'Eigenschaften übertragen',
 	'Transfer object attributes' : 'Objekt-Eigenschaften übertragen',
 	'Choose the attributes which should be transferred to the selected objects' : 'Wählen Sie die Eigenschaften aus, die auf die markierten Objekte übertragen werden sollen',
 	'Transfer attributes' : 'Eigenschaften übertragen',

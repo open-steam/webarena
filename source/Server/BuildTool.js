@@ -62,9 +62,11 @@ BuildTool.buildClientCode = function(){
 		that.addToClientCode(filebase + '/client.js');
 		that.addToClientCode(filebase + '/view.js');
 		
+		that.clientCode += enter + 'try {';
 		that.clientCode += enter + temp + '.register("' + objName + '");' + enter + enter;
 		that.clientCode += enter + temp + '.clientRegister();' + enter + enter;
 		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
+		that.clientCode += enter + '} catch (e) {console.log("Cannot register '+temp+'")}';
 
 		that.addToClientCode(filebase + '/languages.js');
 
