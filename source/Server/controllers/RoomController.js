@@ -42,7 +42,13 @@ RoomController.createRoom = function (data, context, callback) {
 
 }
 
+//TODO: should be implemented on Connector lvl. because it may be different
+RoomController.roomExists = function (data, context, callback) {
+    var roomID = data.roomID;
+    var obj= Modules.Connector.getObjectDataByFile(roomID,roomID);
 
+    callback(null, !!obj);
+}
 
 //TODO: remove? combine with "browse" of exit object
 RoomController.listRooms = function (context,callback) {
