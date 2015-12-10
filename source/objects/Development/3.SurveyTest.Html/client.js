@@ -8,43 +8,57 @@ SurveyTest.clientRegister=function(){
 	var that = this;
 	SurveyTest.parent.clientRegister.call(this);
 	
-	this.registerAction('Send to users',function(object){
-		that.send(object);
+	this.registerAction('Send to users...',function(){
+		that.chooseRecievingRoomsDialogue();
 	},true);
 }
 
+SurveyTest.sendSurveyResult = function(){
+	for(var i = 0; i < this.getAttribute('surveyLength'); i++){
+		//get point_i and save it in a new object (surveyResult) to gather all data
+	}
+}
+
+SurveyTest.send = function() {
+	var roomID = prompt("Bitte RaumID eingeben", "public2");
+	if (roomID != null) {
+		this.serverCall("sendToRoom", roomID);
+	}
+}
+
 SurveyTest.createRoomList = function(){
-				return $('<div class="checkbox_container">'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'<input type="checkbox" /> This is checkbox <br />'+
-				'</div>');
-}
-
-SurveyTest.send = function(object) {
-	// var roomID = prompt("Bitte RaumID eingeben", "public2");
-	// if (roomID != null) {
-	// 	object.serverCall("sendToRoom", roomID);
-	// }
-	// 
-	this.chooseRecievingRooms();
-}
-
-SurveyTest.chooseRecievingRooms = function() {
 	var that = this; 
 
+	this.serverCall("getUserRooms", function callback(result){
+		console.log('getUserRooms callback happened');
+		that.userRoomList = result;
+	});
+
+	return this.userRoomList;
+
+	// 	console.log('done');
+	// 	return $('<div class="checkbox_container">'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'<label><input type="checkbox" /> This is checkbox </label><br />'+
+	// 	'</div>');
+	// });
+}
+
+SurveyTest.chooseRecievingRoomsDialogue = function() {
+	var that = this; 
 	var dialog_buttons = {};
 
 	dialog_buttons[that.translate(GUI.currentLanguage, "Send")] = function() {		
 		//TODO: acquire selected rooms and call send accordingly
-		prompt("this is working", "dummy");
+		that.send();
 	}
 
 	dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
@@ -54,7 +68,7 @@ SurveyTest.chooseRecievingRooms = function() {
     var dialog_width = 600;
 	var additional_dialog_options = {
 		create: function(){
-			var roomList = that.createRoomList();
+			that.createRoomList();
 
 			$('.ui-dialog-content').html('<div id="tabs">'+
 				'<ul>'+
@@ -64,7 +78,7 @@ SurveyTest.chooseRecievingRooms = function() {
 				'</div>'+
 				'</div>');
 
-			$('#tabs-1').html(roomList);
+			$('#tabs-1').html(that.roomList);
 
 			$(function() {
 				$( "#tabs" ).tabs();
@@ -81,5 +95,4 @@ SurveyTest.chooseRecievingRooms = function() {
             dialog_width,
             additional_dialog_options
             )
-
 }

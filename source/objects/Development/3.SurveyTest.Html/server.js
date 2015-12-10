@@ -26,7 +26,7 @@ theObject.sendToRoom = function (roomID, callback){
 			}else{
 				//Asynchroner Aufruf, dementsprechend lieber innerhalb der sucess function copyObject aufrufen
 				Modules.RoomController.createRoom(data, that.context, function(error, success){
-					console.log('Room created');
+					console.log('Room created ' + that.context);
 					Modules.ObjectManager.copyObject(that, roomID, that.context, callback);
 				});
 			}
@@ -34,4 +34,10 @@ theObject.sendToRoom = function (roomID, callback){
 	});
 }
 
+theObject.getUserRooms = function(callback){
+	console.log('Finally called getUserRooms()');
+	Modules.UserManager.getUserRooms(this.context,callback);
+}
+
 theObject.sendToRoom.public = true;
+theObject.getUserRooms.public = true;

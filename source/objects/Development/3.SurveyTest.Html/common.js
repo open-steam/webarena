@@ -33,12 +33,7 @@ SurveyTest.sliderChange = function(sliderID, value){
 	this.setAttribute(attribute, value);
 }
 
-SurveyTest.sendSurveyResult = function(){
-	console.log('function called');
-	for(var i = 0; i < this.getAttribute('surveyLength'); i++){
-		//get point_i and save it in a new object (surveyResult) to gather all data
-	}
-}
+
 
 SurveyTest.register('SurveyTest');
 SurveyTest.isCreatable=true;

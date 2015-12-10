@@ -798,16 +798,12 @@ theObject.getRoomInventory = function(room, cb){
 
 theObject.getRoomInventory.public = true;
 
-
 theObject.moveToRoom = function (roomID, callback){
-	
 	Modules.ObjectManager.moveObject(this, roomID, this.context, callback);
-	
 }
 
 theObject.copyToRoom = function (roomID, callback){
 	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
-	
 }
 
 theObject.getUserRooms=function(callback){

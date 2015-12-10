@@ -71,7 +71,6 @@ SurveyTest.updateContent = function() {
 
 	//If the SurveyTest-Object is loaded the first time, it is created initially
 	if(!initialised){
-		console.log("!initialised, surveyBaseHtmlInit");
 		self.setHTML(self.surveyBaseHtmlInit());
 		//Send slidervalues to the server and update the attributes, then update the display values as well.
 		$('.surveyslider').each(function (index, Element) {
@@ -92,7 +91,6 @@ SurveyTest.updateContent = function() {
 	}else{ 
 		this.getContentAsString(function(text){ //TODO: Function does not do what expected, new working function needs to be written (getAttributeHash)
 			if(text!=that.oldContent){
-				console.log("text != that.oldcontent");
 				self.setHTML(self.surveyBaseHtmlReload());
 				//Attach functions to send buttons
 				$('.surveysend').each(function (index, Element){
