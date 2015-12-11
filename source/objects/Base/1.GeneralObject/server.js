@@ -298,10 +298,12 @@ theObject.updateClient=function(socket,mode){
 *
 */
 theObject.persist=function(){
+	var self=this;
 	var data=this.get();
 	if (data){
-		Modules.Connector.saveObjectData(this.inRoom, this.id, data, this.context, false, undefined);
-		this.updateClients();
+		Modules.Connector.saveObjectData(this.inRoom, this.id, data, this.context, false, function(){
+			self.updateClients();
+		});
 	} 
 }
 
@@ -313,13 +315,17 @@ theObject.persist=function(){
 */
 theObject.updateClients=function(mode){
 	
+	var self=this;
+	
 	if (!mode) mode='objectUpdate';
 	
 	var connections=Modules.UserManager.getConnectionsForRoom(this.inRoom);
 
-	for (var i in connections){
-		this.updateClient(connections[i].socket,mode);
-	}
+    process.nextTick(function(){
+    	for (var i in connections){
+			self.updateClient(connections[i].socket,mode);
+		}
+    },100);
 	
 }
 
