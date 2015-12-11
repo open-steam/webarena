@@ -12,14 +12,17 @@ SurveyResult.draw = function(external) {
     //hole rep
     var rep = this.getRepresentation();
     var oldGroup = $("#" + this.getAttribute('id') + "-1");
+    var oldResultGroup =$("#"+this.getAttribute('id')+"-2");
 
-    if (oldGroup) {
+    if (oldGroup)
         oldGroup.remove();
-    }
+    if (oldResultGroup)
+        oldResultGroup.remove();
+
     var group = GUI.svg.group(rep, this.getAttribute('id') + "-1");
     var line = GUI.svg.line(group, 0, 0, 20, 20, {});
     var numbers = GUI.svg.group(group);
-    var circles = GUI.svg.circle(group, 30,70,20,20, {});
+    var resultGroup = GUI.svg.group(rep, this.getAttribute('id')+"-2");
 
     $(line).addClass("line");
     $(numbers).addClass("numbers");
@@ -39,19 +42,28 @@ SurveyResult.draw = function(external) {
         $(tempNumberRep).addClass('text');
     }
 
+     //init result circles
+    GUI.svg.circle(resultGroup, 10, 20, 3, {});
+    GUI.svg.circle(resultGroup, 100, 200,3, {});
+    GUI.svg.circle(resultGroup, 70, 30, 3, {});
+    GUI.svg.circle(resultGroup, 100, 150,3, {});
+    GUI.svg.circle(resultGroup, 88, 46, 3, {});
+
     GeneralObject.draw.call(this, external);
+    
 
     //hole das Rechteck
     var rect = rep.getElementsByTagName('rect')[0];
     //hole die Linie
     var line = group.getElementsByTagName('line')[0];
-    //hole den Kreis
-    var circle = group.getElementsByTagName('circle')[0];
+    //hole die Ergebnisspunkte
+    var resultCircleArray = resultGroup.getElementsByTagName('circle');
+
 
     //Fuellfarbe des Rechtsecks ist durchsichtig
     $(rect).attr("fill", this.getAttribute('fillcolor'));
 
-    //Wenn die Topologie nciht selektiert ist, male Border
+    //Wenn die Topologie nicht selektiert ist, male Border
     if (!$(rect).hasClass("selected")) {
         $(rect).attr("stroke", this.getAttribute('linecolor'));
         $(rect).attr("stroke-width", this.getAttribute('linesize'));
@@ -74,16 +86,52 @@ SurveyResult.draw = function(external) {
 
     if (this.getAttribute('direction') === 'horizontal') {
         this.drawHorizontalLine(line, group, min, max, stepping, rep);
-         this.drawCircleHorizontal(circle, group, 30, 70, rep, 3);
+        this.drawCircleArrayHorizontal(resultCircleArray);
     } else {
         this.drawVerticalLine(line, group, min, max, stepping, rep);
-         this.drawCircleVertical(circle, group, 30, 70, rep, 3);
+        this.drawCircleArrayVertical(resultCircleArray);
     }
-
 
     rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.text.style.fontFamily = this.getAttribute('font-family');
     rep.text.style.color = this.getAttribute('font-color');
+}
+
+SurveyResult.drawCircleArrayHorizontal = function(circleArray){
+    for(var i = 0; i < circleArray.length; i++){
+        this.drawCircleHorizontal(circleArray[i]);
+        console.log(circleArray[i]);
+    }
+}
+
+SurveyResult.drawCircleArrayVertical = function(circleArray){
+    for(var i = 0; i < circleArray.length; i++){
+        this.drawCircleVertical(circleArray[i]);
+
+        console.log(circleArray[i]);
+    }
+}
+
+SurveyResult.drawCircleHorizontal = function(circle){
+    //Typecasting necessary
+    var posX = Number(circle.getAttribute('cx'));
+    var posY = Number(circle.getAttribute('cy'));
+    var radius = Number(circle.getAttribute('r'));
+
+    circle.setAttribute('cx', posX + (this.padding*3));
+    circle.setAttribute('cy', posY + (this.padding*3));
+    circle.setAttribute('r', radius);
+}
+
+SurveyResult.drawCircleVertical = function(circle){
+    //Typecasting necessary
+    var posX = Number(circle.getAttribute('cx'));
+    var posY = Number(circle.getAttribute('cy'));
+    var radius = Number(circle.getAttribute('r'));    
+
+    circle.setAttribute('cx', posY + (this.padding*3));
+    circle.setAttribute('cy', this.getAttribute('height') - posX - (this.padding*3));
+    circle.setAttribute('r', radius);
 }
 
 SurveyResult.drawVerticalLine = function(line, group, min, max, stepping, rep){
@@ -184,18 +232,6 @@ SurveyResult.drawHorizontalLine = function(line, group, min, max, stepping, rep)
 
         rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + 'bottom' + ';text-align:' + 'right' + '">' + label + '</td></tr></table>';
 
-}
-
-SurveyResult.drawCircleHorizontal = function(circle, group, posX, posY, rep, radius){
-    $(circle).attr('cx', posX + this.padding*3);
-    $(circle).attr('cy', posY + this.padding*3);
-    $(circle).attr('r', radius);
-}
-
-SurveyResult.drawCircleVertical = function(circle, group, posX, posY, rep, radius){
-    $(circle).attr('cx', posY + this.padding*3);
-    $(circle).attr('cy', this.getAttribute('height') - posX - this.padding*3);
-    $(circle).attr('r', radius);
 }
 
 SurveyResult.createRepresentation = function(parent) {

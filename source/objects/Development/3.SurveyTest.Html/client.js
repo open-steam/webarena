@@ -31,6 +31,7 @@ SurveyTest.send = function(object) {
 }
 
 SurveyTest.createRoomList = function(object){
+	//Testing purpose
 	this.roomList =$('<div class="checkbox_container">'+
 		'<label><input type="checkbox" /> This is checkbox </label><br />'+
 		'<label><input type="checkbox" /> This is checkbox </label><br />'+
@@ -43,12 +44,12 @@ SurveyTest.createRoomList = function(object){
 		'<label><input type="checkbox" /> This is checkbox </label><br />'+
 		'<label><input type="checkbox" /> This is checkbox </label><br />'+
 		'</div>');
-	
-	this.userRooms = {}; 
 
+
+	//getUserRooms ServerCall
 	object.serverCall("getUserRooms", function callback(result){
 		console.log('getUserRooms callback happened');
-		that.userRooms = result;
+		//that.userRooms = result;
 	});
 }
 
@@ -68,7 +69,7 @@ SurveyTest.chooseRecievingRoomsDialogue = function(object) {
     var dialog_width = 600;
 	var additional_dialog_options = {
 		create: function(){
-			that.createRoomList(object);
+			that.createRoomList(object); //asking the server for the current UserRoomList
 
 			$('.ui-dialog-content').html('<div id="tabs">'+
 				'<ul>'+
