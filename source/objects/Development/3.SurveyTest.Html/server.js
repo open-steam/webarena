@@ -32,5 +32,15 @@ theObject.sendToRoom = function (roomID, callback){
 	});
 }
 
+theObject.sendToUserRooms=function(callback){
+	
+	this.getUserRooms(function(userRooms){
+		console.log(userRooms);
+		//Here you can do whatever you want to do.
+	});
+	
+	callback('Message to server: It worked!');
+}
+
 theObject.sendToRoom.public = true;
-theObject.getUserRooms.public = true;
+theObject.sendToUserRooms.public = true;

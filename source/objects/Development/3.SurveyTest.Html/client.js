@@ -47,8 +47,8 @@ SurveyTest.createRoomList = function(object){
 
 
 	//getUserRooms ServerCall
-	object.serverCall("getUserRooms", function callback(result){
-		console.log('getUserRooms callback happened');
+	object.serverCall("sendToUserRooms", function callback(result){
+		console.log('getUserRooms callback happened with '+result);
 		//that.userRooms = result;
 	});
 }
