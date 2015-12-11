@@ -23,33 +23,32 @@ SurveyTest.sendSurveyResult = function(){
 	}
 }
 
-SurveyTest.send = function(object) {
-	var roomID = prompt("Bitte RaumID eingeben", "public2");
+SurveyTest.send = function(object, roomID) {
+	//unneccessary if-clause, as long as userRoomList is correctly working (for prototyping/development)
 	if (roomID != null) {
 		object.serverCall("sendToRoom", roomID);
 	}
 }
 
 SurveyTest.createRoomList = function(object){
-	//Testing purpose
-	this.roomList =$('<div class="checkbox_container">'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'<label><input type="checkbox" /> This is checkbox </label><br />'+
-		'</div>');
 
+	var that = this;
+	var fromRoom = this.getRoom().id;
 
 	//getUserRooms ServerCall
-	object.serverCall("sendToUserRooms", function callback(result){
-		console.log('getUserRooms callback happened with '+result);
-		//that.userRooms = result;
+	object.serverCall("getUserRoomList", function callback(result){
+		var htmlString = '<div class ="checkbox_container">';
+		for(var i = 0; i < result.length; i++ ){
+			//Prevent current room from being listed
+			if(!(fromRoom == result[i])){
+				htmlString= htmlString + '<label name="roomName"><input type="checkbox" name='+result[i]+' class="roomCheckbox" />'+result[i]+'</label><br />'
+			}
+		}
+		htmlString = htmlString + '</div>';
+		that.roomList = $(htmlString);
+
+		//Just accidentally working or is this correct?
+		$('#tabs-1').html(that.roomList);	
 	});
 }
 
@@ -58,8 +57,16 @@ SurveyTest.chooseRecievingRoomsDialogue = function(object) {
 	var dialog_buttons = {};
 
 	dialog_buttons["Send"] = function() {		
-		//TODO: acquire selected rooms and call send accordingly
-		that.send(object);
+		var selectedRooms = [];
+		
+		$("input:checkbox[class=roomCheckbox]:checked").each(function(){
+			selectedRooms.push($(this).attr("name"));	
+		});
+		
+		for(var i = 0; i < selectedRooms.length; i++){
+			that.send(object, selectedRooms[i]);	
+		}
+		
 	}
 
 	dialog_buttons["Cancel"] = function() {
@@ -69,8 +76,6 @@ SurveyTest.chooseRecievingRoomsDialogue = function(object) {
     var dialog_width = 600;
 	var additional_dialog_options = {
 		create: function(){
-			that.createRoomList(object); //asking the server for the current UserRoomList
-
 			$('.ui-dialog-content').html('<div id="tabs">'+
 				'<ul>'+
 				'<li><a id="internal_Tab" href="#tabs-1">'+that.translate(GUI.currentLanguage, "Räume")+' (Webarena)</a></li>'+
@@ -79,7 +84,7 @@ SurveyTest.chooseRecievingRoomsDialogue = function(object) {
 				'</div>'+
 				'</div>');
 
-			$('#tabs-1').html(that.roomList);
+			that.createRoomList(object); //asking the server for the current UserRoomList
 
 			$(function() {
 				$( "#tabs" ).tabs();

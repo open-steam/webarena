@@ -33,7 +33,9 @@ SurveyTest.sliderChange = function(sliderID, value){
 	this.setAttribute(attribute, value);
 }
 
-
+SurveyTest.getRoomID = function() {
+    return this.get('inRoom');
+}
 
 SurveyTest.register('SurveyTest');
 SurveyTest.isCreatable=true;

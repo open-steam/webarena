@@ -32,15 +32,23 @@ theObject.sendToRoom = function (roomID, callback){
 	});
 }
 
-theObject.sendToUserRooms=function(callback){
-	
+theObject.getUserRoomList=function(callback){
+	var roomList = [];
+
 	this.getUserRooms(function(userRooms){
-		console.log(userRooms);
-		//Here you can do whatever you want to do.
+	//iterate users and push roomIDs into array	
+		for (var index in userRooms) {
+    		if (userRooms.hasOwnProperty(index)) {
+    			roomList.push(userRooms[index].id);
+    		}
+		}
+
+		//return the roomList
+		callback(roomList);
 	});
+
 	
-	callback('Message to server: It worked!');
 }
 
 theObject.sendToRoom.public = true;
-theObject.sendToUserRooms.public = true;
+theObject.getUserRoomList.public = true;

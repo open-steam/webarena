@@ -100,15 +100,12 @@ SurveyResult.draw = function(external) {
 SurveyResult.drawCircleArrayHorizontal = function(circleArray){
     for(var i = 0; i < circleArray.length; i++){
         this.drawCircleHorizontal(circleArray[i]);
-        console.log(circleArray[i]);
     }
 }
 
 SurveyResult.drawCircleArrayVertical = function(circleArray){
     for(var i = 0; i < circleArray.length; i++){
         this.drawCircleVertical(circleArray[i]);
-
-        console.log(circleArray[i]);
     }
 }
 

@@ -370,7 +370,7 @@ UserManager.getUserRooms=function(context,callback){
 			ret[element.username]=element.room;
 		}
 		
-		console.log(ret);
+		// console.log(ret);
 		
 		callback(ret);
 	});
