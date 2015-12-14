@@ -59,7 +59,6 @@ SurveyResult.draw = function(external) {
     //hole die Ergebnisspunkte
     var resultCircleArray = resultGroup.getElementsByTagName('circle');
 
-
     //Fuellfarbe des Rechtsecks ist durchsichtig
     $(rect).attr("fill", this.getAttribute('fillcolor'));
 
@@ -84,11 +83,15 @@ SurveyResult.draw = function(external) {
     var max = this.getAttribute('max');
     var stepping = this.getAttribute('stepping');
 
+    var surveyLength = 3; //TODO: get this value from SurveyTest Object
+    var yOffset = this.getAttribute('height')/100 * 80 / surveyLength;
+    var xOffset = this.getAttribute('width')/100 * 80 / surveyLength;
+
     if (this.getAttribute('direction') === 'horizontal') {
-        this.drawHorizontalLine(line, group, min, max, stepping, rep);
+        this.drawHorizontalLine(yOffset , line, group, min, max, stepping, rep);    
         this.drawCircleArrayHorizontal(resultCircleArray);
     } else {
-        this.drawVerticalLine(line, group, min, max, stepping, rep);
+        this.drawVerticalLine(xOffset, line, group, min, max, stepping, rep);
         this.drawCircleArrayVertical(resultCircleArray);
     }
 
@@ -131,15 +134,16 @@ SurveyResult.drawCircleVertical = function(circle){
     circle.setAttribute('r', radius);
 }
 
-SurveyResult.drawVerticalLine = function(line, group, min, max, stepping, rep){
-    var xCoordinate = this.padding*3;
+SurveyResult.drawVerticalLine = function(offset,line, group, min, max, stepping, rep){
+    var xCoordinate = offset;
     var yCoordinate = this.padding*3;
+
     $(line).attr("x1", xCoordinate);
     $(line).attr("y1", this.getAttribute('height') - yCoordinate );
     this.setAttribute("startX", this.getAttribute("x") + this.padding*3);
     this.setAttribute("startY", this.getAttribute("y") + this.getAttribute('height') - this.padding*3 );
 
-    $(line).attr("x2", this.padding*3);
+    $(line).attr("x2", offset);
     $(line).attr("y2", this.padding*3);
 
     var pixelStart = this.getAttribute('height') - this.padding*3;
@@ -180,9 +184,9 @@ SurveyResult.drawVerticalLine = function(line, group, min, max, stepping, rep){
 
 }
 
-SurveyResult.drawHorizontalLine = function(line, group, min, max, stepping, rep){
-        var yCoordinate = this.padding * 3;
-        var xCoordinate = this.padding * 3;
+SurveyResult.drawHorizontalLine = function(offset, line, group, min, max, stepping, rep){
+        var xCoordinate = this.padding *3;
+        var yCoordinate = offset;
 
         $(line).attr("x1", xCoordinate);
         $(line).attr("y1", yCoordinate);
@@ -219,9 +223,6 @@ SurveyResult.drawHorizontalLine = function(line, group, min, max, stepping, rep)
             $(currentNumerationObject).attr('font-size', 12);
 
             drawLineAt += distancePerStepInPixel;
-
-
-
         }
         var label = this.getAttribute('label');
         if (!label)

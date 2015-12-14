@@ -80,7 +80,7 @@ SurveyTest.updateContent = function() {
 
 		//Attach functions to send buttons
 		$('.surveysend').each(function (index, Element){
-			$(Element).bind('click', self.sendSurveyResult);
+			$(Element).bind('click', {this: self}, self.sendSurveyResult);
 		});
 		
 	//Else check if the content of the SurveyTest-Object differs from what is currently loaded in the room 
@@ -94,7 +94,7 @@ SurveyTest.updateContent = function() {
 				self.setHTML(self.surveyBaseHtmlReload());
 				//Attach functions to send buttons
 				$('.surveysend').each(function (index, Element){
-					$(Element).bind('click', self.sendSurveyResult);
+					$(Element).bind('click', {that: self}, self.sendSurveyResult);
 				});
 			}
 			//Send slidervalues to the server and update the attributes, then update the display values as well.

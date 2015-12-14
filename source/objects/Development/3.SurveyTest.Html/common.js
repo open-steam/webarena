@@ -6,7 +6,6 @@
 */
 
 var Modules=require('../../../server.js');
-
 var SurveyTest=Object.create(Modules.ObjectManager.getPrototype('HtmlObject'));
 
 SurveyTest.register=function(type){
@@ -21,7 +20,9 @@ SurveyTest.register=function(type){
 	this.registerAttribute('points_0',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
 	this.registerAttribute('points_1',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
 	this.registerAttribute('points_2',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
-	this.registerAttribute('surveyLength', {hidden: true, standard: 3});
+	this.registerAttribute('surveyLength', {hidden: false, standard: 3});
+
+	
 }
 
 SurveyTest.sliderChange = function(sliderID, value){
@@ -36,6 +37,18 @@ SurveyTest.sliderChange = function(sliderID, value){
 SurveyTest.getRoomID = function() {
     return this.get('inRoom');
 }
+
+SurveyTest.sendSurveyResult = function(event){
+	var that = event.data.that;
+	var surveyResultArray = [];
+
+	for(var i = 0; i < that.getAttribute('surveyLength'); i++){
+		surveyResultArray.push(that.getAttribute('points_'+i));
+	}
+
+	//TODO: Send Array to SurveyResult-Object
+}
+
 
 SurveyTest.register('SurveyTest');
 SurveyTest.isCreatable=true;

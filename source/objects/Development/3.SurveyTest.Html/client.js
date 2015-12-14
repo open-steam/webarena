@@ -17,12 +17,6 @@ SurveyTest.clientRegister=function(){
 	},true);
 }
 
-SurveyTest.sendSurveyResult = function(){
-	for(var i = 0; i < this.getAttribute('surveyLength'); i++){
-		//get point_i and save it in a new object (surveyResult) to gather all data
-	}
-}
-
 SurveyTest.send = function(object, roomID) {
 	//unneccessary if-clause, as long as userRoomList is correctly working (for prototyping/development)
 	if (roomID != null) {
