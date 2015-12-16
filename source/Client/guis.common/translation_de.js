@@ -112,7 +112,6 @@ GUI.setTranslations('de',{
 	'Logout': 'Ausloggen',
 	'Paint' : 'Zeichnen',
 	'You cannot create objects in presentation mode' : 'Im Präsentationsmodus können keine Objekte erstellt werden',
-	'You cannot create objects in coupling mode' : 'Im Couplingmodus können keine Objekte erstellt werden',
 	'Label':'Beschriftung',
 	'top':'oben',
 	'middle':'Mitte',

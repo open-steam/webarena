@@ -218,17 +218,8 @@ ObjectManager.objectUpdate = function(data) {
 			}
 		}
 		
-        if (GUI.couplingModeActive) {
-            // to enable smooth dragging of objects between rooms display new objects immediately 
-            // exceptions: SimpleText and Textarea need to load their content first else they are invisible or empty
-            if (data.type !== "SimpleText" && data.type !== "Textarea") {
-                object.refresh();
-            } else {
-                object.refreshDelayed();
-            }
-        } else {
-            object.refreshDelayed();
-        }
+        object.refreshDelayed();
+
     }
 
     if (this.informGUI) {
@@ -378,44 +369,33 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
 
     if (!index)
         var index = 'left';
+        
+        
+       Modules.Dispatcher.query('enter', {'roomID': roomid, 'index': index}, function(error) {
 
-    // in coupling mode: do not load room if it is already displayed
-    var proceed = true;
-    if (GUI.couplingModeActive && (ObjectManager.getRoomID('left') == roomid || ObjectManager.getRoomID('right') == roomid)) {
-        proceed = false;
-    }
+           if (error !== true) {
+               var objects = self.getObjects(index);
+               for (var i in objects) {
+                   var obj = objects[i];
+                   ObjectManager.removeLocally(obj);
+               }
 
-    if (proceed) {
-        Modules.Dispatcher.query('enter', {'roomID': roomid, 'index': index}, function(error) {
+               if (!roomid) roomid = 'public';
 
-            if (error !== true) {
-                var objects = self.getObjects(index);
-                for (var i in objects) {
-                    var obj = objects[i];
-                    ObjectManager.removeLocally(obj);
-                }
+               if (!byBrowserNav && index === 'left') {
+                   history.pushState({'room': roomid}, roomid, '/room/' + roomid);
+               }
 
-                if (!roomid) roomid = 'public';
+			else{
+				ObjectManager.previousRoomID = self.currentRoomID['left'];
+			}
 
-                if (!byBrowserNav && index === 'left') {
-                    history.pushState({'room': roomid}, roomid, '/room/' + roomid);
-                }
-
-                if (GUI.couplingModeActive) {
-                    GUI.defaultZoomPanState(index, true);
-                }
-				else{
-					ObjectManager.previousRoomID = self.currentRoomID['left'];
-				}
-
-				self.currentRoomID[index] = roomid;
-				
-                if (callback) setTimeout(callback, 1200);
-            }
-        });
-    } else {
-        alert(GUI.translate("Room already displayed"));
-    }
+			self.currentRoomID[index] = roomid;
+			
+               if (callback) setTimeout(callback, 1200);
+           }
+       });
+   
 }
 
 ObjectManager.leaveRoom = function(roomid, index, serverCall) {
@@ -957,7 +937,7 @@ ObjectManager.afterDuplicate = function(newObject) {
     }
 
     //scroll to position of pasted objects (only if object not visible in the current browser window)
-    if (!GUI.couplingModeActive) {
+
         if (minX - 30 < 0)
             minX = 30;
         if (minY - 30 < 0)
@@ -973,7 +953,7 @@ ObjectManager.afterDuplicate = function(newObject) {
 				});
 			}
 		}, 500);
-    }
+    
 }
 
 

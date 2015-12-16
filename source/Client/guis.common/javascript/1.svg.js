@@ -61,15 +61,7 @@ GUI.initSVG = function() {
  * Resort all svg elements by their layer
  */
 GUI.updateLayers = function() {
-	// in coupling mode refresh layers of both rooms
-	if (GUI.couplingModeActive) {
-		var roomIndex = Array();
-		for (var index in ObjectManager.currentRoom) {
-			roomIndex.push(index);
-		}
-	} else {
-		var roomIndex = Array("left");
-	}
+	var roomIndex = Array("left");
 
 	for (var key = 0; key < roomIndex.length; key++) {
 		var index = roomIndex[key];

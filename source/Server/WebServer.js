@@ -99,7 +99,7 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
-        // roomlist for coupling navigation
+        // roomlist
         if (url.substr(0, 9) == "/getRooms") {
 
 			Modules.RoomController.listRooms(function(err, rooms){

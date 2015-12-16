@@ -310,16 +310,6 @@ GUI.drawLinks = function(object) {
         $(line).bind("mouseup", function(event){
             var x = (parseFloat($(this).attr("x1")) + parseFloat($(this).attr("x2")))/2
             var y = (parseFloat($(this).attr("y1")) + parseFloat($(this).attr("y2")))/2
-
-			if (GUI.couplingModeActive) {
-				var index = ObjectManager.getIndexOfObject(object.getId());
-				if (index === 'right') {
-					x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
-				} else {
-					x += GUI.getPanX(index);
-				}
-				y += GUI.getPanY(index);
-			}
 			
 			var deletion = object.translate(GUI.currentLanguage, "Delete");
 			var changeProperties = object.translate(GUI.currentLanguage, "change properties");

@@ -21,7 +21,6 @@ Gate.follow = function(openMethod) {
         if (self.getAttribute("destinationObject") !== '') {
             callback = function() {
                 if (document.getElementById(self.getAttribute("destinationObject"))) {
-                    if (!GUI.couplingModeActive) {
                         $(document).scrollTo(
                                 $('#' + self.getAttribute("destinationObject")),
                                 1000,
@@ -32,7 +31,6 @@ Gate.follow = function(openMethod) {
                                     }
                                 }
                         );
-                    }
                 }
             }
         }

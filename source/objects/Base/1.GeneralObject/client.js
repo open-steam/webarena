@@ -376,14 +376,9 @@ GeneralObject.refreshDelayed = function() {
 
     this.refreshDelay = setTimeout(function() {
         //If the current room has changed in the meantime, do not refresh at all
-        if (GUI.couplingModeActive) {
-            if (that.getAttribute('inRoom') != ObjectManager.getRoomID('left') && that.getAttribute('inRoom') != ObjectManager.getRoomID('right')) {
-                return;
-            }
-        } else {
-            if (that.getAttribute('inRoom') != ObjectManager.getRoomID()) {
-                return;
-            }
+
+        if (that.getAttribute('inRoom') != ObjectManager.getRoomID()) {
+            return;
         }
 
         that.refresh();

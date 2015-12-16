@@ -18,10 +18,6 @@ $(function() {
 		event.stopPropagation();
 		event.preventDefault();
 		
-		if (GUI.couplingModeActive){
-			alert(GUI.translate("You cannot create objects in coupling mode"));	
-			return;
-		}
 		
 		event.dataTransfer.dropEffect = 'copy'; //show that this is a copy
 		

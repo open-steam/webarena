@@ -334,25 +334,6 @@ GUI.initToolbar = function() {
 				Modules.Dispatcher.query("undo", {"userID": GUI.userid});
                 popover.hide();
             };
-			
-			
-            /*add coupling button*/
-            if (Modules.Config.couplingMode) {
-				var couplingButton = document.createElement("img");
-				$(couplingButton).attr("src", "../../guis.common/images/coupling_grey.png").attr("alt", "");
-				$(couplingButton).attr("width", "24").attr("height", "24");
-				$(couplingButton).attr("id", "coupling_button");
-				$(couplingButton).addClass("sidebar_button");
-				$(couplingButton).attr("title", GUI.translate("Coupling"));
-				var btnCoupling = section.addElement($(couplingButton).prop('outerHTML') + GUI.translate("Coupling")); //add menu icon
-				$(couplingButton).attr("src", "../../guis.common/images/coupling.png").attr("alt", "");	
-				numberOfIcons++;
-				$("#header > .header_right").append(couplingButton); //add header icon
-				var clickCoupling = function() { //click handler
-					GUI.enterCouplingMode();
-                    popover.hide();
-				};
-            }
 
 			
             /*add parent button*/
@@ -430,7 +411,6 @@ GUI.initToolbar = function() {
 				//header:
 				$(pasteButton).bind("touchstart", clickPaste);
 				$(undoButton).bind("touchstart", clickUndo);
-				if(Modules.Config.couplingMode) $(couplingButton).bind("touchstart", clickCoupling);
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
 				if(Modules.Config.paintMode) $(paintButton).bind("touchstart", clickPaint);
@@ -438,7 +418,6 @@ GUI.initToolbar = function() {
 				//menu:
 				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
 				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
-				if(Modules.Config.couplingMode) $(btnCoupling.getDOM()).bind("touchstart", clickCoupling);
 				$(btnParent.getDOM()).bind("touchstart", clickParent);
 				$(btnHome.getDOM()).bind("touchstart", clickHome);
 				if(Modules.Config.paintMode) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
@@ -447,7 +426,6 @@ GUI.initToolbar = function() {
 				//header:
 				$(pasteButton).bind("mousedown", clickPaste);
 				$(undoButton).bind("mousedown", clickUndo);
-				if(Modules.Config.couplingMode) $(couplingButton).bind("mousedown", clickCoupling);
 				$(parentButton).bind("mousedown", clickParent);
 				$(homeButton).bind("mousedown", clickHome);
 				if(Modules.Config.paintMode) $(paintButton).bind("mousedown", clickPaint);
@@ -455,7 +433,6 @@ GUI.initToolbar = function() {
 				//menu:
 				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
 				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
-				if(Modules.Config.couplingMode) $(btnCoupling.getDOM()).bind("mousedown", clickCoupling);
 				$(btnParent.getDOM()).bind("mousedown", clickParent);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
 				if(Modules.Config.paintMode) $(btnPaint.getDOM()).bind("mousedown", clickPaint);
@@ -715,7 +692,7 @@ GUI.showNotification = function(add, icon){
  */
 GUI.resizeToolbar = function(){
 
-	if(!GUI.paintModeActive && !GUI.couplingModeActive){
+	if(!GUI.paintModeActive){
 
 		var space = $(window).width();
 		space = space - (numberOfIcons*44); //subtract icons

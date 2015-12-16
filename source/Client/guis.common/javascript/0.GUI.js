@@ -558,18 +558,6 @@ GUI.initMouseHandler = function() {
 			
 			var clickedObject=(temp)?temp.dataObject:false;
 
-			if (GUI.couplingModeActive) {
-				if (event.pageX > $('#couplingBar').attr('x1') && $('#couplingBar:hover').length == 0) {
-					if ($('#rightCouplingControl:hover').length == 0) {
-						if (GUI.defaultZoomPanState('right', false, event)) return;
-					}
-				} else {
-					if ($('#leftCouplingControl:hover').length == 0) {
-						if (GUI.defaultZoomPanState('left', false, event)) return;
-					}
-				}
-			}
-
 			if (clickedObject) {
 				// Objects with restricted moving areas should get the "native" events
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
@@ -915,10 +903,6 @@ GUI.disconnected = function() {
 GUI.connected = function() {
 
 	if (GUI.relogin === true) {
-
-		if (GUI.couplingModeActive) {
-			GUI.closeCouplingMode();
-		}
 		
 		window.setTimeout(function(){
 			$("#disconnected_message")[0].style.display='none';
