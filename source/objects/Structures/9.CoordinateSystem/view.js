@@ -66,13 +66,7 @@ CoordinateSystem.draw = function(external) {
     var tempNumberRep = GUI.svg.text(group, 0, 0, tempNumber);
     $(tempNumberRep).addClass('text');
 
-    rep.textX = GUI.svg.other(group, "foreignObject");
-    var body = document.createElement("body");
-    $(rep.textX).append(body);
-
-    rep.textY = GUI.svg.other(group, "foreignObject");
-    var body = document.createElement("body");
-    $(rep.textY).append(body);
+    
 
     //draw go
     GeneralObject.draw.call(this, external);
@@ -192,39 +186,42 @@ CoordinateSystem.draw = function(external) {
 
 
     }
+    //ADD LABEL
     var label = this.getAttribute('label');
     if (!label)
-        label = '';
-
-    //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + label + '</td></tr></table>';
-
+        label = ' ';
+    var labelY = this.getAttribute('labelY');
+    if (!labelY)
+        labelY = ' ';
+    var labelX = this.getAttribute('labelX');
+    if (!labelX)
+        labelX = ' ';
+    
+    rep.text.innerHTML = '<table style="width:100%;"><tr><td id="labelID" style=" padding-top:3px; padding-left:0px;"><p id="labelIDParagraph'+this.getAttribute('id')+'" style=" display: inline;  margin:0px; padding:0px;">' + label + '</p></td></tr><tr><td id="labelYID" style=" padding-top:10px; padding-left:5px;"><p id="labelIDParagraphY'+this.getAttribute('id')+'" style=" display: inline;  margin:0px; padding:0px;">' + labelY + '</p></td></tr><tr><td id="labelXID" style=" padding-top:0px; padding-left:0px;"><p id="labelIDParagraphX'+this.getAttribute('id')+'" style="display: inline;  margin:0px; padding:0px;">' + labelX + '</p></td></tr</table>';
+    rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
+    rep.text.style.fontFamily = this.getAttribute('font-family');
+    rep.text.style.color = this.getAttribute('font-color');
+    var labelWidth = this.calculateLabelDistance();
+    var labelWidthX = this.calculateLabelXDistance();
+    if(label=='' || label==' '){
+        var labelIDParagraphYPaddingTop=30;
+    }else{
+        var labelIDParagraphYPaddingTop=10;
+    }
+    if(labelY=='' || labelY==' '){
+        var labelIDParagraphXPaddingTop=40;
+    }else{
+        var labelIDParagraphXPaddingTop=20;
+    }
+    
+rep.text.innerHTML = '<table style="width:100%;"><tr><td id="labelID" style=" padding-top:3px; padding-left:'+(this.getAttribute('width')/2 - labelWidth/2)+'px;"><p id="labelIDParagraph'+this.getAttribute('id')+'" style=" display: inline;  margin:0px; padding:0px;">' + label + '</p></td></tr><tr><td id="labelYID" style=" padding-top:'+labelIDParagraphYPaddingTop+'px; padding-left:5px;"><p id="labelIDParagraphY'+this.getAttribute('id')+'" style=" display: inline;  margin:0px; padding:0px;">' + labelY + '</p></td></tr><tr><td id="labelXID" style=" padding-top:'+(this.getAttribute('height')-135+labelIDParagraphXPaddingTop)+'px; padding-left:'+(this.getAttribute('width')-labelWidthX-11)+'px;"><p id="labelIDParagraphX'+this.getAttribute('id')+'" style="display: inline;  margin:0px; padding:0px;">' + labelX + '</p></td></tr</table>';
+    
     //Setze die Pfeilspitze
     var markerId = GUI.getSvgMarkerId("arrow", 'black', true);
     $(line).attr("marker-end", "url(#" + markerId + ")");
 
     var markerIdY = GUI.getSvgMarkerId("arrow", 'black', true);
     $(lineY).attr("marker-end", "url(#" + markerIdY + ")");
-
-    //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + 30 + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + '40' + '">' + label + '</td></tr></table>';
-    var labelX = this.getAttribute('labelX');
-    if (!labelX)
-        labelX = '';
-    rep.textX.innerHTML = '<table style="width:100%;"><tr><td id="labelXID" style="padding-left:5px;padding-top:'+((this.getAttribute('height')/2)-40) +'px;height:' + this.getAttribute('height') + 'px;'+';text-align:' + 'right' + '">' + labelX + '</td></tr></table>';
-    this.calculateLabelXDistance(this.getAttribute('labelX'));
-    rep.textX.style.fontSize = this.getAttribute('font-size') + 'px';
-    rep.textX.style.fontFamily = this.getAttribute('font-family');
-    rep.textX.style.color = this.getAttribute('font-color');
-
-    var labelY = this.getAttribute('labelY');
-    if (!labelY)
-        labelY = '';
-
-    rep.textY.innerHTML = '<table style="width:100%;"><tr><td  style="padding-top:40px;padding-left:5px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + labelY + '</td></tr></table>';
-    rep.textY.style.fontSize = this.getAttribute('font-size') + 'px';
-    rep.textY.style.fontFamily = this.getAttribute('font-family');
-    rep.textY.style.color = this.getAttribute('font-color');
-    
-    
 
 }
 
@@ -240,10 +237,14 @@ CoordinateSystem.createRepresentation = function(parent) {
 
     $(rect).addClass("rect");
     rep.text = GUI.svg.other(rep, "foreignObject");
+    rep.textX = GUI.svg.other(rep, "foreignObject");
+    rep.textY = GUI.svg.other(rep, "foreignObject");
     var body = document.createElement("body");
     $(rep.text).append(body);
+    $(rep.textX).append(body);
+    $(rep.textY).append(body);
     rep.rect = rect;
-
+    
     this.initGUI(rep);
     this.setAttribute("height",330);
     this.setAttribute("width",330);
@@ -340,7 +341,7 @@ CoordinateSystem.setViewWidth = function(value) {
         if (!label)
             label = '';
 
-        //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + label + '</td></tr></table>';
+        
 
         //Setze die Pfeilspitze
         var markerId = GUI.getSvgMarkerId("arrow", 'black', true);
@@ -349,23 +350,7 @@ CoordinateSystem.setViewWidth = function(value) {
         var markerIdY = GUI.getSvgMarkerId("arrow", 'black', true);
         $(lineY).attr("marker-end", "url(#" + markerIdY + ")");
 
-        //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + 30 + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + '40' + '">' + label + '</td></tr></table>';
-        var labelX = this.getAttribute('labelX');
-        if (!labelX)
-            labelX = '';
-        rep.textX.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + 'bottom' + ';text-align:' + 'right' + '">' + labelX + '</td></tr></table>';
-        rep.textX.style.fontSize = this.getAttribute('font-size') + 'px';
-        rep.textX.style.fontFamily = this.getAttribute('font-family');
-        rep.textX.style.color = this.getAttribute('font-color');
-
-        var labelY = this.getAttribute('labelY');
-        if (!labelY)
-            labelY = '';
-
-        rep.textY.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + labelY + '</td></tr></table>';
-        rep.textY.style.fontSize = this.getAttribute('font-size') + 'px';
-        rep.textY.style.fontFamily = this.getAttribute('font-family');
-        rep.textY.style.color = this.getAttribute('font-color');
+        
     }
     $(rep).attr("width", value);
     $(rep.rect).attr("width", value);
@@ -468,11 +453,7 @@ CoordinateSystem.setViewHeight = function(value) {
 
 
         }
-        var label = this.getAttribute('label');
-        if (!label)
-            label = '';
-
-        //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + this.getAttribute('height') + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + label + '</td></tr></table>';
+        
 
         //Setze die Pfeilspitze
         var markerId = GUI.getSvgMarkerId("arrow", 'black', true);
@@ -481,23 +462,7 @@ CoordinateSystem.setViewHeight = function(value) {
         var markerIdY = GUI.getSvgMarkerId("arrow", 'black', true);
         $(lineY).attr("marker-end", "url(#" + markerIdY + ")");
 
-        //rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + 30 + 'px;vertical-align:' + this.getAttribute('vertical-align') + ';text-align:' + '40' + '">' + label + '</td></tr></table>';
-        var labelX = this.getAttribute('labelX');
-        if (!labelX)
-            labelX = '';
-        rep.textX.innerHTML = '<table style="width:100%;"><tr><td style="height:' + value + 'px;vertical-align:' + 'bottom' + ';text-align:' + 'right' + '">' + labelX + '</td></tr></table>';
-        rep.textX.style.fontSize = this.getAttribute('font-size') + 'px';
-        rep.textX.style.fontFamily = this.getAttribute('font-family');
-        rep.textX.style.color = this.getAttribute('font-color');
-
-        var labelY = this.getAttribute('labelY');
-        if (!labelY)
-            labelY = '';
-
-        rep.textY.innerHTML = '<table style="width:100%;"><tr><td style="padding-left:30px;height:' + value + 'px;vertical-align:' + 'top' + ';text-align:' + 'left' + '">' + labelY + '</td></tr></table>';
-        rep.textY.style.fontSize = this.getAttribute('font-size') + 'px';
-        rep.textY.style.fontFamily = this.getAttribute('font-family');
-        rep.textY.style.color = this.getAttribute('font-color');
+      
     }
     $(rep).attr("height", value);
     $(rep.rect).attr("height", value);
@@ -510,8 +475,12 @@ CoordinateSystem.setViewHeight = function(value) {
     GUI.adjustContent(this);
 }
 
-CoordinateSystem.calculateLabelXDistance = function(labelX) {
-    var width = $('#labelXID').width();
-    $('#labelXID').css( "padding-left", this.getAttribute('width')-width-10);
+CoordinateSystem.calculateLabelXDistance = function() {
+    var width = $('#labelIDParagraphX'+this.getAttribute('id')).width();
+    return width; 
+}
+CoordinateSystem.calculateLabelDistance = function() {
+    var width = $('#labelIDParagraph'+this.getAttribute('id')).width();
+    return width; 
 }
 
