@@ -395,6 +395,9 @@ GeneralObject.select = function(multiple, groupSelect) {
     var linkedObjects = this.getAttribute("link");
     $.each(linkedObjects, function(index, value) {
         var targetID = value.destination;
+        
+        if (!targetID) return;
+        
         var target = ObjectManager.getObject(targetID);
         if (!target) {
             //console.log(objectID+' has missing linked objects');
@@ -481,6 +484,9 @@ GeneralObject.deselect = function() {
     var linkedObjects = this.getAttribute("link");
     $.each(linkedObjects, function(index, value) {
         var targetID = value.destination;
+        
+        if (!targetID) return;
+        
         var target = ObjectManager.getObject(targetID);
         if (!target) {
             //console.log(objectID+' has missing linked objects');

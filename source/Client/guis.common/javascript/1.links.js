@@ -26,6 +26,9 @@ GUI.moveLinks = function(object){
 	$.each(linkedObjects, function(index, value) {
 		
 		var targetId = value.destination;
+		
+		if (!targetId) return;
+		
 		var target = ObjectManager.getObject(targetId);
 			
 		if (!target) return;
@@ -257,6 +260,9 @@ GUI.drawLinks = function(object) {
 	$.each(newLinks1, function( index, value ) {
 			
 		var targetID = value.destination;
+		
+		if (!targetID) return;
+		
 		var target = ObjectManager.getObject(targetID);
 	
 		if (!target) return;

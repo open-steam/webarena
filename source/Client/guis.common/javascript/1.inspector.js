@@ -30,8 +30,8 @@ GUI.setupInspectorContent = function(inspector) {
 	
 	} else {
 		/* if no objects are selected the current room is shown in the inspector */
-		var objects = [ObjectManager.currentRoom['left']]; 
-		GUI.currentInspectorObject = ObjectManager.currentRoom['left'];
+		var objects = [ObjectManager.currentRoom]; 
+		GUI.currentInspectorObject = ObjectManager.currentRoom;
 	}
 
 	var object = objects[0]; //needed for translations
