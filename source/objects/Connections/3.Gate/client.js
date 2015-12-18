@@ -47,7 +47,7 @@ Gate.follow = function(openMethod) {
 	
 		//open in same tab
 		if(String(destination).indexOf("http://www.") != 0){
-			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
+			ObjectManager.loadRoom(destination, false, callback);
 		}
 		else{
 			window.open(destination,"_self")

@@ -36,7 +36,7 @@ UserManager.init=function(theModules){
 *	in case of a new connection, a new entry is created.
 **/
 UserManager.socketConnect=function(socket){
-	this.connections[socket.id]=({'socket':socket,'user':false,'rooms':{'left':false,'right':false}});
+	this.connections[socket.id]=({'socket':socket,'user':false,'room':false});
 }
 
 /**
@@ -49,14 +49,12 @@ UserManager.socketConnect=function(socket){
 **/
 UserManager.socketDisconnect=function(socket){
 	
-	var rooms=this.getConnectionBySocket(socket).rooms;
+	var room=this.getConnectionBySocket(socket).room;
 	
 	delete(this.connections[socket.id]);
 	
-	for (var index in rooms) {
-		if (rooms[index]) {
-			UserManager.sendAwarenessData(rooms[index].id);
-		}
+	if (room) {
+		UserManager.sendAwarenessData(room.id);
 	}
 	
 }
@@ -74,14 +72,10 @@ function loggedInInfo(){
    		count++;
    		if (count>1) userInfo+='; ';
    		userInfo+=data.user.username+' in ';
-   		var countRooms=0;
-   		for (var index in data.rooms) {
-   			if (data.rooms[index]) {
-   				if (countRooms>0) userInfo+=' and ';
-   				userInfo+=data.rooms[index].id;
-   				countRooms++;
-   			}
-   		}
+		if (data.room) {
+			userInfo+=data.room.id;
+		}
+   		
    	}
    	console.log(count+' users: '+userInfo);
 }
@@ -172,8 +166,8 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 	var ObjectManager=Modules.ObjectManager;
 	
 	//oldrooom is sent down to the connector, which may use it for parent creation
-	if (connection.rooms[index]) {
-		var oldRoomId=connection.rooms[index].id;
+	if (connection.room) {
+		var oldRoomId=connection.room.id;
 	}
 	
 	if (!connection) {
@@ -194,7 +188,7 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 		if (mayEnter) {
 			
 			ObjectManager.getRoom(roomID,connection,oldRoomId,function(room){	
-				connection.rooms[index] = room;
+				connection.room = room;
 				Modules.RoomController.sendRoom(socket,room.id);
 				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
@@ -223,7 +217,7 @@ UserManager.leaveRoom=function(socket,data,responseID) {
 
 	var connection=UserManager.connections[userID];
 	
-	delete(connection.rooms[index]);
+	delete(connection.room);
 
 	UserManager.sendAwarenessData(roomID);
 
@@ -295,12 +289,12 @@ UserManager.getConnectionsForRoom=function(roomID){
 	var result={};
 	for (var connectionID in this.connections){
 		var connection=this.connections[connectionID];
-		for (var index in connection.rooms) {
-			if (connection.rooms[index] && roomID==connection.rooms[index].id) {
+
+			if (connection.room && roomID==connection.room.id) {
 				result[connectionID]=connection;
 				break;
 			}
-		}
+		
 	}
 	return result;
 }
@@ -341,7 +335,7 @@ UserManager.getUserLocations=function(){
    		
    		var obj={}
    		obj.username=data.user.username;
-   		obj.room=data.rooms['left'];
+   		obj.room=data.room;
    		
    		userData.push(obj);
    	} 
@@ -369,8 +363,6 @@ UserManager.getUserRooms=function(context,callback){
 			var element=results[i];
 			ret[element.username]=element.room;
 		}
-		
-		console.log(ret);
 		
 		callback(ret);
 	});

@@ -10,11 +10,9 @@ var Modules = false;
 var ObjectManager = {};
 
 ObjectManager.isServer = false;
-ObjectManager.objects = {'left': {}, 'right': {}};
-ObjectManager.objectsRight = {'left': {}, 'right': {}};
-ObjectManager.currentRoomID = {'left': false, 'right': false};
-ObjectManager.currentRoom = {'left': false, 'right': false};
-ObjectManager.previousRoomID= false;
+ObjectManager.objects = {};
+ObjectManager.currentRoomID = false;
+ObjectManager.currentRoom = false;
 ObjectManager.clientID = new Date().getTime() - 1296055327011;
 ObjectManager.prototypes = {};
 ObjectManager.user = {};
@@ -41,36 +39,17 @@ ObjectManager.getPrototype = function(objType) {
     return;
 }
 
-ObjectManager.getIndexOfObject = function(objectID) {
-    // room?
-    for (var index in this.currentRoomID) {
-        if (this.currentRoomID[index] === objectID) {
-            return index;
-        }
-    }
-
-    for (var index in this.currentRoomID) {
-        if (ObjectManager.objects[index][objectID] != undefined) {
-            return index;
-        }
-    }
-    return false;
-}
 
 ObjectManager.getObject = function(objectID) {
     //room?  
-    for (var index in this.currentRoomID) {
-        if (objectID == this.currentRoomID[index]) {
-        	var temp=this.currentRoom[index];
-        	if(temp.id==objectID) return this.currentRoom[index];
+        if (objectID == this.currentRoomID) {
+        	var temp=this.currentRoom;
+        	if(temp.id==objectID) return this.currentRoom;
         }
-    }
 
-    for (var index in this.currentRoomID) {
-        if (ObjectManager.objects[index][objectID] != undefined) {
-            return ObjectManager.objects[index][objectID];
+        if (ObjectManager.objects[objectID] != undefined) {
+            return ObjectManager.objects[objectID];
         }
-    }
     
     return undefined;
 }
@@ -91,16 +70,14 @@ ObjectManager.buildObject = function(type, attributes) {
     object.set('type', proto.type);
 
     var isRoom = false;
-    for (var currentRoomIndex in this.currentRoomID) {
-        if (object.get('id') == this.currentRoomID[currentRoomIndex]) {
-            isRoom = true;
-            this.currentRoom[currentRoomIndex] = object;
-            this.currentRoom[currentRoomIndex].isGraphical = false; // the current room cannot be positioned
-        }
+    if (object.get('id') == this.currentRoomID) {
+        isRoom = true;
+        this.currentRoom = object;
+        this.currentRoom.isGraphical = false; // the current room cannot be positioned
     }
+ 
     if (!isRoom) {
-        var index = ObjectManager.getIndexOfObject(attributes.inRoom);
-        this.objects[index][object.id] = object;
+        this.objects[object.id] = object;
     }
 
     if (typeof object.afterCreation == "function") {
@@ -118,19 +95,17 @@ ObjectManager.buildObject = function(type, attributes) {
 /**
  * getObjects - get an array of all objects including the room
  */
-ObjectManager.getObjects = function(index) {
-    if (!index)
-        index = 'left';
-    return this.objects[index];
+ObjectManager.getObjects = function() {
+    return this.objects;
 }
 ObjectManager.getInventory = ObjectManager.getObjects;
 
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (highest layer first)
  */
-ObjectManager.getObjectsByLayer = function(index) {
+ObjectManager.getObjectsByLayer = function() {
 
-    var objects = this.getObjects(index);
+    var objects = this.getObjects();
 
     var objectsArray = [];
 
@@ -165,9 +140,9 @@ ObjectManager.getObjectsByLayer = function(index) {
 /**
  * getObjectsByLayer - get an array of all objects ordered by layer (lowest layer first)
  */
-ObjectManager.getObjectsByLayerInverted = function(index) {
+ObjectManager.getObjectsByLayerInverted = function() {
 
-    var objects = ObjectManager.getObjectsByLayer(index);
+    var objects = ObjectManager.getObjectsByLayer();
     objects.reverse();
 
     return objects;
@@ -298,7 +273,7 @@ ObjectManager.removeLocally = function(data) {
         object.removeRepresentation();
     }
 
-    delete(ObjectManager.objects[ObjectManager.getIndexOfObject(data.id)][data.id]);
+    delete(ObjectManager.objects[data.id]);
 
     // delete associated pad
     if (Modules.config.collaborativeEditor)
@@ -325,22 +300,16 @@ ObjectManager.login = function(username, password, externalSession) {
 
 
 ObjectManager.goParent = function() {
-	/*
-    var currentRoomID = ObjectManager.currentRoomID['left'];
-    var currentRoom = ObjectManager.getObject(currentRoomID);
-    var parentID = currentRoom.getAttribute('parent');
-
-    if (parentID) {
-        ObjectManager.loadRoom(parentID);
-    } else {
-        alert(GUI.translate('This room has no parent.'))
-    }
-	*/
-	if(this.previousRoomID){
-		ObjectManager.loadRoom(this.previousRoomID);
+	
+	var room=this.getCurrentRoom();
+	
+	var parent=room.getAttribute('parent');
+	
+	if(parent){
+		ObjectManager.loadRoom(parent);
 	}
 	else {
-        alert(GUI.translate('There is no previously visited room'));
+        alert(GUI.translate('This room has no parent.'));
     }
 }
 
@@ -359,38 +328,30 @@ ObjectManager.executeRoomChangeCallbacks = function() {
     }
 }
 
-ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
+ObjectManager.loadRoom = function(roomid, byBrowserNav, callback) {
 
     var self = this;
 
     GUI.eraseAllLinks(); //erase the existing links in the old room
 
     this.executeRoomChangeCallbacks();
-
-    if (!index)
-        var index = 'left';
         
-        
-       Modules.Dispatcher.query('enter', {'roomID': roomid, 'index': index}, function(error) {
+       Modules.Dispatcher.query('enter', {'roomID': roomid}, function(error) {
 
            if (error !== true) {
-               var objects = self.getObjects(index);
-               for (var i in objects) {
-                   var obj = objects[i];
-                   ObjectManager.removeLocally(obj);
-               }
+            var objects = self.getObjects();
+            for (var i in objects) {
+                var obj = objects[i];
+                ObjectManager.removeLocally(obj);
+            }
 
-               if (!roomid) roomid = 'public';
+            if (!roomid) roomid = 'public';
 
-               if (!byBrowserNav && index === 'left') {
-                   history.pushState({'room': roomid}, roomid, '/room/' + roomid);
-               }
+            if (!byBrowserNav) {
+                history.pushState({'room': roomid}, roomid, '/room/' + roomid);
+            }
 
-			else{
-				ObjectManager.previousRoomID = self.currentRoomID['left'];
-			}
-
-			self.currentRoomID[index] = roomid;
+			self.currentRoomID = roomid;
 			
                if (callback) setTimeout(callback, 1200);
            }
@@ -398,49 +359,10 @@ ObjectManager.loadRoom = function(roomid, byBrowserNav, index, callback) {
    
 }
 
-ObjectManager.leaveRoom = function(roomid, index, serverCall) {
-
-    var self = this;
-
-    if (!index)
-        var index = 'right';
-
-    if (serverCall) {
-        Modules.Dispatcher.query('leave', {'roomID': roomid, 'index': index, 'user': self.getUser()}, function(error) {
-
-            if (error !== true) {
-
-                var objects = self.getObjects(index);
-                for (var i in objects) {
-                    var obj = objects[i];
-                    ObjectManager.removeLocally(obj);
-                }
-
-                self.currentRoomID[index] = false;
-                self.currentRoom[index] = false;
-
-            }
-
-        });
-    } else {
-        var objects = self.getObjects(index);
-        for (var i in objects) {
-            var obj = objects[i];
-            ObjectManager.removeLocally(obj);
-        }
-
-        self.currentRoomID[index] = false;
-        self.currentRoom[index] = false;
-
-    }
-}
-
-ObjectManager.createObject = function(type, attributes, content, callback, index) {
-    if (!index)
-        var index = 'left';
+ObjectManager.createObject = function(type, attributes, content, callback) {
 		
     var data = {
-        'roomID': this.currentRoomID[index],
+        'roomID': this.currentRoomID,
         'type': type,
         'attributes': attributes,
         'content': content
@@ -634,32 +556,27 @@ ObjectManager.init = function() {
     });
 }
 
-ObjectManager.getRoomID = function(index) {
-    if (!index)
-        var index = 'left';
-    return this.currentRoomID[index];
+ObjectManager.getRoomID = function() {
+    return this.currentRoomID;
 }
 
-ObjectManager.getCurrentRoom = function(index) {
-    if (!index)
-        var index = 'left';
-    return this.currentRoom[index];
+ObjectManager.getCurrentRoom = function() {
+    return this.currentRoom;
 }
 
 
 ObjectManager.getSelected = function() {
     var result = [];
 
-    for (var index in this.objects) {
-        for (var i in this.objects[index]) {
-            var obj = this.objects[index][i];
+    for (var i in this.objects) {
+        var obj = this.objects[i];
 
-            if (obj.isSelected()) {
-                result.push(obj);
-            }
-
+        if (obj.isSelected()) {
+            result.push(obj);
         }
+
     }
+    
     return result;
 }
 
@@ -750,11 +667,11 @@ ObjectManager.getUser = function() {
     return this.user;
 }
 
-ObjectManager.inform = function(type, content, index) {
+ObjectManager.inform = function(type, content) {
     var data = {};
     data.message = {};
     data.message[type] = content;
-    data.room = this.getRoomID(index);
+    data.room = this.getRoomID();
     data.user = this.getUser().username;
     data.color = this.getUser().color;
     data.userId = this.getUser().id;
@@ -770,7 +687,7 @@ ObjectManager.informAboutSelection = function(id) {
     if (Modules.config.collaborativeEditor)
         ObjectManager.Pads.showPadFor(id);
 
-    ObjectManager.inform('selection', id, ObjectManager.getIndexOfObject(id));
+    ObjectManager.inform('selection', id);
 }
 
 ObjectManager.informAboutDeselection = function(id) {
@@ -778,11 +695,11 @@ ObjectManager.informAboutDeselection = function(id) {
     if (Modules.config.collaborativeEditor)
         ObjectManager.Pads.showDefault();
 
-    ObjectManager.inform('deselection', id, ObjectManager.getIndexOfObject(id));
+    ObjectManager.inform('deselection', id);
 }
 
 ObjectManager.requestAttentionToObject = function(id) {
-    ObjectManager.inform('requestAttention', id, ObjectManager.getIndexOfObject(id));
+    ObjectManager.inform('requestAttention', id);
 }
 
 ObjectManager.reportBug = function(data, callback) {

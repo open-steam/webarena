@@ -19,7 +19,6 @@ GUI.rubberbandStart = function(event) {
 
 	var contentPosition = $("#content").offset();
 
-	var index = 'left';	
 	var pageX = event.pageX;
 	var pageY = event.pageY-contentPosition.top;
 	
@@ -31,7 +30,7 @@ GUI.rubberbandStart = function(event) {
 	GUI.rubberbandX = 0;
 	GUI.rubberbandY = 0;
 
-	GUI.rubberband = GUI.svg.rect($('#room_'+index),
+	GUI.rubberband = GUI.svg.rect($('#room'),
 		GUI.rubberbandStartX, //x
 		GUI.rubberbandStartY, //y
 		0, //width
@@ -84,7 +83,7 @@ GUI.rubberbandStart = function(event) {
 		
 			var count = 0;
 		
-			$.each(ObjectManager.getObjects(index), function(index, object) {
+			$.each(ObjectManager.getObjects('left'), function(index, object) {
 			
 				if (!object.getAttribute("visible")) return;
 				

@@ -157,7 +157,7 @@ GeneralObject.getRepresentation = function() {
     var rep = document.getElementById(this.getAttribute('id'));
 
     if (!rep) {
-        var parent = $('#room_' + ObjectManager.getIndexOfObject(this.getAttribute("inRoom")));
+        var parent = $('#room_' + 'left');
         var rep = this.createRepresentation(parent);
         this.representationCreated();
 

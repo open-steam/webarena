@@ -837,7 +837,7 @@ ObjectManager.shout=function(text,object,everyone){
 	
 	if(object){
 		if (everyone){
-			Modules.RoomController.shout(text,object.context.rooms.left.id);
+			Modules.RoomController.shout(text,object.context.room.id);
 		} else {
 			console.log('Shouting to '+object.context.user.username+': '+text);
 			Modules.SocketServer.sendToSocket(object.context.socket, 'infotext', text);

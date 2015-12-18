@@ -70,7 +70,7 @@ GUI.userMarker = {
 			$(GUI.userMarker.markers[data.objectId]["markers"][data.identifier]).remove();
 		}
 		
-		var parent = $('#room_'+ObjectManager.getIndexOfObject(data.objectId));
+		var parent = $('#room_'+'left');
 
 		var infoBox = GUI.svg.group(parent, "selection_"+data.objectId+"_"+data.identifier);
 

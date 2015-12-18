@@ -268,7 +268,7 @@ GUI.drawLinks = function(object) {
 		var targetCenterY = target.getViewBoundingBoxY()+(target.getViewBoundingBoxHeight()/2);
 				
 		/* draw link line */
-		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId())).parent();
+		var parent = $('#room_'+'left').parent();
 		
 		var line = GUI.svg.line(parent, objectCenterX, objectCenterY, targetCenterX, targetCenterY, {
 			strokeWidth: value.width,
