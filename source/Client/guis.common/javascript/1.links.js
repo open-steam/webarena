@@ -248,7 +248,7 @@ GUI.drawLinks = function(object) {
 		
 	var newLinks1 = [];
 	var oldLinks1 = object.getAttribute("link");
-	if (_.isArray(oldLinks1)){
+	if (typeof oldLinks1 == 'array'){
 		newLinks1 = newLinks1.concat(oldLinks1);
 	}else if (oldLinks1){
 		newLinks1.push(oldLinks1);
@@ -339,9 +339,11 @@ GUI.drawLinks = function(object) {
 						"actionName" : changeProperties,
                         "actionFunction" : function(){
 						
-							_.each(ObjectManager.getObjects(), function(current) {
+						    var allObjects=ObjectManager.getObjects();
+							for (var i in allObjects){
+								var current=allObjects[i];
 								current.deselect();
-							});
+							}
 				
 							object.select();
 								

@@ -411,7 +411,7 @@ GeneralObject.serverCall = function() {
     //don't use pop directly, because function
     //can be called without callback.
     var lastArg = args[args.length - 1];
-    if (_.isFunction(lastArg)) {
+    if (typeof lastArg == "function") {
         callback = lastArg;
         args.pop();
     }
@@ -422,7 +422,7 @@ GeneralObject.serverCall = function() {
 
     if (remoteFnName === undefined)
         throw "Function name is missing.";
-    if (remoteFnName && !_.isString(remoteFnName))
+    if (remoteFnName && !typeof remoteFnName == 'string')
         throw "Function names can be strings only.";
 
     var remoteCall = {
