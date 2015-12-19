@@ -27,7 +27,6 @@ UserManager.init=function(theModules){
 	var Dispatcher=Modules.Dispatcher;
 	Dispatcher.registerCall('login',UserManager.login);
     Dispatcher.registerCall('enter',UserManager.enterRoom);  
-    Dispatcher.registerCall('leave',UserManager.leaveRoom);
 }
 
 /**
@@ -158,7 +157,6 @@ UserManager.login=function(socketOrUser,data){
 UserManager.enterRoom=function(socketOrUser,data,responseID){
 	
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
-	if(data.index===undefined) var index = 'left'; else var index = data.index;
 
 	var roomID = data.roomID;
 
@@ -209,20 +207,6 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 
 }
 
-UserManager.leaveRoom=function(socket,data,responseID) {
-	if(data.index===undefined) var index = 'right'; else var index = data.index;
-
-	var roomID = data.roomID;
-	var userID = data.user.id;
-
-	var connection=UserManager.connections[userID];
-	
-	delete(connection.room);
-
-	UserManager.sendAwarenessData(roomID);
-
-	Modules.Dispatcher.respond(socket,responseID,false);
-}
 
 /**
 *	getArarenessData
