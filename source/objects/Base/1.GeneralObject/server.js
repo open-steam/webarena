@@ -833,3 +833,7 @@ theObject.pong=function(){
 	this.shout(this+' says Pong');
 }
 theObject.pong.public=true;
+
+theObject.intelligentRename=function(attribute,value){
+	//console.log(this+ ' intelligentRename '+attribute+' '+value);
+}
