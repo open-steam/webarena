@@ -28,7 +28,6 @@ module.exports={
 // Functional restrictions
 	
 	collaborativeEditor:false, //sidebar
-	paintMode:true,
 	chat:true,
 	bugReport:true,
 	WebRTC: false,

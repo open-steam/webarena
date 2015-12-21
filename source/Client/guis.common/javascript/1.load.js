@@ -119,13 +119,11 @@ GUI.loadGUI = function(step) {
 		GUI.updateLayers(); //update z-order by layer-attribute
 		GUI.updateInspector();
 		GUI.trashbasket.update();
-
 		
 		GUI.loaded = true;
 		GUI.hideLogin();
 		WebRTCManager.init();
 		
-		ObjectManager.paintingUpdate();
 		GUI.drawAllLinks(); //draw all existing links in the new room
 
 	

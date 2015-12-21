@@ -15,7 +15,6 @@ GUI.setTranslations('de',{
 	'collaboration':'Zusammenarbeit',
 	'content':'Inhalt',
 	'connections':'Verbindungen',
-	'Paintings':'Zeichnungen',
 	'Functionality':'Funktion',
 	'Current user':'Aktueller Nutzer',
 	'Show hidden objects':'Versteckte Objekte einblenden',

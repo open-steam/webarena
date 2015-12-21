@@ -161,98 +161,6 @@ GUI.initToolbar = function() {
 		});
 
 		
-        //} else { //one object in the category
-
-            /* add link to icon (no Popover) 
-			
-            $(newCategoryIcon).attr("title", object[0].translate(GUI.currentLanguage, object[0].type));
-
-            var click = function(attributes, drag) {
-
-                if (toolbar_locked_elements[object[0].type] === true)
-                    return; //element is locked
-
-                if (object[0].type == "Paint" || object[0].type == "Highlighter") {
-
-                    toolbar_locked_elements[object[0].type] = true;
-
-                    // create unlock timer
-                    window.setTimeout(function() {
-                        toolbar_locked_elements[object[0].type] = undefined;
-                    }, 2000);
-
-                }
-
-                jPopoverManager.hideAll();
-
-                var proto = ObjectManager.getPrototype(object[0].type);
-
-                if (!Modules.Config.presentationMode) {
-
-                    if (drag) {
-                        GUI.startNoAnimationTimer();
-                        proto.create(attributes);
-                    }
-                    else {
-                        $("body").css('cursor', 'url(/objectIcons/' + object[0].type + '), auto');
-                    }
-
-                }
-                else {
-                    alert(GUI.translate("You cannot create objects in presentation mode"));
-                }
-
-            }
-
-            if (GUI.isTouchDevice) {
-                $(newCategoryIcon).bind("touchstart", function() {
-                    click({
-                        "x": window.pageXOffset + 40,
-                        "y": window.pageYOffset + 40
-                    }, false);
-                });
-            } else {
-                $(newCategoryIcon).bind("click", function() {
-                    click({
-                        "x": window.pageXOffset + 40,
-                        "y": window.pageYOffset + 40
-                    }, false);
-                });
-            }
-
-            //All objects (except for Paint and Highlighter) can be created by dragging them to the svg area
-            if (object[0].type != "Paint" && object[0].type != "Highlighter") {
-
-                //make draggable
-                var helper = $('<img src="categoryIcons/' + object[0].category + '" alt="" width="24" height="24" />');
-                helper.get(0).callback = function(offsetX, offsetY) {
-
-                    var svgpos = $("#content").offset();
-
-                    var top = offsetY - svgpos.top;
-                    var left = offsetX;
-
-                    click({
-                        "x": left,
-                        "y": top
-                    }, true);
-
-                }
-
-                $(newCategoryIcon).addClass("toolbar_draggable");
-                $(newCategoryIcon).draggable({
-                    revert: true,
-                    distance: 20,
-                    cursor: "move",
-                    helper: function(event) {
-                        return helper;
-                    }
-                });
-
-            }
-
-        }
-		*/
 		
         var effect = function() {
             $(this).animate({opacity: 1}, 500, function() {
@@ -370,25 +278,6 @@ GUI.initToolbar = function() {
 			};
 			
 
-            /*add paint button*/
-			if (Modules.Config.paintMode) {
-				var paintButton = document.createElement("img");
-				$(paintButton).attr("src", "../../guis.common/images/paint_grey.png").attr("alt", "");
-				$(paintButton).attr("width", "24").attr("height", "24");
-				$(paintButton).attr("id", "paint_button");
-				$(paintButton).addClass("sidebar_button");
-				$(paintButton).attr("title", GUI.translate("Paint"));
-				var btnPaint = section.addElement($(paintButton).prop('outerHTML') + GUI.translate("Paint")); //add menu icon
-				$(paintButton).attr("src", "../../guis.common/images/paint.png").attr("alt", "");	
-				numberOfIcons++;
-				$("#header > .header_right").append(paintButton); //add header icon
-				var clickPaint = function() { //click handler
-					GUI.editPaint();
-					popover.hide();
-				};
-			}
-			
-
             /*add logout button*/
 			var logoutButton = document.createElement("img");
 			$(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
@@ -413,14 +302,12 @@ GUI.initToolbar = function() {
 				$(undoButton).bind("touchstart", clickUndo);
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
-				if(Modules.Config.paintMode) $(paintButton).bind("touchstart", clickPaint);
 				$(logoutButton).bind("touchstart", clickLogout);
 				//menu:
 				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
 				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
 				$(btnParent.getDOM()).bind("touchstart", clickParent);
 				$(btnHome.getDOM()).bind("touchstart", clickHome);
-				if(Modules.Config.paintMode) $(btnPaint.getDOM()).bind("touchstart", clickPaint);
                 $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
 				//header:
@@ -428,14 +315,12 @@ GUI.initToolbar = function() {
 				$(undoButton).bind("mousedown", clickUndo);
 				$(parentButton).bind("mousedown", clickParent);
 				$(homeButton).bind("mousedown", clickHome);
-				if(Modules.Config.paintMode) $(paintButton).bind("mousedown", clickPaint);
 				$(logoutButton).bind("mousedown", clickLogout);
 				//menu:
 				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
 				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
 				$(btnParent.getDOM()).bind("mousedown", clickParent);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
-				if(Modules.Config.paintMode) $(btnPaint.getDOM()).bind("mousedown", clickPaint);
                 $(btnLogout.getDOM()).bind("mousedown", clickLogout);
             }
         }
@@ -692,8 +577,6 @@ GUI.showNotification = function(add, icon){
  */
 GUI.resizeToolbar = function(){
 
-	if(!GUI.paintModeActive){
-
 		var space = $(window).width();
 		space = space - (numberOfIcons*44); //subtract icons
 
@@ -721,5 +604,5 @@ GUI.resizeToolbar = function(){
 			$("#header > .header_right > img").show();
 			$("#menu_button").hide();
 		}
-	}
+	
 }

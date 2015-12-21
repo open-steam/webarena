@@ -294,59 +294,6 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
-		//paintings
-
-		else  if (url.substr(0,10) == '/paintings'){
-			
-			try {
-				var ids = url.substr(11).split('/');
-				var roomID = ids[0];
-				var user = ids[1];
-				
-				var mimeType = 'image/png';
-				
-				if(Modules.Connector.getPaintingStream !== undefined){
-					
-
-					var objStream = Modules.Connector.getPaintingStream(roomID, user, context);
-					
-					if ( objStream == undefined )
-					{
-						res.writeHead(404, {"Content-Type": "text/plain"});
-						res.write("404 Image not found");
-						res.end();
-					}
-					else
-					{
-						objStream.pipe(res);
-						objStream.on("end", function(){
-							res.writeHead(200, {
-								'Content-Type': mimeType,
-								'Content-Disposition': 'inline; filename="' + user + '.png"'
-							});
-							res.end();
-						})
-					}
-				} else {
-					res.writeHead(200, {
-							'Content-Type':'text/plain'
-					});
-					var data = 'Connector does not support PaintingStreams';
-					res.end(new Buffer(data));
-				}				
-				
-			} catch (err) {
-
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
-
-			return;
-			
-		}
-
 		// getContent
 		
 		else if (url.substr(0, 11) == '/getContent') {
