@@ -100,6 +100,8 @@ Modules.SocketServer = require('./Server/SocketServer.js');
 Modules.UserManager = require('./Server/UserManager.js');
 Modules.Helper = require('./Server/Helper.js');
 Modules.BuildTool = require('./Server/BuildTool.js');
+Modules.ApplicationManager = require('./Server/ApplicationManager.js');
+Modules.Applications = Modules.ApplicationManager;
 
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));

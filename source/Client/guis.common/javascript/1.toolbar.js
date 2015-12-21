@@ -556,19 +556,6 @@ GUI.showNotification = function(add, icon){
 	}
 	
 	var counter = 0;
-	function blink(){
-		if(counter < 4){
-			counter++;
-			$("#"+button).delay(200).fadeTo(500,0).delay(200).fadeTo(500,1, blink);
-		}
-		else{
-			$("#"+button).css("opacity", '');
-			$("#"+button).attr("src", "../../guis.common/images/"+icon+".png").attr("alt", "");
-			$("#"+button).attr("title", title);
-			
-		}
-	}
-	blink();
 }
 
 
