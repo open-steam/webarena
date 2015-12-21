@@ -247,6 +247,10 @@ fileConnector.getRoomData=function(roomID,context,oldRoomId,callback){
 	}
 }
 
+fileConnector.createRoom=function(roomID, context, callback){
+	this.getRoomData(roomID,context,false,callback);
+}
+
 /**
 *	getRoomHierarchy
 *

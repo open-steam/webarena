@@ -15,3 +15,7 @@ SimpleText.clientRegister = function(){
 		});
 	}, true);	
 }
+
+SimpleText.objectCreated=function(){
+	this.setContent(this.translate(this.currentLanguage, 'No text yet!'));
+}

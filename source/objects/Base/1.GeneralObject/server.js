@@ -491,20 +491,8 @@ theObject.evaluatePositionInt=function(data){
 
 
 theObject.getRoomAsync=function(error,cb){
-	if (!this.context) error();
-	
-	//search the room in the context and return the room this object is in
-	
-	for (var index in this.context.rooms){
-		var test=this.context.rooms[index];
-		if (test && test.hasObjectAsync) {
-			test.hasObjectAsync(this,function(){
-				cb(test);
-			});
-		}
-	}
-	
-	error();
+	if (!this.context) error('No context');
+	cb (this.context.room);	
 }
 
 
@@ -836,4 +824,8 @@ theObject.pong.public=true;
 
 theObject.intelligentRename=function(attribute,value){
 	//console.log(this+ ' intelligentRename '+attribute+' '+value);
+}
+
+theObject.objectCreated = function() {
+    //react on server side if an object has just been created and needs further input
 }

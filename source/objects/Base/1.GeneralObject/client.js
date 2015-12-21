@@ -553,7 +553,7 @@ GeneralObject.getIconPath = function() {
     return "/objectIcons/" + this.getType();
 }
 
-GeneralObject.justCreated = function() {
+GeneralObject.objectCreated = function() {
     //react on client side if an object has just been created and needs further input
 }
 

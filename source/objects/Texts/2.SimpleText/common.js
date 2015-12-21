@@ -67,8 +67,4 @@ SimpleText.contentURLOnly = false; //content is only accessible via URL
 
 SimpleText.content='Neuer Text';
 
-SimpleText.justCreated=function(){
-	this.setContent(this.translate(this.currentLanguage, 'No text yet!'));
-}
-
 module.exports=SimpleText;

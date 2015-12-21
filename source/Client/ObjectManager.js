@@ -388,7 +388,7 @@ ObjectManager.createObject = function(type, attributes, content, callback) {
 
                 object.setAttribute('name', GUI.translate(type));
 
-                object.justCreated();
+                object.objectCreated();
                 if (callback != undefined)
                     callback(object);
                 return;

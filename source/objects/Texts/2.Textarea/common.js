@@ -53,10 +53,6 @@ Textarea.intelligentRename=function(newValue){
 	});
 }
 
-Textarea.justCreated = function() {
-	this.setContent('');
-}
-
 Textarea.register('Textarea');
 Textarea.isCreatable=true;
 

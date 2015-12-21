@@ -270,6 +270,8 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
 		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 		
+		object.objectCreated();
+		
         callback(false, object);
     });
 }
@@ -476,6 +478,20 @@ ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
     });
 
 }
+
+ObjectManager.createSubroom = function (where,callback){
+	
+  var destination=new Date().getTime()-1296055327011;
+  var context=where.context;
+  
+   Modules.Connector.createRoom(destination, context, function(data) {
+        var obj = buildObjectFromObjectData(data, destination, 'Room');
+        obj.context = context;
+  		obj.setAttribute('parent',where.getAttribute('id'));
+        callback(obj);
+    });
+	
+} 
 
 ObjectManager.countSubrooms = function(roomID, context) {
     var counter = 1;

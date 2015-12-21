@@ -35,7 +35,7 @@ $(function() {
 			ObjectManager.createObject("File",{
 				"x":x,
 				"y":y,
-				"hasContent":true //prevent calling justCreated() after object creation (would display file upload dialog)
+				"hasContent":true //prevent calling objectCreated() after object creation (would display file upload dialog)
 			},false,function(newObject) {
 				/* object created --> upload content */
 			

@@ -18,3 +18,7 @@ Textarea.clientRegister=function(){
 	}, true);
 
 }
+
+Textarea.objectCreated = function() {
+	this.setContent('');
+}

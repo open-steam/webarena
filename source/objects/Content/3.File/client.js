@@ -133,7 +133,7 @@ WAFile.contentUpdated=function(){
 	
 }
 
-WAFile.justCreated=function(){
+WAFile.objectCreated=function(){
 	if (!this.getAttribute('hasContent')) this.upload();
 }
 
