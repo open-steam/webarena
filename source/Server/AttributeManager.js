@@ -8,6 +8,8 @@
 */
 
 
+var Modules={};
+
 /**
 *	Each object type get its attribute manager. This is the server side
 *   AttributeManager which mainly is responsible for channeling through
@@ -84,6 +86,11 @@ var AttributeManager=new function(){
 *	again filled in the registration procress.
 **/
 AttributeManager.init=function(proto){
+	
+	//on the initial init, the evenvironment is provided
+	if(proto.config) {
+		Modules=proto;
+	}
 
 	this.proto=proto;
 	this.attributes={};
@@ -226,6 +233,12 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
 		object.intelligentRename(attribute,value);
 	}
+	
+	//inform applications
+	
+	var data={};
+	data[attribute]=value;
+	Modules.Applications.message('setAttribute',object,data);
 	
 	return true;
 }

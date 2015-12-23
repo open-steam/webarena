@@ -31,4 +31,9 @@ ApplicationManager.init = function(theModules) {
 	this.initialized=true;
 }
 
+
+ApplicationManager.message=function(identifier,object,data){
+	console.log('ApplicationManager.message: '+identifier+': '+object,data);
+}
+
 module.exports = ApplicationManager;
