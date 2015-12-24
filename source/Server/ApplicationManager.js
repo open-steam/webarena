@@ -33,7 +33,11 @@ ApplicationManager.init = function(theModules) {
 
 
 ApplicationManager.message=function(identifier,object,data){
-	console.log('ApplicationManager.message: '+identifier+': '+object,data);
+	if (data) {
+		console.log('ApplicationManager.message: '+identifier+': '+object,data);
+	} else {
+		console.log('ApplicationManager.message: '+identifier+': '+object);
+	}
 }
 
 module.exports = ApplicationManager;

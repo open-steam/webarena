@@ -7,16 +7,6 @@
 
 "use strict";
 
-var User=function(UserManager){
-	
-	this.username=false;
-	this.home=false;
-	
-	
-	this.toString=function(){
-		return 'User '+this.username;
-	}
-
-}
-
-module.exports=User;
+var theObject=Object.create(require('./common.js'));
+var Modules=require('../../../server.js');
+module.exports=theObject;

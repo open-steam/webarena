@@ -50,6 +50,8 @@ UserManager.socketDisconnect=function(socket){
 	
 	var room=this.getConnectionBySocket(socket).room;
 	
+	Modules.Applications.message('logout',this.connections[socket.id].user);
+	
 	delete(this.connections[socket.id]);
 	
 	if (room) {
@@ -140,6 +142,8 @@ UserManager.login=function(socketOrUser,data){
 				userhash: connection.user.hash,
 				home: connection.user.home
 			});
+			
+			Modules.Applications.message('login',connection.user);
 
 		} else {
 			socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
@@ -185,14 +189,15 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 
 		if (mayEnter) {
 			
-			ObjectManager.getRoom(roomID,connection,oldRoomId,function(room){	
+			ObjectManager.getRoom(roomID,connection,oldRoomId,function(room){
+				if (connection.room) Modules.Applications.message('left',connection.room);	
 				connection.room = room;
 				Modules.RoomController.sendRoom(socket,room.id);
 				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
+				Modules.Applications.message('entered',room);
 			});
 			
-			//ObjectManager.sendChatMessages(roomID,socket);
 			
 			Modules.Dispatcher.respond(socket,responseID,false);
 
