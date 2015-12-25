@@ -206,6 +206,8 @@ GUI.clearUserStorage = function() {
  * reads out the user data from the local storage
  */
 GUI.retrieveUserData = function() {
+	
+	if (Config.debugMode) return undefined;
 
 	var userDataObject = localStorage.getItem('webarena');
 	
