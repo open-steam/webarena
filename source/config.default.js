@@ -25,6 +25,10 @@ module.exports={
 	enabledCategories: ['graphical','texts','collaboration','connections','content'],
 	objectBlacklist: ['HtmlTest'],    //Syntax: objectBlacklist:['SharePoint','EasyDBImage']
 	
+// Applications
+
+enabledApplications: [],
+	
 // Functional restrictions
 	
 	collaborativeEditor:false, //sidebar

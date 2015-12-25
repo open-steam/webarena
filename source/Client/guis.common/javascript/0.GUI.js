@@ -444,6 +444,15 @@ GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
 }
 
 
+GUI.elementSelectable = function (element){
+	switch(element.tagName){
+    	case 'INPUT':
+    	case 'BUTTON':
+    	case 'A':return false; break;
+    	default: return true;
+    }
+}
+
 /**
  * add event handler for object selection (based on clicked position and layers)
  */
@@ -559,20 +568,9 @@ GUI.initMouseHandler = function() {
 			var clickedObject=(temp)?temp.dataObject:false;
 
 			if (clickedObject) {
-				// Objects with restricted moving areas should get the "native" events
-				// Only if clicked on the moving area, e.g. actionbar the default event handling
-				// should be prevented
-                if(! clickedObject.restrictedMovingArea || $(event.target).hasClass("moveArea")){
-					if(clickedObject.input != true){
-						event.preventDefault();
-						event.stopPropagation();
-					}
-					else{
-						return;
-					}
-                }
+                
+                if (GUI.elementSelectable(event.target)) {clickedObject.click(event);}
 
-				clickedObject.click(event);
 			} else {
 				/* clicked on background */
                 event.preventDefault();

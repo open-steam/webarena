@@ -15,11 +15,6 @@ GeneralObject.moveByTransform = function() {
     return false;
 }
 
-/**
- * True if the object has a special area where it can be moved
- */
-GeneralObject.restrictedMovingArea = false;
-
 
 /**
  * Updates the representation using the attributes
@@ -157,7 +152,7 @@ GeneralObject.getRepresentation = function() {
     var rep = document.getElementById(this.getAttribute('id'));
 
     if (!rep) {
-        var parent = $('#room_');
+        var parent = $('#room');
         var rep = this.createRepresentation(parent);
         this.representationCreated();
 
@@ -207,11 +202,15 @@ GeneralObject.representationCreated = function() {
             //execute copy/cut - if intersecting on mouse/touch release
             if (that.intersectsWith(movedObject)) {
                 var selected = ObjectManager.getSelected();
-                _(selected).each(function(elem) {
-                    if (elem !== that) {
+                
+                for (var i in selected){
+                	var elem=selected[i];
+                	if (elem !== that) {
                         that.serverCall("onDrop", elem.getID());
                     }
-                })
+                	
+                }
+ 
             }
 
             that.hideActivationMarker();
@@ -1212,11 +1211,7 @@ GeneralObject.makeMovable = function() {
     var self = this;
     var rep;
 
-    if (this.restrictedMovingArea) {
-        rep = $(this.getRepresentation()).find(".moveArea").get(0);
-    } else {
-        rep = this.getRepresentation();
-    }
+    rep = this.getRepresentation();
 
     if (GUI.isTouchDevice) {
         /* touch */
@@ -1271,16 +1266,12 @@ GeneralObject.moveBy = function(x, y) {
  */
 GeneralObject.unmakeMovable = function() {
 
-    var rep;
-    if (this.restrictedMovingArea) {
-        rep = $(this.getRepresentation()).find(".moveArea").get(0);
-    } else {
-        rep = this.getRepresentation();
-    }
+    var rep = this.getRepresentation();
 
     if (!rep){
-        console.log('No representation in '+this);
+        console.log('Could not find representation in '+this);
         console.trace();
+        return;
     }
 
     $(rep).unbind("mousedown");
@@ -1571,18 +1562,15 @@ GeneralObject.clickHandler = function(event) {
     }
 
     if (this.selected) {
-        if (this.restrictedMovingArea && !$(event.target).hasClass("moveArea")) {
-
-        } else {
+    	
+        if (GUI.elementSelectable(event.target)) {
             this.selectedClickHandler(event);
         }
     } else {
         this.selectionClickActive = true; //this is used to prevent a second click-call by mouseup of move when selecting an object (otherwise this would result in an doubleclick)
         this.select();
 
-        if (this.restrictedMovingArea && !$(event.target).hasClass("moveArea")) {
-
-        } else {
+        if (GUI.elementSelectable(event.target)) {
 
             this.moveStart(event);
         }
@@ -1840,5 +1828,18 @@ GeneralObject.checkBrowserVisibility = function() {
 	var result = ((objectBottom <= documentViewBottom) && (objectTop >= documentViewTop));
 	
     return result;
+	
+}
+
+/**
+*
+*  isInMoveArea
+*
+*  always true except for HTML objects
+*
+*/
+GeneralObject.isInMoveArea=function(htmlobject){
+	
+	return true;
 	
 }

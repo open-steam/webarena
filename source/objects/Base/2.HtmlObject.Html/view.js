@@ -18,24 +18,27 @@ HtmlObject.draw=function(external){
 
 	var that=this;
 	
-	this.updateContent();
+	this.updateHTMLContent();
 	
 }
 
-
 HtmlObject.updateContent = function() {
+	console.log('ERROR: This should not be called any more!');
+}
+
+HtmlObject.createHTMLContent = function() {
 	
 	var rep=this.getRepresentation();
 	
-	this.getContentAsString(function(text){
+	$(rep).find("body").html('HTML CONTENT');
+	
+}
 
-		if(text!=that.oldContent){
-			$(rep).find("body").html(text);
-		}
-		
-		that.oldContent=text;
-		
-	});
+HtmlObject.updateHTMLContent = function() {
+	
+	var rep=this.getRepresentation();
+	
+	$(rep).find("body").html('UPDATED HTML CONTENT');
 	
 }
 
@@ -55,6 +58,8 @@ HtmlObject.createRepresentation = function(parent) {
 	$(rep).attr("id", this.getAttribute('id'));
 
 	this.initGUI(rep);
+	
+	this.createHTMLContent();
 	
 	return rep;
 	

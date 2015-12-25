@@ -6,11 +6,15 @@
  */
 GUI.showLogin = function(err) {
 	
+	console.log('showLogin');
+	
 	/* check for an external session login request in the URL hash */
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession') > -1) {
 		GUI.login();
 		return;
 	}
+	
+	console.log('1');
 	
 	/* true if the login process is active */
 	GUI.loginProcessActive = false;
@@ -50,7 +54,11 @@ GUI.showLogin = function(err) {
 		GUI.login();
 	});
 	
+	console.log('2');
+	
 	var userDataObject = GUI.retrieveUserData();
+	
+	console.log(userDataObject);
 
 	if(userDataObject){
 		GUI.login();

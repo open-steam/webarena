@@ -238,7 +238,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	
 	var data={};
 	data[attribute]=value;
-	Modules.Applications.message('setAttribute',object,data);
+	Modules.Applications.event('setAttribute',object,data);
 	
 	return true;
 }

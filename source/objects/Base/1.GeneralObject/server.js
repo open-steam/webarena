@@ -829,3 +829,8 @@ theObject.intelligentRename=function(attribute,value){
 theObject.objectCreated = function() {
     //react on server side if an object has just been created and needs further input
 }
+
+
+theObject.applicationMessage=function(identifier,data){
+	Modules.ApplicationManager.message(identifier,this,data);
+}
