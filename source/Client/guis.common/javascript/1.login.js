@@ -51,8 +51,6 @@ GUI.showLogin = function(err) {
 	});
 	
 	var userDataObject = GUI.retrieveUserData();
-	
-	console.log(userDataObject);
 
 	if(userDataObject){
 		GUI.login();

@@ -12,8 +12,8 @@ UserChooser.buttonText='Not OK!';
 UserChooser.updateHTMLContent = function(){
 	var newContent=this.getAttribute('userNames');
 	
-	if (newContent!=this.oldContent){
-		
+	if (newContent.toString()!=this.oldContent.toString()){
+
 		var rep=this.getRepresentation();
 		var contentArea=$(rep).find('.content')[0];
 		
@@ -54,6 +54,7 @@ UserChooser.createHTMLContent = function() {
 	+'</div>'
 	);
 	
+	self.oldContent='';
 	self.adjustHeight();
 	
 	self.serverCall('startUserGetter');
