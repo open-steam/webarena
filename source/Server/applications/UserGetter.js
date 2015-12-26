@@ -17,7 +17,6 @@ UserGetter.init=function(name,theModules){
 }
 
 UserGetter.startUserGetter=function(object){
-	console.log('startUserGetter '+object);
 	objectList[object.getAttribute('id')]=object;
 	updateAttributes(object);
 }
@@ -26,9 +25,12 @@ UserGetter.onEntered=function(){
 	updateAttributes();
 }
 
+UserGetter.onLeft=function(){
+	updateAttributes();
+}
+
 function updateAttributes(object){
 	if (object){
-		console.log('Setting the new content for '+object);
 		
 		var userData=Modules.UserManager.getUserLocations();
 		

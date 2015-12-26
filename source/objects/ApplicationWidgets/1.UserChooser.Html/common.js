@@ -17,11 +17,10 @@ UserChooser.register=function(type){
 	HtmlObject.register.call(this,type);
 	
 	this.registerAttribute('width',{min:250,max:250,standard:250});
-	this.registerAttribute('height',{min:500,max:300,standard:300});
 	
 }
 
-UserChooser.isCreatable=true;
+UserChooser.isCreatable=false;
 
 UserChooser.contentURLOnly = false;
 

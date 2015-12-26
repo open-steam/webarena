@@ -43,11 +43,7 @@ ApplicationManager.init = function(theModules) {
 	}
 }
 
-ApplicationManager.message=function(identifier,object,data){
-	if (data) {
-		console.log('ApplicationManager.message: '+identifier+': '+object,data);
-	} 
-	
+ApplicationManager.message=function(identifier,object,data){	
 	for (var appName in Applications){
 		var app=Applications[appName];
 		process.nextTick(function(){
@@ -58,11 +54,7 @@ ApplicationManager.message=function(identifier,object,data){
 }
 
 
-ApplicationManager.event=function(identifier,object,data){
-	if (data) {
-		console.log('ApplicationManager.event: '+identifier+': '+object,data);
-	} 
-		
+ApplicationManager.event=function(identifier,object,data){		
 	for (var appName in Applications){
 		var app=Applications[appName];
 		process.nextTick(function(){

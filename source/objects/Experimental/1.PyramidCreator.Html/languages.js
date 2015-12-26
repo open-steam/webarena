@@ -1,0 +1,4 @@
+PyramidCreator.setTranslations('de',{
+
+}
+);
