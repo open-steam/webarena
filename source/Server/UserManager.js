@@ -272,12 +272,12 @@ UserManager.getConnections=function(){
 UserManager.getConnectionsForRoom=function(roomID){
 	var result={};
 	for (var connectionID in this.connections){
+		
 		var connection=this.connections[connectionID];
 
-			if (connection.room && roomID==connection.room.id) {
-				result[connectionID]=connection;
-				break;
-			}
+		if (connection.room && roomID==connection.room.id) {
+			result[connectionID]=connection;
+		}
 		
 	}
 	return result;
