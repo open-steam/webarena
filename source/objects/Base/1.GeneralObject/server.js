@@ -489,6 +489,12 @@ theObject.evaluatePositionInt=function(data){
 	
 }
 
+theObject.getRoom=function(){
+	if (!this.context) error('No context');
+	return (this.context.room);	
+}
+
+
 
 theObject.getRoomAsync=function(error,cb){
 	if (!this.context) error('No context');
@@ -826,8 +832,10 @@ theObject.intelligentRename=function(attribute,value){
 	//console.log(this+ ' intelligentRename '+attribute+' '+value);
 }
 
-theObject.objectCreated = function() {
+theObject.objectCreated = function(callback) {
     //react on server side if an object has just been created and needs further input
+    
+    if (callback) callback(this);
 }
 
 

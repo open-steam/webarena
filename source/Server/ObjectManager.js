@@ -270,9 +270,10 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
 		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 		
-		object.objectCreated();
+		object.objectCreated(function(){
+			callback(false, object);
+		});
 		
-        callback(false, object);
     });
 }
 
