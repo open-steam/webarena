@@ -462,6 +462,10 @@ ObjectManager.init = function() {
     Modules.Dispatcher.registerCall('entered', function(data) {
         GUI.entered();
     });
+    
+    Modules.Dispatcher.registerCall('goToRoom', function(roomID) {
+        ObjectManager.loadRoom(roomID);
+    });
 
     Modules.Dispatcher.registerCall('error', function(data) {
         GUI.error("server error", data, false, true);

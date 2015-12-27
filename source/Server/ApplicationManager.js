@@ -27,6 +27,7 @@ function godify(original){
 	
 	var object=Object.create(original);
 	object.context=Object.create(object.context);
+	object.context.originalUser=object.context.user;
 	object.context.user=GodUser;
 	
 	return object;	
@@ -97,6 +98,15 @@ ApplicationManager.event=function(identifier,object,data){
 
 	}
 	
+}
+
+ApplicationManager.sendUserToRoom=function(user,room,callback){
+
+	var connection=Modules.UserManager.getConnectionBySocketID(user.id);
+	
+	Modules.SocketServer.sendToSocket(connection.socket, 'goToRoom', room.id);
+	
+	if (callback) callback();
 }
 
 
