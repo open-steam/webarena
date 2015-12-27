@@ -262,6 +262,7 @@ GeneralObject.removeRepresentation = function() {
     this.deselect();
 
     $(rep).empty();
+    $(rep).remove();
 
 }
 
