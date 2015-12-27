@@ -28,8 +28,10 @@ BuildTool.addToClientCode = function(filename) {
 			}, "");
 		}
 		BuildTool.clientCode += enter + enter + '//' + filename + enter + enter + fileContent;
+		return true;
 	} catch (e) {
 		BuildTool.clientCode += enter + enter + '//' + filename + enter + enter + ' //' + e;
+		return false;
 	}
 }
 
@@ -58,17 +60,21 @@ BuildTool.buildClientCode = function(){
 		} else temp=objName;
 
 		var filebase = __dirname + '/../objects/' + category + '/' + filename;
-		that.addToClientCode(filebase + '/common.js');
-		that.addToClientCode(filebase + '/client.js');
-		that.addToClientCode(filebase + '/view.js');
 		
-		that.clientCode += enter + 'try {';
-		that.clientCode += enter + temp + '.register("' + objName + '");' + enter + enter;
-		that.clientCode += enter + temp + '.clientRegister();' + enter + enter;
-		that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
-		that.clientCode += enter + '} catch (e) {console.log("Cannot register '+temp+'")}';
-
-		that.addToClientCode(filebase + '/languages.js');
+		if (that.addToClientCode(filebase + '/common.js')){
+		
+			that.addToClientCode(filebase + '/client.js');
+			that.addToClientCode(filebase + '/view.js')
+		
+			that.clientCode += enter + temp + '.register("' + objName + '");' + enter + enter;
+			that.clientCode += enter + temp + '.clientRegister();' + enter + enter;
+			that.clientCode += enter + temp + '.category="' + category +'";' + enter + enter;
+			
+			that.addToClientCode(filebase + '/languages.js');
+			
+		 } else {	
+			that.clientCode += enter + 'console.log("Cannot register '+temp+'");';
+		 }
 
 	});
 }

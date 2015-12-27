@@ -903,8 +903,12 @@ GUI.connected = function() {
 	if (GUI.relogin === true) {
 		
 		window.setTimeout(function(){
-			$("#disconnected_message")[0].style.display='none';
-		 	$("#disconnected_message")[0].remove(); //get rid of the disconnected message
+			var message=$("#disconnected_message")[0];
+			
+			if (!message) return;
+			
+			message.style.display='none';
+		 	message.empty(); //get rid of the disconnected message
 		},1000);
 		
 		GUI.relogin = false;
@@ -920,7 +924,7 @@ GUI.connected = function() {
 GUI.showDisconnected = function() {
 
 	if ($("#disconnected_message").length == 0)
-	$("body").append('<div id="disconnected_message"><div>'+GUI.translate('Lost connection to the server.')+'</div></div>');
+	$($("body")[0]).append('<div id="disconnected_message"><div>'+GUI.translate('Lost connection to the server.')+'</div></div>');
 
 	GUI.isLoggedIn = false;
 	GUI.relogin = true;
