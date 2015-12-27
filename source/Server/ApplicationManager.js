@@ -15,6 +15,23 @@ var Applications={};
 
 var Modules = false;
 
+
+var GodUser={};
+GodUser.name='God';
+GodUser.isGod=true;
+GodUser.toString='God';
+
+function godify(original){
+	if (!original) return original;
+	if (!original.context) return original;
+	
+	var object=Object.create(original);
+	object.context=Object.create(object.context);
+	object.context.user=GodUser;
+	
+	return object;	
+}
+
 ApplicationManager.toString = function() {
     return 'Application Manager';
 }
@@ -43,24 +60,43 @@ ApplicationManager.init = function(theModules) {
 	}
 }
 
-ApplicationManager.message=function(identifier,object,data){	
+ApplicationManager.message=function(identifier,object,data){
+	
+	object=godify(object);
+		
 	for (var appName in Applications){
 		var app=Applications[appName];
-		process.nextTick(function(){
-			app.message(identifier,object,data);
-		});
+		
+		function deliver(app){
+			process.nextTick(function(){
+				app.message(identifier,object,data);
+			});						
+		}
+		
+		deliver(app);
+
 	}
 	
 }
 
 
-ApplicationManager.event=function(identifier,object,data){		
+ApplicationManager.event=function(identifier,object,data){
+	
+	object=godify(object);
+			
 	for (var appName in Applications){
 		var app=Applications[appName];
-		process.nextTick(function(){
-			app.event(identifier,object,data);
-		});
+		
+		function deliver(app){
+			process.nextTick(function(){
+				app.event(identifier,object,data);
+			});						
+		}
+		
+		deliver(app);
+
 	}
+	
 }
 
 
