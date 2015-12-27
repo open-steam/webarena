@@ -324,6 +324,7 @@ UserManager.getUserLocations=function(){
    		
    		var obj={}
    		obj.username=data.user.username;
+   		obj.id=data.socket.id;
    		obj.room=data.room;
    		
    		userData.push(obj);

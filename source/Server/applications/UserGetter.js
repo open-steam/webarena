@@ -32,17 +32,20 @@ UserGetter.onLeft=function(){
 function updateAttributes(object){
 	if (object){
 		
-		var userData=Modules.UserManager.getUserLocations();
+		var userDataRaw=Modules.UserManager.getUserLocations();
 		
-		var userNames=[];
+		var userData=[];
 		
-		for (var i in userData){
-			userNames.push(userData[i].username);
+		for (var i in userDataRaw){
+			var element={};
+			element.name=userDataRaw[i].username;
+			element.id=userDataRaw[i].id;
+			element.room=userDataRaw[i].room.id;
+			
+			userData.push(element);
 		}
 		
-		console.log(userNames);
-		
-		object.setAttribute('userNames',userNames);
+		object.setAttribute('userData',userData);
 		
 		return;
 	}

@@ -10,4 +10,12 @@
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 
+theObject.startPyramid=function(selection){
+	
+	this.applicationMessage('startPyramid',selection);
+	
+	return 'started';
+}
+theObject.startPyramid.public=true;
+
 module.exports=theObject;

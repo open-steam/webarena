@@ -8,3 +8,7 @@
 PyramidCreator.clientRegister = function (){
 
 }
+
+PyramidCreator.proceed = function (selection){
+	this.serverCall('startPyramid',selection);
+}

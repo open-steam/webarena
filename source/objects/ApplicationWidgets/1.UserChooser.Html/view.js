@@ -10,9 +10,11 @@ UserChooser.infoText='This is the text that explains what the chooser is used fo
 UserChooser.buttonText='Not OK!';
 
 UserChooser.updateHTMLContent = function(){
-	var newContent=this.getAttribute('userNames');
+	var newContent=this.getAttribute('userData');
 	
-	if (newContent.toString()!=this.oldContent.toString()){
+	if (JSON.stringify(newContent)!=JSON.stringify(this.oldContent)){
+		
+		console.log(JSON.stringify(newContent));
 
 		var rep=this.getRepresentation();
 		var contentArea=$(rep).find('.content')[0];
@@ -22,8 +24,8 @@ UserChooser.updateHTMLContent = function(){
 		for (var j in newContent){
 			var user=newContent[j];
 			html+='<label>';
-            html+='<input type="checkbox" name="users" value="'+user+'">';
-            html+=user;
+            html+='<input type="checkbox" name="users" value="'+user.id+'">';
+            html+=user.name;
             html+='</label><br>'; 
 		}
 		
