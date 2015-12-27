@@ -11,7 +11,7 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 module.exports=theObject;
 
-theObject.sendToRoom = function (roomID, callback){
+theObject.sendToRoom = function (roomID, attributes, callback){
 	var data = {};
 	data.roomID = roomID;
 	var that = this;
@@ -22,11 +22,11 @@ theObject.sendToRoom = function (roomID, callback){
 	Modules.RoomController.roomExists(data, this.context, function(error, exists){
 			if(exists){
 				console.log('The room exists');
-				Modules.ObjectManager.copyObject(that, roomID, that.context, callback);
+				Modules.ObjectManager.createObject(roomID, 'SurveyTest', attributes, false,that.context, callback);
 			}else{
 				Modules.RoomController.createRoom(data, that.context, function(error, success){
 					console.log('Room created, object will be copied');
-					Modules.ObjectManager.copyObject(that, roomID, that.context, callback);
+					Modules.ObjectManager.createObject(roomID, 'SurveyTest', attributes, false, that.context, callback);
 				});
 			}
 	});

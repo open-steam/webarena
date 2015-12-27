@@ -12,17 +12,11 @@ SurveyTest.register=function(type){
 	// Registering the object
 	HtmlObject=Modules.ObjectManager.getPrototype('HtmlObject');
 	HtmlObject.register.call(this,type);
-
-	this.registerAttribute('stepping', {hidden: true, type: 'number', standard: 1});
-	this.registerAttribute('minValue', {hidden: true, type: 'number', standard: -5});
-	this.registerAttribute('maxValue', {hidden: true, type: 'number', standard: 5});
-
-	this.registerAttribute('points_0',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
-	this.registerAttribute('points_1',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
-	this.registerAttribute('points_2',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});
-	this.registerAttribute('surveyLength', {hidden: false, standard: 3});
-
-	
+	this.registerAttribute('stepping', {hidden: false, type: 'number'});
+    this.registerAttribute('minValue', {hidden: false, type: 'number'});
+    this.registerAttribute('maxValue', {hidden: false, type: 'number'});
+    this.registerAttribute('surveyLength', {hidden: false});
+    this.registerAttribute('statements', {multiple: true, hidden: false, standard: []});
 }
 
 SurveyTest.sliderChange = function(sliderID, value){
@@ -45,6 +39,7 @@ SurveyTest.sendSurveyResult = function(event){
 	for(var i = 0; i < that.getAttribute('surveyLength'); i++){
 		surveyResultArray.push(that.getAttribute('points_'+i));
 	}
+	console.log(surveyResultArray);
 
 	//TODO: Send Array to SurveyResult-Object
 }

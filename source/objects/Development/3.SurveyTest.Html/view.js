@@ -18,58 +18,49 @@ SurveyTest.updateContent = function() {
 	//for convenience
 	var initialised = this.getAttribute("initialised");
 
+	this.addStatement = function(text, id){
+		var oldSliders = that.getAttribute('sliders');
+		var newSliders = oldSliders;
+		var minValue = that.getAttribute('minValue');
+		var maxValue = that.getAttribute('maxValue');
+
+		newSliders.push(0);
+		that.setAttribute('sliders', newSliders);
+		return text+'<br><input type="range" id="slider_'+id+'" min="'+minValue+'" max="'+maxValue+'" class="surveyslider" value="'+newSliders[id]+'"> '+
+			'Punkte: <output id="display_'+id+'">'+newSliders[id]+'</output>';
+	}
+
 	//Initial load of the SurveyBase with standard values and sliders at 0
 	this.surveyBaseHtmlInit = function(){
+		var statements = that.getAttribute('statements');
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
-			    'Bewerten Sie die folgenden Aussagen auf einer Skala von minValue bis  maxValue'+
-			    '<br>'+
-			    '<br>'+
-			    	'Diese Aussage ist super. '+
-			    	'<br>'+
-			    	'<input type="range" id="slider_0" min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_0">0</output>'+
-			    	'<br>'+
-			    	'Diese Aussage ist okay. <br>'+
-			    	'<input  type="range" id="slider_1" min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_1">0</output>'+
-			    	'<br>'+
-			    	'Diese Aussage ist schlecht. <br>'+
-			    	'<input type="range" id="slider_2" min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_2">0</output>'+
-			    	'<br>'+
-			    	'<input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden">'+
-			'</div>'
-			return string;
+			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' bis '+that.getAttribute('maxValue')+'<br>';
+		for(var i = 0; i < that.getAttribute('surveyLength'); i++){
+			string += that.addStatement(statements[i], i)+
+			'<br>';
+		}
+			    	
+		string += '<br><input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden"></div>'
+		return string;
 	}
 
 	//called when the page has been reloaded
 	this.surveyBaseHtmlReload = function(){
+		var statements = that.getAttribute('statements');
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
-			    'Bewerten Sie die folgenden Aussagen auf einer Skala von minValue bis  maxValue'+
-			    '<br>'+
-			    '<br>'+
-			    	'Diese Aussage ist super. '+
-			    	'<br>'+
-			    	'<input type="range" id="slider_0" value='+this.getAttribute('points_0')+' min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_0">'+this.getAttribute('points_0')+'</output>'+
-			    	'<br>'+
-			    	'Diese Aussage ist okay. <br>'+
-			    	'<input type="range" id="slider_1" value='+this.getAttribute('points_1')+' min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_1">'+this.getAttribute('points_1')+'</output>'+
-			    	'<br>'+
-			    	'Diese Aussage ist schlecht. <br>'+
-			    	'<input type="range" id="slider_2" value='+this.getAttribute('points_2')+' min="-5" max="5" class="surveyslider">'+
-			    	'Punkte: <output id="display_2">'+this.getAttribute('points_2')+'</output>'+
-			    	'<br>'+
-			    	'<input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden">'+
-			'</div>'
-			return string;
+			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' bis '+that.getAttribute('maxValue')+'<br><br>';
+		for(var i = 0; i < that.getAttribute('surveyLength'); i++){
+			string += '<br>'+that.addStatement(statements[i], i)+'<br>';
+		}
+			    	
+		string += '<br><input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden"></div>'
+		return string;
 	}
 
 
-	//If the SurveyTest-Object is loaded the first time, it is created initially
+	// //If the SurveyTest-Object is loaded the first time, it is created initially
 	if(!initialised){
 		self.setHTML(self.surveyBaseHtmlInit());
 		//Send slidervalues to the server and update the attributes, then update the display values as well.
@@ -106,7 +97,6 @@ SurveyTest.updateContent = function() {
 			that.oldContent=text;
 		});
 	}
-
 	this.setAttribute("initialised", true);
-
 }
+
