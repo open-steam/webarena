@@ -70,11 +70,14 @@ UserChooser.buttonClicked=function(htmlobject){
 	
 	var checkboxes=$(rep).find('input');
 	
-	var selection={};
+	var selection=[];
 	
 	for (var i=0;i<checkboxes.length;i++){
 		var box=checkboxes[i];
-		selection[box.value]=box.checked;
+		var data={};
+		data.value=box.value;
+		data.selected=box.checked;
+		selection.push(data);
 	}
 	
 	if (object.proceed){

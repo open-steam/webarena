@@ -7,7 +7,7 @@
 
 "use strict";
 
-var UserGetter=require('./Application.js');
+var UserGetter=Object.create(require('./Application.js'));
 var objectList={};
 var Modules={};
 
