@@ -17,6 +17,11 @@ SurveyTest.register=function(type){
     this.registerAttribute('maxValue', {hidden: false, type: 'number'});
     this.registerAttribute('surveyLength', {hidden: false});
     this.registerAttribute('statements', {multiple: true, hidden: false, standard: []});
+    this.registerAttribute('resultHash', {type: 'object'});
+    this.registerAttribute('testHash', {type: 'object'});
+
+	// TODO: implement
+    // this.generateHash();
 }
 
 SurveyTest.sliderChange = function(sliderID, value){
@@ -26,6 +31,13 @@ SurveyTest.sliderChange = function(sliderID, value){
 	var value = value;
 
 	this.setAttribute(attribute, value);
+}
+
+SurveyTest.generateHash = function(){
+	var that = this;
+	var  hash = {roomID: that.getRoomID(),
+				 testID: that.getTestID()};
+	this.setAttribute('testHash', hash);
 }
 
 SurveyTest.getRoomID = function() {

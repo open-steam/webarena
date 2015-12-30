@@ -16,7 +16,7 @@ SurveyTeacher.clientRegister=function(){
 		that.send(object);
 	},true);
 
-	 this.registerAction('Zeilen und Spalten anpassen', function(lastClicked) {
+	 this.registerAction('Edit Survey', function(lastClicked) {
         var selected = ObjectManager.getSelected();
         lastClicked.showFormatDialog(selected);
     });
