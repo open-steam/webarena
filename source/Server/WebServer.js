@@ -38,9 +38,9 @@ WebServer.init = function (theModules) {
 		var agent = req.headers['user-agent'];
 
 
-		if (!Modules.config.debugMode && agent && agent.indexOf('Trident') > 0) {
+		if (!Modules.config.debugMode && agent && (agent.indexOf('Trident') > 0 || agent.indexOf('Edge') > 0)) {
 			res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
-			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
+			data = '<h1>WebArena does not work with Microsoft Internet Explorer or Microsoft Edge</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
 			res.end(data);
 			return;
 		}
