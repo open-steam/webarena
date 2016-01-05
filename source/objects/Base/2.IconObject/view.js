@@ -254,7 +254,7 @@ IconObject.renderText = function (text){
     var temp=text;
     
     while(temp){
-    	if (!temp.substring) temp='';
+    	if (!temp || !temp.substring) temp='';
     	
     	var test=temp.substring(0,lineLength);
     	var length=0;
