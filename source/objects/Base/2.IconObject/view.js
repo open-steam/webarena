@@ -235,6 +235,10 @@ IconObject.renderText = function (text){
 	
 	var rep = this.getRepresentation();
 	
+	$(rep).find("text").remove();
+	
+	if (!this.getAttribute('showCaption')) return;  // if no caption should be displayed, we can end here
+	
 	if (this.getAttribute("bigIcon")) {
 		var startX = 78;
 		var widthHalf = 32;
@@ -267,8 +271,6 @@ IconObject.renderText = function (text){
     }
     
     var cTexts = GUI.svg.createText();
-
-    $(rep).find("text").remove();
 
     for(var i = 0, len = splitTextVal.length; i< len ; i++){
         cTexts.span(splitTextVal[i], {'y' : startX + i * 14, 'x': 0});
