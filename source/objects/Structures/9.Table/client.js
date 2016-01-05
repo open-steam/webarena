@@ -129,7 +129,7 @@ Table.showFormatDialog = function(selected) {
 
 
 // find selected cell, open dialog and change the labelName through input
-Table.showLabelDialog = function(selectedObject,labelList,labelType,positionMouse) {
+Table.showLabelDialog = function(selectedObject,labelList,labelType,positionMouse,positionList) {
     var that = this;
     var dialog_buttons = {};
     
@@ -137,13 +137,12 @@ Table.showLabelDialog = function(selectedObject,labelList,labelType,positionMous
         var oldName = selectedObject[0].innerHTML;
         var newName = document.getElementById("inputField").value;
         for (var i = 0; i <= labelList.length; i++){
-            if(labelList[i]==oldName && i+1 == position){
+            if(i+1 == positionList){
                 labelList[i]=newName;
-                
+                console.log("bin im if");
             }
         }
-        console.log(labelType);
-        console.log(labelList);
+
         that.setAttribute(labelType,labelList);
         GUI.updateInspector();
     }

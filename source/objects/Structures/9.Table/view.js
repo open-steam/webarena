@@ -320,7 +320,7 @@ Table.setViewWidth = function(value) {
                  labelFound=true;
                  labellist=rows;
                  labelType='Row';
-                 LabelIdNumber=columns.length+counter;
+                 LabelIdNumber=columns.length+counter-1;
              }
          }
      }
@@ -331,7 +331,7 @@ Table.setViewWidth = function(value) {
 
      var rep = this.getRepresentation();
      var labelObject = $(rep).find('#label'+LabelIdNumber);
-     this.showLabelDialog(labelObject,labellist,labelType,positionMouse);
+     this.showLabelDialog(labelObject,labellist,labelType,positionMouse,counter);
 	
      GUI.inPlaceEditionObject = this.id;
      
