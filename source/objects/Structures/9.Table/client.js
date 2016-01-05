@@ -129,30 +129,27 @@ Table.showFormatDialog = function(selected) {
 
 
 // find selected cell, open dialog and change the labelName through input
-Table.showLabelDialog = function(selectedObject,labelList,labelType,positionMouse,positionList) {
-    var that = this;
+Table.showLabelDialog = function(clickedElement,positionMouse) {
+	
+    var self = this;var that=this;
     var dialog_buttons = {};
     
     var changeName = function(){
-        var oldName = selectedObject[0].innerHTML;
-        var newName = document.getElementById("inputField").value;
-        for (var i = 0; i <= labelList.length; i++){
-            if(i+1 == positionList){
-                labelList[i]=newName;
-                console.log("bin im if");
-            }
-        }
+    	
+    	var oldName = clickedElement.innerHTML;
+    	var newName = document.getElementById("inputField").value;
+    	
+    	var value=self.getAttribute(clickedElement.elementType);
+    	value[clickedElement.elementNumber]=newName;
+    	self.setAttribute(clickedElement.elementType,value);
+    	
+    	GUI.updateInspector();
 
-        that.setAttribute(labelType,labelList);
-        GUI.updateInspector();
     }
     
     dialog_buttons[that.translate(GUI.currentLanguage, "Namen übernehmen")] = function() {
         changeName();
     };
-    
-
-   
     
     dialog_buttons[that.translate(GUI.currentLanguage, "Cancel")] = function() {
         return false;
@@ -162,7 +159,7 @@ Table.showLabelDialog = function(selectedObject,labelList,labelType,positionMous
     var content = [];
     var html = "<p>Tragen im unteren Eingabefeld einen neuen Namen ein.</p>";
     html+="<p>Mit der Eingabe-Taste &#9166 übernehmen Sie den Namen</p>";
-    html+="<input id='inputField' type='text' style='width:100%' value='"+selectedObject[0].innerHTML+"'>";
+    html+="<input id='inputField' type='text' style='width:100%' value='"+clickedElement.innerHTML+"'>";
     
 var js = '$(document).ready(function(){document.getElementById("inputField").select();});';
 
