@@ -18,10 +18,6 @@ $(function() {
 		event.stopPropagation();
 		event.preventDefault();
 		
-		if (GUI.couplingModeActive){
-			alert(GUI.translate("You cannot create objects in coupling mode"));	
-			return;
-		}
 		
 		event.dataTransfer.dropEffect = 'copy'; //show that this is a copy
 		
@@ -39,7 +35,7 @@ $(function() {
 			ObjectManager.createObject("File",{
 				"x":x,
 				"y":y,
-				"hasContent":true //prevent calling justCreated() after object creation (would display file upload dialog)
+				"hasContent":true //prevent calling objectCreated() after object creation (would display file upload dialog)
 			},false,function(newObject) {
 				/* object created --> upload content */
 			

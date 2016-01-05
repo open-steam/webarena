@@ -376,14 +376,9 @@ GeneralObject.refreshDelayed = function() {
 
     this.refreshDelay = setTimeout(function() {
         //If the current room has changed in the meantime, do not refresh at all
-        if (GUI.couplingModeActive) {
-            if (that.getAttribute('inRoom') != ObjectManager.getRoomID('left') && that.getAttribute('inRoom') != ObjectManager.getRoomID('right')) {
-                return;
-            }
-        } else {
-            if (that.getAttribute('inRoom') != ObjectManager.getRoomID()) {
-                return;
-            }
+
+        if (that.getAttribute('inRoom') != ObjectManager.getRoomID()) {
+            return;
         }
 
         that.refresh();
@@ -416,7 +411,7 @@ GeneralObject.serverCall = function() {
     //don't use pop directly, because function
     //can be called without callback.
     var lastArg = args[args.length - 1];
-    if (_.isFunction(lastArg)) {
+    if (typeof lastArg == "function") {
         callback = lastArg;
         args.pop();
     }
@@ -427,7 +422,7 @@ GeneralObject.serverCall = function() {
 
     if (remoteFnName === undefined)
         throw "Function name is missing.";
-    if (remoteFnName && !_.isString(remoteFnName))
+    if (remoteFnName && !typeof remoteFnName == 'string')
         throw "Function names can be strings only.";
 
     var remoteCall = {
@@ -558,7 +553,7 @@ GeneralObject.getIconPath = function() {
     return "/objectIcons/" + this.getType();
 }
 
-GeneralObject.justCreated = function() {
+GeneralObject.objectCreated = function() {
     //react on client side if an object has just been created and needs further input
 }
 

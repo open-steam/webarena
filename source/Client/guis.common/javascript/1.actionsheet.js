@@ -156,7 +156,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 		actionsheet.css("opacity", 1);
 
         // automatically scroll to actionsheet if it is not visible in current scroll position
-        if (!GUI.couplingModeActive) {
+
             var scrollTop = $(document).scrollTop();
             var scrollLeft = $(document).scrollLeft();
             if (actionsheetLeft + actionsheetWidth > scrollLeft + $(window).width()) {
@@ -178,7 +178,7 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
             }
 
             $(document).scrollTo( {top: scrollTop, left: scrollLeft}, 800 );
-        }
+        
 		
 	}, 10);
 	

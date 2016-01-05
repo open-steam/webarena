@@ -247,6 +247,10 @@ fileConnector.getRoomData=function(roomID,context,oldRoomId,callback){
 	}
 }
 
+fileConnector.createRoom=function(roomID, context, callback){
+	this.getRoomData(roomID,context,false,callback);
+}
+
 /**
 *	getRoomHierarchy
 *
@@ -387,117 +391,6 @@ fileConnector.saveContent=function(roomID,objectID,content,context, inputIsStrea
     }
 }
 
-/**
-*	save a users painting
-*
-*	if a callback function is specified, it is called after saving
-*
-*/
-fileConnector.savePainting=function(roomID,content,context,callback){
-	if (!context) this.Modules.Log.error("Missing context");
-
-	this.Modules.Log.debug("Save painting (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	var that = this;
-	var username=this.Modules.Log.getUserFromContext(context);
-
-    var filebase=this.Modules.Config.filebase;
-    var foldername=filebase+'/'+roomID;
-    try {fs.mkdirSync(foldername)} catch(e){};
-    var filename=filebase+'/'+roomID+'/'+username+'.painting';
-
-	if (({}).toString.call(content).match(/\s([a-zA-Z]+)/)[1].toLowerCase() == "string") {
-	    /* create byte array */
-	
-	    var byteArray = [];
-	    var contentBuffer = new Buffer(content);
-	
-	    for (var j = 0; j < contentBuffer.length; j++) {
-	
-	        byteArray.push(contentBuffer.readUInt8(j));
-	
-	    }
-	
-	    content = byteArray;
-	
-	}
-	
-	try {
-		fs.writeFileSync(filename, new Buffer(content));
-	} catch (err) {
-	    this.Modules.Log.error("Could not write painting to file (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	}
-	if (callback) callback();
-	
-}
-
-/**
-*	deletePainting
-*
-*	delete a users Painting
-*/
-fileConnector.deletePainting=function(roomID, context, callback){
-	
-	if (!context) this.Modules.Log.error("Missing context");
-	var username=this.Modules.Log.getUserFromContext(context);
-	
-	this.Modules.Log.debug("Delete painting (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-
-	try {
-	
-		var filebase=this.Modules.Config.filebase;
-
-		var filename=filebase+'/'+roomID+'/'+username+'.painting';
-
-		fs.unlink(filename, function (err) {});
-	
-	} catch (e) {
-		this.Modules.Log.error("Could not delete painting (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	}
-	
-	if (callback) callback();
-	
-}
-
-/**
-*	getPaintings
-*
-*	returns all paintings in a room (no actual objects, just a number of users with paintings)
-*
-*/
-fileConnector.getPaintings=function(roomID,context,callback){
-
-	var self = this;
-
-	this.Modules.Log.debug("Request paintings (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
-	if (!context) throw new Error('Missing context in getPaintings');
-	
-	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
-	var filebase=this.Modules.Config.filebase;
-
-	var paintings=[];
-
-	try {fs.mkdirSync(filebase+'/'+roomID)} catch(e){};
-
-	var files=fs.readdirSync(filebase+'/'+roomID);
-
-    files=(files)?files:[];
-
-	files.forEach(function(value,index){
-		var position=value.indexOf('.painting');
-		if(position == -1) return; //not an object file
-		var filename=value;
-		var user=filename.substr(0,position);
-		paintings.push(user);
-    });
-
-	if (callback !== undefined) {
-		/* async */
-		process.nextTick(function(){callback(paintings);});
-	}
-	
-}
 
 
 /**
@@ -578,22 +471,6 @@ fileConnector.getContentStream = function(roomID,objectID,context){
 }
 
 
-fileConnector.getPaintingStream = function(roomID,user,context){
-		
-    this.Modules.Log.debug("Get painting stream (roomID: '"+roomID+"', user: '"+user+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-    var filebase=this.Modules.Config.filebase;
-    var filename=filebase+'/'+roomID+'/'+user+'.painting';
-
-    var rds = fs.createReadStream(filename);
-	var that=this;
-    rds.on("error", function(err) {
-        // that.Modules.Log.debug("Error reading file: " + filename);
-        return undefined;
-    });
-
-    return rds;
-}
-
 
 
 /**
@@ -640,13 +517,6 @@ fileConnector.createObject=function(roomID,type,data, context, callback){
 	var objectID = uuid.v4();
 	
 	data.type=type;
-	
-	if (type == "Paint" || type == "Highlighter") {
-		
-		data.mimeType = 'image/png';
-		data.hasContent = false;
-		
-	}
 	
 	this.saveObjectData(roomID,objectID,data,context,true,callback);
 	

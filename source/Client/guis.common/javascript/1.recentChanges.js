@@ -16,11 +16,20 @@ GUI.recentChanges.addChange = function(room, change) {
 		action = action+': '+room.translate(GUI.currentLanguage, change.attribute);
 	}
 	
+	var theObject=ObjectManager.getObject(change.objectID);
+	
+	if (!theObject) {
+		var objName=change.objectID;
+	}
+	else {
+		var objName=ObjectManager.getObject(change.objectID).getAttribute('name');
+	}
+	
 	$("#recent_changes").prepend(
-		'<div class="recent_change_other">'+
+		'<div class="recent_change_other" onclick="ObjectManager.getObject(\''+change.objectID+'\').select()">'+
 		'<span style="color:  #000000">'+change.user+' ('+change.date+')</span>'+
 		action+
-		'<span style="color:  #000000; font-weight: normal; font-size: 9px">'+change.objectID+'</span>'+
+		'<span style="color:  #000000; font-weight: normal; font-size: 9px">'+objName+'</span>'+
 		'</div>'
 	);
 }

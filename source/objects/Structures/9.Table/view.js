@@ -128,6 +128,8 @@ Table.draw = function(external) {
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
                 $(currentTextElement).attr('id', 'label'+LabelID);
+                currentTextElement.elementType='Column';
+                currentTextElement.elementNumber=j-1;
                 LabelID++;
                 var textLength = currentTextElement.getComputedTextLength();
                 while(cellWidth<textLength+10){
@@ -148,6 +150,8 @@ Table.draw = function(external) {
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
                 $(currentTextElement).attr('id', 'label'+LabelID);
+                currentTextElement.elementType='Row';
+                currentTextElement.elementNumber=i-1;
                 LabelID++;
                 var textLength = currentTextElement.getComputedTextLength();
                 while(cellWidth<textLength+10){
@@ -283,58 +287,16 @@ Table.setViewWidth = function(value) {
 
 //find cell and open LabelDialog for changing name
  Table.editText= function(event){
-     var objectX = this.getAttribute('x');
-     var objectY = this.getAttribute('y');
-     var objectWidth = this.getAttribute('width');
-     var objectHeight = this.getAttribute('height');
-     var rows = this.getAttribute('Row');
-     var columns = this.getAttribute('Column');
+ 	
+ 	 var clickedElement=event.srcElement;
      
-     var cellWidth = objectWidth/(columns.length+1);
-     var cellHeight = objectHeight/(rows.length+1);
-    
-     var labellist= null;
-     var labelType =null;
-     var counter=0;
-     var LabelIdNumber=null;
-
-     if((objectX+cellWidth)<event.clientX){
-         // in oberster Zeile suchen (COLUMN)
-         var labelFound=false;
-         while(!labelFound){
-             counter++;
-             if(objectX+cellWidth*(counter+1)>= event.clientX ){
-                 labelFound=true;
-                 labellist=columns;
-                 labelType='Column';
-                 LabelIdNumber=counter;
-             }
-         }
-         
-     }else{
-         // in erster Spalte suchen (ROW)
-         var labelFound=false;
-         while(!labelFound){
-             counter++;
-             if(objectY+cellHeight*(counter+1)>= event.clientY){
-                 labelFound=true;
-                 labellist=rows;
-                 labelType='Row';
-                 LabelIdNumber=columns.length+counter;
-             }
-         }
-     }
      var positionMouse ={
          x: event.clientX,
          y: event.clientY
      };
-
-     var rep = this.getRepresentation();
-     var labelObject = $(rep).find('#label'+LabelIdNumber);
-     this.showLabelDialog(labelObject,labellist,labelType,positionMouse);
-	
-     GUI.inPlaceEditionObject = this.id;
      
+     if (clickedElement.elementType) this.showLabelDialog(clickedElement,positionMouse);
+	     
  }
  
  /**

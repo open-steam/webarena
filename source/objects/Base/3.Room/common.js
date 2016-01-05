@@ -36,7 +36,6 @@ Room.register=function(type){
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
 	
-	this.registerAttribute('showUserPaintings',{type:"boolean", standard:true, changedFunction: function(object, value) {object.showUserPaintings(value);}});
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
     
     if (Modules.Config.structuringMode) {        this.attributeManager.registerAttribute('mode', {type: 'selection', standard: 'foreground', options: ['background', 'foreground'], category: 'Structure', hidden: true, changedFunction: function(room) {                GUI.deselectAllObjects();                room.redraw();
@@ -48,31 +47,6 @@ Room.register=function(type){
                             }});    }
 }
 
-/*
-Room.hasObject=function(obj){
-	var inventory=this.getInventory();
-	for (var i in inventory){
-		if (inventory[i].id==obj.id) return true;
-	}
-	return false;
-}
-*/
-
-Room.getPaintingURL = function(user) {
-	if (!user) user=this.getCurrentUserName();
-	
-	//maybe it is necessary to add a time here to get rid of cache issues
-	
-	return "/paintings/"+this.getRoomID()+"/"+user+"/"+ObjectManager.userHash;
-}
-
-Room.showUserPaintings = function(value)
-{
-	if ( value )
-	{ ObjectManager.paintingUpdate(); }
-	else
-	{ $('img[id^="userPainting_"]').remove(); }
-}
 
 Room.isInBackgroundMode = function() {    var mode = this.getAttribute('mode');    if (mode == 'background')        return true;    return false;}Room.switchMode = function(mode) {    if (mode == 'background')        this.setAttribute('mode', 'background');    else        this.setAttribute('mode', 'foreground');}
 

@@ -102,8 +102,9 @@ var Helper = new function () {
 
 	}
 
-	//alias for "lodash random"
-	this.getRandom = _.random
+	this.getRandom = function(min, max) {
+    	return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
 
 	this.getIntersectionOfArrays = function (A, B) {
 

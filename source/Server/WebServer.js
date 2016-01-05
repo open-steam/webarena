@@ -38,9 +38,9 @@ WebServer.init = function (theModules) {
 		var agent = req.headers['user-agent'];
 
 
-		if (!Modules.config.debugMode && agent && agent.indexOf('Trident') > 0) {
+		if (!Modules.config.debugMode && agent && (agent.indexOf('Trident') > 0 || agent.indexOf('Edge') > 0)) {
 			res.writeHead(200, {'Content-Type': 'text/html', 'Content-Disposition': 'inline'});
-			data = '<h1>WebArena does not work with Microsoft Internet Explorer</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
+			data = '<h1>WebArena does not work with Microsoft Internet Explorer or Microsoft Edge</h1><p>This is experimental software. Please use the most recent versions of Firefox or Chrome.</p>';
 			res.end(data);
 			return;
 		}
@@ -99,7 +99,7 @@ WebServer.init = function (theModules) {
 			return;
 		}
 
-        // roomlist for coupling navigation
+        // roomlist
         if (url.substr(0, 9) == "/getRooms") {
 
 			Modules.RoomController.listRooms(function(err, rooms){
@@ -292,59 +292,6 @@ WebServer.init = function (theModules) {
 			}
 	
 			return;
-		}
-
-		//paintings
-
-		else  if (url.substr(0,10) == '/paintings'){
-			
-			try {
-				var ids = url.substr(11).split('/');
-				var roomID = ids[0];
-				var user = ids[1];
-				
-				var mimeType = 'image/png';
-				
-				if(Modules.Connector.getPaintingStream !== undefined){
-					
-
-					var objStream = Modules.Connector.getPaintingStream(roomID, user, context);
-					
-					if ( objStream == undefined )
-					{
-						res.writeHead(404, {"Content-Type": "text/plain"});
-						res.write("404 Image not found");
-						res.end();
-					}
-					else
-					{
-						objStream.pipe(res);
-						objStream.on("end", function(){
-							res.writeHead(200, {
-								'Content-Type': mimeType,
-								'Content-Disposition': 'inline; filename="' + user + '.png"'
-							});
-							res.end();
-						})
-					}
-				} else {
-					res.writeHead(200, {
-							'Content-Type':'text/plain'
-					});
-					var data = 'Connector does not support PaintingStreams';
-					res.end(new Buffer(data));
-				}				
-				
-			} catch (err) {
-
-				res.writeHead(500, {"Content-Type": "text/plain"});
-				res.write("500 Internal Server Error");
-				res.end();
-				Modules.Log.error(err);
-			}
-
-			return;
-			
 		}
 
 		// getContent

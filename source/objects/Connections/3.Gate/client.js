@@ -21,7 +21,6 @@ Gate.follow = function(openMethod) {
         if (self.getAttribute("destinationObject") !== '') {
             callback = function() {
                 if (document.getElementById(self.getAttribute("destinationObject"))) {
-                    if (!GUI.couplingModeActive) {
                         $(document).scrollTo(
                                 $('#' + self.getAttribute("destinationObject")),
                                 1000,
@@ -32,7 +31,6 @@ Gate.follow = function(openMethod) {
                                     }
                                 }
                         );
-                    }
                 }
             }
         }
@@ -49,7 +47,7 @@ Gate.follow = function(openMethod) {
 	
 		//open in same tab
 		if(String(destination).indexOf("http://www.") != 0){
-			ObjectManager.loadRoom(destination, false, ObjectManager.getIndexOfObject(this.getAttribute('id')), callback);
+			ObjectManager.loadRoom(destination, false, callback);
 		}
 		else{
 			window.open(destination,"_self")

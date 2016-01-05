@@ -21,6 +21,7 @@ IconObject.register=function(type){
 	this.attributeManager.registerAttribute('layer',{hidden: true});
 	
 	this.registerAttribute('bigIcon',{type:'boolean',standard:true, changedFunction: function(object) { if(object) {object.updateIcon();} }});
+	this.registerAttribute('showCaption',{type:'boolean',standard:true, changedFunction: function(object) { if(object) {object.updateIcon();} }});
 	this.registerAttribute('width',{hidden:true});
 	this.registerAttribute('height',{hidden:true});
 	this.registerAttribute('fillcolor',{hidden:true});

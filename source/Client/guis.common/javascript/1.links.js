@@ -26,6 +26,9 @@ GUI.moveLinks = function(object){
 	$.each(linkedObjects, function(index, value) {
 		
 		var targetId = value.destination;
+		
+		if (!targetId) return;
+		
 		var target = ObjectManager.getObject(targetId);
 			
 		if (!target) return;
@@ -245,7 +248,7 @@ GUI.drawLinks = function(object) {
 		
 	var newLinks1 = [];
 	var oldLinks1 = object.getAttribute("link");
-	if (_.isArray(oldLinks1)){
+	if (typeof oldLinks1 == 'array'){
 		newLinks1 = newLinks1.concat(oldLinks1);
 	}else if (oldLinks1){
 		newLinks1.push(oldLinks1);
@@ -257,6 +260,9 @@ GUI.drawLinks = function(object) {
 	$.each(newLinks1, function( index, value ) {
 			
 		var targetID = value.destination;
+		
+		if (!targetID) return;
+		
 		var target = ObjectManager.getObject(targetID);
 	
 		if (!target) return;
@@ -268,7 +274,7 @@ GUI.drawLinks = function(object) {
 		var targetCenterY = target.getViewBoundingBoxY()+(target.getViewBoundingBoxHeight()/2);
 				
 		/* draw link line */
-		var parent = $('#room_'+ObjectManager.getIndexOfObject(object.getId())).parent();
+		var parent = $('#room_'+'left').parent();
 		
 		var line = GUI.svg.line(parent, objectCenterX, objectCenterY, targetCenterX, targetCenterY, {
 			strokeWidth: value.width,
@@ -310,16 +316,6 @@ GUI.drawLinks = function(object) {
         $(line).bind("mouseup", function(event){
             var x = (parseFloat($(this).attr("x1")) + parseFloat($(this).attr("x2")))/2
             var y = (parseFloat($(this).attr("y1")) + parseFloat($(this).attr("y2")))/2
-
-			if (GUI.couplingModeActive) {
-				var index = ObjectManager.getIndexOfObject(object.getId());
-				if (index === 'right') {
-					x += parseInt($('#room_right_wrapper').attr('x')) + GUI.getPanX(index);
-				} else {
-					x += GUI.getPanX(index);
-				}
-				y += GUI.getPanY(index);
-			}
 			
 			var deletion = object.translate(GUI.currentLanguage, "Delete");
 			var changeProperties = object.translate(GUI.currentLanguage, "change properties");
@@ -343,9 +339,11 @@ GUI.drawLinks = function(object) {
 						"actionName" : changeProperties,
                         "actionFunction" : function(){
 						
-							_.each(ObjectManager.getObjects(), function(current) {
+						    var allObjects=ObjectManager.getObjects();
+							for (var i in allObjects){
+								var current=allObjects[i];
 								current.deselect();
-							});
+							}
 				
 							object.select();
 								

@@ -27,10 +27,7 @@ module.exports={
 	
 // Functional restrictions
 	
-	couplingMode:true,
 	structuringMode:true,
-	collaborativeEditor:false, //sidebar
-	paintMode:true,
 	chat:true,
 	bugReport:true,
 	WebRTC: false,

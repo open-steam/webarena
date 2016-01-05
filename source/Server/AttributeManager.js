@@ -244,6 +244,12 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	    })
     }
     
+	//give the object a proper name if no name has been chosen so far
+	
+	if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
+		object.intelligentRename(attribute,value);
+	}
+	
 	return true;
 }
 

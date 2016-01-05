@@ -11,6 +11,11 @@ var User=function(UserManager){
 	
 	this.username=false;
 	this.home=false;
+	
+	
+	this.toString=function(){
+		return 'User '+this.username;
+	}
 
 }
 

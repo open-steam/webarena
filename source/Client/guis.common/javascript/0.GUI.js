@@ -558,19 +558,8 @@ GUI.initMouseHandler = function() {
 			
 			var clickedObject=(temp)?temp.dataObject:false;
 
-			if (GUI.couplingModeActive) {
-				if (event.pageX > $('#couplingBar').attr('x1') && $('#couplingBar:hover').length == 0) {
-					if ($('#rightCouplingControl:hover').length == 0) {
-						if (GUI.defaultZoomPanState('right', false, event)) return;
-					}
-				} else {
-					if ($('#leftCouplingControl:hover').length == 0) {
-						if (GUI.defaultZoomPanState('left', false, event)) return;
-					}
-				}
-			}
-
 			if (clickedObject && clickedObject.isAccessible()) {
+
 				// Objects with restricted moving areas should get the "native" events
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
 				// should be prevented
@@ -915,14 +904,14 @@ GUI.disconnected = function() {
 GUI.connected = function() {
 
 	if (GUI.relogin === true) {
-
-		if (GUI.couplingModeActive) {
-			GUI.closeCouplingMode();
-		}
 		
 		window.setTimeout(function(){
-			$("#disconnected_message")[0].style.display='none';
-		 	$("#disconnected_message")[0].remove(); //get rid of the disconnected message
+			var message=$("#disconnected_message")[0];
+			
+			if (!message) return;
+			
+			message.style.display='none';
+		 	message.empty(); //get rid of the disconnected message
 		},1000);
 		
 		GUI.relogin = false;
@@ -938,7 +927,7 @@ GUI.connected = function() {
 GUI.showDisconnected = function() {
 
 	if ($("#disconnected_message").length == 0)
-	$("body").append('<div id="disconnected_message"><div>'+GUI.translate('Lost connection to the server.')+'</div></div>');
+	$($("body")[0]).append('<div id="disconnected_message"><div>'+GUI.translate('Lost connection to the server.')+'</div></div>');
 
 	GUI.isLoggedIn = false;
 	GUI.relogin = true;

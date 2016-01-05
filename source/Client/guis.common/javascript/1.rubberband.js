@@ -11,34 +11,15 @@ GUI.rubberbandStart = function(event) {
 	if (GUI.shiftKeyDown) return;
 	
 	$("#content").find(".webarenaRubberband").remove();
-	
-	if (GUI.paintModeActive) return;
 
 	/* deselect all objects */
 	GUI.deselectAllObjects();
 
 	var contentPosition = $("#content").offset();
 
-	// coupling adjustments
-	var index = 'left';
-	if (GUI.couplingModeActive) {
-		// no rubberband if vertical bar was clicked
-		if ($('#couplingBar:hover').length != 0) return;
-
-		// adjust position according to current pan state in corresponding room (left or right)
-		if (event.pageX > $('#couplingBar').attr('x1')) {
-			var index = 'right';
-			var pageX = event.pageX - $('#couplingBar').attr('x1') - GUI.getPanX('right');
-			var pageY = event.pageY - contentPosition.top - GUI.getPanY('right');
-		} else {
-			var index = 'left';
-			var pageX = event.pageX - GUI.getPanX('left');
-			var pageY = event.pageY - contentPosition.top - GUI.getPanY('left');
-		}
-	} else {
-		var pageX = event.pageX;
-		var pageY = event.pageY-contentPosition.top;
-	}
+	var pageX = event.pageX;
+	var pageY = event.pageY-contentPosition.top;
+	
 
 	GUI.rubberbandStartX = pageX;
 	GUI.rubberbandStartY = pageY;
@@ -47,7 +28,7 @@ GUI.rubberbandStart = function(event) {
 	GUI.rubberbandX = 0;
 	GUI.rubberbandY = 0;
 
-	GUI.rubberband = GUI.svg.rect($('#room_'+index),
+	GUI.rubberband = GUI.svg.rect($('#room'),
 		GUI.rubberbandStartX, //x
 		GUI.rubberbandStartY, //y
 		0, //width
@@ -65,19 +46,9 @@ GUI.rubberbandStart = function(event) {
 	var move = function(event) {
 		
 		event.preventDefault();
-		
-		if (GUI.couplingModeActive) {
-			if (index === 'right') {
-				GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX-$('#couplingBar').attr('x1')-GUI.getPanX('right');
-				GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('right');
-			} else {
-				GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX-GUI.getPanX('left');
-				GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top-GUI.getPanY('left');
-			}
-		} else {
-			GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX;
-			GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top;
-		}
+	
+		GUI.rubberbandWidth = event.pageX-GUI.rubberbandStartX;
+		GUI.rubberbandHeight = event.pageY-GUI.rubberbandStartY-contentPosition.top;		
 		
 		GUI.rubberbandX = GUI.rubberbandStartX;
 		GUI.rubberbandY = GUI.rubberbandStartY;
@@ -98,40 +69,6 @@ GUI.rubberbandStart = function(event) {
 		
 		$(GUI.rubberband).attr("x", GUI.rubberbandX);
 		$(GUI.rubberband).attr("y", GUI.rubberbandY);
-
-		if (!GUI.couplingModeActive) {
-			// scrolling if mouse curser is close to window boundaries
-			var scrollPixel = 15; // how many pixels to scroll each event
-			var scrollSensitivity = 15; // boundary for scrolling
-			/* enlarge room dimensions if scrolling over boundaries
-			var currentRoom = ObjectManager.getCurrentRoom();
-			if (GUI.rubberbandX + GUI.rubberbandWidth >= $('#content').width() - visibleWidth) {
-				GUI.setRoomWidth(parseInt(currentRoom.getAttribute("width")) + scrollPixel);
-			}
-			if (GUI.rubberbandY + GUI.rubberbandHeight >= $('#content').height() - scrollSensitivity) {
-				GUI.setRoomHeight(parseInt(currentRoom.getAttribute("height")) + scrollPixel);
-			}*/
-			var visibleWidth = scrollSensitivity;
-			if (GUI.sidebar.open) {
-				visibleWidth += parseInt($("#sidebar").css("width"), 10);
-			}
-			// right
-			if ((event.pageX >= $(document).scrollLeft() + $(window).width() - visibleWidth) && (GUI.rubberbandX + GUI.rubberbandWidth >= $(document).scrollLeft() + $(window).width() - visibleWidth)) {
-				$(document).scrollLeft($(document).scrollLeft() + scrollPixel);
-			}
-			// left
-			if ((event.pageX - $(document).scrollLeft() <= scrollSensitivity) && (GUI.rubberbandX - $(document).scrollLeft() <= scrollSensitivity)) {
-				$(document).scrollLeft($(document).scrollLeft() - scrollPixel);
-			}
-			// bottom
-			if ((event.pageY >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity) && (GUI.rubberbandY + GUI.rubberbandHeight >= $(document).scrollTop() + $(window).height() - contentPosition.top - scrollSensitivity)) {
-				$(document).scrollTop($(document).scrollTop() + scrollPixel);
-			}
-			// top
-			if ((event.pageY - contentPosition.top - $(document).scrollTop() <= scrollSensitivity) && (GUI.rubberbandY - $(document).scrollTop() <= scrollSensitivity)) {
-				$(document).scrollTop($(document).scrollTop() - scrollPixel);
-			}
-		}
 					
 	}
 	
@@ -144,7 +81,7 @@ GUI.rubberbandStart = function(event) {
 		
 			var count = 0;
 		
-			$.each(ObjectManager.getObjects(index), function(index, object) {
+			$.each(ObjectManager.getObjects('left'), function(index, object) {
 			
 				if (!object.isVisible()) return;
 				

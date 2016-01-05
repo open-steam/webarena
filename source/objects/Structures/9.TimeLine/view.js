@@ -118,7 +118,7 @@ TimeLine.draw = function(external) {
         if (!label)
             label = '';
 
-        rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + 'bottom' + ';text-align:' + 'right' + '">' + label + '</td></tr></table>';
+        rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + (this.getAttribute('height')-10) + 'px;vertical-align:' + 'bottom' + ';text-align:' + 'right' + '">' + label + '</td></tr></table>';
     } else {
         $(line).attr("x1", this.padding + this.padding + this.padding);
         $(line).attr("y1", this.getAttribute('height') - this.padding - this.padding - this.padding - this.padding);

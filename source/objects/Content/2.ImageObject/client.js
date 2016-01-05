@@ -65,7 +65,7 @@ ImageObject.contentUpdated=function(){
 	
 }
 
-ImageObject.justCreated=function(){
+ImageObject.objectCreated=function(){
 	this.upload();
 }
 
