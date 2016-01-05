@@ -321,6 +321,7 @@ Table.setViewWidth = function(value) {
                  labellist=rows;
                  labelType='Row';
                  LabelIdNumber=columns.length+counter-1;
+                 counter=counter-1;
              }
          }
      }
@@ -331,6 +332,10 @@ Table.setViewWidth = function(value) {
 
      var rep = this.getRepresentation();
      var labelObject = $(rep).find('#label'+LabelIdNumber);
+     console.log("labelObject   "+labelObject);
+     console.log("labellist     "+labellist);
+     console.log("labelType     "+labelType);
+     console.log("counter       "+counter);
      this.showLabelDialog(labelObject,labellist,labelType,positionMouse,counter);
 	
      GUI.inPlaceEditionObject = this.id;
