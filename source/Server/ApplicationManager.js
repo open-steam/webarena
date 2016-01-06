@@ -55,6 +55,7 @@ ApplicationManager.init = function(theModules) {
 		    var app=require('./applications/'+appName+'.js');
 		    app.init(appName,Modules);
 		    Applications[appName]=app;
+		    console.log('Loaded application '+appName);
 		} catch (err) {
 		    console.log('ERROR: cannot start application '+appName+' '+err);
 		}

@@ -1,7 +1,7 @@
 /**
 *    Webarena - A web application for responsive graphical knowledge work
 *
-*    @author Felix Winkelnkemper, University of Paderborn, 2015
+*    @author Felix Winkelnkemper, University of Paderborn, 2016
 *
 */
 
@@ -96,11 +96,11 @@ PyramidDiscussion.startPyramid=function(object,selection){
 						
 						//TODO here: Send others in their rooms
 						
-						self.teacherRoom.createObject('Rectangle',function(error,stone){
+						self.teacherRoom.createObject('PyramidElement',function(error,stone){
 							stone.setAttribute('width',300);
 							stone.setAttribute('height',150);
 							stone.setAttribute('x',10);
-							stone.setAttribute('y',10+(index*1.0)*165);
+							stone.setAttribute('y',10+(index*1.0)*175);
 							stone.setAttribute('users',entry.value);
 							
 							stones[1].push(stone);
@@ -129,50 +129,53 @@ PyramidDiscussion.startPyramid=function(object,selection){
 						async.whilst(function(){return counter<amount},
 						function (callback){
 
-							if (counter*level+3==stones[parentLevel].length){
+							if (counter*2+3==stones[parentLevel].length){
 								
-								self.teacherRoom.createObject('Rectangle',function(error,stone){
-									console.log(counter*level,counter*level+1,counter*level+2);
+								self.teacherRoom.createObject('PyramidElement',function(error,stone){
+									console.log(counter*2,counter*2+1,counter*2+2);
 									
-									var top=stones[parentLevel][counter*level].getAttribute('y');
-									var bottom=stones[parentLevel][counter*level+2].getAttribute('y')+stones[parentLevel][counter*level+2].getAttribute('height');
+									var top=stones[parentLevel][counter*2].getAttribute('y');
+									var bottom=stones[parentLevel][counter*2+2].getAttribute('y')+stones[parentLevel][counter*2+2].getAttribute('height');
 									
 									console.log('top '+top+' bottom '+bottom);
 									
-									counter+=2;
+									
 									
 									stone.setAttribute('width',300);
 									stone.setAttribute('height',bottom-top);
 									stone.setAttribute('x',(level-1)*310.0+10);
 									stone.setAttribute('y',top);
-									stone.setAttribute('users',stones[parentLevel][counter*level].getAttribute('users')
-														  +'_'+stones[parentLevel][counter*level+1].getAttribute('users')
-														  +'_'+stones[parentLevel][counter*level+2].getAttribute('users'));
+									stone.setAttribute('users',stones[parentLevel][counter*2].getAttribute('users')
+														  +'_'+stones[parentLevel][counter*2+1].getAttribute('users')
+														  +'_'+stones[parentLevel][counter*2+2].getAttribute('users'));
+									
 									
 									stones[level].push(stone);
+									counter+=2;
 									
 									return callback(null);
 								});								
 								
 							} else {
-								self.teacherRoom.createObject('Rectangle',function(error,stone){
-									console.log(counter*level,counter*level+1);
+								self.teacherRoom.createObject('PyramidElement',function(error,stone){
+									console.log(counter*2,counter*2+1);
 									
-									var top=stones[parentLevel][counter*level].getAttribute('y');
-									var bottom=stones[parentLevel][counter*level+1].getAttribute('y')+stones[parentLevel][counter*level+1].getAttribute('height');
+									var top=stones[parentLevel][counter*2].getAttribute('y');
+									var bottom=stones[parentLevel][counter*2+1].getAttribute('y')+stones[parentLevel][counter*2+1].getAttribute('height');
 									
 									console.log('top '+top+' bottom '+bottom);
 									
-									counter+=1;
+									
 									
 									stone.setAttribute('width',300);
 									stone.setAttribute('height',bottom-top);
 									stone.setAttribute('x',(level-1)*310.0+10);
 									stone.setAttribute('y',top);
-									stone.setAttribute('users',stones[parentLevel][counter*level].getAttribute('users')
-														  +'_'+stones[parentLevel][counter*level+1].getAttribute('users'));
+									stone.setAttribute('users',stones[parentLevel][counter*2].getAttribute('users')
+														  +'_'+stones[parentLevel][counter*2+1].getAttribute('users'));
 									
 									stones[level].push(stone);
+									counter+=1;
 									
 									return callback(null);
 								});
@@ -190,7 +193,9 @@ PyramidDiscussion.startPyramid=function(object,selection){
 					}
 					
 					async.whilst(test,nextLevel,function(err){
-						//hier müsste die pyramide fertig sein.
+						//copy them to every user room
+						//active them in the teacher room
+						//activate first level in the user rooms
 					});
 					
 				});

@@ -27,7 +27,7 @@ module.exports={
 	
 // Applications
 
-enabledApplications: [],
+	enabledApplications: [],
 	
 // Functional restrictions
 	

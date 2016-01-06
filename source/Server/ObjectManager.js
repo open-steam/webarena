@@ -295,10 +295,11 @@ ObjectManager.getEnabledObjectTypes = function() {
         console.log('No object categories enabled in configuration file!');
     }
     categories.push('Base');
+    categories.push('ApplicationWidgets');
 
     for (var i in configCategories) {
         var temp = configCategories[i];
-        if (temp !== 'Base')
+        if (temp !== 'Base' && temp !== 'ApplicationWidgets')
             categories.push(temp);
     }
 
