@@ -17,8 +17,8 @@ SurveyTest.register=function(type){
     this.registerAttribute('maxValue', {hidden: false, type: 'number'});
     this.registerAttribute('surveyLength', {hidden: false});
     this.registerAttribute('statements', {multiple: true, hidden: false, standard: []});
-    this.registerAttribute('resultHash', {type: 'object'});
-    this.registerAttribute('testHash', {type: 'object'});
+    this.registerAttribute('resultObjectID', {hidden: false});
+    this.registerAttribute('resultObjectRoom', {hidden: false});
 
 	// TODO: implement
     // this.generateHash();

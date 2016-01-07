@@ -23,7 +23,6 @@ SurveyTeacher.clientRegister=function(){
 }
 
 SurveyTeacher.send = function(object, roomID) {
-	//unneccessary if-clause, as long as userRoomList is correctly working (for prototyping/development)
     var sliders = [];
     var surveyLength = object.getAttribute('surveyLength');
 
@@ -35,10 +34,10 @@ SurveyTeacher.send = function(object, roomID) {
                          minValue: object.getAttribute('minValue'),
                          maxValue: object.getAttribute('maxValue'), 
                          stepping: object.getAttribute('stepping'), 
-                         teacherObject: object.getRoomID,
+                         resultObjectID: null,
+                         resultObjectRoom: object.getAttribute('inRoom'), 
                          sliders: sliders};
 
-    console.log(attributes);
 	if (roomID != null) {
 		object.serverCall("sendToRoom", roomID, attributes);
 	}

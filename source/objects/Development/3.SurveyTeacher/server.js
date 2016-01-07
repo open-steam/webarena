@@ -15,23 +15,24 @@ theObject.sendToRoom = function (roomID, attributes, callback){
 	var data = {};
 	data.roomID = roomID;
 	var that = this;
+	var attr = attributes;
+
 
 	/* check if room exists already or if it needs to 
 	be created.
 	*/
 	Modules.RoomController.roomExists(data, this.context, function(error, exists){
-			if(exists){
-				console.log('The room exists');
-				Modules.ObjectManager.createObject(roomID, 'SurveyTest', attributes, false,that.context, function(error, success){
-						Modules.ObjectManager.createObject(that.getRoomID(), 'SurveyResult', false, false, that.context, callback);
-				});
-			}else{
-				Modules.RoomController.createRoom(data, that.context, function(error, success){
-					console.log('Room created, object will be copied');
-					Modules.ObjectManager.createObject(roomID, 'SurveyTest', attributes, false, that.context, callback);
-					Modules.ObjectManager.createObject(that.getRoomID(), 'SurveyResult', false, false, that.context, callback);
-				});
-			}
+		console.log('The room exists');
+
+		Modules.ObjectManager.createObject(that.getRoomID(), 'SurveyResult', false, false, that.context, function(error, object){
+
+			attr.resultObjectID = object.id;
+
+			Modules.ObjectManager.createObject(roomID, 'SurveyTest', attr, false,that.context, function(error, object){
+				console.log('resultObjectID ' + attr.resultObjectID);
+				console.log('room ' + attr.resultObjectRoom);
+			});	
+		});
 	});
 }
 
