@@ -334,6 +334,17 @@ UserManager.getUserLocations=function(){
 	
 }
 
+UserManager.getUserName=function(userID){
+	var connections=UserManager.connections;
+	for (var i in connections){
+		var data=connections[i];
+		
+		if (!data.user.username) continue;
+		if (data.socket.id==userID) return data.user.username;
+	}
+	return undefined;
+}
+
 UserManager.getUserRooms=function(context,callback){
 	
 	var locations=this.getUserLocations();

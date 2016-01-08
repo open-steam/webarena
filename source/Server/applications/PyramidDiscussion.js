@@ -27,6 +27,9 @@ PyramidDiscussion.startPyramid=function(object,selection){
 		//DEVELOPMENT: for development set everything in the selection to selected.
 		selection[i].selected=true;
 		
+		//add a readable username
+		selection[i].userName=Modules.UserManager.getUserName(selection[i].value);
+		
 		//remove the initiator, who cannot be a participant
 		if (selection[i].value==teacher) selection[i].selected=false;
 		
@@ -66,7 +69,8 @@ PyramidDiscussion.startPyramid=function(object,selection){
 				
 						subroomObject.getDestinationRoom(function(participantRoom){
 							
-							subroomObject.setAttribute('name',entry.value);
+							subroomObject.setAttribute('name',entry.userName);
+							participantRoom.setAttribute('pyramidUser',entry.value);
 							self.participantRooms[entry.value]=participantRoom;
 							subroomObjects.push(subroomObject);
 							callback(null);
@@ -211,34 +215,52 @@ PyramidDiscussion.startPyramid=function(object,selection){
 						
 						self.stones=stones;
 						
+						var allStones=[];
 						for (var i in stones){
 							var level=stones[i];
 							for (var s in level){
 								var stone=level[s];
 								stone.runtimeData.copies=[];
-								
-								console.log(self.participantRooms);
-								//ERROR: WE NEED AN ARRAY HERE
-								
-								async.each(self.participantRooms,function(participantRoom,callback){
-										
-										console.log('Copying '+stone+' to '+participantRoom);
-										callback();
-										
-									},function(err){
-										
-									console.log('WE ARE HERE');
-									
-									//hier gehts weiter
-									//copy them to every participate room
-									//active them in the teacher room
-									//activate first level in the user rooms
-									
-								});
-								
+								allStones.push(stone);
 							}
 						}
 						
+						
+						async.each(allStones,function(stone,nextStone){
+							
+								stone.runtimeData.copies=[];
+								
+								var pRooms=[];
+								for (var p in self.participantRooms){pRooms.push(self.participantRooms[p]);}
+								
+								async.each(pRooms,function(participantRoom,nextRoom){
+										
+										stone.copyToRoom(participantRoom.getAttribute('id'),function(error,participantStone){
+											
+											stone.runtimeData.copies.push(participantStone);
+											
+											//activate the respective stone on the first level
+											if (participantRoom.getAttribute('pyramidUser')==participantStone.getAttribute('users')){
+												participantStone.setAttribute('active',true);
+											}
+											nextRoom();
+										});
+								
+										
+									},function(err){
+										
+										//activate stones in the teacher room so we can see what is going on
+										stone.setAttribute('active',true);
+										nextStone();
+									
+								});
+							
+							
+						}, function(err){
+							
+							console.log('WE ARE HERE');
+							
+						});
 						
 					});
 					
