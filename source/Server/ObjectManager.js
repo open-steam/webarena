@@ -40,7 +40,6 @@ ObjectManager.registerType = function(type, constr) {
  *  deletes an object and informs clients about the deletion
  */
 ObjectManager.remove = function(obj) {
-	
     Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
     obj.updateClients('objectDelete');
     
@@ -467,7 +466,6 @@ ObjectManager.undo = function(data, context, callback) {
  *
  **/
 ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
-
     if (!context)
         throw new Error('Missing context in ObjectManager.getRoom');
 

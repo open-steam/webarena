@@ -59,7 +59,13 @@ GUI.trashbasket.update = function() {
 		$(this).find('a > .jstree-icon').css({'background-size': 'contain'})
 	});
 	
-	$("#trash").append(renderedTree)
+    var cleanButton = $("<button type='button' style='margin-top:10px; margin-left:5px;' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' role='button'><span class='ui-button-text'>"+GUI.translate("Clean Trashbucket")+"</span></button>");
+    
+    $(cleanButton).click(function() {
+      GUI.trashbasket.clean();
+    });
+	$("#trash").append(cleanButton);
+    $("#trash").append(renderedTree);
 	
 	$('#jsTrashTree').css("margin-top", "5px");
 	
@@ -155,4 +161,11 @@ GUI.trashbasket.leave = function() {
 	$("#trash").find("#emptyTrashMessage").show();
 	$('#jsTrashTree').show();
 	
+}
+
+/**
+ * delete all objects in the trash folder
+ */
+GUI.trashbasket.clean = function() {
+     ObjectManager.getCurrentRoom().clearTrash();
 }
