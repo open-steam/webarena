@@ -5,7 +5,7 @@
 *
 */
 
-OpacityControler.draw = function(external) {
+OpacityController.draw = function(external) {
 	
 	GeneralObject.draw.call(this, external);
 	
@@ -46,22 +46,22 @@ OpacityControler.draw = function(external) {
 }
 
 /* get the width of the objects bounding box */
-OpacityControler.getViewBoundingBoxWidth = function() {
+OpacityController.getViewBoundingBoxWidth = function() {
 	//return GeneralObject.getViewBoundingBoxWidth.call(this);
 	return 64;
 }
 
 /* get the height of the objects bounding box */
-OpacityControler.getViewBoundingBoxHeight = function() {
+OpacityController.getViewBoundingBoxHeight = function() {
 	//return GeneralObject.getViewBoundingBoxHeight.call(this);
 	return 64;
 }
 
-OpacityControler.getStatusIcon = function() {
+OpacityController.getStatusIcon = function() {
 	//return this.hasContent() ? this.getIconPath() + "/color" : this.getIconPath() + "/black";
 	return this.getIconPath() + "/black"
 }
 
-OpacityControler.getIconText = function() {
+OpacityController.getIconText = function() {
     return this.getAttribute("Object ID"); // to show a text under the icon
 }

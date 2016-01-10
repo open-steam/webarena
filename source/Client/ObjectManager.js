@@ -728,12 +728,13 @@ ObjectManager.getActionsForSelected = function() {
 
 ObjectManager.performActionForSelected = function(actionName, clickedObject) {
     var selectedObjects = this.getSelected();
+    var selectedObject = null;
 
-    if (!selectedObjects) {
-        return;
+    if (selectedObjects.length === 0) {
+        selectedObject = clickedObject;
+    } else {
+        selectedObject = selectedObjects[0];
     }
-
-    var selectedObject = selectedObjects[0];
 
     if (selectedObject) {
         selectedObject.performAction(actionName, clickedObject);

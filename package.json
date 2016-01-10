@@ -10,6 +10,7 @@
     "connect-mobile-detection": "0.0.5",
     "connect-mongo": "^0.8.1",
     "cookie": "^0.2.0",
+    "cookie-parser": "^1.4.0",
     "eventemitter2": "~0.4.13",
     "express": "~4.x",
     "express-session": "*",
@@ -28,14 +29,14 @@
     "passport-strategy": "^1.0.0",
     "path": "*",
     "q": "~0.9.6",
+    "qr-image": "*",
     "serve-favicon": "^2.3.0",
     "sharepoint": "*",
     "socket.io": ">=0.9.14",
     "socket.io-express-session": "*",
     "underscore": "*",
     "underscore.string": "~2.3.3",
-    "winston": "0.8.0",
-    "qr-image": "*"
+    "winston": "0.8.0"
   },
   "devDependencies": {
     "superagent": "~0.15.7",

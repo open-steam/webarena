@@ -55,6 +55,7 @@ GUI.translate = function(text) {
  */
 $(function() {
     var userAgent = navigator.userAgent;
+
     if (userAgent.indexOf('iPhone') > 0 ||
 		(userAgent.indexOf('Android') > 0 && userAgent.indexOf('Mobile') > 0)) {
 		GUI.guiType = 'mobilephone';
@@ -483,19 +484,22 @@ GUI.initMouseHandler = function() {
 		$("#content>svg").get(0).addEventListener("touchstart", touchHandler, false);
 		
 	} else {
-		
+		// no touch device
+
 		var mousedown = function(event) {
+			//console.log("mousedown!!!!");
+
 			jPopoverManager.hideAll();
 			
 			GUI.saveChanges(event);
 
 			var contentPosition = $("#content").offset();
 			
-			var temp=event.target;
+			var temp = event.target;
 				
 			//object creation via object symbols
 			var cursor = $("body").css('cursor');	
-			if(cursor != "auto"){
+			if (cursor != "auto") {
 								
 				var url = cursor.split(".cur");
 				var arr = url[0].split("/");	
@@ -623,9 +627,8 @@ GUI.initMouseHandler = function() {
 
 		}		
 		
-		$("#content>svg").bind("mousedown", mousedown);
-		$("#content>svg").bind("mousemove", mousemove);
-		
+		$("#content > svg").bind("mousedown", mousedown);
+		$("#content > svg").bind("mousemove", mousemove);
 	}
 	
 }

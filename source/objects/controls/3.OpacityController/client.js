@@ -7,15 +7,15 @@
 "use strict";
 
 
-OpacityControler.justCreated = function() {
+OpacityController.justCreated = function() {
 	console.log("justCreated");
 }
 
-OpacityControler.isPreviewable = function() {
+OpacityController.isPreviewable = function() {
 	return false;
 }
 
-OpacityControler.setOpacity = function() {
+OpacityController.setOpacity = function() {
 	var objID = this.getAttribute("Object ID");
 
 	var compiledTemplate = _.template($('script#opacity-controller-dialog-template').html());
@@ -74,8 +74,8 @@ OpacityControler.setOpacity = function() {
 /**
 *	determine if the object's bounding box intersects with the square x,y,width,height
 */
-OpacityControler.objectIntersectsWith = function(ox, oy, ow, oh) {
-	//console.log("OpacityControler.objectIntersectsWith");
+OpacityController.objectIntersectsWith = function(ox, oy, ow, oh) {
+	//console.log("OpacityController.objectIntersectsWith");
 
 	return false;
 }

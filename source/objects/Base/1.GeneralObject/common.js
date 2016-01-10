@@ -334,33 +334,39 @@ GeneralObject.register = function(type) {
                     return device.WADIV;
                 });
 
-                var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
-                objectDevCoupDialog.show();
-
-                $(objectDevCoupDialog).on("objectDevCoupling::selections", function(event) {
-                    var choices = event.payLoad;
-                    var roles = [];
-                    var resources = [];
-                    var extras = [];
-
-                    $.each(choices, function(index, choice) {
-                        roles.push(choice.id);
+                Modules.ACLManager.roleUsers('shared-surface', function(users) {
+                    devices = _.filter(devices, function(device){
+                        return !_.contains(users, device.WADIV);
                     });
 
-                    $.each(selectedObjects, function(index, obj) {
-                        resources.push(Modules.ACLManager.makeACLName(obj.id));
-                        extras.push( { room: { id: obj.getRoomID()}, objectID: obj.id } );
-                    });
+                    var objectDevCoupDialog = new ObjectDeviceCouplingDialog(selectedObjects, devices);
+                    objectDevCoupDialog.show();
 
-                    Modules.ACLManager.allow(roles, resources, "couple", extras, function(result) {
-                        if (result) {
-                            $().toastmessage('showToast', {
-                                text: GUI.translate("Couple succeed"),
-                                sticky: false,
-                                position: 'top-left',
-                                type    : 'success'
-                            });
-                        }
+                    $(objectDevCoupDialog).on("objectDevCoupling::selections", function(event) {
+                        var choices = event.payLoad;
+                        var roles = [];
+                        var resources = [];
+                        var extras = [];
+
+                        $.each(choices, function(index, choice) {
+                            roles.push(choice.id);
+                        });
+
+                        $.each(selectedObjects, function(index, obj) {
+                            resources.push(Modules.ACLManager.makeACLName(obj.id));
+                            extras.push( { room: { id: obj.getRoomID()}, objectID: obj.id } );
+                        });
+
+                        Modules.ACLManager.allow(roles, resources, "couple", extras, function(result) {
+                            if (result) {
+                                $().toastmessage('showToast', {
+                                    text: GUI.translate("Couple succeed"),
+                                    sticky: false,
+                                    position: 'top-left',
+                                    type    : 'success'
+                                });
+                            }
+                        });
                     });
                 });
             } else {
@@ -372,7 +378,7 @@ GeneralObject.register = function(type) {
                 });
             }
         });
-    }, true);
+    }, false);
 
     this.registerAction('object.decoupling.action', function() {
         var selectedObjects = ObjectManager.getSelected();
@@ -452,9 +458,13 @@ GeneralObject.register = function(type) {
 
     this.registerAction('object.publish.share', function() {
         var selectedObjects = ObjectManager.getSelected();
-        var resource = Modules.ACLManager.makeACLName(selectedObjects[0].getAttribute("id"));
+        var resources = [];
 
-        Modules.ACLManager.allow(['shared-surface'], resource, "publish", function(result) {
+        _.each(selectedObjects, function(object) {
+            resources.push(Modules.ACLManager.makeACLName(object.getAttribute("id")));
+        });
+
+        Modules.ACLManager.allow(['shared-surface'], resources, "publish", function(result) {
             if (result) {
 
                 $().toastmessage('showToast', {
@@ -465,6 +475,10 @@ GeneralObject.register = function(type) {
                 });
             }
         });
+    }, false);
+
+    this.registerAction('Copy ID to clipboard', function(obj) {
+        window.prompt("Copy to clipboard: Ctrl+C, Enter", obj.id);
     }, true);
 
 }

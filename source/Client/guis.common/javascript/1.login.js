@@ -136,22 +136,11 @@ GUI.login = function() {
 		
 	}
 	
-	if (GUI.username == "") GUI.username = "User";
-	
-	var userDataObject = GUI.retrieveUserData();
-
-	if (userDataObject) {
-		GUI.username = userDataObject.username;
-		GUI.password = userDataObject.password;
-		GUI.externalSession = userDataObject.external;
-	} 
+	if (GUI.username === "") GUI.username = "User";
 	
 	GUI.userid = GUI.username;
-
 	$("#disconnected_message").remove();
-	
 	GUI.progressBarManager.addProgress(GUI.translate('checking login information'), "login");
-	
 	GUI.loadGUI(); //reload GUI
 }
 

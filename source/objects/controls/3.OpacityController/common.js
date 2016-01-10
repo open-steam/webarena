@@ -7,9 +7,9 @@
 
 var Modules = require('../../../server.js');
 
-var OpacityControler = Object.create(Modules.ObjectManager.getPrototype('IconObject'));
+var OpacityController = Object.create(Modules.ObjectManager.getPrototype('IconObject'));
 
-OpacityControler.register = function(type) {
+OpacityController.register = function(type) {
 	// Registering the object
 	IconObject = Modules.ObjectManager.getPrototype('IconObject');
 	IconObject.register.call(this, type);
@@ -79,7 +79,7 @@ OpacityControler.register = function(type) {
 	}, false);
 }
 
-OpacityControler.execute = function() {
+OpacityController.execute = function() {
 	var id = this.getAttribute("Object ID");
 
 	if (id) {
@@ -94,31 +94,31 @@ OpacityControler.execute = function() {
 	}
 }
 
-OpacityControler.isProportional = function() {
+OpacityController.isProportional = function() {
 	return true;
 }
 
-OpacityControler.resizeProportional = function() {
+OpacityController.resizeProportional = function() {
 	return true;
 }
 
-OpacityControler.isResizable = function() {
+OpacityController.isResizable = function() {
 	if (this.hasContent() == true && this.getAttribute("preview") == true) {
 		return GeneralObject.isResizable.call(this);
 	} else return false; 
 }
 
-OpacityControler.register('OpacityControler');
-OpacityControler.isCreatable = true;
-OpacityControler.isCreatableOnMobile = false;
-OpacityControler.onMobile = false;
+OpacityController.register('OpacityController');
+OpacityController.isCreatable = true;
+OpacityController.isCreatableOnMobile = false;
+OpacityController.onMobile = false;
 
-OpacityControler.moveByTransform = function() { return true; };
+OpacityController.moveByTransform = function() { return true; };
 
-OpacityControler.alwaysOnTop = function () {
+OpacityController.alwaysOnTop = function () {
 	if (this.hasContent() == true && this.getAttribute("preview") == true) {
 		return false;
 	} else return true;
 };
 
-module.exports = OpacityControler;
+module.exports = OpacityController;

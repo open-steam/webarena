@@ -180,6 +180,8 @@ AccessController.prototype._removeAllow = function(roles, resources, permissions
 AccessController.prototype._roleUsers = function(rolenames, cb) {
     var usersCollection = [];
 
+    rolenames = _.isArray(rolenames) ? rolenames : [rolenames];
+
     var that = this;
     async.each(rolenames, function(rolename, callback) {
         that.acl.roleUsers(rolename, function(err, users)  {

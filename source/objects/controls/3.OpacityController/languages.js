@@ -1,0 +1,2 @@
+
+OpacityController.setTranslations('de',{});
