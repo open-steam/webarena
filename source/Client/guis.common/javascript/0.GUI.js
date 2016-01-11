@@ -519,10 +519,8 @@ GUI.initMouseHandler = function() {
 				else{
 					GUI.setCursorText(GUI.translate("Choose Line-Endpoint"));
 				}
-							
-				var position = $('#besideMouse').position();
 				
-				$('#besideMouse').attr('title', position.left+','+position.top);
+				$('#besideMouse').attr('title', event.pageX+','+event.pageY);
 				
 			}
 			
@@ -542,9 +540,7 @@ GUI.initMouseHandler = function() {
 				
 				var title = $('#besideMouse').attr('title');
 				
-				var position = $('#besideMouse').position();
-				
-				$('#besideMouse').attr('title', title+','+position.left+','+position.top);
+				$('#besideMouse').attr('title', title+','+event.pageX+','+event.pageY);
 										
 				var attributes;
 				var content;			
@@ -645,10 +641,10 @@ GUI.setFinalPosition = function(object){
 	
 	var point = title.split(',');
 	
-	var x1 = parseInt(point[0])-15;
-	var y1 = parseInt(point[1])-35; 
-	var x2 = parseInt(point[2])-15;
-	var y2 = parseInt(point[3])-35; 
+	var x1 = parseInt(point[0]);
+	var y1 = parseInt(point[1])-33; 
+	var x2 = parseInt(point[2]);
+	var y2 = parseInt(point[3])-33; 
 		
 	var direction1;
 	var direction2;	
