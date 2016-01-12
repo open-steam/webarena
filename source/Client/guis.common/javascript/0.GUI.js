@@ -906,7 +906,7 @@ GUI.connected = function() {
 			if (!message) return;
 			
 			message.style.display='none';
-		 	message.empty(); //get rid of the disconnected message
+		 	$(message).empty(); //get rid of the disconnected message
 		},1000);
 		
 		GUI.relogin = false;
