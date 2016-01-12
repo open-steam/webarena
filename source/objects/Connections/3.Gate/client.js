@@ -44,13 +44,19 @@ Gate.follow = function(openMethod) {
 			var newWindow = window.open(destination, Modules.Config.projectTitle, "height="+window.outerHeight+", width="+window.outerWidth);
 			return;
         }
+        
+        
+        var isWebLink=false;
+        
+        if (String(destination).indexOf("http://") == 0) isWebLink=true;
+        if (String(destination).indexOf("https://") == 0) isWebLink=true;
 	
 		//open in same tab
-		if(String(destination).indexOf("http://www.") != 0){
+		if(!isWebLink){
 			ObjectManager.loadRoom(destination, false, callback);
 		}
 		else{
-			window.open(destination,"_self")
+			window.open(destination,"_self");
 		}
     }
 

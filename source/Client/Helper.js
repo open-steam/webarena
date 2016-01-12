@@ -194,3 +194,27 @@ Helper.utf8.parse = function(byteArray) {
     }
     return '';
 };
+
+Helper.cleanString=function(input){
+	
+	input=input.toLowerCase();
+    var output='';
+	
+	for (var i=0;i<input.length;i++){
+		    var char=input[i];
+		    var code=char.charCodeAt(0);
+		    
+		    if (code==45
+		    	|| (code>96 && code<122)
+		    	|| (code>48 && code<57) 
+		    
+		    ){
+			   output+=input[i];
+		    }
+	}
+
+	
+	return output;
+	
+	
+}

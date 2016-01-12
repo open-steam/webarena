@@ -648,8 +648,13 @@ GeneralObject.showExitDialog = function() {
 	};
 	
 	function HandleTextareaInput(textareaInput){
+		
+		var isWebLink=false;
+        
+        if (textareaInput.indexOf("http://") == 0) isWebLink=true;
+        if (textareaInput.indexOf("https://") == 0) isWebLink=true;
 	
-		if(textareaInput.indexOf("http://www.") != 0){
+		if(!isWebLink){
 			alert(that.translate(GUI.currentLanguage, "Please enter a valid URL"));
 			setTimeout(function(){ that.showExitDialog() }, 10);
 		}

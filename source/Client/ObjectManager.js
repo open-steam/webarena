@@ -329,6 +329,8 @@ ObjectManager.executeRoomChangeCallbacks = function() {
 }
 
 ObjectManager.loadRoom = function(roomid, byBrowserNav, callback) {
+	
+	roomid = Modules.Helper.cleanString(roomid);
 
     var self = this;
 
