@@ -167,5 +167,37 @@ GUI.trashbasket.leave = function() {
  * delete all objects in the trash folder
  */
 GUI.trashbasket.clean = function() {
-     ObjectManager.getCurrentRoom().clearTrash();
+     //ObjectManager.getCurrentRoom().clearTrash();
+    GUI.showCheckDialog();
+}
+
+// find selected cell, open dialog and change the labelName through input
+GUI.showCheckDialog = function() {
+	
+    var self = this;var that=this;
+    var dialog_buttons = {};
+    
+
+    
+    dialog_buttons[GUI.translate("Clean Trashbucket")] = function() {
+        ObjectManager.getCurrentRoom().clearTrash();
+    };
+    dialog_buttons[GUI.translate( "Do not clean")] = function() {
+     
+    };
+    
+    var dialog_width = 300;
+    
+    var html = "<p>Möchten Sie den Papierkorb wirklich leeren?</p>";
+    var content = [];
+    content.push(html);
+    
+    var dialog = GUI.dialog(
+            GUI.translate("Clean Trashbucket"),
+            content,
+            dialog_buttons,
+            dialog_width
+            );
+    
+    
 }
