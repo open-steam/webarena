@@ -414,10 +414,10 @@ theObject.getContent.neededRights = {
 theObject.getContentAsString=function(callback){
 	if (callback === undefined) {
 		console.log('>>>> Synchronous getContentAsString in GeneralObject');
-		return Helper.utf8.parse(this.getContent());
+		return Modules.Helper.utf8.parse(this.getContent());
 	} else {
 		this.getContent(function(content){
-			callback(Helper.utf8.parse(content));
+			callback(Modules.Helper.utf8.parse(content));
 		});
 	}
 }

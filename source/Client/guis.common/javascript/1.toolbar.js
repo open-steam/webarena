@@ -545,7 +545,7 @@ GUI.showNotification = function(add, icon){
 		TextLeft = GUI.translate("An object was restored");
 		title = GUI.translate("Trash basket");
 	}
-	
+	/*
 	if(add){
 		$("#"+button).attr("src", "../../guis.common/images/"+IconEnter).attr("alt", "");
 		$("#"+button).attr("title", TextEnter);
@@ -554,7 +554,8 @@ GUI.showNotification = function(add, icon){
 		$("#"+button).attr("src", "../../guis.common/images/"+IconLeft).attr("alt", "");
 		$("#"+button).attr("title", TextLeft);
 	}
-	
+    */
+    
 	var counter = 0;
 }
 

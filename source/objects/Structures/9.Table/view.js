@@ -83,13 +83,6 @@ Table.draw = function(external) {
 
     this.padding = 20;
 
-    //var direction = this.getAttribute('direction');
-    //var distance = this.getAttribute('distance');
-	
-    rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
-    rep.text.style.fontFamily = this.getAttribute('font-family');
-    rep.text.style.color = this.getAttribute('font-color');
-
     var structureWidth = this.getAttribute('width');
     var structureHeigth = this.getAttribute('height');
     var rows = this.getAttribute('Row');
@@ -179,21 +172,6 @@ Table.createRepresentation = function(parent) {
 
     rep.dataObject = this;
 
-    var rect = GUI.svg.rect(rep,
-            0, //x
-            0, //y
-            10, //width
-            10 //height
-            );
-
-
-    $(rect).addClass("rect");
-
-    rep.text = GUI.svg.other(rep, "foreignObject");
-    var body = document.createElement("body");
-    $(rep.text).append(body);
-    rep.rect = rect;
-
     this.initGUI(rep);
     return rep;
 
@@ -227,17 +205,10 @@ Table.setViewHeight = function(value) {
         });
     }
     $(rep).attr("height", value);
-    $(rep.rect).attr("height", value);
-    $(rep.text).attr("height", value);
-    var table = rep.text.getElementsByTagName('td')[0];
+    
+    GUI.adjustContent(this);
 
-    if (table) {
-        table.style.height = value + 'px';
-        table.style.verticalAlign = this.getAttribute('vertical-align');
 
-        GUI.adjustContent(this);
-
-    }
 }
 
 
@@ -275,25 +246,19 @@ Table.setViewWidth = function(value) {
 
     }
     $(rep).attr("width", value);
-    $(rep.rect).attr("width", value);
-    $(rep.text).attr("width", value);
-    var table = rep.text.getElementsByTagName('td')[0];
-
-    if (table)
-        table.style.textAlign = this.getAttribute('horizontal-align');
 
     GUI.adjustContent(this);
 }
 
 //find cell and open LabelDialog for changing name
  Table.editText= function(event){
- 	
- 	 var clickedElement=event.srcElement;
      
      var positionMouse ={
          x: event.clientX,
          y: event.clientY
      };
+     
+     var clickedElement=event.target;
      
      if (clickedElement.elementType) this.showLabelDialog(clickedElement,positionMouse);
 	     
