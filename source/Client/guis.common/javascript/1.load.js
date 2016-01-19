@@ -24,6 +24,7 @@ GUI.entered = function() {
  * @param {int} step Loading step which should be performed
  */
 GUI.loadGUI = function(step) {
+    this.setScrollPosition();
     this.checkCurrentsGUIObjects();
 	/* not logged in? */
 	if (!GUI.username) {
@@ -137,6 +138,9 @@ GUI.checkCurrentsGUIObjects = function(){
         $(".ui-dialog-content").dialog("close");
 }
 
+GUI.setScrollPosition = function(){
+    window.scrollTo( 0, 0 );
+}
 /**
  * start loading with step 1 when the document is ready
  */
