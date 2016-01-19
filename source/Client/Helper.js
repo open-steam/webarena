@@ -196,7 +196,7 @@ Helper.utf8.parse = function(byteArray) {
 };
 
 Helper.cleanString=function(input){
-	
+    input=input+'';
 	input=input.toLowerCase();
     var output='';
 	
@@ -212,9 +212,5 @@ Helper.cleanString=function(input){
 			   output+=input[i];
 		    }
 	}
-
-	
 	return output;
-	
-	
 }
