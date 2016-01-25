@@ -102,10 +102,34 @@ ApplicationManager.event=function(identifier,object,data){
 }
 
 ApplicationManager.sendUserToRoom=function(user,room,callback){
-
-	var connection=Modules.UserManager.getConnectionBySocketID(user.id);
 	
-	Modules.SocketServer.sendToSocket(connection.socket, 'goToRoom', room.id);
+	var userID=false;
+	var roomID=false;
+	
+	if (typeof user=='string'){userID=user;}
+	else if (typeof user=='object'){
+		userID=user.id;
+	}
+	
+	if (!userID){
+		console.log('ERROR! Could not find the user!',user);
+		return callback(false);
+	}
+
+	if (typeof room=='string'){roomID=room;}
+	else if (typeof room=='object'){
+		roomID=room.id;
+	}
+	
+	if (!roomID){
+		console.log('ERROR! Could not find the room!',room);
+		return callback(false);
+	}
+
+
+	var connection=Modules.UserManager.getConnectionBySocketID(userID);
+	
+	Modules.SocketServer.sendToSocket(connection.socket, 'goToRoom', roomID);
 	
 	if (callback) callback();
 }

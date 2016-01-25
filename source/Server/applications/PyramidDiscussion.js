@@ -110,8 +110,6 @@ PyramidDiscussion.startPyramid=function(object,selection){
 					
 					if (entry.selected){
 						
-						//TODO here: Send others in their rooms
-						
 						self.teacherRoom.createObject('PyramidElement',function(error,stone){
 							stone.setAttribute('width',300);
 							stone.setAttribute('height',150);
@@ -240,8 +238,10 @@ PyramidDiscussion.startPyramid=function(object,selection){
 											stone.runtimeData.copies.push(participantStone);
 											
 											//activate the respective stone on the first level
+											//as well as send the user into his room
 											if (participantRoom.getAttribute('pyramidUser')==participantStone.getAttribute('users')){
 												participantStone.setAttribute('active',true);
+												Modules.ApplicationManager.sendUserToRoom(participantRoom.getAttribute('pyramidUser'),participantRoom);
 											}
 											nextRoom();
 										});
