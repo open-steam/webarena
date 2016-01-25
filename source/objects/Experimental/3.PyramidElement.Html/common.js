@@ -7,13 +7,13 @@
 
 var Modules=require('../../../server.js');
 
-var PyramidElement=Object.create(Modules.ObjectManager.getPrototype('HtmlObject'));
+var PyramidElement=Object.create(Modules.ObjectManager.getPrototype('Textarea'));
 
 PyramidElement.register=function(type){
 	
 	// Registering the object
 	
-	HtmlObject=Modules.ObjectManager.getPrototype('HtmlObject');
+	HtmlObject=Modules.ObjectManager.getPrototype('Textarea');
 	HtmlObject.register.call(this,type);
 	
 }
