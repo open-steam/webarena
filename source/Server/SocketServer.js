@@ -19,7 +19,8 @@ SocketServer.init = function (theModules) {
 	var UserManager = Modules.UserManager;
 
     var ios = require('socket.io-express-session');
-	io = require('socket.io')(Modules.WebServer.server);
+	//io = require('socket.io')(Modules.WebServer.server);
+	io = require('socket.io')(Modules.WebServer.server_s);
     io.use(ios(Modules.WebServer.session)); // session support
 
 	io.sockets.on('connection', function (socket) {

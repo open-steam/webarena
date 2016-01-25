@@ -80,6 +80,25 @@ WebServer.init = function(theModules) {
     server.on('listening', function (callback) {
         console.info("Http server now listening on port: " + Modules.config.port);
     });
+
+    var fs = require('fs');
+    //// This line is from the Node.js HTTPS documentation.
+    var options = {
+         //key:  fs.readFileSync("./Server/keys/key.pem"),
+         //cert: fs.readFileSync("./Server/keys/key.pem"),
+        pfx: fs.readFileSync("./Server/keys/keystore.pfx"),
+        passphrase: "12345"
+    }
+
+    var server_s = require('https').createServer(options, app).listen("443");
+    server_s.on('error', function(error) {
+        console.info("Error while creating https server: " + error);
+    });
+    server.on('listening', function() {
+        console.info("HTTPS server created. :)");
+    });
+
+    WebServer.server_s = server_s;
 };
 
 hbs.registerHelper('extend', function(name, context) {

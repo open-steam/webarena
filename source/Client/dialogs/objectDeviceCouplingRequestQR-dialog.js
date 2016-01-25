@@ -29,15 +29,16 @@ ObjectDeviceCouplingRequestQRDialog.prototype.show = function() {
     var scannedQR  = document.querySelector("#scanned-QR");
 
     var args = {
+        decoderWorker: '/guis.common/libraries/webcodecamjs_2_0_5/DecoderWorker.js',
         beep: "/guis.common/audio/beep.mp3",
         DecodeBarCodeRate: null,
         autoBrightnessValue: 100,
         resultFunction: function(text, imgSrc) {
             //scannedImg.src = imgSrc;
-            scannedQR[txt] = text;
+            scannedQR[txt] = text.code;
 
             var event = jQuery.Event('objectDevCoupling::request');
-            event.payLoad = text;
+            event.payLoad = text.code;
             $(that).trigger(event);
 
             window.setTimeout(function() {
@@ -71,9 +72,7 @@ ObjectDeviceCouplingRequestQRDialog.prototype.show = function() {
         }
     };
 
-    var decoder = new WebCodeCamJS('#webcodecam-canvas');
-    decoder.buildSelectMenu('#camera-select');
-    decoder.init(args);
+    var decoder = new WebCodeCamJS('#webcodecam-canvas').buildSelectMenu('#camera-select').init(args).play();
 
     document.querySelector('#camera-select').addEventListener('change', function() {
         if (decoder.isInitialized()) {
