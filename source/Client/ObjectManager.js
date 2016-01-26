@@ -405,12 +405,34 @@ ObjectManager.init = function() {
     this.transactionId = false;
     this.transactionTimeout = 500;
     var that = this;
-
-    Modules.Dispatcher.registerCall('infotext', function(text) {
-        var translatedText = GUI.translate(text);
+    
+    Modules.Dispatcher.registerCall('infotext', function(data) {
+        var translatedText;
+        if(typeof data == "string"){
+            var tmp = data;
+            data = {};
+            data.text = tmp;
+        }
+        console.log(data.type);
+        switch(data.type) {
+            case "undo.attribute":
+                var undoObject = data.data.changeSet[0];
+                
+                undoObject.object = Modules.ObjectManager.getObject(undoObject.objectID);
+                translatedText = GUI.translate(data.text);
+                translatedText = translatedText.replace("##O","<b>"+ undoObject.object.getAttribute('name')+"</b>");
+                translatedText = translatedText.replace("##A", "<b>"+undoObject.attribute+"</b>");
+                translatedText = translatedText.replace("##N", undoObject.old);
+                translatedText = translatedText.replace("##B", undoObject.new);
+                break;
+            default:
+                translatedText = GUI.translate(data.text);
+        }
         //GUI.error("warning", text, false, false);
+        
         $().toastmessage('showToast', {
             'text': translatedText,
+             stayTime: 3000, 
             'sticky': false,
             'position': 'top-left'
         });

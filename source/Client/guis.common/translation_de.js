@@ -1,11 +1,12 @@
 "use strict";
 
 GUI.setTranslations('de',{
-    'info.undo.attribute' : 'Eine Attributänderung wurde rückgängig gemacht.',
+    'info.undo.attribute' : 'Attribut ##A am Objekt ##O wurde zurückgestellt. </br> Jetzt: ##N </br> Vorher: ##B',
     'info.undo.duplication' : 'Duplizierung wurde rückgängig gemacht.',
     'info.undo.delete' : 'Gelöschtes Objekt wiederhergestellt.',
-    'info.undo.nothing' : 'Es können keine weiteren Änderungen rückgängig gemacht werden.',
+    'info.undo.nothing' : 'Es gibt keine weiteren Änderungen die rückgängig gemacht werden können.',
     'info.undo.blocked' : 'Die letzte Aktion kann nicht rückgängig gemacht werden. Ein anderer Nutzer hat das Objekt verändert.',
+    'info.undo.unsupported': 'Letzte Aktion zurück zu stellen wird nicht unterstützt',
 	'ping':'pong',
 	'Basic':'Basis',
 	'Dimensions':'Dimensionen',
