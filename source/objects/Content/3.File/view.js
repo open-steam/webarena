@@ -121,7 +121,6 @@ WAFile.buildContentDialog = function(){
 	if ($("#FileContentDialog_"+this.id).length == 0) {
         var name = this.getAttribute("name");
         name = name.split(' ').join('_');
-        console.log(name);
 		$("body").first().append('<div id="FileContentDialog_'+this.id+'" title='+name+'></div>');
 		$("#FileContentDialog_"+this.id).dialog({
 			position: { my: "left top", at: "left top", of: $("#"+that.id).find("image")}
@@ -143,7 +142,7 @@ WAFile.buildContentDialog = function(){
 				
 				var w = $(img).context.naturalWidth;
 				var h = $(img).context.naturalHeight;
-		
+                
 				that.openContentDialog(w, h);
 			});
 		}
@@ -200,10 +199,17 @@ WAFile.openContentDialog = function(w, h){
 	
 	if(w){
 		this.naturalWidth = w;
-	}
+        localStorage['naturalWidth']=w;
+	}else{
+        this.naturalWidth=localStorage['naturalWidth'];
+    }
+    
 	if(h){
 		this.naturalHeight = h;
-	}
+        localStorage['naturalHeight']=h;
+	}else{
+        this.naturalHeight=localStorage['naturalHeight'];
+    }
 	
 	var aspectRatio = this.naturalWidth/this.naturalHeight;
 	var maxWidth;
@@ -228,7 +234,7 @@ WAFile.openContentDialog = function(w, h){
 		var dialogHeight = maxHeight;
 		var dialogWidth = maxHeight*aspectRatio;
 	}
-	console.log("#FileContentDialog_"+this.id);
+
 	$("#FileContentDialog_"+this.id).parent().animate({
 		width: dialogWidth+"px",
 		height: (dialogHeight+40)+"px",
@@ -248,7 +254,7 @@ WAFile.openContentDialog = function(w, h){
 WAFile.closeContentDialog = function(){
 
 	var that = this;
-	
+    
 	$("#FileContentDialog_"+this.id).parent().animate({
 		width: "64px",
 		height: "64px",
