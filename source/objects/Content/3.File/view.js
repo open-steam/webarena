@@ -119,7 +119,10 @@ WAFile.buildContentDialog = function(){
 	var type = this.getAttribute("mimeType");
 	
 	if ($("#FileContentDialog_"+this.id).length == 0) {
-		$("body").first().append('<div id="FileContentDialog_'+this.id+'" title='+this.getAttribute("name")+'></div>');
+        var name = this.getAttribute("name");
+        name = name.split(' ').join('_');
+        console.log(name);
+		$("body").first().append('<div id="FileContentDialog_'+this.id+'" title='+name+'></div>');
 		$("#FileContentDialog_"+this.id).dialog({
 			position: { my: "left top", at: "left top", of: $("#"+that.id).find("image")}
 		});
