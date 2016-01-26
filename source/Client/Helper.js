@@ -205,8 +205,8 @@ Helper.cleanString=function(input){
 		    var code=char.charCodeAt(0);
 		    
 		    if (code==45
-		    	|| (code>96 && code<122)
-		    	|| (code>48 && code<57) 
+		    	|| (code>96 && code<123)
+		    	|| (code>47 && code<58) 
 		    
 		    ){
 			   output+=input[i];
