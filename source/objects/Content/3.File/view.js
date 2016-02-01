@@ -91,6 +91,7 @@ WAFile.getStatusIcon = function() {
 			if (mimeType.indexOf('msexcel') != -1 || mimeType.indexOf('ms-excel') != -1 || mimeType.indexOf('officedocument.spreadsheetml') != -1) typeIcon = "excel";
 			if (mimeType == 'application/zip') typeIcon = "archive";
 			if (mimeType == 'application/pdf') typeIcon = "pdf";
+			if (mimeType == 'application/x-pdf') typeIcon = 'pdf';
 			if (mimeType.indexOf('mspowerpoint') != -1 || mimeType.indexOf('ms-powerpoint') != -1 || mimeType.indexOf('officedocument.presentationml') != -1) typeIcon = "powerpoint";
 			if (mimeType.indexOf('text') != -1) typeIcon = "text";
 			if (mimeType.indexOf('msword') != -1 || mimeType.indexOf('ms-word') != -1 || mimeType.indexOf('officedocument.wordprocessingml') != -1) typeIcon = "word";

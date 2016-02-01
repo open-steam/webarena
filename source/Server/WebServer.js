@@ -311,6 +311,9 @@ WebServer.init = function (theModules) {
 				}
 
 				var mimeType = object.getAttribute('mimeType') || 'text/plain';
+				
+				if (mimeType == 'application/x-pdf') mimeType = 'application/pdf';  //fix inline pdf preview
+				
 				res.writeHead(200, {
 					'Content-Type': mimeType,
 					'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'
