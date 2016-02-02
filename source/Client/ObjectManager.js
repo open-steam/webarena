@@ -331,6 +331,11 @@ ObjectManager.executeRoomChangeCallbacks = function() {
 ObjectManager.loadRoom = function(roomid, byBrowserNav, callback) {
 	
 	roomid = Modules.Helper.cleanString(roomid);
+	
+	if (roomid=='trash') {
+		alert(GUI.translate('You cannot enter the trashbin.'));
+		return
+	}
 
     var self = this;
 

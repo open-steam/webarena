@@ -76,6 +76,8 @@ elabConnector.addExternalSession=function(data) {
 elabConnector.mayWrite=function(roomID,objectID,connection,callback) {
 	this.Modules.Log.debug("Check right: write (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(connection)+"')");
 
+	if (roomID=='trash') return callback(null, true);   //Allow access to trash
+
 	var self = this;
 	
 	var fs = require('fs');
@@ -111,6 +113,8 @@ elabConnector.mayWrite=function(roomID,objectID,connection,callback) {
 
 elabConnector.mayRead=function(roomID,objectID,connection,callback) {
 	this.Modules.Log.debug("Check right: read (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(connection)+"')");
+	
+	if (roomID=='trash') return callback(null, true);  //Allow access to trash
 	
 	var self = this;
 	
