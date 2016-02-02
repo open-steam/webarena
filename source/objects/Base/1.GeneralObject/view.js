@@ -172,7 +172,7 @@ GeneralObject.getRepresentation = function() {
  */
 GeneralObject.representationCreated = function() {
 
-    GUI.updateLayers();
+    GUI.updateLayersDelayed();
 
     if (!this.isSensitive())
         return;
