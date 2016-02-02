@@ -200,16 +200,16 @@ WAFile.openContentDialog = function(w, h){
 	
 	if(w){
 		this.naturalWidth = w;
-        localStorage['naturalWidth']=w;
+        localStorage['naturalWidth_'+this.id]=w;
 	}else{
-        this.naturalWidth=localStorage['naturalWidth'];
+        this.naturalWidth=localStorage['naturalWidth_'+this.id];
     }
     
 	if(h){
 		this.naturalHeight = h;
-        localStorage['naturalHeight']=h;
+        localStorage['naturalHeight_'+this.id]=h;
 	}else{
-        this.naturalHeight=localStorage['naturalHeight'];
+        this.naturalHeight=localStorage['naturalHeight_'+this.id];
     }
 	
 	var aspectRatio = this.naturalWidth/this.naturalHeight;
@@ -235,7 +235,17 @@ WAFile.openContentDialog = function(w, h){
 		var dialogHeight = maxHeight;
 		var dialogWidth = maxHeight*aspectRatio;
 	}
-
+	
+	var pdf_top;
+	var pdf_left;
+	if(localStorage['top_'+this.id] == "undefined" || localStorage['top_'+this.id] == "undefined"){
+		pdf_top = ($(window).scrollTop()+70)+"px";
+		pdf_left =($(window).scrollLeft()+50)+"px";
+	}else{
+		pdf_top = localStorage['top_'+this.id];
+		pdf_left = localStorage['left_'+this.id];
+	}
+	
 	$("#FileContentDialog_"+this.id).parent().animate({
 		width: dialogWidth+"px",
 		height: (dialogHeight+40)+"px",
@@ -253,9 +263,14 @@ WAFile.openContentDialog = function(w, h){
 
 
 WAFile.closeContentDialog = function(){
-
+	console.log($("#FileContentDialog_"+this.id).position());
 	var that = this;
-    
+
+	localStorage['naturalWidth_'+this.id]=$("#FileContentDialog_"+this.id).width();
+	localStorage['naturalHeight_'+this.id]=$("#FileContentDialog_"+this.id).height();
+	localStorage['top_'+this.id] = $("#FileContentDialog_"+this.id).position().top;
+	localStorage['left_'+this.id] = $("#FileContentDialog_"+this.id).position().left;
+	
 	$("#FileContentDialog_"+this.id).parent().animate({
 		width: "64px",
 		height: "64px",
