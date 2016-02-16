@@ -51,7 +51,6 @@ SurveyTest.sendSurveyResult = function(event){
 	for(var i = 0; i < that.getAttribute('surveyLength'); i++){
 		surveyResultArray.push(that.getAttribute('points_'+i));
 	}
-	console.log(surveyResultArray);
 
 	//TODO: Send Array to SurveyResult-Object
 }

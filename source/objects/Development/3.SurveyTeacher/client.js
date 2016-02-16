@@ -119,7 +119,7 @@ SurveyTeacher.chooseRecievingRoomsDialogue = function(object) {
 SurveyTeacher.showFormatDialog = function(selected) {
     var that = this;
     var dialog_buttons = {};
-    dialog_buttons[that.translate(GUI.currentLanguage, "Speichere Anordnung von Zeilen und Spalten")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Speichere Anordnung von Aussagen")] = function() {
         var yAttributes = $("#sortable").children();
         var yAttributeValues = [];
         var surveyLength = 0;
@@ -139,13 +139,13 @@ SurveyTeacher.showFormatDialog = function(selected) {
     var html = "";
 
     html += '<div id="sort-headline">'
-    html += ' Das gewünschte Elemente kann durch Ziehen von Symbol <span id="drag-icon-headline"><img src="../../guis.common/images/dragarea.png"></span> an die gewünschte Stelle per Drag & Drop bewegt werden.';
-    html += ' Durch Betätigung der Schaltflächen + bzw. X Zeilen und Spalten hinzugefügt bzw. entfernt werden.'
+    html += ' Das gewünschte Element kann durch Ziehen von Symbol <span id="drag-icon-headline"><img src="../../guis.common/images/dragarea.png"></span> an die gewünschte Stelle per Drag & Drop bewegt werden.';
+    html += ' Durch Betätigung der Schaltfläche + kann eine neue Aussage hinzugefügt werden.'
     html += '</div>'
 
 
     var attributesY = that.getAttribute("statements");
-    html += '<div id="sortableDiv"><h2>Zeilen:</h2><div class="sortable-inner"><div onclick="SurveyTeacher.insertFirstRow(this);"><span style="font-weight:bold;font-size:1.44em;position:relative;left:-9px;top:5px;">+</span></div>';
+    html += '<div id="sortableDiv"><h2>Aussagen:</h2><div class="sortable-inner"><div onclick="SurveyTeacher.insertFirstRow(this);"><span style="font-weight:bold;font-size:1.44em;position:relative;left:-9px;top:5px;">+</span></div>';
     html += '<ul id="sortable" style="width: 500px">';
     for (var i in attributesY) {
         html += '<li class="ui-state-default"><input style="width: 90%" class="input-row-column" type="text" value="' + attributesY[i] + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div></li>';
@@ -161,7 +161,7 @@ SurveyTeacher.showFormatDialog = function(selected) {
     html += '<script>' + js + js1 + '</script>';
     content.push(html);
     var dialog = GUI.dialog(
-            that.translate(GUI.currentLanguage, "Zeilen und Spalten anpassen"),
+            that.translate(GUI.currentLanguage, "Aussagen anpassen"),
             content,
             dialog_buttons,
             dialog_width,
@@ -171,7 +171,7 @@ SurveyTeacher.showFormatDialog = function(selected) {
 }
 
 SurveyTeacher.insertElement = function(obj) {
-    var insertHtml = '<li class="ui-state-default"><input style="width: 90%" class="input-row-column" type="text" value="' + 'Neue Zeile' + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div><div style="position:relative;left:-20px;top:-8px;font-size:1.2em;" onclick="SurveyTeacher.insertElement(this);">+</div></li>';
+    var insertHtml = '<li class="ui-state-default"><input style="width: 90%" class="input-row-column" type="text" value="' + 'Neue Aussage' + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div><div style="position:relative;left:-20px;top:-8px;font-size:1.2em;" onclick="SurveyTeacher.insertElement(this);">+</div></li>';
     $($(insertHtml)).insertAfter($(obj).parent());
 };
 SurveyTeacher.insertElementColumn = function(obj) {
