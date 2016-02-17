@@ -9,45 +9,47 @@ SurveyResult.moveByTransform = function(){
 }
 
 SurveyResult.draw = function(external) {
+    var min = this.getAttribute('minValue');
+    var max = this.getAttribute('maxValue');
+    var stepping = this.getAttribute('stepping');
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
+    var surveyLength = this.getAttribute('surveyLength');
+
     //hole rep
     var rep = this.getRepresentation();
     var oldGroup = $("#" + this.getAttribute('id') + "-1");
     var oldResultGroup =$("#"+this.getAttribute('id')+"-2");
+    var oldScalesGroupArray = Array(surveyLength);
+   
+   for(var i = 0; i < oldScalesGroupArray.length; i++){
+        var index = 4+i;
+        oldScalesGroupArray[i] = $('#'+this.getAttribute('id')+'-'+index);
+   }
 
     if (oldGroup)
         oldGroup.remove();
     if (oldResultGroup)
         oldResultGroup.remove();
 
-    var group = GUI.svg.group(rep, this.getAttribute('id') + "-1");
-    var line = GUI.svg.line(group, 0, 0, 20, 20, {});
-    var numbers = GUI.svg.group(group);
-    var resultGroup = GUI.svg.group(rep, this.getAttribute('id')+"-2");
-
-    $(line).addClass("line");
-    $(numbers).addClass("numbers");
-
-    var min = this.getAttribute('minValue');
-    var max = this.getAttribute('maxValue');
-    var stepping = this.getAttribute('stepping');
-
-    var numberOfSteps = Math.floor(((max - min) / stepping) + 1);
-
-    for (var i = 0; i < numberOfSteps; i++) {
-        var tempStep = GUI.svg.line(group, 0, 0, 20, 20, {});
-        $(tempStep).addClass('line');
-
-        var tempNumber = GUI.svg.createText();
-        var tempNumberRep = GUI.svg.text(group, 0, 0, tempNumber);
-        $(tempNumberRep).addClass('text');
+    for(var i = 0; i < oldScalesGroupArray.length; i++){
+        if(oldScalesGroupArray[i])
+            oldScalesGroupArray[i].remove();
     }
 
-     //init result circles
-    GUI.svg.circle(resultGroup, 1, 1, 5, {});
-    GUI.svg.circle(resultGroup, 1, 1, 7, {});
-    GUI.svg.circle(resultGroup, 1, 1, 2, {});
-    GUI.svg.circle(resultGroup, 1, 1, 4, {});
-    GUI.svg.circle(resultGroup, 1, 1, 18, {});
+    var group = GUI.svg.group(rep, this.getAttribute('id') + "-1");
+    var numbers = GUI.svg.group(group);
+    var resultGroup = GUI.svg.group(rep, this.getAttribute('id')+"-2");
+    var scalesGroupArray = Array(surveyLength);
+
+    for(var i = 0; i < scalesGroupArray.length; i++){
+        var index = 4+i;
+        scalesGroupArray[i] = GUI.svg.group(rep, this.getAttribute('id')+"-"+index);
+    }
+
+    GUI.svg.group(rep, this.getAttribute('id')+"-3");
+    this.createResultCircles(resultGroup);
+    this.createScales(scalesGroupArray);
+
 
     GeneralObject.draw.call(this, external);
     
@@ -55,9 +57,10 @@ SurveyResult.draw = function(external) {
     //hole das Rechteck
     var rect = rep.getElementsByTagName('rect')[0];
     //hole die Linie
-    var line = group.getElementsByTagName('line')[0];
+    var lines = rep.getElementsByTagName('line');
+    
     //hole die Ergebnisspunkte
-    var resultCircleArray = resultGroup.getElementsByTagName('circle');
+    var resultCircleArray = rep.getElementsByTagName('circle');
 
     //Fuellfarbe des Rechtsecks ist durchsichtig
     $(rect).attr("fill", this.getAttribute('fillcolor'));
@@ -72,24 +75,20 @@ SurveyResult.draw = function(external) {
     $(rect).attr('width', this.getAttribute('width'));
     $(rect).attr('height', this.getAttribute('height'));
 
-    //Setze Darstellung der Linie
+    var offset = 80;
+    this.offset = 80;
 
-    $(line).attr("stroke", "rbg(0,0,0)");
-    $(line).attr("stroke-width", 1);
-
-    var min = this.getAttribute('minValue');
-    var max = this.getAttribute('maxValue');
-    var stepping = this.getAttribute('stepping');
-
-    var surveyLength = 3; //TODO: get this value from SurveyTest Object
-    var offset = 40;
-    this.offset = 40;
-
-    if (this.getAttribute('direction') === 'horizontal') {
-        this.drawHorizontalLine(offset , line, group, min, max, stepping, rep);    
+    if (this.getAttribute('direction') === 'horizontal') { 
+        for(var i = 0; i < surveyLength; i++){
+            var line = scalesGroupArray[i].getElementsByTagName('line')[0];
+            this.drawHorizontalLine(offset, i, line, scalesGroupArray[i], min, max, stepping, rep);
+        }
         this.drawCircleArrayHorizontal(resultCircleArray);
     } else {
-        this.drawVerticalLine(offset, line, group, min, max, stepping, rep);
+        for(var i = 0; i < surveyLength; i++){
+            var line = scalesGroupArray[i].getElementsByTagName('line')[0];
+            this.drawVerticalLine(offset, i, line, scalesGroupArray[i], min, max, stepping, rep);
+        }
         this.drawCircleArrayVertical(resultCircleArray);
     }
 
@@ -99,56 +98,54 @@ SurveyResult.draw = function(external) {
 }
 
 SurveyResult.drawCircleArrayHorizontal = function(circleArray){
+    var statementNumber = 0;
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
     for(var i = 0; i < circleArray.length; i++){
-        this.drawCircleHorizontal(circleArray[i], i);
+        if(i%scaleLength == 0){
+            statementNumber++;
+        }
+        this.drawCircleHorizontal(circleArray[i], i, statementNumber);
     }
 }
-
-// SurveyResult.convertCoordinatesToCanvas = function(xCoordinate, yCoordinate){
-//     var height = this.getAttribute('height');
-//     var width = this.getAttribute('width');
-//     var stepping = this.getAttribute('stepping');
-//     var minValue = this.getAttribute('minValue');
-//     var maxValue = this.getAttribute('maxValue');
-//     var length = this.getAttribute('surveyLength');
-//     var offset =  50;
-
-
-//     //Fallunterscheidung Horizontal/Vertikal
-    
-//     console.log(height + width);
-// }
 
 SurveyResult.drawCircleArrayVertical = function(circleArray){
-    for(var i = 0; i < circleArray.length; i++){
-        this.drawCircleVertical(circleArray[i], i);
+    var statementNumber = 0;
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1 ;
+        for(var i = 0; i < circleArray.length; i++){
+        if(i%scaleLength == 0){
+            statementNumber++;
+        }
+        this.drawCircleVertical(circleArray[i], i, statementNumber);
     }
 }
 
-SurveyResult.drawCircleHorizontal = function(circle, step){
+SurveyResult.drawCircleHorizontal = function(circle, step, statementNumber){
     //Typecasting necessary
     var posX = Number(circle.getAttribute('cx'));
     var posY = Number(circle.getAttribute('cy'));
     var radius = Number(circle.getAttribute('r'));
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
 
-    circle.setAttribute('cx', posX + this.offset + (this.getAttribute('distanceX')*step)-1);
-    circle.setAttribute('cy', posY + this.offset);
+    circle.setAttribute('cx', posX + this.offset + (this.getAttribute('distanceX')*(step%scaleLength)));
+    circle.setAttribute('cy', posY + (this.offset*statementNumber));
     circle.setAttribute('r', radius);
 }
 
-SurveyResult.drawCircleVertical = function(circle, step){
+SurveyResult.drawCircleVertical = function(circle, step, statementNumber){
     //Typecasting necessary
     var posX = Number(circle.getAttribute('cx'));
     var posY = Number(circle.getAttribute('cy'));
     var radius = Number(circle.getAttribute('r'));    
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
 
-    circle.setAttribute('cx', posY + this.offset);
-    circle.setAttribute('cy', this.getAttribute('height') - posY - this.offset - (this.getAttribute('distanceY')*step));
+
+    circle.setAttribute('cx', posY + (this.offset*statementNumber));
+    circle.setAttribute('cy', this.getAttribute('height') - posY - this.offset - (this.getAttribute('distanceY')*(step%scaleLength)));
     circle.setAttribute('r', radius);
 }
 
-SurveyResult.drawVerticalLine = function(offset,line, group, min, max, stepping, rep){
-    var xCoordinate = offset;
+SurveyResult.drawVerticalLine = function(offset, argumentNumber, line, group, min, max, stepping, rep){
+    var xCoordinate = offset*(argumentNumber+1);
     var yCoordinate = offset;
 
     $(line).attr("x1", xCoordinate);
@@ -197,9 +194,9 @@ SurveyResult.drawVerticalLine = function(offset,line, group, min, max, stepping,
 
 }
 
-SurveyResult.drawHorizontalLine = function(offset, line, group, min, max, stepping, rep){
+SurveyResult.drawHorizontalLine = function(offset, argumentNumber, line, group, min, max, stepping, rep){
         var xCoordinate = offset;
-        var yCoordinate = offset;
+        var yCoordinate = offset*(1+argumentNumber);
 
         $(line).attr("x1", xCoordinate);
         $(line).attr("y1", yCoordinate);
@@ -242,12 +239,76 @@ SurveyResult.drawHorizontalLine = function(offset, line, group, min, max, steppi
             label = '';
 
         rep.text.innerHTML = '<table style="width:100%;"><tr><td style="height:' + this.getAttribute('height') + 'px;vertical-align:' + 'bottom' + ';text-align:' + 'right' + '">' + label + '</td></tr></table>';
-
 }
+
+SurveyResult.createScales = function(groupArray){
+    var surveyLength = this.getAttribute('surveyLength');
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') +1;
+
+    for(var i = 0; i < groupArray.length; i++){
+        var line = GUI.svg.line(groupArray[i], 0,0,20,20,{});
+        var numbers = GUI.svg.group(groupArray[i]); 
+        $(line).addClass('line');
+        $(numbers).addClass('numbers');
+
+        var min = this.getAttribute('minValue');
+        var max = this.getAttribute('maxValue');
+        var stepping = this.getAttribute('stepping');
+
+        var numberOfSteps = Math.floor(((max - min) / stepping) + 1);
+
+        for (var j = 0; j < numberOfSteps; j++) {
+            var tempStep = GUI.svg.line(groupArray[i], 0, 0, 20, 20, {});
+            $(tempStep).addClass('line');
+
+            var tempNumber = GUI.svg.createText();
+            var tempNumberRep = GUI.svg.text(groupArray[i], 0, 0, tempNumber);
+            $(tempNumberRep).addClass('text');
+        }
+
+        line = groupArray[i].getElementsByTagName('line')[0];
+         //Setze Darstellung der Linie
+        $(line).attr("stroke", "rbg(0,0,0)");
+        $(line).attr("stroke-width", 1);
+    }
+}
+
+
+SurveyResult.createResultCircles = function(group){
+    var surveyLength = this.getAttribute('surveyLength');
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
+
+    for(var i = 0; i < surveyLength; i++){
+        for(var j = 0; j < scaleLength; j++){
+            GUI.svg.circle(group, 1,1,1,5);
+        }
+    }
+}
+
+// SurveyResult.createScaleLines = function(group){
+//     for(var i = 0; i <= this.getAttribute('surveyLength'); i++){
+//          GUI.svg.line(group, 0, 0, 20, 20, {});
+//     }
+// }
+
+// SurveyResult.drawScales = function(rep, group, line){
+//     var surveyLength = this.getAttribute('surveyLength');
+
+//     for(var i = 1; i <= surveyLength; i++){
+//         if (this.getAttribute('direction') === 'horizontal') {
+//             this.drawHorizontalLine(this.offset, i, line, group, this.getAttribute('minValue'), this.getAttribute('maxValue'), this.getAttribute('stepping'), rep)
+//         }else{
+//             this.drawVerticalLine(this.offset, i, line,group, this.getAttribute('minValue'), this.getAttribute('maxValue'), this.getAttribute('stepping'), rep)
+//         }
+//     }
+// }
 
 SurveyResult.createRepresentation = function(parent) {
     var rep = GUI.svg.group(parent, this.getAttribute('id'));
     rep.dataObject = this;
+    //Preparing result-array for incoming results
+    this.initResultArray();
+
     var rect = GUI.svg.rect(rep,
             0, //x
             0, //y
@@ -262,8 +323,8 @@ SurveyResult.createRepresentation = function(parent) {
     rep.rect = rect;
 
     this.initGUI(rep);
-    this.setAttribute("height",400);
-    this.setAttribute("width",400);
+    this.setAttribute("height",200 + 80*this.getAttribute('surveyLength'));
+    this.setAttribute("width", 200 + 80*(this.getAttribute('maxValue')-this.getAttribute('minValue')));
     return rep;
 }
 

@@ -40,14 +40,16 @@ SurveyResult.register=function(type){
     this.makeStructuring();
  	this.registerAttribute('linestyle', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
 
-    this.registerAttribute('minValue', {type: 'number', standard: 1, category: 'TimeLine'});
-    this.registerAttribute('maxValue', {type: 'number', standard: 5, category: 'TimeLine'});
-    this.registerAttribute('stepping', {type: 'number', standard: 1, min: 1, category: 'TimeLine'});
+    this.registerAttribute('minValue', {type: 'number'});
+    this.registerAttribute('maxValue', {type: 'number'});
+    this.registerAttribute('stepping', {type: 'number',min: 1});
+    this.registerAttribute('surveyLength', {type: 'number'});
     /*this.registerAttribute('distinct',{type:'boolean',standard:false,category:'Scale'});
      this.registerAttribute('orientation',{type:'selection',standard:'bottom',options:['bottom','top','left','right'],category:'Scale'});
      */
-    
-    this.registerAttribute('label', {type: 'text', standard: 'Ergebnisse', category: 'TimeLine', hidden: 'true'})
+    this.registerAttribute('results', {multiple: true, standard: []});
+
+    this.registerAttribute('label', {type: 'text', standard: 'Ergebnisse', category: 'TimeLine', hidden: 'true'});
     this.registerAttribute('vertical-align', {hidden:true});
     this.registerAttribute('horizontal-align', {hidden:true});
     this.standardData.fillcolor = 'white';
@@ -63,6 +65,27 @@ SurveyResult.register=function(type){
 	//Define attributes needed
     this.standardData.linecolor = 'black';
 	this.standardData.fillcolor = 'grey';
+}
+
+SurveyResult.initResultArray = function(){
+    var step = this.getAttribute('stepping');
+    var maxValue = this.getAttribute('maxValue');
+    var minValue = this.getAttribute('minValue');
+    var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
+    var surveyLength = this.getAttribute('surveyLength');
+    var array = new Array(surveyLength);
+
+    for(var j = 0; j < surveyLength; j++){
+        array[j] = new Array(scaleLength);
+    }
+
+    for(var i = 0; i < surveyLength; i++){
+        for(var j = 0; j < scaleLength; j++){
+            array[i][j] = 0;
+        }
+    }
+
+    this.setAttribute('results', array);
 }
 
 SurveyResult.register('SurveyResult');

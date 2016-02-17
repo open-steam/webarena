@@ -174,10 +174,6 @@ SurveyTeacher.insertElement = function(obj) {
     var insertHtml = '<li class="ui-state-default"><input style="width: 90%" class="input-row-column" type="text" value="' + 'Neue Aussage' + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div><div style="position:relative;left:-20px;top:-8px;font-size:1.2em;" onclick="SurveyTeacher.insertElement(this);">+</div></li>';
     $($(insertHtml)).insertAfter($(obj).parent());
 };
-SurveyTeacher.insertElementColumn = function(obj) {
-    var insertHtml = '<li class="ui-state-default"><input class="input-row-column" type="text" value="' + 'Neue Spalte' + '"/><span class="drag-item"><img src="../../guis.common/images/dragarea.png" /></span><div onclick="$(this).parent().remove();" class="remove-item">X</div><div style="position:relative;left:-20px;top:-8px;font-size:1.2em;" onclick="SurveyTeacher.insertElementColumn(this);">+</div></li>';
-    $($(insertHtml)).insertAfter($(obj).parent());
-};
 SurveyTeacher.createPluses = function(obj) {
     $(obj).append('<div onclick="SurveyTeacher.insertElement(this);">+</div>');
     $(obj).children('div').last().css('position', 'relative');
@@ -185,14 +181,7 @@ SurveyTeacher.createPluses = function(obj) {
     $(obj).children('div').last().css('top', '-8px');
     $(obj).children('div').last().css('font-size', '1.2em');
 };
-SurveyTeacher.createPlusesColumn = function(obj) {
-    $(obj).append('<div onclick="SurveyTeacher.insertElementColumn(this);">+</div>');
-    $(obj).children('div').last().css('position', 'relative');
-    $(obj).children('div').last().css('left', '-20px');
-    $(obj).children('div').last().css('top', '-8px');
-    $(obj).children('div').last().css('font-size', '1.2em');
-};
 SurveyTeacher.insertFirstRow = function(obj) {
-    var insertHtml = '<li class="ui-state-default"><input style="width: 90%" class="input-row-column" type="text" value="' + 'Neue Zeile' + '"/><img src="../../guis.common/images/dragarea.png" /><div onclick="$(this).parent().remove();" class="remove-item">X</div><div style="position:relative;left:-20px;top:-8px;font-size:1.2em;" onclick="SurveyTeacher.insertElement(this);">+</div></li>';
+    var insertHtml = '<li class="ui-state-default"><input style="width: 90%" class="input-row-column" type="text" value="' + 'Neue Aussage' + '"/><img src="../../guis.common/images/dragarea.png" /><div onclick="$(this).parent().remove();" class="remove-item">X</div><div style="position:relative;left:-20px;top:-8px;font-size:1.2em;" onclick="SurveyTeacher.insertElement(this);">+</div></li>';
     $("#sortable").prepend(insertHtml);
 };

@@ -20,8 +20,6 @@ SurveyTest.register=function(type){
     this.registerAttribute('resultObjectID', {hidden: false});
     this.registerAttribute('resultObjectRoom', {hidden: false});
 
-	// TODO: implement
-    // this.generateHash();
 }
 
 SurveyTest.sliderChange = function(sliderID, value){
@@ -35,24 +33,13 @@ SurveyTest.sliderChange = function(sliderID, value){
 
 SurveyTest.generateHash = function(){
 	var that = this;
-	var  hash = {roomID: that.getRoomID(),
-				 testID: that.getTestID()};
+	var hash = {roomID: that.getRoomID(),
+				testID: that.getTestID()};
 	this.setAttribute('testHash', hash);
 }
 
 SurveyTest.getRoomID = function() {
     return this.get('inRoom');
-}
-
-SurveyTest.sendSurveyResult = function(event){
-	var that = event.data.that;
-	var surveyResultArray = [];
-
-	for(var i = 0; i < that.getAttribute('surveyLength'); i++){
-		surveyResultArray.push(that.getAttribute('points_'+i));
-	}
-
-	//TODO: Send Array to SurveyResult-Object
 }
 
 

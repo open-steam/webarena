@@ -16,13 +16,17 @@ theObject.sendToRoom = function (roomID, attributes, callback){
 	data.roomID = roomID;
 	var that = this;
 	var attr = attributes;
+	var resultAttr = {	minValue: attr.minValue, 
+						maxValue: attr.maxValue, 
+						surveyLength: attr.surveyLength, 
+						stepping: attr.stepping};
 
 
 	/* check if room exists already or if it needs to 
 	be created.
 	*/
 	Modules.RoomController.roomExists(data, this.context, function(error, exists){
-		Modules.ObjectManager.createObject(that.getRoomID(), 'SurveyResult', false, false, that.context, function(error, object){
+		Modules.ObjectManager.createObject(that.getRoomID(), 'SurveyResult', resultAttr, false, that.context, function(error, object){
 			attr.resultObjectID = object.id;
 			Modules.ObjectManager.createObject(roomID, 'SurveyTest', attr, false,that.context, function(error, object){
 			});	
