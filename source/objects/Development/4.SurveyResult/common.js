@@ -40,8 +40,8 @@ SurveyResult.register=function(type){
     this.makeStructuring();
  	this.registerAttribute('linestyle', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
 
-    this.registerAttribute('min', {type: 'number', standard: 1, category: 'TimeLine'});
-    this.registerAttribute('max', {type: 'number', standard: 5, category: 'TimeLine'});
+    this.registerAttribute('minValue', {type: 'number', standard: 1, category: 'TimeLine'});
+    this.registerAttribute('maxValue', {type: 'number', standard: 5, category: 'TimeLine'});
     this.registerAttribute('stepping', {type: 'number', standard: 1, min: 1, category: 'TimeLine'});
     /*this.registerAttribute('distinct',{type:'boolean',standard:false,category:'Scale'});
      this.registerAttribute('orientation',{type:'selection',standard:'bottom',options:['bottom','top','left','right'],category:'Scale'});

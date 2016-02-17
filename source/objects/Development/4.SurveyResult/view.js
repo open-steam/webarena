@@ -27,8 +27,8 @@ SurveyResult.draw = function(external) {
     $(line).addClass("line");
     $(numbers).addClass("numbers");
 
-    var min = this.getAttribute('min');
-    var max = this.getAttribute('max');
+    var min = this.getAttribute('minValue');
+    var max = this.getAttribute('maxValue');
     var stepping = this.getAttribute('stepping');
 
     var numberOfSteps = Math.floor(((max - min) / stepping) + 1);
@@ -43,11 +43,11 @@ SurveyResult.draw = function(external) {
     }
 
      //init result circles
-    GUI.svg.circle(resultGroup, 10, 20, 3, {});
-    GUI.svg.circle(resultGroup, 100, 200,3, {});
-    GUI.svg.circle(resultGroup, 70, 30, 3, {});
-    GUI.svg.circle(resultGroup, 100, 150,3, {});
-    GUI.svg.circle(resultGroup, 88, 46, 3, {});
+    GUI.svg.circle(resultGroup, 1, 1, 5, {});
+    GUI.svg.circle(resultGroup, 1, 1, 7, {});
+    GUI.svg.circle(resultGroup, 1, 1, 2, {});
+    GUI.svg.circle(resultGroup, 1, 1, 4, {});
+    GUI.svg.circle(resultGroup, 1, 1, 18, {});
 
     GeneralObject.draw.call(this, external);
     
@@ -77,21 +77,19 @@ SurveyResult.draw = function(external) {
     $(line).attr("stroke", "rbg(0,0,0)");
     $(line).attr("stroke-width", 1);
 
-    this.padding = 20;
-
-    var min = this.getAttribute('min');
-    var max = this.getAttribute('max');
+    var min = this.getAttribute('minValue');
+    var max = this.getAttribute('maxValue');
     var stepping = this.getAttribute('stepping');
 
     var surveyLength = 3; //TODO: get this value from SurveyTest Object
-    var yOffset = this.getAttribute('height')/100 * 80 / surveyLength;
-    var xOffset = this.getAttribute('width')/100 * 80 / surveyLength;
+    var offset = 40;
+    this.offset = 40;
 
     if (this.getAttribute('direction') === 'horizontal') {
-        this.drawHorizontalLine(yOffset , line, group, min, max, stepping, rep);    
+        this.drawHorizontalLine(offset , line, group, min, max, stepping, rep);    
         this.drawCircleArrayHorizontal(resultCircleArray);
     } else {
-        this.drawVerticalLine(xOffset, line, group, min, max, stepping, rep);
+        this.drawVerticalLine(offset, line, group, min, max, stepping, rep);
         this.drawCircleArrayVertical(resultCircleArray);
     }
 
@@ -102,52 +100,67 @@ SurveyResult.draw = function(external) {
 
 SurveyResult.drawCircleArrayHorizontal = function(circleArray){
     for(var i = 0; i < circleArray.length; i++){
-        this.drawCircleHorizontal(circleArray[i]);
+        this.drawCircleHorizontal(circleArray[i], i);
     }
 }
+
+// SurveyResult.convertCoordinatesToCanvas = function(xCoordinate, yCoordinate){
+//     var height = this.getAttribute('height');
+//     var width = this.getAttribute('width');
+//     var stepping = this.getAttribute('stepping');
+//     var minValue = this.getAttribute('minValue');
+//     var maxValue = this.getAttribute('maxValue');
+//     var length = this.getAttribute('surveyLength');
+//     var offset =  50;
+
+
+//     //Fallunterscheidung Horizontal/Vertikal
+    
+//     console.log(height + width);
+// }
 
 SurveyResult.drawCircleArrayVertical = function(circleArray){
     for(var i = 0; i < circleArray.length; i++){
-        this.drawCircleVertical(circleArray[i]);
+        this.drawCircleVertical(circleArray[i], i);
     }
 }
 
-SurveyResult.drawCircleHorizontal = function(circle){
+SurveyResult.drawCircleHorizontal = function(circle, step){
     //Typecasting necessary
     var posX = Number(circle.getAttribute('cx'));
     var posY = Number(circle.getAttribute('cy'));
     var radius = Number(circle.getAttribute('r'));
 
-    circle.setAttribute('cx', posX + (this.padding*3));
-    circle.setAttribute('cy', posY + (this.padding*3));
+    circle.setAttribute('cx', posX + this.offset + (this.getAttribute('distanceX')*step)-1);
+    circle.setAttribute('cy', posY + this.offset);
     circle.setAttribute('r', radius);
 }
 
-SurveyResult.drawCircleVertical = function(circle){
+SurveyResult.drawCircleVertical = function(circle, step){
     //Typecasting necessary
     var posX = Number(circle.getAttribute('cx'));
     var posY = Number(circle.getAttribute('cy'));
     var radius = Number(circle.getAttribute('r'));    
 
-    circle.setAttribute('cx', posY + (this.padding*3));
-    circle.setAttribute('cy', this.getAttribute('height') - posX - (this.padding*3));
+    circle.setAttribute('cx', posY + this.offset);
+    circle.setAttribute('cy', this.getAttribute('height') - posY - this.offset - (this.getAttribute('distanceY')*step));
     circle.setAttribute('r', radius);
 }
 
 SurveyResult.drawVerticalLine = function(offset,line, group, min, max, stepping, rep){
     var xCoordinate = offset;
-    var yCoordinate = this.padding*3;
+    var yCoordinate = offset;
 
     $(line).attr("x1", xCoordinate);
     $(line).attr("y1", this.getAttribute('height') - yCoordinate );
-    this.setAttribute("startX", this.getAttribute("x") + this.padding*3);
-    this.setAttribute("startY", this.getAttribute("y") + this.getAttribute('height') - this.padding*3 );
+    this.setAttribute("startX", this.getAttribute("x") + offset);
+    this.setAttribute("startY", this.getAttribute("y") + this.getAttribute('height') - offset);
 
     $(line).attr("x2", offset);
-    $(line).attr("y2", this.padding*3);
+    $(line).attr("y2", offset);
 
-    var pixelStart = this.getAttribute('height') - this.padding*3;
-    var pixelEnd =  this.padding*3;
+    var pixelStart = this.getAttribute('height') - offset;
+    var pixelEnd =  offset;
 
     var numberOfSteps = group.getElementsByTagName('line').length - 1;
     var distancePerStepInPixel = Math.floor((pixelStart - pixelEnd) / (numberOfSteps - 1));
@@ -185,20 +198,20 @@ SurveyResult.drawVerticalLine = function(offset,line, group, min, max, stepping,
 }
 
 SurveyResult.drawHorizontalLine = function(offset, line, group, min, max, stepping, rep){
-        var xCoordinate = this.padding *3;
+        var xCoordinate = offset;
         var yCoordinate = offset;
 
         $(line).attr("x1", xCoordinate);
         $(line).attr("y1", yCoordinate);
-        this.setAttribute("startX", this.getAttribute("x") + this.padding*3);
-        this.setAttribute("startY", this.getAttribute("y") + this.getAttribute('height') - this.padding*3);
+        this.setAttribute("startX", this.getAttribute("x") + offset);
+        this.setAttribute("startY", this.getAttribute("y") + this.getAttribute('height') - offset);
 
 
         $(line).attr("x2", this.getAttribute('width') - xCoordinate);
         $(line).attr("y2", yCoordinate);
 
-        var pixelStart = this.padding*3;
-        var pixelEnd = this.getAttribute('width') - this.padding*3;
+        var pixelStart = offset;
+        var pixelEnd = this.getAttribute('width') - offset;
         var numberOfSteps = group.getElementsByTagName('line').length - 1;
         var distancePerStepInPixel = Math.floor((pixelEnd - pixelStart) / (numberOfSteps - 1));
         this.setAttribute("distanceX", distancePerStepInPixel);
@@ -249,8 +262,8 @@ SurveyResult.createRepresentation = function(parent) {
     rep.rect = rect;
 
     this.initGUI(rep);
-    this.setAttribute("height",330);
-    this.setAttribute("width",330);
+    this.setAttribute("height",400);
+    this.setAttribute("width",400);
     return rep;
 }
 
