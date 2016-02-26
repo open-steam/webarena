@@ -1,24 +1,3 @@
-//currently not in use
-/*Table.getAbsoluteX = function(elm) {
- var x = 0;
- if (elm && typeof elm.offsetParent != "undefined") {
- while (elm && typeof elm.offsetLeft == "number") {
- x += elm.offsetLeft;
- elm = elm.offsetParent;
- }
- }
- return x;
- }
- Table.getAbsoluteY = function(elm) {
- var y = 0;
- if (elm && typeof elm.offsetParent != "undefined") {
- while (elm && typeof elm.offsetTop == "number") {
- y += elm.offsetTop;
- elm = elm.offsetParent;
- }
- }
- return y;
- } */
 
 Table.clientRegister=function(){
 	
@@ -157,8 +136,7 @@ Table.showLabelDialog = function(clickedElement,positionMouse) {
     
     var dialog_width = 300;
     var content = [];
-    var html = "<p>Tragen im unteren Eingabefeld einen neuen Namen ein.</p>";
-    html+="<p>Mit der Eingabe-Taste &#9166 übernehmen Sie den Namen</p>";
+    var html = "<p>Bitte tragen Sie in das Textfeld die neue Zellenbeschriftung ein.</p>";
     html+="<input id='inputField' type='text' style='width:100%' value='"+clickedElement.innerHTML+"'>";
     
 var js = '$(document).ready(function(){document.getElementById("inputField").select();});';

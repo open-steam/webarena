@@ -577,5 +577,27 @@ theObject.updateContexts = function(callback){
 }
 	
 theObject.getRecentChanges.public = true;	
+
+
+theObject.clearTrash=function(callback){
+    var currentRoom = this.context.room.id;
+    var that = this;
+    Modules.ObjectManager.getObjects("trash",this.context,function(inventory){
+        var objectArray = new Array();
+		for(var i = 0; i<inventory.length; i++){
+			var oldRoom = inventory[i].getAttribute("oldRoomID");
+            if(currentRoom == oldRoom){
+                var objectID = inventory[i].id;
+                var removeObject = Modules.ObjectManager.getObject("trash", objectID, that.context);
+                Modules.ObjectManager.remove(removeObject);
+            }
+		}
+        callback();
+    });
+    
+    
+}
+theObject.clearTrash.public = true;
+
 	
 module.exports=theObject;

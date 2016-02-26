@@ -55,6 +55,10 @@ WebServer.init = function (theModules) {
 			url = url.slice(0, userHashIndex);
 
 			var context = Modules.UserManager.getConnectionByUserHash(userHash);
+			if (!context){
+				console.log('UserHash has expired or could not be found '+userHash);
+				userHash = false;
+			}
 
 		} else {
 			var userHash = false;
@@ -311,6 +315,9 @@ WebServer.init = function (theModules) {
 				}
 
 				var mimeType = object.getAttribute('mimeType') || 'text/plain';
+				
+				if (mimeType == 'application/x-pdf') mimeType = 'application/pdf';  //fix inline pdf preview
+				
 				res.writeHead(200, {
 					'Content-Type': mimeType,
 					'Content-Disposition': 'inline; filename="' + object.getAttribute("name") + '"'

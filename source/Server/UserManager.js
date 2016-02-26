@@ -159,6 +159,11 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
 
 	var roomID = data.roomID;
+	
+	if (roomID=='trash') {
+		Modules.Log.warning("UserManager", "+enter", "Tried to enter trash (user: '"+userID+"')");
+		return;
+	}
 
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;

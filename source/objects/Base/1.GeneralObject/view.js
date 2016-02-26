@@ -109,7 +109,7 @@ GeneralObject.getRepresentation = function() {
  */
 GeneralObject.representationCreated = function() {
 
-    GUI.updateLayers();
+    GUI.updateLayersDelayed();
 
     if (!this.isSensitive())
         return;
@@ -1007,6 +1007,7 @@ GeneralObject.moveStart = function(event) {
         console.log('Could not get object for '+this);
         console.log(this);
         console.trace();
+        return;
     }
 
     if (!self.selected)

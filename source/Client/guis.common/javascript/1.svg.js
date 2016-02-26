@@ -9,7 +9,7 @@
  */
 GUI.refreshSVG = function() {
 	$("#room").hide().show();
-	GUI.updateLayers();
+	GUI.updateLayersDelayed();
 }
 
 

@@ -81,7 +81,7 @@
 	$(document).ready(function() {
 		for (var name in Modules){
 			var module=Modules[name];
-			if (module.init) {
+			if (module && module.init) {
 				module.init(Modules);
 				module.Modules=Modules;
 			}
