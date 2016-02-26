@@ -208,49 +208,70 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	setter(object,value);
 	object.persist();
 	
-    // evaluation
-	//
-	// if the position ob the object has changed. collectPositioningData is called. This function
-	// should wait and collect data for a while, as position and dimension information is hardly
-	// ever changed in only one aspect.
-		
-	if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
-		if (object.collectPositioningData)
-			object.collectPositioningData(attribute,value,oldValue);
-	}
-	
-	// for every other attribute which may have changed, a changed function is called
-	// (eg. if the attribute test has changed, we try to call testChanged on the server)
-	
-	var fnName=attribute+'Changed';
-    if (object[fnName]) object[fnName](value);
-    
-    
-    //check if the changed attribute value is one of those structured by the background.
-    //if this is the case, reposition the object.
-    
-    if (object.isActive()){
-	    object.getRoomAsync(function(){
-	    	console.log('ERROR: could not get room in serverside setAttribute');
-	    },function(room){
-	    	
-	    	if (attribute=='context') return room.repositionObjects(object);
-	    	
-	    	room.getStructuringAttributes(function(attList){
-	    		if (attList[attribute]){
-	    			room.repositionObjects(object);
-	    		}
-	    	},true);
-	    })
-    }
-    
-	//give the object a proper name if no name has been chosen so far
-	
-	if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
-		object.intelligentRename(attribute,value);
-	}
+    this.triggerEvaluation(object,attribute,value,oldValue);
 	
 	return true;
+}
+
+var triggerEvaluationDelay={};
+AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
+	
+	var delayID=object.getAttribute('id')+attribute;
+	
+	if (triggerEvaluationDelay[delayID]){
+		clearTimeout(triggerEvaluationDelay[delayID]);
+		triggerEvaluationDelay[delayID]=false;
+	}
+	
+	triggerEvaluationDelay[delayID]=setTimeout(function(){
+		
+	    // evaluation
+		//
+		// if the position ob the object has changed. collectPositioningData is called. This function
+		// should wait and collect data for a while, as position and dimension information is hardly
+		// ever changed in only one aspect.
+			
+		if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
+			if (object.collectPositioningData)
+				object.collectPositioningData(attribute,value,oldValue);
+		}
+		
+		// for every other attribute which may have changed, a changed function is called
+		// (eg. if the attribute test has changed, we try to call testChanged on the server)
+		
+		var fnName=attribute+'Changed';
+	    if (object[fnName]) {
+	    	object[fnName](value);
+	    }
+	    
+	    
+	    //check if the changed attribute value is one of those structured by the background.
+	    //if this is the case, reposition the object.
+	    
+	    if (object.isActive()){
+		    object.getRoomAsync(function(){
+		    	console.log('ERROR: could not get room in serverside setAttribute');
+		    },function(room){
+		    	
+		    	if (attribute=='context') return room.repositionObjects(object);
+		    	
+		    	room.getStructuringAttributes(function(attList){
+		    		if (attList[attribute]){
+		    			room.repositionObjects(object);
+		    		}
+		    	},true);
+		    })
+	    }
+	    
+		//give the object a proper name if no name has been chosen so far
+		
+		if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
+			object.intelligentRename(attribute,value);
+		}		
+		
+		
+	},100);
+	
 }
 
 /**
