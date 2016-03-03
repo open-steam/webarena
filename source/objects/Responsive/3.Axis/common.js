@@ -19,12 +19,10 @@ Axis.register = function(type) {
     this.registerAttribute('linestyle', {type: 'selection', standard: 'stroke', options: ['stroke', 'dotted', 'dashed'], category: 'Appearance'});
 
     this.registerAttribute('min', {type: 'number', standard: 1, category: 'Axis'});
-    this.registerAttribute('max', {type: 'number', standard: 5, category: 'Axis'});
+    this.registerAttribute('max', {type: 'number', standard: 10, category: 'Axis'});
     this.registerAttribute('stepping', {type: 'number', standard: 1, min: 1, category: 'Axis'});
-    /*this.registerAttribute('distinct',{type:'boolean',standard:false,category:'Axis'});
-     this.registerAttribute('orientation',{type:'selection',standard:'bottom',options:['bottom','top','left','right'],category:'Axis'});
-     */
-    this.registerAttribute('direction', {type: 'selection', standard: 'horizontal', options: ['horizontal', 'vertical'], category: 'Axis'});
+    this.registerAttribute('distinct',{type:'boolean',standard:false,category:'Axis'});
+
     this.registerAttribute('label', {category: 'Axis'})
     this.registerAttribute('vertical-align', {hidden:true});
     this.registerAttribute('horizontal-align', {hidden:true});

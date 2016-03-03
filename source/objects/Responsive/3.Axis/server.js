@@ -126,41 +126,22 @@ theObject.getPlacementArea = function(object) {
     var aoWidth = object.getAttribute("width");
     var aoHeight = object.getAttribute("height");
 
-    var direction = this.getAttribute("direction");
     var minimum = this.getAttribute("min");
     var stepping = this.getAttribute("stepping");
     var value = object.getAttribute(this.getAttribute("attribute"));
     var v = (value - minimum) / stepping;
 
-    if (direction === "horizontal") {
-        var d = this.getAttribute("distanceX");
-        var cx = startX + 20 + (v * d);
-        var x = cx - (aoWidth / 2)
-        var y1 = startY;
-        var y2 = startY + height - aoHeight - 80;
-        var p1 = {X: x, Y: y1};
-        var p2 = {X: x + 1, Y: y1};
-        var p3 = {X: x + 1, Y: y2};
-        var p4 = {X: x, Y: y2};
+    var d = this.getAttribute("distanceX");
+    var cx = startX + 20 + (v * d);
+    var x = cx - (aoWidth / 2)
+    var y1 = startY;
+    var y2 = startY + height - aoHeight - 80;
+    var p1 = {X: x, Y: y1};
+    var p2 = {X: x + 1, Y: y1};
+    var p3 = {X: x + 1, Y: y2};
+    var p4 = {X: x, Y: y2};
 
 
-        return [[p1, p2, p3, p4]];
-
-    } else {
-        var d = this.getAttribute("distanceY");
-        var cy = (startY + height - 80) - (v * d);
-        var y = Math.floor(cy - (aoHeight / 2));
-        var x1 = Math.floor(startX + 60);
-        var x2 = Math.floor(startX + width - aoWidth);
-
-        var p1 = {X: x1, Y: y};
-        var p2 = {X: x2, Y: y};
-        var p3 = {X: x2, Y: y + 1};
-        var p4 = {X: x1, Y: y + 1};
-
-        return [[p1, p2, p3, p4]];
-
-    }
-
+    return [[p1, p2, p3, p4]];
 
 }
