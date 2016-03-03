@@ -15,7 +15,7 @@ Gate.register=function(type){
 	IconObject.register.call(this,type);
 	
 	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
-            object.showExitDialog()
+            Gate.showLinklDialog(object);
         }, category: 'Hyperlink', changedFunction: function(object) {
             if(object.updateIcon){object.updateIcon()};
         }});
@@ -31,12 +31,26 @@ Gate.register=function(type){
 
 
 };
-
+/**
+* execute when object double-clicked
+*/
 Gate.execute=function(){
-
-		this.follow(this.getAttribute("open in"));
-
+	if(this.getAttribute("destination") == "choose"){
+		this.showLinklDialog(this);
+	}else{
+		ObjectManager.loadRoom(this.getAttribute("destination"));
+	}
+		
+	
 }
+
+/**
+* set new destination
+* 	destination: Room-ID of target room
+*/
+Gate.saveDestination = function(destination){
+	this.setAttribute("destination",destination);
+};
 
 Gate.isCreatable=true;
 Gate.moveByTransform = function(){return true;};
