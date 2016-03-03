@@ -6,9 +6,9 @@
  */
 
 var Modules = require('../../../server.js')
-var Group = Object.create(Modules.ObjectManager.getPrototype('Rectangle'));
+var Area = Object.create(Modules.ObjectManager.getPrototype('Rectangle'));
 
-Group.register = function(type) {
+Area.register = function(type) {
 
     // Registering the object
     Modules.ObjectManager.getPrototype('Rectangle').register.call(this, type);
@@ -20,13 +20,13 @@ Group.register = function(type) {
 
 }
 
-Group.getStructuringAttributes=function(){
+Area.getStructuringAttributes=function(){
 	var structuringAttribute=this.getAttribute('attribute');
 	if (structuringAttribute) return [structuringAttribute];
 	return [];
 }
 
-Group.isCreatable = true;
+Area.isCreatable = true;
 
 
-module.exports = Group;
+module.exports = Area;

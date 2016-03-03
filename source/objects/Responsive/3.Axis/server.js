@@ -93,9 +93,6 @@ theObject.checkData = function(object) {
     return true;
 }
 
-theObject.getType = function() {
-    return "scale1d";
-}
 
 theObject.howToHandle = function(object) {
     var attributeName = this.getAttribute("attribute");

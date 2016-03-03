@@ -5,11 +5,11 @@
  *
  */
 
-Scale.moveByTransform = function() {
+Axis.moveByTransform = function() {
     return true;
 };
 
-Scale.draw = function(external) {
+Axis.draw = function(external) {
 
      console.log();
 
@@ -199,7 +199,7 @@ Scale.draw = function(external) {
 
 }
 
-Scale.createRepresentation = function(parent) {
+Axis.createRepresentation = function(parent) {
     var rep = GUI.svg.group(parent, this.getAttribute('id'));
 
     rep.dataObject = this;
