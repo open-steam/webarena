@@ -42,5 +42,13 @@ Axis.getStructuringAttributes=function(){
 
 Axis.isCreatable = true;
 
+Axis.input=false;
+
+Axis.execute = function(event) {
+    if(!this.inPlaceEditingMode){
+		this.editText(event);
+	}
+}
+
 
 module.exports = Axis;

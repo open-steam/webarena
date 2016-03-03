@@ -37,6 +37,13 @@ Matrix.getStructuringAttributes=function(){
 	return result;
 }
 
+Matrix.execute = function(event) {
+    if(!this.inPlaceEditingMode){
+		this.editText(event);
+	}
+}
+
+
 Matrix.isCreatable = true;
 
 

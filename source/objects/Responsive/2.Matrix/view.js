@@ -30,6 +30,10 @@ Matrix.draw = function(external) {
     if (refresh) {
         oldGroup.remove();
         var group = GUI.svg.group(rep, this.getAttribute('id') + "-1");
+
+
+
+
         if (rows.length !== 0 && columns.length !== 0) {
             var cellNumber = (rows.length + 1) * (columns.length + 1);
         } else {
@@ -79,13 +83,6 @@ Matrix.draw = function(external) {
 
     this.padding = 20;
 
-    //var direction = this.getAttribute('direction');
-    //var distance = this.getAttribute('distance');
-
-    rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
-    rep.text.style.fontFamily = this.getAttribute('font-family');
-    rep.text.style.color = this.getAttribute('font-color');
-
     var structureWidth = this.getAttribute('width');
     var structureHeigth = this.getAttribute('height');
     var rows = this.getAttribute('Row');
@@ -102,10 +99,12 @@ Matrix.draw = function(external) {
     var cellYPos = 0;
 
     var allRects = group.getElementsByTagName('rect');
+    var LabelID = 1;
 
     for (var i = 0; i < rows.length + 1; i++) {
         for (var j = 0; j < columns.length + 1; j++) {
             var cell = allRects[counter];
+            $(cell).attr('x', cellXPos);
             $(cell).attr('x', cellXPos);
             $(cell).attr('y', cellYPos);
             $(cell).attr('width', cellWidth);
@@ -115,26 +114,44 @@ Matrix.draw = function(external) {
             $(cell).attr("stroke-width", this.getAttribute('linecolor'));
             if (i == 0 && j > 0) {
                 var textcontent = columns[j - 1];
+                var fontSize= 22;
                 var currentTextElement = group.getElementsByTagName("text")[textElementCounter];
                 currentTextElement.textContent = textcontent;
-                //$(currentTextElement).attr('x', cellXPos + 5);
-                //$(currentTextElement).attr('y', cellYPos + 5);
-                $(currentTextElement).attr('font-size', 22);
+                $(currentTextElement).attr('font-size', fontSize);
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
+                $(currentTextElement).attr('id', 'label'+LabelID);
+                currentTextElement.elementType='Column';
+                currentTextElement.elementNumber=j-1;
+                LabelID++;
                 var textLength = currentTextElement.getComputedTextLength();
+                while(cellWidth<textLength+10){
+                    fontSize=fontSize-1;
+                    $(currentTextElement).attr('font-size', fontSize);
+                    textLength = currentTextElement.getComputedTextLength();
+                }
                 $(currentTextElement).attr('x', cellXPos + (cellWidth / 2) - (textLength / 2));
                 $(currentTextElement).attr('y', cellYPos + (cellHeight / 2) + 5);
                 textElementCounter++;
 
             } else if (i > 0 && j == 0) {
                 var textcontent = rows[i - 1];
+                var fontSize= 22;
                 var currentTextElement = group.getElementsByTagName("text")[textElementCounter];
                 currentTextElement.textContent = textcontent;
-                $(currentTextElement).attr('font-size', 22);
+                $(currentTextElement).attr('font-size', fontSize);
                 $(currentTextElement).attr('stroke', "black");
                 $(currentTextElement).attr('stroke-width', 1);
+                $(currentTextElement).attr('id', 'label'+LabelID);
+                currentTextElement.elementType='Row';
+                currentTextElement.elementNumber=i-1;
+                LabelID++;
                 var textLength = currentTextElement.getComputedTextLength();
+                while(cellWidth<textLength+10){
+                    fontSize=fontSize-1;
+                    $(currentTextElement).attr('font-size', fontSize);
+                    textLength = currentTextElement.getComputedTextLength();
+                }
                 $(currentTextElement).attr('x', cellXPos + (cellWidth / 2) - (textLength / 2));
                 $(currentTextElement).attr('y', cellYPos + (cellHeight / 2) + 5);
 
@@ -154,21 +171,6 @@ Matrix.createRepresentation = function(parent) {
     var rep = GUI.svg.group(parent, this.getAttribute('id'));
 
     rep.dataObject = this;
-
-    var rect = GUI.svg.rect(rep,
-            0, //x
-            0, //y
-            10, //width
-            10 //height
-            );
-
-
-    $(rect).addClass("rect");
-
-    rep.text = GUI.svg.other(rep, "foreignObject");
-    var body = document.createElement("body");
-    $(rep.text).append(body);
-    rep.rect = rect;
 
     this.initGUI(rep);
     return rep;
@@ -197,25 +199,16 @@ Matrix.setViewHeight = function(value) {
                 textCounter++;
             } else if (i > (columns.length) && i % (columns.length + 1) === 0) {
                 $(texts[textCounter]).attr("y", row * cellHeight + (cellHeight / 2) + 5);
-                console.log($(texts[textCounter]));
                 textCounter++;
             }
             i++;
         });
-
     }
     $(rep).attr("height", value);
-    $(rep.rect).attr("height", value);
-    $(rep.text).attr("height", value);
-    var table = rep.text.getElementsByTagName('td')[0];
+    
+    GUI.adjustContent(this);
 
-    if (table) {
-        table.style.height = value + 'px';
-        table.style.verticalAlign = this.getAttribute('vertical-align');
 
-        GUI.adjustContent(this);
-
-    }
 }
 
 
@@ -245,14 +238,40 @@ Matrix.setViewWidth = function(value) {
             }
             i++;
         });
+
+
+
+
+
+
     }
     $(rep).attr("width", value);
-    $(rep.rect).attr("width", value);
-    $(rep.text).attr("width", value);
-    var table = rep.text.getElementsByTagName('td')[0];
-
-    if (table)
-        table.style.textAlign = this.getAttribute('horizontal-align');
 
     GUI.adjustContent(this);
+}
+
+//find cell and open LabelDialog for changing name
+ Matrix.editText= function(event){
+     
+     var positionMouse ={
+         x: event.clientX,
+         y: event.clientY
+     };
+     
+     var clickedElement=event.target;
+     
+     if (clickedElement.elementType) this.showLabelDialog(clickedElement,positionMouse);
+	     
+ }
+ 
+ /**
+ * Called after hitting the Enter key during the inplace editing
+ */
+Matrix.saveChanges = function() {
+    this.draw();
+	if(this.inPlaceEditingMode){
+	    this.inPlaceEditingMode = false;
+		GUI.inPlaceEditingObject = false;
+	}
+	
 }
