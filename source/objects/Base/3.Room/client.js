@@ -11,3 +11,10 @@ Room.getInventory=function(){
 }
 
 Room.redraw=function(){	var inventory=this.getInventory();	for (var i in inventory){		var obj=inventory[i];		obj.draw();	}}
+
+Room.clearTrash=function(){
+    var currentRoomID = ObjectManager.getCurrentRoom().id;
+    this.serverCall('clearTrash',function(){
+        GUI.trashbasket.update();
+	});
+}

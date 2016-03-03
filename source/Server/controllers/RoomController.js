@@ -2,6 +2,7 @@
  * Contains room related tasks
  */
 var _ = require('lodash');
+var async = require('async');
 
 var RoomController = {}
 
@@ -50,9 +51,32 @@ RoomController.roomExists = function (data, context, callback) {
     callback(null, !!obj);
 }
 
-//TODO: remove? combine with "browse" of exit object
+//Get a list of all rooms. Calls a callback with data object containing object id and object name
 RoomController.listRooms = function (context,callback) {
-    Modules.Connector.listRooms(context,callback)
+    
+    Modules.Connector.listRooms(context,function(error,rooms){
+    
+       var buildData=function(roomID,gotData){
+       	
+       	  Modules.ObjectManager.getRoom(roomID, context, false, function(roomObject){
+       	  	
+       	  	var returnData={}; 
+            returnData.id=roomObject.getAttribute('id');
+            returnData.name=roomObject.getAttribute('name');
+            
+            gotData(null,returnData);
+       	  	
+       	  });
+       	
+       }
+       
+       async.map(rooms, buildData, function(err, results){
+		    callback(err,results);
+	   });
+    	
+    });
+
+    
 }
 
 //Information are sent to all clients in the same room

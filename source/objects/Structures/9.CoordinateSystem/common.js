@@ -12,7 +12,6 @@ CoordinateSystem.register = function(type) {
 
     // Registering the object
     Modules.ObjectManager.getPrototype('Rectangle').register.call(this, type);
-    this.makeStructuring();
 
     // this are hidden attributes
 	this.registerAttribute('vertical-align',{type:'selection',standard:'middle',options:['top','middle','bottom'],category:'Label',hidden:true});

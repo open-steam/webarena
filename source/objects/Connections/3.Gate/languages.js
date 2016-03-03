@@ -8,6 +8,10 @@ Gate.setTranslations('de',{
 	'ObjectBrowser' : 'Verknüpfung (Browser)',
 	'filterObjects' : 'Nur Räume in Objektauswahl',
 	'Show objects' : 'Objekte anzeigen',
-	'create new Subroom' : 'neuen Unterraum erstellen'
+	'create new Subroom' : 'neuen Unterraum erstellen',
+	'select room' : 'Raum auswählen',
+	'please select a room':'Bitte wählen Sie ein Raum aus',
+	'set target room' : 'Zielraum setzen',
+	'cancel process': 'Vorgang abbrechen'
 }
 );

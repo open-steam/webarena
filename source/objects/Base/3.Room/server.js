@@ -598,6 +598,5 @@ theObject.clearTrash=function(callback){
     
 }
 theObject.clearTrash.public = true;
-
 	
 module.exports=theObject;
