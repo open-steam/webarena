@@ -31,6 +31,7 @@ Gate.register=function(type){
 
 
 };
+
 /**
 * execute when object double-clicked
 */
@@ -38,7 +39,7 @@ Gate.execute=function(){
 	if(this.getAttribute("destination") == "choose"){
 		this.showLinklDialog(this);
 	}else{
-		ObjectManager.loadRoom(this.getAttribute("destination"));
+		this.follow();
 	}
 		
 	
@@ -52,6 +53,13 @@ Gate.saveDestination = function(destination){
 	this.setAttribute("destination",destination);
 };
 
+/**
+* open destination room
+*/
+
+Gate.follow = function(){
+	ObjectManager.loadRoom(this.getAttribute("destination"));
+}
 Gate.isCreatable=true;
 Gate.moveByTransform = function(){return true;};
 
