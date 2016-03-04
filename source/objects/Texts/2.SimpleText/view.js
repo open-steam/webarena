@@ -95,49 +95,67 @@ SimpleText.createRepresentation = function(parent) {
  * Called after a double click on the text, enables the inplace editing
  */
 SimpleText.editText = function() {
-	
+
+	// set state editable
+	this.inPlaceEditingMode = true;
 	var rep = this.getRepresentation();
 	
+	//block Android Chrome
 	var userAgent = navigator.userAgent;
     if(userAgent.indexOf('Android') > 0 && userAgent.indexOf('Chrome') > 0){
 		//inplace editing of SimpleTexts on Android and Chrome does not work properly
 		GUI.editText(this);
 	}
 	else{
+		$(rep).find("foreignObject").attr("id","InputforeignObject");
 		$(rep).find("foreignObject").show();
-	
-		$(rep).find("body").append('<input type="text">');
-		$(rep).find("input").attr("name", "newContent");
-		$(rep).find("input").attr("value", this.oldContent);
-		$(rep).find("input").css("font-size", this.getAttribute('font-size')+"px");
-		$(rep).find("input").css("font-family", this.getAttribute('font-family')); 
-		$(rep).find("input").css("color", this.getAttribute('font-color'));
-		$(rep).find("input").css("width", (rep.text.getBoundingClientRect().width+2)+"px"); 
-		$(rep).find("input").css("height", (rep.text.getBoundingClientRect().height-3)+"px");
+		
+		//Create an Inputtag and set content and style
+		$(rep).find("body").append('<input id="simpleTextInputField" type="text"></input>');
+		$(rep).find("#simpleTextInputField").attr("name", "newContent");
+		$(rep).find("#simpleTextInputField").attr("value", this.oldContent);
+				console.log('***START************');
+		console.log($('#simpleTextInputField').val());
+		console.log(this.inPlaceEditingMode);
+		console.log(GUI.inPlaceEditingObject);
+		console.log(this.oldContent);
+		console.log('*******************');
+		$("#simpleTextInputField").css("font-size", this.getAttribute('font-size')+"px");
+		$("#simpleTextInputField").css("font-family", this.getAttribute('font-family')); 
+		$("#simpleTextInputField").css("color", this.getAttribute('font-color'));
+		$("#simpleTextInputField").css("display","block");
+		var textlength=this.getRepresentation().getBBox().width+30;
+		$("#simpleTextInputField").css("width", "auto"); 
 		$(rep).find("foreignObject").attr("height", rep.text.getBoundingClientRect().height+10);
 		$(rep).find("foreignObject").attr("width", rep.text.getBoundingClientRect().width+26);
 		
+		//foreignObject is the upper Tag which limits the bounding Box of the Inputfield. foreignObject should be expand in the edit mode. Important for Firefox and Safari
+		$("#InputforeignObject").attr("width",2000);
+		
+		//the actual text will be hide and the inputfield will be focused 
 		$(rep).find("text").hide();
+		$(rep).find("#simpleTextInputField").focus();
 		
-		$(rep).find("input").focus();
-		
-		this.inPlaceEditingMode = true;
+		//at a event the input field will be expanded dynamicly
+		var resizeInput = function(){
+			 $('#simpleTextInputField').attr('size', $('#simpleTextInputField').val().length);
+		}
+		$('#simpleTextInputField')
+			// event handler
+			.keyup(resizeInput)
+			// resize on page load
+			.each(resizeInput);
 		GUI.inPlaceEditingObject = this.id;
+		
+		console.log('***EDIT************');
+		console.log($('#simpleTextInputField').val());
+		console.log(this.inPlaceEditingMode);
+		console.log(GUI.inPlaceEditingObject);
+		console.log(this.oldContent);
+		console.log('*******************');
 	}
     
-    // Simple text box will be expanded (width)
-    var that = this;
-    var charWidth=0;
-    var boxWidth = that.getRepresentation().getBBox().width;
-    document.onkeydown = function(event){ 
-            if(event.keyCode != 8){
-                var inputChar = String.fromCharCode(event.keyCode);
-                charWidth = that.getCharWidth(inputChar);
-                var newWidth =boxWidth+charWidth;
-                $(rep).find("input").css("width", newWidth+"px");
-                boxWidth=newWidth;
-            }
-        }
+	
 }
 
 
@@ -204,12 +222,4 @@ SimpleText.saveChanges =  function() {
 
 	}
 	
-}
-
-SimpleText.getCharWidth = function(txt){
-        var c=document.createElement('canvas');
-        var ctx=c.getContext('2d');
-        ctx.font = this.getAttribute('font-size') + 'px' + this.getAttribute('font-family');
-        var length = ctx.measureText(txt).width;
-        return length;
 }
