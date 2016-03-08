@@ -62,10 +62,6 @@ theObject.getPlacementArea = function(object) {
     return [[p1, p2, p3, p4]];
 }
 
-theObject.getType = function() {
-    return "area";
-}
-
 theObject.howToHandle = function(object) {
     var attributeName = this.getAttribute("attribute");
     var value = object.getAttribute(attributeName) || false;

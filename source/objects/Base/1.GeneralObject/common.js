@@ -648,4 +648,12 @@ GeneralObject.makeStructuring=function(){	this.isStructuringFlag=true;}Gener
 
 GeneralObject.isSensitive=function(){	return this.isSensitiveFlag||false;}
 
+GeneralObject.getContexts=function(){
+	
+	var room=this.getRoom();
+	var contexts=room.getAttribute('contexts');
+	
+	return contexts;
+}
+
 module.exports = GeneralObject;
