@@ -773,6 +773,88 @@ GUI.mimeTypeIsPreviewable=function(mimeType) {
 }
 
 /**
+ * Simple selection dialog
+ * @param dialogData 
+ *
+ * dialogData has to be an object with the following attributes:
+ *
+ *	entries: The actual entries for the select dialog in form of an object with key-value-pairs
+ *	selectButtonText: The text for the select button (optional)
+ *	cancelButtonText: The text for the cancel button (optional)
+ *	heading: The heading of the dialogue
+ *	description: A short description for the dialogue (optional)
+ *	width: The width of the dialogue (optional)
+ *	position: The position where the dialogue should appear in form of an object with x and y attributes
+ *	selectCallback(selection): The function which is called when a selection has been made
+ *	cancelCallback(): The function which is called when the dialogue has been canceled (or no selection has been made) (optional)
+ */
+ 
+GUI.simpleSelectionDialog=function(dialogData){
+	
+	//complete dialogue data
+	
+	if (!dialogData) dialogData={};
+	
+	if (!dialogData.entries) dialogData.entries={};
+	if (!dialogData.selectButtonText) dialogData.selectButtonText=GUI.translate("Select");
+	if (!dialogData.cancelButtonText) dialogData.cancelButtonText=GUI.translate("Cancel");
+	if (!dialogData.heading) dialogData.heading='PLEASE SPECIFY HEADING';
+	if (!dialogData.description) dialogData.description='';
+	if (!dialogData.selectCallback) dialogData.selectCallback = function(selection){console.log('SPECIFY SELECTED CALLBACK - Selection:',selection);}
+	if (!dialogData.cancelCallback) dialogData.cancelCallback = function(){};
+	if (!dialogData.width) dialogData.width = 350;
+	if (!dialogData.position) dialogData.position = {'x':50,'y':50};
+	
+	// the generic dialog function returns the dialog content, so we have to determine the selected
+	// element and call the given selectCallback function with the selected element only.
+	var selectCallback=function(content){
+		var inputs=content.getElementsByTagName('input');
+		for (var i in inputs){
+			var input=inputs[i];
+			if (input.checked) return dialogData.selectCallback(input.value);
+		}
+		
+		dialogData.cancelCallback();
+		
+	}
+	
+	// the only purpose of this wrapping is the removal of the dialog content which should not be
+	// provided to the given cancelCallback function.
+	var cancelCallback=function(){
+		dialogData.cancelCallback();
+	}
+	
+	// build button data
+	var buttons={};
+	buttons[dialogData.selectButtonText]=selectCallback;
+	buttons[dialogData.cancelButtonText]=cancelCallback;
+	
+	// for the position of the dialogue, we need to provide a passthrough object which is interpreted
+	// by the respective jquery functions.
+	var position = {
+            open: function(event, ui) {
+            $(event.target).parent().css('position', 'fixed');
+            $(event.target).parent().css('top', dialogData.position.y+'px');
+            $(event.target).parent().css('left', dialogData.position.x+'px');
+        }
+    };
+    
+    // now build the dialog content. It contains of the description and a radiobutton list of the specified entries.
+    var content='<p>'+dialogData.description+'</p>';
+    content+='<div class="simpleselection">';
+    
+    for (var key in dialogData.entries){
+    	var value=dialogData.entries[key];
+    	var entry='<label><input type="radio" name="simpleSelectionDialog" value="'+key+'"><span>'+value+'</span></label>';
+    	content+=entry;
+    }
+    content+='</div>';
+	
+	return GUI.dialog (dialogData.heading, content, buttons, dialogData.width, position);
+	
+}
+
+/**
  * GUI specific display of general messages (and complex control dialogs)
  * @param {String} heading A title for the dialog
  * @param {String|DOMObject} content A message or DOM object that will be used as the body of the dialog
