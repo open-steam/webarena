@@ -15,9 +15,9 @@ SurveyTeacher.register=function(type){
 
     // this.registerAttribute('initialised', {hidden: true, standard: false});
     this.registerAttribute('HTMLString', {hidden: true, type: 'text'});
-    this.registerAttribute('stepping', {hidden: false, type: 'number'});
-    this.registerAttribute('minValue', {hidden: false, type: 'number'});
-    this.registerAttribute('maxValue', {hidden: false, type: 'number'});
+    this.registerAttribute('stepping', {hidden: false, type: 'number', standard: 1});
+    this.registerAttribute('minValue', {hidden: false, type: 'number', standard: 0});
+    this.registerAttribute('maxValue', {hidden: false, type: 'number', standard: 3});
     this.registerAttribute('surveyLength', {hidden: false});
     this.registerAttribute('statements', {multiple: true, hidden: true, standard: []});
 }

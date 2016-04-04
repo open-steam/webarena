@@ -41,7 +41,7 @@ SurveyTeacher.getSpecifications = function(){
 	'<span style="margin-right: 30px">Schrittgröße:</span><span style="margin-left: 40px">'+this.getAttribute('stepping')+ '</span><br>'+
 	'<span style="margin-right: 50px">Skala: </span><span style="margin-left: 55px"> '+this.getAttribute('minValue')+' bis '+
 	this.getAttribute('maxValue')+'</span><br>'+
-	'<span style="margin-right: 4px">Anzahl der Aussagen:</span><span style="margin-left: 20px">'+this.getAttribute('surveyLength')+ '</span>';;
+	'<span style="margin-right: 4px">Anzahl der Aussagen:</span><span style="margin-left: 20px">'+this.getAttribute('surveyLength')+ '</span>';
 }
 
 

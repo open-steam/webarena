@@ -19,7 +19,6 @@ SurveyTest.register=function(type){
     this.registerAttribute('statements', {multiple: true, hidden: false, standard: []});
     this.registerAttribute('resultObjectID', {hidden: false});
     this.registerAttribute('resultObjectRoom', {hidden: false});
-
 }
 
 SurveyTest.sliderChange = function(sliderID, value){

@@ -94,52 +94,68 @@ SurveyResult.draw = function(external) {
 
     rep.text.style.fontSize = this.getAttribute('font-size') + 'px';
     rep.text.style.fontFamily = this.getAttribute('font-family');
-    rep.text.style.color = this.getAttribute('font-color');
+    rep.text.style.color = this.getAttribute('white');
 }
 
 SurveyResult.drawCircleArrayHorizontal = function(circleArray){
-    var statementNumber = 0;
+    var statementNumber = this.getAttribute("surveyLength")-1;
     var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
-    for(var i = 0; i < circleArray.length; i++){
+    for(var i = circleArray.length-1; i >= 0; i--){
+        this.drawCircleHorizontal(circleArray[i], i%scaleLength, statementNumber);
+
         if(i%scaleLength == 0){
-            statementNumber++;
+            statementNumber--;
         }
-        this.drawCircleHorizontal(circleArray[i], i, statementNumber);
+        
+        
+        
     }
 }
 
 SurveyResult.drawCircleArrayVertical = function(circleArray){
-    var statementNumber = 0;
+    var statementNumber = this.getAttribute('surveyLength')-1;
     var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1 ;
-        for(var i = 0; i < circleArray.length; i++){
-        if(i%scaleLength == 0){
-            statementNumber++;
-        }
-        this.drawCircleVertical(circleArray[i], i, statementNumber);
+
+
+    for(var i = circleArray.length-1; i >= 0; i--){
+        this.drawCircleVertical(circleArray[i], i%scaleLength, statementNumber);
     }
+    if(i%scaleLength == 0){
+            statementNumber--;
+    }
+}
+
+SurveyResult.growthFunction = function(input){
+    return 14 * Math.exp(-Math.exp(-0.3 * (input-5)));
 }
 
 SurveyResult.drawCircleHorizontal = function(circle, step, statementNumber){
     //Typecasting necessary
+    console.log(statementNumber +", "+ step);
+    var results = this.getAttribute("results");
+    var value = results[statementNumber][step];
     var posX = Number(circle.getAttribute('cx'));
     var posY = Number(circle.getAttribute('cy'));
-    var radius = Number(circle.getAttribute('r'));
+    console.log(this.growthFunction(value));
+    var radius = Number(circle.getAttribute('r'))*this.growthFunction(value)*3;
     var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
 
     circle.setAttribute('cx', posX + this.offset + (this.getAttribute('distanceX')*(step%scaleLength)));
-    circle.setAttribute('cy', posY + (this.offset*statementNumber));
+    circle.setAttribute('cy', posY + (this.offset*(statementNumber+1)));
     circle.setAttribute('r', radius);
 }
 
 SurveyResult.drawCircleVertical = function(circle, step, statementNumber){
     //Typecasting necessary
+    var results = this.getAttribute("results");
+    var value = results[statementNumber][step];
     var posX = Number(circle.getAttribute('cx'));
     var posY = Number(circle.getAttribute('cy'));
-    var radius = Number(circle.getAttribute('r'));    
+    var radius = Number(circle.getAttribute('r'))*this.growthFunction(value)*3;    
     var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
 
 
-    circle.setAttribute('cx', posY + (this.offset*statementNumber));
+    circle.setAttribute('cx', posY + (this.offset*(statementNumber+1)));
     circle.setAttribute('cy', this.getAttribute('height') - posY - this.offset - (this.getAttribute('distanceY')*(step%scaleLength)));
     circle.setAttribute('r', radius);
 }
@@ -182,6 +198,7 @@ SurveyResult.drawVerticalLine = function(offset, argumentNumber, line, group, mi
         $(currentNumerationObject).attr('y', drawLineAt + 3);
         $(currentNumerationObject).attr('x', xCoordinate - 36);
         $(currentNumerationObject).attr('font-size', 12);
+        $(currentNumerationObject).attr('fill', 'white');
 
         drawLineAt -= distancePerStepInPixel;
     }
@@ -231,6 +248,7 @@ SurveyResult.drawHorizontalLine = function(offset, argumentNumber, line, group, 
             $(currentNumerationObject).attr('x', drawLineAt - 3);
             $(currentNumerationObject).attr('y', yCoordinate + 18);
             $(currentNumerationObject).attr('font-size', 12);
+            $(currentNumerationObject).attr('fill', 'white');
 
             drawLineAt += distancePerStepInPixel;
         }
@@ -285,23 +303,6 @@ SurveyResult.createResultCircles = function(group){
     }
 }
 
-// SurveyResult.createScaleLines = function(group){
-//     for(var i = 0; i <= this.getAttribute('surveyLength'); i++){
-//          GUI.svg.line(group, 0, 0, 20, 20, {});
-//     }
-// }
-
-// SurveyResult.drawScales = function(rep, group, line){
-//     var surveyLength = this.getAttribute('surveyLength');
-
-//     for(var i = 1; i <= surveyLength; i++){
-//         if (this.getAttribute('direction') === 'horizontal') {
-//             this.drawHorizontalLine(this.offset, i, line, group, this.getAttribute('minValue'), this.getAttribute('maxValue'), this.getAttribute('stepping'), rep)
-//         }else{
-//             this.drawVerticalLine(this.offset, i, line,group, this.getAttribute('minValue'), this.getAttribute('maxValue'), this.getAttribute('stepping'), rep)
-//         }
-//     }
-// }
 
 SurveyResult.createRepresentation = function(parent) {
     var rep = GUI.svg.group(parent, this.getAttribute('id'));

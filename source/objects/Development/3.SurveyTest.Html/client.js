@@ -5,7 +5,6 @@
 *
 */
 SurveyTest.clientRegister=function(){
-	var that = this;
 	SurveyTest.parent.clientRegister.call(this);
 }
 
@@ -17,13 +16,16 @@ SurveyTest.sendSurveyResult = function(event){
 		surveyResultArray.push(that.getAttribute('points_'+i));
 	}
 
-	console.log("ResultObjectRoom "+ that.getAttribute('resultObjectRoom'));
-	console.log("ResultObjectID "+ that.getAttribute('resultObjectID'));
-	console.log();
+	console.log("***********CLIENTSIDE**************");
+	console.log("SurveyResultArray " + surveyResultArray);
+	console.log("resultObjectRoom "+ that.getAttribute('resultObjectRoom') );
+	console.log("resultObjectID "+ that.getAttribute('resultObjectID'));
 
-	var resultObject = Modules.ObjectManager.getObject(that.getAttribute('resultObjectRoom'), that.getAttribute('resultObjectID'), that.context);
-	console.log(resultObject);
-	console.log();
-	var result = resultObject.getAttribute('result');
-	console.log(result);
+	 var attributes =    {resultArray: surveyResultArray,
+	 					  resultObjectRoom: that.getAttribute('resultObjectRoom'),
+	 					  resultObjectID: that.getAttribute('resultObjectID'),
+	 					  minValue: that.getAttribute('minValue'),
+                         };
+
+	that.serverCall("sendSurveyResult", attributes);
 }

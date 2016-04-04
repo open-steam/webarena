@@ -42,12 +42,14 @@ SurveyResult.register=function(type){
 
     this.registerAttribute('minValue', {type: 'number'});
     this.registerAttribute('maxValue', {type: 'number'});
-    this.registerAttribute('stepping', {type: 'number',min: 1});
+    this.registerAttribute('stepping', {type: 'number',min: 1, standard: 1});
     this.registerAttribute('surveyLength', {type: 'number'});
     /*this.registerAttribute('distinct',{type:'boolean',standard:false,category:'Scale'});
      this.registerAttribute('orientation',{type:'selection',standard:'bottom',options:['bottom','top','left','right'],category:'Scale'});
      */
-    this.registerAttribute('results', {multiple: true, standard: []});
+    this.registerAttribute('results', {hidden:false, standard: false });
+
+    this.registerAttribute('initialized', {standard: false});
 
     this.registerAttribute('label', {type: 'text', standard: 'Ergebnisse', category: 'TimeLine', hidden: 'true'});
     this.registerAttribute('vertical-align', {hidden:true});
@@ -68,6 +70,7 @@ SurveyResult.register=function(type){
 }
 
 SurveyResult.initResultArray = function(){
+    if(!(this.getAttribute("initialized"))){
     var step = this.getAttribute('stepping');
     var maxValue = this.getAttribute('maxValue');
     var minValue = this.getAttribute('minValue');
@@ -84,8 +87,9 @@ SurveyResult.initResultArray = function(){
             array[i][j] = 0;
         }
     }
-
     this.setAttribute('results', array);
+    this.setAttribute('initialized', true);
+    }
 }
 
 SurveyResult.register('SurveyResult');

@@ -74,6 +74,8 @@ SurveyTest.updateContent = function() {
 			$(Element).bind('click', {this: self}, self.sendSurveyResult);
 		});
 		
+		this.setAttribute("initialised", true);
+
 	//Else check if the content of the SurveyTest-Object differs from what is currently loaded in the room 
 	//if so: reload it, else keep the old content
 	//This prevents the range-sliders from resetting or the HTML-Content not rendering after refreshing the page
@@ -97,6 +99,5 @@ SurveyTest.updateContent = function() {
 			that.oldContent=text;
 		});
 	}
-	this.setAttribute("initialised", true);
 }
 
