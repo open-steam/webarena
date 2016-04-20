@@ -363,9 +363,24 @@ GeneralObject.hideActivationMarker = function() {
  * @param {bool} groupSelect ?
  */
 GeneralObject.select = function(multiple, groupSelect) {
-
     if (this.selected)
         return;
+	
+	//check if the object is blocked. if you get the permission then you block it for yourself
+	if(this.getAttribute("blockedByID") == "none" ||this.getAttribute("blockedByID") == ObjectManager.user.id){
+		this.block();
+	}else{
+		//when its blocked but the user not online or in the room then you get the permission
+		if(GUI.chat.users.indexOf(this.getAttribute("blockedByID")) == -1){
+			this.block();
+		}else{
+			//its blocked. you get a notifcation
+			if(document.getElementById("blockingMessage") == null)
+				this.showBlockDialog(this);
+			return;
+		}
+	}
+
 
     GUI.hideActionsheet();
 
@@ -463,13 +478,11 @@ GeneralObject.select = function(multiple, groupSelect) {
  * Deselects the object
  */
 GeneralObject.deselect = function() {
-
     if (!this.selected)
         return;
 
-    this.selected = false;
-
-
+    this.selected = false;	
+	this.unblock();
     //hide invisible object after deselection
     var visible = true;
     if (!this.getAttribute("visible")) {
@@ -506,6 +519,7 @@ GeneralObject.deselect = function() {
         if (!visible) {
             GUI.showLink(objectID, targetID, false);
         }
+
     });
 
 

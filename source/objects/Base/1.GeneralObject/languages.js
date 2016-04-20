@@ -66,6 +66,9 @@ GeneralObject.setTranslations('de',{
 	'Please select a destination or enter a URL' : 'Bitte wählen Sie ein Ziel oder geben Sie eine URL ein',
 	'Please enter a valid URL' : 'Bitte geben Sie eine gültige URL ein',
 	'Internal' : 'Intern',
-	'External' : 'Extern'
+	'External' : 'Extern',
+	'is blocked by' : 'ist blockiert von',
+	"Object is blocked" : "Objekt blockiert",
+	'cancel process' : 'Vorgang abbrechen'
 	}
 );

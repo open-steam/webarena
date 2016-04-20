@@ -175,6 +175,10 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
 	
+	this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
+	this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
+	this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
+	
     var r = Modules.Helper.getRandom(0, 200);
     var g = Modules.Helper.getRandom(0, 200);
     var b = Modules.Helper.getRandom(0, 200);
@@ -211,6 +215,49 @@ GeneralObject.toString = function() {
         return 'type ' + this.type;
     }
     return this.type + ' #' + this.get('id');
+}
+
+/**
+ * Set a blockade on the selected object
+ */
+GeneralObject.block = function(){
+	this.setAttribute('blockedByUser',ObjectManager.user.username);
+	this.setAttribute('blockedByID',ObjectManager.user.id);
+	var checkInterval = this.checkBlockade();
+}
+
+/**
+ * cancel the blockade on the selected object
+ */
+GeneralObject.unblock = function(){
+	this.setAttribute('blockedByUser','none');
+	this.setAttribute('blockedByID','none');
+	console.log("UNBLOCK");
+}
+
+GeneralObject.tryOfUnblock=1;
+
+/**
+ * called when another User got the blockingMessage. Object will unblocked after one minute
+ */
+GeneralObject.checkBlockade = function(timeOut){
+	var that = this;
+	var inervalFunction = setInterval(function(){
+		document.onkeydown = function(event){ 
+			that.tryOfUnblock=1;
+		}
+		if(that.getAttribute('blockedByID') != 'none' && that.tryOfUnblock <= 4){
+			console.log("unblock in "+(60-15*(-1+that.tryOfUnblock))+"sec");
+			that.tryOfUnblock++;
+		}else{
+			that.tryOfUnblock=1;
+			if(that.saveChanges != null)
+				that.saveChanges();
+			that.deselect();
+			that.unblock();
+			clearInterval(inervalFunction);
+		}
+	}, 3000);
 }
 
 /**

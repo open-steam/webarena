@@ -811,6 +811,45 @@ GeneralObject.showExitDialog = function() {
 
 }
 
+GeneralObject.showBlockDialog = function(context) {
+    var self = this;
+	var that=this;
+    var dialog_buttons = {};
+    var html;
+
+    dialog_buttons[that.translate(GUI.currentLanguage, "cancel process")] = function() {
+        return false;
+    };
+    
+    var dialog_width = 350;
+    var content = [];
+    html = "<p id='blockingMessage'> "+this.getAttribute("type")+" ("+this.getAttribute("id")+") "+that.translate(GUI.currentLanguage, "is blocked by")+":<br>"+this.getAttribute("blockedByUser")+" ("+this.getAttribute("blockedByID")+")</p>";
+    
+    content.push(html);
+
+    var position = {
+            open: function(event, ui) {
+            $(event.target).parent().css('position', 'fixed');
+            $(event.target).parent().css('top', context.getAttribute("y")+'px');
+            $(event.target).parent().css('left', context.getAttribute("x")+'px');
+        }
+    };
+
+    var dialog = GUI.dialog(
+            that.translate(GUI.currentLanguage, "Object is blocked"),
+            content,
+            dialog_buttons,
+            dialog_width,
+            position
+            );
+
+     document.onkeydown = function(event){ 
+            if(event.keyCode ==13){
+            }
+        }
+
+}
+
 
 /**
  *	Attribute Transfer Dialog, where the user can select which of the attributes of the current object will be transferred to the selected objects
