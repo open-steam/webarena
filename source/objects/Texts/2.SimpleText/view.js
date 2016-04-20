@@ -98,6 +98,8 @@ SimpleText.editText = function() {
 
 	// set state editable
 	this.inPlaceEditingMode = true;
+	GUI.inPlaceEditingObject = this.id;
+	console.log("EDITING MODE GESETZT");
 	var rep = this.getRepresentation();
 	
 	//block Android Chrome
@@ -114,12 +116,6 @@ SimpleText.editText = function() {
 		$(rep).find("body").append('<input id="simpleTextInputField" type="text"></input>');
 		$(rep).find("#simpleTextInputField").attr("name", "newContent");
 		$(rep).find("#simpleTextInputField").attr("value", this.oldContent);
-				console.log('***START************');
-		console.log($('#simpleTextInputField').val());
-		console.log(this.inPlaceEditingMode);
-		console.log(GUI.inPlaceEditingObject);
-		console.log(this.oldContent);
-		console.log('*******************');
 		$("#simpleTextInputField").css("font-size", this.getAttribute('font-size')+"px");
 		$("#simpleTextInputField").css("font-family", this.getAttribute('font-family')); 
 		$("#simpleTextInputField").css("color", this.getAttribute('font-color'));
@@ -145,14 +141,8 @@ SimpleText.editText = function() {
 			.keyup(resizeInput)
 			// resize on page load
 			.each(resizeInput);
-		GUI.inPlaceEditingObject = this.id;
+
 		
-		console.log('***EDIT************');
-		console.log($('#simpleTextInputField').val());
-		console.log(this.inPlaceEditingMode);
-		console.log(GUI.inPlaceEditingObject);
-		console.log(this.oldContent);
-		console.log('*******************');
 	}
     
 	
@@ -221,5 +211,6 @@ SimpleText.saveChanges =  function() {
 		this.draw();
 
 	}
+	this.deselect();
 	
 }
