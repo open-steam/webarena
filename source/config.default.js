@@ -32,6 +32,7 @@ module.exports={
 	bugReport:true,
 	WebRTC: false,
 	trash: true,
+	objectlist:true,
 	cloud: false,
 	recentChanges: true,
 	

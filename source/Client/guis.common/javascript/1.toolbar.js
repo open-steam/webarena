@@ -297,7 +297,7 @@ GUI.initToolbar = function() {
 				var dialog_width =690;
 				var content = [];
 
-				html = '<div id="bug"><div>Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.<span><br /><br />Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.</span></div><div id="bug_report"><span>Was wollten Sie tun?</span><textarea id="dialog_bug_task"></textarea><span>Welches Problem ist aufgetreten?</span><textarea id="dialog_bug_problem"></textarea><span>Ihre Email-Adresse:</span><input type="email" id="dialog_bug_email" /><p><input type="submit" value="Senden" id="bug_submit" /></p></div><div id="bug_result"></div></div>';
+				html = '<div id="bug"><div>Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.<span><br /><br />Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.</span></div><div id="bug_report"><span>Was wollten Sie tun?</span><textarea id="dialog_bug_task"></textarea><span>Welches Problem ist aufgetreten?</span><textarea id="dialog_bug_problem"></textarea><span>Ihre Email-Adresse:</span><input type="email" id="dialog_bug_email" /><p></p></div><div id="bug_result"></div></div>';
 
 				content.push(html);
 				
@@ -532,6 +532,32 @@ GUI.initToolbar = function() {
         }
 
         $("#header > .header_tabs_sidebar").append(trashButton);
+
+    }
+	
+	/* add ObjectList toggle */
+    if (!Modules.Config.presentationMode && Modules.config.objectlist) {
+	
+        var objectlistButton = document.createElement("img");
+        $(objectlistButton).attr("src", "../../guis.common/images/objectlist.png").attr("alt", "");
+        $(objectlistButton).attr("width", "24").attr("height", "24");
+
+        $(objectlistButton).attr("id", "trash_button");
+        $(objectlistButton).addClass("sidebar_button header_tab");
+
+        $(objectlistButton).attr("title", GUI.translate("ObjectList"));
+
+        var click = function() {
+            GUI.sidebar.openPage("objectList", objectlistButton);
+        }
+
+        if (GUI.isTouchDevice) {
+            $(objectlistButton).bind("touchstart", click);
+        } else {
+            $(objectlistButton).bind("mousedown", click);
+        }
+
+        $("#header > .header_tabs_sidebar").append(objectlistButton);
 
     }
 	

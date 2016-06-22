@@ -200,6 +200,7 @@
 				<div id="inspector"></div>
                 <div id="pad"><iframe name="padframe"></iframe></div>
 				<div id="trash"></div>
+				<div id="objectList"></div>
 				<div id="cloud" style="height: 2000px"></div>
 				<div id="recentChanges" style="height: 2000px"></div>
 			</div>
@@ -234,7 +235,12 @@
 		<br />
 		
 		<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
+		<input type="submit" name="Impressum" value="About" class="login_submit" id="impressum_button" />
 		
+	</div>
+	
+	<div id='impressum' style='padding: 20px; background-color: #FFFFFF; border: 3px solid #C7C7C7;position: absolute; top: 100px;  width:550px; height:280px; overflow-y: scroll;z-index: 25001;border-radius: 10px; margin-left:225px;'>
+		<input type='submit' name='Impressum' value='Close About' class='login_submit' id='impressum_button' onclick="$('#impressum').hide();" style="float: right;"/>
 	</div>
 	
 	

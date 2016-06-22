@@ -40,6 +40,7 @@ GUI.setTranslations('de',{
 	'Reload' : 'Neuladen',
 	'Bugreport' : 'Fehlerbericht',
 	'Object inspector' : 'Objektinspektor',
+	'ObjectList' : 'Objektliste',
 	'Trash basket' : 'Papierkorb',
 	'Recent Changes' : 'Letzte Änderungen',
 	'Toggle hidden mode' : 'Versteckt-Modus wechseln',
