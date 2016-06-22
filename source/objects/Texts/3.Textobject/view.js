@@ -92,7 +92,6 @@ Textobject.getIconText = function() {
 
 
 Textobject.buildContentDialog = function(){
-	console.log("BUILD DIALOG");
 	var that = this;
 	var type = this.getAttribute("mimeType");
 
@@ -258,11 +257,9 @@ Textobject.mergeContent = function(){
 			element: v
 		};
 	});
-	
+
 	 if(newStr==null)
 		 newStr={};
-	
-	console.log(oldData);
 
 	$.each(newStr, function( k, v ) {
 		if(v.nodeName=="#text"){
@@ -285,9 +282,9 @@ Textobject.mergeContent = function(){
 		
 		if(v.hasAttribute('TIME') === false)
 			v.setAttribute('TIME', Date.now());
-		
+
 		if(v.hasAttribute('AUTHOR') === false)
-			v.setAttribute('AUTHOR', ObjectManager.user.username);
+			v.setAttribute('AUTHOR', ObjectManager.user.id);
 		
 		if(oldData.hasOwnProperty(v.getAttribute('ID'))){
 			var oldElement = oldData[v.getAttribute('ID')].element;
@@ -303,11 +300,10 @@ Textobject.mergeContent = function(){
 				oldElement.removeAttribute("align");
 				var string = v.outerHTML;
 				var oldString = oldElement.outerHTML;
-				console.log(v.tagName);
 				oldString = oldString.substr(2+v.tagName.length,oldString.length);
 				oldString = oldString.substr(0,oldString.length-(3+v.tagName.length));
 				mergedStr +=string.substr(0, string.length-(3+v.tagName.length)) + " <span style='background-color: rgb(247, 198, 206);'>("+oldString+")</span>" + string.substr(string.length-(3+v.tagName.length));
-			}else{
+			}else{		
 				mergedStr += v.outerHTML;
 			}
 		}else{
@@ -315,8 +311,6 @@ Textobject.mergeContent = function(){
 		}
 		delete oldData[v.getAttribute('ID')];
 	});
-	
-	console.log(oldData);
 	
 	$.each(oldData, function( k, v ) {
 		var oldString = v.element.outerHTML;
@@ -330,7 +324,6 @@ Textobject.mergeContent = function(){
 	console.log("DATA MERGED");
 	this.setAttribute("editorText",mergedStr);
 	console.log("DATA SAVED");
-	console.log(this.getAttribute("editorText"));
 	this.setAttribute("editorBlock", false);
 }
 

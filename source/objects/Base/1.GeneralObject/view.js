@@ -480,7 +480,6 @@ GeneralObject.select = function(multiple, groupSelect) {
 GeneralObject.deselect = function() {
     if (!this.selected)
         return;
-
     this.selected = false;	
 	this.unblock();
     //hide invisible object after deselection

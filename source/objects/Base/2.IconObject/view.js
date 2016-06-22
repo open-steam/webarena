@@ -138,7 +138,7 @@ IconObject.dblclickHandler = function(event) {
 		}
 	
 		if(event.target.localName == "tspan"){
-			this.editText();
+			this.editText();		
 		}
 	}
 }
@@ -284,9 +284,9 @@ IconObject.renderText = function (text){
 	
 		/* width of tspan elements is 0 in Firefox --> display multiline text left aligned in Firefox */
 		if ($(rep).find("text").width() == 0) {
-			var w = widthHalf-Math.floor($(this)[0].getBoundingClientRect().width/2);
+			var w = widthHalf-($(rep).find("text").width()/2)-Math.floor($(this)[0].getBoundingClientRect().width/2);
 		} else {
-			var w = widthHalf-Math.floor($(this).width()/2);
+			var w = widthHalf-($(rep).find("text").width()/2)-Math.floor($(this).width()/2);
 		}
 		
 		$(this).attr("x", w);
@@ -318,12 +318,10 @@ IconObject.updateIcon=function(){
 	this.createPixelMap();
 }
 
-
 /**
  * Called after a double click on the text, enables the inplace editing
  */
 IconObject.editText = function(){
-
 	var rep = this.getRepresentation();
 	
 	$(rep).find("foreignObject").show();
@@ -347,7 +345,8 @@ IconObject.editText = function(){
 	
 	this.inPlaceEditingMode = true;
 	GUI.inPlaceEditingObject = this.id;
-
+	
+	this.block();
 }
 
 
@@ -355,8 +354,6 @@ IconObject.editText = function(){
  * Called after hitting the Enter key during the inplace editing
  */
 IconObject.saveChanges = function() {
-	
-	console.log('In saveChanges');
 
 	if(this.inPlaceEditingMode){
 		var rep = this.getRepresentation();
@@ -373,7 +370,8 @@ IconObject.saveChanges = function() {
 		GUI.inPlaceEditingObject = false;
 	
 		this.setAttribute("name", newContent);
-	
-		this.draw();	
+		this.checkBlockade();
+		this.draw();
+		this.unblock();
 	}
 }
