@@ -7,23 +7,40 @@
 
 
 var printLogo = function() {
-    var logo = ['##########################################',
-        '#    W E B A R E N A   S E R V E R       #',
-        '#                                        #',
-        '#    (c) 2012-15 Contextual Informatics, #',
-        '#                Universität Paderborn   #',
-        '#                                        #',
-        '#    Main contributors:                  #',
-        '#                                        #',
-        '#        Felix Winkelnkemper             #',
-        '#        Tobias Kempkensteffen           #',
-        '#        Viktor Koop                     #',
-        '#        Jan Petertonkoker               #',
-        '#        Steven Christopher Lücker       #',
-        '#        Christoph Sens                  #',
-        '#                                        #',
-        '##########################################'];
-
+	var localconfig = require('./config.local.js');
+	var imprint = localconfig.about;
+	var printList = function(aData){
+		var list="";
+		for (i = 0; i < aData.length; i++) { 
+			logo.push("#  "+aData[i]);
+		}
+		return list;
+	};
+	var printObject = function(aData){
+		var list="";
+		for (var prop in aData) {
+		  logo.push("#  "+aData[prop]);
+		}
+		return list;
+	};
+    var logo = [
+		'##############################################################',
+		'#             '+imprint.project+'                  #'];
+	    logo.push("##############################################################");
+	    logo.push("#");
+	    logo.push('# '+imprint.copyright);
+		logo.push("#");
+		printObject(imprint.adress);
+		logo.push("#");
+		logo.push("# Main contributors");
+	 	printList(imprint.contributors);
+		logo.push("#");
+		logo.push("# Contact");
+		printObject(imprint.contact);
+		logo.push("#");
+		logo.push("# Guarantor");
+		printObject(imprint.guarantor);
+		logo.push("##############################################################");
     logo.forEach(function(l) {
         console.log(l);
     });

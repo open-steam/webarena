@@ -77,7 +77,7 @@ WebServer.init = function (theModules) {
 				var roomId = url.substr(6);
 
 				var indexFilename = '/../Client/guis/desktop/index.html';
-
+				var impressumFilename = '/../Client/guis/desktop/impressum.html';
 				fs.readFile(__dirname + indexFilename, 'utf8', function (err, data) {
 
 					if (err) {

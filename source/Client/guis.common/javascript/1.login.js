@@ -39,6 +39,59 @@ GUI.showLogin = function(err) {
 		$("#login").append("<p>"+GUI.translate('Unfortunately Microsoft Internet Explorer did not support all features of this system. We recommend using Google Chrome or Mozilla Firefox. Thank you for your understanding.')+"</p>");
 	}
 	
+	var printImprint = function(){
+		var imprint	= Config.about;
+		var printList = function(aData){
+			var list="";
+			for (var i = 0; i < aData.length; i++) { 
+				logo.push("<li>   "+aData[i]+"</li>");
+			}
+			return list;
+		};
+		var printObject = function(aData){
+			var list="";
+			for (var prop in aData) {
+			  logo.push("   "+aData[prop]+"<br>");
+			}
+			return list;
+		};
+		var logo = ['<h3>'+imprint.project+'</h3>'];
+			logo.push('<p>'+imprint.copyright+'</p>');
+			
+			printObject(imprint.adress);
+		
+			logo.push("<p>Main contributors</p>");
+			
+			logo.push("<ul>");
+			printList(imprint.contributors);
+			logo.push("</ul>");
+		
+			logo.push("<p>Contact</p>");
+			
+			logo.push("<ul>");
+			printObject(imprint.contact);
+			logo.push("</ul>");
+			
+			logo.push("<p>Guarantor</p>");
+			
+			logo.push("<ul>");
+			printObject(imprint.guarantor);
+			
+			logo.push("<br>");
+		
+			printObject(imprint.text);
+		
+		var str="";
+		logo.forEach(function(l) {
+			$( "#impressum" ).append(l);
+		});
+	
+	};
+	
+	printImprint();
+	
+	$("#impressum").hide();
+	
 	$("body").append("<p id='TouchMouseNote' style='position: fixed; bottom: 10px; z-index: 15002; left: 10%'>"+GUI.translate('Please note: if you are using a computer with touchscreen AND mouse, press the login button with your prefered device. The webarena interface will be optimized for the selected input method.')+"</p>");
 	
 	$("#login_submit").on("touchend", function () {
@@ -48,6 +101,13 @@ GUI.showLogin = function(err) {
 	
 	$("#login_submit").on("mouseup", function () {
 		GUI.login();
+	});
+	$("#impressum_button").on("touchend", function () {
+		$("#impressum").show();
+	});
+	
+	$("#impressum_button").on("mouseup", function () {
+		$("#impressum").show();
 	});
 	
 	var userDataObject = GUI.retrieveUserData();
@@ -64,6 +124,7 @@ GUI.showLogin = function(err) {
 GUI.hideLogin = function() {
 	
 	$("#login").hide();
+	$("#impressum").hide();
 	$("#login_background").hide();
 	$("#login_background").css("opacity", 1);
 	$("#TouchMouseNote").hide();

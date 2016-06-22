@@ -71,8 +71,6 @@ theObject.createObject=function(type,callback){
     return Modules.ObjectManager.createObject(this.id, type, false, false, this.context, callback);
 }
 
-
-
 /**
 *	returns the objects which were deleted in the current room (special format for JSTree!)
 */
