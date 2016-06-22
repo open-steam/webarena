@@ -247,18 +247,25 @@ GeneralObject.checkBlockade = function(timeOut){
 			that.tryOfUnblock=1;
 		}
 		if(that.getAttribute('blockedByID') != 'none' && that.tryOfUnblock <= 4){
-			console.log("unblock in "+(60-15*(-1+that.tryOfUnblock))+"sec");
+			console.log("unblock in "+(20-5*(-1+that.tryOfUnblock))+"sec");
 			that.tryOfUnblock++;
 		}else{
 			that.tryOfUnblock=1;
-			if(that.saveChanges != null)
-				that.saveChanges();
-			that.deselect();
-			that.unblock();
+			if(!that.inPlaceEditingMode)
+				that.endCheckBlockade();
 			clearInterval(inervalFunction);
 		}
-	}, 3000);
+	}, 5000);
 }
+
+GeneralObject.endCheckBlockade = function(){
+	var that = this;
+	if(that.saveChanges != null){
+		that.saveChanges();
+	}
+	that.deselect();
+	that.unblock();
+}; 
 
 /**
  * Attribute handling
