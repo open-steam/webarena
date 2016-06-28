@@ -77,15 +77,17 @@ theObject.positionToValueY = function(object) {
     var pixelStart = this.getAttribute("startY");
     var distancePerStepInPixel = this.getAttribute("distanceY");
     var objY = object.getAttribute('cy');
+    
+    console.log(minVal, stepping, pixelStart, distancePerStepInPixel, objY);
 
-    var v = (pixelStart - objY) / distancePerStepInPixel;
+    var value = (pixelStart - objY) / distancePerStepInPixel;
 
     return value;
 }
 
 theObject.checkData = function(object) {
     var data = this.getData(object);
-    if (!data.attribute || !data.value) {
+    if (!data.attribute) {
         console.log(this + ' has insufficient data.'); //TODO shout back to people in the room
         return false;
     }
