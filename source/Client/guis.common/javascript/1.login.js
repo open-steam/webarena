@@ -40,48 +40,29 @@ GUI.showLogin = function(err) {
 	}
 	
 	var printImprint = function(){
-		var imprint	= Config.about;
-		var printList = function(aData){
-			var list="";
-			for (var i = 0; i < aData.length; i++) { 
-				logo.push("<li>   "+aData[i]+"</li>");
-			}
-			return list;
-		};
-		var printObject = function(aData){
-			var list="";
-			for (var prop in aData) {
-			  logo.push("   "+aData[prop]+"<br>");
-			}
-			return list;
-		};
-		var logo = ['<h3>'+imprint.project+'</h3>'];
-			logo.push('<p>'+imprint.copyright+'</p>');
-			
-			printObject(imprint.adress);
+	var imprint = Config.about;
+	var printList = function(aData){		
+		var list="";
 		
-			logo.push("<p>Main contributors</p>");
-			
-			logo.push("<ul>");
-			printList(imprint.contributors);
-			logo.push("</ul>");
+		if (!aData) return list;
 		
-			logo.push("<p>Contact</p>");
-			
-			logo.push("<ul>");
-			printObject(imprint.contact);
-			logo.push("</ul>");
-			
-			logo.push("<p>Guarantor</p>");
-			
-			logo.push("<ul>");
-			printObject(imprint.guarantor);
-			
-			logo.push("<br>");
-		
-			printObject(imprint.text);
-		
-		var str="";
+		for (var i = 0; i < aData.length; i++) { 
+			logo.push("<li>"+aData[i]+'</li>');
+		}
+		return list;
+	};
+    var logo = ['<h2>'+imprint.project+'</h2>'];
+    
+    	logo.push('<p>&copy; '+imprint.copyright+'</p>');
+		logo.push('<h3>Main contributors:</h3>');
+		logo.push('<ul>');
+	 	printList(imprint.contributors);
+	 	logo.push('</ul>');
+		logo.push('<h3>Contact information</h3>');
+		logo.push('<p>'+imprint.contact+'</p>');
+		logo.push('<h3>Acknowledgements</h3>');
+		logo.push('<p>'+imprint.acknowledgements+'</p>');
+
 		logo.forEach(function(l) {
 			$( "#impressum" ).append(l);
 		});

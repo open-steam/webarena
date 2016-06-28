@@ -6,45 +6,7 @@
  */
 
 
-var printLogo = function() {
-	var localconfig = require('./config.local.js');
-	var imprint = localconfig.about;
-	var printList = function(aData){
-		var list="";
-		for (i = 0; i < aData.length; i++) { 
-			logo.push("#  "+aData[i]);
-		}
-		return list;
-	};
-	var printObject = function(aData){
-		var list="";
-		for (var prop in aData) {
-		  logo.push("#  "+aData[prop]);
-		}
-		return list;
-	};
-    var logo = [
-		'##############################################################',
-		'#             '+imprint.project+'                  #'];
-	    logo.push("##############################################################");
-	    logo.push("#");
-	    logo.push('# '+imprint.copyright);
-		logo.push("#");
-		printObject(imprint.adress);
-		logo.push("#");
-		logo.push("# Main contributors");
-	 	printList(imprint.contributors);
-		logo.push("#");
-		logo.push("# Contact");
-		printObject(imprint.contact);
-		logo.push("#");
-		logo.push("# Guarantor");
-		printObject(imprint.guarantor);
-		logo.push("##############################################################");
-    logo.forEach(function(l) {
-        console.log(l);
-    });
-}();
+
 
 "use strict";
 
@@ -68,6 +30,42 @@ try {
     console.log('Attention: No local config found or the file could not be read.');
     console.log('Solution: Copy the content of the config.default and create a new config.local in the same directory! Don\'t forget to update the filebase property to your desired folder!');
 }
+
+var printLogo = function() {
+	var imprint = config.about;
+	var printList = function(aData){		
+		var list="";
+		
+		if (!aData) return list;
+		
+		for (var i = 0; i < aData.length; i++) { 
+			logo.push("     "+aData[i]);
+		}
+		return list;
+	};
+    var logo = ['','',
+		'##############################################################',imprint.project];
+	    logo.push("##############################################################");
+	    logo.push('');
+	    logo.push('(c) '+imprint.copyright);
+		logo.push('');
+		logo.push('Main contributors:');
+		logo.push('');
+	 	printList(imprint.contributors);
+		logo.push('');
+		logo.push('Contact information');
+		logo.push('');
+		logo.push('     '+imprint.contact);
+		logo.push('');
+		logo.push('Acknowledgements');
+		logo.push('');
+		logo.push(imprint.acknowledgements);
+		logo.push('');
+		logo.push("##############################################################");
+    logo.forEach(function(l) {
+        console.log(l);
+    });
+}();
 
 
 //store the general config/client config in an own variable

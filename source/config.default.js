@@ -19,6 +19,20 @@ module.exports={
 	language:'de',	// The client language 
 	presentationMode:false, // If set to true, no new objects can be created and the sidebar is hidden
 	showSidebarbydefault:true, // Toggle the inital state of the sidebar
+	about:{
+		project:'The WebArena Project',
+		copyright:'2012-2016, Contextual Informatics, Universität Paderborn',
+		contributors:
+		  ['Felix Winkelnkemper',
+		   'Tobias Kempkensteffen',
+		   'Viktor Koop',
+		   'Jan Petertonkoker',
+		   'Steven Christopher Luecker',
+		   'Christoph Sens',
+		   'Andreas Schiller'],
+		contact: 'Felix Winkelnkemper, felix.winkelnkemper@uni-paderborn.de',
+		acknowledgements: '',
+	},
 	
 // Object handling
 	
