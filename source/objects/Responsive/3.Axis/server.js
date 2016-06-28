@@ -48,12 +48,9 @@ theObject.evaluatePosition = function(object, inside) {
 
 theObject.getData = function(object) {
     var attribute = this.getAttribute('attribute');
-    if (this.getAttribute("direction") === "horizontal") {
-        var value = this.positionToValueX(object);
-    } else {
-        var value = this.positionToValueY(object);
-    }
-
+    
+    var value = this.positionToValueX(object);
+    
     return {'attribute': attribute, 'value': value};
 }
 
@@ -71,19 +68,6 @@ theObject.positionToValueX = function(object) {
     return value;
 }
 
-theObject.positionToValueY = function(object) {
-    var minVal = this.getAttribute('min');
-    var stepping = this.getAttribute('stepping');
-    var pixelStart = this.getAttribute("startY");
-    var distancePerStepInPixel = this.getAttribute("distanceY");
-    var objY = object.getAttribute('cy');
-    
-    console.log(minVal, stepping, pixelStart, distancePerStepInPixel, objY);
-
-    var value = (pixelStart - objY) / distancePerStepInPixel;
-
-    return value;
-}
 
 theObject.checkData = function(object) {
     var data = this.getData(object);
