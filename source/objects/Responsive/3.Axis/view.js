@@ -67,18 +67,12 @@ Axis.draw = function(external) {
     $(line).attr("stroke", "rbg(0,0,0)");
     $(line).attr("stroke-width", 5);
 
-    this.padding = 20;
-
     var min = this.getAttribute('min');
     var max = this.getAttribute('max');
     var stepping = this.getAttribute('stepping');
 
         $(line).attr("x1", this.padding);
         $(line).attr("y1", this.getAttribute('height') - this.padding - this.padding - this.padding - this.padding);
-        this.setAttribute("startX", this.getAttribute("x") + this.padding);
-        this.setAttribute("startY", this.getAttribute("y") + this.getAttribute('height') - this.padding - this.padding - this.padding - this.padding);
-
-
         $(line).attr("x2", this.getAttribute('width') - this.padding - this.padding);
         $(line).attr("y2", this.getAttribute('height') - this.padding - this.padding - this.padding - this.padding);
 
@@ -86,7 +80,6 @@ Axis.draw = function(external) {
         var pixelEnd = this.getAttribute('width') - this.padding - this.padding;
         var numberOfSteps = group.getElementsByTagName('line').length - 1;
         var distancePerStepInPixel = Math.floor((pixelEnd - pixelStart) / (numberOfSteps - 1));
-        this.setAttribute("distanceX", distancePerStepInPixel);
 
         var yCoordinate = this.getAttribute('height') - this.padding - this.padding - this.padding - this.padding;
 
@@ -157,7 +150,6 @@ Axis.createRepresentation = function(parent) {
 }
 
 Axis.setViewWidth = function(value) {
-    this.padding = 20;
     var rep = this.getRepresentation();
     var group = $("#" + this.getAttribute("id") + "-1");
     if (group) {
@@ -171,16 +163,12 @@ Axis.setViewWidth = function(value) {
         var line = lines[0];
 
             $(line).attr("x1", this.padding);
-            this.setAttribute("startX", this.getAttribute("x") + this.padding);
-            
-
             $(line).attr("x2", value - this.padding - this.padding);
             
             var pixelStart = this.padding;
             var pixelEnd = value - this.padding - this.padding;
             var numberOfSteps = lines.length - 1;
             var distancePerStepInPixel = Math.floor((pixelEnd - pixelStart) / (numberOfSteps - 1));
-            this.setAttribute("distanceX", distancePerStepInPixel);
 
             var yCoordinate = this.getAttribute('height') - this.padding - this.padding - this.padding - this.padding;
 
@@ -234,7 +222,6 @@ Axis.setViewWidth = function(value) {
 }
 
 Axis.setViewHeight = function(value) {
-    this.padding = 20;
     var rep = this.getRepresentation();
     var group = $("#" + this.getAttribute("id") + "-1");
         if (group) {
@@ -248,9 +235,6 @@ Axis.setViewHeight = function(value) {
         var line = lines[0];
 
             $(line).attr("y1", value - this.padding - this.padding - this.padding - this.padding);
-            this.setAttribute("startY", this.getAttribute("y") + value - this.padding - this.padding - this.padding - this.padding);
-
-
             $(line).attr("y2", value - this.padding - this.padding - this.padding - this.padding);
 
             var pixelStart = this.padding;

@@ -50,5 +50,8 @@ Axis.execute = function(event) {
 	}
 }
 
+//The number of pixels padding
+Axis.padding=20;
+
 
 module.exports = Axis;

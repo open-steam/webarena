@@ -55,15 +55,20 @@ theObject.getData = function(object) {
 }
 
 theObject.positionToValueX = function(object) {
-    var minVal = this.getAttribute('min');
-    var stepping = this.getAttribute('stepping');
 
-    var pixelStart = this.getAttribute("startX");
-    var distancePerStepInPixel = this.getAttribute("distanceX");
+    var min = this.getAttribute('min');
+    var max = this.getAttribute('max');
+    var stepping = this.getAttribute('stepping');
+    var numberOfSteps = Math.floor(((max - min) / stepping) + 1);
+    
+    var pixelStart = this.getAttribute("x")+this.padding;
+    var pixelEnd = pixelStart+ this.getAttribute('width') - this.padding - this.padding - this.padding;
+    var distancePerStepInPixel = Math.floor((pixelEnd - pixelStart) / (numberOfSteps - 1));
+
     var objX = object.getAttribute('cx');
     var v = (objX - pixelStart) / distancePerStepInPixel;
 
-    var value = minVal + v * stepping;
+    var value = min + v * stepping;
     
     return value;
 }
@@ -72,7 +77,7 @@ theObject.positionToValueX = function(object) {
 theObject.checkData = function(object) {
     var data = this.getData(object);
     if (!data.attribute) {
-        console.log(this + ' has insufficient data.'); //TODO shout back to people in the room
+        //console.log(this + ' has insufficient data.');
         return false;
     }
 
