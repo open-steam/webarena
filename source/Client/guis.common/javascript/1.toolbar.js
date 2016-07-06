@@ -302,7 +302,7 @@ GUI.initToolbar = function() {
 				content.push(html);
 				
 				var dialog_buttons = {};
-				dialog_buttons["Send"] = function() {
+				dialog_buttons[GUI.translate("Send")] = function() {
 
 					var task = $("#dialog_bug_task").val();
 					var problem = $("#dialog_bug_problem").val();
@@ -348,7 +348,7 @@ GUI.initToolbar = function() {
 							);
 					});
 				};
-				dialog_buttons["Close"] = function() {
+				dialog_buttons[GUI.translate("Close")] = function() {
 					return false;
 				};
 
