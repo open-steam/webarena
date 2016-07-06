@@ -12,6 +12,11 @@ GUI.showLogin = function(err) {
 		return;
 	}
 	
+	//translate all buttons
+	$("#login_submit").attr('value', GUI.translate("Login"));
+	$("#impressum_button").attr('value', GUI.translate("About"));
+	$("#impressum_close_button").attr('value', GUI.translate("Close About"));
+	
 	/* true if the login process is active */
 	GUI.loginProcessActive = false;
 	
@@ -53,7 +58,7 @@ GUI.showLogin = function(err) {
 	};
     var logo = ['<h2>'+imprint.project+'</h2>'];
     
-    	logo.push('<p>&copy; '+imprint.copyright+'</p>');
+    	logo.push('<p>'+imprint.copyright+'</p>');
 		logo.push('<h3>Main contributors:</h3>');
 		logo.push('<ul>');
 	 	printList(imprint.contributors);
@@ -83,11 +88,22 @@ GUI.showLogin = function(err) {
 	$("#login_submit").on("mouseup", function () {
 		GUI.login();
 	});
+	
+	var fitAboutBox = function(){
+		var p = $( "#login" );
+		var position = p.position();
+		$("#impressum").css("top",window.innerHeight*0.05+"px");
+		$("#impressum").css("left",(position.left-402)+"px");
+		$("#impressum").css("width",(804)+"px");
+		$("#impressum").css("height",(Math.min(800,window.innerHeight*0.7))+"px");
+	}
 	$("#impressum_button").on("touchend", function () {
+		fitAboutBox();
 		$("#impressum").show();
 	});
 	
 	$("#impressum_button").on("mouseup", function () {
+		fitAboutBox();
 		$("#impressum").show();
 	});
 	
