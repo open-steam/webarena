@@ -89,7 +89,7 @@ GUI.objectList.update = function() {
 	$("#objectList").on("dblclick", '.jstree-clicked', function() {
 		GUI.objectList.navigate();
     });
-	
+
 }
 
 

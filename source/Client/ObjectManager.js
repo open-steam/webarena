@@ -497,7 +497,6 @@ ObjectManager.init = function() {
     });
 
     Modules.Dispatcher.registerCall('inform', function(data) {
-	
         if (data.message.awareness !== undefined && data.message.awareness.present !== undefined) {
             //list of users
             var users = [];
@@ -950,7 +949,6 @@ ObjectManager.writeToServerConsole = function(data) {
 
 
 ObjectManager.restoreObject = function(objectID, x, y){
-
 	var arr = new Array();
 	arr.push(objectID);
 	

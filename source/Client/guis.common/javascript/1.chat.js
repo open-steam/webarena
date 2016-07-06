@@ -56,7 +56,6 @@ GUI.chat.init = function() {
 GUI.chat.setUsers = function(users) {
 	
 	var userIds = [];
-		
 	for(var j = 0; j<users.length; j++){   //new user: add in GUI.chat.users and create a representation
 		userIds.push(users[j].id);
 		if(GUI.chat.users.indexOf(users[j].id) == -1){ 
@@ -84,7 +83,6 @@ GUI.chat.setUsers = function(users) {
 			var userid = GUI.chat.users[i];
 			
 			GUI.showNotification(false, "chat");
-			
 			$("#"+userid).parent().remove();
 			GUI.chat.users.splice(i, 1);
 		}
