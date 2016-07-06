@@ -82,11 +82,11 @@ GeneralObject.draw = function(external) {
 
         }
 
-
+		
     }
 
     this.adjustControls();
-
+	GUI.objectList.update();
 }
 
 /**
@@ -135,9 +135,9 @@ GeneralObject.updateGUI = function() {
     }
 
     this.draw();
-
     GUI.updateGUI(this);
-
+		
+	
 }
 
 /**
@@ -223,7 +223,7 @@ GeneralObject.representationCreated = function() {
         $("html").unbind("moveObject.wa");
         $("html").unbind("moveend.wa");
     })
-
+	
 }
 
 
@@ -263,6 +263,8 @@ GeneralObject.removeRepresentation = function() {
 
     $(rep).empty();
     $(rep).remove();
+	
+	GUI.objectList.update();
 
 }
 
@@ -357,28 +359,30 @@ GeneralObject.hideActivationMarker = function() {
 }
 
 /**
+ * save the last selected Group
+ */
+GeneralObject.selectedGroup = null;
+
+/**
  * Selects the object
  * 
  * @param {bool} multiple True is multiple objects should be selected (otherwise the selection of an object will deselect all other objects)
  * @param {bool} groupSelect ?
  */
-GeneralObject.select = function(multiple, groupSelect) {
+GeneralObject.select = function(multiple, groupSelect, singleEdit) {
     if (this.selected)
         return;
-	
+								  
 	//check if the object is blocked. if you get the permission then you block it for yourself
 	if(this.getAttribute("blockedByID") == "none" ||this.getAttribute("blockedByID") == ObjectManager.user.id){
 		this.block();
 	}else{
-		//when its blocked but the user not online or in the room then you get the permission
-		if(GUI.chat.users.indexOf(this.getAttribute("blockedByID")) == -1){
-			this.block();
-		}else{
+		
 			//its blocked. you get a notifcation
 			if(document.getElementById("blockingMessage") == null)
 				this.showBlockDialog(this);
 			return;
-		}
+		
 	}
 
 
@@ -394,7 +398,6 @@ GeneralObject.select = function(multiple, groupSelect) {
     }
 
     this.selected = true;
-
 
     //show invisible object if selected
     var visible = true;
@@ -432,12 +435,12 @@ GeneralObject.select = function(multiple, groupSelect) {
             GUI.showLink(objectID, targetID, true);
         }
     });
-
-
-    if (this.getAttribute("group") != 0 && !groupSelect) {
+	
+    if (this.getAttribute("group") != 0 && !groupSelect & singleEdit!=true) {
         $.each(this.getGroupMembers(), function(index, object) {
             object.select(true, true);
         });
+		this.selectedGroup = this.getAttribute("group");
     }
 
 
@@ -1649,7 +1652,10 @@ GeneralObject.deselectHandler = function() {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.dblclickHandler = function(event) {
-
+		//select a single object in the group
+		if(this.getAttribute("group")==this.selectedGroup){
+			this.select(false,false,true);
+		}
 		this.execute(event);
 }
 
