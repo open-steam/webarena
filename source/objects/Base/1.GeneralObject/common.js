@@ -119,11 +119,6 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('locked', {type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
 
-            window.setTimeout(function() {
-                object.deselect();
-                object.select();
-            }, 10);
-
             return true;
 
         }});
@@ -188,6 +183,7 @@ GeneralObject.register = function(type) {
     this.standardData.width = width;
     this.standardData.height = width;
 	
+	
 }  // End of register function
 
 /**
@@ -227,15 +223,40 @@ GeneralObject.block = function(){
 }
 
 /**
+* saves all states for the console Logs when a object will unblock
+ */
+GeneralObject.blockStates = [
+	"unblock in 20sec ",
+	"unblock in 15sec ",
+	"unblock in 10sec ",
+	"unblock in 5sec ",
+	"UNBLOCK "
+];
+
+
+
+/**
  * cancel the blockade on the selected object
  */
 GeneralObject.unblock = function(){
 	this.setAttribute('blockedByUser','none');
 	this.setAttribute('blockedByID','none');
-	console.log("UNBLOCK");
+	if(this.lastBlockState != 4){
+		console.log(this.blockStates[4],this.getAttribute('id'));
+		this.lastBlockState =4;
+	}
+		
 }
 
+/**
+* count all blockStates
+ */
 GeneralObject.tryOfUnblock=1;
+
+/**
+* saves the last State
+*/
+GeneralObject.lastBlockState = 1;
 
 /**
  * called when another User got the blockingMessage. Object will unblocked after one minute
@@ -247,8 +268,9 @@ GeneralObject.checkBlockade = function(timeOut){
 			that.tryOfUnblock=1;
 		}
 		if(that.getAttribute('blockedByID') != 'none' && that.tryOfUnblock <= 4){
-			console.log("unblock in "+(20-5*(-1+that.tryOfUnblock))+"sec");
+			console.log(that.blockStates[that.tryOfUnblock-1]);
 			that.tryOfUnblock++;
+			that.lastBlockState = that.tryOfUnblock-1;
 		}else{
 			that.tryOfUnblock=1;
 			if(!that.inPlaceEditingMode)
@@ -357,6 +379,7 @@ GeneralObject.getId = GeneralObject.getID;
 
 GeneralObject.remove = function() {
     Modules.ObjectManager.remove(this);
+	
 }
 
 GeneralObject.deleteIt = GeneralObject.remove;
