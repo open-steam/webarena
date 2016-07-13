@@ -381,6 +381,7 @@ GeneralObject.select = function(multiple, groupSelect, singleEdit) {
 			//its blocked. you get a notifcation
 			if(document.getElementById("blockingMessage") == null)
 				this.showBlockDialog(this);
+				this.checkBlockade();
 			return;
 		
 	}
@@ -1652,10 +1653,7 @@ GeneralObject.deselectHandler = function() {
  * @param {DomEvent} event DOM click event
  */
 GeneralObject.dblclickHandler = function(event) {
-		//select a single object in the group
-		if(this.getAttribute("group")==this.selectedGroup){
-			this.select(false,false,true);
-		}
+
 		this.execute(event);
 }
 
