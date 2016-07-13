@@ -91,9 +91,9 @@ Textobject.getIconText = function() {
 }
 
 
-Textobject.buildContentDialog = function(){
-	var that = this;
-	var type = this.getAttribute("mimeType");
+Textobject.buildContentDialog = function(userAction){
+		var that = this;
+		var type = this.getAttribute("mimeType");
 
         var name = this.getAttribute("name");
         name = name.split(' ').join('_');
@@ -115,9 +115,10 @@ Textobject.buildContentDialog = function(){
 		});
         
         //Event handler for the browser back function
-        $(window).on('popstate', function() {
-            console.log('in back handler');
-            that.closeContentDialog();
+        $(window).on('popstate', function(userAction) {
+			//userAction must be a boolean so Jquerey-Events cant trigger this function
+			if(userAction == true)
+            	that.closeContentDialog();
             $("#FileContentDialog_"+this.id).dialog( "destroy" );
         });
 
