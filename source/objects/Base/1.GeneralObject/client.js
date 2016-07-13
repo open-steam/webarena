@@ -63,6 +63,26 @@ GeneralObject.clientRegister = function (){
     //
     // registerAction(name,func,single,visibilityFunc)
 
+		this.registerAction('singleSelect', function(clickedObject) {
+
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            selected[i].deselect();
+        }
+		clickedObject.select(false,false,true)
+		
+    },  false, function(){
+		var selected = ObjectManager.getSelected();
+
+        /* only one object --> no group */
+        if (selected.length == 1){
+            return false;
+		}
+		
+		return true;
+	});
+	
     this.registerAction('Delete', function(clickedObject) {
 
 	   // it does not matter which object has been clicked on
@@ -77,7 +97,7 @@ GeneralObject.clientRegister = function (){
 
        }
 
-    });
+    },false);
 
     // Copy paste functionality
 
@@ -179,7 +199,7 @@ GeneralObject.clientRegister = function (){
             var obj = selected[i];
 
             if (obj.getAttribute("group") != 0) {
-                hasGroups = true;
+                hasGroups = true;	
             }
 
         }
@@ -239,6 +259,8 @@ GeneralObject.clientRegister = function (){
         ObjectManager.renumberLayers();
 
     });
+	
+
 
 }
 

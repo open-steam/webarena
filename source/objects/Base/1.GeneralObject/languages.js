@@ -26,6 +26,7 @@ GeneralObject.setTranslations('de',{
 	'group':'Gruppe',
 	'Group':'Gruppieren',
 	'Ungroup':'Gruppierung aufheben',
+	'singleSelect': 'Einzelselektion',
 	'shadow':'Schatten',
 	'hidden':'Versteckt',
 	'id':'ID',
