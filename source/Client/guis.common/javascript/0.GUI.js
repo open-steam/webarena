@@ -40,6 +40,10 @@ GUI.translate=function(text){
 	
 }
 
+/**
+ * variable to check if client have the permission to perform some actions what writes some attributes on objects
+ */
+GUI.writePermission = false;
 
 /**
  * variable to check if client is a touch device (to add suitable event handlers)

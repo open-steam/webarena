@@ -822,6 +822,13 @@ theObject.pong=function(){
 }
 theObject.pong.public=true;
 
+theObject.writePermission=function(callback){
+	Modules.Connector.mayWrite(this.inRoom,this.id,this.context,function(error,result){
+		callback(result);
+	});
+}
+theObject.writePermission.public=true;
+
 theObject.intelligentRename=function(attribute,value){
 	//console.log(this+ ' intelligentRename '+attribute+' '+value);
 }

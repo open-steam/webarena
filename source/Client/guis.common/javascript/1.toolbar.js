@@ -5,11 +5,24 @@ var popover_positionOffsetX = 8;
 var popover_positionOffsetY = 20;
 
 var numberOfIcons = 0;
+GUI.writePermission = false;
 
+GUI.initToolbar = function (){
+	var rightCheckFunction = function(){
+		ObjectManager.getCurrentRoom().serverCall("writePermission",function(result){
+			console.log(result);
+			GUI.writePermission=result;
+			GUI.buildToolbar();
+		});
+	}; 
+	
+	rightCheckFunction();
+	console.log(GUI.writePermission);
+}
 /**
  * Init. the toolbar
  */
-GUI.initToolbar = function() {
+GUI.buildToolbar = function() {
 
 	$(window).resize(function() {		
 		GUI.resizeToolbar();
@@ -18,11 +31,12 @@ GUI.initToolbar = function() {
     /* insert icons for creating new objects: */
 
     var types = {};
-
+	
+	
     /* get types of objects */
     $.each(ObjectManager.getTypes(), function(key, object) {
 
-        if (object.isCreatable) {
+        if (object.isCreatable && GUI.writePermission) {
 
             if (object.category == undefined) {
                 object.category = "default";
@@ -43,7 +57,6 @@ GUI.initToolbar = function() {
 
     /* build categories for each type */
     $.each(types, function(key, object) {
-
 		numberOfIcons++;
 	
         var newCategoryIcon = document.createElement("img");
@@ -211,38 +224,43 @@ GUI.initToolbar = function() {
 
 			
 			/*add paste button*/
-			var pasteButton = document.createElement("img");
-			$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
-			$(pasteButton).attr("width", "24").attr("height", "24");
-			$(pasteButton).attr("id", "paste_button");
-			$(pasteButton).addClass("sidebar_button");
-			$(pasteButton).attr("title", GUI.translate("Paste"));
-			var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
-			$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");	
-			numberOfIcons++;
-			$("#header > .header_right").append(pasteButton); //add header icon
-			var clickPaste = function() { //click handler
-				Modules.ObjectManager.pasteObjects();
-                popover.hide();
-            };
+			if(GUI.writePermission){
+				var pasteButton = document.createElement("img");
+				$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
+				$(pasteButton).attr("width", "24").attr("height", "24");
+				$(pasteButton).attr("id", "paste_button");
+				$(pasteButton).addClass("sidebar_button");
+				$(pasteButton).attr("title", GUI.translate("Paste"));
+				var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
+				$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");	
+				numberOfIcons++;
+				$("#header > .header_right").append(pasteButton); //add header icon
+				var clickPaste = function() { //click handler
+					Modules.ObjectManager.pasteObjects();
+					popover.hide();
+				};
+			}
+			
   
 			
 			/*add undo button*/
-			var undoButton = document.createElement("img");
-			$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
-			$(undoButton).attr("width", "24").attr("height", "24");
-			$(undoButton).attr("id", "undo_button");
-			$(undoButton).addClass("sidebar_button");
-			$(undoButton).attr("title", GUI.translate("Undo"));
-			var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
-			$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");	
-			numberOfIcons++;
-			$("#header > .header_right").append(undoButton); //add header icon
-			var clickUndo = function() { //click handler
-				Modules.Dispatcher.query("undo", {"userID": GUI.userid});
-                popover.hide();
-            };
-
+		if(GUI.writePermission){
+				var undoButton = document.createElement("img");
+				$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
+				$(undoButton).attr("width", "24").attr("height", "24");
+				$(undoButton).attr("id", "undo_button");
+				$(undoButton).addClass("sidebar_button");
+				$(undoButton).attr("title", GUI.translate("Undo"));
+				var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
+				$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");	
+				numberOfIcons++;
+				$("#header > .header_right").append(undoButton); //add header icon
+				var clickUndo = function() { //click handler
+					Modules.Dispatcher.query("undo", {"userID": GUI.userid});
+					popover.hide();
+				};
+		}
+			
 			
             /*add parent button*/
 			var parentButton = document.createElement("img");
@@ -381,8 +399,10 @@ GUI.initToolbar = function() {
 
             if (GUI.isTouchDevice) {
 				//header:
-				$(pasteButton).bind("touchstart", clickPaste);
-				$(undoButton).bind("touchstart", clickUndo);
+				if(GUI.writePermission){
+					$(pasteButton).bind("touchstart", clickPaste);
+					$(undoButton).bind("touchstart", clickUndo);
+				}
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
 				$(bugButton).bind("touchstart", clickBug);
@@ -395,15 +415,19 @@ GUI.initToolbar = function() {
                 $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
 				//header:
-				$(pasteButton).bind("mousedown", clickPaste);
-				$(undoButton).bind("mousedown", clickUndo);
+				if(GUI.writePermission){
+					$(pasteButton).bind("mousedown", clickPaste);
+					$(undoButton).bind("mousedown", clickUndo);
+				}
 				$(parentButton).bind("mousedown", clickParent);
 				$(homeButton).bind("mousedown", clickHome);
 				$(bugButton).bind("mousedown", clickBug);
 				$(logoutButton).bind("mousedown", clickLogout);
 				//menu:
-				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
-				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
+				if(GUI.writePermission){
+					$(btnPaste.getDOM()).bind("mousedown", clickPaste);
+					$(btnUndo.getDOM()).bind("mousedown", clickUndo);
+				}
 				$(btnParent.getDOM()).bind("mousedown", clickParent);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
                 $(btnLogout.getDOM()).bind("mousedown", clickLogout);
@@ -510,7 +534,7 @@ GUI.initToolbar = function() {
 
 	
 	/* add trashbasket toggle */
-    if (!Modules.Config.presentationMode && Modules.config.trash) {
+    if (!Modules.Config.presentationMode && Modules.config.trash && GUI.writePermission) {
 	
         var trashButton = document.createElement("img");
         $(trashButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
