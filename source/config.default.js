@@ -33,6 +33,7 @@ module.exports={
 		contact: 'Felix Winkelnkemper, felix.winkelnkemper@uni-paderborn.de',
 		acknowledgements: '',
 	},
+	logoutURL:"", //URl string that is forwarded during logout
 	
 // Object handling
 	
@@ -74,6 +75,7 @@ module.exports={
 		// the following values are not sent to the client.
 		
 		port: 8080,     // HTTP Port for server
+		
 		
 		// Connector configuration.
 		

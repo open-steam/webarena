@@ -382,10 +382,14 @@ GUI.buildToolbar = function() {
 			numberOfIcons++;
 			$("#header > .header_right").append(logoutButton); //add header icon
             var clickLogout = function() { //click handler
-				alert("logout action");
-                location.replace(location.origin);
+				//alert("logout action");
+				if(Modules.Config.logoutURL == "")
+                	location.replace(location.origin);
+				else
+					location.replace(Modules.Config.logoutURL);
                 popover.hide();
 				GUI.deleteUserData();
+				
             };
 
 
