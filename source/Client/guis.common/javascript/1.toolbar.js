@@ -5,19 +5,10 @@ var popover_positionOffsetX = 8;
 var popover_positionOffsetY = 20;
 
 var numberOfIcons = 0;
-GUI.writePermission = false;
+
 
 GUI.initToolbar = function (){
-	var rightCheckFunction = function(){
-		ObjectManager.getCurrentRoom().serverCall("writePermission",function(result){
-			console.log(result);
-			GUI.writePermission=result;
 			GUI.buildToolbar();
-		});
-	}; 
-	
-	rightCheckFunction();
-	console.log(GUI.writePermission);
 }
 /**
  * Init. the toolbar
@@ -36,7 +27,7 @@ GUI.buildToolbar = function() {
     /* get types of objects */
     $.each(ObjectManager.getTypes(), function(key, object) {
 
-        if (object.isCreatable && GUI.writePermission) {
+        if (object.isCreatable) {
 
             if (object.category == undefined) {
                 object.category = "default";
@@ -224,7 +215,7 @@ GUI.buildToolbar = function() {
 
 			
 			/*add paste button*/
-			if(GUI.writePermission){
+			
 				var pasteButton = document.createElement("img");
 				$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
 				$(pasteButton).attr("width", "24").attr("height", "24");
@@ -239,12 +230,12 @@ GUI.buildToolbar = function() {
 					Modules.ObjectManager.pasteObjects();
 					popover.hide();
 				};
-			}
+			
 			
   
 			
 			/*add undo button*/
-		if(GUI.writePermission){
+		
 				var undoButton = document.createElement("img");
 				$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
 				$(undoButton).attr("width", "24").attr("height", "24");
@@ -259,7 +250,7 @@ GUI.buildToolbar = function() {
 					Modules.Dispatcher.query("undo", {"userID": GUI.userid});
 					popover.hide();
 				};
-		}
+		
 			
 			
             /*add parent button*/
@@ -391,6 +382,7 @@ GUI.buildToolbar = function() {
 			numberOfIcons++;
 			$("#header > .header_right").append(logoutButton); //add header icon
             var clickLogout = function() { //click handler
+				alert("logout action");
                 location.replace(location.origin);
                 popover.hide();
 				GUI.deleteUserData();
@@ -399,10 +391,10 @@ GUI.buildToolbar = function() {
 
             if (GUI.isTouchDevice) {
 				//header:
-				if(GUI.writePermission){
+				
 					$(pasteButton).bind("touchstart", clickPaste);
 					$(undoButton).bind("touchstart", clickUndo);
-				}
+				
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
 				$(bugButton).bind("touchstart", clickBug);
@@ -415,19 +407,19 @@ GUI.buildToolbar = function() {
                 $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
 				//header:
-				if(GUI.writePermission){
+				
 					$(pasteButton).bind("mousedown", clickPaste);
 					$(undoButton).bind("mousedown", clickUndo);
-				}
+				
 				$(parentButton).bind("mousedown", clickParent);
 				$(homeButton).bind("mousedown", clickHome);
 				$(bugButton).bind("mousedown", clickBug);
 				$(logoutButton).bind("mousedown", clickLogout);
 				//menu:
-				if(GUI.writePermission){
+				
 					$(btnPaste.getDOM()).bind("mousedown", clickPaste);
 					$(btnUndo.getDOM()).bind("mousedown", clickUndo);
-				}
+				
 				$(btnParent.getDOM()).bind("mousedown", clickParent);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
                 $(btnLogout.getDOM()).bind("mousedown", clickLogout);
@@ -534,7 +526,7 @@ GUI.buildToolbar = function() {
 
 	
 	/* add trashbasket toggle */
-    if (!Modules.Config.presentationMode && Modules.config.trash && GUI.writePermission) {
+    if (!Modules.Config.presentationMode && Modules.config.trash) {
 	
         var trashButton = document.createElement("img");
         $(trashButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
