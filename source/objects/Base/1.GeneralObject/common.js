@@ -219,20 +219,8 @@ GeneralObject.toString = function() {
 GeneralObject.block = function(){
 	this.setAttribute('blockedByUser',ObjectManager.user.username);
 	this.setAttribute('blockedByID',ObjectManager.user.id);
-	var checkInterval = this.checkBlockade();
+	this.checkBlockade();
 }
-
-/**
-* saves all states for the console Logs when a object will unblock
- */
-GeneralObject.blockStates = [
-	"unblock in 20sec ",
-	"unblock in 15sec ",
-	"unblock in 10sec ",
-	"unblock in 5sec ",
-	"UNBLOCK "
-];
-
 
 
 /**
@@ -241,53 +229,37 @@ GeneralObject.blockStates = [
 GeneralObject.unblock = function(){
 	this.setAttribute('blockedByUser','none');
 	this.setAttribute('blockedByID','none');
-	if(this.lastBlockState != 4){
-		console.log(this.blockStates[4],this.getAttribute('id'));
-		this.lastBlockState =4;
-	}
-		
+	console.log("Unblocked: ",this.getAttribute('id'));
 }
 
-/**
-* count all blockStates
- */
-GeneralObject.tryOfUnblock=1;
-
-/**
-* saves the last State
-*/
-GeneralObject.lastBlockState = 1;
-
-/**
- * called when another User got the blockingMessage. Object will unblocked after one minute
- */
-GeneralObject.checkBlockade = function(timeOut){
+GeneralObject.checkBlockade = function(){
 	var that = this;
+	var startTimestamp = new Date().getTime();
+	var waitingTime = 30; //sec
+
 	var inervalFunction = setInterval(function(){
+		//refresh time when keyboard is used
 		document.onkeydown = function(event){ 
-			that.tryOfUnblock=1;
+			startTimestamp = new Date().getTime();
 		}
-		if(that.getAttribute('blockedByID') != 'none' && that.tryOfUnblock <= 4){
-			console.log(that.blockStates[that.tryOfUnblock-1]);
-			that.tryOfUnblock++;
-			that.lastBlockState = that.tryOfUnblock-1;
-		}else{
-			that.tryOfUnblock=1;
-			if(!that.inPlaceEditingMode)
-				that.endCheckBlockade();
+		document.mousemove = function(event){ 
+			startTimestamp = new Date().getTime();
+		}
+		console.log("difference: ",(new Date().getTime()-startTimestamp)/1000 );
+		console.log(that.getAttribute('blockedByID') != 'none');
+		console.log((new Date().getTime()-startTimestamp)/1000 >= waitingTime);
+		if((new Date().getTime()-startTimestamp)/1000 >= waitingTime){
+			if(!that.inPlaceEditingMode){
+				if(that.saveChanges != null){
+					that.saveChanges();
+				}
+				that.deselect();
+				that.unblock();
+			}
 			clearInterval(inervalFunction);
 		}
 	}, 5000);
 }
-
-GeneralObject.endCheckBlockade = function(){
-	var that = this;
-	if(that.saveChanges != null){
-		that.saveChanges();
-	}
-	that.deselect();
-	that.unblock();
-}; 
 
 /**
  * Attribute handling
@@ -318,7 +290,11 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
 
 GeneralObject.setAttribute = function(attribute, value, forced, transactionId) {
 	
-  return this.attributeManager.setAttribute(this, attribute, value, forced);
+  if(GUI.writePermission==false || GUI.writePermission=="undefined"){
+	  return ;
+  }else{
+	  return this.attributeManager.setAttribute(this, attribute, value, forced);
+  }
 
 }
 GeneralObject.setAttribute.public = true;
