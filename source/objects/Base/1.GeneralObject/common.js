@@ -245,10 +245,8 @@ GeneralObject.checkBlockade = function(){
 		document.mousemove = function(event){ 
 			startTimestamp = new Date().getTime();
 		}
-		console.log("difference: ",(new Date().getTime()-startTimestamp)/1000 );
-		console.log(that.getAttribute('blockedByID') != 'none');
-		console.log((new Date().getTime()-startTimestamp)/1000 >= waitingTime);
-		if((new Date().getTime()-startTimestamp)/1000 >= waitingTime){
+		console.log("seconds until unblock: ",waitingTime-(new Date().getTime()-startTimestamp)/1000 );
+		if((new Date().getTime()-startTimestamp)/1000 >= waitingTime || that.getAttribute("blockedByID")=="none"){
 			if(!that.inPlaceEditingMode){
 				if(that.saveChanges != null){
 					that.saveChanges();
