@@ -282,14 +282,18 @@ IconObject.renderText = function (text){
 	/* center text */
 	$(rep).find("text").find("tspan").each(function() {
 	
+		var o_text = $(rep).find("text");
+		var rect = $(rep).find("rect");
+		var w = rect[0].width.baseVal.value/2 -this.getBoundingClientRect().width/2;
+		$(this).attr("x", w);
 		/* width of tspan elements is 0 in Firefox --> display multiline text left aligned in Firefox */
-		if ($(rep).find("text").width() == 0) {
+		/*if ($(rep).find("text").width() == 0) {
 			var w = widthHalf-($(rep).find("text").width()/2)-Math.floor($(this)[0].getBoundingClientRect().width/2);
 		} else {
 			var w = widthHalf-($(rep).find("text").width()/2)-Math.floor($(this).width()/2);
 		}
 		
-		$(this).attr("x", w);
+		$(this).attr("x", w);*/
 		
 	});
 
