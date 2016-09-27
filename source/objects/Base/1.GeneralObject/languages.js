@@ -6,6 +6,7 @@ GeneralObject.setTranslations('de',{
 	'width':'Breite',
 	'height':'Höhe',
 	'fillcolor':'Füllfarbe',
+	'headercolor':'Kopfzeilenfarbe',
 	'linecolor':'Linienfarbe',
 	'opacity':'Deckkraft',
 	'linesize':'Linienstärke',

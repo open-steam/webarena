@@ -110,6 +110,8 @@ Table.draw = function(external) {
             $(cell).attr('width', cellWidth);
             $(cell).attr('height', cellHeight);
             $(cell).attr("fill", this.getAttribute('fillcolor'));
+			if (i==0 || j==0)
+				$(cell).attr("fill", this.getAttribute('headercolor'));
             $(cell).attr("stroke", "black");
             $(cell).attr("stroke-width", this.getAttribute('linecolor'));
             if (i == 0 && j > 0) {

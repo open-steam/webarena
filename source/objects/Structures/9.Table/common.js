@@ -19,6 +19,14 @@ Table.register = function(type) {
     this.standardData.linecolor = 'black';
     this.standardData.width = 400;
     this.standardData.height = 200;
+	this.registerAttribute('headercolor', {type: 'color', standard: 'white', category: 'Appearance', checkFunction: function(object, value) {
+
+            if (object.checkTransparency('fillcolor', value)) {
+                return true;
+            } else
+                return object.translate(GUI.currentLanguage, "Completely transparent objects are not allowed.");
+
+        }});
 
     
 }
