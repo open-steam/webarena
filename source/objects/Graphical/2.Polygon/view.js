@@ -129,7 +129,7 @@ Polygon.getPoints = function(){
 
 	var rep = this.getRepresentation();
 
-	var pointsString = $(rep).attr("points");	
+	var pointsString = $(rep).attr("points") || '';	
 	var pointsArr = pointsString.split(" ");
 	
 	var P = new Array();
