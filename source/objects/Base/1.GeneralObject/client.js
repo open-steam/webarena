@@ -111,7 +111,7 @@ GeneralObject.clientRegister = function (){
     //
     // Linking actions are only shown when more than one object is selected
 
-  /*  this.registerAction('Link',
+    this.registerAction('Link',
 			function(lastClicked) {
 
                 var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
@@ -123,7 +123,7 @@ GeneralObject.clientRegister = function (){
             function() {
                 return (ObjectManager.getSelected().length > 1)
             }
-    );*/
+    );
 
     // Grouping and ungrouping
 

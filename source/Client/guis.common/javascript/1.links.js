@@ -248,7 +248,7 @@ GUI.drawLinks = function(object) {
 		
 	var newLinks1 = [];
 	var oldLinks1 = object.getAttribute("link");
-	if (typeof oldLinks1 == 'array'){
+	if (newLinks1.constructor === Array){
 		newLinks1 = newLinks1.concat(oldLinks1);
 	}else if (oldLinks1){
 		newLinks1.push(oldLinks1);
