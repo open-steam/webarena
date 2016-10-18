@@ -35,8 +35,10 @@ Room.register=function(type){
 	this.registerAttribute('bigIcon',{hidden:true, changedFunction: function(object) {}});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
+	this.registerAttribute('showCaption',{hidden:true});
 	
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
+	
     
 }
 
