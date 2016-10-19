@@ -832,7 +832,7 @@ GeneralObject.showExitDialog = function() {
 
 }
 
-GeneralObject.showBlockDialog = function(context) {
+GeneralObject.showBlockDialog = function() {
     var self = this;
 	var that=this;
     var dialog_buttons = {};
@@ -851,8 +851,8 @@ GeneralObject.showBlockDialog = function(context) {
     var position = {
             open: function(event, ui) {
             $(event.target).parent().css('position', 'fixed');
-            $(event.target).parent().css('top', context.getAttribute("y")+'px');
-            $(event.target).parent().css('left', context.getAttribute("x")+'px');
+            $(event.target).parent().css('top', that.getAttribute("y")+'px');
+            $(event.target).parent().css('left', that.getAttribute("x")+'px');
         }
     };
 

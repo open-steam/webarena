@@ -77,7 +77,10 @@ Textobject.register=function(type){
 }
 
 Textobject.execute=function(){
-		this.openFile()
+		
+		if (this.checkBlock()){
+		   this.openFile();
+		}
 }
 
 Textobject.isProportional=function(){

@@ -149,6 +149,7 @@ WAFile.openFile=function(){
 	var type = this.getAttribute("mimeType");
 	
 	if(type.indexOf("image") > -1 || type.indexOf("text") > -1 || type.indexOf("pdf") > -1){
+		this.tryToBlock();
 		this.buildContentDialog();
 		return;
 	}

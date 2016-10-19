@@ -372,21 +372,9 @@ GeneralObject.selectedGroup = null;
 GeneralObject.select = function(multiple, groupSelect, singleEdit) {
     if (this.selected)
         return;
-								  
-	//check if the object is blocked. if you get the permission then you block it for yourself
-	if(this.getAttribute("blockedByID") == "none" ||this.getAttribute("blockedByID") == ObjectManager.user.id){
-		this.block();
-	}else{
-		
-			//its blocked. you get a notifcation
-			if(document.getElementById("blockingMessage") == null)
-				this.showBlockDialog(this);
-				this.checkBlockade();
-			return;
-		
-	}
-
-
+        
+    this.tryToBlock();
+								
     GUI.hideActionsheet();
 
     if (!GUI.shiftKeyDown && !multiple) {
@@ -485,7 +473,9 @@ GeneralObject.deselect = function() {
     if (!this.selected)
         return;
     this.selected = false;	
-	this.unblock();
+	
+	this.tryToUnblock();
+    
     //hide invisible object after deselection
     var visible = true;
     if (!this.getAttribute("visible")) {

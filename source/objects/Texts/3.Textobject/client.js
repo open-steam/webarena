@@ -77,6 +77,7 @@ Textobject.openFile=function(){
 	
 	if(type.indexOf("image") > -1 || type.indexOf("text") > -1 || type.indexOf("pdf") > -1){
 		this.buildContentDialog(true);
+		this.tryToBlock();
 		return;
 	}
 	window.open(this.getContentURL(), "_blank");

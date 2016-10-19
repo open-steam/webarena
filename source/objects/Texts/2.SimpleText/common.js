@@ -40,8 +40,9 @@ SimpleText.register=function(type){
 
 SimpleText.execute=function(){
 		// if you enter the Editmode then block the object
-		this.block();
-		this.editText();
+		if (this.checkBlock()){
+			this.editText();
+		}
 }
 
 SimpleText.isResizable=function(){

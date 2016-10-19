@@ -374,7 +374,6 @@ IconObject.saveChanges = function() {
 		GUI.inPlaceEditingObject = false;
 	
 		this.setAttribute("name", newContent);
-		this.checkBlockade();
 		this.draw();
 		this.unblock();
 	}
