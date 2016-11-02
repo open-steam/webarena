@@ -17,10 +17,24 @@ GUI.objectList.opened = function() {
  */
 GUI.navigateList = null;
 
+GUI.objectList.updateTimeout=false;
+GUI.objectList.update=function(){
+	
+	if (GUI.objectList.updateTimeout){
+		window.clearTimeout(GUI.objectList.updateTimeout);
+		GUI.objectList.updateTimeout=false;
+	}
+	
+	GUI.objectList.updateTimeout=window.setTimeout(function(){
+		GUI.objectList.updateInternal();
+	},500);
+	
+}
+
 /**
- * updates the trashbasket content (called when opening the trashbasket, if an object was deleted or restored)
+ * updates the object list
  */
-GUI.objectList.update = function() {
+GUI.objectList.updateInternal = function() {
 	
 	var that = this;
 	$('#objectList').empty();
