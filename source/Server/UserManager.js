@@ -132,8 +132,7 @@ UserManager.login=function(socketOrUser,data){
 			connection.user.password=data.password;
 			connection.user.color=userColor;
 			connection.user.externalSession = data.externalSession;
-			connection.user.id = socket.id;
-		
+			connection.user.id = UserManager.generateUID();
 			connection.user.home=data.home;
 			connection.user.hash='___'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
 		
@@ -153,6 +152,16 @@ UserManager.login=function(socketOrUser,data){
 	
 }
 
+UserManager.generateUID= function() {
+    var d = new Date().getTime();
+    var uid = 'xxxx-xxxx-yxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uid;
+};
+
 /**
 *	enterRoom
 *
@@ -163,6 +172,11 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 	if(typeof socketOrUser.id=='string') var userID=socketOrUser.id; else var userID=socketOrUser;
 
 	var roomID = data.roomID;
+	
+	if (roomID=='trash') {
+		Modules.Log.warning("UserManager", "+enter", "Tried to enter trash (user: '"+userID+"')");
+		return;
+	}
 
 	var connection=UserManager.connections[userID];
 	var ObjectManager=Modules.ObjectManager;
@@ -228,7 +242,7 @@ UserManager.getAwarenessData=function(roomID,connections){
 		
 		var presData={};
 		presData.username=con.user.username;
-		presData.id=i;
+		presData.id=con.user.id;
 		presData.color=con.user.color;
 		awarenessData.present.push(presData);
 	}

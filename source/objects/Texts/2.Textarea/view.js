@@ -179,7 +179,8 @@ Textarea.saveChanges = function() {
 		$(rep).find("textarea").hide();
 	
 		$(rep).find(".overfloating-y").show();
-	
+		
+		this.unblock();
 	}
 	
 }

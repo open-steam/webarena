@@ -119,11 +119,6 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('locked', {type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
 
-            window.setTimeout(function() {
-                object.deselect();
-                object.select();
-            }, 10);
-
             return true;
 
         }});
@@ -175,6 +170,10 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
 	
+	this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
+	this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
+	this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
+	
     var r = Modules.Helper.getRandom(0, 200);
     var g = Modules.Helper.getRandom(0, 200);
     var b = Modules.Helper.getRandom(0, 200);
@@ -183,6 +182,7 @@ GeneralObject.register = function(type) {
     this.standardData.fillcolor = 'rgb(' + r + ',' + g + ',' + b + ')';
     this.standardData.width = width;
     this.standardData.height = width;
+	
 	
 }  // End of register function
 
@@ -214,6 +214,138 @@ GeneralObject.toString = function() {
 }
 
 /**
+* tryToBlock
+*
+* Try to set the block on an object. This os only possible, if the object is not already blocked.
+*/
+GeneralObject.tryToBlock=function(){
+	
+	
+	if (!this.isBlocked()) {
+		this.block();
+		return true;
+	} else {
+		//console.log('Cannot block '+this);
+	}
+	
+	return false;
+
+}
+
+/**
+ * Set a block on the object (regardless of existing blocks)
+ *
+ * This should not be called direclty. Use tryToBlock instead.
+ */
+GeneralObject.block = function(){
+	this.setAttribute('blockedByUser',ObjectManager.user.username);
+	this.setAttribute('blockedByID',ObjectManager.user.id);
+	var startTimestamp = new Date().getTime();
+	this.setAttribute('blockedTime',startTimestamp);
+	//console.log("Blocked: " +this);
+	
+	//renew the block every 5 seconds if the object has not been unblocked
+	//in between.
+	
+	var that=this;
+	this.blockrenwer=window.setTimeout(function(){
+		
+		if (that.blockrenwer){
+			clearTimeout(that.blockrenwer);
+			that.blockrenwer=false;
+		}
+		
+		if (that.isBlocked(true)){
+			that.block();
+		} 
+		
+	},5000);
+	
+}
+
+/**
+* tryToUnblock
+*
+* Try remove the block of an object. This is only possible if it was you who blocked it in the first place.
+*/
+GeneralObject.tryToUnblock=function(){
+	
+	var blockedById=this.getAttribute('blockedByID');
+	
+	if (ObjectManager.user.id==blockedById) this.unblock();
+	else {
+		//console.log('Cannot unblock '+this+ ' as you have not blocked it!');
+	}
+
+}
+
+
+/**
+ * cancel the blockade on the selected object
+ */
+GeneralObject.unblock = function(){
+	this.setAttribute('blockedByUser','none');
+	this.setAttribute('blockedByID','none');
+	this.setAttribute('blockedTime',0);
+	//console.log("Unblocked: " +this);
+}
+
+/*
+* isBlocked
+*
+* determine if an object is blocked.
+*
+* in standard behavour returns false, if the current user set the block
+* if you want to determine if a valid block exists regardless of who set
+* it, set raw to true;
+*
+*/
+GeneralObject.isBlocked = function(raw){
+	
+	//set raw to true if you just want to check if a valid block exists without checking who set it.
+	
+	//console.log('checking for block on '+this);
+	
+	var that = this;
+
+	var waitingTime = 30; //sec
+	
+	var blockedTime=this.getAttribute('blockedTime');
+	
+	if (!blockedTime) return false;
+	if (blockedTime==0) return false;    //object not blocked
+	
+	var now = new Date().getTime();
+	
+	if (now-blockedTime>(waitingTime*1000)) return false; //object blocked long ago
+	
+	if (raw) return true;
+	
+	var blockedById=this.getAttribute('blockedByID');
+	
+	if (ObjectManager.user.id==blockedById) return false; //blocked by myself
+	
+	return true;
+	
+}
+
+/*
+* checkBlock
+*
+* shows the blocked dialogue, returns true otherwise;
+*
+*/
+GeneralObject.checkBlock=function(){
+	
+	if (this.isBlocked()){
+		return this.showBlockDialog();
+	}
+	
+	return true;
+	
+}
+
+/**
  * Attribute handling
  *
  * The following attributes are mostly a shortcut to the object's attribute manager
@@ -241,8 +373,17 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
 }
 
 GeneralObject.setAttribute = function(attribute, value, forced, transactionId) {
-	
-  return this.attributeManager.setAttribute(this, attribute, value, forced);
+	try {
+    	if(GUI.writePermission==false || GUI.writePermission=="undefined"){
+			return ;
+		}else{
+			return this.attributeManager.setAttribute(this, attribute, value, forced);
+		}
+	}
+	catch(err) {
+		// GUI wird auf dem Server aufgerufen und ist dort nicht verfügbar
+		return this.attributeManager.setAttribute(this, attribute, value, forced);
+	}
 
 }
 GeneralObject.setAttribute.public = true;
@@ -303,6 +444,7 @@ GeneralObject.getId = GeneralObject.getID;
 
 GeneralObject.remove = function() {
     Modules.ObjectManager.remove(this);
+	
 }
 
 GeneralObject.deleteIt = GeneralObject.remove;

@@ -1,11 +1,12 @@
 "use strict";
 
 GUI.setTranslations('de',{
-    'info.undo.attribute' : 'Eine Attributänderung wurde rückgängig gemacht.',
+    'info.undo.attribute' : 'Attribut ##A am Objekt ##O wurde zurückgestellt. </br> Jetzt: ##N </br> Vorher: ##B',
     'info.undo.duplication' : 'Duplizierung wurde rückgängig gemacht.',
     'info.undo.delete' : 'Gelöschtes Objekt wiederhergestellt.',
-    'info.undo.nothing' : 'Es können keine weiteren Änderungen rückgängig gemacht werden.',
+    'info.undo.nothing' : 'Es gibt keine weiteren Änderungen die rückgängig gemacht werden können.',
     'info.undo.blocked' : 'Die letzte Aktion kann nicht rückgängig gemacht werden. Ein anderer Nutzer hat das Objekt verändert.',
+    'info.undo.unsupported': 'Letzte Aktion zurück zu stellen wird nicht unterstützt',
 	'ping':'pong',
 	'Basic':'Basis',
 	'Dimensions':'Dimensionen',
@@ -39,6 +40,7 @@ GUI.setTranslations('de',{
 	'Reload' : 'Neuladen',
 	'Bugreport' : 'Fehlerbericht',
 	'Object inspector' : 'Objektinspektor',
+	'ObjectList' : 'Objektliste',
 	'Trash basket' : 'Papierkorb',
 	'Recent Changes' : 'Letzte Änderungen',
 	'Toggle hidden mode' : 'Versteckt-Modus wechseln',
@@ -148,6 +150,15 @@ GUI.setTranslations('de',{
 	'delete Object' : 'Objekt gelöscht',
 	'Release the mouse button to delete' : 'Zum Löschen die Maustaste loslassen',
 	'The trash basket is empty. You can delete objects with the contextmenu, the Escape-Button or by dragging them into the trash basket.' : 'Der Papierkorb ist leer. Objekte können mithilfe des Kontextmenüs, dem Escape-Button oder durch Ablegen im Papierkorb gelöscht werden.',
-	'There are no recent changes' : 'Es existieren keine letzten Änderungen'
-	}
+	'There are no recent changes' : 'Es existieren keine letzten Änderungen',
+    'Clean Trashbucket' : 'Papierkorb leeren',
+    'Do not clean' : 'Nicht leeren',
+	'Login' : 'Anmelden',
+	'About' : "Impressum anzeigen",
+	'Close About' : 'Impressum schließen',
+	'Object does not exist' : "Objekt existiert nicht",
+	'Object does not exist anymore. It was deleted by another user completely. Trashtree will up. Trash is updated' : 'Objekt existiert nicht mehr. Es wurde von einem anderen Benutzer vollständig gelöscht. Papierkorb wird aktualsiert',
+	'Close message' : 'Schließe Nachricht',
+	'Send' :'Senden'
+ 	}
 );

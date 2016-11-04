@@ -40,13 +40,18 @@ GUI.sidebar.elementConfig = {
 		onOpen : GUI.trashbasket.opened,
 		onClose: GUI.trashbasket.closed
 	},
-	"cloud" : {
+	"objectList" : {
 		order : 5,
+		onOpen : GUI.objectList.opened,
+		onClose: GUI.objectList.closed
+	},
+	"cloud" : {
+		order : 6,
 		onOpen : GUI.cloud.opened,
 		onClose: GUI.cloud.closed
 	},
 	"recentChanges" : {
-		order : 6,
+		order : 7,
 		onOpen : GUI.recentChanges.opened,
 		onClose: GUI.recentChanges.closed
 	}
@@ -96,7 +101,6 @@ GUI.sidebar.openPage = function(element, button) {
 	
     /* set currently opened element/page */
     GUI.sidebar.currentElement = element;
-
     var left = GUI.sidebar.elementConfig[element]['order']*$("#sidebar").width()*(-1);
 
     /* check if sidebar is shown */
@@ -223,6 +227,7 @@ GUI.sidebar.init = function() {
     GUI.sidebar.elementConfig.bug.title = GUI.translate("Bugreport");
 	GUI.sidebar.elementConfig.pad.title = GUI.translate("Annotations");
 	GUI.sidebar.elementConfig.trashbasket.title = GUI.translate("Trash basket");
+	GUI.sidebar.elementConfig.objectList.title = GUI.translate("ObjectList");
 	GUI.sidebar.elementConfig.cloud.title = GUI.translate("Cloud");
 	GUI.sidebar.elementConfig.recentChanges.title = GUI.translate("Recent Changes");
 	

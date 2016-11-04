@@ -91,6 +91,7 @@ WAFile.getStatusIcon = function() {
 			if (mimeType.indexOf('msexcel') != -1 || mimeType.indexOf('ms-excel') != -1 || mimeType.indexOf('officedocument.spreadsheetml') != -1) typeIcon = "excel";
 			if (mimeType == 'application/zip') typeIcon = "archive";
 			if (mimeType == 'application/pdf') typeIcon = "pdf";
+			if (mimeType == 'application/x-pdf') typeIcon = 'pdf';
 			if (mimeType.indexOf('mspowerpoint') != -1 || mimeType.indexOf('ms-powerpoint') != -1 || mimeType.indexOf('officedocument.presentationml') != -1) typeIcon = "powerpoint";
 			if (mimeType.indexOf('text') != -1) typeIcon = "text";
 			if (mimeType.indexOf('msword') != -1 || mimeType.indexOf('ms-word') != -1 || mimeType.indexOf('officedocument.wordprocessingml') != -1) typeIcon = "word";
@@ -119,7 +120,9 @@ WAFile.buildContentDialog = function(){
 	var type = this.getAttribute("mimeType");
 	
 	if ($("#FileContentDialog_"+this.id).length == 0) {
-		$("body").first().append('<div id="FileContentDialog_'+this.id+'" title='+this.getAttribute("name")+'></div>');
+        var name = this.getAttribute("name");
+        name = name.split(' ').join('_');
+		$("body").first().append('<div id="FileContentDialog_'+this.id+'" title='+name+'></div>');
 		$("#FileContentDialog_"+this.id).dialog({
 			position: { my: "left top", at: "left top", of: $("#"+that.id).find("image")}
 		});
@@ -140,7 +143,7 @@ WAFile.buildContentDialog = function(){
 				
 				var w = $(img).context.naturalWidth;
 				var h = $(img).context.naturalHeight;
-		
+                
 				that.openContentDialog(w, h);
 			});
 		}
@@ -197,10 +200,17 @@ WAFile.openContentDialog = function(w, h){
 	
 	if(w){
 		this.naturalWidth = w;
-	}
+        localStorage['naturalWidth_'+this.id]=w;
+	}else{
+        this.naturalWidth=localStorage['naturalWidth_'+this.id];
+    }
+    
 	if(h){
 		this.naturalHeight = h;
-	}
+        localStorage['naturalHeight_'+this.id]=h;
+	}else{
+        this.naturalHeight=localStorage['naturalHeight_'+this.id];
+    }
 	
 	var aspectRatio = this.naturalWidth/this.naturalHeight;
 	var maxWidth;
@@ -225,7 +235,17 @@ WAFile.openContentDialog = function(w, h){
 		var dialogHeight = maxHeight;
 		var dialogWidth = maxHeight*aspectRatio;
 	}
-	console.log("#FileContentDialog_"+this.id);
+	
+	var pdf_top;
+	var pdf_left;
+	if(localStorage['top_'+this.id] == "undefined" || localStorage['top_'+this.id] == "undefined"){
+		pdf_top = ($(window).scrollTop()+70)+"px";
+		pdf_left =($(window).scrollLeft()+50)+"px";
+	}else{
+		pdf_top = localStorage['top_'+this.id];
+		pdf_left = localStorage['left_'+this.id];
+	}
+	
 	$("#FileContentDialog_"+this.id).parent().animate({
 		width: dialogWidth+"px",
 		height: (dialogHeight+40)+"px",
@@ -243,8 +263,13 @@ WAFile.openContentDialog = function(w, h){
 
 
 WAFile.closeContentDialog = function(){
-
+	console.log($("#FileContentDialog_"+this.id).position());
 	var that = this;
+
+	localStorage['naturalWidth_'+this.id]=$("#FileContentDialog_"+this.id).width();
+	localStorage['naturalHeight_'+this.id]=$("#FileContentDialog_"+this.id).height();
+	localStorage['top_'+this.id] = $("#FileContentDialog_"+this.id).position().top;
+	localStorage['left_'+this.id] = $("#FileContentDialog_"+this.id).position().left;
 	
 	$("#FileContentDialog_"+this.id).parent().animate({
 		width: "64px",

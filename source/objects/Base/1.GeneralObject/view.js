@@ -77,11 +77,11 @@ GeneralObject.draw = function(external) {
 
         }
 
-
+		
     }
 
     this.adjustControls();
-
+	GUI.objectList.update();
 }
 
 /**
@@ -130,9 +130,9 @@ GeneralObject.updateGUI = function() {
     }
 
     this.draw();
-
     GUI.updateGUI(this);
-
+		
+	
 }
 
 /**
@@ -167,7 +167,7 @@ GeneralObject.getRepresentation = function() {
  */
 GeneralObject.representationCreated = function() {
 
-    GUI.updateLayers();
+    GUI.updateLayersDelayed();
 
     if (!this.isSensitive())
         return;
@@ -222,7 +222,7 @@ GeneralObject.representationCreated = function() {
         $("html").unbind("moveObject.wa");
         $("html").unbind("moveend.wa");
     })
-
+	
 }
 
 
@@ -262,6 +262,8 @@ GeneralObject.removeRepresentation = function() {
 
     $(rep).empty();
     $(rep).remove();
+	
+	GUI.objectList.update();
 
 }
 
@@ -356,16 +358,22 @@ GeneralObject.hideActivationMarker = function() {
 }
 
 /**
+ * save the last selected Group
+ */
+GeneralObject.selectedGroup = null;
+
+/**
  * Selects the object
  * 
  * @param {bool} multiple True is multiple objects should be selected (otherwise the selection of an object will deselect all other objects)
  * @param {bool} groupSelect ?
  */
-GeneralObject.select = function(multiple, groupSelect) {
-
+GeneralObject.select = function(multiple, groupSelect, singleEdit) {
     if (this.selected)
         return;
-
+        
+    this.tryToBlock();
+								
     GUI.hideActionsheet();
 
     if (!GUI.shiftKeyDown && !multiple) {
@@ -378,7 +386,6 @@ GeneralObject.select = function(multiple, groupSelect) {
     }
 
     this.selected = true;
-
 
     //show invisible object if selected
     var visible = true;
@@ -416,12 +423,12 @@ GeneralObject.select = function(multiple, groupSelect) {
             GUI.showLink(objectID, targetID, true);
         }
     });
-
-
-    if (this.getAttribute("group") != 0 && !groupSelect) {
+	
+    if (this.getAttribute("group") != 0 && !groupSelect & singleEdit!=true) {
         $.each(this.getGroupMembers(), function(index, object) {
             object.select(true, true);
         });
+		this.selectedGroup = this.getAttribute("group");
     }
 
 
@@ -462,13 +469,12 @@ GeneralObject.select = function(multiple, groupSelect) {
  * Deselects the object
  */
 GeneralObject.deselect = function() {
-
     if (!this.selected)
         return;
-
-    this.selected = false;
-
-
+    this.selected = false;	
+	
+	this.tryToUnblock();
+    
     //hide invisible object after deselection
     var visible = true;
     if (!this.getAttribute("visible")) {
@@ -505,6 +511,7 @@ GeneralObject.deselect = function() {
         if (!visible) {
             GUI.showLink(objectID, targetID, false);
         }
+
     });
 
 
@@ -1066,6 +1073,7 @@ GeneralObject.moveStart = function(event) {
         console.log('Could not get object for '+this);
         console.log(this);
         console.trace();
+        return;
     }
 
     if (!self.selected)

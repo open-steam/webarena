@@ -18,7 +18,7 @@ Triangle.register=function(type){
 	
 	// Registering attributes circle
 
-	this.registerAttribute('rotation',{type:'number',standard:0,min:0,category:'Appearance'});
+	this.registerAttribute('rotation',{type:'number',standard:30,min:0,category:'Appearance'});
 	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
 	
 }

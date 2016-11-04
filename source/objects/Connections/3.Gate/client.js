@@ -7,53 +7,32 @@ Gate.clientRegister=function(){
 	},true);
 }
 
-
-Gate.follow = function(openMethod) {
-
-    var destination = this.getAttribute('destination');
+/**
+* creates a Dialogbox, display all subrooms in a list and set the destination
+* self: the actual gate object this dialog is called for
+*/
+Gate.showLinklDialog = function(self) {
 	
-    if (!destination || destination == "choose") {
-        return this.showExitDialog();
-    } else {
-        var self = this;
-
-        var callback = false;
-        if (self.getAttribute("destinationObject") !== '') {
-            callback = function() {
-                if (document.getElementById(self.getAttribute("destinationObject"))) {
-                        $(document).scrollTo(
-                                $('#' + self.getAttribute("destinationObject")),
-                                1000,
-                                {
-                                    offset: {
-                                        top: (self.getAttribute("height") / 2) - ($(window).height() / 2),
-                                        left: (self.getAttribute("width") / 2) - ($(window).width() / 2)
-                                    }
-                                }
-                        );
-                }
-            }
-        }
-
-		
-        if(openMethod == 'new Tab'){
-            window.open(destination);
-			return;
-		}
-        if(openMethod == 'new Window'){
-			var newWindow = window.open(destination, Modules.Config.projectTitle, "height="+window.outerHeight+", width="+window.outerWidth);
-			return;
-        }
-	
-		//open in same tab
-		if(String(destination).indexOf("http://www.") != 0){
-			ObjectManager.loadRoom(destination, false, callback);
-		}
-		else{
-			window.open(destination,"_self")
-		}
-    }
-
-	
-	
+	Modules.Dispatcher.query('roomlist',undefined, function(rooms){
+								var entries=[];
+								for (var i in rooms){
+									var room=rooms[i];
+									entries[room.id]=room.name+' ('+room.id+')';
+								}
+								
+								var dialogData={};
+							    dialogData.heading=self.translate(GUI.currentLanguage, "select room");
+							    dialogData.description=self.translate(GUI.currentLanguage, "please select a room");
+							    dialogData.position={'x':self.getAttribute("x"),'y':self.getAttribute("y")};
+							    dialogData.selectCallback=function(selection){
+							    	self.saveDestination(selection);
+							    }
+							    dialogData.selectButtonText=self.translate(GUI.currentLanguage, "set target room");
+							    dialogData.cancelButtonText=self.translate(GUI.currentLanguage, "cancel process");
+							    dialogData.entries=entries;
+							    dialogData.width=500;
+							    
+							    GUI.simpleSelectionDialog(dialogData);
+							});
+   
 }

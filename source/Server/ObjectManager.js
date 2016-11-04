@@ -40,7 +40,6 @@ ObjectManager.registerType = function(type, constr) {
  *  deletes an object and informs clients about the deletion
  */
 ObjectManager.remove = function(obj) {
-	
     Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
     obj.updateClients('objectDelete');
     
@@ -417,11 +416,14 @@ ObjectManager.undo = function(data, context, callback) {
     var that = this;
     var userID = data.userID;
     var lastChange = that.history.getLastChangeForUser(userID);
-    
+    var undoMessage = {
+        type : null,
+        data : lastChange,
+        text : null
+    }
     if (lastChange) {
         if (!lastChange.blocked) {
             var changeSet = lastChange.changeSet;
-            var undoMessage = ""
             try {
                 changeSet.forEach(function(e) {
                     var object = ObjectManager.getObject(e.roomID, e.objectID, context);
@@ -431,33 +433,42 @@ ObjectManager.undo = function(data, context, callback) {
                             o2.updateClients("objectUpdate");
                             object.remove();
                         });
-                        undoMessage = 'info.undo.delete';
+                        undoMessage.type = "undo.delete";
+                        undoMessage.text = 'info.undo.delete';
 
                     } else if (e.action === 'setAttribute' || e.action === 'set Attribute') {
                         object.setAttribute(e.attribute, e.old);
-                        undoMessage = 'info.undo.attribute';
+                        undoMessage.type = "undo.attribute";
+                        undoMessage.text  = 'info.undo.attribute';
                     } else if (e.action === 'duplicate') {
                         object.remove();
-                        undoMessage = 'info.undo.duplication';
+                        undoMessage.type = "undo.duplication";
+                        undoMessage.text  = 'info.undo.duplication';
                     } else {
-                        undoMessage = "Undo of the action isn't supported";
+                        undoMessage.type = "undo.unsupported";
+                        undoMessage.text  = "info.undo.unsupported";
                     }
                 });
                 callback(null, undoMessage);
             } catch (e) {
             	
             	console.log('Undo error');
-            	
-                callback(null, "info.error");
+                undoMessage.type = "undo.error";
+            	undoMessage.text ="info.error";
+                callback(null, undoMessage);
             }
 
             that.history.removeHistoryEntry(lastChange.transactionId);
 
         } else {
-            callback(null, 'info.undo.blocked');
+            undoMessage.type = "undo.blocked";
+            undoMessage.text ='info.undo.blocked';
+            callback(null, undoMessage);
         }
     } else {
-        callback(null, 'info.undo.nothing');
+        undoMessage.type = "undo.nothing";
+        undoMessage.text ='info.undo.nothing';
+        callback(null, undoMessage);
 
     }
 };
@@ -469,7 +480,6 @@ ObjectManager.undo = function(data, context, callback) {
  *
  **/
 ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
-
     if (!context)
         throw new Error('Missing context in ObjectManager.getRoom');
 

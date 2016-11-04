@@ -59,13 +59,20 @@ GUI.trashbasket.update = function() {
 		$(this).find('a > .jstree-icon').css({'background-size': 'contain'})
 	});
 	
-	$("#trash").append(renderedTree)
+    var cleanButton = $("<button type='button' style='margin-top:10px; margin-left:5px;' class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' role='button'><span class='ui-button-text'>"+GUI.translate("Clean Trashbucket")+"</span></button>");
+    
+    $(cleanButton).click(function() {
+      GUI.trashbasket.clean();
+    });
+	$("#trash").append(cleanButton);
+    $("#trash").append(renderedTree);
 	
 	$('#jsTrashTree').css("margin-top", "5px");
 	
 	$("#trash").on("dblclick", '.jstree-clicked', function() {
 		GUI.trashbasket.restoreObject();
-    });
+    })
+	setTimeout(function(){ GUI.objectList.update();}, 300);
 	
 }
 
@@ -117,7 +124,35 @@ GUI.trashbasket.restoreObject = function(x, y) {
 		
 	if(jstree_selected_item.length != 0){
 		var objectID = jstree_selected_item.data('id');
-		ObjectManager.restoreObject(objectID, x, y);
+		var room = ObjectManager.getObject(ObjectManager.getRoomID());
+		var objectStillExist = false;
+		
+		room.serverCall("getDeletedObjects", function(result){
+			for(var i=0; i<result.length; i++){
+				if(result[i].metadata.id == objectID)
+					objectStillExist=true;
+			}
+		});
+		
+		if(objectStillExist){
+			ObjectManager.restoreObject(objectID, x, y);	
+		}else{
+			var dialog_buttons = {};
+    
+
+    
+			dialog_buttons[GUI.translate("Close message")] = function() {
+				return;
+			};
+			
+			GUI.dialog(
+            GUI.translate("Object does not exist"),
+            [GUI.translate("Object does not exist anymore. It was deleted by another user completely. Trashtree will up. Trash is updated")],
+            dialog_buttons,
+            300
+            );
+		}
+		
 		GUI.trashbasket.update();
 	}
 	
@@ -128,7 +163,6 @@ GUI.trashbasket.restoreObject = function(x, y) {
  * called when the mouse cursor enters the trashbasket area 
  */
 GUI.trashbasket.enter = function() {
-
 	var selected = ObjectManager.getSelected();
 	var moving = false;
 	
@@ -142,7 +176,6 @@ GUI.trashbasket.enter = function() {
 			break;
 		}
 	}
-
 }
 
 
@@ -155,4 +188,42 @@ GUI.trashbasket.leave = function() {
 	$("#trash").find("#emptyTrashMessage").show();
 	$('#jsTrashTree').show();
 	
+}
+
+/**
+ * delete all objects in the trash folder
+ */
+GUI.trashbasket.clean = function() {
+    GUI.showCheckDialog();
+}
+
+// open a Dialog and ask the user if he want to delete all objects in the trash
+GUI.showCheckDialog = function() {
+	
+    var self = this;var that=this;
+    var dialog_buttons = {};
+    
+
+    
+    dialog_buttons[GUI.translate("Clean Trashbucket")] = function() {
+        ObjectManager.getCurrentRoom().clearTrash();
+    };
+    dialog_buttons[GUI.translate( "Do not clean")] = function() {
+     
+    };
+    
+    var dialog_width = 300;
+    
+    var html = "<p>Möchten Sie den Papierkorb wirklich leeren?</p>";
+    var content = [];
+    content.push(html);
+    
+    var dialog = GUI.dialog(
+            GUI.translate("Clean Trashbucket"),
+            content,
+            dialog_buttons,
+            dialog_width
+            );
+    
+    
 }

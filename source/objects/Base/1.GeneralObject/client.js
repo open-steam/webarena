@@ -63,6 +63,26 @@ GeneralObject.clientRegister = function (){
     //
     // registerAction(name,func,single,visibilityFunc)
 
+		this.registerAction('singleSelect', function(clickedObject) {
+
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            selected[i].deselect();
+        }
+		clickedObject.select(false,false,true)
+		
+    },  false, function(){
+		var selected = ObjectManager.getSelected();
+
+        /* only one object --> no group */
+        if (selected.length == 1){
+            return false;
+		}
+		
+		return true;
+	});
+	
     this.registerAction('Delete', function(clickedObject) {
 
 	   // it does not matter which object has been clicked on
@@ -77,7 +97,7 @@ GeneralObject.clientRegister = function (){
 
        }
 
-    });
+    },false);
 
     // Copy paste functionality
 
@@ -91,9 +111,8 @@ GeneralObject.clientRegister = function (){
     //
     // Linking actions are only shown when more than one object is selected
 
-    this.registerAction(
-            'Link',
-            function(lastClicked) {
+    this.registerAction('Link',
+			function(lastClicked) {
 
                 var linkProperties = lastClicked.translate(GUI.currentLanguage, "select properties");
 
@@ -179,7 +198,7 @@ GeneralObject.clientRegister = function (){
             var obj = selected[i];
 
             if (obj.getAttribute("group") != 0) {
-                hasGroups = true;
+                hasGroups = true;	
             }
 
         }
@@ -239,6 +258,8 @@ GeneralObject.clientRegister = function (){
         ObjectManager.renumberLayers();
 
     });
+	
+
 
 }
 
@@ -257,7 +278,7 @@ GeneralObject.performAction = function(name, clickedObject) {
 }
 
 GeneralObject.getActions = function() {
-    return this.actionManager.getActions();
+    	return this.actionManager.getActions();
 }
 
 GeneralObject.translate = function(language, text) {
@@ -648,8 +669,13 @@ GeneralObject.showExitDialog = function() {
 	};
 	
 	function HandleTextareaInput(textareaInput){
+		
+		var isWebLink=false;
+        
+        if (textareaInput.indexOf("http://") == 0) isWebLink=true;
+        if (textareaInput.indexOf("https://") == 0) isWebLink=true;
 	
-		if(textareaInput.indexOf("http://www.") != 0){
+		if(!isWebLink){
 			alert(that.translate(GUI.currentLanguage, "Please enter a valid URL"));
 			setTimeout(function(){ that.showExitDialog() }, 10);
 		}
@@ -803,6 +829,45 @@ GeneralObject.showExitDialog = function() {
     dialog.on("click", '.jstree-clicked', function() {
         //$(':button:contains(' + that.translate(GUI.currentLanguage, "Okay") + ')').attr("disabled", false);
     });
+
+}
+
+GeneralObject.showBlockDialog = function() {
+    var self = this;
+	var that=this;
+    var dialog_buttons = {};
+    var html;
+
+    dialog_buttons[that.translate(GUI.currentLanguage, "cancel process")] = function() {
+        return false;
+    };
+    
+    var dialog_width = 350;
+    var content = [];
+    html = "<p id='blockingMessage'> "+this.getAttribute("type")+" ("+this.getAttribute("id")+") "+that.translate(GUI.currentLanguage, "is blocked by")+":<br>"+this.getAttribute("blockedByUser")+" ("+this.getAttribute("blockedByID")+")</p>";
+    
+    content.push(html);
+
+    var position = {
+            open: function(event, ui) {
+            $(event.target).parent().css('position', 'fixed');
+            $(event.target).parent().css('top', that.getAttribute("y")+'px');
+            $(event.target).parent().css('left', that.getAttribute("x")+'px');
+        }
+    };
+
+    var dialog = GUI.dialog(
+            that.translate(GUI.currentLanguage, "Object is blocked"),
+            content,
+            dialog_buttons,
+            dialog_width,
+            position
+            );
+
+     document.onkeydown = function(event){ 
+            if(event.keyCode ==13){
+            }
+        }
 
 }
 

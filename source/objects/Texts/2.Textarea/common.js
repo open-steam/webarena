@@ -36,7 +36,9 @@ Textarea.register=function(type){
 Textarea.execute=function(){
 	
 	if(!this.inPlaceEditingMode){
-		this.editText();
+		if (this.checkBlock()){
+		 this.editText();
+		}
 	}
 	
 }

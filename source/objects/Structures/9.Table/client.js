@@ -1,24 +1,3 @@
-//currently not in use
-/*Table.getAbsoluteX = function(elm) {
- var x = 0;
- if (elm && typeof elm.offsetParent != "undefined") {
- while (elm && typeof elm.offsetLeft == "number") {
- x += elm.offsetLeft;
- elm = elm.offsetParent;
- }
- }
- return x;
- }
- Table.getAbsoluteY = function(elm) {
- var y = 0;
- if (elm && typeof elm.offsetParent != "undefined") {
- while (elm && typeof elm.offsetTop == "number") {
- y += elm.offsetTop;
- elm = elm.offsetParent;
- }
- }
- return y;
- } */
 
 Table.clientRegister=function(){
 	
@@ -65,7 +44,7 @@ Table.insertFirstColumn = function(obj) {
 Table.showFormatDialog = function(selected) {
     var that = this;
     var dialog_buttons = {};
-    dialog_buttons[that.translate(GUI.currentLanguage, "Speichere Anordnung von Zeilen und Spalten")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Save layout")] = function() {
         var yAttributes = $("#sortable").children();
         var yAttributeValues = [];
         $(yAttributes).each(function() {
@@ -118,7 +97,7 @@ Table.showFormatDialog = function(selected) {
     html += '<script>' + js + js1 + js2 + '</script>';
     content.push(html);
     var dialog = GUI.dialog(
-            that.translate(GUI.currentLanguage, "Zeilen und Spalten anpassen"),
+            that.translate(GUI.currentLanguage, "Edit rows and columns"),
             content,
             dialog_buttons,
             dialog_width,
@@ -147,7 +126,7 @@ Table.showLabelDialog = function(clickedElement,positionMouse) {
 
     }
     
-    dialog_buttons[that.translate(GUI.currentLanguage, "Namen übernehmen")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Change Header")] = function() {
         changeName();
     };
     
@@ -157,8 +136,7 @@ Table.showLabelDialog = function(clickedElement,positionMouse) {
     
     var dialog_width = 300;
     var content = [];
-    var html = "<p>Tragen im unteren Eingabefeld einen neuen Namen ein.</p>";
-    html+="<p>Mit der Eingabe-Taste &#9166 übernehmen Sie den Namen</p>";
+    var html = "<p>Bitte tragen Sie in das Textfeld die neue Zellenbeschriftung ein.</p>";
     html+="<input id='inputField' type='text' style='width:100%' value='"+clickedElement.innerHTML+"'>";
     
 var js = '$(document).ready(function(){document.getElementById("inputField").select();});';
@@ -174,7 +152,7 @@ var js = '$(document).ready(function(){document.getElementById("inputField").sel
         }
     };
     var dialog = GUI.dialog(
-            that.translate(GUI.currentLanguage, "Zeilen- und Spaltennamen überarbeiten"),
+            that.translate(GUI.currentLanguage, "Change Header"),
             content,
             dialog_buttons,
             dialog_width,

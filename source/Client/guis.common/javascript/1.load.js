@@ -24,6 +24,7 @@ GUI.entered = function() {
  * @param {int} step Loading step which should be performed
  */
 GUI.loadGUI = function(step) {
+    this.setScrollPosition();
     this.checkCurrentsGUIObjects();
 	/* not logged in? */
 	if (!GUI.username) {
@@ -125,6 +126,16 @@ GUI.loadGUI = function(step) {
 		WebRTCManager.init();
 		
 		GUI.drawAllLinks(); //draw all existing links in the new room
+		
+		setTimeout(function(){
+		
+			ObjectManager.getCurrentRoom().serverCall("writePermission",function(result){
+				GUI.writePermission=result;
+				console.log("Write permission: ",GUI.writePermission);
+				GUI.fadeoutActionElements();
+			});
+			
+		}, 200);
 
 	
 	} else {
@@ -133,10 +144,24 @@ GUI.loadGUI = function(step) {
 
 }
 
+GUI.fadeoutActionElements = function(){
+	if(GUI.writePermission){
+
+	}else{
+		$(".header_left").css("display","none");
+		$("#paste_button").css("display","none");
+		$("#undo_button").css("display","none");
+		$("#trash_button").css("display","none");
+	}
+};
+
 GUI.checkCurrentsGUIObjects = function(){
         $(".ui-dialog-content").dialog("close");
 }
 
+GUI.setScrollPosition = function(){
+    window.scrollTo( 0, 0 );
+}
 /**
  * start loading with step 1 when the document is ready
  */

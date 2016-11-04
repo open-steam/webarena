@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Summernote</title>
+  <link href="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.css" rel="stylesheet">
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.js"></script> 
+  <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script> 
+  <link href="http://cdnjs.cloudflare.com/ajax/libs/summernote/0.8.1/summernote.css" rel="stylesheet">
+  <script src="summernote.js"></script>
+</head>
+<body id="editorbody">
+  <div id="summernote"><h2>Text wird geladen...</h2></div>
+  <div id="noteData"></div>
+  <script>
+    $(document).ready(function() {
+	  $('#summernote').summernote({
+		lang: 'de-DE', // default: 'en-US'
+		toolbar: [
+			['style', ['style']],
+			['font', ['bold', 'underline']],
+			['color', ['color']],
+			['fontname', ['fontname']],
+			['para', ['ul', 'ol', 'paragraph']]
+		  ],
+	  });
+
+	setTimeout(function(){
+		console.log("SET SUMMERNOTEDATA")
+		// @param {Node} node
+		$('#summernote').summernote('code', $('#noteData').html());
+
+		setInterval(function(){
+			$('#noteData').html($('#summernote').summernote('code'));
+		},500);
+	},1500);	
+		
+	});
+  </script>
+</body>
+</html>

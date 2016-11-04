@@ -196,6 +196,7 @@ Helper.utf8.parse = function(byteArray) {
 };
 
 
+
 Helper.hash = function(input){
     var hash = 0;
     if (input.length == 0) return hash;
@@ -205,4 +206,25 @@ Helper.hash = function(input){
         hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
+}
+
+
+Helper.cleanString=function(input){
+    input=input+'';
+	input=input.toLowerCase();
+    var output='';
+	
+	for (var i=0;i<input.length;i++){
+		    var char=input[i];
+		    var code=char.charCodeAt(0);
+		    
+		    if (code==45
+		    	|| (code>96 && code<123)
+		    	|| (code>47 && code<58) 
+		    
+		    ){
+			   output+=input[i];
+		    }
+	}
+	return output;
 }

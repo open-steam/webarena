@@ -6,10 +6,14 @@ var popover_positionOffsetY = 20;
 
 var numberOfIcons = 0;
 
+
+GUI.initToolbar = function (){
+			GUI.buildToolbar();
+}
 /**
  * Init. the toolbar
  */
-GUI.initToolbar = function() {
+GUI.buildToolbar = function() {
 
 	$(window).resize(function() {		
 		GUI.resizeToolbar();
@@ -18,7 +22,8 @@ GUI.initToolbar = function() {
     /* insert icons for creating new objects: */
 
     var types = {};
-
+	
+	
     /* get types of objects */
     $.each(ObjectManager.getTypes(), function(key, object) {
 
@@ -43,7 +48,6 @@ GUI.initToolbar = function() {
 
     /* build categories for each type */
     $.each(types, function(key, object) {
-
 		numberOfIcons++;
 	
         var newCategoryIcon = document.createElement("img");
@@ -211,38 +215,43 @@ GUI.initToolbar = function() {
 
 			
 			/*add paste button*/
-			var pasteButton = document.createElement("img");
-			$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
-			$(pasteButton).attr("width", "24").attr("height", "24");
-			$(pasteButton).attr("id", "paste_button");
-			$(pasteButton).addClass("sidebar_button");
-			$(pasteButton).attr("title", GUI.translate("Paste"));
-			var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
-			$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");	
-			numberOfIcons++;
-			$("#header > .header_right").append(pasteButton); //add header icon
-			var clickPaste = function() { //click handler
-				Modules.ObjectManager.pasteObjects();
-                popover.hide();
-            };
+			
+				var pasteButton = document.createElement("img");
+				$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
+				$(pasteButton).attr("width", "24").attr("height", "24");
+				$(pasteButton).attr("id", "paste_button");
+				$(pasteButton).addClass("sidebar_button");
+				$(pasteButton).attr("title", GUI.translate("Paste"));
+				var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
+				$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");	
+				numberOfIcons++;
+				$("#header > .header_right").append(pasteButton); //add header icon
+				var clickPaste = function() { //click handler
+					Modules.ObjectManager.pasteObjects();
+					popover.hide();
+				};
+			
+			
   
 			
 			/*add undo button*/
-			var undoButton = document.createElement("img");
-			$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
-			$(undoButton).attr("width", "24").attr("height", "24");
-			$(undoButton).attr("id", "undo_button");
-			$(undoButton).addClass("sidebar_button");
-			$(undoButton).attr("title", GUI.translate("Undo"));
-			var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
-			$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");	
-			numberOfIcons++;
-			$("#header > .header_right").append(undoButton); //add header icon
-			var clickUndo = function() { //click handler
-				Modules.Dispatcher.query("undo", {"userID": GUI.userid});
-                popover.hide();
-            };
-
+		
+				var undoButton = document.createElement("img");
+				$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
+				$(undoButton).attr("width", "24").attr("height", "24");
+				$(undoButton).attr("id", "undo_button");
+				$(undoButton).addClass("sidebar_button");
+				$(undoButton).attr("title", GUI.translate("Undo"));
+				var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
+				$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");	
+				numberOfIcons++;
+				$("#header > .header_right").append(undoButton); //add header icon
+				var clickUndo = function() { //click handler
+					Modules.Dispatcher.query("undo", {"userID": GUI.userid});
+					popover.hide();
+				};
+		
+			
 			
             /*add parent button*/
 			var parentButton = document.createElement("img");
@@ -276,9 +285,92 @@ GUI.initToolbar = function() {
 				Modules.ObjectManager.goHome();
                 popover.hide();
 			};
-			
 
-            /*add logout button*/
+            /*add bugReport button*/
+			var bugButton = document.createElement("img");
+			$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
+			$(bugButton).attr("width", "24").attr("height", "24");
+			$(bugButton).attr("id", "bug_button");
+			$(bugButton).addClass("sidebar_button");
+			$(bugButton).attr("title", GUI.translate("Bugreport"));
+			$(bugButton).addClass("sidebar_button");
+			$(bugButton).attr("title", GUI.translate("Bugreport"));
+			var btnBug = section.addElement($(bugButton).prop('outerHTML') + "Feedback"); //add menu icon
+			$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
+			numberOfIcons++;
+			$("#header > .header_right").append(bugButton); //add header icon
+			var that = this;
+            var clickBug = function(feedbackDialogfeedbackDialog) { //click handler
+							
+    			var html;
+				var dialog_width =690;
+				var content = [];
+
+				html = '<div id="bug"><div>Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.<span><br /><br />Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.</span></div><div id="bug_report"><span>Was wollten Sie tun?</span><textarea id="dialog_bug_task"></textarea><span>Welches Problem ist aufgetreten?</span><textarea id="dialog_bug_problem"></textarea><span>Ihre Email-Adresse:</span><input type="email" id="dialog_bug_email" /><p></p></div><div id="bug_result"></div></div>';
+
+				content.push(html);
+				
+				var dialog_buttons = {};
+				dialog_buttons[GUI.translate("Send")] = function() {
+
+					var task = $("#dialog_bug_task").val();
+					var problem = $("#dialog_bug_problem").val();
+					var email = $("#dialog_bug_email").val();
+
+					var objectsString = "";
+					var objects = ObjectManager.getObjects();
+					for (var i in objects) {
+						var object = objects[i];
+
+						objectsString += "\n"+i+":\n--------------------\n";
+
+						var data=object.get();
+						for (var name in data) {
+							objectsString += name+": "+data[name]+"\n";
+						}
+					}
+
+					ObjectManager.reportBug({
+						"task" : task,
+						"problem" : problem,
+						"user" : GUI.username,
+						"email" : email,
+						"objects" : objectsString,
+						"userAgent" : navigator.userAgent
+					}, function(result) {
+						
+						var content = [];
+						var html;
+						
+						if (result === true) {
+							html='<p class="bug_success">Vielen Dank für Ihren Fehlerbericht.<br />Unsere Entwickler wurden informiert und werden sich schnellst möglich um das Problem kümmern.</p>';
+						} else {
+							html='<p class="bug_error">Leider konnte der Fehlerbericht nicht gesendet werden. Bitte versuchen Sie es später noch einmal.</p>';
+						}
+						content.push(html);
+						
+						var feedbackDialog = GUI.dialog(
+							"Feedback",
+							content,
+							null,
+							dialog_width
+							);
+					});
+				};
+				dialog_buttons[GUI.translate("Close")] = function() {
+					return false;
+				};
+
+				var feedbackDialog = GUI.dialog(
+							"Feedback",
+							content,
+							dialog_buttons,
+							dialog_width
+							);
+				
+            };
+			
+			/*add logout button*/
 			var logoutButton = document.createElement("img");
 			$(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
 			$(logoutButton).attr("width", "24").attr("height", "24");
@@ -290,18 +382,26 @@ GUI.initToolbar = function() {
 			numberOfIcons++;
 			$("#header > .header_right").append(logoutButton); //add header icon
             var clickLogout = function() { //click handler
-                location.replace(location.origin);
+				//alert("logout action");
+				if(Modules.Config.logoutURL == "")
+                	location.replace(location.origin);
+				else
+					location.replace(Modules.Config.logoutURL);
                 popover.hide();
 				GUI.deleteUserData();
+				
             };
 
 
             if (GUI.isTouchDevice) {
 				//header:
-				$(pasteButton).bind("touchstart", clickPaste);
-				$(undoButton).bind("touchstart", clickUndo);
+				
+					$(pasteButton).bind("touchstart", clickPaste);
+					$(undoButton).bind("touchstart", clickUndo);
+				
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
+				$(bugButton).bind("touchstart", clickBug);
 				$(logoutButton).bind("touchstart", clickLogout);
 				//menu:
 				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
@@ -311,14 +411,19 @@ GUI.initToolbar = function() {
                 $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
 				//header:
-				$(pasteButton).bind("mousedown", clickPaste);
-				$(undoButton).bind("mousedown", clickUndo);
+				
+					$(pasteButton).bind("mousedown", clickPaste);
+					$(undoButton).bind("mousedown", clickUndo);
+				
 				$(parentButton).bind("mousedown", clickParent);
 				$(homeButton).bind("mousedown", clickHome);
+				$(bugButton).bind("mousedown", clickBug);
 				$(logoutButton).bind("mousedown", clickLogout);
 				//menu:
-				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
-				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
+				
+					$(btnPaste.getDOM()).bind("mousedown", clickPaste);
+					$(btnUndo.getDOM()).bind("mousedown", clickUndo);
+				
 				$(btnParent.getDOM()).bind("mousedown", clickParent);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
                 $(btnLogout.getDOM()).bind("mousedown", clickLogout);
@@ -328,7 +433,7 @@ GUI.initToolbar = function() {
 
 
     /* add bug report toggle */
-    if (!Modules.Config.presentationMode && Modules.config.bugReport) {
+/*    if (!Modules.Config.presentationMode && Modules.config.bugReport) {
 		var bugButton = document.createElement("img");
 		$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
 		$(bugButton).attr("width", "24").attr("height", "24");
@@ -349,7 +454,7 @@ GUI.initToolbar = function() {
 		} else {
 			$(bugButton).bind("mousedown", click);
 		}
-    }
+    }*/
 
 
     /* add chat toggle */
@@ -450,6 +555,32 @@ GUI.initToolbar = function() {
 
     }
 	
+	/* add ObjectList toggle */
+    if (!Modules.Config.presentationMode && Modules.config.objectlist) {
+	
+        var objectlistButton = document.createElement("img");
+        $(objectlistButton).attr("src", "../../guis.common/images/objectlist.png").attr("alt", "");
+        $(objectlistButton).attr("width", "24").attr("height", "24");
+
+        $(objectlistButton).attr("id", "trash_button");
+        $(objectlistButton).addClass("sidebar_button header_tab");
+
+        $(objectlistButton).attr("title", GUI.translate("ObjectList"));
+
+        var click = function() {
+            GUI.sidebar.openPage("objectList", objectlistButton);
+        }
+
+        if (GUI.isTouchDevice) {
+            $(objectlistButton).bind("touchstart", click);
+        } else {
+            $(objectlistButton).bind("mousedown", click);
+        }
+
+        $("#header > .header_tabs_sidebar").append(objectlistButton);
+
+    }
+	
 
 	/* add cloud toggle */
     if (!Modules.Config.presentationMode && Modules.config.cloud) {
@@ -545,7 +676,7 @@ GUI.showNotification = function(add, icon){
 		TextLeft = GUI.translate("An object was restored");
 		title = GUI.translate("Trash basket");
 	}
-	
+	/*
 	if(add){
 		$("#"+button).attr("src", "../../guis.common/images/"+IconEnter).attr("alt", "");
 		$("#"+button).attr("title", TextEnter);
@@ -554,7 +685,8 @@ GUI.showNotification = function(add, icon){
 		$("#"+button).attr("src", "../../guis.common/images/"+IconLeft).attr("alt", "");
 		$("#"+button).attr("title", TextLeft);
 	}
-	
+    */
+    
 	var counter = 0;
 }
 

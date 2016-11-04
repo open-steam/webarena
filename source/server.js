@@ -6,28 +6,7 @@
  */
 
 
-var printLogo = function() {
-    var logo = ['##########################################',
-        '#    W E B A R E N A   S E R V E R       #',
-        '#                                        #',
-        '#    (c) 2012-15 Contextual Informatics, #',
-        '#                Universität Paderborn   #',
-        '#                                        #',
-        '#    Main contributors:                  #',
-        '#                                        #',
-        '#        Felix Winkelnkemper             #',
-        '#        Tobias Kempkensteffen           #',
-        '#        Viktor Koop                     #',
-        '#        Jan Petertonkoker               #',
-        '#        Steven Christopher Lücker       #',
-        '#        Christoph Sens                  #',
-        '#                                        #',
-        '##########################################'];
 
-    logo.forEach(function(l) {
-        console.log(l);
-    });
-}();
 
 "use strict";
 
@@ -51,6 +30,42 @@ try {
     console.log('Attention: No local config found or the file could not be read.');
     console.log('Solution: Copy the content of the config.default and create a new config.local in the same directory! Don\'t forget to update the filebase property to your desired folder!');
 }
+
+var printLogo = function() {
+	var imprint = config.about;
+	var printList = function(aData){		
+		var list="";
+		
+		if (!aData) return list;
+		
+		for (var i = 0; i < aData.length; i++) { 
+			logo.push("     "+aData[i]);
+		}
+		return list;
+	};
+    var logo = ['','',
+		'##############################################################',imprint.project];
+	    logo.push("##############################################################");
+	    logo.push('');
+	    logo.push('(c) '+imprint.copyright);
+		logo.push('');
+		logo.push('Main contributors:');
+		logo.push('');
+	 	printList(imprint.contributors);
+		logo.push('');
+		logo.push('Contact information');
+		logo.push('');
+		logo.push('     '+imprint.contact);
+		logo.push('');
+		logo.push('Acknowledgements');
+		logo.push('');
+		logo.push(imprint.acknowledgements);
+		logo.push('');
+		logo.push("##############################################################");
+    logo.forEach(function(l) {
+        console.log(l);
+    });
+}();
 
 
 //store the general config/client config in an own variable

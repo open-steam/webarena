@@ -414,10 +414,10 @@ theObject.getContent.neededRights = {
 theObject.getContentAsString=function(callback){
 	if (callback === undefined) {
 		console.log('>>>> Synchronous getContentAsString in GeneralObject');
-		return Helper.utf8.parse(this.getContent());
+		return Modules.Helper.utf8.parse(this.getContent());
 	} else {
 		this.getContent(function(content){
-			callback(Helper.utf8.parse(content));
+			callback(Modules.Helper.utf8.parse(content));
 		});
 	}
 }
@@ -827,6 +827,13 @@ theObject.pong=function(){
 	this.shout(this+' says Pong');
 }
 theObject.pong.public=true;
+
+theObject.writePermission=function(callback){
+	Modules.Connector.mayWrite(this.inRoom,this.id,this.context,function(error,result){
+		callback(result);
+	});
+}
+theObject.writePermission.public=true;
 
 theObject.intelligentRename=function(attribute,value){
 	//console.log(this+ ' intelligentRename '+attribute+' '+value);

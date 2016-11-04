@@ -298,9 +298,33 @@ div.header_menu form {
 
 
 
+.simpleselection {
+	border:1px solid #333;
+	max-height:300px;
+	overflow:scroll;
+}
 
+.simpleselection label {
+	white-space: nowrap;
+	display:block;
+}
 
+.simpleselection label:hover {
+	background:rgba(255,255,255,0.7);
+}
 
+.simpleselection label input {
+	display:none;
+}
+
+.simpleselection label span{
+	display:block;
+	padding:2px 0 2px 5px;
+}
+
+.simpleselection input:checked +span{
+	background:rgba(255,255,255,1);
+}
 
 #error_bg {
     background:-webkit-gradient(radial, center center, 80, center center, 400, from(#CCCCCC), to(#000000));
