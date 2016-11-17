@@ -90,6 +90,12 @@ Dispatcher.registerCall('inform', function(socket, data, responseID) {
     Modules.RoomController.informAllInRoom(data, resultCallbackWrapper(socket, responseID));
 });
 
+
+//Information to shift control to a specific device
+Dispatcher.registerCall('ShiftToDevice', function(socket, data, responseID) {
+    Modules.RoomController.shiftDevice(socket,data, resultCallbackWrapper(socket, responseID));
+});
+
 Dispatcher.registerCall('bugreport', function(socket, data, responseID) {
     Modules.ServerController.bugreport(data, socket, responseID, resultCallbackWrapper(socket, responseID));
 });
