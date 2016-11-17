@@ -90,6 +90,29 @@ RoomController.informAllInRoom = function (data, callback) {
     }
 };
 
+
+//Information sent to the destination device of the same client for the purpose of transferring device control.
+RoomController.shiftDevice = function (socket,data, callback) {
+
+    var connections = Modules.UserManager.getConnections();
+
+    //Obtain the connection details of the destination device and pass the source device object context and action details.
+    for (var i in connections) {
+        if ((connections[i].device.deviceClass == data.Device.deviceClass) && (connections[i].device.name == data.Device.name )) {
+
+            var SocketServer=Modules.SocketServer;
+            SocketServer.sendToSocket(connections[i].socket,'RefreshDeviceContext',{
+                Device:data.Device,
+                roomID: data.roomID,
+                objectID:data.objectID,
+                actionName:data.actionName,
+                sourceDevice:data.sourceDevice
+            });
+        }
+    }
+};
+
+
 RoomController.shout=function(message,room){
 	
 	if (room){
