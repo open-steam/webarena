@@ -450,9 +450,10 @@ ObjectManager.init = function () {
 
     Modules.Dispatcher.registerCall('loggedIn', function (data) {
         GUI.loggedIn();
-        alert("in loggedin client");
-        //calling method to save the consolidated device capabilities values in local storage.
-        GUI.saveLocalStorage(data.deviceCapabilitiesConsolidated);
+        //calling method to save the consolidated device capabilities values in local storage, if detection procedures were sdne.
+       if(!data.deviceCapabilitiesConsolidated.isRetrieved) {
+           GUI.saveLocalStorage(data.deviceCapabilitiesConsolidated);
+       }
         ObjectManager.user = data.userData;
         ObjectManager.userHash = data.userhash;
 
