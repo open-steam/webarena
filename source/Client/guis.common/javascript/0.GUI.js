@@ -969,16 +969,19 @@ GUI.getCursorText = function(){
 GUI.inPlaceEditingObject = false;
 
 /**
- * if inplace editing is active, call the saveChanges method of the related object 
+ * if inplace editing is active, call the saveChanges method of the related object
  */
 GUI.saveChanges = function(event){
-	
+	console.trace();
 	if(GUI.inPlaceEditingObject){
-		if(event.target.localName == "input" || event.target.localName == "textarea"){ 
+		if(event.target.localName == "input" || event.target.localName == "textarea"){
 			return;
 		}
 		else{	//mouseclick outside of the inplace editing field
+
 			var object = ObjectManager.getObject(GUI.inPlaceEditingObject);
+
+			object.inPlaceEditingMode=true;
 			object.saveChanges();
 		}
 	}
