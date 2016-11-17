@@ -35,8 +35,9 @@ fileConnector.info=function(){
 *	If the login was successful, the newly created user object is sent to a
 *	response function.
 *
+*	Update for CCD- additional parameter 'userDeviceDetails' specifying the detected device capabilities.
 */
-fileConnector.login=function(username,password,externalSession,context, callback){
+fileConnector.login=function(username,password,externalSession,context,userDeviceDetails, callback){
 	
 	this.Modules.Log.debug("Login request for user '"+username+"'");
 	
@@ -45,6 +46,7 @@ fileConnector.login=function(username,password,externalSession,context, callback
 	data.username=username.toLowerCase();
 	data.password=password;
 	data.home= "public";
+	data.deviceCapabilitiesLogin=userDeviceDetails;
 	
 	if (this.Modules.Config.fileConnectorUsers) {
 		
