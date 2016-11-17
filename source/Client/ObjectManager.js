@@ -450,9 +450,10 @@ ObjectManager.init = function () {
 
     Modules.Dispatcher.registerCall('loggedIn', function (data) {
         GUI.loggedIn();
-        alert("in loggedin client");
-        //calling method to save the consolidated device capabilities values in local storage.
-        GUI.saveLocalStorage(data.deviceCapabilitiesConsolidated);
+        //calling method to save the consolidated device capabilities values in local storage, if detection procedures were sdne.
+        if(!data.deviceCapabilitiesConsolidated.isRetrieved) {
+            GUI.saveLocalStorage(data.deviceCapabilitiesConsolidated);
+        }
         ObjectManager.user = data.userData;
         ObjectManager.userHash = data.userhash;
 
@@ -474,7 +475,7 @@ ObjectManager.init = function () {
     Modules.Dispatcher.registerCall('Case7DeviceIncapability', function (data) {
 
         var userConfirmation = confirm("Oops!!!\n\nYour current device-" + data.CurrentDevice.name + ", of Device Class- " + data.CurrentDevice.deviceClass + ", does not pocess the hardware capabilities to perform the requested action. \n\nFurther, WebArena detects no other currently logged-in devices of the user, capable of the requested action. \n\nSuggestion: For the requested action, WebArena recommends using devices of Device Class- " + data.DeviceClassList.toString());
-        });
+    });
 
     //Handler for addressing the 'case 8' of the assignment rules. (Device does not have device capabilities for performing the current action on the selected object. However there are 1 or more devices of the current user which satisfy the device capabilitiies of the action.)
     Modules.Dispatcher.registerCall('Case8DeviceIncapability', function (data) {
@@ -526,7 +527,7 @@ ObjectManager.init = function () {
 
         } else if (userConfirmation == false){
 
-           var selectedObject=Modules.ObjectManager.getObject(data.objectID);
+            var selectedObject=Modules.ObjectManager.getObject(data.objectID);
 
             switch(data.actionName)
             {
@@ -581,7 +582,7 @@ ObjectManager.init = function () {
 
             };
 
-           ObjectManager.loadRoom(destination, false,callback);
+            ObjectManager.loadRoom(destination, false,callback);
         }
         else {
             GUI.error("Unable to load room", "Unable to load room. (no room defined)", false, true);
