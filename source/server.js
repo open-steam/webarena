@@ -102,6 +102,9 @@ Modules.Helper = require('./Server/Helper.js');
 Modules.BuildTool = require('./Server/BuildTool.js');
 Modules.ApplicationManager = require('./Server/ApplicationManager.js');
 Modules.Applications = Modules.ApplicationManager;
+//Adding the new server modules- DeviceDecision and ServerDeviceDetection.
+Modules.DeviceDecision = require('./Server/DeviceDecision.js');
+Modules.ServerDeviceDetection = require('./Server/ServerDeviceDetection.js');
 
 // These object exist for every object type or every single object. They shall not be
 // modified directly but inherited (e.g. this.attributeManager=Object.create(AttributeManager));
