@@ -298,13 +298,11 @@
 		//No further detection is to be done.
 		if(ClientDeviceDetection.isRetrieved) {
 			document.getElementById("login_userdeviceproperties").setAttribute("value", JSON.stringify(ClientDeviceDetection));
-		alert("Retrieved");
 		}
 		else {
 
 			//Perform entire device capabilities detection.
 			//Proceed with Client side detection.
-
 
 			// Check for support for 'devicemotion' events to determine the 'DN-Device Nature' field.
 			if (window.DeviceMotionEvent) {
@@ -429,14 +427,6 @@
 		setTimeout(function() {
 			//Consolidate the client side detection values and temporarily stored them in local storage, and then attach the 'ClientDeviceDetection' object values to the login panel element.
 			document.getElementById("login_userdeviceproperties").setAttribute("value", JSON.stringify(ClientDeviceDetection));
-
-			//need to remove this---
-			//if(!ClientDeviceDetection.isRetrieved) {
-			//	if (typeof(Storage) != "undefined") {
-			//		localStorage.setItem('DeviceIdentified', JSON.stringify(ClientDeviceDetection));
-		//		}
-		//	}
-
 		}, delay);
 
 
