@@ -34,11 +34,28 @@ Textarea.register=function(type){
 }
 
 Textarea.execute=function(){
-	
+
+	//Intercepting the edit action execution to execute the 'DeviceDecisionInvocation' server call and device assessment.
 	if(!this.inPlaceEditingMode){
-		this.editText();
+
+		var selected = ObjectManager.getSelected();
+		for (var i in selected) {
+			var obj = selected[i];
+
+			var name = "EditText";
+			var sourceDeviceContexts = {
+				roomID: this.getRoomID(),
+				objectID: obj.id,
+				action: "EditText"
+			}
+
+			var editObjectCallback = function() {
+			}
+			this.serverCall('DeviceDecisionInvocation',sourceDeviceContexts, editObjectCallback);
+
+		}
+
 	}
-	
 }
 
 Textarea.intelligentRename=function(newValue){
