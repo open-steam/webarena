@@ -2,21 +2,21 @@
 
 /**
  * Show login prompt
- * @param {bool|String} [err=false] Optional error message 
+ * @param {bool|String} [err=false] Optional error message
  */
 GUI.showLogin = function(err) {
-	
+
 	/* check for an external session login request in the URL hash */
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession') > -1) {
 		GUI.login();
 		return;
 	}
-	
+
 	/* true if the login process is active */
 	GUI.loginProcessActive = false;
-	
+
 	$("#login_background").show();
-	
+
 	$("#login").css("opacity", 0);
 	$("#login").show();
 
@@ -26,48 +26,48 @@ GUI.showLogin = function(err) {
 	} else {
 		$("#login > .login_error").hide();
 	}
-	
+
 	$("#login").animate({
 		opacity: 1
 	}, 1000);
-	
+
 	$("#login_title").html(Config.projectTitle||'WebArena');
-	
+
 	$("#login_username").focus();
-	
+
 	if(navigator.userAgent.indexOf("Trident") > -1){
 		$("#login").append("<p>"+GUI.translate('Unfortunately Microsoft Internet Explorer did not support all features of this system. We recommend using Google Chrome or Mozilla Firefox. Thank you for your understanding.')+"</p>");
 	}
-	
+
 	$("body").append("<p id='TouchMouseNote' style='position: fixed; bottom: 10px; z-index: 15002; left: 10%'>"+GUI.translate('Please note: if you are using a computer with touchscreen AND mouse, press the login button with your prefered device. The webarena interface will be optimized for the selected input method.')+"</p>");
-	
+
 	$("#login_submit").on("touchend", function () {
 		GUI.isTouchDevice = true;
 		GUI.login();
 	});
-	
+
 	$("#login_submit").on("mouseup", function () {
 		GUI.login();
 	});
-	
+
 	var userDataObject = GUI.retrieveUserData();
 
 	if(userDataObject){
 		GUI.login();
 	}
-	
+
 }
 
 /**
  * hide the login prompt
  */
 GUI.hideLogin = function() {
-	
+
 	$("#login").hide();
 	$("#login_background").hide();
 	$("#login_background").css("opacity", 1);
 	$("#TouchMouseNote").hide();
-	
+
 	GUI.progressBarManager.updateProgress("login", 100);
 
 	GUI.loginProcessActive = false;
@@ -84,11 +84,11 @@ GUI.isLoggedIn = false;
  */
 GUI.loggedIn = function() {
 	if (GUI.isLoggedIn) return;
-	
+
 	GUI.isLoggedIn = true;
 
 	GUI.progressBarManager.updateProgress("login", 30, GUI.translate('loading room'));
-	
+
 }
 
 /**
@@ -109,6 +109,12 @@ GUI.loginFailed = function(err) {
 GUI.username = undefined;
 GUI.password = undefined;
 GUI.userid = undefined;
+GUI.deviceName = undefined;
+GUI.formFactor = undefined;
+GUI.isMobile = undefined;
+GUI.isTouch=undefined;
+GUI.clientDeviceDetectionProperties=undefined;
+
 
 GUI.loginProcessActive = false;
 
@@ -118,64 +124,64 @@ GUI.externalSession = false;
  * called when hitting the login-button
  */
 GUI.login = function() {
-	
+
 	if (GUI.loginProcessActive) return;
 	if (GUI.isLoggedIn) return;
 
 	GUI.loginProcessActive = true;
-	
+
 	if (GUI.username === undefined)	GUI.username = $("#login_username").val();
 	if (GUI.password === undefined) GUI.password = $("#login_password").val();
-	
+
+	//Defining a GUI object property consisting of a Javascript object of the obtained 'ClientDeviceDetection' object.
+	if (GUI.clientDeviceDetectionProperties === undefined) GUI.clientDeviceDetectionProperties = JSON.parse($("#login_userdeviceproperties").val());
+
 	$("#login_username").blur();
 	$("#login_password").blur();
-	
+
 	GUI.externalSession = false;
 	if (window.location.hash != "" && window.location.hash.indexOf('externalSession/') > -1) {
-		
+
+
 		var hashData = window.location.hash.substr(1).split("/")
-		
+
 		if (hashData[0] == "externalSession") {
-		
+
 			GUI.username = hashData[1];
 			GUI.password = hashData[2];
-			
+			GUI.clientDeviceDetectionProperties = hashData[3];
+
 			GUI.externalSession = true;
-			
+
 			GUI.storeUserData();
 			window.location.replace('#');
-		
+
 		}
-		
+
 	}
-	
+
 	if (GUI.username == "") GUI.username = "User";
-	
+
 	var userDataObject = GUI.retrieveUserData();
 
 	if(userDataObject){
 		GUI.username = userDataObject.username;
 		GUI.password = userDataObject.password;
 		GUI.externalSession = userDataObject.external;
-		GUI.isTouchDevice = userDataObject.isTouchDevice;
+		GUI.clientDeviceDetectionProperties=userDataObject.clientDeviceDetectionProperties;
 	}
 	else{
 		GUI.storeUserData();
 	}
-	
+
 	GUI.userid = GUI.username;
-        
-        // add cookie with user id
-//        Webserver.response.writeHead(200, {
-//            'Set-Cookie': 'userid='+GUI.userid
-//        });
-	
+
 	$("#disconnected_message").remove();
-	
+
 	GUI.progressBarManager.addProgress(GUI.translate('checking login information'), "login");
-	
+
 	GUI.loadGUI(); //reload GUI
-	
+
 }
 
 
@@ -184,11 +190,13 @@ GUI.login = function() {
  */
 GUI.storeUserData = function() {
 
-	var userDataObject = {'username': GUI.username, 'password': GUI.password, 'external': GUI.externalSession, 'isTouchDevice': GUI.isTouchDevice};
+	var userDataObject = {'username': GUI.username, 'password': GUI.password, 'external': GUI.externalSession, 'deviceCapabilities': GUI.clientDeviceDetectionProperties};
 
 	if (typeof(Storage) != "undefined") {
+
 		localStorage.setItem('webarena', JSON.stringify(userDataObject));
-	} 
+
+	}
 }
 
 /**
@@ -198,7 +206,7 @@ GUI.clearUserStorage = function() {
 
 	if (typeof(Storage) != "undefined") {
 		localStorage.clear();
-	} 
+	}
 }
 
 
@@ -206,11 +214,11 @@ GUI.clearUserStorage = function() {
  * reads out the user data from the local storage
  */
 GUI.retrieveUserData = function() {
-	
+
 	if (Config.debugMode) return undefined;
 
 	var userDataObject = localStorage.getItem('webarena');
-	
+
 	return JSON.parse(userDataObject);
 
 }

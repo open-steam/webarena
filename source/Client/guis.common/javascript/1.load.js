@@ -46,7 +46,8 @@ GUI.loadGUI = function(step) {
 
 
 		/* login to server */
-		ObjectManager.login(GUI.username, GUI.password, GUI.externalSession);
+		//Modified to include the client side object of the 'ClientDeviceDetection' class.
+		ObjectManager.login(GUI.username, GUI.password, GUI.externalSession, GUI.clientDeviceDetectionProperties);
 		GUI.externalSession = false;
 		
 	} else if (step == 2) {

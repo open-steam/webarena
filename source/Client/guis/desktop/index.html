@@ -1,11 +1,11 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+		"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="de" lang="de">
 <head>
 	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
 	<title>Webarena 1.0</title>
-	
+
 	<meta content="minimum-scale=1.0, initial-scale=1.0, width=device-width, maximum-scale=1, user-scalable=no" name="viewport" />
 	<meta content="yes" name="apple-mobile-web-app-capable" />
 	<link rel="apple-touch-icon" sizes="72x72" href="/guis.common/images/ipad_icon.png" />
@@ -17,15 +17,15 @@
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery.migrate.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jPopover.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jsTree/jquery.jstree.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.toastmessage.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jsTree/jquery.jstree.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.toastmessage.js"></script>
 
-    <script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/adapter.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.autogrow.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.autogrow.js"></script>
-    <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.dotdotdot.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.autogrow.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.autogrow.js"></script>
+	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.dotdotdot.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.mousewheel.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.scrollTo.min.js"></script>
@@ -34,62 +34,63 @@
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgdom.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svgfilter.min.js"></script>
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.svganim.min.js"></script>
-	
+
 	<!-- Library for creating data driven complex svg graphs. -->
 	<script type="text/javascript" src="/guis.common/libraries/d3/d3.min.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/jquery-ui.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/css/jquery-ui.css" rel="Stylesheet" />
-	
+
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.ui.touch-punch.min.js"></script>
 
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.color.js"></script>
-	
+
 	<script src="/config.js"></script>
 	<script src="/Helper.js"></script>
 	<script src="/Dispatcher.js"></script>
 	<script src="/ObjectManager.js"></script>
 	<script src="/SocketClient.js"></script>
-    <script src="/ActionManager.js"></script>
-    <script src="/TranslationManager.js"></script>
+	<script src="/ActionManager.js"></script>
+	<script src="/TranslationManager.js"></script>
 
 	<script src="/WebRTCManager.js"></script>
 	<script src="/Common/Log.js"></script>
 	<script src="/Common/DataSet.js"></script>
 	<script src="/AttributeManager.js"></script>
-	
+
+
 
 	<script>
-	var  Modules={
-		'Log':Log,
-		'config':Config,
-		'Config':Config,
-		'SocketClient':SocketClient,
-		'Dispatcher':Dispatcher,
-		'ObjectManager':ObjectManager,
-		'Helper':Helper,
+		var  Modules={
+			'Log':Log,
+			'config':Config,
+			'Config':Config,
+			'SocketClient':SocketClient,
+			'Dispatcher':Dispatcher,
+			'ObjectManager':ObjectManager,
+			'Helper':Helper,
 
-		//Object specific
+			//Object specific
 
-		'DataSet':DataSet,
-		'AttributeManager':AttributeManager,
-		'TranslationManager':TranslationManager,
-		'ActionManager':ActionManager,
-	};
+			'DataSet':DataSet,
+			'AttributeManager':AttributeManager,
+			'TranslationManager':TranslationManager,
+			'ActionManager':ActionManager,
+		};
 
-	
-	$(document).ready(function() {
-		for (var name in Modules){
-			var module=Modules[name];
-			if (module && module.init) {
-				module.init(Modules);
-				module.Modules=Modules;
+
+		$(document).ready(function() {
+			for (var name in Modules){
+				var module=Modules[name];
+				if (module && module.init) {
+					module.init(Modules);
+					module.Modules=Modules;
+				}
 			}
-		}
-		
-		document.title=Modules.Config.projectTitle||'WebArena';
-		
-	});
+
+			document.title=Modules.Config.projectTitle||'WebArena';
+
+		});
 
 	</script>
 
@@ -99,146 +100,359 @@
 
 	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 
-    <link type="text/css" href="/guis/desktop/style.css" rel="Stylesheet" />
+	<link type="text/css" href="/guis/desktop/style.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/actionsheet.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/progressBar.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/login.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/css/studiolo.css" rel="Stylesheet" />
 
-  <link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
-	
+	<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+
 	<script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jDesktopInspector.js"></script>
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jDesktopInspector.css" rel="Stylesheet" />
 	<link type="text/css" href="/guis.common/libraries/jquery/plugins/css/jquery.jPopover.desktop.css" rel="Stylesheet" />
 
-    <script type="text/javascript" src="/guis/desktop/main.js"></script>
+	<script type="text/javascript" src="/guis/desktop/main.js"></script>
+	<!--Adding the WURFL.io external javascript file.-->
+	<script type="text/javascript" src="//wurfl.io/wurfl.js"></script>
+	<!--Linking the ClientDeviceDetection which may directly provide the previously detected device capabilities.-->
+	<script type="text/javascript" src="/ClientDeviceDetection.js"></script>
+
 	<script>
 
-        /**
-         * Define room which will be loaded (value will be replaced by node.js Webserver)
-         */
-        GUI.startRoom = '##START_ROOM##';
+		/**
+		 * Define room which will be loaded (value will be replaced by node.js Webserver)
+		 */
+		GUI.startRoom = '##START_ROOM##';
 
-        /**
-         * check if device is touch-device
-         */
-        //if (!!('ontouchstart' in window)) {
-          //  GUI.isTouchDevice = true;
-        //}
+		/**
+		 * check if device is touch-device
+		 */
+		//if (!!('ontouchstart' in window)) {
+		//  GUI.isTouchDevice = true;
+		//}
 
-        /**
-         * jQuery extension used to prevent scrolling of sidebar/body when scrolling of sidebar contents hits top/bottom (e.g. for chat messages container)
-         */
-        $.fn.dontScrollParent = function()
-        {
-            this.bind('mousewheel DOMMouseScroll',function(e)
-            {
-                var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
+		/**
+		 * jQuery extension used to prevent scrolling of sidebar/body when scrolling of sidebar contents hits top/bottom (e.g. for chat messages container)
+		 */
+		$.fn.dontScrollParent = function()
+		{
+			this.bind('mousewheel DOMMouseScroll',function(e)
+			{
+				var delta = e.originalEvent.wheelDelta || -e.originalEvent.detail;
 
-                if (delta > 0 && $(this).scrollTop() <= 0)
-                    return false;
-                if (delta < 0 && $(this).scrollTop() >= this.scrollHeight - $(this).height())
-                    return false;
+				if (delta > 0 && $(this).scrollTop() <= 0)
+					return false;
+				if (delta < 0 && $(this).scrollTop() >= this.scrollHeight - $(this).height())
+					return false;
 
-                return true;
-            });
-        }
+				return true;
+			});
+		}
 
 	</script>
 </head>
 <body>
-	
-	<div id="header">
-		<div class="header_right"></div>
-		<div class="header_left"></div>
-		<div class="header_tabs_sidebar animate">
-			<div id="header_toggle_sidebar">
-				<img id="header_toggle_sidebar_hide" src="/guis.common/images/arrow-right.png" alt="" style="width: 18px; height: 18px;">
-				<img id="header_toggle_sidebar_show" src="/guis.common/images/arrow-left.png" alt="" style="width: 18px; height: 18px; display: none;">
-			</div>
+
+<div id="header">
+	<div class="header_right"></div>
+	<div class="header_left"></div>
+	<div class="header_tabs_sidebar animate">
+		<div id="header_toggle_sidebar">
+			<img id="header_toggle_sidebar_hide" src="/guis.common/images/arrow-right.png" alt="" style="width: 18px; height: 18px;">
+			<img id="header_toggle_sidebar_show" src="/guis.common/images/arrow-left.png" alt="" style="width: 18px; height: 18px; display: none;">
 		</div>
-		
 	</div>
-	
-	<div id="content">
-		<p style="z-index:10; position:fixed;" id="besideMouse"></p>
-	</div>
-	
-	<div id="sidebar">
-		<div id="sidebar_title"><span></span></div>
-		<div id="sidebar_content">
-			<div>
-				<div id="bug">
-					<div>
-						Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />
-						Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.
+
+</div>
+
+<div id="content">
+	<p style="z-index:10; position:fixed;" id="besideMouse"></p>
+</div>
+
+<div id="sidebar">
+	<div id="sidebar_title"><span></span></div>
+	<div id="sidebar_content">
+		<div>
+			<div id="bug">
+				<div>
+					Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />
+					Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.
 						<span><br />
 						<br />
 							Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.
 						</span>
-					</div>
-					
-					<div id="bug_report">
-						
-						<span>Was wollten Sie tun?</span>
-						<textarea id="bug_task"></textarea>
-					
-						<span>Welches Problem ist aufgetreten?</span>
-						<textarea id="bug_problem"></textarea>
-						
-						<span>Ihre Email-Adresse:</span>
-						<input type="email" id="bug_email" />
-						
-						<p><input type="submit" value="Senden" id="bug_submit" /></p>
-					
-					</div>
-					
-					<div id="bug_result"></div>
-					
 				</div>
-				<div id="chat"></div>
-				<div id="inspector"></div>
-                <div id="pad"><iframe name="padframe"></iframe></div>
-				<div id="trash"></div>
-				<div id="cloud" style="height: 2000px"></div>
-				<div id="recentChanges" style="height: 2000px"></div>
+
+				<div id="bug_report">
+
+					<span>Was wollten Sie tun?</span>
+					<textarea id="bug_task"></textarea>
+
+					<span>Welches Problem ist aufgetreten?</span>
+					<textarea id="bug_problem"></textarea>
+
+					<span>Ihre Email-Adresse:</span>
+					<input type="email" id="bug_email" />
+
+					<p><input type="submit" value="Senden" id="bug_submit" /></p>
+
+				</div>
+
+				<div id="bug_result"></div>
+
 			</div>
+			<div id="chat"></div>
+			<div id="inspector"></div>
+			<div id="pad"><iframe name="padframe"></iframe></div>
+			<div id="trash"></div>
+			<div id="cloud" style="height: 2000px"></div>
+			<div id="recentChanges" style="height: 2000px"></div>
 		</div>
 	</div>
-	
-	<div id="actionsheet"></div>
-	
-	<div id="error_bg"></div>
-	<div id="error_box">
-		
-		<div id="error_box_heading"></div>
-		<div id="error_box_message"></div>
-		<div id="error_box_button"></div>
-		
+</div>
+
+<div id="actionsheet"></div>
+
+<div id="error_bg"></div>
+<div id="error_box">
+
+	<div id="error_box_heading"></div>
+	<div id="error_box_message"></div>
+	<div id="error_box_button"></div>
+
+</div>
+
+<!--HTML element which occupies exactly 1 pixel dimension on the device screen.-->
+<div id="obtainPPI" style="width:1in;visible:hidden;padding:0px"></div>
+<div id="login_background" style="display: none">&nbsp;</div>
+<div id="login" style="display: none;">
+
+	<div class="login_title" id="login_title">Webarena 1.0</div>
+
+	<div class="login_error"></div>
+
+	<div class="login_icon login_icon_username"></div><input type="text" name="username" value="" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
+
+	<br />
+
+	<div class="login_icon login_icon_password"></div><input type="password" name="password" value="" id="login_password" class="login_input" autocomplete="off" />
+
+	<br />
+
+	<div class="login_device">
+		<input name="userdeviceproperties" value="" class="login_device" id="login_userdeviceproperties" >
 	</div>
 
+	<script type="text/javascript">
 
-	<div id="login_background" style="display: none">&nbsp;</div>
-	<div id="login" style="display: none;">
-		
-		<div class="login_title" id="login_title">Webarena 1.0</div>
-		
-		<div class="login_error"></div>
-		
-		<div class="login_icon login_icon_username"></div><input type="text" name="username" value="" id="login_username" class="login_input" autocomplete="off" placeholder="Username" autofocus="autofocus" />
-		
-		<br />
-		
-		<div class="login_icon login_icon_password"></div><input type="password" name="password" value="" id="login_password" class="login_input" autocomplete="off" />
-		
-		<br />
-		
-		<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
-		
-	</div>
-	
-	
-	<div id="progressBar"><div class="progressBar_container"></div></div>
+
+
+		//Handler for the 'devicemotion' events used for calculating the 'DN-Device Nature' parameter.
+		var motionEventCount = 0;
+		function checkDeviceMotionEvents(event) {
+			if (motionEventCount < 5) {
+
+				//var x1 = event.accelerationIncludingGravity.x;
+				var y1 = event.accelerationIncludingGravity.y;
+				var z1 = event.accelerationIncludingGravity.z;
+
+				//Registering a change in acceleration either in the z or y axis, representative of the forward and backward movement.
+				//the x axis was not considered in order to avoid accidental horizontal adjustment movements of stationary devices.
+				if ((z1 < 9 || z1 > 9) && (y1 < 3 || y1 > 3)) {
+					motionEventCount++;
+				}
+				//Stop considering 'devicemotion' events after three individual counts of change
+				if (motionEventCount> 3) {
+					ClientDeviceDetection.Motion = true;
+					window.removeEventListener('devicemotion', checkDeviceMotionEvents, false);
+				}
+			}
+
+		};
+
+
+		//Handler for the 'deviceorientation' events used for calculating the 'DN-Device Nature' parameter.
+		var orientationEventCount = 0;
+		function checkDeviceOrientationEvents(event) {
+			if (orientationEventCount < 4) {
+			  //var alpha1 = event.alpha;
+				var beta1 = event.beta;
+			  //var gammma1 = event.gamma;
+
+				//Registering a change in the z or y axis, representative of the forward and backward movement.
+				//the x axis was not considered in order to avoid accidental horizontal adjustment movements of stationary devices.
+				if ((beta1 < 3 || beta1 > 3)) {
+					orientationEventCount++;
+				}
+
+				if (orientationEventCount > 2) {
+					ClientDeviceDetection.Orientation = true;
+					window.removeEventListener('deviceorientation', checkDeviceOrientationEvents, false);
+				}
+			}
+		};
+
+
+		//Check if Device capabilities was previously detected and stored in local storage, if so attach it to the login panel element.
+		//No further detection is to be done.
+		if(ClientDeviceDetection.isRetrieved) {
+			document.getElementById("login_userdeviceproperties").setAttribute("value", JSON.stringify(ClientDeviceDetection));
+		alert("Retrieved");
+		}
+		else {
+
+			//Perform entire device capabilities detection.
+			//Proceed with Client side detection.
+
+
+			// Check for support for 'devicemotion' events to determine the 'DN-Device Nature' field.
+			if (window.DeviceMotionEvent) {
+				window.addEventListener('devicemotion', checkDeviceMotionEvents, false);
+			}
+
+			// Check for support for 'deviceorientation' events to determine the 'DN-Device Nature' field.
+			if (window.DeviceOrientationEvent) {
+				window.addEventListener('deviceorientation', checkDeviceOrientationEvents, false);
+			}
+
+
+			//Check for WebRTC support and obtain the counts of the video and audio streams for determining the 'CVS-Camera/Video Streams' and 'AS-Audio Streams' parameters.
+			navigator.getUserMedia = navigator.getUserMedia ||
+					navigator.webkitGetUserMedia ||
+					navigator.mozGetUserMedia;
+
+			if (window.navigator && window.navigator.mediaDevices && window.navigator.mediaDevices.enumerateDevices) {
+				window.navigator.mediaDevices.enumerateDevices().then(function (deviceInfos) {
+
+					var audioInputSelect={};
+					audioInputSelect.length=0;
+					var audioOutputSelect={};
+					audioOutputSelect.length=0;
+					var audioCount=0;
+					ClientDeviceDetection.AS=0;
+
+					var videoSelect={};
+					videoSelect.length=0;
+					var videoCount=0;
+					ClientDeviceDetection.CVS=0;
+
+					for (var i = 0; i !== deviceInfos.length; ++i) {
+
+						var deviceInfo = deviceInfos[i];
+
+						if ((deviceInfo.kind == 'audioinput') || (deviceInfo.kind == 'audiooutput'))
+						{
+							if(!(deviceInfo.deviceId=="default") && !(deviceInfo.deviceId=="communications") )
+							{
+								audioCount++;
+							}
+						} else if (deviceInfo.kind == 'videoinput') {
+							if(!(deviceInfo.deviceId=="default") && !(deviceInfo.deviceId=="communications") )
+							{
+								videoCount++;
+							}
+						}
+					}
+					ClientDeviceDetection.CVS=videoCount;
+					ClientDeviceDetection.AS=audioCount;
+				})
+			} else if (navigator.getUserMedia) {
+				//In order to support older devices which may not support the MediaStream interface, but rather the deprecated 'navigator.getUserMedia' method for determining the 'CVS-Camera/Video Streams' and 'AS-Audio Streams' parameters.
+				navigator.getUserMedia({audio: true, video: true}, function (stream) {
+
+							var audioCount=0;
+							var videoCount=0;
+							for(var i in stream.getTracks())
+							{
+								if( (stream.getTracks()[i].kind == "audio"))
+								{
+									audioCount++;
+								}
+								else if (stream.getTracks()[i].kind == "video")
+								{
+									videoCount++;
+								}
+							}
+
+							ClientDeviceDetection.CVS=videoCount;
+							ClientDeviceDetection.AS=audioCount;
+						},
+						function (error) {
+							console.log("Error description: " + error.name);
+						}
+				);
+
+			}
+			else
+			{
+				console.log("WebRTC APIs not supported");
+			}
+
+
+			//Determine the device screen dimensions, namely the 'SP-Screen Dimensions in pixels' and 'SI-Screen Dimensions in inches'
+			//HTML element which occupies exactly 1 pixel dimension on the device screen.
+			var screenPPI = document.getElementById('obtainPPI').offsetWidth;
+			//To determine if device screen has greater value for the length or the height.
+			var higherScreenDimension=0;
+			if(screen.height > screen.width)
+			{
+				higherScreenDimension=screen.height;
+			}
+			else {
+				higherScreenDimension=screen.width;
+			}
+			//Best estimate method, largest screen dimension divided by Pixels per inch = 'SI-Screen Dimensions in inches'
+			var SI=higherScreenDimension/screenPPI;
+			ClientDeviceDetection.SI=SI;
+			ClientDeviceDetection.SP=higherScreenDimension;
+
+			//WURFL.io BOM object data, for assigning device name, 'FF-Form Factor(Client side)' and variables contributing to 'DN-Device Nature'.
+			ClientDeviceDetection.FF= WURFL.form_factor;
+			//Variable which will append a unique identifier to the device name, to differentiate multiple devices of the Desktop or Laptop device classes.
+			var secondName= Math.floor((Math.random() * 1000) + 1);
+			ClientDeviceDetection.name = WURFL.complete_device_name+""+secondName;
+			ClientDeviceDetection.ismobile = WURFL.is_mobile;
+
+
+			//Collaborate the results of 'devicemotion' events, 'deviceorientation' events and the WURFL.io results to determine the 'DN-Device Nature' parameter.
+			ClientDeviceDetection.DN="S"; //Default assignment- 'Stationary'.
+			if(ClientDeviceDetection.Motion || ClientDeviceDetection.Orientation || ClientDeviceDetection.ismobile)
+			{
+				ClientDeviceDetection.DN="M"; //Override to mobile, if device is non-stationary.
+			}
+
+		}
+
+		//variable to set a 1 second delay to enable registering and evaluation of device motion and orientation events.
+		var delay=1000;
+		setTimeout(function() {
+			//Consolidate the client side detection values and temporarily stored them in local storage, and then attach the 'ClientDeviceDetection' object values to the login panel element.
+			document.getElementById("login_userdeviceproperties").setAttribute("value", JSON.stringify(ClientDeviceDetection));
+
+			//need to remove this---
+			//if(!ClientDeviceDetection.isRetrieved) {
+			//	if (typeof(Storage) != "undefined") {
+			//		localStorage.setItem('DeviceIdentified', JSON.stringify(ClientDeviceDetection));
+		//		}
+		//	}
+
+		}, delay);
+
+
+
+	</script>
+
+	<script type="text/javascript">
+
+	</script>
+
+	<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
+
+</div>
+
+
+<div id="progressBar"><div class="progressBar_container"></div></div>
 
 </body>
 </html>

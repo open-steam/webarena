@@ -61,6 +61,9 @@
 	margin-bottom: 20px;
 }
 
+#login div.login_device {
+	display: none;
+}
 
 #login div.login_icon {
 	position: relative;
