@@ -15,21 +15,19 @@
 var ClientDeviceDetection = {};
 
 
-localStorage.clear();  ///CHANGE THIS DURING LIVE TEST--------------CHECK THIS AND UPDATE
-
+//localStorage.clear();  
 //Checks if current device capabilities were previously detected and stored for quick reference as local storage.
 if (localStorage["DeviceIdentified"]) {
 
     var DeviceDataRetrieved = localStorage.getItem('DeviceIdentified');
-
-    //DeviceDetails.name=JSON.parse(DeviceDataRetrieved.name);
-    //DeviceDetails.formfactor=JSON.parse(DeviceDataRetrieved.form_factor);
     ClientDeviceDetection=JSON.parse(DeviceDataRetrieved);
     ClientDeviceDetection.isRetrieved=true;
-//--------CHECK THIS AND UPDATE
-    alert("retrieved device details"+DeviceDetails.name+DeviceDetails.formfactor+DeviceDetails.ismobile+DeviceDetails.istouch);
+    console.log("Presence of stored device capabilities in local storage, no detection procedures required");
 }
 else {
+
+   console.log("New device, no stored device capabilities in local storage, perform full detection");
+
     //Set up a flag to perform both client and server side device capabilities detection.
     ClientDeviceDetection.isRetrieved=false;
    
