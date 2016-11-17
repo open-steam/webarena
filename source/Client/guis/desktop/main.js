@@ -132,3 +132,256 @@ GUI.setupInspector = function() {
 
 
 
+/**
+ * Initates streaming the devices's back camera feed and dynamically capture and store a picture from this live video stream.
+ * @param {webarenaObject} object The webarena object to upload the file
+*/
+GUI.setPictureFile=function(object){
+
+	var video1 =document.createElement("video");
+	video1.style.width="45vw";
+	video1.style.height="50vw";
+	video1.style.background = "blue";
+	video1.style.position="relative";
+	video1.style.alignment="center";
+	video1.autoplay;
+	video1.style.color = "white";
+	video1.id="video1";
+	video1.style.zIndex=0;
+	document.body.appendChild(video1);
+
+	var img1=document.createElement("img");
+	img1.style.width="45vw";
+	img1.style.height="50vw";
+	img1.style.background = "red";
+	img1.style.position="relative";
+	img1.style.color = "white";
+	img1.id="img1";
+	img1.style.zIndex=0;
+	img1.style.visibility='hidden';
+	document.body.appendChild(img1);
+
+	var button1=document.createElement("button");
+	button1.style.background = "yellow";
+	button1.style.color = "black";
+	button1.innerHTML = "Take Picture and Save";
+	button1.style.width="100%";
+	button1.style.height="12%";
+	button1.style.position="relative";
+	button1.id="button1";
+	document.body.appendChild(button1);
+
+	var canvas1=document.createElement("canvas");
+	canvas1.style.width="45vw";
+	canvas1.style.height="50vw";
+	canvas1.style.position="relative";
+	canvas1.style.background = "green";
+	canvas1.style.color = "white";
+	canvas1.id="canvas1";
+	canvas1.style.visibility='hidden';
+	document.body.appendChild(canvas1);
+
+	//Obtaining access to the device back camera using the WebRTC API and MediaDevices interface.
+	if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+
+		navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: { exact: "environment" } }  }).then(function(stream) {
+
+			//Append the live video stream onto the video element.
+			video1.src= window.URL.createObjectURL(stream);
+			video1.play();
+
+		});
+
+	}
+
+    //Elements for taking the snapshot
+	var canvasbase = document.getElementById('canvas1');
+	var context = canvasbase.getContext('2d');
+	var imgAsDataURL;
+
+    //Trigger photo take and photo save
+	document.getElementById('button1').addEventListener("click", function() {
+
+		context.drawImage(video1, 0, 0, 300,300); //300,270
+
+		img1.setAttribute('src',canvasbase.toDataURL('image/jpg'));
+
+		// Get canvas contents as a data URL
+		imgAsDataURL = canvasbase.toDataURL("image/jpg");
+
+
+		// Save image and append to the object.
+		var dataURL = canvasbase.toDataURL("image/jpg");
+		document.body.removeChild(video1);
+		document.body.removeChild(img1);
+		document.body.removeChild(button1);
+
+
+		var progress = document.createElement("div");
+		$(progress).css("margin-top", "10px");
+		$(progress).progressbar({
+			value: 0
+		});
+
+
+		var blob = dataURItoBlob(dataURL);
+
+
+		var fd = new FormData();
+		fd.append("file", blob);
+
+		var filename = "Take Picture";
+
+		object.setAttribute('name', filename, true);
+
+
+			var xhr = new XMLHttpRequest();
+			xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
+			xhr.send(fd);
+
+	});
+
+
+
+}
+
+//Converting DataURL to the Blob data format.
+//Referenced from -http://stackoverflow.com/questions/4998908/convert-data-uri-to-file-then-append-to-formdata
+function dataURLSourcetoBlobFormat(dataURLSource) {
+	// convert the base64/URLEncoded data to the raw binary data format
+	var byteStringFormat;
+	if (dataURLSource.split(',')[0].indexOf('base64') >= 0)
+		byteStringFormat = atob(dataURLSource.split(',')[1]);
+	else
+		byteStringFormat = unescape(dataURLSource.split(',')[1]);
+
+	// Obtain the mime component from the dataURLSource
+	var mimeContent = dataURLSource.split(',')[0].split(':')[1].split(';')[0];
+
+	var typedArray = new Uint8Array(byteStringFormat.length);
+	for (var i = 0; i < byteStringFormat.length; i++) {
+		typedArray[i] = byteStringFormat.charCodeAt(i);
+	}
+
+	return new Blob([typedArray], {type:mimeContent});
+}
+
+
+/**
+ * Initates streaming the devices's back camera feed and dynamically capture and store a picture from this live video stream.
+ * @param {webarenaObject} object The webarena object to upload the file
+ */
+GUI.setSelfiePictureFile=function(object){
+
+	var video1 =document.createElement("video");
+	video1.style.width="45vw";
+	video1.style.height="50vw";
+	video1.style.background = "blue";
+	video1.style.position="relative";
+	video1.style.alignment="center";
+	video1.autoplay;
+	video1.style.color = "white";
+	video1.id="video1";
+	video1.style.zIndex=0;
+	document.body.appendChild(video1);
+
+	var img1=document.createElement("img");
+	img1.style.width="45vw";
+	img1.style.height="50vw";
+	img1.style.background = "red";
+	img1.style.position="relative";
+	img1.style.color = "white";
+	img1.id="img1";
+	img1.style.zIndex=0;
+	img1.style.visibility='hidden';
+	document.body.appendChild(img1);
+
+	var button1=document.createElement("button");
+	button1.style.background = "yellow";
+	button1.style.color = "black";
+	button1.innerHTML = "Make Selfie and Save";
+	button1.style.width="100%";
+	button1.style.height="12%";
+	button1.style.position="relative";
+	button1.id="button1";
+	document.body.appendChild(button1);
+
+	var canvas1=document.createElement("canvas");
+	canvas1.style.width="45vw";
+	canvas1.style.height="50vw";
+	canvas1.style.position="relative";
+	canvas1.style.background = "green";
+	canvas1.style.color = "white";
+	canvas1.id="canvas1";
+	canvas1.style.visibility='hidden';
+	document.body.appendChild(canvas1);
+
+	//Obtaining access to the device back camera using the WebRTC API and MediaDevices interface.
+	if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+
+		navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: { exact: "environment" } }  }).then(function(stream) {
+
+			//Append the live video stream onto the video element.
+			video1.src= window.URL.createObjectURL(stream);
+			video1.play();
+		});
+	}
+
+	//Elements for taking the snapshot
+	var canvasbase = document.getElementById('canvas1');
+	var context = canvasbase.getContext('2d');
+	var imgAsDataURL;
+
+	//Trigger photo take and photo save
+	document.getElementById('button1').addEventListener("click", function() {
+
+		context.drawImage(video1, 0, 0, 300,300); //300,270
+
+		img1.setAttribute('src',canvasbase.toDataURL('image/jpg'));
+
+		// Get canvas contents as a data URL
+		imgAsDataURL = canvasbase.toDataURL("image/jpg");
+
+		// Save image and append to the object.
+		var dataURL = canvasbase.toDataURL("image/jpg");
+		document.body.removeChild(video1);
+		document.body.removeChild(img1);
+		document.body.removeChild(button1);
+
+		var progress = document.createElement("div");
+		$(progress).css("margin-top", "10px");
+		$(progress).progressbar({
+			value: 0
+		});
+
+		var blob = dataURItoBlob(dataURL);
+
+		var fd = new FormData();
+		fd.append("file", blob);
+
+		var filename = "Take Picture";
+
+		object.setAttribute('name', filename, true);
+
+		var xhr = new XMLHttpRequest();
+		xhr.open("POST", "/setContent/"+object.getCurrentRoom()+"/"+object.getAttribute('id')+"/"+ObjectManager.userHash);
+		xhr.send(fd);
+
+	});
+
+}
+
+/**
+ * Initates streaming the devices's back camera feed and dynamically capture and store a picture from this live video stream.
+ * @param {webarenaObject} object The webarena object to upload the file
+ */
+GUI.saveLocalStorage=function(data){
+
+	console.log("Data to be saved as local storage with key-DeviceIdentified  -"+JSON.stringify(data));
+	if(!ClientDeviceDetection.isRetrieved) {
+		if (typeof(Storage) != "undefined") {
+			localStorage.setItem('DeviceIdentified', JSON.stringify(data));
+			}
+		}
+
+}
