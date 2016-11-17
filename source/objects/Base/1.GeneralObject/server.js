@@ -368,6 +368,22 @@ theObject.setContent.neededRights = {
     write : true
 }
 
+//Server handling of the client server call-'DeviceDecisionInvocation', invoking the server module method- DeviceDecision.recommendedDevice()
+theObject.DeviceDecisionInvocation=function(sourceDeviceContexts,callback) {
+
+	var Callback = function() {
+	}
+
+	Modules.DeviceDecision.recommendedDevice(this.context,sourceDeviceContexts);
+}
+
+theObject.DeviceDecisionInvocation.public = true;
+
+theObject.DeviceDecisionInvocation.neededRights = {
+	write : true
+}
+
+
 //TODO: On this lever, we should not care about files at all!
 theObject.copyContentFromFile=function(filename,callback) {
 
