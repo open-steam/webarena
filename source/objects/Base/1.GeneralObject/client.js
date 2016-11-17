@@ -253,6 +253,49 @@ GeneralObject.unregisterAction = function(name) {
 }
 
 GeneralObject.performAction = function(name, clickedObject) {
+
+    //Handling the action- 'Make Selfie' requested on the current object.
+    if(name=="Make Selfie") {
+
+
+        var selected = ObjectManager.getSelected();
+        for (var i in selected){
+            var obj = selected[i];
+
+            var sourceDeviceContexts = {
+                roomID: this.getRoomID(),
+                objectID: obj.id,
+                action:name
+            }
+            var makeSelfieCallback = function() {
+            }
+
+            this.serverCall('DeviceDecisionInvocation',sourceDeviceContexts,makeSelfieCallback );
+
+        }
+    }
+
+    //Handling the action- 'Take Picture' requested on the current object.
+    if(name=="Take Picture") {
+
+        var selected = ObjectManager.getSelected();
+
+        for (var i in selected) {
+            var obj = selected[i];
+
+            var sourceDeviceContexts = {
+                roomID: this.getRoomID(),
+                objectID: obj.id,
+                action:name
+            }
+            var takePictureCallback = function() {
+            }
+
+            this.serverCall('DeviceDecisionInvocation',sourceDeviceContexts,takePictureCallback );
+
+        }
+    }
+
     return this.actionManager.performAction(name, clickedObject);
 }
 
