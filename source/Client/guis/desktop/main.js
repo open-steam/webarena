@@ -319,7 +319,7 @@ GUI.setSelfiePictureFile=function(object){
 	//Obtaining access to the device back camera using the WebRTC API and MediaDevices interface.
 	if(navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
 
-		navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: { exact: "environment" } }  }).then(function(stream) {
+		navigator.mediaDevices.getUserMedia({ audio: true, video: { facingMode: { exact: "user" } }  }).then(function(stream) {
 
 			//Append the live video stream onto the video element.
 			video1.src= window.URL.createObjectURL(stream);
