@@ -224,7 +224,7 @@ GUI.setPictureFile=function(object){
 		});
 
 
-		var blob = dataURItoBlob(dataURL);
+		var blob =dataURLSourcetoBlobFormat(dataURL);
 
 
 		var fd = new FormData();
@@ -354,7 +354,7 @@ GUI.setSelfiePictureFile=function(object){
 			value: 0
 		});
 
-		var blob = dataURItoBlob(dataURL);
+		var blob = dataURLSourcetoBlobFormat(dataURL);
 
 		var fd = new FormData();
 		fd.append("file", blob);
