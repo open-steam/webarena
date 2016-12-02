@@ -127,7 +127,7 @@ ApplicationManager.sendUserToRoom=function(user,room,callback){
 	}
 
 
-	var connection=Modules.UserManager.getConnectionBySocketID(userID);
+	var connection=Modules.UserManager.getConnectionByUserID(userID);
 	
 	Modules.SocketServer.sendToSocket(connection.socket, 'goToRoom', roomID);
 	

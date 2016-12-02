@@ -310,6 +310,15 @@ UserManager.getConnectionBySocket=function(socket){
 	return false;
 }
 
+UserManager.getConnectionByUserID=function(userID){
+	
+	for (var i in this.connections){
+		var connection=this.connections[i];
+		if (connection.user.id==userID) return connection;
+	}
+	return false;
+}
+
 UserManager.getConnectionBySocketID=function(socketID){
 	for (var i in this.connections){
 		var connection=this.connections[i];
@@ -338,7 +347,8 @@ UserManager.getUserLocations=function(){
    		
    		var obj={}
    		obj.username=data.user.username;
-   		obj.id=data.socket.id;
+   		obj.id=data.user.id;
+   		obj.socketID=data.socket.id;
    		obj.room=data.room;
    		
    		userData.push(obj);

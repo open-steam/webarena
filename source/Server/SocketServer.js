@@ -133,6 +133,11 @@ SocketServer.askSocket = function (socket, name, data, callback){
 
 
 SocketServer.sendToSocket = function (socket, name, data) {
+	if (!socket) {
+		console.log('ERROR: No socket!');
+		console.trace();
+		return;
+	}
 	socket.emit('message', {type: 'call', 'name': name, 'data': data});
 }
 
