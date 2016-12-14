@@ -194,7 +194,7 @@ ObjectManager.getObjects = function(roomID, context, callback) {
         }
 
         console.log('>>>> Synchronous return in getObjects');
-
+        console.log(inventory);
         return inventory;
 
     } else {
