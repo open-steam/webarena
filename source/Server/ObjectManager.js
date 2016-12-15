@@ -105,7 +105,6 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     obj.inRoom = roomID;
     obj.attributeManager.set(objectData.id, 'inRoom', roomID);
 
-    
     obj.set('type', type);
 
     // runtimeData is an array that containts variables
@@ -182,19 +181,15 @@ ObjectManager.getObjects = function(roomID, context, callback) {
         /* sync. */
 
         var objectsData = Modules.Connector.getInventory(roomID, context);
-
         for (var i in objectsData) {
             var objectData = objectsData[i];
-
             var object = buildObjectFromObjectData(objectData, roomID);
 
             object.context = context;
-
             inventory.push(object);
         }
 
         console.log('>>>> Synchronous return in getObjects');
-        console.log(inventory);
         return inventory;
 
     } else {

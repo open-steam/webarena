@@ -24,7 +24,7 @@ ObjectChooser.updateHTMLContent = function(){
 			var object=newContent[j];
 			html+='<label>';
             html+='<input type="checkbox" name="objects" value="'+object.id+'">';
-            html+=object.name;
+            html+= object.id;
             html+='</label><br>'; 
 		}
 		

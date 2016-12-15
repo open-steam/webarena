@@ -158,11 +158,10 @@ fileConnector.mayInsert=function(roomID,connection,callback) {
 *
 */
 fileConnector.getInventory=function(roomID,context,callback){
-
 	var self = this;
 
 	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
+
 	if (!context) throw new Error('Missing context in getInventory');
 	
 	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
@@ -201,7 +200,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 		/* async */
 		process.nextTick(function(){callback(inventory);});
 	}
-	
+	return inventory;
 }
 
 
