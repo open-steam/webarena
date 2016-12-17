@@ -16,6 +16,12 @@ ObjectGetter.init=function(name,theModules){
 	Modules=theModules;
 }
 
+/**
+*	Data should not be part of the function, it should be possible to acquire the necessary 
+*	data from the server instead of handing it over. 
+*	Problem: Object.context delivers different context
+* 	
+*/
 ObjectGetter.startObjectGetter=function(object, data){
 	objectList[object.getAttribute('id')]=object;
 	object.context = data.context;
@@ -23,11 +29,7 @@ ObjectGetter.startObjectGetter=function(object, data){
 	updateAttributes(object);
 }
 
-ObjectGetter.onEntered=function(){
-	updateAttributes();
-}
-
-ObjectGetter.onLeft=function(){
+ObjectGetter.onObjectCreated=function(){
 	updateAttributes();
 }
 

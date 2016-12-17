@@ -268,6 +268,21 @@ GUI.buildToolbar = function() {
 				Modules.ObjectManager.goParent();
                 popover.hide();
 			};
+
+			/*add saveState button*/
+			var saveStateButton = document.createElement("img");
+			$(saveStateButton).attr("src", "../../guis.common/images/save_grey.png").attr("alt", "");
+			$(saveStateButton).attr("width", "24").attr("height", "24");
+			$(saveStateButton).attr("id", "saveState_button");
+			$(saveStateButton).addClass("sidebar_button");
+			$(saveStateButton).attr("title", GUI.translate("SaveState"));
+			var btnSaveState = section.addElement($(saveStateButton).prop('outerHTML') + GUI.translate("SaveState")); //add menu icon
+			$(saveStateButton).attr("src", "../../guis.common/images/save.png").attr("alt", "");	
+			numberOfIcons++;
+			$("#header > .header_right").append(saveStateButton); //add header icon
+			var clickSaveState = function() { //click handler
+				
+			};
   
 
             /*add home button*/
@@ -407,6 +422,7 @@ GUI.buildToolbar = function() {
 				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
 				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
 				$(btnParent.getDOM()).bind("touchstart", clickParent);
+				$(btnSave.getDOM()).bind("touchstart", clickSaveState);
 				$(btnHome.getDOM()).bind("touchstart", clickHome);
                 $(btnLogout.getDOM()).bind("touchstart", clickLogout);
             } else {
@@ -416,6 +432,7 @@ GUI.buildToolbar = function() {
 					$(undoButton).bind("mousedown", clickUndo);
 				
 				$(parentButton).bind("mousedown", clickParent);
+				$(saveStateButton).bind("mousedown", clickSaveState);
 				$(homeButton).bind("mousedown", clickHome);
 				$(bugButton).bind("mousedown", clickBug);
 				$(logoutButton).bind("mousedown", clickLogout);
@@ -424,7 +441,7 @@ GUI.buildToolbar = function() {
 					$(btnPaste.getDOM()).bind("mousedown", clickPaste);
 					$(btnUndo.getDOM()).bind("mousedown", clickUndo);
 				
-				$(btnParent.getDOM()).bind("mousedown", clickParent);
+				$(btnSaveState.getDOM()).bind("mousedown", clickSaveState);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
                 $(btnLogout.getDOM()).bind("mousedown", clickLogout);
             }
