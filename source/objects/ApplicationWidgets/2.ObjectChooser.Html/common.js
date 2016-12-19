@@ -17,7 +17,7 @@ ObjectChooser.register=function(type){
 	HtmlObject.register.call(this,type);
 	
 	this.registerAttribute('width',{min:250,max:250,standard:250});
-	
+	this.registerAttribute('Targetroom', {type: 'text', standard: 'undefined'});
 }
 
 ObjectChooser.isCreatable=true;

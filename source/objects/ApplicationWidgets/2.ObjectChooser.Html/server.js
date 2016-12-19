@@ -14,7 +14,7 @@ theObject.startObjectGetter=function(){
 	var data = {}
 	data.roomID = this.get('inRoom');
 	data.context = this.context;
-	this.applicationMessage('startObjectGetter', data);
+	this.applicationMessage('startObjectGetter');
 	
 	return 'started';
 }

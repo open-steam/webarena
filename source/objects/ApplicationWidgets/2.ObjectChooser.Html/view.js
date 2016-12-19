@@ -5,7 +5,7 @@
 *
 */
 
-ObjectChooser.title='The title';
+ObjectChooser.title='The Objectchooser';
 ObjectChooser.infoText='This is the text that explains what the chooser is used for.';
 ObjectChooser.buttonText='Not OK!';
 
@@ -24,7 +24,7 @@ ObjectChooser.updateHTMLContent = function(){
 			var object=newContent[j];
 			html+='<label>';
             html+='<input type="checkbox" name="objects" value="'+object.id+'">';
-            html+= object.id;
+            html+= object.name;
             html+='</label><br>'; 
 		}
 		

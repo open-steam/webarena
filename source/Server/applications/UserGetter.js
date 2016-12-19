@@ -25,6 +25,7 @@ UserGetter.onEntered=function(){
 	updateAttributes();
 }
 
+//TODO: startUserGetter never ends if the user that created it leaves
 UserGetter.onLeft=function(){
 	updateAttributes();
 }
@@ -35,7 +36,6 @@ function updateAttributes(object){
 		var userDataRaw=Modules.UserManager.getUserLocations();
 		
 		var userData=[];
-		
 		for (var i in userDataRaw){
 			var element={};
 			element.name=userDataRaw[i].username;
