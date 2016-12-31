@@ -234,10 +234,10 @@ AttributeManager.setAttribute=function(object,attribute,value,forced, notify){
 		object.intelligentRename(attribute,value);
 	}
 	
-	//inform applications
+	//inform applications if notify is set to true or null
 	var data={};
 	data[attribute]=value;
-	if(notify){
+	if(notify || notify == undefined){
 		Modules.Applications.event('setAttribute',object,data);	
 	}
 	
