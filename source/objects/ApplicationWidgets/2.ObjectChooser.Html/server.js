@@ -11,9 +11,6 @@ var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
 
 theObject.startObjectGetter=function(){
-	var data = {}
-	data.roomID = this.get('inRoom');
-	data.context = this.context;
 	this.applicationMessage('startObjectGetter');
 	
 	return 'started';

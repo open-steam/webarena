@@ -9,7 +9,7 @@
 
 
 var Modules={};
-
+var _ = require('underscore');
 /**
 *	Each object type get its attribute manager. This is the server side
 *   AttributeManager which mainly is responsible for channeling through
@@ -176,15 +176,16 @@ AttributeManager.registerAttribute=function(attribute,data){
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced){
+AttributeManager.setAttribute=function(object,attribute,value,forced, notify){
 
 	var that = this;
 		
 	// do nothing, if value has not changed
-	if (object.get(attribute)===value){
+	//previous solution with "===" does not work correctly
+	if (_.isEqual(object.get(attribute),value)){
         return false;
-    } 
-    
+    }
+
     if(attribute=='id'){
 		console.log('ERROR: TRIED TO SET ID');
 		console.trace();
@@ -229,16 +230,17 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	object.persist();
 	
 	//give the object a proper name if no name has been chosen so far
-	
 	if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
 		object.intelligentRename(attribute,value);
 	}
 	
 	//inform applications
-	
 	var data={};
 	data[attribute]=value;
-	Modules.Applications.event('setAttribute',object,data);
+	if(notify){
+		Modules.Applications.event('setAttribute',object,data);	
+	}
+	
 	
 	return true;
 }

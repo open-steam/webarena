@@ -19,13 +19,20 @@ ObjectChooser.updateHTMLContent = function(){
 		var contentArea=$(rep).find('.content')[0];
 		
 		var html='';
-		
+		var previousRoom = null;
 		for (var j in newContent){
+			var thisRoom = newContent[j].room;
 			var object=newContent[j];
+			if(thisRoom != previousRoom){
+				html += '<label><b>'+thisRoom+'</b></label>';
+				html+= '<br>';
+			}
+
 			html+='<label>';
             html+='<input type="checkbox" name="objects" value="'+object.id+'">';
             html+= object.name;
             html+='</label><br>'; 
+            previousRoom = newContent[j].room;
 		}
 		
 		contentArea.innerHTML=html;

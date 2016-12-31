@@ -372,17 +372,17 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
     return this.attributeManager.registerAttribute(attribute, setter, type, min, max);
 }
 
-GeneralObject.setAttribute = function(attribute, value, forced, transactionId) {
+GeneralObject.setAttribute = function(attribute, value, forced, notify, transactionId) {
 	try {
     	if(GUI.writePermission==false || GUI.writePermission=="undefined"){
 			return ;
 		}else{
-			return this.attributeManager.setAttribute(this, attribute, value, forced);
+			return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
 		}
 	}
 	catch(err) {
 		// GUI wird auf dem Server aufgerufen und ist dort nicht verfügbar
-		return this.attributeManager.setAttribute(this, attribute, value, forced);
+		return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
 	}
 
 }

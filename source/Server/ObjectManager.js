@@ -267,7 +267,9 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 		object.objectCreated(function(){
 			callback(false, object);
 		});
-		
+
+        var data = object.context;
+		Modules.Applications.event('objectCreated',object,data);
     });
 }
 
@@ -844,7 +846,8 @@ ObjectManager.deleteObject = function(data, context, callback) {
                         that.history.add(new Date().getTime(), data.userId, historyEntry);
 						Modules.RoomController.informAllInRoom({"room": 'trash', 'message': {'change': 'change'}}, null); 
                     });
-
+                    var newdata = '';
+                    Modules.Applications.event('objectDeleted',object,newdata);
                 });
 
             } else {
