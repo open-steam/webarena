@@ -234,7 +234,7 @@ AttributeManager.setAttribute=function(object,attribute,value,forced, notify){
 		object.intelligentRename(attribute,value);
 	}
 	
-	//inform applications if notify is set to true or null
+	//inform applications if notify is set to true or undefined
 	var data={};
 	data[attribute]=value;
 	if(notify || notify == undefined){
