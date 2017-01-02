@@ -268,7 +268,7 @@ GUI.buildToolbar = function() {
 				Modules.ObjectManager.goParent();
                 popover.hide();
 			};
-
+			
 			/*add saveState button*/
 			var saveStateButton = document.createElement("img");
 			$(saveStateButton).attr("src", "../../guis.common/images/save_grey.png").attr("alt", "");
@@ -281,6 +281,47 @@ GUI.buildToolbar = function() {
 			numberOfIcons++;
 			$("#header > .header_right").append(saveStateButton); //add header icon
 			var clickSaveState = function() { //click handler
+						
+    			var html;
+				var dialog_width =690;
+				var content = [];
+
+				html = '<div id="alert"><div>Bitte wählen Sie eine Aktion aus</div>';
+
+				content.push(html);
+				
+				var dialog_buttons = {};
+				dialog_buttons["Raumzustand speichern"] = function() {
+					var stateName = prompt("Namen für den aktuellen Raumzustand eingeben", "statename");
+				
+					Modules.Dispatcher.query("saveState", {"userID" : GUI.userid, "stateName": stateName});
+					popover.hide();
+				};
+
+				dialog_buttons["Raumstatus laden"] = function() {
+
+					Modules.Dispatcher.query("getSavedState", function(states){
+						for(state in states){
+							//create list with checkboxes for each state
+						}
+
+						//function call Modules.Dispatcher.query("loadState", data);
+					});
+					popover.hide();
+				};
+
+				dialog_buttons[GUI.translate("Close")] = function() {
+					return false;
+				};
+
+				var feedbackDialog = GUI.dialog(
+							"Raumzustände",
+							content,
+							dialog_buttons,
+							dialog_width
+							);
+
+
 				
 			};
   

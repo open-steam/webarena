@@ -21,7 +21,7 @@ Application.init=function(name,theModules){
 
 Application.message=function(identifier,object,data){
 	//console.log(this+' got message '+identifier);
-	
+
 	if (this[identifier]) this[identifier](object,data);
 }
 

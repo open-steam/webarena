@@ -108,6 +108,13 @@ Dispatcher.registerCall('duplicateObjects', function(socket, data, responseID) {
     Modules.ObjectManager.duplicate(data, context, resultCallbackWrapper(socket, responseID));
 });
 
+Dispatcher.registerCall('saveState', function(socket, data, responseID) {
+    var context = Modules.UserManager.getConnectionBySocket(socket);
+    data.context = context;
+    data.roomID = context.room.getRoomID();
+    Modules.ApplicationManager.message("saveState", this , data)
+});
+
 Dispatcher.registerCall('serverCall', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));

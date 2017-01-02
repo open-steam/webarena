@@ -208,7 +208,6 @@ ObjectManager.getObjects = function(roomID, context, callback) {
             }
 
             callback(inventory);
-
         });
     }
 }
@@ -341,7 +340,6 @@ ObjectManager.getEnabledObjectTypes = function() {
                 }
                 result.push({'category': category, 'filename': filename});
             });
-
         }
     }
 

@@ -179,9 +179,9 @@ AttributeManager.registerAttribute=function(attribute,data){
 AttributeManager.setAttribute=function(object,attribute,value,forced, notify){
 
 	var that = this;
-		
+	
 	// do nothing, if value has not changed
-	//previous solution with "===" does not work correctly
+	//previous solution with "===" did not work correctly
 	if (_.isEqual(object.get(attribute),value)){
         return false;
     }
@@ -240,7 +240,6 @@ AttributeManager.setAttribute=function(object,attribute,value,forced, notify){
 	if(notify || notify == undefined){
 		Modules.Applications.event('setAttribute',object,data);	
 	}
-	
 	
 	return true;
 }

@@ -203,7 +203,106 @@ fileConnector.getInventory=function(roomID,context,callback){
 	return inventory;
 }
 
+/**
+*	getStateList
+*
+*	returns all objects in a room (no actual objects, just their attributeset)
+*
+*/
+fileConnector.getStateList=function(roomID){
+	var self = this;
+	//TODO: finish implementation
+}
 
+/**
+*	getInventoryState
+*
+*	returns all objects in a room (no actual objects, just their attributeset)
+*
+*/
+fileConnector.getInventoryState=function(roomID, context, stateName, callback){
+	var self = this;
+
+	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+
+	if (!context) throw new Error('Missing context in getInventory');
+	
+	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	
+	var filebase=this.Modules.Config.filebase;
+
+	var inventory=[];
+
+	try {
+		fs.mkdirSync(filebase+'/'+roomID)
+	} catch(e){};
+
+	var files=fs.readdirSync(filebase+'/'+roomID+'/'+stateName+'-state');
+
+    files= files || [];
+
+	files.forEach(function(value,index){
+		var position=value.indexOf('.object.txt');
+		if(position == -1) return; //not an object file
+		var filename=value;
+		var objectID=filename.substr(0,position);
+
+		if (roomID==objectID) return; //leave out the room
+
+		try {		
+			var obj=self.getObjectDataByFile(roomID,objectID);
+			if (obj) inventory.push(obj);
+        } catch (e) {
+			console.log(e);
+			self.Modules.Log.error("Cannot load object with id '"+objectID+"' (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
+		}
+
+	});
+
+	if (callback) {
+		/* async */
+		process.nextTick(function(){callback(inventory);});
+	}
+	return inventory;
+}
+
+
+
+/**
+*	saveInventoryState
+*
+*	saves current inventory state in a .txt file
+*/
+fileConnector.saveInventoryState=function(roomID, context, stateName){
+	var self = this
+
+	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+
+	if (!context) throw new Error('Missing context in getInventory');
+	
+	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	
+	var filebase=this.Modules.Config.filebase;
+
+	var inventory=[];
+
+	try {
+		fs.mkdirSync(filebase+'/'+roomID+'/'+stateName+'-state')
+	} catch(e){
+		console.log(e);
+	};
+
+	var files=fs.readdirSync(filebase+'/'+roomID);
+
+    files= files || [];
+
+    files.forEach(function(value,index){
+    	var position=value.indexOf('.object.txt');
+		if(position == -1) return; //not an object file
+
+    	fs.createReadStream(filebase+'/'+roomID+'/'+value).pipe(fs.createWriteStream(filebase+'/'+roomID+'/'+stateName+'-state/'+value));
+    });
+}
 
 /**
  *	getRoomData

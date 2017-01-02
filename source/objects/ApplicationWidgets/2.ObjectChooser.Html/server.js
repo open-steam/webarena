@@ -15,6 +15,7 @@ theObject.startObjectGetter=function(){
 	
 	return 'started';
 }
+
 theObject.startObjectGetter.public=true;
 
 module.exports=theObject;

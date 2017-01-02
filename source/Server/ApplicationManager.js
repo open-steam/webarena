@@ -63,9 +63,8 @@ ApplicationManager.init = function(theModules) {
 }
 
 ApplicationManager.message=function(identifier,object,data){
-	
 	object=godify(object);
-		
+	
 	for (var appName in Applications){
 		var app=Applications[appName];
 		

@@ -65,6 +65,9 @@ function updateAttributes(object){
 
 							objectData.push(element);
 						}
+
+						//instead of the notify boolean its probably possible to use async concat
+						//to make sure that objectData is only set when all objects are aggregated
 						object.setAttribute('objectData',objectData, false, false);
 					});
 				}
