@@ -11,22 +11,47 @@ var RoomState=Object.create(require('./Application.js'));
 var objectList={};
 var Modules={};
 
+/** Initializes the function
+ *
+ * @param  {[type]} Description
+ * @param  {[type]} Description
+ *
+ * @return {[type]}
+ */
 RoomState.init=function(name,theModules){
 	this.name=name;
 	Modules=theModules;
 }
 
-RoomState.saveState=function(object, data){
+/** Saves the current roomstate
+ *
+ * @param  {[data]} needs to contain roomID, context and statename
+ * 
+ */
+RoomState.saveState=function(data){
 	Modules.Connector.saveInventoryState(data.roomID, data.context, data.stateName);
 }
 
-RoomState.loadState=function(stateName, callback){
-	Modules.Connector.getInventoryState(stateName, callback);
+/*
+*	Restores the selected state from a radio-input selection
+*
+*	@param  {[selection]} An array of objects (selection.value, selection.selected)
+*/
+RoomState.restoreState=function(selection){
+	for(var entry in selection){
+		if(selection[entry].selected == true){
+			console.log(selection[entry].value+' wurde gewählt');
+		}
+	}
 }
 
+/*
+*	Returns the list of currently saved states
+*
+*
+*/
 RoomState.getSavedStates = function(object, data, callback){
 	Modules.Connector.getStateList(data.roomID, function(err, states){
-		console.log(states);
 		callback(err, states);
 	});
 

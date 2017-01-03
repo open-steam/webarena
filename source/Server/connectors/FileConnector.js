@@ -206,7 +206,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 /**
 *	getStateList
 *
-*	returns all objects in a room (no actual objects, just their attributeset)
+*	returns all states that the user saved in a room (no actual objects, just their attributeset)
 *
 */
 fileConnector.getStateList=function(roomID, callback){
@@ -231,7 +231,7 @@ fileConnector.getStateList=function(roomID, callback){
 /**
 *	getInventoryState
 *
-*	returns all objects in a room (no actual objects, just their attributeset)
+*	gathers the current state of the inventory
 *
 */
 fileConnector.getInventoryState=function(roomID, context, stateName, callback){

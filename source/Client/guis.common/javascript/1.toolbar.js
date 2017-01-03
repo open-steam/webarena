@@ -304,9 +304,8 @@ GUI.buildToolbar = function() {
 						html = '<div id="alert"><div>Bitte wählen Sie den zu ladenden Zustand'+
 						' aus: <br>';
 						for(var state in states){
-							console.log(states[state]);
 							html+='<label>';
-            				html+='<input type="checkbox" name="objects" value='+states[state]+'>';
+            				html+='<input type="radio" name="objects" value='+states[state]+'>';
             				html+= states[state];
             				html+='<br>';
 						}
@@ -315,8 +314,19 @@ GUI.buildToolbar = function() {
 						var load_buttons = {};
 
 						load_buttons['Raumstatus wiederherstellen'] = function(){
-							console.log("es klappt!");
-						}
+							var checkboxes=$(stateDialog).find('input');
+							
+							var selection=[];
+							
+							for (var i=0;i<checkboxes.length;i++){
+								var box=checkboxes[i];
+								var data={};
+								data.value=box.value+'-state';
+								data.selected=box.checked;
+								selection.push(data);
+							}
+							Modules.Dispatcher.query('restoreState', {'userID' : GUI.userid, 'selection': selection});
+							}
 
 						var stateDialog = GUI.dialog(
 							"Raumzustände",

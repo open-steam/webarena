@@ -112,7 +112,7 @@ Dispatcher.registerCall('saveState', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     data.context = context;
     data.roomID = context.room.getRoomID();
-    Modules.ApplicationManager.message("saveState", this , data);
+    Modules.ApplicationManager.message("saveState", data);
 });
 
 Dispatcher.registerCall('getSavedStates', function(socket, data, responseID) {
@@ -121,6 +121,10 @@ Dispatcher.registerCall('getSavedStates', function(socket, data, responseID) {
     data.roomID = context.room.getRoomID();
 
     Modules.ApplicationManager.message('getSavedStates', this, data, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('restoreState', function(socket, data, responseID) {
+    Modules.ApplicationManager.message('restoreState', data.selection);
 });
 
 Dispatcher.registerCall('serverCall', function(socket, data, responseID) {
