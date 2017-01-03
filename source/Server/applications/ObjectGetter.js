@@ -11,6 +11,7 @@ var ObjectGetter=Object.create(require('./Application.js'));
 var objectList={};
 var Modules={};
 var _ = require('underscore');
+var async = require('async');
 
 ObjectGetter.init=function(name,theModules){
 	this.name=name;
@@ -53,7 +54,7 @@ function updateAttributes(object){
 					object.setAttribute('objectData',objectData);					
 				});	
 		}else{
-			Modules.RoomController.listRooms(object.context, function(err, rooms){
+			/*Modules.RoomController.listRooms(object.context, function(err, rooms){
 				for(var i = 0; i < rooms.length; i++){
 					Modules.ObjectManager.getObjects(rooms[i].id, object.context, function(inventory){
 						//Applying filters should happen here
@@ -71,6 +72,30 @@ function updateAttributes(object){
 						object.setAttribute('objectData',objectData, false, false);
 					});
 				}
+			});*/
+
+			Modules.RoomController.listRooms(object.context, function(err, rooms){
+				var getObjects = function(room,callback){
+					Modules.ObjectManager.getObjects(room.id, object.context, function(inventory){
+						callback(err, inventory);
+					});
+				}
+				var self = this;
+
+				async.concat(rooms, getObjects, function(err, inventory){
+					var objectData = [];
+					for (var i in inventory){
+							var element = {};
+
+							element.name=inventory[i].getAttribute('name');
+							element.id=inventory[i].id;
+							element.room=inventory[i].inRoom;
+
+							objectData.push(element);
+						}
+
+    				object.setAttribute('objectData', objectData);
+				});
 			});
 		}	
 	}else{
