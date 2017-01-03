@@ -19,10 +19,10 @@ Application.init=function(name,theModules){
 	Modules=theModules;
 }
 
-Application.message=function(identifier,object,data){
+Application.message=function(identifier, object, data, callback){
 	//console.log(this+' got message '+identifier);
 
-	if (this[identifier]) this[identifier](object,data);
+	if (this[identifier]) this[identifier](object,data, callback);
 }
 
 Application.event=function(identifier,object,data){

@@ -62,7 +62,7 @@ ApplicationManager.init = function(theModules) {
 	}
 }
 
-ApplicationManager.message=function(identifier,object,data){
+ApplicationManager.message=function(identifier,object,data, callback){
 	object=godify(object);
 	
 	for (var appName in Applications){
@@ -70,7 +70,7 @@ ApplicationManager.message=function(identifier,object,data){
 		
 		function deliver(app){
 			process.nextTick(function(){
-				app.message(identifier,object,data);
+				app.message(identifier,object,data, callback);
 			});						
 		}
 		

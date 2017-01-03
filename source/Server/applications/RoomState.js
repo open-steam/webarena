@@ -24,9 +24,11 @@ RoomState.loadState=function(stateName, callback){
 	Modules.Connector.getInventoryState(stateName, callback);
 }
 
-RoomState.getSavedStates = function(roomID, callback){
-	var states = Modules.Connector.getStateList(roomID);
+RoomState.getSavedStates = function(object, data, callback){
+	Modules.Connector.getStateList(data.roomID, function(err, states){
+		console.log(states);
+		callback(err, states);
+	});
 
-	callback(states);
 }
 module.exports=RoomState;

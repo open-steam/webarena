@@ -209,9 +209,23 @@ fileConnector.getInventory=function(roomID,context,callback){
 *	returns all objects in a room (no actual objects, just their attributeset)
 *
 */
-fileConnector.getStateList=function(roomID){
+fileConnector.getStateList=function(roomID, callback){
 	var self = this;
-	//TODO: finish implementation
+	var filebase=this.Modules.Config.filebase;
+
+	var states = fs.readdirSync(filebase+'/'+roomID);
+
+	states = states || [];
+	var stateList = [];
+
+	states.forEach(function(value, index){
+		var position=value.indexOf('-state');
+		if(position == -1) return; //not an object file
+		var stateName = value.replace('-state', '');
+		stateList.push(stateName);		
+	});
+
+	callback(null, stateList);
 }
 
 /**

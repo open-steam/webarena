@@ -14,7 +14,7 @@ ObjectChooser.updateHTMLContent = function(){
 	
 	if (JSON.stringify(newContent)!=JSON.stringify(this.oldContent)){
 		
-		console.log(JSON.stringify(newContent));
+		//console.log(JSON.stringify(newContent));
 		var rep=this.getRepresentation();
 		var contentArea=$(rep).find('.content')[0];
 		

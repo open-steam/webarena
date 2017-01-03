@@ -280,7 +280,7 @@ GUI.buildToolbar = function() {
 			$(saveStateButton).attr("src", "../../guis.common/images/save.png").attr("alt", "");	
 			numberOfIcons++;
 			$("#header > .header_right").append(saveStateButton); //add header icon
-			var clickSaveState = function() { //click handler
+			var clickSaveState = function(stateDialog) { //click handler
 						
     			var html;
 				var dialog_width =690;
@@ -294,27 +294,45 @@ GUI.buildToolbar = function() {
 				dialog_buttons["Raumzustand speichern"] = function() {
 					var stateName = prompt("Namen für den aktuellen Raumzustand eingeben", "statename");
 				
-					Modules.Dispatcher.query("saveState", {"userID" : GUI.userid, "stateName": stateName});
+					Modules.Dispatcher.query('saveState', {"userID" : GUI.userid, "stateName": stateName});
 					popover.hide();
 				};
 
 				dialog_buttons["Raumstatus laden"] = function() {
+					Modules.Dispatcher.query('getSavedStates', {"userID": GUI.userid}, function(states){
+						content = [];
+						html = '<div id="alert"><div>Bitte wählen Sie den zu ladenden Zustand'+
+						' aus: <br>';
+						for(var state in states){
+							console.log(states[state]);
+							html+='<label>';
+            				html+='<input type="checkbox" name="objects" value='+states[state]+'>';
+            				html+= states[state];
+            				html+='<br>';
+						}
+						html+='</label><br></div>';
+						content.push(html);
+						var load_buttons = {};
 
-					Modules.Dispatcher.query("getSavedState", function(states){
-						for(state in states){
-							//create list with checkboxes for each state
+						load_buttons['Raumstatus wiederherstellen'] = function(){
+							console.log("es klappt!");
 						}
 
-						//function call Modules.Dispatcher.query("loadState", data);
+						var stateDialog = GUI.dialog(
+							"Raumzustände",
+							content,
+							load_buttons,
+							dialog_width
+							);
 					});
-					popover.hide();
+//					popover.hide();
 				};
 
 				dialog_buttons[GUI.translate("Close")] = function() {
 					return false;
 				};
 
-				var feedbackDialog = GUI.dialog(
+				var stateDialog = GUI.dialog(
 							"Raumzustände",
 							content,
 							dialog_buttons,
@@ -324,6 +342,7 @@ GUI.buildToolbar = function() {
 
 				
 			};
+			numberOfIcons++;
   
 
             /*add home button*/
