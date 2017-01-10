@@ -321,7 +321,7 @@ GUI.buildToolbar = function() {
 							for (var i=0;i<checkboxes.length;i++){
 								var box=checkboxes[i];
 								var data={};
-								data.value=box.value+'-state';
+								data.value=box.value;
 								data.selected=box.checked;
 								selection.push(data);
 							}

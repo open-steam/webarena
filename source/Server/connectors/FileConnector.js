@@ -11,7 +11,7 @@
 var fileConnector={};
 var fs = require('fs');
 var async = require('async');
-
+var _ = require('underscore');
 var Q = require('q');
 var Modules=false;
 
@@ -73,8 +73,8 @@ fileConnector.getTrashRoom = function(context, callback){
 }
 
 
+
 fileConnector.listRooms = function(context,callback){
-	
 	var self=this;
 	
 	var filebase = fileConnector.Modules.Config.filebase;
@@ -227,19 +227,110 @@ fileConnector.getStateList=function(roomID, callback){
 
 	callback(null, stateList);
 }
+/**
+ * restoreState goes through the folder where a certain state was saved and recovers that particular state step by step
+ *
+ * @param  {String}   roomID    the room of which a state is supposed to be restored
+ * @param  {Context}   context   The context
+ * @param  {String}   stateName the name of the state that is suposed to be restored
+ * @param  {Function} callback  Callback function TODO: what use
+ *
+ * @return returns true if sucessfull
+ */
+fileConnector.restoreState = function(roomID, context, stateName, callback){
+	var self = this;
+
+	if(!context) throw new Error('Missing context in restoreInventoryState');
+
+	if(!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+
+	var filebase = this.Modules.Config.filebase;
+
+	var currentInventory = [];
+	var oldInventory = [];
+
+	try {
+		fs.mkdirSync(filebase+'/'+roomID)
+	} catch(e){};
+
+	var stateInventory = self.getStateInventory(roomID, context, stateName);
+	var currentInventory = self.getInventory(roomID, context);
+	var stateInventoryMap = {};
+	var currentInventoryMap = {};
+
+	console.log(stateInventory);
+	console.log("--------------------");
+	console.log(currentInventory);
+
+	//Create Key-Value-Object from Array. Keys are Object-IDs
+	for(var i = 0; i < stateInventory.length; i++){
+		stateInventoryMap[stateInventory[i].id] = stateInventory[i];
+	}
+
+	//Create Key-Value-Object from Array. Keys are Object-IDs
+	for(var i = 0; i < currentInventory.length; i++){
+		currentInventoryMap[currentInventory[i].id] = currentInventory[i];
+	}
+
+	//Doesnt work properly, as it does not compare color or coordinates
+	if(_.isEqual(currentInventory, stateInventory)){
+		console.log('Seit der Speicherung von '+ stateName + ' hat sich nichts geändert');
+		return true;
+	}else{
+		for(var id in currentInventoryMap){
+			console.log('Object');
+			console.log(currentInventoryMap[id]);
+			//does the object also exist in the state?
+			if(stateInventoryMap[id]){
+				//is the object the same as the existing object?
+				if(!(_.isEqual(currentInventoryMap[id], stateInventoryMap[id]))){
+					console.log(currentInventoryMap[id] + "did not change");
+				}else{
+					//get current object
+					var currentObject = Modules.ObjectManager.getObject(roomID, id, context);
+					//get states object
+					var oldObject = this.getObjectDataByState(roomID, id, stateName);
+
+					console.log("OldObjectData");
+					console.log(oldObject);
+					//restore objects attributes
+					for(var attr in oldObject.attributes){
+						currentObject.setAttribute(attr, oldObject.attributes[attr]);
+					}
+				}
+			}else{
+				var data = {};
+				data.roomID = roomID;
+				data.objectID = id;
+
+				Modules.ObjectManager.deleteObject(data, context);
+			}
+		}
+
+		for(var id in stateInventoryMap){
+			//if an object from the state does not exist in the currentInventorymap, create it
+			if(!(currentInventoryMap[id])){
+				console.log(currentInventoryMap[id].type);
+				console.log(currentInventoryMap[id].attributes);
+
+				Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, null, context);
+			}
+		}
+	}
+}
 
 /**
-*	getInventoryState
+*	getStateInventory
 *
-*	gathers the current state of the inventory
+*	gathers the current state (= objects and their attributeset) of the inventory
 *
 */
-fileConnector.getInventoryState=function(roomID, context, stateName, callback){
+fileConnector.getStateInventory=function(roomID, context, stateName, callback){
 	var self = this;
 
 	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 
-	if (!context) throw new Error('Missing context in getInventory');
+	if (!context) throw new Error('Missing context in getInventoryState');
 	
 	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
@@ -292,7 +383,7 @@ fileConnector.saveInventoryState=function(roomID, context, stateName){
 
 	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 
-	if (!context) throw new Error('Missing context in getInventory');
+	if (!context) throw new Error('Missing context in saveInveotryState');
 	
 	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
@@ -774,6 +865,57 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 	var filebase = this.Modules.Config.filebase;
 	
 	var filename=filebase+'/'+roomID+'/'+objectID+'.object.txt';
+	
+	try {
+		var attributes = fs.readFileSync(filename, 'utf8');
+		attributes=JSON.parse(attributes);
+	} catch (e) {								//if the attribute file does not exist, create an empty one
+	
+		//when an object is not there, false is returned as a sign of an error
+		return false;
+	}
+	
+	var data={};
+	
+	//	automatically repair some values which could be wrong due
+	//  to manual file copying.
+
+	data.attributes=attributes;
+	data.type=data.attributes.type;
+	data.id=objectID;
+	data.attributes.id=data.id;
+	data.inRoom=roomID;
+	data.attributes.inRoom=roomID;
+	data.attributes.hasContent=false;
+	
+	//assure rooms do not loose their type
+	if (roomID==objectID){
+		data.type='Room';
+		data.attributes.type='Room';
+	}
+	
+	var path = require('path');
+	
+	filename=filebase+'/'+roomID+'/'+objectID+'.content';
+	
+	if (fs.existsSync(filename)) {
+		
+		data.attributes.hasContent=true;
+		data.attributes.contentAge=new Date().getTime();
+	}
+
+	return data;
+}
+
+/**
+*	internal
+*
+*	read an object file from a saved state and return the attribute set
+*/
+fileConnector.getObjectDataByState=function(roomID,objectID, stateName){
+	var filebase = this.Modules.Config.filebase;
+	
+	var filename=filebase+'/'+roomID+'/'+stateName+'-state'+'/'+objectID+'.object.txt';
 	
 	try {
 		var attributes = fs.readFileSync(filename, 'utf8');

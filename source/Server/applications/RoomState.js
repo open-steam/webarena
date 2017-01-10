@@ -35,12 +35,15 @@ RoomState.saveState=function(data){
 /*
 *	Restores the selected state from a radio-input selection
 *
-*	@param  {[selection]} An array of objects (selection.value, selection.selected)
+*	@param  {[Data]} Contains the context, roomID and the selection
 */
-RoomState.restoreState=function(selection){
+RoomState.restoreState=function(data){
+	console.log(data.selection);
+	var selection = data.selection;
 	for(var entry in selection){
 		if(selection[entry].selected == true){
 			console.log(selection[entry].value+' wurde gewählt');
+			Modules.Connector.restoreState(data.roomID, data.context, selection[entry].value)
 		}
 	}
 }
