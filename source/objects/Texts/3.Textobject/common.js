@@ -26,61 +26,11 @@ Textobject.register=function(type){
 
 	this.registerAttribute('fillcolor',{hidden: true});
 	
-	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});
-	
-     this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
-
-            if (object.resizeProportional()) {
-                object.setAttribute("height", object.getAttribute("height") * (value / object.getAttribute("width")));
-            }
-
-            return true;
-
-        }, getFunction: function(object) {
-            //var preview = object.getAttribute("preview");
-            //if ((!preview)) {
-            var bigIcon = object.getAttribute("bigIcon");
-            if (bigIcon) {
-                return "64"
-            } else {
-                return "32";
-            }
-            //}
-            return object.get('width');
-        }});
-
-    this.registerAttribute('height', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
-
-            if (object.resizeProportional()) {
-                object.setAttribute("width", object.getAttribute("width") * (value / object.getAttribute("height")));
-            }
-
-            return true;
-
-        }, getFunction: function(object) {
-            //var preview = object.getAttribute("preview");
-            //if ((!preview)) {
-            var bigIcon = object.getAttribute("bigIcon");
-            if (bigIcon) {
-                return "64"
-            } else {
-                return "32";
-            }
-            //}
-            return object.get('height');
-        }
-        });
-	
-	this.registerAttribute('editorText', {type:'text',readonly: false, standard: "", hidden:false});
-	
-	this.registerAttribute('editorBlock', {type:'boolean',readonly: false, standard: false, hidden:false});
+	this.registerAttribute('opacity', {type: 'number', min: 10, max: 100, standard: 100, category: 'Appearance', stepsize: 10});	
 }
 
 Textobject.execute=function(){
-		
-		if (this.checkBlock()){
-		   this.openFile();
-		}
+	this.openFile();
 }
 
 Textobject.isProportional=function(){

@@ -205,127 +205,18 @@ Textobject.openContentDialog = function(w, h){
 	$("#"+this.id).css("opacity", 0.3);
 	
 	setTimeout(function(){
-	console.log("SET NOTEDATA")
 	$('#iframeText').contents().find('#noteData').html(that.getAttribute("editorText"));
 	}, 1500);
 
 }
 
 Textobject.mergeContent = function(){
-	this.setAttribute("editorBlock", true);
-	var that = this;
-	
-	var oldStr = this.getAttribute("editorText");
+
 	var newStr = $('#iframeText').contents().find('#noteData').html();
 	
 	newStr = newStr.replace('&nbsp;',' ')
 	
-	oldStr = jQuery.parseHTML(oldStr);
-	newStr = jQuery.parseHTML(newStr);
-	var mergedStr ="";
-	
-	if(oldStr==null ){
-		var p = document.createElement("p");
-		oldStr=[p];
-	}
-	// olddata as compare object
-	var oldData={};
-	$.each(oldStr, function( k, v ) {
-		if(v.nodeName=="#text"){
-			var p = document.createElement("p");
-			var tmp = v;
-			p.appendChild(tmp);
-			v=p;
-		}
-		var pv;
-		if(v.previousElementSibling == null){
-			pv={};
-		}else{
-			pv=v.previousElementSibling;
-		}
-		if(v.hasAttribute('ID') === false ||v.getAttribute('ID') == pv.id){
-			v.setAttribute('ID', Date.now()+k);
-			setTimeout(null, 1);
-		}
-		if(v.hasAttribute('TIME') === false)
-			v.setAttribute('TIME', Date.now());
-		if(v.hasAttribute('AUTHOR') === false)
-			v.setAttribute('AUTHOR', ObjectManager.user.id);
-
-		oldData[v.getAttribute('ID')] ={
-			time : v.getAttribute('TIME'),
-			author : v.getAttribute('AUTHOR'),
-			element: v
-		};
-	});
-
-	 if(newStr==null)
-		 newStr={};
-
-	$.each(newStr, function( k, v ) {
-		if(v.nodeName=="#text"){
-			var p = document.createElement("p");
-			var tmp = v;
-			p.appendChild(tmp);
-			v=p;
-		}
-		// ID generieren
-		var pv;
-		if(v.previousElementSibling == null){
-			pv={};
-		}else{
-			pv=v.previousElementSibling;
-		}
-		if(v.hasAttribute('ID') === false ||v.getAttribute('ID') == pv.id){
-			v.setAttribute('ID', Date.now()+k);
-			setTimeout(null, 1);
-		}
-		
-		if(v.hasAttribute('TIME') === false)
-			v.setAttribute('TIME', Date.now());
-
-		if(v.hasAttribute('AUTHOR') === false)
-			v.setAttribute('AUTHOR', ObjectManager.user.id);
-		
-		if(oldData.hasOwnProperty(v.getAttribute('ID'))){
-			var oldElement = oldData[v.getAttribute('ID')].element;
-
-			if(v.innerHTML.localeCompare(oldElement.innerHTML) != 0)
-				v.setAttribute('AUTHOR', ObjectManager.user.id);
-			
-			if(v.getAttribute('AUTHOR') != oldElement.getAttribute('AUTHOR')){
-				oldElement.removeAttribute("ID");
-				oldElement.removeAttribute("TIME");
-				oldElement.removeAttribute("AUTHOR");
-				oldElement.removeAttribute("style");
-				oldElement.removeAttribute("align");
-				var string = v.outerHTML;
-				var oldString = oldElement.outerHTML;
-				oldString = oldString.substr(2+v.tagName.length,oldString.length);
-				oldString = oldString.substr(0,oldString.length-(3+v.tagName.length));
-				mergedStr +=string.substr(0, string.length-(3+v.tagName.length)) + " <span style='background-color: rgb(247, 198, 206);'>("+oldString+")</span>" + string.substr(string.length-(3+v.tagName.length));
-			}else{		
-				mergedStr += v.outerHTML;
-			}
-		}else{
-			mergedStr += v.outerHTML;
-		}
-		delete oldData[v.getAttribute('ID')];
-	});
-	
-	$.each(oldData, function( k, v ) {
-		var oldString = v.element.outerHTML;
-		if(v == null )
-			v={};
-		if(oldString != undefined && v.author!= null && v.author != ObjectManager.user.id)
-			mergedStr +="<span style='background-color: rgb(247, 198, 206);'>("+oldString+")</span>";
-	});
-	
-	
-	console.log("DATA MERGED");
-	this.setAttribute("editorText",mergedStr);
-	console.log("DATA SAVED");
-	this.setAttribute("editorBlock", false);
+	this.setAttribute("editorText",newStr);
 }
 
 Textobject.closeContentDialog = function(){
