@@ -112,6 +112,7 @@ Dispatcher.registerCall('saveState', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     data.context = context;
     data.roomID = context.room.getRoomID();
+
     Modules.ApplicationManager.message("saveState", data);
 });
 

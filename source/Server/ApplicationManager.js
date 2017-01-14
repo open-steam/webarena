@@ -75,7 +75,6 @@ ApplicationManager.message=function(identifier,object,data, callback){
 		}
 		
 		deliver(app);
-
 	}
 	
 }
@@ -131,6 +130,35 @@ ApplicationManager.sendUserToRoom=function(user,room,callback){
 	Modules.SocketServer.sendToSocket(connection.socket, 'goToRoom', roomID);
 	
 	if (callback) callback();
+}
+
+/**
+ * saveApplicationData allows an application to write persistent key-value-data for later use
+ * (See Roomstate for an example of what you can do)
+ *
+ * @param  {String} appID The ID of the app
+ * @param  {String} key   The key 
+ * @param  {Object} value The value that is supposed to be stored
+ *
+ */
+
+ApplicationManager.saveApplicationData = function(appID, key, value){
+	console.log("im here");
+	console.log(appID +', '+ key +', '+ value);
+	Modules.Connector.saveApplicationData(appID, key, value);
+}
+
+
+/**
+ * Reads the persistent application data and returns
+ *
+ * @param  {String}   appID    The ID of the app
+ * @param  {String}   key      The key of the data
+ * @param  {Function} callback The callback function
+ * 
+ */
+ApplicationManager.getApplicationData = function(appID, key, callback){
+	Modules.Connector.getApplicationData(appID, key, callback);
 }
 
 

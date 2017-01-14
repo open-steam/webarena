@@ -54,26 +54,6 @@ function updateAttributes(object){
 					object.setAttribute('objectData',objectData);					
 				});	
 		}else{
-			/*Modules.RoomController.listRooms(object.context, function(err, rooms){
-				for(var i = 0; i < rooms.length; i++){
-					Modules.ObjectManager.getObjects(rooms[i].id, object.context, function(inventory){
-						//Applying filters should happen here
-						for (var i in inventory){
-							var element={};
-							element.name=inventory[i].getAttribute('name');
-							element.id=inventory[i].id;
-							element.room = inventory[i].inRoom;
-
-							objectData.push(element);
-						}
-
-						//instead of the notify boolean its probably possible to use async concat
-						//to make sure that objectData is only set when all objects are aggregated
-						object.setAttribute('objectData',objectData, false, false);
-					});
-				}
-			});*/
-
 			Modules.RoomController.listRooms(object.context, function(err, rooms){
 				var getObjects = function(room,callback){
 					Modules.ObjectManager.getObjects(room.id, object.context, function(inventory){

@@ -8,7 +8,7 @@
 "use strict";
 
 var Application={};
-var Modules={};
+var Modules = require('../../server.js');
 
 Application.toString=function(){
 	return 'Application '+this.name;
@@ -45,6 +45,31 @@ function ucfirst(str) {
   var f = str.charAt(0)
     .toUpperCase();
   return f + str.substr(1);
+}
+
+/**
+ * saveApplicationData allows an application to write persistent key-value-data for later use
+ * (See Roomstate for an example of what you can do)
+ *
+ * @param  {String} appID The ID of the app
+ * @param  {String} key   The key 
+ * @param  {Object} value The value that is supposed to be stored
+ *
+ */
+Application.saveApplicationData = function(appID, key, value){
+	Modules.Connector.saveApplicationData(appID, key, value);
+}
+
+
+/**
+ * Reads the persistent application data and returns
+ *
+ * @param  {String}   appID    The ID of the app
+ * @param  {String}   key      The key of the data
+ * @param  {Function} callback The callback function
+ */
+Application.getApplicationData = function(appID, key, callback){
+	Modules.Connector.getApplicationData(appID, key, callback);
 }
 
 

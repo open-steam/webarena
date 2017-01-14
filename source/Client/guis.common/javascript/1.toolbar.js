@@ -326,7 +326,7 @@ GUI.buildToolbar = function() {
 								selection.push(data);
 							}
 							Modules.Dispatcher.query('restoreState', {'userID' : GUI.userid, 'selection': selection});
-							}
+						}
 
 						var stateDialog = GUI.dialog(
 							"Raumzustände",

@@ -204,210 +204,89 @@ fileConnector.getInventory=function(roomID,context,callback){
 }
 
 /**
-*	getStateList
-*
-*	returns all states that the user saved in a room (no actual objects, just their attributeset)
-*
-*/
-fileConnector.getStateList=function(roomID, callback){
-	var self = this;
-	var filebase=this.Modules.Config.filebase;
-
-	var states = fs.readdirSync(filebase+'/'+roomID);
-
-	states = states || [];
-	var stateList = [];
-
-	states.forEach(function(value, index){
-		var position=value.indexOf('-state');
-		if(position == -1) return; //not an object file
-		var stateName = value.replace('-state', '');
-		stateList.push(stateName);		
-	});
-
-	callback(null, stateList);
-}
-/**
- * restoreState goes through the folder where a certain state was saved and recovers that particular state step by step
+ * Reads the persistent application data and returns
  *
- * @param  {String}   roomID    the room of which a state is supposed to be restored
- * @param  {Context}   context   The context
- * @param  {String}   stateName the name of the state that is suposed to be restored
- * @param  {Function} callback  Callback function TODO: what use
- *
- * @return returns true if sucessfull
+ * @param  {String}   appID    The ID of the app
+ * @param  {String}   key      The key of the data
+ * @param  {Function} callback The callback function
  */
-fileConnector.restoreState = function(roomID, context, stateName, callback){
-	var self = this;
-
-	if(!context) throw new Error('Missing context in restoreInventoryState');
-
-	if(!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-
-	var filebase = this.Modules.Config.filebase;
-
-	var currentInventory = [];
-	var oldInventory = [];
-
-	try {
-		fs.mkdirSync(filebase+'/'+roomID)
-	} catch(e){};
-
-	var stateInventory = self.getStateInventory(roomID, context, stateName);
-	var currentInventory = self.getInventory(roomID, context);
-	var stateInventoryMap = {};
-	var currentInventoryMap = {};
-
-	console.log(stateInventory);
-	console.log("--------------------");
-	console.log(currentInventory);
-
-	//Create Key-Value-Object from Array. Keys are Object-IDs
-	for(var i = 0; i < stateInventory.length; i++){
-		stateInventoryMap[stateInventory[i].id] = stateInventory[i];
-	}
-
-	//Create Key-Value-Object from Array. Keys are Object-IDs
-	for(var i = 0; i < currentInventory.length; i++){
-		currentInventoryMap[currentInventory[i].id] = currentInventory[i];
-	}
-
-	//Doesnt work properly, as it does not compare color or coordinates
-	if(_.isEqual(currentInventory, stateInventory)){
-		console.log('Seit der Speicherung von '+ stateName + ' hat sich nichts geändert');
-		return true;
-	}else{
-		for(var id in currentInventoryMap){
-			console.log('Object');
-			console.log(currentInventoryMap[id]);
-			//does the object also exist in the state?
-			if(stateInventoryMap[id]){
-				//is the object the same as the existing object?
-				if(!(_.isEqual(currentInventoryMap[id], stateInventoryMap[id]))){
-					console.log(currentInventoryMap[id] + "did not change");
-				}else{
-					//get current object
-					var currentObject = Modules.ObjectManager.getObject(roomID, id, context);
-					//get states object
-					var oldObject = this.getObjectDataByState(roomID, id, stateName);
-
-					console.log("OldObjectData");
-					console.log(oldObject);
-					//restore objects attributes
-					for(var attr in oldObject.attributes){
-						currentObject.setAttribute(attr, oldObject.attributes[attr]);
-					}
-				}
-			}else{
-				var data = {};
-				data.roomID = roomID;
-				data.objectID = id;
-
-				Modules.ObjectManager.deleteObject(data, context);
-			}
-		}
-
-		for(var id in stateInventoryMap){
-			//if an object from the state does not exist in the currentInventorymap, create it
-			if(!(currentInventoryMap[id])){
-				console.log(currentInventoryMap[id].type);
-				console.log(currentInventoryMap[id].attributes);
-
-				Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, null, context);
-			}
-		}
-	}
-}
-
-/**
-*	getStateInventory
-*
-*	gathers the current state (= objects and their attributeset) of the inventory
-*
-*/
-fileConnector.getStateInventory=function(roomID, context, stateName, callback){
-	var self = this;
-
-	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-
-	if (!context) throw new Error('Missing context in getInventoryState');
-	
-	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
+fileConnector.getApplicationData = function(appID, key, callback){
 	var filebase=this.Modules.Config.filebase;
 
-	var inventory=[];
-
-	try {
-		fs.mkdirSync(filebase+'/'+roomID)
-	} catch(e){};
-
-	var files=fs.readdirSync(filebase+'/'+roomID+'/'+stateName+'-state');
-
-    files= files || [];
-
-	files.forEach(function(value,index){
-		var position=value.indexOf('.object.txt');
-		if(position == -1) return; //not an object file
-		var filename=value;
-		var objectID=filename.substr(0,position);
-
-		if (roomID==objectID) return; //leave out the room
-
-		try {		
-			var obj=self.getObjectDataByFile(roomID,objectID);
-			if (obj) inventory.push(obj);
-        } catch (e) {
+	if(!(fs.existsSync(filebase+'/appdata'))){
+		try {
+			fs.mkdirSync(filebase+'/appdata');
+		}catch(e){
 			console.log(e);
-			self.Modules.Log.error("Cannot load object with id '"+objectID+"' (roomID: '"+roomID+"', user: '"+self.Modules.Log.getUserFromContext(context)+"')");
 		}
-
-	});
-
-	if (callback) {
-		/* async */
-		process.nextTick(function(){callback(inventory);});
 	}
-	return inventory;
+
+	if(!(fs.existsSync(filebase+'/appdata/'+appID))){
+		try {
+			fs.mkdirSync(filebase+'/appdata/'+appID)
+		} catch(e){
+			console.log(e);
+		}
+	}
+
+	var data=fs.readdirSync(filebase+'/appdata/'+appID);
+
+	if(data.length >= 1){
+		var file = fs.readFileSync(filebase+'/appdata/'+appID+'/'+data[0]);
+		var obj = JSON.parse(file);
+	}else{
+		var obj = {};
+	}
+
+	callback(null, obj[key]);
 }
 
-
-
 /**
-*	saveInventoryState
-*
-*	saves current inventory state in a .txt file
-*/
-fileConnector.saveInventoryState=function(roomID, context, stateName){
+ * saveApplicationData allows an application to write persistent key-value-data for later use
+ * (See Roomstate for an example of what you can do)
+ *
+ * @param  {String} appID The ID of the app
+ * @param  {String} key   The key 
+ * @param  {Object} value The value that is supposed to be stored
+ *
+ */
+fileConnector.saveApplicationData = function (appID, key, value){
 	var self = this
 
-	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-
-	if (!context) throw new Error('Missing context in saveInveotryState');
-	
-	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
 	var filebase=this.Modules.Config.filebase;
 
-	var inventory=[];
+	var data = [];
+	if(!(fs.existsSync(filebase+'/appdata'))){
+		try {
+			fs.mkdirSync(filebase+'/appdata');
+		}catch(e){
+			console.log(e);
+		}
+	}
 
-	try {
-		fs.mkdirSync(filebase+'/'+roomID+'/'+stateName+'-state')
-	} catch(e){
-		console.log(e);
-	};
+	if(!(fs.existsSync(filebase+'/appdata/'+appID))){
+		try {
+			fs.mkdirSync(filebase+'/appdata/'+appID)
+		} catch(e){
+			console.log(e);
+		}
+	}
 
-	var files=fs.readdirSync(filebase+'/'+roomID);
+	data=fs.readdirSync(filebase+'/appdata/'+appID);
 
-    files= files || [];
+	if(data.length >= 1){
+		var file = fs.readFileSync(filebase+'/appdata/'+appID+'/'+data[0]);
+		var obj = JSON.parse(file);
+	}else{
+		var obj = {};
+	}
+	obj[key] = value;
 
-    files.forEach(function(value,index){
-    	var position=value.indexOf('.object.txt');
-		if(position == -1) return; //not an object file
+	var newData = JSON.stringify(obj);
 
-    	fs.createReadStream(filebase+'/'+roomID+'/'+value).pipe(fs.createWriteStream(filebase+'/'+roomID+'/'+stateName+'-state/'+value));
-    });
+    fs.writeFileSync(filebase+'/appdata/'+appID+'/'+appID+'.data.txt', newData);
 }
+
 
 /**
  *	getRoomData
