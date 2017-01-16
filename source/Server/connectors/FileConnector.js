@@ -429,7 +429,7 @@ fileConnector.saveObjectData=function(roomID,objectID,data,context,createIfNotEx
 *	if a callback function is specified, it is called after saving
 *
 */
-fileConnector.saveContent=function(roomID,objectID,content,context, inputIsStream,callback){
+fileConnector.saveContent=function(roomID, objectID, content,context, inputIsStream, callback){
 	this.Modules.Log.debug("Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	var that = this;
 
@@ -589,14 +589,17 @@ fileConnector.remove=function(roomID,objectID,context, callback){
 *	after(objectID)
 *
 */
-fileConnector.createObject=function(roomID,type,data, context, callback){
+fileConnector.createObject=function(objectID, roomID, type, data, context, callback){
 
-	this.Modules.Log.debug("Create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	this.Modules.Log.debug("Create object "+objectID+" (roomID: '"+roomID+"', type: '"+type+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var uuid = require('node-uuid');
-	var objectID = uuid.v4();
+
+	if(!(objectID)){
+		var objectID = uuid.v4();	
+	}
 	
 	data.type=type;
 	

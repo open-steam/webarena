@@ -176,7 +176,7 @@ AttributeManager.registerAttribute=function(attribute,data){
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced, notify){
+AttributeManager.setAttribute=function(object, attribute, value, forced, notify){
 
 	var that = this;
 	

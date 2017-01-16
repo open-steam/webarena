@@ -233,13 +233,24 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 
     var proto = this.getPrototypeFor(type);
 
-    Modules.Connector.createObject(roomID, type, proto.standardData, context, function(id) {
+    if(attributes.id){
+        console.log("im here");
+        var objectID = attributes.id;
+        delete attributes.id;
+        console.log(attributes);
+    }
+
+    //forced-id as parameter that allows creating an object with that id
+    Modules.Connector.createObject(objectID, roomID, type, proto.standardData, context, function(id) {
         var object = ObjectManager.getObject(roomID, id, context);
 
         //set default attributes
         var defaultAttributes = object.standardData;
         for (var key in defaultAttributes) {
             var value = defaultAttributes[key];
+            if(key =="id"){
+                continue;
+            }
             object.setAttribute(key, value);
         }
 
@@ -263,10 +274,12 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
 		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 		
-		object.objectCreated(function(){
-			callback(false, object);
-		});
-
+        if(callback){
+            object.objectCreated(function(){
+                callback(false, object);
+            }); 
+        }
+		
         var data = object.context;
 		Modules.Applications.event('objectCreated',object,data);
     });
