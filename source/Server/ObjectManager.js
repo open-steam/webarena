@@ -30,6 +30,7 @@ ObjectManager.toString = function() {
  *  registers an object type, so objects can be created by this objectManager
  */
 ObjectManager.registerType = function(type, constr) {
+	
     prototypes[type] = constr;
 }
 
@@ -55,10 +56,15 @@ ObjectManager.getPrototype = function(objType) {
         return prototypes[objType];
         
     // fallback. Return the GeneralObject protoype instead    
+	
+	console.log('ERROR: '+objType+' not registered. Falling back to GeneralObject');
         
     if (prototypes['GeneralObject'])
         return prototypes['GeneralObject'];
-    return;
+	
+	console.log('ERROR: There is no prototype for GeneralObject registred. I should never be here!');
+	
+    return null;
 }
 
 ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
@@ -374,25 +380,33 @@ ObjectManager.init = function(theModules) {
 
 		var fs=require('fs');
 		
-		fs.stat(filebase + '/server.js', function(err, stat) {
-		    if(err == null) {
-		        var obj = require(filebase + '/server.js');
-		        obj.ObjectManager = Modules.ObjectManager;
-		        obj.register(objName);
-		
-		        obj.localIconPath = function(selection) {
-		            selection = (selection) ? '_' + selection : '';
-		            return filebase + '/icon' + selection + '.png';
-		        }
-		    } else if(err.code == 'ENOENT') {
+		try {
+			
+			var stat=fs.statSync(filebase + '/server.js');
+			var obj = require(filebase + '/server.js');
+			obj.ObjectManager = Modules.ObjectManager;
+			obj.register(objName);
+	
+			obj.localIconPath = function(selection) {
+				selection = (selection) ? '_' + selection : '';
+				return filebase + '/icon' + selection + '.png';
+			}
+			
+			
+		}
+		catch (err){
+			if(err.code == 'ENOENT') {
 		        //likely an empty folder
 		    } else {
 		        console.log('ERROR: cannot load server.js for '+objName);
-		    }
-		});
+			}
+			
+		}
+		
     }
 
     var files = this.getEnabledObjectTypes();
+	
     files.forEach(function(data) {
 
 
