@@ -371,22 +371,29 @@ ObjectManager.init = function(theModules) {
 
 		var fs=require('fs');
 		
-		fs.stat(filebase + '/server.js', function(err, stat) {
-		    if(err == null) {
-		        var obj = require(filebase + '/server.js');
-		        obj.ObjectManager = Modules.ObjectManager;
-		        obj.register(objName);
-		
-		        obj.localIconPath = function(selection) {
-		            selection = (selection) ? '_' + selection : '';
-		            return filebase + '/icon' + selection + '.png';
-		        }
-		    } else if(err.code == 'ENOENT') {
+		try {
+			
+			var stat=fs.statSync(filebase + '/server.js');
+			var obj = require(filebase + '/server.js');
+			obj.ObjectManager = Modules.ObjectManager;
+			obj.register(objName);
+	
+			obj.localIconPath = function(selection) {
+				selection = (selection) ? '_' + selection : '';
+				return filebase + '/icon' + selection + '.png';
+			}
+			
+			
+		}
+		catch (err){
+			if(err.code == 'ENOENT') {
 		        //likely an empty folder
 		    } else {
 		        console.log('ERROR: cannot load server.js for '+objName);
-		    }
-		});
+			}
+			
+		}
+		
     }
 
     var files = this.getEnabledObjectTypes();
