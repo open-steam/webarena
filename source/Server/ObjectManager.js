@@ -30,7 +30,6 @@ ObjectManager.toString = function() {
  *  registers an object type, so objects can be created by this objectManager
  */
 ObjectManager.registerType = function(type, constr) {
-	
     prototypes[type] = constr;
 }
 
@@ -56,15 +55,10 @@ ObjectManager.getPrototype = function(objType) {
         return prototypes[objType];
         
     // fallback. Return the GeneralObject protoype instead    
-	
-	console.log('ERROR: '+objType+' not registered. Falling back to GeneralObject');
         
     if (prototypes['GeneralObject'])
         return prototypes['GeneralObject'];
-	
-	console.log('ERROR: There is no prototype for GeneralObject registred. I should never be here!');
-	
-    return null;
+    return;
 }
 
 ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
@@ -111,7 +105,6 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     obj.inRoom = roomID;
     obj.attributeManager.set(objectData.id, 'inRoom', roomID);
 
-    
     obj.set('type', type);
 
     // runtimeData is an array that containts variables
@@ -125,7 +118,7 @@ function buildObjectFromObjectData(objectData, roomID, type) {
 
     obj.runtimeData = runtimeData[obj.id];
 
-	// if the object has an afterCreation function, it is called here
+    // if the object has an afterCreation function, it is called here
 
     if (typeof obj.afterCreation == "function") {
         obj.afterCreation();
@@ -188,19 +181,15 @@ ObjectManager.getObjects = function(roomID, context, callback) {
         /* sync. */
 
         var objectsData = Modules.Connector.getInventory(roomID, context);
-
         for (var i in objectsData) {
             var objectData = objectsData[i];
-
             var object = buildObjectFromObjectData(objectData, roomID);
 
             object.context = context;
-
             inventory.push(object);
         }
 
         console.log('>>>> Synchronous return in getObjects');
-
         return inventory;
 
     } else {
@@ -219,7 +208,6 @@ ObjectManager.getObjects = function(roomID, context, callback) {
             }
 
             callback(inventory);
-
         });
     }
 }
@@ -239,7 +227,7 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  **/
 ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
 
-	var that = this;
+    var that = this;
 
     //TODO check for rights right here
 
@@ -265,19 +253,22 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         if (content) {
             object.setContent(content);
         }
-		
-		var historyEntry = {
-			'roomID': roomID,
+        
+        var historyEntry = {
+            'roomID': roomID,
             'objectID': id,
             'action': 'create Object'
         }
 
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
-		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
-		
-		object.objectCreated();
-		
-        callback(false, object);
+        Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+        
+        object.objectCreated(function(){
+            callback(false, object);
+        });
+
+        var data = object.context;
+        Modules.Applications.event('objectCreated',object,data);
     });
 }
 
@@ -302,7 +293,7 @@ ObjectManager.getEnabledObjectTypes = function() {
 
     for (var i in configCategories) {
         var temp = configCategories[i];
-        if (temp !== 'Base')
+        if (temp !== 'Base' && temp !== 'ApplicationWidgets')
             categories.push(temp);
     }
 
@@ -348,7 +339,6 @@ ObjectManager.getEnabledObjectTypes = function() {
                 }
                 result.push({'category': category, 'filename': filename});
             });
-
         }
     }
 
@@ -378,35 +368,34 @@ ObjectManager.init = function(theModules) {
         var objName = fileinfo[1];
         var filebase = __dirname + '/../objects/' + category + '/' + filename;
 
-		var fs=require('fs');
-		
-		try {
-			
-			var stat=fs.statSync(filebase + '/server.js');
-			var obj = require(filebase + '/server.js');
-			obj.ObjectManager = Modules.ObjectManager;
-			obj.register(objName);
-	
-			obj.localIconPath = function(selection) {
-				selection = (selection) ? '_' + selection : '';
-				return filebase + '/icon' + selection + '.png';
-			}
-			
-			
-		}
-		catch (err){
-			if(err.code == 'ENOENT') {
-		        //likely an empty folder
-		    } else {
-		        console.log('ERROR: cannot load server.js for '+objName);
-			}
-			
-		}
-		
+        var fs=require('fs');
+        
+        try {
+            
+            var stat=fs.statSync(filebase + '/server.js');
+            var obj = require(filebase + '/server.js');
+            obj.ObjectManager = Modules.ObjectManager;
+            obj.register(objName);
+    
+            obj.localIconPath = function(selection) {
+                selection = (selection) ? '_' + selection : '';
+                return filebase + '/icon' + selection + '.png';
+            }
+            
+            
+        }
+        catch (err){
+            if(err.code == 'ENOENT') {
+                //likely an empty folder
+            } else {
+                console.log('ERROR: cannot load server.js for '+objName);
+            }
+            
+        }
+        
     }
 
     var files = this.getEnabledObjectTypes();
-	
     files.forEach(function(data) {
 
 
@@ -463,10 +452,10 @@ ObjectManager.undo = function(data, context, callback) {
                 });
                 callback(null, undoMessage);
             } catch (e) {
-            	
-            	console.log('Undo error');
+                
+                console.log('Undo error');
                 undoMessage.type = "undo.error";
-            	undoMessage.text ="info.error";
+                undoMessage.text ="info.error";
                 callback(null, undoMessage);
             }
 
@@ -492,12 +481,6 @@ ObjectManager.undo = function(data, context, callback) {
  *
  **/
 ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
-	
-	if (!callback){
-		console.log('Called getRoom without callback.');
-		console.trace();
-	}
-
     if (!context)
         throw new Error('Missing context in ObjectManager.getRoom');
 
@@ -510,17 +493,17 @@ ObjectManager.getRoom = function(roomID, context, oldRoomId, callback) {
 }
 
 ObjectManager.createSubroom = function (where,callback){
-	
+    
   var destination=new Date().getTime()-1296055327011;
   var context=where.context;
   
    Modules.Connector.createRoom(destination, context, function(data) {
         var obj = buildObjectFromObjectData(data, destination, 'Room');
         obj.context = context;
-  		obj.setAttribute('parent',where.getAttribute('id'));
+        obj.setAttribute('parent',where.getAttribute('id'));
         callback(obj);
     });
-	
+    
 } 
 
 ObjectManager.countSubrooms = function(roomID, context) {
@@ -589,27 +572,27 @@ var mayReadMultiple = function(fromRoom, files, context, cb) {
 * callback (error,newObject);
 */
 ObjectManager.moveObject=function(object, destination, context, callback,copy){
-	
-	var roomID=object.inRoom;
-	var toRoom=destination;
-	var objectID=object.id;
-	
-	Modules.Connector.moveObject(roomID,toRoom, objectID, context, function(error,newID,oldID){
-		var newObject=ObjectManager.getObject(destination,newID,context);
-		
-		if (!copy){
-			object.updateClients('objectDelete');
-			//object.inRoom=toRoom;
-			//object.set('inRoom',toRoom);
-		}
-		newObject.updateClients('objectUpdate');
+    
+    var roomID=object.inRoom;
+    var toRoom=destination;
+    var objectID=object.id;
+    
+    Modules.Connector.moveObject(roomID,toRoom, objectID, context, function(error,newID,oldID){
+        var newObject=ObjectManager.getObject(destination,newID,context);
+        
+        if (!copy){
+            object.updateClients('objectDelete');
+            //object.inRoom=toRoom;
+            //object.set('inRoom',toRoom);
+        }
+        newObject.updateClients('objectUpdate');
 
-		if (callback) callback(false,newObject);
-	},copy);
+        if (callback) callback(false,newObject);
+    },copy);
 }
 
 ObjectManager.copyObject=function(object, destination, context, callback){
-	this.moveObject(object, destination, context, callback, true);
+    this.moveObject(object, destination, context, callback, true);
 }
 
 
@@ -839,35 +822,36 @@ ObjectManager.deleteObject = function(data, context, callback) {
                     callback(new Error('Object not found ' + objectID), null);
                     return;
                 }
-				
-				
+                
+                
                 var historyEntry = {
                     'roomID': roomID,
                     'objectID': objectID,
                     'action': 'delete Object'
                 }
-				
-				var transactionId = data.transactionId;
+                
+                var transactionId = data.transactionId;
 
                 that.history.add(new Date().getTime(), data.userId, historyEntry);
-				Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
-				
+                Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+                
                 Modules.Connector.getTrashRoom(context, function(toRoom) {
                     Modules.Connector.duplicateObject(roomID, toRoom.id, objectID, context, function(err, newId, oldId) {
-						var newObject = Modules.ObjectManager.getObject(toRoom.id, newId, context);
-						newObject.setAttribute("oldRoomID", roomID);
+                        var newObject = Modules.ObjectManager.getObject(toRoom.id, newId, context);
+                        newObject.setAttribute("oldRoomID", roomID);
                         object.remove();
 
-						historyEntry = {
-							'roomID': 'trash',
-							'objectID': newId,
-							'action': 'create Object'
-						}
-						
+                        historyEntry = {
+                            'roomID': 'trash',
+                            'objectID': newId,
+                            'action': 'create Object'
+                        }
+                        
                         that.history.add(new Date().getTime(), data.userId, historyEntry);
-						Modules.RoomController.informAllInRoom({"room": 'trash', 'message': {'change': 'change'}}, null); 
+                        Modules.RoomController.informAllInRoom({"room": 'trash', 'message': {'change': 'change'}}, null); 
                     });
-
+                    var newdata = '';
+                    Modules.Applications.event('objectDeleted',object,newdata);
                 });
 
             } else {
@@ -880,18 +864,17 @@ ObjectManager.deleteObject = function(data, context, callback) {
 }
 
 ObjectManager.shout=function(text,object,everyone){
-	
-	if(object){
-		if (everyone){
-			Modules.RoomController.shout(text,object.context.room.id);
-		} else {
-			console.log('Shouting to '+object.context.user.username+': '+text);
-			Modules.SocketServer.sendToSocket(object.context.socket, 'infotext', text);
-		}
-	} else {
-		Modules.RoomController.shout(text);
-	}
+    
+    if(object){
+        if (everyone){
+            Modules.RoomController.shout(text,object.context.room.id);
+        } else {
+            console.log('Shouting to '+object.context.user.username+': '+text);
+            Modules.SocketServer.sendToSocket(object.context.socket, 'infotext', text);
+        }
+    } else {
+        Modules.RoomController.shout(text);
+    }
 }
-
 
 module.exports = ObjectManager;
