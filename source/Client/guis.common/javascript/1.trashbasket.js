@@ -132,28 +132,31 @@ GUI.trashbasket.restoreObject = function(x, y) {
 				if(result[i].metadata.id == objectID)
 					objectStillExist=true;
 			}
+
+			if(objectStillExist){
+				ObjectManager.restoreObject(objectID, x, y);	
+			}else{
+				var dialog_buttons = {};
+	    
+	
+	    
+				dialog_buttons[GUI.translate("Close message")] = function() {
+					return;
+				};
+				
+				GUI.dialog(
+	            GUI.translate("Object does not exist"),
+	            [GUI.translate("Object does not exist anymore. It was deleted by another user completely. Trashtree will up. Trash is updated")],
+	            dialog_buttons,
+	            300
+	            );
+			}
+			
+			GUI.trashbasket.update();			
+			
+			
 		});
 		
-		if(objectStillExist){
-			ObjectManager.restoreObject(objectID, x, y);	
-		}else{
-			var dialog_buttons = {};
-    
-
-    
-			dialog_buttons[GUI.translate("Close message")] = function() {
-				return;
-			};
-			
-			GUI.dialog(
-            GUI.translate("Object does not exist"),
-            [GUI.translate("Object does not exist anymore. It was deleted by another user completely. Trashtree will up. Trash is updated")],
-            dialog_buttons,
-            300
-            );
-		}
-		
-		GUI.trashbasket.update();
 	}
 	
 }
