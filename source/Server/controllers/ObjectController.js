@@ -113,6 +113,7 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 				//do not make history entries for object blocking metadata
 				if (attribute=='blockedTime') return;
 				if (attribute=='blockedByID') return;
+				if (attribute=='blockedByUser') return;
 				
 				var oldValue = object.getAttribute(attribute);
 				var historyEntry = {
