@@ -214,7 +214,20 @@ Textobject.mergeContent = function(){
 
 	var newStr = $('#iframeText').contents().find('#noteData').html();
 	
-	newStr = newStr.replace('&nbsp;',' ')
+	newStr = newStr.replace('&nbsp;',' ');
+	
+	console.log(newStr);
+	
+	if (!newStr) {
+		alert('Achtung! Die Abfrage des Editorinhalts ergab einen leeren String! Solltet ihr das nicht beabsichtigt haben, ist hier ein Fehler aufgeteten! Bitte unbedingt melden und dazu sagen, wie es dazu gekommen ist! Der alte Text bleibt erhalten!');
+		return;
+	}
+	
+	if (newStr=="<p><br></p>" || newStr=="<p></p>"){
+		alert('Achtung! Der Text ist leer! Solltet ihr das nicht beabsichtigt haben, ist hier ein Fehler aufgeteten! Bitte unbedingt melden und dazu sagen, wie es dazu gekommen ist! Der alte Text bleibt erhalten!');
+		return;		
+	}
+	
 	
 	this.setAttribute("editorText",newStr);
 }
