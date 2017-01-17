@@ -242,9 +242,11 @@ IconObject.renderText = function (text){
 	if (this.getAttribute("bigIcon")) {
 		var startX = 78;
 		var widthHalf = 32;
+		var bigIcon=true;
 	} else {
 		var startX = 48;
 		var widthHalf = 16;
+		var bigIcon=false;
 	}
     
     //split the text after a maximum of 17 characters
@@ -279,21 +281,14 @@ IconObject.renderText = function (text){
     $(text).attr("font-size", 12);
 	$(text).attr('pointer-events','fill');
 
+
 	/* center text */
-	$(rep).find("text").find("tspan").each(function() {
-	
-		var o_text = $(rep).find("text");
-		var rect = $(rep).find("rect");
-		var w = rect[0].width.baseVal.value/2 -this.getBoundingClientRect().width/2;
-		$(this).attr("x", w);
-		/* width of tspan elements is 0 in Firefox --> display multiline text left aligned in Firefox */
-		/*if ($(rep).find("text").width() == 0) {
-			var w = widthHalf-($(rep).find("text").width()/2)-Math.floor($(this)[0].getBoundingClientRect().width/2);
-		} else {
-			var w = widthHalf-($(rep).find("text").width()/2)-Math.floor($(this).width()/2);
-		}
+	$(rep).find("text").find("tspan").each(function(dum,ts) {
 		
-		$(this).attr("x", w);*/
+		var width=ts.getComputedTextLength();
+		var maxWidth=(bigIcon)?65:33;
+		var border=(maxWidth-width)/2;
+		$(ts).attr("x", border);
 		
 	});
 
