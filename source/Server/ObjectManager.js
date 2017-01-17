@@ -55,9 +55,12 @@ ObjectManager.getPrototype = function(objType) {
     if (prototypes[objType])
         return prototypes[objType];
         
-    // fallback. Return the GeneralObject protoype instead    
-	
-	console.log('ERROR: '+objType+' not registered. Falling back to GeneralObject');
+    // fallback. Return the UnknownObject protoype instead    
+        
+    if (prototypes['UnknownObject'])
+        return prototypes['UnknownObject'];
+        
+    // fallback. Return the UnknownObject protoype instead    
         
     if (prototypes['GeneralObject'])
         return prototypes['GeneralObject'];
