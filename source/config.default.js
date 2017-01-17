@@ -45,7 +45,6 @@ module.exports={
 	collaborativeEditor:false, //sidebar
 	chat:true,
 	bugReport:true,
-	WebRTC: false,
 	trash: true,
 	objectlist:true,
 	cloud: false,

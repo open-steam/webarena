@@ -121,7 +121,6 @@ function traverseLog(folder){
 			
 			if (filename.search('svn')!=-1) return;
 			if (filename.search('libraries')!=-1) return;
-			//if (filename.search('WebRTCManager.js')!=-1) return;
 			
 			filename=folder+filename;
 			
