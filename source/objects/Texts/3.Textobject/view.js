@@ -205,18 +205,16 @@ Textobject.openContentDialog = function(w, h){
 	$("#"+this.id).css("opacity", 0.3);
 	
 	setTimeout(function(){
-	$('#iframeText').contents().find('#noteData').html(that.getAttribute("editorText"));
+		$(document.getElementById("FileContentDialog_"+that.id)).find('iframe').contents().find('#noteData').html(that.getAttribute("editorText"));
 	}, 1500);
 
 }
 
 Textobject.mergeContent = function(){
-
-	var newStr = $('#iframeText').contents().find('#noteData').html();
+	
+	var newStr = $(document.getElementById("FileContentDialog_"+this.id)).find('iframe').contents().find('#noteData').html();
 	
 	newStr = newStr.replace('&nbsp;',' ');
-	
-	console.log(newStr);
 	
 	if (!newStr) {
 		alert('Achtung! Die Abfrage des Editorinhalts ergab einen leeren String! Solltet ihr das nicht beabsichtigt haben, ist hier ein Fehler aufgeteten! Bitte unbedingt melden und dazu sagen, wie es dazu gekommen ist! Der alte Text bleibt erhalten!');
@@ -250,9 +248,7 @@ Textobject.closeContentDialog = function(){
 		that.draw();
 		that.deleteContentDialog();
 	});
-	
-	
-		//$("#FileContentDialog_"+this.id).remove();
+
 	
 }
 Textobject.deleteContentDialog = function(){
