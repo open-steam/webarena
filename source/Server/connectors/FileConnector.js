@@ -13,6 +13,7 @@ var fs = require('fs');
 var async = require('async');
 var _ = require('underscore');
 var Q = require('q');
+var mkdirp = require('mkdirp');
 var Modules=false;
 
 fileConnector.init=function(theModules){
@@ -213,32 +214,24 @@ fileConnector.getInventory=function(roomID,context,callback){
 fileConnector.getApplicationData = function(appID, key, callback){
 	var filebase=this.Modules.Config.filebase;
 
-	if(!(fs.existsSync(filebase+'/appdata'))){
-		try {
-			fs.mkdirSync(filebase+'/appdata');
-		}catch(e){
-			console.log(e);
-		}
-	}
+	mkdirp(filebase+'/appdata/'+appID, function(err){
 
-	if(!(fs.existsSync(filebase+'/appdata/'+appID))){
-		try {
-			fs.mkdirSync(filebase+'/appdata/'+appID)
-		} catch(e){
-			console.log(e);
-		}
-	}
+		fs.readdir(filebase+'/appdata/'+appID, function(err, files){
 
-	var data=fs.readdirSync(filebase+'/appdata/'+appID);
+			if(files.length >= 1){
+				fs.readFile(filebase+'/appdata/'+appID+'/'+files[0], function(err, file){
+					var obj = JSON.parse(file);
+					callback(null, obj[key]);
+				});
 
-	if(data.length >= 1){
-		var file = fs.readFileSync(filebase+'/appdata/'+appID+'/'+data[0]);
-		var obj = JSON.parse(file);
-	}else{
-		var obj = {};
-	}
+			}else{
+				var obj = {};
+				callback(null, obj[key]);
+			}
+		});
+	});
 
-	callback(null, obj[key]);
+	
 }
 
 /**
@@ -255,36 +248,35 @@ fileConnector.saveApplicationData = function (appID, key, value){
 
 	var filebase=this.Modules.Config.filebase;
 
-	var data = [];
-	if(!(fs.existsSync(filebase+'/appdata'))){
-		try {
-			fs.mkdirSync(filebase+'/appdata');
-		}catch(e){
-			console.log(e);
-		}
-	}
+	mkdirp(filebase+'/appdata/'+appID, function(err){
 
-	if(!(fs.existsSync(filebase+'/appdata/'+appID))){
-		try {
-			fs.mkdirSync(filebase+'/appdata/'+appID)
-		} catch(e){
-			console.log(e);
-		}
-	}
+		fs.readdir(filebase+'/appdata/'+appID, function(err, files){
 
-	data=fs.readdirSync(filebase+'/appdata/'+appID);
+			if(files.length >= 1){
+				fs.readFile(filebase+'/appdata/'+appID+'/'+files[0], function(err, file){
+					var obj = JSON.parse(file);
 
-	if(data.length >= 1){
-		var file = fs.readFileSync(filebase+'/appdata/'+appID+'/'+data[0]);
-		var obj = JSON.parse(file);
-	}else{
-		var obj = {};
-	}
-	obj[key] = value;
+					obj[key] =  value;
 
-	var newData = JSON.stringify(obj);
+					var newData = JSON.stringify(obj);
 
-    fs.writeFileSync(filebase+'/appdata/'+appID+'/'+appID+'.data.txt', newData);
+					fs.writeFile(filebase+'/appdata/'+appID+'/'+appID+'.data.txt', newData, (err) => {
+						if (err) throw err;
+					});
+				});
+			}else{
+				var obj = {};
+
+				obj[key] = value;
+
+				var newData = JSON.stringify(obj);
+
+				fs.writeFile(filebase+'/appdata/'+appID+'/'+appID+'.data.txt', newData, (err) => {
+					if (err) throw err;
+				});
+			}
+		});
+	});
 }
 
 
