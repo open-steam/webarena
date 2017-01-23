@@ -36,28 +36,32 @@ RoomState.init=function(name,theModules){
 RoomState.saveState=function(data){
 	var stateName  = data.stateName;
 	var self = this;
+	var inventoryState = [];
+	
+	//Needs to be programmed using async API https://caolan.github.io/async/docs.html#eachSeries
 	Modules.Connector.getInventory(data.roomID, data.context, function callback(inventory){
-		var inventoryState = [];
-
 		for(var element in inventory){
-			var obj = Modules.ObjectManager.getObject(data.roomID, inventory[element].id, data.context);
-			obj.attributes = {};
+			Modules.Connector.getContent(data.roomID, inventory[element].id, data.context, function(content){
+					var obj = Modules.ObjectManager.getObject(data.roomID, inventory[element].id, data.context);
+					obj.attributes = {};
+					for(var attr in inventory[element].attributes){
+						obj.attributes[attr] = inventory[element].attributes[attr];	
+					}
 
-			for(var attr in inventory[element].attributes){
-				obj.attributes[attr] = inventory[element].attributes[attr];	
-			}
+					delete obj.context;
+					delete obj.runtimeData;
 
-			delete obj.context;
-			delete obj.runtimeData;
+					if(content){
+						obj.content = content;
+					}
 
-			obj.type = obj.attributes['type'];
-			inventoryState.push(obj);
+					obj.type = obj.attributes['type'];
+					inventoryState.push(obj);
+			});	
 		}
 		self.saveApplicationData(self.name, stateName, inventoryState);
-
-		self.updateSavedStatesArray(data);
-		
 	});
+	self.updateSavedStatesArray(data);
 }
 
 /**
@@ -71,7 +75,6 @@ RoomState.updateSavedStatesArray = function(data){
 	var stateName = data.stateName;
 	var roomID = data.roomID;
 	self.getApplicationData(self.name, "states", function callback(err, states){
-		console.log(states);
 		if(states){
 			states[roomID].push(stateName);
 			self.saveApplicationData(self.name, "states", states);	
@@ -110,7 +113,6 @@ RoomState.restoreState=function(data){
 
 				    //Create Key-Value-Object from Array. Keys are Object-IDs
 				    for(var i = 0; i < stateInventory.length; i++){
-
 				        stateInventoryMap[stateInventory[i].id] = stateInventory[i];
 				    }
 
@@ -121,7 +123,6 @@ RoomState.restoreState=function(data){
 
 				    //Doesnt work properly, as it does not compare color or coordinates
 				    if(_.isEqual(currentInventoryMap, stateInventoryMap)){
-				        console.log('Seit der Speicherung von '+ stateName + ' hat sich nichts geändert');
 				        return true;
 				    }else{
 				        for(var id in currentInventoryMap){
@@ -130,7 +131,6 @@ RoomState.restoreState=function(data){
 				                //is the object the same as the existing object?
 				                if(!(_.isEqual(currentInventoryMap[id], stateInventoryMap[id]))){
 				                    //get current object
-				                    console.log("Ich stelle die alten Attributwerte wieder her");
 				                    var currentObject = Modules.ObjectManager.getObject(roomID, id, context);
 
 				                    
@@ -165,11 +165,10 @@ RoomState.restoreState=function(data){
 /**
  * Gets all states that are saved for the current room
  *
- * @param  {[type]}   object   [description]
- * @param  {[type]}   data     [description]
- * @param  {Function} callback [description]
+ * @param  {Object}   object   Object that sends the request
+ * @param  {Object}   data     Object containing the roomID at data.roomID
+ * @param  {Function} callback Callback function
  *
- * @return {[type]}            [description]
  */
 RoomState.getSavedStates = function(object, data, callback){
 	this.getApplicationData(this.name, "states", function(err, states){

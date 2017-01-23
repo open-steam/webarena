@@ -292,8 +292,17 @@ GUI.buildToolbar = function() {
 				
 				var dialog_buttons = {};
 				dialog_buttons["Raumzustand speichern"] = function() {
-					var stateName = prompt("Namen für den aktuellen Raumzustand eingeben", "statename");
-				
+					var getStateName = function(stateName){
+						if(stateName == "states"){
+							alert("Der Name states ist nicht erlaubt, bitte geben sie einen anderen ein!");
+							stateName = prompt("Bitte geben sie einen Statusnamen ein", "");
+							getStateName(stateName);
+						}else{
+							return stateName;
+						}
+					}
+					var stateName = getStateName(prompt("Bitte geben sie einen Statusnamen ein", ""));
+					
 					Modules.Dispatcher.query('saveState', {"userID" : GUI.userid, "stateName": stateName});
 					popover.hide();
 				};
