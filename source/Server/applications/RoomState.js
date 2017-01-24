@@ -37,10 +37,9 @@ RoomState.saveState=function(data){
 	var stateName  = data.stateName;
 	var self = this;
 	var inventoryState = [];
-	
-	//Needs to be programmed using async API https://caolan.github.io/async/docs.html#eachSeries
+
 	Modules.Connector.getInventory(data.roomID, data.context, function callback(inventory){
-		for(var element in inventory){
+		for(let element in inventory){
 			Modules.Connector.getContent(data.roomID, inventory[element].id, data.context, function(content){
 					var obj = Modules.ObjectManager.getObject(data.roomID, inventory[element].id, data.context);
 					obj.attributes = {};
