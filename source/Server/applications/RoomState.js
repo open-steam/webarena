@@ -25,9 +25,15 @@ var async = require("async");
 var objectList={};
 var Modules = {};
 
+var appDataPath;
+var contentDataPath;
+
 RoomState.init=function(name,theModules){
 	this.name=name;
 	Modules=theModules;
+
+	appDataPath = this.name;
+	contentDataPath=this.name+'_content';
 }
 
 /** Saves the current roomstate
@@ -64,13 +70,15 @@ RoomState.saveState=function(data){
 					callback();
 			});	
 		}, function(err) {
+			//Called after async.each finishes all iterations
 			self.saveContent(contentState, stateName);
+			self.saveApplicationData(self.name, stateName, inventoryState);
 
 		  	if (err) {
 		  		console.error(err.message);
 		  	}
 		});
-		self.saveApplicationData(self.name, stateName, inventoryState);
+		
 
 	});
 	self.updateSavedStatesArray(data);
@@ -79,15 +87,15 @@ RoomState.saveState=function(data){
 RoomState.saveContent=function(contentState, stateName){
 	var self = this;
 
-	self.getApplicationData(self.name+'_content', stateName, function callback(err, stateObject){
+	self.getApplicationData(contentDataPath, stateName, function callback(err, stateObject){
 		if(stateObject){
 			for(var element in contentState){
 				stateObject[element] = contentState[element];
 			}
-			self.saveApplicationData(self.name+'_content', stateName, stateObject);
+			self.saveApplicationData(contentDataPath, stateName, stateObject);
 		}else{
 			var stateObject = contentState;
-			self.saveApplicationData(self.name+'_content', stateName, stateObject);
+			self.saveApplicationData(contentDataPath, stateName, stateObject);
 		}	
 	});
 }
@@ -102,15 +110,15 @@ RoomState.updateSavedStatesArray = function(data){
 	var self = this;
 	var stateName = data.stateName;
 	var roomID = data.roomID;
-	self.getApplicationData(self.name, "states", function callback(err, states){
+	self.getApplicationData(appDataPath, "states", function callback(err, states){
 		if(states){
 			states[roomID].push(stateName);
-			self.saveApplicationData(self.name, "states", states);	
+			self.saveApplicationData(appDataPath, "states", states);	
 		}else{
 			var states = {};
 			states[roomID] = [];
 			states[roomID].push(stateName);
-			self.saveApplicationData(self.name, "states", states);
+			self.saveApplicationData(appDataPath, "states", states);
 		}	
 	});
 }
@@ -198,6 +206,10 @@ RoomState.restoreState=function(data){
 	}
 }
 
+RoomState.getContent = function(objectID, stateName){
+	this.getApplicationData()
+}
+
 /**
  * Gets all states that are saved for the current room
  *
@@ -207,7 +219,7 @@ RoomState.restoreState=function(data){
  *
  */
 RoomState.getSavedStates = function(object, data, callback){
-	this.getApplicationData(this.name, "states", function(err, states){
+	this.getApplicationData(appDataPath, "states", function(err, states){
 		var statesForCurrentRoom = states[data.roomID];
 		callback(err, statesForCurrentRoom);
 	});
@@ -222,7 +234,7 @@ RoomState.getSavedStates = function(object, data, callback){
  * @return {Object}             Inventory-object
  */
 RoomState.getStateInventory = function(stateName, callback){
-	this.getApplicationData(this.name, stateName, callback);
+	this.getApplicationData(appDataPath, stateName, callback);
 }
 
 module.exports=RoomState;
