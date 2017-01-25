@@ -234,10 +234,8 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
     var proto = this.getPrototypeFor(type);
 
     if(attributes.id){
-        console.log("im here");
         var objectID = attributes.id;
         delete attributes.id;
-        console.log(attributes);
     }
 
     //forced-id as parameter that allows creating an object with that id

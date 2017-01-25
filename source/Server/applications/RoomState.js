@@ -84,6 +84,13 @@ RoomState.saveState=function(data){
 	self.updateSavedStatesArray(data);
 }
 
+/**
+ * Saves the content of all objects in the current inventory
+ *
+ * @param  {Object} contentState Contains all content of the inventory
+ * @param  {String} stateName    Name of the state for which the content is saved
+ *
+ */
 RoomState.saveContent=function(contentState, stateName){
 	var self = this;
 
@@ -175,6 +182,7 @@ RoomState.restoreState=function(data){
 				                        currentObject.setAttribute(attr, stateInventoryMap[id].attributes[attr]);
 				                    }
 				                }
+				            //if it does not exist, delete the object    
 				            }else{
 				                var data = {};
 				                data.roomID = roomID;
@@ -190,9 +198,10 @@ RoomState.restoreState=function(data){
 				                var forcedID = stateInventoryMap[id].id;
 
 				                //if there is content saved
-				                if(stateInventoryMap[id].content == true){	
-				                	var content = self.getContent(stateInventoryMap[id]);
-				                	Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, content, context);
+				                if(stateInventoryMap[id].attributes.hasContent == true){	
+				                	self.getContent(stateInventoryMap[id].id, stateName, function(content){
+				                		Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, content, context);
+				                	});
 				                }else{
 				                	Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, null, context);	
 				                }
@@ -206,8 +215,18 @@ RoomState.restoreState=function(data){
 	}
 }
 
-RoomState.getContent = function(objectID, stateName){
-	this.getApplicationData()
+/**
+ * Gets the content from a given state for a given object and returns it with a callback
+ *
+ * @param  {String}   objectID  the unqiue objectID
+ * @param  {String}   stateName the name of the state
+ * @param  {Function} callback  the callback function that returns the content for the object as an array of bytes
+ *
+ */
+RoomState.getContent = function(objectID, stateName, callback){
+	this.getApplicationData(contentDataPath, stateName, function(err, contents){
+		callback(contents[objectID]);
+	});
 }
 
 /**
