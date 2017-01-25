@@ -20,6 +20,8 @@
 
 var RoomState=Object.create(require('./Application.js'));
 var _ = require("underscore");
+var async = require("async");
+
 var objectList={};
 var Modules = {};
 
@@ -37,30 +39,57 @@ RoomState.saveState=function(data){
 	var stateName  = data.stateName;
 	var self = this;
 	var inventoryState = [];
+	var contentState = {};
 
 	Modules.Connector.getInventory(data.roomID, data.context, function callback(inventory){
-		for(let element in inventory){
-			Modules.Connector.getContent(data.roomID, inventory[element].id, data.context, function(content){
-					var obj = Modules.ObjectManager.getObject(data.roomID, inventory[element].id, data.context);
+		
+		async.each(inventory, function(object, callback) {
+			Modules.Connector.getContent(data.roomID, object.id, data.context, function(content){
+					var obj = Modules.ObjectManager.getObject(data.roomID, object.id, data.context);
 					obj.attributes = {};
-					for(var attr in inventory[element].attributes){
-						obj.attributes[attr] = inventory[element].attributes[attr];	
+
+					for(var attr in object.attributes){
+						obj.attributes[attr] = object.attributes[attr];	
 					}
 
 					delete obj.context;
 					delete obj.runtimeData;
 
-					if(content){
-						obj.content = content;
+					if(obj.hasContent && content){
+						contentState[object.id] = content;
 					}
 
 					obj.type = obj.attributes['type'];
 					inventoryState.push(obj);
+					callback();
 			});	
-		}
+		}, function(err) {
+			self.saveContent(contentState, stateName);
+
+		  	if (err) {
+		  		console.error(err.message);
+		  	}
+		});
 		self.saveApplicationData(self.name, stateName, inventoryState);
+
 	});
 	self.updateSavedStatesArray(data);
+}
+
+RoomState.saveContent=function(contentState, stateName){
+	var self = this;
+
+	self.getApplicationData(self.name+'_content', stateName, function callback(err, stateObject){
+		if(stateObject){
+			for(var element in contentState){
+				stateObject[element] = contentState[element];
+			}
+			self.saveApplicationData(self.name+'_content', stateName, stateObject);
+		}else{
+			var stateObject = contentState;
+			self.saveApplicationData(self.name+'_content', stateName, stateObject);
+		}	
+	});
 }
 
 /**
@@ -151,7 +180,15 @@ RoomState.restoreState=function(data){
 				            //if an object from the state does not exist in the currentInventorymap, create it
 				            if(!(currentInventoryMap[id])){
 				                var forcedID = stateInventoryMap[id].id;
-				                Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, null, context);
+
+				                //if there is content saved
+				                if(stateInventoryMap[id].content == true){	
+				                	var content = self.getContent(stateInventoryMap[id]);
+				                	Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, content, context);
+				                }else{
+				                	Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, null, context);	
+				                }
+				                
 				            }
 				        }
 				    }
