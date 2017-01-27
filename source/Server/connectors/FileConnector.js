@@ -225,8 +225,6 @@ fileConnector.getApplicationData = function(appID, key, callback){
 				});
 
 			}else{
-				var obj = {};
-				callback(null, obj[key]);
 			}
 		});
 	});
