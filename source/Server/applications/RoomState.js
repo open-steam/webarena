@@ -163,7 +163,6 @@ RoomState.restoreState=function(data){
 				        currentInventoryMap[currentInventory[i].id] = currentInventory[i];
 				    }
 
-				    //Doesnt work properly, as it does not compare color or coordinates
 				    if(_.isEqual(currentInventoryMap, stateInventoryMap)){
 				        return true;
 				    }else{
@@ -174,11 +173,18 @@ RoomState.restoreState=function(data){
 				                if(!(_.isEqual(currentInventoryMap[id], stateInventoryMap[id]))){
 				                    //get current object
 				                    var currentObject = Modules.ObjectManager.getObject(roomID, id, context);
-
 				                    
 				                    //restore objects attributes
 				                    for(var attr in stateInventoryMap[id].attributes){
 				                        currentObject.setAttribute(attr, stateInventoryMap[id].attributes[attr]);
+				                    }
+
+				                    //restore content of the object
+				                    if(currentObject.hasContent){
+				                    	self.getContent(id, stateName, function(content){
+				                    		console.log(content);
+				                    		currentObject.setContent(content);
+				                    	});
 				                    }
 				                }
 				            //if it does not exist, delete the object    
@@ -238,8 +244,13 @@ RoomState.getContent = function(objectID, stateName, callback){
  */
 RoomState.getSavedStates = function(object, data, callback){
 	this.getApplicationData(appDataPath, "states", function(err, states){
-		var statesForCurrentRoom = states[data.roomID];
-		callback(err, statesForCurrentRoom);
+		if(!err){
+			var statesForCurrentRoom = states[data.roomID];
+			callback(err, statesForCurrentRoom);	
+		}else{
+			console.log(err.message);
+		}
+		
 	});
 }
 
