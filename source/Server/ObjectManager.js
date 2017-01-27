@@ -230,7 +230,6 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 	var that = this;
 
     //TODO check for rights right here
-
     var proto = this.getPrototypeFor(type);
 
     if(attributes.id){

@@ -22,7 +22,7 @@ WAFile.register=function(type){
 		//if (object.getAttribute("preview")) return "icon size not changeable when preview is shown";
 	}});
 
-	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',readonly:true});
+	this.registerAttribute('mimeType',{type:'text',standard:'text/plain',hidden: true});
 
 	this.registerAttribute('fillcolor',{hidden: true});
 	

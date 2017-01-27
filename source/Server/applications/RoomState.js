@@ -73,15 +73,14 @@ RoomState.saveState=function(data){
 			//Called after async.each finishes all iterations
 			self.saveContent(contentState, stateName);
 			self.saveApplicationData(self.name, stateName, inventoryState);
+			self.updateSavedStatesArray(data);
 
 		  	if (err) {
 		  		console.error(err.message);
 		  	}
 		});
-		
-
 	});
-	self.updateSavedStatesArray(data);
+	
 }
 
 /**
