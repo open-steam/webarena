@@ -163,9 +163,11 @@ RoomState.restoreState=function(data){
 				        currentInventoryMap[currentInventory[i].id] = currentInventory[i];
 				    }
 
+				    //Check if there were any changes since the state was saved
 				    if(_.isEqual(currentInventoryMap, stateInventoryMap)){
 				        return true;
 				    }else{
+				    	//iterate through the current inventory
 				        for(var id in currentInventoryMap){
 				            //does the object also exist in the state?
 				            if(stateInventoryMap[id]){
@@ -181,9 +183,8 @@ RoomState.restoreState=function(data){
 
 				                    //restore content of the object
 				                    if(currentObject.hasContent){
-				                    	self.getContent(id, stateName, function(content){
-				                    		console.log(content);
-				                    		currentObject.setContent(content);
+				                    	self.getContent(id, stateName, function(objectContent){
+				                    		currentObject.setContent(objectContent);
 				                    	});
 				                    }
 				                }
@@ -197,16 +198,18 @@ RoomState.restoreState=function(data){
 				            }
 				        }
 
+				        //Iterate through the stateInventory and create every object that is currently not existing in the room
 				        for(var id in stateInventoryMap){
 				            //if an object from the state does not exist in the currentInventorymap, create it
 				            if(!(currentInventoryMap[id])){
 				                var forcedID = stateInventoryMap[id].id;
 
-				                //if there is content saved
-				                if(stateInventoryMap[id].attributes.hasContent == true){	
+				                //if there is content saved, load it from the appdata and create the object
+				                if(stateInventoryMap[id].attributes.hasContent){	
 				                	self.getContent(stateInventoryMap[id].id, stateName, function(content){
 				                		Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, content, context);
 				                	});
+				                //If the object does not have content, just create it
 				                }else{
 				                	Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, null, context);	
 				                }
