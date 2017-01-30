@@ -16,7 +16,7 @@ ImageObject.register=function(type){
 	GeneralObject=Modules.ObjectManager.getPrototype('GeneralObject');
 	GeneralObject.register.call(this,type);
 	
-	this.registerAttribute('mimeType',{type:'text',standard:'image/png', hidden:true});
+	this.registerAttribute('mimeType',{type:'text',standard:'image/png', readonly:true});
 
 	
 }

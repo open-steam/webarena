@@ -215,16 +215,19 @@ fileConnector.getApplicationData = function(appID, key, callback){
 	var filebase=this.Modules.Config.filebase;
 
 	mkdirp(filebase+'/appdata/'+appID, function(err){
+			fs.readdir(filebase+'/appdata/'+appID, function(err, files){
 
-		fs.readdir(filebase+'/appdata/'+appID, function(err, files){
-
-			if(files.length >= 1){
+			if(files.length > 0){
 				fs.readFile(filebase+'/appdata/'+appID+'/'+files[0], function(err, file){
 					var obj = JSON.parse(file);
 					callback(null, obj[key]);
 				});
 
 			}else{
+				var err = {};
+				err.toString = function(){err.message};
+				err.message = "No states are currently saved";
+				callback(err);
 			}
 		});
 	});
@@ -247,9 +250,7 @@ fileConnector.saveApplicationData = function (appID, key, value){
 	var filebase=this.Modules.Config.filebase;
 
 	mkdirp(filebase+'/appdata/'+appID, function(err){
-
 		fs.readdir(filebase+'/appdata/'+appID, function(err, files){
-
 			if(files.length >= 1){
 				fs.readFile(filebase+'/appdata/'+appID+'/'+files[0], function(err, file){
 					var obj = JSON.parse(file);
@@ -917,7 +918,7 @@ fileConnector.getMimeType=function(roomID,objectID,context,callback) {
 
 	var objectData = this.getObjectData(roomID,objectID,context);
 	var mimeType = objectData.attributes.mimeType;
-	
+
 	callback(mimeType);
 	
 }
@@ -1049,6 +1050,7 @@ fileConnector.getInlinePreviewMimeType=function(roomID, objectID,context,callbac
 		var generatorName = self.getInlinePreviewProviderName(mimeType);
 
 		if (generatorName == false) {
+			console.trace();
 			self.Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
 			callback(false);
 		} else {

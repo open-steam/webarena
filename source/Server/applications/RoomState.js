@@ -47,40 +47,40 @@ RoomState.saveState=function(data){
 	var inventoryState = [];
 	var contentState = {};
 
-	Modules.Connector.getInventory(data.roomID, data.context, function callback(inventory){
-		
-		async.each(inventory, function(object, callback) {
-			Modules.Connector.getContent(data.roomID, object.id, data.context, function(content){
-					var obj = Modules.ObjectManager.getObject(data.roomID, object.id, data.context);
-					obj.attributes = {};
+	if(stateName){
+		Modules.Connector.getInventory(data.roomID, data.context, function callback(inventory){
+			async.each(inventory, function(object, callback) {
+				Modules.Connector.getContent(data.roomID, object.id, data.context, function(content){
+						var obj = Modules.ObjectManager.getObject(data.roomID, object.id, data.context);
+						obj.attributes = {};
 
-					for(var attr in object.attributes){
-						obj.attributes[attr] = object.attributes[attr];	
-					}
+						for(var attr in object.attributes){
+							obj.attributes[attr] = object.attributes[attr];	
+						}
 
-					delete obj.context;
-					delete obj.runtimeData;
+						delete obj.context;
+						delete obj.runtimeData;
 
-					if(obj.hasContent && content){
-						contentState[object.id] = content;
-					}
+						if(obj.hasContent && content){
+							contentState[object.id] = content;
+						}
 
-					obj.type = obj.attributes['type'];
-					inventoryState.push(obj);
-					callback();
-			});	
-		}, function(err) {
-			//Called after async.each finishes all iterations
-			self.saveContent(contentState, stateName);
-			self.saveApplicationData(self.name, stateName, inventoryState);
-			self.updateSavedStatesArray(data);
+						obj.type = obj.attributes['type'];
+						inventoryState.push(obj);
+						callback();
+				});	
+			}, function(err) {
+				//Called after async.each finishes all iterations
+				self.saveContent(contentState, stateName);
+				self.saveApplicationData(self.name, stateName, inventoryState);
+				self.updateSavedStatesArray(data);
 
-		  	if (err) {
-		  		console.error(err.message);
-		  	}
+			  	if (err) {
+			  		console.error(err.message);
+			  	}
+			});
 		});
-	});
-	
+	}
 }
 
 /**
@@ -178,14 +178,17 @@ RoomState.restoreState=function(data){
 				                    
 				                    //restore objects attributes
 				                    for(var attr in stateInventoryMap[id].attributes){
-				                        currentObject.setAttribute(attr, stateInventoryMap[id].attributes[attr]);
+				                    	currentObject.setAttribute(attr, stateInventoryMap[id].attributes[attr]);	
 				                    }
 
-				                    //restore content of the object
+				                    //restore content of the object if it changed
 				                    if(currentObject.hasContent){
-				                    	self.getContent(id, stateName, function(objectContent){
-				                    		currentObject.setContent(objectContent);
-				                    	});
+				                    		self.getContent(id, stateName, function(objectContent){
+				                    			if(!(_.isEqual(currentObject.content, objectContent))){
+				                    				console.log("objects are different");
+				                    				currentObject.setContent(objectContent);
+				                    			}
+				                    		});
 				                    }
 				                }
 				            //if it does not exist, delete the object    
@@ -248,12 +251,12 @@ RoomState.getContent = function(objectID, stateName, callback){
 RoomState.getSavedStates = function(object, data, callback){
 	this.getApplicationData(appDataPath, "states", function(err, states){
 		if(!err){
+			console.log(states);
 			var statesForCurrentRoom = states[data.roomID];
-			callback(err, statesForCurrentRoom);	
+			callback(null, statesForCurrentRoom);
 		}else{
-			console.log(err.message);
+			callback(err);
 		}
-		
 	});
 }
 
