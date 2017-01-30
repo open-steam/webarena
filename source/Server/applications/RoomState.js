@@ -135,31 +135,31 @@ RoomState.updateSavedStatesArray = function(data){
 *	@param  {[Data]} Contains the context, roomID and the selection
 */
 RoomState.restoreState=function(data){
-	var self = this;
-	var selection = data.selection;
-	var roomID = data.roomID;
-	var objectID = data.objectID;
-	var context = data.context;
+	let self = this;
+	let selection = data.selection;
+	let roomID = data.roomID;
+	let objectID = data.objectID;
+	let context = data.context;
 
-	for(var entry in selection){
+	for(let entry in selection){
 		if(selection[entry].selected == true){
-			var stateName = selection[entry].value;
+			let stateName = selection[entry].value;
 
 			Modules.Connector.getInventory(data.roomID, data.context, function (inventory){
-				var currentInventory = inventory;
+				let currentInventory = inventory;
 				self.getStateInventory(stateName, function (err, callback){
-					var stateInventory = callback;
+					let stateInventory = callback;
 
-					var stateInventoryMap = {};
-				    var currentInventoryMap = {};
+					let stateInventoryMap = {};
+				    let currentInventoryMap = {};
 
 				    //Create Key-Value-Object from Array. Keys are Object-IDs
-				    for(var i = 0; i < stateInventory.length; i++){
+				    for(let i = 0; i < stateInventory.length; i++){
 				        stateInventoryMap[stateInventory[i].id] = stateInventory[i];
 				    }
 
 				    //Create Key-Value-Object from Array. Keys are Object-IDs
-				    for(var i = 0; i < currentInventory.length; i++){
+				    for(let i = 0; i < currentInventory.length; i++){
 				        currentInventoryMap[currentInventory[i].id] = currentInventory[i];
 				    }
 
@@ -168,16 +168,16 @@ RoomState.restoreState=function(data){
 				        return true;
 				    }else{
 				    	//iterate through the current inventory
-				        for(var id in currentInventoryMap){
+				        for(let id in currentInventoryMap){
 				            //does the object also exist in the state?
 				            if(stateInventoryMap[id]){
 				                //is the object the same as the existing object?
 				                if(!(_.isEqual(currentInventoryMap[id], stateInventoryMap[id]))){
 				                    //get current object
-				                    var currentObject = Modules.ObjectManager.getObject(roomID, id, context);
+				                    let currentObject = Modules.ObjectManager.getObject(roomID, id, context);
 				                    
 				                    //restore objects attributes
-				                    for(var attr in stateInventoryMap[id].attributes){
+				                    for(let attr in stateInventoryMap[id].attributes){
 				                    	currentObject.setAttribute(attr, stateInventoryMap[id].attributes[attr]);	
 				                    }
 
@@ -193,7 +193,7 @@ RoomState.restoreState=function(data){
 				                }
 				            //if it does not exist, delete the object    
 				            }else{
-				                var data = {};
+				                let data = {};
 				                data.roomID = roomID;
 				                data.objectID = id;
 
@@ -202,12 +202,10 @@ RoomState.restoreState=function(data){
 				        }
 
 				        //Iterate through the stateInventory and create every object that is currently not existing in the room
-				        for(var id in stateInventoryMap){
+				        for(let id in stateInventoryMap){
 				            //if an object from the state does not exist in the currentInventorymap, create it
 				            if(!(currentInventoryMap[id])){
-				                var forcedID = stateInventoryMap[id].id;
-
-				                //if there is content saved, load it from the appdata and create the object
+				            	//if there is content saved, load it from the appdata and create the object
 				                if(stateInventoryMap[id].attributes.hasContent){	
 				                	self.getContent(stateInventoryMap[id].id, stateName, function(content){
 				                		Modules.ObjectManager.createObject(roomID, stateInventoryMap[id].type, stateInventoryMap[id].attributes, content, context);
