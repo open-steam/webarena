@@ -564,7 +564,6 @@ WebServer.init = function (theModules) {
 
 			try {
 				var code = Modules.BuildTool.getClientCode();
-
 				var mimeType = 'application/javascript';
 
 				res.writeHead(200, {'Content-Type': mimeType});
