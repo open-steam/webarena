@@ -37,11 +37,10 @@ ApplicationManager.toString = function() {
     return 'Application Manager';
 }
 
-
 /**
  *  init
  *
- *  initializes the ObjectManager
+ *  initializes the ApplicationManager
  **/
 ApplicationManager.init = function(theModules) {
 	if (this.initialized) return;
@@ -62,7 +61,7 @@ ApplicationManager.init = function(theModules) {
 	}
 }
 
-ApplicationManager.message=function(identifier,object,data, callback){
+ApplicationManager.message=function(identifier, object, data, callback){
 	object=godify(object);
 	
 	for (var appName in Applications){
@@ -70,7 +69,7 @@ ApplicationManager.message=function(identifier,object,data, callback){
 		
 		function deliver(app){
 			process.nextTick(function(){
-				app.message(identifier,object,data, callback);
+				app.message(identifier,object, data, callback);
 			});						
 		}
 		
@@ -80,7 +79,7 @@ ApplicationManager.message=function(identifier,object,data, callback){
 }
 
 
-ApplicationManager.event=function(identifier,object,data){
+ApplicationManager.event=function(identifier, object, data){
 	
 	object=godify(object);
 			
@@ -99,7 +98,7 @@ ApplicationManager.event=function(identifier,object,data){
 	
 }
 
-ApplicationManager.sendUserToRoom=function(user,room,callback){
+ApplicationManager.sendUserToRoom=function(user, room, callback){
 	
 	var userID=false;
 	var roomID=false;
@@ -141,10 +140,7 @@ ApplicationManager.sendUserToRoom=function(user,room,callback){
  * @param  {Object} value The value that is supposed to be stored
  *
  */
-
 ApplicationManager.saveApplicationData = function(appID, key, value){
-	console.log("im here");
-	console.log(appID +', '+ key +', '+ value);
 	Modules.Connector.saveApplicationData(appID, key, value);
 }
 
@@ -162,5 +158,20 @@ ApplicationManager.getApplicationData = function(appID, key, callback){
 }
 
 
+ApplicationManager.getApplicationGUIElements = function(object, data, callback){
+	object=godify(object);
+	
+	for (var appName in Applications){
+		var app=Applications[appName];
+		
+		function deliver(app){
+			process.nextTick(function(){
+				app.message("getGUIElements", object, data, callback);
+			});						
+		}
+		
+		deliver(app);
+	}
+}
 
 module.exports = ApplicationManager;

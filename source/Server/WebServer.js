@@ -530,8 +530,6 @@ WebServer.init = function (theModules) {
 					})
 				}
 			})
-
-
 		}
 
 		else if (url == '/time'){
@@ -579,7 +577,28 @@ WebServer.init = function (theModules) {
 				Modules.Log.error(err);
 			}
 
-		} else if (url.substr(0, 10) !== "/socket.io") {
+		}
+
+		else if(url == "/applications"){
+			try {
+				Modules.ApplicationManager.getApplicationGUIElements(this, null, function(callback){
+					var mimeType = 'application/javascript';
+
+					res.writeHead(200, {'Content-Type': mimeType});
+					res.end(callback);
+				});
+			}
+				
+			 catch (err) {
+				res.writeHead(500, {"Content-Type": "text/plain"});
+				res.write("500 Internal Server Error");
+				res.end();
+				Modules.Log.error(err);
+			}
+		}
+
+
+		else if (url.substr(0, 10) !== "/socket.io") {
 
 			// plain files
 
@@ -689,7 +708,7 @@ WebServer.init = function (theModules) {
 
 		}
 
-
+		
 	}  // handler
 
 

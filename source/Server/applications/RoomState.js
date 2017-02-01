@@ -32,8 +32,19 @@ RoomState.init=function(name,theModules){
 	this.name=name;
 	Modules=theModules;
 
+	// Necessary to have 2 folders on the same level
+	// otherwise the saveApplicationData does not function properly
 	appDataPath = this.name;
 	contentDataPath=this.name+'_content';
+}
+
+/**
+ * [getApplicationGUIElements description]
+ *
+ * @type {[type]}
+ */
+RoomState.getGUIElements = function(object, data, callback){
+	callback("alert(5)");
 }
 
 /** Saves the current roomstate
@@ -118,13 +129,21 @@ RoomState.updateSavedStatesArray = function(data){
 	var roomID = data.roomID;
 	self.getApplicationData(appDataPath, "states", function callback(err, states){
 		if(states){
-			states[roomID].push(stateName);
-			self.saveApplicationData(appDataPath, "states", states);	
+			if(states[roomID]){
+				console.log(roomID);
+				console.log(states);
+				states[roomID].push(stateName);
+				self.saveApplicationData(appDataPath, "states", states);	
+			}else{
+				states[roomID] = [];
+				states[roomID].push(stateName);
+				self.saveApplicationData(appDataPath, "states", states);
+			}
 		}else{
 			var states = {};
-			states[roomID] = [];
-			states[roomID].push(stateName);
-			self.saveApplicationData(appDataPath, "states", states);
+				states[roomID] = [];
+				states[roomID].push(stateName);
+				self.saveApplicationData(appDataPath, "states", states);
 		}	
 	});
 }

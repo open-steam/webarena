@@ -361,7 +361,6 @@ GUI.buildToolbar = function() {
 
 				
 			};
-			numberOfIcons++;
   
 
             /*add home button*/
