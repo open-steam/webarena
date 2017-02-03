@@ -9,6 +9,7 @@
 
 var Application={};
 var Modules = require('../../server.js');
+var GuiData;
 
 Application.toString=function(){
 	return 'Application '+this.name;
@@ -16,6 +17,7 @@ Application.toString=function(){
 	
 Application.init=function(name,theModules){
 	this.name=name;
+	this.GuiData = 'GUI Data of: ' + this.name;
 	Modules=theModules;
 }
 
@@ -82,8 +84,8 @@ Application.getApplicationData = function(appID, key, callback){
  *
  * @return {[type]}            [description]
  */
-Application.getGUIElements = function(object, data, callback){
-	callback("alert(5)");
+Application.getGuiElements = function(){
+	return this.GuiData;
 	
 	// this.addInspectorElements(appID, GUIElements[inspector], user, context, callback){
 

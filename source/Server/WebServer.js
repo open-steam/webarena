@@ -580,11 +580,17 @@ WebServer.init = function (theModules) {
 
 		else if(url == "/applications"){
 			try {
-				Modules.ApplicationManager.getApplicationGUIElements(this, null, function(callback){
+				Modules.ApplicationManager.getApplicationGuiElements(function(err, callback){
 					var mimeType = 'application/javascript';
 
 					res.writeHead(200, {'Content-Type': mimeType});
-					res.end(callback);
+					console.log(callback);
+
+					var output = "";
+					for(let data in callback){
+						output += callback[data];
+					}
+					res.end("alert('"+output+"')");
 				});
 			}
 				

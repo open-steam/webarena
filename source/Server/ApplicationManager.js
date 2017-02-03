@@ -157,21 +157,45 @@ ApplicationManager.getApplicationData = function(appID, key, callback){
 	Modules.Connector.getApplicationData(appID, key, callback);
 }
 
-
-ApplicationManager.getApplicationGUIElements = function(object, data, callback){
+/*
+ApplicationManager.getApplicationGUIElements = function(object, data, guiElementData){
 	object=godify(object);
 	
-	for (var appName in Applications){
-		var app=Applications[appName];
-		
-		function deliver(app){
-			process.nextTick(function(){
-				app.message("getGUIElements", object, data, callback);
-			});						
+	async.each(Applications, function(appName, callback){
+		var app = Applications[appName];
+		console.log(app.name);
+		app.message("getGUIElements", object, data, guiElementData);				
+	},function(err){
+		if(err){
+			callback(err.message);
+		}else{
+			callback("please work");
 		}
-		
-		deliver(app);
-	}
+	});
 }
+*/
 
+ApplicationManager.getApplicationGuiElements = function(callback){
+	var guiElements  = [];
+	var apps = [];
+
+	for(let app in Applications){
+		apps.push(Applications[app]);
+	}
+
+	async.each(apps, function(application, done){
+		var name = application.name;
+		if(application.getGuiElements()){
+			guiElements.push(application.getGuiElements());				
+		}
+		done();
+	}, function(err){
+		if(err){
+			console.log(err.message);
+		}else{
+			console.log(guiElements);
+			callback(err, guiElements);
+		}
+	});
+}
 module.exports = ApplicationManager;

@@ -123,7 +123,6 @@ GUI.loadGUI = function(step) {
 		
 		GUI.loaded = true;
 		GUI.hideLogin();
-		WebRTCManager.init();
 		
 		GUI.drawAllLinks(); //draw all existing links in the new room
 		
