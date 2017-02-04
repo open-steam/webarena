@@ -31,6 +31,7 @@ var contentDataPath;
 RoomState.init=function(name,theModules){
 	this.name=name;
 	Modules=theModules;
+	this.hasGui = true;
 
 	// Necessary to have 2 folders on the same level
 	// otherwise the saveApplicationData does not function properly

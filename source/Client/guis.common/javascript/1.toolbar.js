@@ -23,6 +23,15 @@ GUI.buildToolbar = function() {
 
     var types = {};
 	
+	/*
+	For the toolbar entries of the applications it is necessary to iterate through 
+	the activated applications and then create the icons & functions according to their presets
+	 */
+	$.each(Modules.Config.enabledApplications, function(key, app) {
+		if(app.hasGui){
+			console.log(app+" has gui");
+		}
+    });
 	
     /* get types of objects */
     $.each(ObjectManager.getTypes(), function(key, object) {
