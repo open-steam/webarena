@@ -12,6 +12,8 @@ var objectList={};
 var Modules={};
 var _ = require('underscore');
 var async = require('async');
+const util = require('util')
+
 
 ObjectGetter.init=function(name,theModules){
 	this.name=name;

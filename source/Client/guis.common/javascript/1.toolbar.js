@@ -366,9 +366,6 @@ GUI.buildToolbar = function() {
 							dialog_buttons,
 							dialog_width
 							);
-
-
-				
 			};
   
 

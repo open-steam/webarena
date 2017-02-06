@@ -17,6 +17,7 @@ PyramidDiscussion.init=function(name,theModules){
 	Modules=theModules;
 }
 
+
 PyramidDiscussion.startPyramid=function(object,selection){
 	
 	//optimize selection	

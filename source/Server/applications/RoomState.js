@@ -21,31 +21,21 @@
 var RoomState=Object.create(require('./Application.js'));
 var _ = require("underscore");
 var async = require("async");
+const util = require('util')
 
-var objectList={};
 var Modules = {};
 
-var appDataPath;
-var contentDataPath;
+var AppDataPath;
+var ContentDataPath;
+RoomState.GuiData = {hasGui: true};
 
-RoomState.init=function(name,theModules){
+RoomState.init=function(name, theModules){
 	this.name=name;
 	Modules=theModules;
-	this.hasGui = true;
-
 	// Necessary to have 2 folders on the same level
 	// otherwise the saveApplicationData does not function properly
-	appDataPath = this.name;
-	contentDataPath=this.name+'_content';
-}
-
-/**
- * [getApplicationGUIElements description]
- *
- * @type {[type]}
- */
-RoomState.getGUIElements = function(object, data, callback){
-	callback("alert(5)");
+	AppDataPath = this.name;
+	ContentDataPath=this.name+'_content';
 }
 
 /** Saves the current roomstate
@@ -105,15 +95,15 @@ RoomState.saveState=function(data){
 RoomState.saveContent=function(contentState, stateName){
 	var self = this;
 
-	self.getApplicationData(contentDataPath, stateName, function callback(err, stateObject){
+	self.getApplicationData(ContentDataPath, stateName, function callback(err, stateObject){
 		if(stateObject){
 			for(var element in contentState){
 				stateObject[element] = contentState[element];
 			}
-			self.saveApplicationData(contentDataPath, stateName, stateObject);
+			self.saveApplicationData(ContentDataPath, stateName, stateObject);
 		}else{
 			var stateObject = contentState;
-			self.saveApplicationData(contentDataPath, stateName, stateObject);
+			self.saveApplicationData(ContentDataPath, stateName, stateObject);
 		}	
 	});
 }
@@ -128,23 +118,23 @@ RoomState.updateSavedStatesArray = function(data){
 	var self = this;
 	var stateName = data.stateName;
 	var roomID = data.roomID;
-	self.getApplicationData(appDataPath, "states", function callback(err, states){
+	self.getApplicationData(AppDataPath, "states", function callback(err, states){
 		if(states){
 			if(states[roomID]){
 				console.log(roomID);
 				console.log(states);
 				states[roomID].push(stateName);
-				self.saveApplicationData(appDataPath, "states", states);	
+				self.saveApplicationData(AppDataPath, "states", states);	
 			}else{
 				states[roomID] = [];
 				states[roomID].push(stateName);
-				self.saveApplicationData(appDataPath, "states", states);
+				self.saveApplicationData(AppDataPath, "states", states);
 			}
 		}else{
 			var states = {};
 				states[roomID] = [];
 				states[roomID].push(stateName);
-				self.saveApplicationData(appDataPath, "states", states);
+				self.saveApplicationData(AppDataPath, "states", states);
 		}	
 	});
 }
@@ -253,7 +243,7 @@ RoomState.restoreState=function(data){
  *
  */
 RoomState.getContent = function(objectID, stateName, callback){
-	this.getApplicationData(contentDataPath, stateName, function(err, contents){
+	this.getApplicationData(ContentDataPath, stateName, function(err, contents){
 		callback(contents[objectID]);
 	});
 }
@@ -267,7 +257,7 @@ RoomState.getContent = function(objectID, stateName, callback){
  *
  */
 RoomState.getSavedStates = function(object, data, callback){
-	this.getApplicationData(appDataPath, "states", function(err, states){
+	this.getApplicationData(AppDataPath, "states", function(err, states){
 		if(!err){
 			console.log(states);
 			var statesForCurrentRoom = states[data.roomID];
@@ -287,7 +277,29 @@ RoomState.getSavedStates = function(object, data, callback){
  * @return {Object}             Inventory-object
  */
 RoomState.getStateInventory = function(stateName, callback){
-	this.getApplicationData(appDataPath, stateName, callback);
+	this.getApplicationData(AppDataPath, stateName, callback);
+}
+
+/**
+ * Functions to create the necessary GUI-Elements
+ *
+ * @param  {[type]}   appID    [description]
+ * @param  {[type]}   user     [description]
+ * @param  {[type]}   context  [description]
+ * @param  {Function} callback [description]
+ *
+ * @return {[type]}            [description]
+ */
+RoomState.getGuiElements = function(){
+	return this.GuiData;
+	
+	// this.addInspectorElements(appID, GUIElements[inspector], user, context, callback){
+
+	// }
+
+	// this.addActionSheetElements(appID, GUIElements[toolbar], user, context, callback){
+
+	// }
 }
 
 module.exports=RoomState;

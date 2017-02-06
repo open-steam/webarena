@@ -112,7 +112,6 @@ SocketServer.init = function (theModules) {
 
 }
 
-
 /**
  * Send request to client, add one time response listener.
  *
@@ -130,7 +129,6 @@ SocketServer.askSocket = function (socket, name, data, callback){
 
     this.sendToSocket(socket, name, data);
 }
-
 
 SocketServer.sendToSocket = function (socket, name, data) {
 	if (!socket) {

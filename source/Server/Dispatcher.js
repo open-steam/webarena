@@ -61,6 +61,17 @@ Dispatcher.init = function(theModules) {
     Modules = theModules;
 }
 
+Dispatcher.registerCall('applicationCall', function(socket, data, responseID) {
+    var context = Modules.UserManager.getConnectionBySocket(socket);
+    console.log("applicationCall happened");
+
+    if(data.message == "getApplicationGuiElements"){
+        Modules.ApplicationManager.getApplicationGuiElements(resultCallbackWrapper(socket, responseID));
+    }else{
+        Modules.ApplicationManager.message(data.message, this, data, resultCallbackWrapper(socket, responseID));
+    }
+});
+
 Dispatcher.registerCall('deleteObject', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectManager.deleteObject(data, context, resultCallbackWrapper(socket, responseID));

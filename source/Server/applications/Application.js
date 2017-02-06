@@ -73,28 +73,6 @@ Application.getApplicationData = function(appID, key, callback){
 }
 
 /**
- * Functions to create the necessary GUI-Elements
- *
- * @param  {[type]}   appID    [description]
- * @param  {[type]}   user     [description]
- * @param  {[type]}   context  [description]
- * @param  {Function} callback [description]
- *
- * @return {[type]}            [description]
- */
-Application.getGUIElements = function(object, data, callback){
-	callback("alert(5)");
-	
-	// this.addInspectorElements(appID, GUIElements[inspector], user, context, callback){
-
-	// }
-
-	// this.addActionSheetElements(appID, GUIElements[toolbar], user, context, callback){
-
-	// }
-}
-
-/**
  * [getToolbarElements description]
  *
  * @param  {[type]}   appID       [description]
@@ -108,6 +86,5 @@ Application.getGUIElements = function(object, data, callback){
 Application.getToolbarElements = function(object, data, callback){
 	
 }
-
 
 module.exports=Application;

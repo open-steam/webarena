@@ -592,7 +592,6 @@ ObjectManager.getCurrentRoom = function() {
     return this.currentRoom;
 }
 
-
 ObjectManager.getSelected = function() {
     var result = [];
 
