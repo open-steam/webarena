@@ -27,7 +27,12 @@ var Modules = {};
 
 var AppDataPath;
 var ContentDataPath;
-RoomState.GuiData = {hasGui: true};
+RoomState.clientAppData = {
+					hasGui: true, guiElements: {
+					buttonName: "test", 
+					icon: "arrow-left", 
+					clickFunction:"warn"}
+					};
 
 RoomState.init=function(name, theModules){
 	this.name=name;
@@ -281,17 +286,13 @@ RoomState.getStateInventory = function(stateName, callback){
 }
 
 /**
- * Functions to create the necessary GUI-Elements
+ * Function to return the necessary GUI-Elements
  *
- * @param  {[type]}   appID    [description]
- * @param  {[type]}   user     [description]
- * @param  {[type]}   context  [description]
- * @param  {Function} callback [description]
  *
  * @return {[type]}            [description]
  */
-RoomState.getGuiElements = function(){
-	return this.GuiData;
+RoomState.getClientAppData = function(object, data, callback){
+	return this.clientAppData;
 	
 	// this.addInspectorElements(appID, GUIElements[inspector], user, context, callback){
 

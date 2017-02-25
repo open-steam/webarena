@@ -126,9 +126,11 @@ GUI.loadGUI = function(step) {
 		GUI.drawAllLinks(); //draw all existing links in the new room
 
 
-		//Load application-GUI elements
-		Modules.ApplicationManager.applicationCall("getApplicationGuiElements", null, function(callback){
-			console.log("ApplicationManager called from load.js got "+ callback);
+		//Init applicationManager & load GUI-elements
+		Modules.ApplicationManager.applicationCall("getClientApplicationData", function(GuiElements){
+			Modules.ApplicationManager.setAppData(GuiElements);
+			console.log(GuiElements);
+			GUI.initApplications();
 		});
 		
 		setTimeout(function(){

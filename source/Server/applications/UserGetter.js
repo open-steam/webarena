@@ -11,6 +11,14 @@ var UserGetter=Object.create(require('./Application.js'));
 var objectList={};
 var Modules={};
 
+UserGetter.clientAppData = {
+					hasGui: true, guiElements: {
+					buttonName: "test", 
+					icon: "arrow-left", 
+					clickFunction:"warn"}
+					};
+
+
 UserGetter.init=function(name,theModules){
 	this.name=name;
 	Modules=theModules;
@@ -57,5 +65,10 @@ function updateAttributes(object){
 	}
 	
 }
+
+UserGetter.getClientAppData = function(object, data, callback){
+	return this.clientAppData;
+}
+
 
 module.exports=UserGetter;

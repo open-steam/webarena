@@ -7,65 +7,57 @@ var popover_positionOffsetY = 20;
 var numberOfIcons = 0;
 
 
-GUI.initToolbar = function (){
-			GUI.buildToolbar();
+GUI.initToolbar = function() {
+	GUI.buildToolbar();
 }
+
 /**
  * Init. the toolbar
  */
 GUI.buildToolbar = function() {
 
-	$(window).resize(function() {		
+	$(window).resize(function() {
 		GUI.resizeToolbar();
 	});
 
-    /* insert icons for creating new objects: */
+	/* insert icons for creating new objects: */
 
-    var types = {};
-	
-	/*
-	For the toolbar entries of the applications it is necessary to iterate through 
-	the activated applications and then create the icons & functions according to their presets
-	 */
-	$.each(Modules.Config.enabledApplications, function(key, app) {
-		if(app.hasGui){
-			console.log(app+" has gui");
+	var types = {};
+
+
+	/* get types of objects */
+	$.each(ObjectManager.getTypes(), function(key, object) {
+
+		if (object.isCreatable) {
+
+			if (object.category == undefined) {
+				object.category = "default";
+			}
+
+			if (types[object.category] == undefined) {
+				types[object.category] = [];
+			}
+
+			types[object.category].push(object);
+
 		}
-    });
-	
-    /* get types of objects */
-    $.each(ObjectManager.getTypes(), function(key, object) {
 
-        if (object.isCreatable) {
-
-            if (object.category == undefined) {
-                object.category = "default";
-            }
-
-            if (types[object.category] == undefined) {
-                types[object.category] = [];
-            }
-
-            types[object.category].push(object);
-
-        }
-
-    });
+	});
 
 
-    var toolbar_locked_elements = {};
+	var toolbar_locked_elements = {};
 
-    /* build categories for each type */
-    $.each(types, function(key, object) {
+	/* build categories for each type */
+	$.each(types, function(key, object) {
 		numberOfIcons++;
-	
-        var newCategoryIcon = document.createElement("img");
-        $(newCategoryIcon).attr("src", "/categoryIcons/" + object[0].category).attr("alt", "");
-        $(newCategoryIcon).attr("width", "24").attr("height", "24");
 
-        $("#header>div.header_left").append(newCategoryIcon);
+		var newCategoryIcon = document.createElement("img");
+		$(newCategoryIcon).attr("src", "/categoryIcons/" + object[0].category).attr("alt", "");
+		$(newCategoryIcon).attr("width", "24").attr("height", "24");
 
-        //if (object.length > 1) { //more than one object in the category
+		$("#header>div.header_left").append(newCategoryIcon);
+
+		//if (object.length > 1) { //more than one object in the category
 
 		$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
 
@@ -86,7 +78,7 @@ GUI.buildToolbar = function() {
 					var element = section.addElement('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" /> ' + name);
 
 					var dragging = false;
-					
+
 					var click = function(attributes, drag) {
 
 						popover.hide();
@@ -99,23 +91,19 @@ GUI.buildToolbar = function() {
 								GUI.startNoAnimationTimer();
 								proto.create(attributes);
 								dragging = false;
-							}
-							else {
-								if(GUI.isTouchDevice){
+							} else {
+								if (GUI.isTouchDevice) {
 									proto.create(attributes);
-								}
-								else{
-									if (object.type == 'Arrow' || object.type == 'Line'){
+								} else {
+									if (object.type == 'Arrow' || object.type == 'Line') {
 										GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
-									}
-									else {
-										$("body").css('cursor', 'url(/objectIcons/'+object.type+'), auto');
-										GUI.creatingObject=object.type;
+									} else {
+										$("body").css('cursor', 'url(/objectIcons/' + object.type + '), auto');
+										GUI.creatingObject = object.type;
 									}
 								}
 							}
-						}
-						else {
+						} else {
 							alert(GUI.translate("You cannot create objects in presentation mode"));
 						}
 					}
@@ -123,7 +111,7 @@ GUI.buildToolbar = function() {
 
 					if (GUI.isTouchDevice) {
 						$(element.getDOM()).bind("touchend", function(event) {
-							if(!dragging){
+							if (!dragging) {
 								click({
 									"x": window.pageXOffset + 40,
 									"y": window.pageYOffset + 40
@@ -143,7 +131,7 @@ GUI.buildToolbar = function() {
 					/* make draggable */
 					var helper = $('<img src="/objectIcons/' + object.type + '" alt="" width="24" height="24" />');
 					helper.get(0).callback = function(offsetX, offsetY) {
-					
+
 						var svgpos = $("#content").offset();
 
 						var top = offsetY - svgpos.top;
@@ -158,9 +146,9 @@ GUI.buildToolbar = function() {
 
 					$(element.getDOM()).addClass("toolbar_draggable");
 					$(element.getDOM()).draggable({
-						revert:  "invalid",
+						revert: "invalid",
 						distance: 20,
-						scope: "ContentDrag", 
+						scope: "ContentDrag",
 						cursor: "move",
 						helper: function(event) {
 							dragging = true;
@@ -173,96 +161,101 @@ GUI.buildToolbar = function() {
 			}
 		});
 
-		
-		
-        var effect = function() {
-            $(this).animate({opacity: 1}, 500, function() {
-                $(this).animate({opacity: 0.6}, 500);
-            });
-        }
 
-        if (GUI.isTouchDevice) {
-            $(newCategoryIcon).bind("touchstart", effect);
-        } else {
-            $(newCategoryIcon).bind("mousedown", effect);
-        }
 
-    });
-	
-	
-    /*add menu button*/
-    var menuButton = document.createElement("img");
-    $(menuButton).attr("src", "../../guis.common/images/menu.png").attr("alt", "");
-    $(menuButton).attr("width", "24").attr("height", "24");
+		var effect = function() {
+			$(this).animate({
+				opacity: 1
+			}, 500, function() {
+				$(this).animate({
+					opacity: 0.6
+				}, 500);
+			});
+		}
 
-    $(menuButton).attr("id", "menu_button");
-    $(menuButton).addClass("sidebar_button");
+		if (GUI.isTouchDevice) {
+			$(newCategoryIcon).bind("touchstart", effect);
+		} else {
+			$(newCategoryIcon).bind("mousedown", effect);
+		}
 
-    $(menuButton).attr("title", GUI.translate("Menu"));
+	});
+
+
+	/*add menu button*/
+	var menuButton = document.createElement("img");
+	$(menuButton).attr("src", "../../guis.common/images/menu.png").attr("alt", "");
+	$(menuButton).attr("width", "24").attr("height", "24");
+
+	$(menuButton).attr("id", "menu_button");
+	$(menuButton).addClass("sidebar_button");
+
+	$(menuButton).attr("title", GUI.translate("Menu"));
 	$(menuButton).css("margin-right", "0px");
-    $("#header > .header_right").append(menuButton);
+	$("#header > .header_right").append(menuButton);
 
-    $(menuButton).jPopover({
-        positionOffsetX: popover_positionOffsetX,
-        positionOffsetY: popover_positionOffsetY,
-        arrowOffsetRight: 12,
-        onSetup: function(domEl, popover) {
+	$(menuButton).jPopover({
+		positionOffsetX: popover_positionOffsetX,
+		positionOffsetY: popover_positionOffsetY,
+		arrowOffsetRight: 12,
+		onSetup: function(domEl, popover) {
 
-            Object.defineProperty(popover.options, 'positionOffsetX', {
-                get: function() {
-                    return -4 - popover_positionOffsetX + $("#header > .header_right").position().left;
-                }
-            });
-            Object.defineProperty(popover.options, 'arrowOffsetRight', {
-                get: function() {
-                    return 30 + $("#header > .header_right").position().left;
-                }
-            });
+			Object.defineProperty(popover.options, 'positionOffsetX', {
+				get: function() {
+					return -4 - popover_positionOffsetX + $("#header > .header_right").position().left;
+				}
+			});
+			Object.defineProperty(popover.options, 'arrowOffsetRight', {
+				get: function() {
+					return 30 + $("#header > .header_right").position().left;
+				}
+			});
 
-            var page = popover.addPage(GUI.translate("Welcome") + " " + Modules.Helper.capitalize(GUI.username));
-            var section = page.addSection();
+			var page = popover.addPage(GUI.translate("Welcome") + " " + Modules.Helper.capitalize(GUI.username));
+			var section = page.addSection();
 
-			
+
 			/*add paste button*/
-			
-				var pasteButton = document.createElement("img");
-				$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
-				$(pasteButton).attr("width", "24").attr("height", "24");
-				$(pasteButton).attr("id", "paste_button");
-				$(pasteButton).addClass("sidebar_button");
-				$(pasteButton).attr("title", GUI.translate("Paste"));
-				var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
-				$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");	
-				numberOfIcons++;
-				$("#header > .header_right").append(pasteButton); //add header icon
-				var clickPaste = function() { //click handler
-					Modules.ObjectManager.pasteObjects();
-					popover.hide();
-				};
-			
-			
-  
-			
+
+			var pasteButton = document.createElement("img");
+			$(pasteButton).attr("src", "../../guis.common/images/paste_grey.png").attr("alt", "");
+			$(pasteButton).attr("width", "24").attr("height", "24");
+			$(pasteButton).attr("id", "paste_button");
+			$(pasteButton).addClass("sidebar_button");
+			$(pasteButton).attr("title", GUI.translate("Paste"));
+			var btnPaste = section.addElement($(pasteButton).prop('outerHTML') + GUI.translate("Paste")); //add menu icon
+			$(pasteButton).attr("src", "../../guis.common/images/paste.png").attr("alt", "");
+			numberOfIcons++;
+			$("#header > .header_right").append(pasteButton); //add header icon
+			var clickPaste = function() { //click handler
+				Modules.ObjectManager.pasteObjects();
+				popover.hide();
+			};
+
+
+
 			/*add undo button*/
-		
-				var undoButton = document.createElement("img");
-				$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
-				$(undoButton).attr("width", "24").attr("height", "24");
-				$(undoButton).attr("id", "undo_button");
-				$(undoButton).addClass("sidebar_button");
-				$(undoButton).attr("title", GUI.translate("Undo"));
-				var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
-				$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");	
-				numberOfIcons++;
-				$("#header > .header_right").append(undoButton); //add header icon
-				var clickUndo = function() { //click handler
-					Modules.Dispatcher.query("undo", {"userID": GUI.userid});
-					popover.hide();
-				};
-		
-			
-			
-            /*add parent button*/
+
+			var undoButton = document.createElement("img");
+			$(undoButton).attr("src", "../../guis.common/images/undo_grey.png").attr("alt", "");
+			$(undoButton).attr("width", "24").attr("height", "24");
+			$(undoButton).attr("id", "undo_button");
+			$(undoButton).addClass("sidebar_button");
+			$(undoButton).attr("title", GUI.translate("Undo"));
+			var btnUndo = section.addElement($(undoButton).prop('outerHTML') + GUI.translate("Undo")); //add menu icon
+			$(undoButton).attr("src", "../../guis.common/images/undo.png").attr("alt", "");
+			numberOfIcons++;
+			$("#header > .header_right").append(undoButton); //add header icon
+			var clickUndo = function() { //click handler
+				Modules.Dispatcher.query("undo", {
+					"userID": GUI.userid
+				});
+				popover.hide();
+			};
+
+
+
+			/*add parent button*/
 			var parentButton = document.createElement("img");
 			$(parentButton).attr("src", "../../guis.common/images/parent_grey.png").attr("alt", "");
 			$(parentButton).attr("width", "24").attr("height", "24");
@@ -270,14 +263,14 @@ GUI.buildToolbar = function() {
 			$(parentButton).addClass("sidebar_button");
 			$(parentButton).attr("title", GUI.translate("Environment"));
 			var btnParent = section.addElement($(parentButton).prop('outerHTML') + GUI.translate("Environment")); //add menu icon
-			$(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");	
+			$(parentButton).attr("src", "../../guis.common/images/parent.png").attr("alt", "");
 			numberOfIcons++;
 			$("#header > .header_right").append(parentButton); //add header icon
 			var clickParent = function() { //click handler
 				Modules.ObjectManager.goParent();
-                popover.hide();
+				popover.hide();
 			};
-			
+
 			/*add saveState button*/
 			var saveStateButton = document.createElement("img");
 			$(saveStateButton).attr("src", "../../guis.common/images/save_grey.png").attr("alt", "");
@@ -286,64 +279,72 @@ GUI.buildToolbar = function() {
 			$(saveStateButton).addClass("sidebar_button");
 			$(saveStateButton).attr("title", GUI.translate("SaveState"));
 			var btnSaveState = section.addElement($(saveStateButton).prop('outerHTML') + GUI.translate("SaveState")); //add menu icon
-			$(saveStateButton).attr("src", "../../guis.common/images/save.png").attr("alt", "");	
+			$(saveStateButton).attr("src", "../../guis.common/images/save.png").attr("alt", "");
 			numberOfIcons++;
 			$("#header > .header_right").append(saveStateButton); //add header icon
 			var clickSaveState = function(stateDialog) { //click handler
-						
-    			var html;
-				var dialog_width =690;
+
+				var html;
+				var dialog_width = 690;
 				var content = [];
 
 				html = '<div id="alert"><div>Bitte wählen Sie eine Aktion aus</div>';
 
 				content.push(html);
-				
+
 				var dialog_buttons = {};
 				dialog_buttons["Raumzustand speichern"] = function() {
-					var getStateName = function(stateName){
-						if(stateName == "states"){
+					var getStateName = function(stateName) {
+						if (stateName == "states") {
 							alert("Der Name states ist nicht erlaubt, bitte geben sie einen anderen ein!");
 							stateName = prompt("Bitte geben sie einen Statusnamen ein", "");
 							getStateName(stateName);
-						}else{
+						} else {
 							return stateName;
 						}
 					}
 					var stateName = getStateName(prompt("Bitte geben sie einen Statusnamen ein", ""));
-					
-					Modules.Dispatcher.query('saveState', {"userID" : GUI.userid, "stateName": stateName});
+
+					Modules.Dispatcher.query('saveState', {
+						"userID": GUI.userid,
+						"stateName": stateName
+					});
 					popover.hide();
 				};
 
 				dialog_buttons["Raumstatus laden"] = function() {
-					Modules.Dispatcher.query('getSavedStates', {"userID": GUI.userid}, function(states){
+					Modules.Dispatcher.query('getSavedStates', {
+						"userID": GUI.userid
+					}, function(states) {
 						content = [];
-						html = '<div id="alert"><div>Bitte wählen Sie den zu ladenden Zustand'+
-						' aus: <br>';
-						for(var state in states){
-							html+='<label>';
-            				html+='<input type="radio" name="objects" value='+states[state]+'>';
-            				html+= states[state];
-            				html+='<br>';
+						html = '<div id="alert"><div>Bitte wählen Sie den zu ladenden Zustand' +
+							' aus: <br>';
+						for (var state in states) {
+							html += '<label>';
+							html += '<input type="radio" name="objects" value=' + states[state] + '>';
+							html += states[state];
+							html += '<br>';
 						}
-						html+='</label><br></div>';
+						html += '</label><br></div>';
 						content.push(html);
 						var load_buttons = {};
 
-						load_buttons['Raumstatus wiederherstellen'] = function(){
-							var checkboxes=$(stateDialog).find('input');
-							
-							var selection=[];
-							
-							for (var i=0;i<checkboxes.length;i++){
-								var box=checkboxes[i];
-								var data={};
-								data.value=box.value;
-								data.selected=box.checked;
+						load_buttons['Raumstatus wiederherstellen'] = function() {
+							var checkboxes = $(stateDialog).find('input');
+
+							var selection = [];
+
+							for (var i = 0; i < checkboxes.length; i++) {
+								var box = checkboxes[i];
+								var data = {};
+								data.value = box.value;
+								data.selected = box.checked;
 								selection.push(data);
 							}
-							Modules.Dispatcher.query('restoreState', {'userID' : GUI.userid, 'selection': selection});
+							Modules.Dispatcher.query('restoreState', {
+								'userID': GUI.userid,
+								'selection': selection
+							});
 						}
 
 						var stateDialog = GUI.dialog(
@@ -351,9 +352,9 @@ GUI.buildToolbar = function() {
 							content,
 							load_buttons,
 							dialog_width
-							);
+						);
 					});
-//					popover.hide();
+					//					popover.hide();
 				};
 
 				dialog_buttons[GUI.translate("Close")] = function() {
@@ -361,15 +362,15 @@ GUI.buildToolbar = function() {
 				};
 
 				var stateDialog = GUI.dialog(
-							"Raumzustände",
-							content,
-							dialog_buttons,
-							dialog_width
-							);
+					"Raumzustände",
+					content,
+					dialog_buttons,
+					dialog_width
+				);
 			};
-  
 
-            /*add home button*/
+
+			/*add home button*/
 			var homeButton = document.createElement("img");
 			$(homeButton).attr("src", "../../guis.common/images/home_grey.png").attr("alt", "");
 			$(homeButton).attr("width", "24").attr("height", "24");
@@ -377,15 +378,15 @@ GUI.buildToolbar = function() {
 			$(homeButton).addClass("sidebar_button");
 			$(homeButton).attr("title", GUI.translate("Home"));
 			var btnHome = section.addElement($(homeButton).prop('outerHTML') + GUI.translate("Home")); //add menu icon
-			$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");	
+			$(homeButton).attr("src", "../../guis.common/images/home.png").attr("alt", "");
 			numberOfIcons++;
 			$("#header > .header_right").append(homeButton); //add header icon
 			var clickHome = function() { //click handler
 				Modules.ObjectManager.goHome();
-                popover.hide();
+				popover.hide();
 			};
 
-            /*add bugReport button*/
+			/*add bugReport button*/
 			var bugButton = document.createElement("img");
 			$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
 			$(bugButton).attr("width", "24").attr("height", "24");
@@ -399,16 +400,16 @@ GUI.buildToolbar = function() {
 			numberOfIcons++;
 			$("#header > .header_right").append(bugButton); //add header icon
 			var that = this;
-            var clickBug = function(feedbackDialogfeedbackDialog) { //click handler
-							
-    			var html;
-				var dialog_width =690;
+			var clickBug = function(feedbackDialogfeedbackDialog) { //click handler
+
+				var html;
+				var dialog_width = 690;
 				var content = [];
 
 				html = '<div id="bug"><div>Ist Ihnen bei der Benutzung ein Fehler aufgefallen? Teilen Sie uns ihn doch bitte mit.<br />Bitte haben Sie Verständnis dafür, dass wir nicht auf jede Anfrage persönlich antworten können.<span><br /><br />Beachten Sie: Mit Ihrer Fehlermeldung wird eine Liste aller Objekte gesendet, um uns eine Auswertung des Fehlers zu ermöglichen.</span></div><div id="bug_report"><span>Was wollten Sie tun?</span><textarea id="dialog_bug_task"></textarea><span>Welches Problem ist aufgetreten?</span><textarea id="dialog_bug_problem"></textarea><span>Ihre Email-Adresse:</span><input type="email" id="dialog_bug_email" /><p></p></div><div id="bug_result"></div></div>';
 
 				content.push(html);
-				
+
 				var dialog_buttons = {};
 				dialog_buttons[GUI.translate("Send")] = function() {
 
@@ -421,39 +422,39 @@ GUI.buildToolbar = function() {
 					for (var i in objects) {
 						var object = objects[i];
 
-						objectsString += "\n"+i+":\n--------------------\n";
+						objectsString += "\n" + i + ":\n--------------------\n";
 
-						var data=object.get();
+						var data = object.get();
 						for (var name in data) {
-							objectsString += name+": "+data[name]+"\n";
+							objectsString += name + ": " + data[name] + "\n";
 						}
 					}
 
 					ObjectManager.reportBug({
-						"task" : task,
-						"problem" : problem,
-						"user" : GUI.username,
-						"email" : email,
-						"objects" : objectsString,
-						"userAgent" : navigator.userAgent
+						"task": task,
+						"problem": problem,
+						"user": GUI.username,
+						"email": email,
+						"objects": objectsString,
+						"userAgent": navigator.userAgent
 					}, function(result) {
-						
+
 						var content = [];
 						var html;
-						
+
 						if (result === true) {
-							html='<p class="bug_success">Vielen Dank für Ihren Fehlerbericht.<br />Unsere Entwickler wurden informiert und werden sich schnellst möglich um das Problem kümmern.</p>';
+							html = '<p class="bug_success">Vielen Dank für Ihren Fehlerbericht.<br />Unsere Entwickler wurden informiert und werden sich schnellst möglich um das Problem kümmern.</p>';
 						} else {
-							html='<p class="bug_error">Leider konnte der Fehlerbericht nicht gesendet werden. Bitte versuchen Sie es später noch einmal.</p>';
+							html = '<p class="bug_error">Leider konnte der Fehlerbericht nicht gesendet werden. Bitte versuchen Sie es später noch einmal.</p>';
 						}
 						content.push(html);
-						
+
 						var feedbackDialog = GUI.dialog(
 							"Feedback",
 							content,
 							null,
 							dialog_width
-							);
+						);
 					});
 				};
 				dialog_buttons[GUI.translate("Close")] = function() {
@@ -461,14 +462,14 @@ GUI.buildToolbar = function() {
 				};
 
 				var feedbackDialog = GUI.dialog(
-							"Feedback",
-							content,
-							dialog_buttons,
-							dialog_width
-							);
-				
-            };
-			
+					"Feedback",
+					content,
+					dialog_buttons,
+					dialog_width
+				);
+
+			};
+
 			/*add logout button*/
 			var logoutButton = document.createElement("img");
 			$(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
@@ -480,24 +481,24 @@ GUI.buildToolbar = function() {
 			$(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
 			numberOfIcons++;
 			$("#header > .header_right").append(logoutButton); //add header icon
-            var clickLogout = function() { //click handler
+			var clickLogout = function() { //click handler
 				//alert("logout action");
-				if(Modules.Config.logoutURL == "")
-                	location.replace(location.origin);
+				if (Modules.Config.logoutURL == "")
+					location.replace(location.origin);
 				else
 					location.replace(Modules.Config.logoutURL);
-                popover.hide();
+				popover.hide();
 				GUI.deleteUserData();
-				
-            };
+
+			};
 
 
-            if (GUI.isTouchDevice) {
+			if (GUI.isTouchDevice) {
 				//header:
-				
-					$(pasteButton).bind("touchstart", clickPaste);
-					$(undoButton).bind("touchstart", clickUndo);
-				
+
+				$(pasteButton).bind("touchstart", clickPaste);
+				$(undoButton).bind("touchstart", clickUndo);
+
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
 				$(bugButton).bind("touchstart", clickBug);
@@ -508,58 +509,58 @@ GUI.buildToolbar = function() {
 				$(btnParent.getDOM()).bind("touchstart", clickParent);
 				$(btnSave.getDOM()).bind("touchstart", clickSaveState);
 				$(btnHome.getDOM()).bind("touchstart", clickHome);
-                $(btnLogout.getDOM()).bind("touchstart", clickLogout);
-            } else {
+				$(btnLogout.getDOM()).bind("touchstart", clickLogout);
+			} else {
 				//header:
-				
-					$(pasteButton).bind("mousedown", clickPaste);
-					$(undoButton).bind("mousedown", clickUndo);
-				
+
+				$(pasteButton).bind("mousedown", clickPaste);
+				$(undoButton).bind("mousedown", clickUndo);
+
 				$(parentButton).bind("mousedown", clickParent);
 				$(saveStateButton).bind("mousedown", clickSaveState);
 				$(homeButton).bind("mousedown", clickHome);
 				$(bugButton).bind("mousedown", clickBug);
 				$(logoutButton).bind("mousedown", clickLogout);
 				//menu:
-				
-					$(btnPaste.getDOM()).bind("mousedown", clickPaste);
-					$(btnUndo.getDOM()).bind("mousedown", clickUndo);
-				
+
+				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
+				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
+
 				$(btnSaveState.getDOM()).bind("mousedown", clickSaveState);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
-                $(btnLogout.getDOM()).bind("mousedown", clickLogout);
-            }
-        }
-    });
-
-
-    /* add bug report toggle */
-/*    if (!Modules.Config.presentationMode && Modules.config.bugReport) {
-		var bugButton = document.createElement("img");
-		$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
-		$(bugButton).attr("width", "24").attr("height", "24");
-
-		$(bugButton).attr("id", "bug_button");
-		$(bugButton).addClass("sidebar_button header_tab");
-
-		$(bugButton).attr("title", GUI.translate("Bugreport"));
-
-		$("#header > .header_tabs_sidebar").append(bugButton);
-
-		var click = function() {
-			GUI.sidebar.openPage("bug", bugButton);
+				$(btnLogout.getDOM()).bind("mousedown", clickLogout);
+			}
 		}
-
-		if (GUI.isTouchDevice) {
-			$(bugButton).bind("touchstart", click);
-		} else {
-			$(bugButton).bind("mousedown", click);
-		}
-    }*/
+	});
 
 
-    /* add chat toggle */
-    if (!Modules.Config.presentationMode && Modules.config.chat) {
+	/* add bug report toggle */
+	/*    if (!Modules.Config.presentationMode && Modules.config.bugReport) {
+			var bugButton = document.createElement("img");
+			$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
+			$(bugButton).attr("width", "24").attr("height", "24");
+
+			$(bugButton).attr("id", "bug_button");
+			$(bugButton).addClass("sidebar_button header_tab");
+
+			$(bugButton).attr("title", GUI.translate("Bugreport"));
+
+			$("#header > .header_tabs_sidebar").append(bugButton);
+
+			var click = function() {
+				GUI.sidebar.openPage("bug", bugButton);
+			}
+
+			if (GUI.isTouchDevice) {
+				$(bugButton).bind("touchstart", click);
+			} else {
+				$(bugButton).bind("mousedown", click);
+			}
+	    }*/
+
+
+	/* add chat toggle */
+	if (!Modules.Config.presentationMode && Modules.config.chat) {
 		var chatButton = document.createElement("img");
 		$(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
 		$(chatButton).attr("width", "24").attr("height", "24");
@@ -595,172 +596,172 @@ GUI.buildToolbar = function() {
 			$(chatButton).bind("mousedown", click);
 			$(chatNotifier).bind("mousedown", click);
 		}
-    }
+	}
 
-    /* add inspector toggle */
-    if (!Modules.Config.presentationMode) {
+	/* add inspector toggle */
+	if (!Modules.Config.presentationMode) {
 
-        var inspectorButton = document.createElement("img");
-        $(inspectorButton).attr("src", "../../guis.common/images/inspector.png").attr("alt", "");
-        $(inspectorButton).attr("width", "24").attr("height", "24");
+		var inspectorButton = document.createElement("img");
+		$(inspectorButton).attr("src", "../../guis.common/images/inspector.png").attr("alt", "");
+		$(inspectorButton).attr("width", "24").attr("height", "24");
 
-        $(inspectorButton).attr("id", "inspector_button");
-        $(inspectorButton).addClass("sidebar_button header_tab");
+		$(inspectorButton).attr("id", "inspector_button");
+		$(inspectorButton).addClass("sidebar_button header_tab");
 
-        $(inspectorButton).attr("title", GUI.translate("Object inspector"));
+		$(inspectorButton).attr("title", GUI.translate("Object inspector"));
 
-        var click = function() {
-            GUI.sidebar.openPage("inspector", inspectorButton);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("inspector", inspectorButton);
+		}
 
-        if (GUI.isTouchDevice) {
-            $(inspectorButton).bind("touchstart", click);
-        } else {
-            $(inspectorButton).bind("mousedown", click);
-        }
+		if (GUI.isTouchDevice) {
+			$(inspectorButton).bind("touchstart", click);
+		} else {
+			$(inspectorButton).bind("mousedown", click);
+		}
 
-        $("#header > .header_tabs_sidebar").append(inspectorButton);
+		$("#header > .header_tabs_sidebar").append(inspectorButton);
 
-        GUI.sidebar.openPage("inspector", inspectorButton);
+		GUI.sidebar.openPage("inspector", inspectorButton);
 
-        if (!Modules.Config.showSidebarbydefault) {
-            GUI.sidebar.closeSidebar(false);
-        }
+		if (!Modules.Config.showSidebarbydefault) {
+			GUI.sidebar.closeSidebar(false);
+		}
 
-    }
+	}
 
-	
+
 	/* add trashbasket toggle */
-    if (!Modules.Config.presentationMode && Modules.config.trash) {
-	
-        var trashButton = document.createElement("img");
-        $(trashButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
-        $(trashButton).attr("width", "24").attr("height", "24");
+	if (!Modules.Config.presentationMode && Modules.config.trash) {
 
-        $(trashButton).attr("id", "trash_button");
-        $(trashButton).addClass("sidebar_button header_tab");
+		var trashButton = document.createElement("img");
+		$(trashButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
+		$(trashButton).attr("width", "24").attr("height", "24");
 
-        $(trashButton).attr("title", GUI.translate("Trash basket"));
+		$(trashButton).attr("id", "trash_button");
+		$(trashButton).addClass("sidebar_button header_tab");
 
-        var click = function() {
-            GUI.sidebar.openPage("trashbasket", trashButton);
-        }
+		$(trashButton).attr("title", GUI.translate("Trash basket"));
 
-        if (GUI.isTouchDevice) {
-            $(trashButton).bind("touchstart", click);
-        } else {
-            $(trashButton).bind("mousedown", click);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("trashbasket", trashButton);
+		}
 
-        $("#header > .header_tabs_sidebar").append(trashButton);
+		if (GUI.isTouchDevice) {
+			$(trashButton).bind("touchstart", click);
+		} else {
+			$(trashButton).bind("mousedown", click);
+		}
 
-    }
-	
+		$("#header > .header_tabs_sidebar").append(trashButton);
+
+	}
+
 	/* add ObjectList toggle */
-    if (!Modules.Config.presentationMode && Modules.config.objectlist) {
-	
-        var objectlistButton = document.createElement("img");
-        $(objectlistButton).attr("src", "../../guis.common/images/objectlist.png").attr("alt", "");
-        $(objectlistButton).attr("width", "24").attr("height", "24");
+	if (!Modules.Config.presentationMode && Modules.config.objectlist) {
 
-        $(objectlistButton).attr("id", "trash_button");
-        $(objectlistButton).addClass("sidebar_button header_tab");
+		var objectlistButton = document.createElement("img");
+		$(objectlistButton).attr("src", "../../guis.common/images/objectlist.png").attr("alt", "");
+		$(objectlistButton).attr("width", "24").attr("height", "24");
 
-        $(objectlistButton).attr("title", GUI.translate("ObjectList"));
+		$(objectlistButton).attr("id", "trash_button");
+		$(objectlistButton).addClass("sidebar_button header_tab");
 
-        var click = function() {
-            GUI.sidebar.openPage("objectList", objectlistButton);
-        }
+		$(objectlistButton).attr("title", GUI.translate("ObjectList"));
 
-        if (GUI.isTouchDevice) {
-            $(objectlistButton).bind("touchstart", click);
-        } else {
-            $(objectlistButton).bind("mousedown", click);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("objectList", objectlistButton);
+		}
 
-        $("#header > .header_tabs_sidebar").append(objectlistButton);
+		if (GUI.isTouchDevice) {
+			$(objectlistButton).bind("touchstart", click);
+		} else {
+			$(objectlistButton).bind("mousedown", click);
+		}
 
-    }
-	
+		$("#header > .header_tabs_sidebar").append(objectlistButton);
+
+	}
+
 
 	/* add cloud toggle */
-    if (!Modules.Config.presentationMode && Modules.config.cloud) {
+	if (!Modules.Config.presentationMode && Modules.config.cloud) {
 
-        var cloudButton = document.createElement("img");
-        $(cloudButton).attr("src", "../../guis.common/images/cloud.png").attr("alt", "");
-        $(cloudButton).attr("width", "24").attr("height", "24");
+		var cloudButton = document.createElement("img");
+		$(cloudButton).attr("src", "../../guis.common/images/cloud.png").attr("alt", "");
+		$(cloudButton).attr("width", "24").attr("height", "24");
 
-        $(cloudButton).attr("id", "cloud_button");
-        $(cloudButton).addClass("sidebar_button header_tab");
+		$(cloudButton).attr("id", "cloud_button");
+		$(cloudButton).addClass("sidebar_button header_tab");
 
-        $(cloudButton).attr("title", GUI.translate("Cloud"));
+		$(cloudButton).attr("title", GUI.translate("Cloud"));
 
-        var click = function() {
-            GUI.sidebar.openPage("cloud", cloudButton);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("cloud", cloudButton);
+		}
 
-        if (GUI.isTouchDevice) {
-            $(cloudButton).bind("touchstart", click);
-        } else {
-            $(cloudButton).bind("mousedown", click);
-        }
+		if (GUI.isTouchDevice) {
+			$(cloudButton).bind("touchstart", click);
+		} else {
+			$(cloudButton).bind("mousedown", click);
+		}
 
-        $("#header > .header_tabs_sidebar").append(cloudButton);
+		$("#header > .header_tabs_sidebar").append(cloudButton);
 
-    }
-	
+	}
+
 	/* add recent changes toggle */
-    if (!Modules.Config.presentationMode && Modules.config.recentChanges) {
+	if (!Modules.Config.presentationMode && Modules.config.recentChanges) {
 
-        var recentChangesButton = document.createElement("img");
-        $(recentChangesButton).attr("src", "../../guis.common/images/clock.png").attr("alt", "");
-        $(recentChangesButton).attr("width", "24").attr("height", "24");
+		var recentChangesButton = document.createElement("img");
+		$(recentChangesButton).attr("src", "../../guis.common/images/clock.png").attr("alt", "");
+		$(recentChangesButton).attr("width", "24").attr("height", "24");
 
-        $(recentChangesButton).attr("id", "recentChanges_button");
-        $(recentChangesButton).addClass("sidebar_button header_tab");
+		$(recentChangesButton).attr("id", "recentChanges_button");
+		$(recentChangesButton).addClass("sidebar_button header_tab");
 
-        $(recentChangesButton).attr("title", GUI.translate("Recent Changes"));
+		$(recentChangesButton).attr("title", GUI.translate("Recent Changes"));
 
-        var click = function() {
-            GUI.sidebar.openPage("recentChanges", recentChangesButton);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("recentChanges", recentChangesButton);
+		}
 
-        if (GUI.isTouchDevice) {
-            $(recentChangesButton).bind("touchstart", click);
-        } else {
-            $(recentChangesButton).bind("mousedown", click);
-        }
+		if (GUI.isTouchDevice) {
+			$(recentChangesButton).bind("touchstart", click);
+		} else {
+			$(recentChangesButton).bind("mousedown", click);
+		}
 
-        $("#header > .header_tabs_sidebar").append(recentChangesButton);
+		$("#header > .header_tabs_sidebar").append(recentChangesButton);
 
-    }
-	
-    $("#header_toggle_sidebar_hide").on("click", function() {
-        $(".jPopover").hide();
-        GUI.sidebar.closeSidebar(true);
-    });
+	}
 
-    $("#header_toggle_sidebar_show").on("click", function() {
-        $(".jPopover").hide();
-        GUI.sidebar.openSidebar();
-    });
-	
+	$("#header_toggle_sidebar_hide").on("click", function() {
+		$(".jPopover").hide();
+		GUI.sidebar.closeSidebar(true);
+	});
+
+	$("#header_toggle_sidebar_show").on("click", function() {
+		$(".jPopover").hide();
+		GUI.sidebar.openSidebar();
+	});
+
 }
 
 
 /**
  * add a notification if a user entered or left the room or if an object was deleted or restored
  */
-GUI.showNotification = function(add, icon){
-	
+GUI.showNotification = function(add, icon) {
+
 	var button = "";
 	var IconEnter = "";
 	var IconLeft = "";
 	var TextEnter = "";
 	var TextLeft = "";
 	var title = "";
-	if(icon == "chat"){
-		if(GUI.sidebar.currentElement == "chat") return;
+	if (icon == "chat") {
+		if (GUI.sidebar.currentElement == "chat") return;
 		button = "chat_button";
 		IconEnter = "newUser.png";
 		IconLeft = "lostUser.png";
@@ -768,8 +769,8 @@ GUI.showNotification = function(add, icon){
 		TextLeft = GUI.translate("A user left this room");
 		title = GUI.translate("Chat");
 	}
-	if(icon == "trash"){
-		if(GUI.sidebar.currentElement == "trash") return;
+	if (icon == "trash") {
+		if (GUI.sidebar.currentElement == "trash") return;
 		button = "trash_button";
 		IconEnter = "trashadd.png";
 		IconLeft = "trashleft.png";
@@ -787,7 +788,7 @@ GUI.showNotification = function(add, icon){
 		$("#"+button).attr("title", TextLeft);
 	}
     */
-    
+
 	var counter = 0;
 }
 
@@ -795,34 +796,31 @@ GUI.showNotification = function(add, icon){
 /**
  * decides which icons are shown in the toolbar, depending on the free space  
  */
-GUI.resizeToolbar = function(){
+GUI.resizeToolbar = function() {
 
-		var space = $(window).width();
-		space = space - (numberOfIcons*44); //subtract icons
+	var space = $(window).width();
+	space = space - (numberOfIcons * 44); //subtract icons
 
-		if(space < -10){
-			if(GUI.sidebar.open){
-				GUI.sidebar.saveStateAndHide();
-			}
+	if (space < -10) {
+		if (GUI.sidebar.open) {
+			GUI.sidebar.saveStateAndHide();
+		}
+		$("#header_toggle_sidebar_show").hide();
+	} else {
+		if (GUI.sidebar.open) {
+			$("#header_toggle_sidebar_hide").show();
 			$("#header_toggle_sidebar_show").hide();
+		} else {
+			$("#header_toggle_sidebar_show").show();
+			$("#header_toggle_sidebar_hide").hide();
 		}
-		else{
-			if(GUI.sidebar.open){
-				$("#header_toggle_sidebar_hide").show();
-				$("#header_toggle_sidebar_show").hide();
-			}
-			else{
-				$("#header_toggle_sidebar_show").show();
-				$("#header_toggle_sidebar_hide").hide();
-			}
-		}
-		if((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)){
-			$("#header > .header_right > img").hide();
-			$("#menu_button").show();
-		}
-		else{
-			$("#header > .header_right > img").show();
-			$("#menu_button").hide();
-		}
-	
+	}
+	if ((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)) {
+		$("#header > .header_right > img").hide();
+		$("#menu_button").show();
+	} else {
+		$("#header > .header_right > img").show();
+		$("#menu_button").hide();
+	}
+
 }

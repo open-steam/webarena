@@ -175,10 +175,8 @@ ApplicationManager.getApplicationGUIElements = function(object, data, guiElement
 }
 */
 
-ApplicationManager.getApplicationGuiElements = function(callback){
-	console.log("################ getApplicationGUIElements #################");
-
-	var guiElements  = {};
+ApplicationManager.getClientApplicationData = function(callback){
+	var appData  = {};
 	var apps = [];
 
 	for(let app in Applications){
@@ -188,8 +186,9 @@ ApplicationManager.getApplicationGuiElements = function(callback){
 	async.each(apps, function(application, done){
 		var name = application.name;
 		if(!(name == "application")){
-			if(application.getGuiElements){
-				guiElements[name] = application.getGuiElements();	
+			console.log(application.name);
+			if(application.getClientAppData){
+				appData[name] = application.getClientAppData();	
 			}			
 		}
 		done();
@@ -197,8 +196,8 @@ ApplicationManager.getApplicationGuiElements = function(callback){
 		if(err){
 			console.log(err.message);
 		}else{
-			console.log(guiElements);
-			callback(err, guiElements);
+			console.log(appData);
+			callback(err, appData);
 		}
 	});
 }

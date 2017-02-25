@@ -18,17 +18,19 @@ ApplicationManager.toString=function(){
 	return 'ApplicationManager';
 }
 
-ApplicationManager.applicationCall = function(message, data, callback){
+ApplicationManager.applicationCall = function(message, callback){
 	var data = {};
-	data["message"] = message; 
-	console.log(data);
-	Modules.Dispatcher.query("applicationCall", data, this.setAppData);
+	data["message"] = message;
+	Modules.Dispatcher.query("applicationCall", data, callback);
 }
 
 ApplicationManager.setAppData = function(data){
-	console.log("setAppData call successfull: ");
-	console.dir(data);
 	this.ApplicationData = data;
 }
+
+ApplicationManager.getAppData = function(){
+	return this.ApplicationData;
+}
+
 
 module.exports=ApplicationManager;
