@@ -19,15 +19,7 @@ SurveyTest.register=function(type){
     this.registerAttribute('statements', {multiple: true, hidden: false, standard: []});
     this.registerAttribute('resultObjectID', {hidden: false});
     this.registerAttribute('resultObjectRoom', {hidden: false});
-}
-
-SurveyTest.sliderChange = function(sliderID, value){
-	var slider = 'slider_'+sliderID;
-	var display = 'display_'+sliderID;
-	var attribute = 'points_'+sliderID;
-	var value = value;
-
-	this.setAttribute(attribute, value);
+    this.registerAttribute('sliders', {multiple: true, hidden: true, standard:[]});
 }
 
 SurveyTest.generateHash = function(){

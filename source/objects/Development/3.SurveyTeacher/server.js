@@ -9,29 +9,43 @@
 
 var theObject=Object.create(require('./common.js'));
 var Modules=require('../../../server.js');
+var async = require('async');
+
 module.exports=theObject;
 
-theObject.sendToRoom = function (roomID, attributes, callback){
-	var data = {};
-	data.roomID = roomID;
+theObject.sendToRoom = function (rooms, attributes, callback){
 	var that = this;
 	var attr = attributes;
 	var resultAttr = {	minValue: attr.minValue, 
 						maxValue: attr.maxValue, 
 						surveyLength: attr.surveyLength, 
-						stepping: attr.stepping};
+						stepping: attr.stepping,
+						statements: attr.statements};
 
 
 	/* check if room exists already or if it needs to 
 	be created.
 	*/
-	Modules.RoomController.roomExists(data, this.context, function(error, exists){
 		Modules.ObjectManager.createObject(that.getRoomID(), 'SurveyResult', resultAttr, false, that.context, function(error, object){
 			attr.resultObjectID = object.id;
-			Modules.ObjectManager.createObject(roomID, 'SurveyTest', attr, false,that.context, function(error, object){
-			});	
+			async.each(rooms, function(room, callback) {
+				// Perform operation on file here.
+			    console.log('Processing file ' + room);
+				Modules.ObjectManager.createObject(room, 'SurveyTest', attr, false,that.context, function(error, object){
+				});
+			    callback();
+			}, function(err) {
+			    // if any of the file processing produced an error, err would equal that error
+			    if( err ) {
+			      // One of the iterations produced an error.
+			      // All processing will now stop.
+			      console.log('A room failed to process');
+			    } else {
+			      console.log('All rooms have been processed successfully');
+			    }
+			});
+					
 		});
-	});
 }
 
 theObject.getUserRoomList=function(callback){

@@ -16,11 +16,6 @@ SurveyTest.sendSurveyResult = function(event){
 		surveyResultArray.push(that.getAttribute('points_'+i));
 	}
 
-	console.log("***********CLIENTSIDE**************");
-	console.log("SurveyResultArray " + surveyResultArray);
-	console.log("resultObjectRoom "+ that.getAttribute('resultObjectRoom') );
-	console.log("resultObjectID "+ that.getAttribute('resultObjectID'));
-
 	 var attributes =    {resultArray: surveyResultArray,
 	 					  resultObjectRoom: that.getAttribute('resultObjectRoom'),
 	 					  resultObjectID: that.getAttribute('resultObjectID'),
@@ -28,4 +23,6 @@ SurveyTest.sendSurveyResult = function(event){
                          };
 
 	that.serverCall("sendSurveyResult", attributes);
+	$(".surveysend").remove();
+	alert('Ihre Abstimmung wurde entgegengenommen');
 }

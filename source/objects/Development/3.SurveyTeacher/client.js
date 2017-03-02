@@ -12,17 +12,13 @@ SurveyTeacher.clientRegister=function(){
 		that.chooseRecievingRoomsDialogue(object);
 	},true);
 
-	this.registerAction('Send to room', function(object){
-		that.send(object);
-	},true);
-
 	 this.registerAction('Edit Survey', function(lastClicked) {
         var selected = ObjectManager.getSelected();
         lastClicked.showFormatDialog(selected);
     });
 }
 
-SurveyTeacher.send = function(object, roomID) {
+SurveyTeacher.send = function(object, rooms) {
     var sliders = [];
     var surveyLength = object.getAttribute('surveyLength');
 
@@ -37,10 +33,8 @@ SurveyTeacher.send = function(object, roomID) {
                          resultObjectID: null,
                          resultObjectRoom: object.getAttribute('inRoom'), 
                          sliders: sliders};
-
-	if (roomID != null) {
-		object.serverCall("sendToRoom", roomID, attributes);
-	}
+                         
+	object.serverCall("sendToRoom", rooms, attributes);
 }
 
 SurveyTeacher.createRoomList = function(object){
@@ -76,9 +70,9 @@ SurveyTeacher.chooseRecievingRoomsDialogue = function(object) {
 			selectedRooms.push($(this).attr("name"));	
 		});
 		
-		for(var i = 0; i < selectedRooms.length; i++){
-			that.send(object, selectedRooms[i]);	
-		}
+		//for(var i = 0; i < selectedRooms.length; i++){
+			that.send(object, selectedRooms);	
+		//}
 		
 	}
 

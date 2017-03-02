@@ -4,14 +4,16 @@
 *    @author Felix Winkelnkemper, University of Paderborn, 2011
 *
 */
+
+
 SurveyTest.updateContent = function() {
 	var self = this;
 
 	var rep=this.getRepresentation();
 	var that = this;
 
-	this.setAttribute("width", 400);
-	this.setAttribute("height", 400);
+	this.setAttribute("width", 500);
+	this.setAttribute("height", 950);
 	if(!this.getAttribute("initialised")){
 		this.setAttribute("initialised", false);
 	}
@@ -20,15 +22,43 @@ SurveyTest.updateContent = function() {
 
 	this.addStatement = function(text, id){
 		var oldSliders = that.getAttribute('sliders');
-		var newSliders = oldSliders;
 		var minValue = that.getAttribute('minValue');
 		var maxValue = that.getAttribute('maxValue');
 
-		newSliders.push(0);
-		that.setAttribute('sliders', newSliders);
-		return text+'<br><input type="range" id="slider_'+id+'" min="'+minValue+'" max="'+maxValue+'" class="surveyslider" value="'+newSliders[id]+'"> '+
-			'Punkte: <output id="display_'+id+'">'+newSliders[id]+'</output>';
+		self.setAttribute('points_'+id, oldSliders[id]);
+
+		//this.sliderChange(id, $('slider_'+id).val())
+		return text+'<br><input type="range" id="slider_'+id+'" min="'+minValue+'" max="'+maxValue+'" class="surveyslider" value="'+oldSliders[id]+'"> '+
+			'Punkte: <output id="display_'+id+'">'+oldSliders[id]+'</output>';
+		
 	}
+
+	this.sliderChange = function(event){
+		console.log(event);
+		console.log(event.srcElement.value);
+		var str = event.srcElement.id;
+		var id = str.substr(str.indexOf("_") + 1); // Contains id of slider
+
+    	var attribute = 'points_'+id;
+    	var value = event.srcElement.value;
+
+    	self.setAttribute(attribute, value);
+
+		//$(rep).find(display).innerHTML = value;
+		//console.log(attribute +': '+ value);
+		//this.setAttribute(attribute, value);
+		//console.log($(Element).val());
+		//console.log($(rep).find('#display_'+index));
+		console.log(id);
+		console.log($('#display_'+id));
+		$('#display_'+id).val(event.srcElement.value); 
+
+		let slider = self.getAttribute('sliders');
+		console.log(slider);
+		slider[id] = event.srcElement.value; 
+		self.setAttribute('sliders', slider);
+	}
+
 
 	//Initial load of the SurveyBase with standard values and sliders at 0
 	this.surveyBaseHtmlInit = function(){
@@ -37,8 +67,7 @@ SurveyTest.updateContent = function() {
   		'<div data-role="main" class="ui-content">'+
 			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' bis '+that.getAttribute('maxValue')+'<br>';
 		for(var i = 0; i < that.getAttribute('surveyLength'); i++){
-			string += that.addStatement(statements[i], i)+
-			'<br>';
+			string += that.addStatement(statements[i], i)+'<br>';
 		}
 			    	
 		string += '<br><input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden"></div>'
@@ -64,14 +93,22 @@ SurveyTest.updateContent = function() {
 	if(!initialised){
 		self.setHTML(self.surveyBaseHtmlInit());
 		//Send slidervalues to the server and update the attributes, then update the display values as well.
+	
+
 		$('.surveyslider').each(function (index, Element) {
-			$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
-			$(rep).find('#display_'+index).val($(Element).val()); 
+			var slider = $(rep).find('#slider_'+index);
+			//slider.attr('oninput', self.sliderChange(index, slider.val(), rep));
+			//slider.setAttribute('oninput', self.blob);
+			//slider.oninput =  self.blob();
+			console.log(Element);
+			//Element.setAttribute("oninput",  self.blob);
+			Element.oninput = self.sliderChange;
+			//$(rep).find('#display_'+index).val($(Element).val()); 
 		});
 
 		//Attach functions to send buttons
 		$('.surveysend').each(function (index, Element){
-			$(Element).bind('click', {this: self}, self.sendSurveyResult);
+			$(Element).bind('click', {that: self}, self.sendSurveyResult);
 		});
 		
 		this.setAttribute("initialised", true);
@@ -90,14 +127,16 @@ SurveyTest.updateContent = function() {
 					$(Element).bind('click', {that: self}, self.sendSurveyResult);
 				});
 			}
+
 			//Send slidervalues to the server and update the attributes, then update the display values as well.
 			$('.surveyslider').each(function (index, Element) {
-				$(Element).attr('oninput', self.sliderChange(index, $(Element).val()));
-				$(rep).find('#display_'+index).val($(Element).val()); 
+				//var slider = $(rep).find('#slider_'+index);
+				console.log(Element);
+				Element.oninput = self.sliderChange; 
+				//$(rep).find('#display_'+index).val($(Element).val()); 
 			});
 
 			that.oldContent=text;
 		});
 	}
 }
-

@@ -14,12 +14,16 @@ SurveyResult.draw = function(external) {
     var stepping = this.getAttribute('stepping');
     var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
     var surveyLength = this.getAttribute('surveyLength');
+    var statements = this.getAttribute('statements');
 
     //hole rep
     var rep = this.getRepresentation();
     var oldGroup = $("#" + this.getAttribute('id') + "-1");
     var oldResultGroup =$("#"+this.getAttribute('id')+"-2");
     var oldScalesGroupArray = Array(surveyLength);
+    var oldLabels = $('#statements');
+   
+
    
    for(var i = 0; i < oldScalesGroupArray.length; i++){
         var index = 4+i;
@@ -30,6 +34,8 @@ SurveyResult.draw = function(external) {
         oldGroup.remove();
     if (oldResultGroup)
         oldResultGroup.remove();
+    if(oldLabels)
+        oldLabels.remove();
 
     for(var i = 0; i < oldScalesGroupArray.length; i++){
         if(oldScalesGroupArray[i])
@@ -40,6 +46,7 @@ SurveyResult.draw = function(external) {
     var numbers = GUI.svg.group(group);
     var resultGroup = GUI.svg.group(rep, this.getAttribute('id')+"-2");
     var scalesGroupArray = Array(surveyLength);
+     var labels = GUI.svg.group(rep, "statements");
 
     for(var i = 0; i < scalesGroupArray.length; i++){
         var index = 4+i;
@@ -75,13 +82,32 @@ SurveyResult.draw = function(external) {
     $(rect).attr('width', this.getAttribute('width'));
     $(rect).attr('height', this.getAttribute('height'));
 
-    var offset = 80;
-    this.offset = 80;
-
+    var offset = 140;
+    this.offset = 140;
+    
+    var label = labels.getElementsByTagName('text');
+    console.log(label);
+    let arr = Array.prototype.slice.call( label )
+    console.log(Object.prototype.toString.apply(arr));
+    console.log(arr[0]);
     if (this.getAttribute('direction') === 'horizontal') { 
         for(var i = 0; i < surveyLength; i++){
+
+            console.log("Im here");
+            var xPos = 50;
+            var yPos = offset/1.75;
+
+            arr[i] = GUI.svg.text(labels, 0, 0, statements[i]);
+            arr[i].setAttribute('x', xPos);
+            arr[i].setAttribute('y', yPos+(offset*i));
+            arr[i].setAttribute('text', statements[i]);
+            arr[i].setAttribute('fill', "white");
+            arr[i].setAttribute('font-size', '22px');
+
+
             var line = scalesGroupArray[i].getElementsByTagName('line')[0];
             this.drawHorizontalLine(offset, i, line, scalesGroupArray[i], min, max, stepping, rep);
+           
         }
         this.drawCircleArrayHorizontal(resultCircleArray);
     } else {
@@ -106,9 +132,6 @@ SurveyResult.drawCircleArrayHorizontal = function(circleArray){
         if(i%scaleLength == 0){
             statementNumber--;
         }
-        
-        
-        
     }
 }
 
@@ -126,22 +149,24 @@ SurveyResult.drawCircleArrayVertical = function(circleArray){
 }
 
 SurveyResult.growthFunction = function(input){
-    return 14 * Math.exp(-Math.exp(-0.3 * (input-5)));
+    if(input == 0){
+        return 0;
+    }
+    return 14 * Math.exp(-Math.exp(-0.3 * (input-5)))+1;
 }
 
 SurveyResult.drawCircleHorizontal = function(circle, step, statementNumber){
     //Typecasting necessary
-    console.log(statementNumber +", "+ step);
     var results = this.getAttribute("results");
     var value = results[statementNumber][step];
     var posX = Number(circle.getAttribute('cx'));
     var posY = Number(circle.getAttribute('cy'));
-    console.log(this.growthFunction(value));
     var radius = Number(circle.getAttribute('r'))*this.growthFunction(value)*3;
     var scaleLength = this.getAttribute('maxValue') - this.getAttribute('minValue') + 1;
 
     circle.setAttribute('cx', posX + this.offset + (this.getAttribute('distanceX')*(step%scaleLength)));
     circle.setAttribute('cy', posY + (this.offset*(statementNumber+1)));
+    circle.setAttribute('fill', 'orange');
     circle.setAttribute('r', radius);
 }
 
@@ -198,7 +223,7 @@ SurveyResult.drawVerticalLine = function(offset, argumentNumber, line, group, mi
         $(currentNumerationObject).attr('y', drawLineAt + 3);
         $(currentNumerationObject).attr('x', xCoordinate - 36);
         $(currentNumerationObject).attr('font-size', 12);
-        $(currentNumerationObject).attr('fill', 'white');
+        $(currentNumerationObject).attr('fill', 'black');
 
         drawLineAt -= distancePerStepInPixel;
     }
@@ -248,7 +273,7 @@ SurveyResult.drawHorizontalLine = function(offset, argumentNumber, line, group, 
             $(currentNumerationObject).attr('x', drawLineAt - 3);
             $(currentNumerationObject).attr('y', yCoordinate + 18);
             $(currentNumerationObject).attr('font-size', 12);
-            $(currentNumerationObject).attr('fill', 'white');
+            $(currentNumerationObject).attr('fill', 'black');
 
             drawLineAt += distancePerStepInPixel;
         }
@@ -324,8 +349,8 @@ SurveyResult.createRepresentation = function(parent) {
     rep.rect = rect;
 
     this.initGUI(rep);
-    this.setAttribute("height",200 + 80*this.getAttribute('surveyLength'));
-    this.setAttribute("width", 200 + 80*(this.getAttribute('maxValue')-this.getAttribute('minValue')));
+    this.setAttribute("height",200 + 130*this.getAttribute('surveyLength'));
+    this.setAttribute("width", 200 + 220*(this.getAttribute('maxValue')-this.getAttribute('minValue')));
     return rep;
 }
 
