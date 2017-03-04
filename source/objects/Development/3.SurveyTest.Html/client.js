@@ -23,6 +23,10 @@ SurveyTest.sendSurveyResult = function(event){
                          };
 
 	that.serverCall("sendSurveyResult", attributes);
+	that.setAttribute('sent', true);
+
 	$(".surveysend").remove();
+	$(".surveyslider").remove();
 	alert('Ihre Abstimmung wurde entgegengenommen');
+	that.updateContent();
 }

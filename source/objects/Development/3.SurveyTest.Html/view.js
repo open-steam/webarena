@@ -28,14 +28,16 @@ SurveyTest.updateContent = function() {
 		self.setAttribute('points_'+id, oldSliders[id]);
 
 		//this.sliderChange(id, $('slider_'+id).val())
-		return text+'<br><input type="range" id="slider_'+id+'" min="'+minValue+'" max="'+maxValue+'" class="surveyslider" value="'+oldSliders[id]+'"> '+
-			'Punkte: <output id="display_'+id+'">'+oldSliders[id]+'</output>';
-		
+		if(!(that.getAttribute('sent'))){
+			return text+'<br><input type="range" id="slider_'+id+'" min="'+minValue+'" max="'+maxValue+'" class="surveyslider" value="'+oldSliders[id]+'"> '+
+			'<b><output id="display_'+id+'"> '+oldSliders[id]+'</output></b>';
+		}else{
+			return text+'<br>'+
+			'<b><output id="display_'+id+'"> '+oldSliders[id]+'</output></b>';
+		}
 	}
 
 	this.sliderChange = function(event){
-		console.log(event);
-		console.log(event.srcElement.value);
 		var str = event.srcElement.id;
 		var id = str.substr(str.indexOf("_") + 1); // Contains id of slider
 
@@ -43,14 +45,6 @@ SurveyTest.updateContent = function() {
     	var value = event.srcElement.value;
 
     	self.setAttribute(attribute, value);
-
-		//$(rep).find(display).innerHTML = value;
-		//console.log(attribute +': '+ value);
-		//this.setAttribute(attribute, value);
-		//console.log($(Element).val());
-		//console.log($(rep).find('#display_'+index));
-		console.log(id);
-		console.log($('#display_'+id));
 		$('#display_'+id).val(event.srcElement.value); 
 
 		let slider = self.getAttribute('sliders');
@@ -65,12 +59,12 @@ SurveyTest.updateContent = function() {
 		var statements = that.getAttribute('statements');
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
-			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' bis '+that.getAttribute('maxValue')+'<br>';
+			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' (ich stimme gar nicht zu) bis '+that.getAttribute('maxValue')+'  (ich stimme vollkommen zu)<br>';
 		for(var i = 0; i < that.getAttribute('surveyLength'); i++){
 			string += that.addStatement(statements[i], i)+'<br>';
 		}
-			    	
-		string += '<br><input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden"></div>'
+		if(!(that.getAttribute('sent')))	 	    	
+			string += '<br><input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden"></div>'
 		return string;
 	}
 
@@ -79,12 +73,13 @@ SurveyTest.updateContent = function() {
 		var statements = that.getAttribute('statements');
 		var string = '<span class="moveArea"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
-			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' bis '+that.getAttribute('maxValue')+'<br><br>';
+			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' (ich stimme gar nicht zu) bis '+that.getAttribute('maxValue')+'  (ich stimme vollkommen zu)<br><br>';
 		for(var i = 0; i < that.getAttribute('surveyLength'); i++){
 			string += '<br>'+that.addStatement(statements[i], i)+'<br>';
 		}
-			    	
-		string += '<br><input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden"></div>'
+		
+		if(!(that.getAttribute('sent')))	    	
+			string += '<br><input type="button" class="surveysend" data-inline="true" value="Ergebnis absenden"></div>'
 		return string;
 	}
 

@@ -20,6 +20,7 @@ SurveyTest.register=function(type){
     this.registerAttribute('resultObjectID', {hidden: false});
     this.registerAttribute('resultObjectRoom', {hidden: false});
     this.registerAttribute('sliders', {multiple: true, hidden: true, standard:[]});
+    this.registerAttribute('sent', {standard: false, hidden:true});
 }
 
 SurveyTest.generateHash = function(){
