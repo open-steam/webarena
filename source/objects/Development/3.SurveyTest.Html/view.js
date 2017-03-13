@@ -57,7 +57,7 @@ SurveyTest.updateContent = function() {
 	//Initial load of the SurveyBase with standard values and sliders at 0
 	this.surveyBaseHtmlInit = function(){
 		var statements = that.getAttribute('statements');
-		var string = '<span class="moveArea"> MOVE HERE </span>'+
+		var string = '<span class="moveArea" style="background-color:grey;"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
 			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' (ich stimme gar nicht zu) bis '+that.getAttribute('maxValue')+'  (ich stimme vollkommen zu)<br>';
 		for(var i = 0; i < that.getAttribute('surveyLength'); i++){
@@ -71,7 +71,7 @@ SurveyTest.updateContent = function() {
 	//called when the page has been reloaded
 	this.surveyBaseHtmlReload = function(){
 		var statements = that.getAttribute('statements');
-		var string = '<span class="moveArea"> MOVE HERE </span>'+
+		var string = '<span class="moveArea"  style="background-color:grey;"> MOVE HERE </span>'+
   		'<div data-role="main" class="ui-content">'+
 			    'Bewerten Sie die folgenden Aussagen auf einer Skala von '+that.getAttribute('minValue')+' (ich stimme gar nicht zu) bis '+that.getAttribute('maxValue')+'  (ich stimme vollkommen zu)<br><br>';
 		for(var i = 0; i < that.getAttribute('surveyLength'); i++){
