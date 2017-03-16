@@ -186,9 +186,8 @@ ApplicationManager.getClientApplicationData = function(callback){
 	async.each(apps, function(application, done){
 		var name = application.name;
 		if(!(name == "application")){
-			console.log(application.name);
 			if(application.getClientAppData){
-				appData[name] = application.getClientAppData();	
+				appData[name] = JSON.stringify(application.getClientAppData());	
 			}			
 		}
 		done();
@@ -196,7 +195,6 @@ ApplicationManager.getClientApplicationData = function(callback){
 		if(err){
 			console.log(err.message);
 		}else{
-			console.log(appData);
 			callback(err, appData);
 		}
 	});

@@ -11,7 +11,6 @@ var ApplicationManager=Object.create(Object);
 var ApplicationData = {};
 
 ApplicationManager.init=function(proto){
-	console.log("Initializing AppManager ");
 }
 
 ApplicationManager.toString=function(){

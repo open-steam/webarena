@@ -4,33 +4,34 @@ GUI.initApplications = function(){
     the activated applications and then create the icons & functions according to their presets
      */
     let appData = Modules.ApplicationManager.getAppData();
-    console.log(appData);
     var self = this;
     for(var app in appData){
         if(appData[app]){
-            console.log(app + " has appData");
-            if(appData[app].hasGui){
-                console.log(app + " has GuiElements");
-                console.log(appData[app].guiElements);
-                self.initApplicationToolbarElements(appData[app].guiElements);      
+            var object = JSON.parse(appData[app]);
+            if(object.hasGui){
+                self.initApplicationToolbarElements(object.guiElements);      
             }
         }
     }
 }
 
-
+/**
+ * Test function
+ *
+ */
 GUI.warn = function(){
     alert("Warum drückst du mich?");
 }
 
+/**
+ * Initializes all the toolbar elements
+ *
+ * @param  {Object} data The application-gui-data recieved from the server
+ *
+ */
 GUI.initApplicationToolbarElements = function(data){
-    console.log("DataSheet for Toolbar");
-    console.log(data);
     let buttonName = data.buttonName;
     let icon = data.icon;
-    let clickFunction = GUI[data.clickFunction];
-
-    console.log(clickFunction);
 
     let temp = {};
     
@@ -44,11 +45,114 @@ GUI.initApplicationToolbarElements = function(data){
     numberOfIcons++;
     $("#header > .header_right").prepend(temp[buttonName]); //add header icon
 
-    if (GUI.isTouchDevice) {
-        //header:
-        $(temp[buttonName]).bind("touchstart", clickFunction);
-    } else {
-        //header:
-        $(temp[buttonName]).bind("mousedown", clickFunction);
+    GUI.generateHtmlfromJson(data, temp[buttonName]);
+}
+
+/**
+ * Generates the client-side HTML based on the JSON-data coming from the server
+ *
+ * @param  {JSON} data The JSON data that is delivered from the server
+ *
+ */
+GUI.generateHtmlfromJson = function(data, button){
+    let buttons = data.buttons;
+    let fragments = data.fragments;
+    let type = data.type;
+
+    let onClick = function(){
+        switch (type) {
+            case "dialog":
+                console.log("generating dialog");
+                let title = data.title;
+                console.log(title);
+                let dialog_width = "auto";
+                let partialContents = [];
+                let content = [];
+                let dialog_buttons;
+                let html = '';
+                var newDiv = document.createElement('div');
+
+                for(var fragment in fragments){
+                    console.log(fragments[fragment]);
+                    switch (fragments[fragment].type) {
+                        case "text":
+                            var newContent = document.createTextNode(fragments[fragment].text);
+                            newDiv.appendChild(newContent);
+                            break;
+
+                        case "input":
+                            html = '';
+
+                            break;
+
+                        case "button":
+                            html = '';
+
+                            break;
+
+                        case "arrange":
+                            html = '';
+
+                            break;
+
+                        case "list":
+                            console.log("generating list content");
+                            var newList = document.createElement('div');
+                            newList.id = "list-"+fragment;
+                            console.log("list-"+fragment);
+
+                            newDiv.appendChild(newList);
+                            var that = this;
+                            if(fragments[fragment].query){
+                                let query = fragments[fragment].query;
+                                let listType = fragments[fragment].listType;
+
+                                function queryWithPromise(query, data){
+                                    return new Promise(function(resolve, reject){
+                                        Modules.Dispatcher.query(query, data, function(entries){
+                                            resolve(entries);
+                                        });
+                                    });
+                                }
+
+                                var entries = queryWithPromise(query, {"userID": GUI.userid});
+                                entries.then(function(entries){
+                                    var innerHtml = '';
+                                    innerHtml += "<br>"
+                                    for (var entry in entries) {
+                                            innerHtml += '<label>';
+                                            innerHtml += '<input type="'+listType+'" name="objects" value=' + entries[entry] + '>';
+                                            innerHtml += entries[entry];
+                                            innerHtml += '</label><br>';
+                                        }
+                                    innerHtml += '<br>';
+
+                                    var children = newDiv.getElementsByTagName('div')
+                                    for(var i = 0; i< children.length;i++){
+                                        if (children[i].getAttribute('id') == 'list-'+fragment){
+                                            children[i].insertAdjacentHTML('afterend', innerHtml);
+                                        }
+                                    }
+                                });
+                            }else{
+                                //Just list the list-elements given in the appdata
+                            }
+                            break;
+
+                        case "input":
+
+                            break;
+                    }
+                }
+            GUI.dialog(title, newDiv, dialog_buttons, dialog_width);             
+            break;
+        }
     }
-} 
+    if (GUI.isTouchDevice) {
+            //header:
+            $(button).bind("touchstart", onClick);
+        } else {
+            //header:
+            $(button).bind("mousedown", onClick);
+        }
+}

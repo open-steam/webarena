@@ -13,9 +13,12 @@ var Modules={};
 
 UserGetter.clientAppData = {
 					hasGui: true, guiElements: {
-					buttonName: "test", 
-					icon: "arrow-left", 
-					clickFunction:"warn"}
+						buttonName: "UserGetter", 
+						icon: "arrow-left", 
+						clickFunction:"warn",
+						type: "dialog",
+						title: "UserGetter",
+						fragments: [{type: "text", text: "Dies ist ein String!"}]}
 					};
 
 

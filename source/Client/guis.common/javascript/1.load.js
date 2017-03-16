@@ -129,7 +129,6 @@ GUI.loadGUI = function(step) {
 		//Init applicationManager & load GUI-elements
 		Modules.ApplicationManager.applicationCall("getClientApplicationData", function(GuiElements){
 			Modules.ApplicationManager.setAppData(GuiElements);
-			console.log(GuiElements);
 			GUI.initApplications();
 		});
 		

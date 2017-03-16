@@ -29,9 +29,15 @@ var AppDataPath;
 var ContentDataPath;
 RoomState.clientAppData = {
 					hasGui: true, guiElements: {
-					buttonName: "test", 
-					icon: "arrow-left", 
-					clickFunction:"warn"}
+						buttonName: "RoomState", 
+						icon: "save", 
+						clickFunction:"warn",
+						type: "dialog",
+						title: "RoomState",
+						fragments: [{type: "text", text: "Dies ist ein String!"},
+									{type: "list", dialogText: "Zu ladenden Zustand auswählen",
+									 query: "getSavedStates",
+									 listType: "radio" }]}
 					};
 
 RoomState.init=function(name, theModules){
