@@ -62,13 +62,10 @@ GUI.generateHtmlfromJson = function(data, button){
     let onClick = function(){
         switch (type) {
             case "dialog":
-                console.log("generating dialog");
                 let title = data.title;
-                console.log(title);
                 let dialog_width = "auto";
-                let partialContents = [];
                 let content = [];
-                let dialog_buttons;
+                var buttons = [];
                 let html = '';
                 var newDiv = document.createElement('div');
 
@@ -86,8 +83,9 @@ GUI.generateHtmlfromJson = function(data, button){
                             break;
 
                         case "button":
-                            html = '';
-
+                            console.log("creating buttons ");
+                            buttons[fragments[fragment].buttonText] = GUI[fragments[fragment].funcName];
+                            console.log(buttons);
                             break;
 
                         case "arrange":
@@ -118,8 +116,9 @@ GUI.generateHtmlfromJson = function(data, button){
                                 var entries = queryWithPromise(query, {"userID": GUI.userid});
                                 entries.then(function(entries){
                                     var innerHtml = '';
-                                    innerHtml += "<br>"
+                                    innerHtml += "<br>"+fragments[fragment].dialogText+"<br>";
                                     for (var entry in entries) {
+                                        console.log("generating entry");
                                             innerHtml += '<label>';
                                             innerHtml += '<input type="'+listType+'" name="objects" value=' + entries[entry] + '>';
                                             innerHtml += entries[entry];
@@ -127,10 +126,12 @@ GUI.generateHtmlfromJson = function(data, button){
                                         }
                                     innerHtml += '<br>';
 
-                                    var children = newDiv.getElementsByTagName('div')
+                                    var children = newDiv.getElementsByTagName('div');
+                                    console.log(children);
                                     for(var i = 0; i< children.length;i++){
                                         if (children[i].getAttribute('id') == 'list-'+fragment){
                                             children[i].insertAdjacentHTML('afterend', innerHtml);
+                                            console.log("im here");
                                         }
                                     }
                                 });
@@ -144,7 +145,7 @@ GUI.generateHtmlfromJson = function(data, button){
                             break;
                     }
                 }
-            GUI.dialog(title, newDiv, dialog_buttons, dialog_width);             
+            GUI.dialog(title, newDiv, null, dialog_width);             
             break;
         }
     }
@@ -155,4 +156,22 @@ GUI.generateHtmlfromJson = function(data, button){
             //header:
             $(button).bind("mousedown", onClick);
         }
+}
+
+GUI.restoreRoomState = function() {
+    var checkboxes = $(stateDialog).find('input');
+
+    var selection = [];
+
+    for (var i = 0; i < checkboxes.length; i++) {
+        var box = checkboxes[i];
+        var data = {};
+        data.value = box.value;
+        data.selected = box.checked;
+        selection.push(data);
+    }
+    Modules.Dispatcher.query('restoreState', {
+        'userID': GUI.userid,
+        'selection': selection
+    });
 }
