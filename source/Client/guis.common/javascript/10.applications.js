@@ -145,7 +145,7 @@ GUI.generateHtmlfromJson = function(data, button){
                             break;
                     }
                 }
-            GUI.dialog(title, newDiv, null, dialog_width);             
+            GUI.dialog(title, newDiv, buttons, dialog_width);             
             break;
         }
     }
