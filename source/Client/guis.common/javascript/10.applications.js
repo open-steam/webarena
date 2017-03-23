@@ -55,22 +55,20 @@ GUI.initApplicationToolbarElements = function(data){
  *
  */
 GUI.generateHtmlfromJson = function(data, button){
-    let buttons = data.buttons;
     let fragments = data.fragments;
     let type = data.type;
+    let title = data.title;
+    let dialog_width = "auto";
+
 
     let onClick = function(){
+        var newDiv = document.createElement('div');
         switch (type) {
             case "dialog":
-                let title = data.title;
-                let dialog_width = "auto";
-                let content = [];
-                var buttons = [];
-                let html = '';
-                var newDiv = document.createElement('div');
-
+                var buttons = {};
+                var content = [];
+                var html = '';
                 for(var fragment in fragments){
-                    console.log(fragments[fragment]);
                     switch (fragments[fragment].type) {
                         case "text":
                             var newContent = document.createTextNode(fragments[fragment].text);
@@ -83,9 +81,8 @@ GUI.generateHtmlfromJson = function(data, button){
                             break;
 
                         case "button":
-                            console.log("creating buttons ");
-                            buttons[fragments[fragment].buttonText] = GUI[fragments[fragment].funcName];
-                            console.log(buttons);
+                            buttons[fragments[fragment].buttonText] = GUI.fillList;
+                            buttons[fragments[fragment].buttonText].query = fragments[fragment].query;
                             break;
 
                         case "arrange":
@@ -108,7 +105,11 @@ GUI.generateHtmlfromJson = function(data, button){
                                 function queryWithPromise(query, data){
                                     return new Promise(function(resolve, reject){
                                         Modules.Dispatcher.query(query, data, function(entries){
-                                            resolve(entries);
+                                            if(entries){
+                                                resolve(entries);
+                                            }else{
+                                                reject(error);
+                                            }
                                         });
                                     });
                                 }
@@ -127,11 +128,9 @@ GUI.generateHtmlfromJson = function(data, button){
                                     innerHtml += '<br>';
 
                                     var children = newDiv.getElementsByTagName('div');
-                                    console.log(children);
                                     for(var i = 0; i< children.length;i++){
                                         if (children[i].getAttribute('id') == 'list-'+fragment){
                                             children[i].insertAdjacentHTML('afterend', innerHtml);
-                                            console.log("im here");
                                         }
                                     }
                                 });
@@ -145,10 +144,13 @@ GUI.generateHtmlfromJson = function(data, button){
                             break;
                     }
                 }
-            GUI.dialog(title, newDiv, buttons, dialog_width);             
-            break;
-        }
-    }
+            buttons[GUI.translate("close")] = function() {
+                //nothing
+            }    
+            GUI.dialog(title, newDiv, buttons, dialog_width); 
+            break;   
+        } 
+    }         
     if (GUI.isTouchDevice) {
             //header:
             $(button).bind("touchstart", onClick);
@@ -158,9 +160,10 @@ GUI.generateHtmlfromJson = function(data, button){
         }
 }
 
-GUI.restoreRoomState = function() {
-    var checkboxes = $(stateDialog).find('input');
-
+GUI.fillList = function(dataset) {
+    var query = dataset.query;
+    var content = dataset.content;
+    var checkboxes = content.getElementsByTagName('input');
     var selection = [];
 
     for (var i = 0; i < checkboxes.length; i++) {
@@ -170,7 +173,8 @@ GUI.restoreRoomState = function() {
         data.selected = box.checked;
         selection.push(data);
     }
-    Modules.Dispatcher.query('restoreState', {
+
+    Modules.Dispatcher.query(query, {
         'userID': GUI.userid,
         'selection': selection
     });

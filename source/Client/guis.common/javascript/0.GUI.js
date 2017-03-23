@@ -887,10 +887,8 @@ GUI.simpleSelectionDialog=function(dialogData){
  * }
  *
  */
-GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
-
-    GUI.blockKeyEvents = true;
-
+GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {    
+	GUI.blockKeyEvents = true;
     if (buttons == undefined) {
 
         var buttons = {};
@@ -908,12 +906,16 @@ GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
     var buttons2 = {};
 
     $.each(buttons, function(title, callback) {
-
+    	console.log(callback);
         buttons2[title] = function() {
-            callback(dialogContent);
+        	if(buttons[title].query){
+        		var data = {content: dialogContent, query: buttons[title].query };
+            	callback(data);
+        	}else{
+        		callback(dialogContent);
+        	}
             $(this).dialog("close");
         }
-
     });
 
     if (dialogWidth == undefined) {
