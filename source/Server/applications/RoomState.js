@@ -34,12 +34,25 @@ RoomState.clientAppData = {
 						clickFunction:"warn",
 						type: "dialog",
 						title: "RoomState",
-						fragments: [{type: "text", text: "Dies ist ein String!"}
-									,
-									{type: "button",
-									buttonText: "Raumzustand laden", 
-									query: "restoreState"}
-									,
+						fragments: [{type: "text", text: "Dies ist ein String!"},
+									{type: "input", label:"Vorname"},
+									{type: "input", label:"Nachname"},
+									{type: "input", label:"Straße"},
+									{type: "input", label:"Postleitzahl"},
+									{type: "textarea", label:"Bemerkungen"},
+									
+									{type: "buttons",
+
+											buttons: {	
+												button1: 	{type: "button",
+															buttonText: "Raumzustand laden", 
+															query: "restoreState"},
+											 	button2: 	{type: "button",
+															buttonText: "Absenden", 
+															query: "send"}
+											}
+									},
+									
 									{type: "list", dialogText: "Zu ladenden Zustand auswählen",
 									 query: "getSavedStates",
 									 listType: "radio" }

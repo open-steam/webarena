@@ -906,11 +906,12 @@ GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
     var buttons2 = {};
 
     $.each(buttons, function(title, callback) {
-    	console.log(callback);
         buttons2[title] = function() {
+        	console.log(title);
         	if(buttons[title].query){
-        		var data = {content: dialogContent, query: buttons[title].query };
-            	callback(data);
+        		var data = {content: dialogContent, query: buttons[title].query};
+        		console.log(data);
+            	callback.func(data);
         	}else{
         		callback(dialogContent);
         	}

@@ -65,24 +65,64 @@ GUI.generateHtmlfromJson = function(data, button){
         var newDiv = document.createElement('div');
         switch (type) {
             case "dialog":
-                var buttons = {};
                 var content = [];
                 var html = '';
-                for(var fragment in fragments){
-                    switch (fragments[fragment].type) {
+                for(var frag in fragments){
+                    var fragment = fragments[frag];
+                    switch (fragment.type) {
                         case "text":
-                            var newContent = document.createTextNode(fragments[fragment].text);
+                            var newContent = document.createTextNode(fragment.text);
                             newDiv.appendChild(newContent);
+                            break;
+                        case "textarea":
+                            var textAreaContainer = document.createElement('div');
+                            var textArea = document.createElement('textarea');
+
+                            if(fragment.label){
+                                var labelTextarea = document.createElement("label");
+                                labelTextarea.innerHTML = (""+ fragment.label +': <br>\n');
+                                labelTextarea.style.fontWeight = "bold";
+                                labelTextarea.style.span = "inline-block";
+                                textAreaContainer.appendChild(labelTextarea);
+                            }
+                            textArea.style.width = "97.5%";
+                            textArea.style.height = "300px";
+                            textAreaContainer.appendChild(textArea);
+                            newDiv.appendChild(textAreaContainer);
                             break;
 
                         case "input":
-                            html = '';
-
+                            var textboxContainer = document.createElement('div');
+                            var enclosingP = document.createElement('p');
+                            var textbox = document.createElement('input');
+                            textboxContainer.style.marginRight = "10px";
+                            textbox.style.marginLeft = "10px"; 
+                            textboxContainer.style.width = "97.5%"; 
+                            textbox.style.float = "right";
+                            textbox.type = 'text';
+                            textbox.style.boxSizing = "border-box";
+                            textbox.style.width = "60%";
+                            if(fragment.label){
+                                var label = document.createElement("label");
+                                label.innerHTML = (""+ fragment.label +': ');
+                                label.style.fontWeight = "bold";
+                                label.style.span = "inline-block";
+                                enclosingP.appendChild(label);
+                            }
+                            label.appendChild(textbox);
+                            newDiv.appendChild(enclosingP);
                             break;
 
-                        case "button":
-                            buttons[fragments[fragment].buttonText] = GUI.fillList;
-                            buttons[fragments[fragment].buttonText].query = fragments[fragment].query;
+                        case "buttons":
+                            console.log("im here");
+                            var buttons = {};
+                            for(let butt in fragment.buttons){
+                                let button = fragment.buttons[butt]
+                                console.log(butt);
+                                buttons[button.buttonText] =  {func: GUI.gatherInputData, query:button.query};
+                                //buttons[button.buttonText+'-query'] = button.query;
+                            }
+                            console.log(buttons);
                             break;
 
                         case "arrange":
@@ -98,9 +138,9 @@ GUI.generateHtmlfromJson = function(data, button){
 
                             newDiv.appendChild(newList);
                             var that = this;
-                            if(fragments[fragment].query){
-                                let query = fragments[fragment].query;
-                                let listType = fragments[fragment].listType;
+                            if(fragment.query){
+                                let query = fragment.query;
+                                let listType = fragment.listType;
 
                                 function queryWithPromise(query, data){
                                     return new Promise(function(resolve, reject){
@@ -117,7 +157,7 @@ GUI.generateHtmlfromJson = function(data, button){
                                 var entries = queryWithPromise(query, {"userID": GUI.userid});
                                 entries.then(function(entries){
                                     var innerHtml = '';
-                                    innerHtml += "<br>"+fragments[fragment].dialogText+"<br>";
+                                    innerHtml += "<br>"+fragment.dialogText+"<br>";
                                     for (var entry in entries) {
                                         console.log("generating entry");
                                             innerHtml += '<label>';
@@ -160,18 +200,25 @@ GUI.generateHtmlfromJson = function(data, button){
         }
 }
 
-GUI.fillList = function(dataset) {
+GUI.gatherInputData = function(dataset) {
     var query = dataset.query;
     var content = dataset.content;
-    var checkboxes = content.getElementsByTagName('input');
+    var inputs = content.getElementsByTagName('input');
     var selection = [];
 
-    for (var i = 0; i < checkboxes.length; i++) {
-        var box = checkboxes[i];
+    for (var i = 0; i < inputs.length; i++) {
+        var box = inputs[i];
         var data = {};
+        data.attribute = inputs[i].parentNode.textContent; 
+        data.type = inputs[i].type;
         data.value = box.value;
         data.selected = box.checked;
         selection.push(data);
+    }
+
+    if(query == "send"){
+        console.log(dataset);
+        console.log(selection);
     }
 
     Modules.Dispatcher.query(query, {
