@@ -73,14 +73,18 @@ GUI.generateHtmlfromJson = function(data, button){
                     var fragment = fragments[frag];
                     switch (fragment.type) {
                         case "text":
+                            var paragraph = document.createElement('p');
                             var newContent = document.createTextNode(fragment.text);
-                            newDiv.appendChild(newContent);
+                            console.log(newContent);
+                            paragraph.style.width = "450px";
+                            paragraph.appendChild(newContent);
+                            newDiv.appendChild(paragraph);
                             break;
 
                         case "textarea":
                             var textAreaContainer = document.createElement('div');
                             var textArea = document.createElement('textarea');
-
+                            textAreaContainer.style.marginTop = "40px";
                             if(fragment.label){
                                 var labelTextarea = document.createElement("label");
                                 labelTextarea.innerHTML = (""+ fragment.label +': <br>\n');
@@ -97,6 +101,7 @@ GUI.generateHtmlfromJson = function(data, button){
                         case "input":
                             var textboxContainer = document.createElement('div');
                             var enclosingP = document.createElement('p');
+                            enclosingP.style.marginTop = "25px";
                             var textbox = document.createElement('input');
                             textboxContainer.style.marginRight = "10px";
                             textbox.style.marginLeft = "10px"; 
@@ -104,7 +109,7 @@ GUI.generateHtmlfromJson = function(data, button){
                             textbox.style.float = "right";
                             textbox.type = 'text';
                             textbox.style.boxSizing = "border-box";
-                            textbox.style.width = "60%";
+                            //textbox.style.width = "100%";
                             if(fragment.label){
                                 var label = document.createElement("label");
                                 label.innerHTML = (""+ fragment.label +': ');
@@ -156,7 +161,6 @@ GUI.generateHtmlfromJson = function(data, button){
                                     var innerHtml = '';
                                     innerHtml += "<br>"+fragment.dialogText+"<br>";
                                     for (var entry in entries) {
-                                        console.log("generating entry");
                                             innerHtml += '<label>';
                                             innerHtml += '<input type="'+listType+'" name="objects" value=' + entries[entry] + '>';
                                             innerHtml += entries[entry];
@@ -212,14 +216,20 @@ GUI.gatherInputData = function(dataset) {
         data.selected = box.checked;
         selection.push(data);
     }
+    if(query.substr(0,6) == "prompt"){
+        console.log(query);
+        var realQuery = query.substring(query.indexOf(")") + 1, query.length);
+        var dialogText = query.substring(query.indexOf("(")+1, query.indexOf(")"));
 
-    if(query == "send"){
-        console.log(dataset);
-        console.log(selection);
+        console.log('Dialog: '+dialogText);
+        console.log('RealQuery: '+realQuery);
+        var value = prompt(dialogText);
+
+        Modules.Dispatcher.query
+    }else{
+        Modules.Dispatcher.query(query, {
+                'userID': GUI.userid,
+                'selection': selection
+            });
     }
-
-    Modules.Dispatcher.query(query, {
-        'userID': GUI.userid,
-        'selection': selection
-    });
 }

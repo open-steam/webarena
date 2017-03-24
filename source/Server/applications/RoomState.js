@@ -34,6 +34,37 @@ RoomState.clientAppData = {
 						clickFunction:"warn",
 						type: "dialog",
 						title: "RoomState",
+						fragments: [{type: "text", text:'Wenn Sie einen Snapshot des Raumes abspeichern wollen drücken auf "Snapshot speichern". Um einen Snapshot zu laden, wählen Sie einen aus der Liste aus und drücken Sie auf "Snapshot laden".' },
+									{type: "buttons",
+
+											buttons: {	
+												button1: 	{type: "button",
+															buttonText: "Snapshot laden", 
+															query: "restoreState"},
+											 	button2: 	{type: "button",
+															buttonText: "Snapshot speichern", 
+															query: "prompt(Bitte Geben Sie einen Namen für den Snapshot ein)saveState"}
+											}
+									},
+
+									{type: "list", dialogText: "Zu ladenden Zustand auswählen",
+									 query: "getSavedStates",
+									 listType: "radio" }
+									]
+								}
+						};
+
+//Example of possible Dialog-Gui:
+/*
+hasGui: true, guiElements: {
+						//Creates the toolbar-button
+						buttonName: "RoomState", 
+						icon: "save", 
+						clickFunction:"warn",
+						type: "dialog",
+						title: "RoomState",
+
+						//Creates the fragments visisble in the dialogue
 						fragments: [{type: "text", text: "Dies ist ein String!"},
 									{type: "input", label:"Vorname"},
 									{type: "input", label:"Nachname"},
@@ -59,6 +90,7 @@ RoomState.clientAppData = {
 									]
 								}
 						};
+ */
 
 RoomState.init=function(name, theModules){
 	this.name=name;

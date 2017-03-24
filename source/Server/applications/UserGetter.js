@@ -12,7 +12,7 @@ var objectList={};
 var Modules={};
 
 UserGetter.clientAppData = {
-					hasGui: true, guiElements: {
+					hasGui: false, guiElements: {
 						buttonName: "UserGetter", 
 						icon: "arrow-left", 
 						clickFunction:"warn",
