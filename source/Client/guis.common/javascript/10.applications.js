@@ -51,7 +51,8 @@ GUI.initApplicationToolbarElements = function(data){
 /**
  * Generates the client-side HTML based on the JSON-data coming from the server
  *
- * @param  {JSON} data The JSON data that is delivered from the server
+ * @param  {JSON}   data The JSON data that is delivered from the server
+ * @param  {Button} the button object 
  *
  */
 GUI.generateHtmlfromJson = function(data, button){
@@ -59,8 +60,9 @@ GUI.generateHtmlfromJson = function(data, button){
     let type = data.type;
     let title = data.title;
     let dialog_width = "auto";
+    let buttons = {};
 
-
+    //parses through the fragments defined in data.fragments to construct the content DOM-Objectfor the dialogue
     let onClick = function(){
         var newDiv = document.createElement('div');
         switch (type) {
@@ -74,6 +76,7 @@ GUI.generateHtmlfromJson = function(data, button){
                             var newContent = document.createTextNode(fragment.text);
                             newDiv.appendChild(newContent);
                             break;
+
                         case "textarea":
                             var textAreaContainer = document.createElement('div');
                             var textArea = document.createElement('textarea');
@@ -114,15 +117,11 @@ GUI.generateHtmlfromJson = function(data, button){
                             break;
 
                         case "buttons":
-                            console.log("im here");
-                            var buttons = {};
                             for(let butt in fragment.buttons){
                                 let button = fragment.buttons[butt]
-                                console.log(butt);
                                 buttons[button.buttonText] =  {func: GUI.gatherInputData, query:button.query};
                                 //buttons[button.buttonText+'-query'] = button.query;
                             }
-                            console.log(buttons);
                             break;
 
                         case "arrange":
@@ -131,10 +130,8 @@ GUI.generateHtmlfromJson = function(data, button){
                             break;
 
                         case "list":
-                            console.log("generating list content");
                             var newList = document.createElement('div');
                             newList.id = "list-"+fragment;
-                            console.log("list-"+fragment);
 
                             newDiv.appendChild(newList);
                             var that = this;
