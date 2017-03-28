@@ -408,7 +408,6 @@ GUI.buildToolbar = function() {
 				$(btnPaste.getDOM()).bind("touchstart", clickPaste);
 				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
 				$(btnParent.getDOM()).bind("touchstart", clickParent);
-				$(btnSave.getDOM()).bind("touchstart", clickSaveState);
 				$(btnHome.getDOM()).bind("touchstart", clickHome);
 				$(btnLogout.getDOM()).bind("touchstart", clickLogout);
 			} else {
@@ -418,7 +417,6 @@ GUI.buildToolbar = function() {
 				$(undoButton).bind("mousedown", clickUndo);
 
 				$(parentButton).bind("mousedown", clickParent);
-				$(saveStateButton).bind("mousedown", clickSaveState);
 				$(homeButton).bind("mousedown", clickHome);
 				$(bugButton).bind("mousedown", clickBug);
 				$(logoutButton).bind("mousedown", clickLogout);
@@ -426,8 +424,6 @@ GUI.buildToolbar = function() {
 
 				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
 				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
-
-				$(btnSaveState.getDOM()).bind("mousedown", clickSaveState);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
 				$(btnLogout.getDOM()).bind("mousedown", clickLogout);
 			}

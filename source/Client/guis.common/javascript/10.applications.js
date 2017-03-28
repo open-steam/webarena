@@ -31,21 +31,25 @@ GUI.warn = function(){
  */
 GUI.initApplicationToolbarElements = function(data){
     let buttonName = data.buttonName;
+    console.log(data.buttonName);
     let icon = data.icon;
-
+    let element = document.getElementById(data.buttonName+'_button');
+    console.log(element);
     let temp = {};
     
-    temp[buttonName] = document.createElement("img");
-    $(temp[buttonName]).attr("src", "../../guis.common/images/"+icon+"_grey.png").attr("alt", "");
-    $(temp[buttonName]).attr("width", "24").attr("height", "24");
-    $(temp[buttonName]).attr("id", buttonName+"_button");
-    $(temp[buttonName]).addClass("sidebar_button");
-    $(temp[buttonName]).attr("title", GUI.translate(buttonName));
-    $(temp[buttonName]).attr("src", "../../guis.common/images/"+icon+".png").attr("alt", "");
-    numberOfIcons++;
-    $("#header > .header_right").prepend(temp[buttonName]); //add header icon
+    if(typeof(element) == 'undefined' || element == null) {
+        temp[buttonName] = document.createElement("img");
+        $(temp[buttonName]).attr("src", "../../guis.common/images/"+icon+"_grey.png").attr("alt", "");
+        $(temp[buttonName]).attr("width", "24").attr("height", "24");
+        $(temp[buttonName]).attr("id", buttonName+"_button");
+        $(temp[buttonName]).addClass("sidebar_button");
+        $(temp[buttonName]).attr("title", GUI.translate(buttonName));
+        $(temp[buttonName]).attr("src", "../../guis.common/images/"+icon+".png").attr("alt", "");
+        numberOfIcons++;
+        $("#header > .header_right").prepend(temp[buttonName]); //add header icon
 
-    GUI.generateHtmlfromJson(data, temp[buttonName]);
+        GUI.generateHtmlfromJson(data, temp[buttonName]);
+    }
 }
 
 /**
