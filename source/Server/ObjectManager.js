@@ -235,16 +235,15 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *
  **/
 ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
-    console.log(attributes);
-    console.log(callback);
 	var that = this;
 
     //TODO check for rights right here
     var proto = this.getPrototypeFor(type);
 
-    if(attributes.id){
+     if(!(attributes == "undefined" || attributes == null)){
         var objectID = attributes.id;
         delete attributes.id;
+        console.log(attributes);
     }
 
     //forced-id as parameter that allows creating an object with that id
