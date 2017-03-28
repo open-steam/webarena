@@ -20,7 +20,7 @@ ObjectChooser.register=function(type){
 	this.registerAttribute('Targetroom', {type: 'text', standard: 'undefined'});
 }
 
-ObjectChooser.isCreatable=true;
+ObjectChooser.isCreatable=false;
 
 ObjectChooser.contentURLOnly = false;
 

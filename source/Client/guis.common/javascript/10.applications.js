@@ -3,15 +3,18 @@ GUI.initApplications = function(){
     For the toolbar entries of the applications it is necessary to iterate through 
     the activated applications and then create the icons & functions according to their presets
      */
-    let appData = Modules.ApplicationManager.getAppData();
-    var self = this;
-    for(var app in appData){
-        if(appData[app]){
-            var object = JSON.parse(appData[app]);
-            if(object.hasGui){
-                self.initApplicationToolbarElements(object.guiElements);      
+
+    if(Modules.Config.enabledApplications.length > 0){
+        let appData = Modules.ApplicationManager.getAppData();
+        var self = this;
+        for(var app in appData){
+            if(appData[app]){
+                var object = JSON.parse(appData[app]);
+                if(object.hasGui){
+                    self.initApplicationToolbarElements(object.guiElements);      
+                }
             }
-        }
+        }    
     }
 }
 
