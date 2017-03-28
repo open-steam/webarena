@@ -243,7 +243,6 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
      if(!(attributes == "undefined" || attributes == null)){
         var objectID = attributes.id;
         delete attributes.id;
-        console.log(attributes);
     }
 
     //forced-id as parameter that allows creating an object with that id
@@ -257,14 +256,14 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
             if(key =="id"){
                 continue;
             }
-            object.set(key, value);
+            object.setAttribute(key, value);
         }
 
         object.setAttribute('name', type);
 
         for (var key in attributes) {
             var value = attributes[key];
-            object.set(key, value);
+            object.setAttribute(key, value);
         }
 
         if (content) {
@@ -282,9 +281,7 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 
         object.objectCreated(function(){
             callback(false, object);
-            console.log(callback);
         }); 
-        console.log(object);
         var data = object.context;
 
 		Modules.Applications.event('objectCreated',object,data);
