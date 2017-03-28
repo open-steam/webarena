@@ -256,14 +256,19 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
             if(key =="id"){
                 continue;
             }
-            object.setAttribute(key, value);
+            object.set(key, value);
         }
 
         object.setAttribute('name', type);
 
         for (var key in attributes) {
             var value = attributes[key];
-            object.setAttribute(key, value);
+            if(key == "mimeType"){
+                object.set(key, value);
+            }else{
+                object.setAttribute(key, value);
+            }
+            
         }
 
         if (content) {
@@ -279,9 +284,12 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
 		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 
-        object.objectCreated(function(){
-            callback(false, object);
-        }); 
+        if(callback){
+            object.objectCreated(function(){
+                callback(false, object);
+            }); 
+        }
+
         var data = object.context;
 
 		Modules.Applications.event('objectCreated',object,data);
