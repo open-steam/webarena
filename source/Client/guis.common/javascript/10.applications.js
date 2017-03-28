@@ -206,10 +206,12 @@ GUI.generateHtmlfromJson = function(data, button){
 }
 
 GUI.gatherInputData = function(dataset) {
+    console.log("gatherInputData");
     var query = dataset.query;
     var content = dataset.content;
     var inputs = content.getElementsByTagName('input');
     var selection = [];
+    console.log(inputs);
 
     for (var i = 0; i < inputs.length; i++) {
         var box = inputs[i];
@@ -220,16 +222,17 @@ GUI.gatherInputData = function(dataset) {
         data.selected = box.checked;
         selection.push(data);
     }
+
     if(query.substr(0,6) == "prompt"){
         console.log(query);
         var realQuery = query.substring(query.indexOf(")") + 1, query.length);
         var dialogText = query.substring(query.indexOf("(")+1, query.indexOf(")"));
-
-        console.log('Dialog: '+dialogText);
-        console.log('RealQuery: '+realQuery);
         var value = prompt(dialogText);
 
-        Modules.Dispatcher.query
+        Modules.Dispatcher.query(realQuery, {
+                'userID': GUI.userid,
+                'value': value
+            });
     }else{
         Modules.Dispatcher.query(query, {
                 'userID': GUI.userid,

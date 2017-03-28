@@ -107,7 +107,10 @@ RoomState.init=function(name, theModules){
  * 
  */
 RoomState.saveState=function(data){
-	var stateName  = data.stateName;
+	var stateName  = data.value;
+	if(!(data.stateName)){
+		data.stateName = data.value;
+	}
 	var self = this;
 	var inventoryState = [];
 	var contentState = {};
@@ -184,8 +187,6 @@ RoomState.updateSavedStatesArray = function(data){
 	self.getApplicationData(AppDataPath, "states", function callback(err, states){
 		if(states){
 			if(states[roomID]){
-				console.log(roomID);
-				console.log(states);
 				states[roomID].push(stateName);
 				self.saveApplicationData(AppDataPath, "states", states);	
 			}else{
@@ -258,7 +259,6 @@ RoomState.restoreState=function(data){
 				                    if(currentObject.hasContent){
 				                    		self.getContent(id, stateName, function(objectContent){
 				                    			if(!(_.isEqual(currentObject.content, objectContent))){
-				                    				console.log("objects are different");
 				                    				currentObject.setContent(objectContent);
 				                    			}
 				                    		});
@@ -322,7 +322,6 @@ RoomState.getContent = function(objectID, stateName, callback){
 RoomState.getSavedStates = function(object, data, callback){
 	this.getApplicationData(AppDataPath, "states", function(err, states){
 		if(!err){
-			console.log(states);
 			var statesForCurrentRoom = states[data.roomID];
 			callback(null, statesForCurrentRoom);
 		}else{
