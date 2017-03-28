@@ -236,6 +236,7 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  **/
 ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
     console.log(attributes);
+    console.log(callback);
 	var that = this;
 
     //TODO check for rights right here
@@ -279,14 +280,14 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
 		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
-		
-        if(callback){
-            object.objectCreated(function(){
-                callback(false, object);
-            }); 
-        }
 
+        object.objectCreated(function(){
+            callback(false, object);
+            console.log(callback);
+        }); 
+        console.log(object);
         var data = object.context;
+
 		Modules.Applications.event('objectCreated',object,data);
     });
 }
