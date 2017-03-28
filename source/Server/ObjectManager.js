@@ -235,7 +235,7 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *
  **/
 ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
-
+    console.log(attributes);
 	var that = this;
 
     //TODO check for rights right here

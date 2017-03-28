@@ -77,6 +77,7 @@ Dispatcher.registerCall('deleteObject', function(socket, data, responseID) {
 
 Dispatcher.registerCall('createObject', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
+    console.log(data);
     Modules.ObjectController.createObject(data, context, resultCallbackWrapper(socket, responseID));
 });
 

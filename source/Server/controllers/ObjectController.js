@@ -22,7 +22,8 @@ ObjectController.init = function(theModules){
 }
 
 ObjectController.createObject = function(data, context, callback){
-
+	console.log("Objectcontrollerdata:");
+	console.log(data.attributes);
     var roomID = data.roomID;
     var type = data.type;
     var attributes = data.attributes;
