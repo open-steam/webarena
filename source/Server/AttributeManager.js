@@ -8,6 +8,8 @@
 */
 
 
+var Modules={};
+var _ = require('underscore');
 /**
 *	Each object type get its attribute manager. This is the server side
 *   AttributeManager which mainly is responsible for channeling through
@@ -84,6 +86,11 @@ var AttributeManager=new function(){
 *	again filled in the registration procress.
 **/
 AttributeManager.init=function(proto){
+	
+	//on the initial init, the evenvironment is provided
+	if(proto.config) {
+		Modules=proto;
+	}
 
 	this.proto=proto;
 	this.attributes={};
@@ -169,15 +176,16 @@ AttributeManager.registerAttribute=function(attribute,data){
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced){
+AttributeManager.setAttribute=function(object, attribute, value, forced, notify){
 
 	var that = this;
-		
+	
 	// do nothing, if value has not changed
-	if (object.get(attribute)===value){
+	//previous solution with "===" did not work correctly
+	if (_.isEqual(object.get(attribute),value)){
         return false;
-    } 
-    
+    }
+
     if(attribute=='id'){
 		console.log('ERROR: TRIED TO SET ID');
 		console.trace();
@@ -222,9 +230,15 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	object.persist();
 	
 	//give the object a proper name if no name has been chosen so far
-	
 	if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
 		object.intelligentRename(attribute,value);
+	}
+	
+	//inform applications if notify is set to true or undefined
+	var data={};
+	data[attribute]=value;
+	if(notify || notify == undefined){
+		Modules.Applications.event('setAttribute',object,data);	
 	}
 	
 	return true;

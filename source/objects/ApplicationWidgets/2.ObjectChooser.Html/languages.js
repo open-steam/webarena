@@ -1,0 +1,4 @@
+ObjectChooser.setTranslations('de',{
+
+}
+);

@@ -50,8 +50,7 @@ Dispatcher.response=function(message){
 
 var responseCleanupTimeout=false;
 Dispatcher.counter=1;
-Dispatcher.query=function(queryName,queryArguments,responseFunction){
-	
+Dispatcher.query=function(queryName,queryArguments,responseFunction){	
 	this.counter++;
 	var random=this.counter+' '+(new Date().getTime()-1296055327011);
 	var responseID=queryName+random;

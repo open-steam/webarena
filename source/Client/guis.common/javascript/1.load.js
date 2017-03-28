@@ -41,7 +41,7 @@ GUI.loadGUI = function(step) {
 
 		if (!GUI.loaded) GUI.chat.init();
 		GUI.chat.clear(); //clear chats messages
-	
+
 		if (!GUI.loaded) GUI.sidebar.init(); //init sidebar
 
 
@@ -81,8 +81,7 @@ GUI.loadGUI = function(step) {
 		if (!GUI.loaded) GUI.initReturnKeyHandler(); //handle return key events to save changes during the inplace editing
 	
 		if (!GUI.loaded) GUI.initObjectCopyCutPasteHandlingByKeyboard(); //handle ctrl+c, ctrl+x, ctrl+v for copy, cut and paste objects //needs: ObjectManager.cutObjects, ObjectManager.copyObjects, ObjectManager.pasteObjets, ObjectManager.getSelected on keydown
-	
-		
+
 		/* toolbar */
 		if (!GUI.loaded) {
 			//needs: ObjectManager
@@ -125,6 +124,13 @@ GUI.loadGUI = function(step) {
 		GUI.hideLogin();
 		
 		GUI.drawAllLinks(); //draw all existing links in the new room
+
+
+		//Init applicationManager & load GUI-elements
+		Modules.ApplicationManager.applicationCall("getClientApplicationData", function(GuiElements){
+			Modules.ApplicationManager.setAppData(GuiElements);
+			GUI.initApplications();
+		});
 		
 		setTimeout(function(){
 		
@@ -133,10 +139,8 @@ GUI.loadGUI = function(step) {
 				console.log("Write permission: ",GUI.writePermission);
 				GUI.fadeoutActionElements();
 			});
-			
 		}, 200);
 
-	
 	} else {
 		console.error("unknown load step");
 	}

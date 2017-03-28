@@ -55,28 +55,21 @@ RoomController.roomExists = function (data, context, callback) {
 RoomController.listRooms = function (context,callback) {
     
     Modules.Connector.listRooms(context,function(error,rooms){
-    
-       var buildData=function(roomID,gotData){
-       	
-       	  Modules.ObjectManager.getRoom(roomID, context, false, function(roomObject){
-       	  	
-       	  	var returnData={}; 
-            returnData.id=roomObject.getAttribute('id');
-            returnData.name=roomObject.getAttribute('name');
-            
-            gotData(null,returnData);
-       	  	
-       	  });
-       	
-       }
-       
-       async.map(rooms, buildData, function(err, results){
-		    callback(err,results);
+        var buildData=function(roomID,gotData){
+
+   	        Modules.ObjectManager.getRoom(roomID, context, false, function(roomObject){
+           	  	var returnData={}; 
+                returnData.id=roomObject.getAttribute('id');
+                returnData.name=roomObject.getAttribute('name');
+                
+           	  	gotData(null,returnData);
+       	    });
+        }
+        async.map(rooms, buildData, function(err, results){
+    		callback(err, results);
 	   });
     	
     });
-
-    
 }
 
 //Information are sent to all clients in the same room

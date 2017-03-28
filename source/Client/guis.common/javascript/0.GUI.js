@@ -448,6 +448,15 @@ GUI.initObjectCopyCutPasteHandlingByKeyboard = function() {
 }
 
 
+GUI.elementSelectable = function (element){
+	switch(element.tagName){
+    	case 'INPUT':
+    	case 'BUTTON':
+    	case 'A':return false; break;
+    	default: return true;
+    }
+}
+
 /**
  * add event handler for object selection (based on clicked position and layers)
  */
@@ -572,7 +581,8 @@ GUI.initMouseHandler = function() {
 					}
                 }
 
-				clickedObject.click(event);
+			clickedObject.click(event);
+				
 			} else {
 				/* clicked on background */
                 event.preventDefault();
@@ -877,10 +887,8 @@ GUI.simpleSelectionDialog=function(dialogData){
  * }
  *
  */
-GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
-
-    GUI.blockKeyEvents = true;
-
+GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {    
+	GUI.blockKeyEvents = true;
     if (buttons == undefined) {
 
         var buttons = {};
@@ -898,12 +906,17 @@ GUI.dialog = function(heading, content, buttons, dialogWidth, passThrough) {
     var buttons2 = {};
 
     $.each(buttons, function(title, callback) {
-
         buttons2[title] = function() {
-            callback(dialogContent);
+        	console.log(title);
+        	if(buttons[title].query){
+        		var data = {content: dialogContent, query: buttons[title].query};
+        		console.log(data);
+            	callback.func(data);
+        	}else{
+        		callback(dialogContent);
+        	}
             $(this).dialog("close");
         }
-
     });
 
     if (dialogWidth == undefined) {

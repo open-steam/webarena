@@ -35,8 +35,30 @@ SocketServer.init = function (theModules) {
 
 }
 
+/**
+ * Send request to client, add one time response listener.
+ *
+ * @param socket
+ * @param name
+ * @param data
+ * @param callback
+ */
+SocketServer.askSocket = function (socket, name, data, callback){
+    var requestID = uuid.v4();
+    data.responseID = requestID;
+    socket.once('response::' + name +'::' + requestID, function(responseData){
+        callback(responseData);
+    });
+
+    this.sendToSocket(socket, name, data);
+}
 
 SocketServer.sendToSocket = function (socket, name, data) {
+	if (!socket) {
+		console.log('ERROR: No socket!');
+		console.trace();
+		return;
+	}
 	socket.emit('message', {type: 'call', 'name': name, 'data': data});
 }
 

@@ -114,7 +114,6 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     obj.inRoom = roomID;
     obj.attributeManager.set(objectData.id, 'inRoom', roomID);
 
-    
     obj.set('type', type);
 
     // runtimeData is an array that containts variables
@@ -191,19 +190,15 @@ ObjectManager.getObjects = function(roomID, context, callback) {
         /* sync. */
 
         var objectsData = Modules.Connector.getInventory(roomID, context);
-
         for (var i in objectsData) {
             var objectData = objectsData[i];
-
             var object = buildObjectFromObjectData(objectData, roomID);
 
             object.context = context;
-
             inventory.push(object);
         }
 
         console.log('>>>> Synchronous return in getObjects');
-
         return inventory;
 
     } else {
@@ -222,7 +217,6 @@ ObjectManager.getObjects = function(roomID, context, callback) {
             }
 
             callback(inventory);
-
         });
     }
 }
@@ -245,24 +239,32 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
 	var that = this;
 
     //TODO check for rights right here
-
     var proto = this.getPrototypeFor(type);
 
-    Modules.Connector.createObject(roomID, type, proto.standardData, context, function(id) {
+    if(attributes.id){
+        var objectID = attributes.id;
+        delete attributes.id;
+    }
+
+    //forced-id as parameter that allows creating an object with that id
+    Modules.Connector.createObject(objectID, roomID, type, proto.standardData, context, function(id) {
         var object = ObjectManager.getObject(roomID, id, context);
 
         //set default attributes
         var defaultAttributes = object.standardData;
         for (var key in defaultAttributes) {
             var value = defaultAttributes[key];
-            object.setAttribute(key, value);
+            if(key =="id"){
+                continue;
+            }
+            object.set(key, value);
         }
 
         object.setAttribute('name', type);
 
         for (var key in attributes) {
             var value = attributes[key];
-            object.setAttribute(key, value);
+            object.set(key, value);
         }
 
         if (content) {
@@ -278,9 +280,14 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
 		Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 		
-		object.objectCreated();
-		
-        callback(false, object);
+        if(callback){
+            object.objectCreated(function(){
+                callback(false, object);
+            }); 
+        }
+
+        var data = object.context;
+		Modules.Applications.event('objectCreated',object,data);
     });
 }
 
@@ -302,10 +309,11 @@ ObjectManager.getEnabledObjectTypes = function() {
         console.log('No object categories enabled in configuration file!');
     }
     categories.push('Base');
+    categories.push('ApplicationWidgets');
 
     for (var i in configCategories) {
         var temp = configCategories[i];
-        if (temp !== 'Base')
+        if (temp !== 'Base' && temp !== 'ApplicationWidgets')
             categories.push(temp);
     }
 
@@ -351,7 +359,6 @@ ObjectManager.getEnabledObjectTypes = function() {
                 }
                 result.push({'category': category, 'filename': filename});
             });
-
         }
     }
 
@@ -864,7 +871,8 @@ ObjectManager.deleteObject = function(data, context, callback) {
                         that.history.add(new Date().getTime(), data.userId, historyEntry);
 						Modules.RoomController.informAllInRoom({"room": 'trash', 'message': {'change': 'change'}}, null); 
                     });
-
+                    var newdata = '';
+                    Modules.Applications.event('objectDeleted',object,newdata);
                 });
 
             } else {

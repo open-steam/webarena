@@ -7,56 +7,57 @@ var popover_positionOffsetY = 20;
 var numberOfIcons = 0;
 
 
-GUI.initToolbar = function (){
-			GUI.buildToolbar();
+GUI.initToolbar = function() {
+	GUI.buildToolbar();
 }
+
 /**
  * Init. the toolbar
  */
 GUI.buildToolbar = function() {
 
-	$(window).resize(function() {		
+	$(window).resize(function() {
 		GUI.resizeToolbar();
 	});
 
-    /* insert icons for creating new objects: */
+	/* insert icons for creating new objects: */
 
-    var types = {};
-	
-	
-    /* get types of objects */
-    $.each(ObjectManager.getTypes(), function(key, object) {
-
-        if (object.isCreatable) {
-
-            if (object.category == undefined) {
-                object.category = "default";
-            }
-
-            if (types[object.category] == undefined) {
-                types[object.category] = [];
-            }
-
-            types[object.category].push(object);
-
-        }
-
-    });
+	var types = {};
 
 
-    var toolbar_locked_elements = {};
+	/* get types of objects */
+	$.each(ObjectManager.getTypes(), function(key, object) {
 
-    /* build categories for each type */
-    $.each(types, function(key, object) {
+		if (object.isCreatable) {
+
+			if (object.category == undefined) {
+				object.category = "default";
+			}
+
+			if (types[object.category] == undefined) {
+				types[object.category] = [];
+			}
+
+			types[object.category].push(object);
+
+		}
+
+	});
+
+
+	var toolbar_locked_elements = {};
+
+	/* build categories for each type */
+	$.each(types, function(key, object) {
 		numberOfIcons++;
-	
-        var newCategoryIcon = document.createElement("img");
-        $(newCategoryIcon).attr("src", "/categoryIcons/" + object[0].category).attr("alt", "");
-        $(newCategoryIcon).attr("width", "24").attr("height", "24");
 
-        $("#header>div.header_left").append(newCategoryIcon);
+		var newCategoryIcon = document.createElement("img");
+		$(newCategoryIcon).attr("src", "/categoryIcons/" + object[0].category).attr("alt", "");
+		$(newCategoryIcon).attr("width", "24").attr("height", "24");
 
-        //if (object.length > 1) { //more than one object in the category
+		$("#header>div.header_left").append(newCategoryIcon);
+
+		//if (object.length > 1) { //more than one object in the category
 
 		$(newCategoryIcon).attr("title", GUI.translate(object[0].category));
 
@@ -90,23 +91,19 @@ GUI.buildToolbar = function() {
 								GUI.startNoAnimationTimer();
 								proto.create(attributes);
 								dragging = false;
-							}
-							else {
-								if(GUI.isTouchDevice){
+							} else {
+								if (GUI.isTouchDevice) {
 									proto.create(attributes);
-								}
-								else{
-									if (object.type == 'Arrow' || object.type == 'Line'){
+								} else {
+									if (object.type == 'Arrow' || object.type == 'Line') {
 										GUI.setCursorText(GUI.translate("Choose " + object.type + "-Startpoint"));
-									}
-									else {
-										$("body").css('cursor', 'url(/objectIcons/'+object.type+'), auto');
-										GUI.creatingObject=object.type;
+									} else {
+										$("body").css('cursor', 'url(/objectIcons/' + object.type + '), auto');
+										GUI.creatingObject = object.type;
 									}
 								}
 							}
-						}
-						else {
+						} else {
 							alert(GUI.translate("You cannot create objects in presentation mode"));
 						}
 					}
@@ -362,14 +359,14 @@ GUI.buildToolbar = function() {
 				};
 
 				var feedbackDialog = GUI.dialog(
-							"Feedback",
-							content,
-							dialog_buttons,
-							dialog_width
-							);
-				
-            };
-			
+					"Feedback",
+					content,
+					dialog_buttons,
+					dialog_width
+				);
+
+			};
+
 			/*add logout button*/
 			var logoutButton = document.createElement("img");
 			$(logoutButton).attr("src", "../../guis.common/images/log_out_grey.png").attr("alt", "");
@@ -381,24 +378,24 @@ GUI.buildToolbar = function() {
 			$(logoutButton).attr("src", "../../guis.common/images/log_out.png").attr("alt", "");
 			numberOfIcons++;
 			$("#header > .header_right").append(logoutButton); //add header icon
-            var clickLogout = function() { //click handler
+			var clickLogout = function() { //click handler
 				//alert("logout action");
-				if(Modules.Config.logoutURL == "")
-                	location.replace(location.origin);
+				if (Modules.Config.logoutURL == "")
+					location.replace(location.origin);
 				else
 					location.replace(Modules.Config.logoutURL);
-                popover.hide();
+				popover.hide();
 				GUI.deleteUserData();
-				
-            };
+
+			};
 
 
-            if (GUI.isTouchDevice) {
+			if (GUI.isTouchDevice) {
 				//header:
-				
-					$(pasteButton).bind("touchstart", clickPaste);
-					$(undoButton).bind("touchstart", clickUndo);
-				
+
+				$(pasteButton).bind("touchstart", clickPaste);
+				$(undoButton).bind("touchstart", clickUndo);
+
 				$(parentButton).bind("touchstart", clickParent);
 				$(homeButton).bind("touchstart", clickHome);
 				$(bugButton).bind("touchstart", clickBug);
@@ -408,57 +405,55 @@ GUI.buildToolbar = function() {
 				$(btnUndo.getDOM()).bind("touchstart", clickUndo);
 				$(btnParent.getDOM()).bind("touchstart", clickParent);
 				$(btnHome.getDOM()).bind("touchstart", clickHome);
-                $(btnLogout.getDOM()).bind("touchstart", clickLogout);
-            } else {
+				$(btnLogout.getDOM()).bind("touchstart", clickLogout);
+			} else {
 				//header:
-				
-					$(pasteButton).bind("mousedown", clickPaste);
-					$(undoButton).bind("mousedown", clickUndo);
-				
+
+				$(pasteButton).bind("mousedown", clickPaste);
+				$(undoButton).bind("mousedown", clickUndo);
+
 				$(parentButton).bind("mousedown", clickParent);
 				$(homeButton).bind("mousedown", clickHome);
 				$(bugButton).bind("mousedown", clickBug);
 				$(logoutButton).bind("mousedown", clickLogout);
 				//menu:
-				
-					$(btnPaste.getDOM()).bind("mousedown", clickPaste);
-					$(btnUndo.getDOM()).bind("mousedown", clickUndo);
-				
-				$(btnParent.getDOM()).bind("mousedown", clickParent);
+
+				$(btnPaste.getDOM()).bind("mousedown", clickPaste);
+				$(btnUndo.getDOM()).bind("mousedown", clickUndo);
 				$(btnHome.getDOM()).bind("mousedown", clickHome);
-                $(btnLogout.getDOM()).bind("mousedown", clickLogout);
-            }
-        }
-    });
-
-
-    /* add bug report toggle */
-/*    if (!Modules.Config.presentationMode && Modules.config.bugReport) {
-		var bugButton = document.createElement("img");
-		$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
-		$(bugButton).attr("width", "24").attr("height", "24");
-
-		$(bugButton).attr("id", "bug_button");
-		$(bugButton).addClass("sidebar_button header_tab");
-
-		$(bugButton).attr("title", GUI.translate("Bugreport"));
-
-		$("#header > .header_tabs_sidebar").append(bugButton);
-
-		var click = function() {
-			GUI.sidebar.openPage("bug", bugButton);
+				$(btnLogout.getDOM()).bind("mousedown", clickLogout);
+			}
 		}
-
-		if (GUI.isTouchDevice) {
-			$(bugButton).bind("touchstart", click);
-		} else {
-			$(bugButton).bind("mousedown", click);
-		}
-    }*/
+	});
 
 
-    /* add chat toggle */
-    if (!Modules.Config.presentationMode && Modules.config.chat) {
+	/* add bug report toggle */
+	/*    if (!Modules.Config.presentationMode && Modules.config.bugReport) {
+			var bugButton = document.createElement("img");
+			$(bugButton).attr("src", "../../guis.common/images/bugreport.png").attr("alt", "");
+			$(bugButton).attr("width", "24").attr("height", "24");
+
+			$(bugButton).attr("id", "bug_button");
+			$(bugButton).addClass("sidebar_button header_tab");
+
+			$(bugButton).attr("title", GUI.translate("Bugreport"));
+
+			$("#header > .header_tabs_sidebar").append(bugButton);
+
+			var click = function() {
+				GUI.sidebar.openPage("bug", bugButton);
+			}
+
+			if (GUI.isTouchDevice) {
+				$(bugButton).bind("touchstart", click);
+			} else {
+				$(bugButton).bind("mousedown", click);
+			}
+	    }*/
+
+
+	/* add chat toggle */
+	if (!Modules.Config.presentationMode && Modules.config.chat) {
 		var chatButton = document.createElement("img");
 		$(chatButton).attr("src", "../../guis.common/images/chat.png").attr("alt", "");
 		$(chatButton).attr("width", "24").attr("height", "24");
@@ -494,146 +489,172 @@ GUI.buildToolbar = function() {
 			$(chatButton).bind("mousedown", click);
 			$(chatNotifier).bind("mousedown", click);
 		}
-    }
+	}
 
-    /* add inspector toggle */
-    if (!Modules.Config.presentationMode) {
+	/* add inspector toggle */
+	if (!Modules.Config.presentationMode) {
 
-        var inspectorButton = document.createElement("img");
-        $(inspectorButton).attr("src", "../../guis.common/images/inspector.png").attr("alt", "");
-        $(inspectorButton).attr("width", "24").attr("height", "24");
+		var inspectorButton = document.createElement("img");
+		$(inspectorButton).attr("src", "../../guis.common/images/inspector.png").attr("alt", "");
+		$(inspectorButton).attr("width", "24").attr("height", "24");
 
-        $(inspectorButton).attr("id", "inspector_button");
-        $(inspectorButton).addClass("sidebar_button header_tab");
+		$(inspectorButton).attr("id", "inspector_button");
+		$(inspectorButton).addClass("sidebar_button header_tab");
 
-        $(inspectorButton).attr("title", GUI.translate("Object inspector"));
+		$(inspectorButton).attr("title", GUI.translate("Object inspector"));
 
-        var click = function() {
-            GUI.sidebar.openPage("inspector", inspectorButton);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("inspector", inspectorButton);
+		}
 
-        if (GUI.isTouchDevice) {
-            $(inspectorButton).bind("touchstart", click);
-        } else {
-            $(inspectorButton).bind("mousedown", click);
-        }
+		if (GUI.isTouchDevice) {
+			$(inspectorButton).bind("touchstart", click);
+		} else {
+			$(inspectorButton).bind("mousedown", click);
+		}
 
-        $("#header > .header_tabs_sidebar").append(inspectorButton);
+		$("#header > .header_tabs_sidebar").append(inspectorButton);
 
-        GUI.sidebar.openPage("inspector", inspectorButton);
+		GUI.sidebar.openPage("inspector", inspectorButton);
 
-        if (!Modules.Config.showSidebarbydefault) {
-            GUI.sidebar.closeSidebar(false);
-        }
+		if (!Modules.Config.showSidebarbydefault) {
+			GUI.sidebar.closeSidebar(false);
+		}
 
-    }
+	}
 
-	
+
 	/* add trashbasket toggle */
-    if (!Modules.Config.presentationMode && Modules.config.trash) {
-	
-        var trashButton = document.createElement("img");
-        $(trashButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
-        $(trashButton).attr("width", "24").attr("height", "24");
+	if (!Modules.Config.presentationMode && Modules.config.trash) {
 
-        $(trashButton).attr("id", "trash_button");
-        $(trashButton).addClass("sidebar_button header_tab");
+		var trashButton = document.createElement("img");
+		$(trashButton).attr("src", "../../guis.common/images/trash.png").attr("alt", "");
+		$(trashButton).attr("width", "24").attr("height", "24");
 
-        $(trashButton).attr("title", GUI.translate("Trash basket"));
+		$(trashButton).attr("id", "trash_button");
+		$(trashButton).addClass("sidebar_button header_tab");
 
-        var click = function() {
-            GUI.sidebar.openPage("trashbasket", trashButton);
-        }
+		$(trashButton).attr("title", GUI.translate("Trash basket"));
 
-        if (GUI.isTouchDevice) {
-            $(trashButton).bind("touchstart", click);
-        } else {
-            $(trashButton).bind("mousedown", click);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("trashbasket", trashButton);
+		}
 
-        $("#header > .header_tabs_sidebar").append(trashButton);
+		if (GUI.isTouchDevice) {
+			$(trashButton).bind("touchstart", click);
+		} else {
+			$(trashButton).bind("mousedown", click);
+		}
 
-    }
-	
+		$("#header > .header_tabs_sidebar").append(trashButton);
+
+	}
+
 	/* add ObjectList toggle */
-    if (!Modules.Config.presentationMode && Modules.config.objectlist) {
-	
-        var objectlistButton = document.createElement("img");
-        $(objectlistButton).attr("src", "../../guis.common/images/objectlist.png").attr("alt", "");
-        $(objectlistButton).attr("width", "24").attr("height", "24");
+	if (!Modules.Config.presentationMode && Modules.config.objectlist) {
 
-        $(objectlistButton).attr("id", "trash_button");
-        $(objectlistButton).addClass("sidebar_button header_tab");
+		var objectlistButton = document.createElement("img");
+		$(objectlistButton).attr("src", "../../guis.common/images/objectlist.png").attr("alt", "");
+		$(objectlistButton).attr("width", "24").attr("height", "24");
 
-        $(objectlistButton).attr("title", GUI.translate("ObjectList"));
+		$(objectlistButton).attr("id", "trash_button");
+		$(objectlistButton).addClass("sidebar_button header_tab");
 
-        var click = function() {
-            GUI.sidebar.openPage("objectList", objectlistButton);
-        }
+		$(objectlistButton).attr("title", GUI.translate("ObjectList"));
 
-        if (GUI.isTouchDevice) {
-            $(objectlistButton).bind("touchstart", click);
-        } else {
-            $(objectlistButton).bind("mousedown", click);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("objectList", objectlistButton);
+		}
 
-        $("#header > .header_tabs_sidebar").append(objectlistButton);
+		if (GUI.isTouchDevice) {
+			$(objectlistButton).bind("touchstart", click);
+		} else {
+			$(objectlistButton).bind("mousedown", click);
+		}
 
-    }
-	
+		$("#header > .header_tabs_sidebar").append(objectlistButton);
+
+	}
+
 
 	/* add cloud toggle */
-    if (!Modules.Config.presentationMode && Modules.config.cloud) {
+	if (!Modules.Config.presentationMode && Modules.config.cloud) {
 
-        var cloudButton = document.createElement("img");
-        $(cloudButton).attr("src", "../../guis.common/images/cloud.png").attr("alt", "");
-        $(cloudButton).attr("width", "24").attr("height", "24");
+		var cloudButton = document.createElement("img");
+		$(cloudButton).attr("src", "../../guis.common/images/cloud.png").attr("alt", "");
+		$(cloudButton).attr("width", "24").attr("height", "24");
 
-        $(cloudButton).attr("id", "cloud_button");
-        $(cloudButton).addClass("sidebar_button header_tab");
+		$(cloudButton).attr("id", "cloud_button");
+		$(cloudButton).addClass("sidebar_button header_tab");
 
-        $(cloudButton).attr("title", GUI.translate("Cloud"));
+		$(cloudButton).attr("title", GUI.translate("Cloud"));
 
-        var click = function() {
-            GUI.sidebar.openPage("cloud", cloudButton);
-        }
+		var click = function() {
+			GUI.sidebar.openPage("cloud", cloudButton);
+		}
 
-        if (GUI.isTouchDevice) {
-            $(cloudButton).bind("touchstart", click);
-        } else {
-            $(cloudButton).bind("mousedown", click);
-        }
+		if (GUI.isTouchDevice) {
+			$(cloudButton).bind("touchstart", click);
+		} else {
+			$(cloudButton).bind("mousedown", click);
+		}
 
-        $("#header > .header_tabs_sidebar").append(cloudButton);
+		$("#header > .header_tabs_sidebar").append(cloudButton);
 
-    }
-	
-    $("#header_toggle_sidebar_hide").on("click", function() {
-        $(".jPopover").hide();
-        GUI.sidebar.closeSidebar(true);
-    });
+	}
 
-    $("#header_toggle_sidebar_show").on("click", function() {
-        $(".jPopover").hide();
-        GUI.sidebar.openSidebar();
-    });
-	
+	/* add recent changes toggle */
+	if (!Modules.Config.presentationMode && Modules.config.recentChanges) {
+
+		var recentChangesButton = document.createElement("img");
+		$(recentChangesButton).attr("src", "../../guis.common/images/clock.png").attr("alt", "");
+		$(recentChangesButton).attr("width", "24").attr("height", "24");
+
+		$(recentChangesButton).attr("id", "recentChanges_button");
+		$(recentChangesButton).addClass("sidebar_button header_tab");
+
+		$(recentChangesButton).attr("title", GUI.translate("Recent Changes"));
+
+		var click = function() {
+			GUI.sidebar.openPage("recentChanges", recentChangesButton);
+		}
+
+		if (GUI.isTouchDevice) {
+			$(recentChangesButton).bind("touchstart", click);
+		} else {
+			$(recentChangesButton).bind("mousedown", click);
+		}
+
+		$("#header > .header_tabs_sidebar").append(recentChangesButton);
+
+	}
+
+	$("#header_toggle_sidebar_hide").on("click", function() {
+		$(".jPopover").hide();
+		GUI.sidebar.closeSidebar(true);
+	});
+
+	$("#header_toggle_sidebar_show").on("click", function() {
+		$(".jPopover").hide();
+		GUI.sidebar.openSidebar();
+	});
+
 }
 
 
 /**
  * add a notification if a user entered or left the room or if an object was deleted or restored
  */
-GUI.showNotification = function(add, icon){
-	
+GUI.showNotification = function(add, icon) {
+
 	var button = "";
 	var IconEnter = "";
 	var IconLeft = "";
 	var TextEnter = "";
 	var TextLeft = "";
 	var title = "";
-	if(icon == "chat"){
-		if(GUI.sidebar.currentElement == "chat") return;
+	if (icon == "chat") {
+		if (GUI.sidebar.currentElement == "chat") return;
 		button = "chat_button";
 		IconEnter = "newUser.png";
 		IconLeft = "lostUser.png";
@@ -641,8 +662,8 @@ GUI.showNotification = function(add, icon){
 		TextLeft = GUI.translate("A user left this room");
 		title = GUI.translate("Chat");
 	}
-	if(icon == "trash"){
-		if(GUI.sidebar.currentElement == "trash") return;
+	if (icon == "trash") {
+		if (GUI.sidebar.currentElement == "trash") return;
 		button = "trash_button";
 		IconEnter = "trashadd.png";
 		IconLeft = "trashleft.png";
@@ -660,7 +681,7 @@ GUI.showNotification = function(add, icon){
 		$("#"+button).attr("title", TextLeft);
 	}
     */
-    
+
 	var counter = 0;
 }
 
@@ -668,34 +689,31 @@ GUI.showNotification = function(add, icon){
 /**
  * decides which icons are shown in the toolbar, depending on the free space  
  */
-GUI.resizeToolbar = function(){
+GUI.resizeToolbar = function() {
 
-		var space = $(window).width();
-		space = space - (numberOfIcons*44); //subtract icons
+	var space = $(window).width();
+	space = space - (numberOfIcons * 44); //subtract icons
 
-		if(space < -10){
-			if(GUI.sidebar.open){
-				GUI.sidebar.saveStateAndHide();
-			}
+	if (space < -10) {
+		if (GUI.sidebar.open) {
+			GUI.sidebar.saveStateAndHide();
+		}
+		$("#header_toggle_sidebar_show").hide();
+	} else {
+		if (GUI.sidebar.open) {
+			$("#header_toggle_sidebar_hide").show();
 			$("#header_toggle_sidebar_show").hide();
+		} else {
+			$("#header_toggle_sidebar_show").show();
+			$("#header_toggle_sidebar_hide").hide();
 		}
-		else{
-			if(GUI.sidebar.open){
-				$("#header_toggle_sidebar_hide").show();
-				$("#header_toggle_sidebar_show").hide();
-			}
-			else{
-				$("#header_toggle_sidebar_show").show();
-				$("#header_toggle_sidebar_hide").hide();
-			}
-		}
-		if((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)){
-			$("#header > .header_right > img").hide();
-			$("#menu_button").show();
-		}
-		else{
-			$("#header > .header_right > img").show();
-			$("#menu_button").hide();
-		}
-	
+	}
+	if ((space < 270 && GUI.sidebar.open) || (space < 40 && !GUI.sidebar.open)) {
+		$("#header > .header_right > img").hide();
+		$("#menu_button").show();
+	} else {
+		$("#header > .header_right > img").show();
+		$("#menu_button").hide();
+	}
+
 }
