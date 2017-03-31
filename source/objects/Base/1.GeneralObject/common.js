@@ -45,6 +45,8 @@ GeneralObject.register = function(type) {
     
     this.standardData = new Modules.DataSet; // DataSet is a set of very basic attributes like x and y
     
+    console.log("im here trying to register the type");
+    console.log(type);
     ObjectManager.registerType(type, this); // Register this object type on the object manager.
                                             // (on ther server as well as on the client)
     
@@ -197,14 +199,15 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
     
-
-
-
-
     var r = Modules.Helper.getRandom(0, 200);
     var g = Modules.Helper.getRandom(0, 200);
     var b = Modules.Helper.getRandom(0, 200);
     var width = 100;
+
+    this.standardData.fillcolor = 'rgb(' + r + ',' + g + ',' + b + ')';
+    this.standardData.width = width;
+    this.standardData.height = width;
+
 
     this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
     this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
@@ -241,14 +244,6 @@ GeneralObject.toString = function() {
 }
 
 /**
-
-
-
-
-
-
-
-
 
 * tryToBlock
 *

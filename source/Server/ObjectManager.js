@@ -51,6 +51,11 @@ ObjectManager.remove = function(obj) {
  *  gets the prototype (the class) of an object.
  */
 ObjectManager.getPrototype = function(objType) {
+    console.log("I CAME FROM WHERE?!? @ L.54 ObjectManager");
+    console.log(objType);
+    console.log(prototypes);
+    console.log(prototypes[objType]);
+
     if (prototypes[objType])
         return prototypes[objType];
         
@@ -63,7 +68,7 @@ ObjectManager.getPrototype = function(objType) {
         
     if (prototypes['GeneralObject'])
         return prototypes['GeneralObject'];
-    
+
     console.log('ERROR: There is no prototype for GeneralObject registred. I should never be here!');
     
     return null;
@@ -233,8 +238,8 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *  creates a new object
  *
  **/
-ObjectManager.createObject = function(roomID, type, attributes, content, context, callback)     
-var that = this;
+ObjectManager.createObject = function(roomID, type, attributes, content, context, callback){     
+    var that = this;
 
 
     //TODO check for rights right here
@@ -391,8 +396,6 @@ ObjectManager.init = function(theModules) {
         var fileinfo = filename.split('.');
         var objName = fileinfo[1];
         var filebase = __dirname + '/../objects/' + category + '/' + filename;
-
-        var fs=require('fs');
         
         try {
             
