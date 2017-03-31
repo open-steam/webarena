@@ -8,8 +8,8 @@
 
 "use strict";
 
-var fs = require('fs');
-var _ = require('lodash');
+var fs = require("fs");
+var _ = require("lodash");
 var async = require("async");
 
 var Modules = false;
@@ -21,7 +21,7 @@ ObjectManager.isServer = true;
 ObjectManager.history = require("./HistoryTracker.js").HistoryTracker(100);
 
 ObjectManager.toString = function() {
-    return 'ObjectManager (server)';
+    return "ObjectManager (server)";
 }
 
 /**
@@ -41,7 +41,7 @@ ObjectManager.registerType = function(type, constr) {
  */
 ObjectManager.remove = function(obj) {
     Modules.Connector.remove(obj.inRoom, obj.id, obj.context);
-    obj.updateClients('objectDelete');
+    obj.updateClients("objectDelete");
     
 }
 
@@ -51,11 +51,6 @@ ObjectManager.remove = function(obj) {
  *  gets the prototype (the class) of an object.
  */
 ObjectManager.getPrototype = function(objType) {
-    console.log("I CAME FROM WHERE?!? @ L.54 ObjectManager");
-    console.log(objType);
-    console.log(prototypes);
-    console.log(prototypes[objType]);
-
     if (prototypes[objType])
         return prototypes[objType];
         
@@ -100,7 +95,6 @@ function buildObjectFromObjectData(objectData, roomID, type) {
     var type = type || objectData.type;
 
     // get the object's prototype
-
     var proto = ObjectManager.getPrototypeFor(type);
 
     // build a new object
@@ -382,14 +376,12 @@ ObjectManager.getEnabledObjectTypes = function() {
  *  initializes the ObjectManager
  **/
 ObjectManager.init = function(theModules) {
-    var that = this;
     Modules = theModules;
 
     //go through all objects, build its client code (the code for the client side)
     //register the object types.
 
     var processFunction = function(data) {
-
         var filename = data.filename;
         var category = data.category;
         
@@ -398,7 +390,6 @@ ObjectManager.init = function(theModules) {
         var filebase = __dirname + '/../objects/' + category + '/' + filename;
         
         try {
-            
             var stat=fs.statSync(filebase + '/server.js');
             var obj = require(filebase + '/server.js');
             obj.ObjectManager = Modules.ObjectManager;
@@ -414,6 +405,7 @@ ObjectManager.init = function(theModules) {
         catch (err){
             if(err.code == 'ENOENT') {
                 //likely an empty folder
+                console.log(err);
             } else {
                 console.log('ERROR: cannot load server.js for '+objName);
             }
@@ -499,7 +491,7 @@ ObjectManager.undo = function(data, context, callback) {
         callback(null, undoMessage);
 
     }
-};
+}
 
 /**
  *  getRoom

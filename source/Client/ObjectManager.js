@@ -32,10 +32,10 @@ ObjectManager.getPrototype = function(objType) {
     var prototypes = this.prototypes;
     if (prototypes[objType])
         return prototypes[objType];
-    if (prototypes['UnknownObject'])
-        return prototypes['UnknownObject'];
-    if (prototypes['GeneralObject'])
-        return prototypes['GeneralObject'];
+    if (prototypes.UnknownObject)
+        return prototypes.UnknownObject;
+    if (prototypes.GeneralObject)
+        return prototypes.GeneralObject;
     return;
 }
 
@@ -47,14 +47,23 @@ ObjectManager.getObject = function(objectID) {
         	if(temp.id==objectID) return this.currentRoom;
         }
 
-        if (ObjectManager.objects[objectID] != undefined) {
+        if (ObjectManager.objects[objectID] !== undefined) {
             return ObjectManager.objects[objectID];
         }
     
     return undefined;
 }
 
-ObjectManager.getObjectByName = function(name) {    var objects = ObjectManager.getObjects();    for (var i in objects) {        var object = objects[i];        if (object.getAttribute('name') == name)            return object;    }}
+ObjectManager.getObjectByName = function(name) {
+    var objects = ObjectManager.getObjects();
+
+    for (var i in objects) {
+        var object = objects[i];
+
+        if (object.getAttribute('name') == name)
+            return object;
+    }
+}
 
 ObjectManager.buildObject = function(type, attributes) {
 	
@@ -944,8 +953,15 @@ ObjectManager.moveObjectBetweenRooms = function(fromRoom, toRoom, cut) {
     }
 }
 
-ObjectManager.repositionObjects = function(room) {
-	    //create array and push all objects    var requestData = {};    requestData.room = room.id;    Modules.Dispatcher.query('repositionObjects', requestData, function() {           GUI.deselectAllObjects();    });}
+ObjectManager.repositionObjects = function(room) {
+	
+    //create array and push all objects
+    var requestData = {};
+    requestData.room = room.id;
+    Modules.Dispatcher.query('repositionObjects', requestData, function() {  
+         GUI.deselectAllObjects();
+    });
+}
 
 
 

@@ -14,14 +14,13 @@
 
 // The server side defintion of the object extends the common parts
 
-var theObject=Object.create(require('./common.js'));
+var theObject=Object.create(require("./common.js"));
 
 // The Modules variable provides access to server modules such as
 // Module.ObjectManager
 
 var Modules=require('../../../server.js');
 var _ = require('lodash');
-var async = require("async");
 
 // Make the object public
 module.exports=theObject;
@@ -242,6 +241,7 @@ theObject.makeSensitive=function(){
 
 }
 
+theObject.processPositioningData=theObject.evaluateObject;
 
 // ****************************************************************
 // * MAKE STRUCTURING *********************************************
@@ -628,6 +628,7 @@ theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
 }
 
+theObject.collectPositioningData=theObject.evaluatePosition;
 
 theObject.evaluatePosition=function(key,value,oldvalue){
 
@@ -662,15 +663,10 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 		data.old=posData.old;
 		data.new=posData.new;
 		
-		self.getRoomAsync(function(){},function(room){
+
+	    self.evaluatePositionInt(data);
+		self.runtimeData.evaluatePositionData=undefined;
     	
-	    	if (!room)
-	        return;
-	
-	    	self.evaluatePositionInt(data);
-			self.runtimeData.evaluatePositionData=undefined;
-    	
-    	});
 		
 	},timerLength);
 	
@@ -1010,7 +1006,7 @@ theObject.copyToRoom = function (roomID, callback){
 	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
 	
 }
-
+/*
 *	get an array of all overlapping objects
 **/
 theObject.getOverlappingObjectsAsync=function(callback){

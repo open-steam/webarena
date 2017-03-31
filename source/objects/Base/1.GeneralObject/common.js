@@ -45,8 +45,6 @@ GeneralObject.register = function(type) {
     
     this.standardData = new Modules.DataSet; // DataSet is a set of very basic attributes like x and y
     
-    console.log("im here trying to register the type");
-    console.log(type);
     ObjectManager.registerType(type, this); // Register this object type on the object manager.
                                             // (on ther server as well as on the client)
     
@@ -213,7 +211,6 @@ GeneralObject.register = function(type) {
     this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
     this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
     
-
 }  // End of register function
 
 /**
@@ -394,15 +391,6 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
     return this.attributeManager.registerAttribute(attribute, setter, type, min, max);
 }
 
-GeneralObject.setAttribute = function(attribute, value, forced) {
-    
-  return this.attributeManager.setAttribute(this, attribute, value, forced);
-
-
-
-
-
-
 GeneralObject.setAttribute = function(attribute, value, forced, notify, transactionId) {
     try {
         if(GUI.writePermission==false || GUI.writePermission=="undefined"){
@@ -415,6 +403,8 @@ GeneralObject.setAttribute = function(attribute, value, forced, notify, transact
         // GUI wird auf dem Server aufgerufen und ist dort nicht verfĂźgbar
         return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
     }
+}
+
 GeneralObject.hasAttribute = function(attribute) {
     return this.attributeManager.hasAttribute(this, attribute);
 }
@@ -453,12 +443,14 @@ GeneralObject.getName = function() {
 GeneralObject.getRoomID = function() {
     return this.get('inRoom');
 }
+
 GeneralObject.getCurrentRoom=GeneralObject.getRoomID;
 
 
 GeneralObject.getID = function() {
     return this.get('id');
 }
+
 GeneralObject.getId = GeneralObject.getID;
 
 
@@ -787,7 +779,6 @@ GeneralObject.removeLinkAttribute = function(targetId){
 *    here in the common.js, only flags are set. Actual logic is provided in the client and server files
 *
 */
-
 GeneralObject.makeSensitive=function(){
     this.isSensitiveFlag=true;
 }
