@@ -54,11 +54,19 @@ ObjectManager.getPrototype = function(objType) {
     if (prototypes[objType])
         return prototypes[objType];
         
-    // fallback. Return the GeneralObject protoype instead    
+    // fallback. Return the UnknownObject protoype instead    
+        
+    if (prototypes['UnknownObject'])
+        return prototypes['UnknownObject'];
+        
+    // fallback. Return the UnknownObject protoype instead    
         
     if (prototypes['GeneralObject'])
         return prototypes['GeneralObject'];
-    return;
+    
+    console.log('ERROR: There is no prototype for GeneralObject registred. I should never be here!');
+    
+    return null;
 }
 
 ObjectManager.getPrototypeFor = ObjectManager.getPrototype;
@@ -225,29 +233,43 @@ ObjectManager.getInventory = ObjectManager.getObjects;
  *  creates a new object
  *
  **/
-ObjectManager.createObject = function(roomID, type, attributes, content, context, callback) {
+ObjectManager.createObject = function(roomID, type, attributes, content, context, callback)     
+var that = this;
 
-    var that = this;
 
     //TODO check for rights right here
 
     var proto = this.getPrototypeFor(type);
 
-    Modules.Connector.createObject(roomID, type, proto.standardData, context, function(id) {
+     if(!(attributes == "undefined" || attributes == null)){
+        var objectID = attributes.id;
+        delete attributes.id;
+    }
+
+    //forced-id as parameter that allows creating an object with that id
+    Modules.Connector.createObject(objectID, roomID, type, proto.standardData, context, function(id) {
         var object = ObjectManager.getObject(roomID, id, context);
 
         //set default attributes
         var defaultAttributes = object.standardData;
         for (var key in defaultAttributes) {
             var value = defaultAttributes[key];
-            object.setAttribute(key, value);
+            if(key =="id"){
+                continue;
+            }
+            object.set(key, value);
         }
 
         object.setAttribute('name', type);
 
         for (var key in attributes) {
             var value = attributes[key];
-            object.setAttribute(key, value);
+            if(key == "mimeType"){
+                object.set(key, value);
+            }else{
+                object.setAttribute(key, value);
+            }
+            
         }
 
         if (content) {
@@ -263,9 +285,11 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         that.history.add(new Date().getTime(), context.user.username, historyEntry);
         Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
         
-        object.objectCreated(function(){
-            callback(false, object);
-        });
+        if(callback){
+            object.objectCreated(function(){
+                callback(false, object);
+            });
+        }
 
         var data = object.context;
         Modules.Applications.event('objectCreated',object,data);

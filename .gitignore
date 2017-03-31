@@ -33,3 +33,9 @@ pluginApplications/VerwaltungsApp/config.local.js
 error.log
 usertool/application/config/config.php
 usertool/application/config/platform.php
+
+source/objects/Connections/3.Weblink/Google-Ergebnis für https---upload.wikimedia.org-wikipedia-commo.webloc
+source/Server/SocketServer_BACKUP_8580.js
+source/Server/SocketServer_BASE_8580.js
+source/Server/SocketServer_LOCAL_8580.js
+source/Server/SocketServer_REMOTE_8580.js

@@ -36,6 +36,50 @@ theObject.makeSensitive=function(){
 	
 	var theObject=this;
 	
+	this.onObjectMove=function(changeData){
+	
+		//complete data
+		
+		var oldData={};
+		var newData={};
+		var fields=['x','y','width','height'];
+		
+		for (var i=0;i<4;i++){
+			var field=fields[i];
+			oldData[field]=changeData['old'][field] || this.getAttribute(field);
+			newData[field]=changeData['new'][field] || this.getAttribute(field);
+		}
+		
+		var that=this;
+		
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			room.getInventoryAsync(function(inventory){
+				for (var i in inventory){
+			
+					var object=inventory[i];
+					
+					if(object.id==that.id) continue;
+					
+					var bbox=object.getBoundingBox();
+					
+					//determine intersections
+				
+					var oldIntersects=that.bBoxIntersects(oldData.x,oldData.y,oldData.width,oldData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+					var newIntersects=that.bBoxIntersects(newData.x,newData.y,newData.width,newData.height,bbox.x,bbox.y,bbox.width,bbox.height);
+					
+					//handle move
+					
+					if (oldIntersects && newIntersects)  that.onMoveWithin(object,newData);
+					if (!oldIntersects && !newIntersects)  that.onMoveOutside(object,newData);
+					if (oldIntersects && !newIntersects)  that.onLeave(object,newData);
+					if (!oldIntersects && newIntersects)  that.onEnter(object,newData);
+				}
+			});
+		})
+	}
+	
 	
 	theObject.bBoxIntersects=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
 		
@@ -86,12 +130,68 @@ theObject.makeSensitive=function(){
 	
 	
 	/**
+	*	getOverlappingObjectsAsync
+	*
+	*	get an array of all overlapping objects
+	**/
+	theObject.getOverlappingObjectsAsync=function(callback){
+		
+		this.getRoomAsync(function(){
+			//error
+		}, function(room){
+			if (!room) return;
+			room.getInventoryAsync(function(inventory){
+			
+				var result=[];
+			
+				for (var i in inventory){
+		
+					var test=inventory[i];
+					if (test.id==this.id) continue;
+					if (this.intersects(test)){
+						result.push(test);
+					}
+				}
+			
+				callback(result);
+			});
+		});
+	}
+	
+	
+	/**
+	*	getOverlappingObjects
+	*
+	*	get an array of all overlapping objects
+	**/
+	theObject.getOverlappingObjects=function(){
+		
+		console.log('>>>> Synchronous getOverlappingObjects in GeneralObject');
+		
+		var result=[];
+		
+		var inventory=this.getRoom().getInventory();
+	
+		for (var i in inventory){
+			var test=inventory[i];
+			if (test.id==this.id) continue;
+			if (this.intersects(test)){
+				result.push(test);
+			}
+		}
+		
+		return result;
+	
+	}
+	
+	
+	/**
 	*	SensitiveObjects evaluate other objects in respect to themselves.
 	*
 	*	object the object that shall be evaluated
 	*	changeData old and new values of positioning (e.g. changeData.old.x) 
 	**/
-	theObject.processPositioningData=function(object,changeData){
+	theObject.evaluateObject=function(object,changeData){
 		
 		//complete data
 		
@@ -147,20 +247,19 @@ theObject.makeSensitive=function(){
 // * MAKE STRUCTURING *********************************************
 // ****************************************************************
 
-theObject.makeStructuring = function() {
+theObject.makeStructuring=function(){
+	this.isStructuringFlag=true;
+	this.makeSensitive();
+	this.isSensitiveFlag=false;
+	
+	this.onObjectMove=function(changeData){
+		
+		//when a structuring object is moved, every active object may be in need of repositioning
+		
+		console.log('onObjectMove on structuring object '+this);
+	}
 
-    if (!Modules.config.structuringMode) {
-        console.log('Cannot make ' + this + ' structuring because structuring is turned off in config.');
-        return;
-    } else {
-        console.log(this + ' is now structuring');
-    }
-
-    this.isStructuringFlag = true;
-
-    var theObject = this;
-
-    theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
+	theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
 
         if ((otherX + otherWidth) < thisX) {
             //console.log('too far left');
@@ -181,8 +280,8 @@ theObject.makeStructuring = function() {
 
         //console.log('intersects');
         return true;
+	}
 
-    }
 
     /**
      *	intersects
@@ -353,6 +452,8 @@ theObject.howToHandle=function(object){
 	console.log('ERROR: howToHandle is not implemented on '+this);
 	return 'distract';
 }
+
+
 
 
 /**
@@ -527,10 +628,8 @@ theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
 }
 
-//this is typically called when an object has been moved
-//data is collected and then handed over to the room which holds information
-//about structuring objects and thus does further processing
-theObject.collectPositioningData=function(key,value,oldvalue){
+
+theObject.evaluatePosition=function(key,value,oldvalue){
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};
@@ -559,28 +658,47 @@ theObject.collectPositioningData=function(key,value,oldvalue){
 	
 	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
 		
-		
 		var data={};
 		data.old=posData.old;
 		data.new=posData.new;
 		
 		self.getRoomAsync(function(){},function(room){
     	
-	    	if (!room)	        return;		    	room.evaluatePositionFor(self, data);
-	    	self.runtimeData.evaluatePositionData=undefined;
+	    	if (!room)
+	        return;
+	
+	    	self.evaluatePositionInt(data);
+			self.runtimeData.evaluatePositionData=undefined;
     	
     	});
-   
+		
 	},timerLength);
 	
 }
 
+theObject.evaluatePositionInt=function(data){
+	
+	var that=this;
+
+	this.getRoomAsync(function(){
+		//error
+	},function(room){
+		if (!room) return;
+		room.evaluatePositionFor(that,data);
+	});
+	
+}
+
+theObject.getRoom=function(){
+	if (!this.context) error('No context');
+	return (this.context.room);	
+}
+
+
 
 theObject.getRoomAsync=function(error,cb){
-
 	if (!this.context) error('No context');
 	cb (this.context.room);	
-
 }
 
 
@@ -893,9 +1011,6 @@ theObject.copyToRoom = function (roomID, callback){
 	
 }
 
-/**
-*	getOverlappingObjectsAsync
-*
 *	get an array of all overlapping objects
 **/
 theObject.getOverlappingObjectsAsync=function(callback){
@@ -928,6 +1043,9 @@ theObject.getOverlappingObjectsAsync=function(callback){
 theObject.getUserRooms=function(callback){
 	Modules.UserManager.getUserRooms(this.context,callback);
 }
+theObject.getUserRooms=function(callback){
+	Modules.UserManager.getUserRooms(this.context,callback);
+}
 
 theObject.registerAction=function(){
 	console.log(this + ' still calls registerAction on the server side');
@@ -942,10 +1060,24 @@ theObject.pong=function(){
 }
 theObject.pong.public=true;
 
+theObject.writePermission=function(callback){
+	Modules.Connector.mayWrite(this.inRoom,this.id,this.context,function(error,result){
+		callback(result);
+	});
+}
+theObject.writePermission.public=true;
+
 theObject.intelligentRename=function(attribute,value){
 	//console.log(this+ ' intelligentRename '+attribute+' '+value);
 }
 
-theObject.objectCreated = function() {
+theObject.objectCreated = function(callback) {
     //react on server side if an object has just been created and needs further input
+    
+    if (callback) callback(this);
+}
+
+
+theObject.applicationMessage=function(identifier,data){
+	Modules.ApplicationManager.message(identifier,this,data);
 }

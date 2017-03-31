@@ -11,8 +11,9 @@
 var fileConnector={};
 var fs = require('fs');
 var async = require('async');
-
+var _ = require('underscore');
 var Q = require('q');
+var mkdirp = require('mkdirp');
 var Modules=false;
 
 fileConnector.init=function(theModules){
@@ -73,8 +74,8 @@ fileConnector.getTrashRoom = function(context, callback){
 }
 
 
+
 fileConnector.listRooms = function(context,callback){
-	
 	var self=this;
 	
 	var filebase = fileConnector.Modules.Config.filebase;
@@ -158,11 +159,10 @@ fileConnector.mayInsert=function(roomID,connection,callback) {
 *
 */
 fileConnector.getInventory=function(roomID,context,callback){
-
 	var self = this;
 
 	this.Modules.Log.debug("Request inventory (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
-	
+
 	if (!context) throw new Error('Missing context in getInventory');
 	
 	if (!this.isLoggedIn(context)) this.Modules.Log.error("User is not logged in (roomID: '"+roomID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
@@ -201,9 +201,82 @@ fileConnector.getInventory=function(roomID,context,callback){
 		/* async */
 		process.nextTick(function(){callback(inventory);});
 	}
+	return inventory;
+}
+
+/**
+ * Reads the persistent application data and returns
+ *
+ * @param  {String}   appID    The ID of the app
+ * @param  {String}   key      The key of the data
+ * @param  {Function} callback The callback function
+ */
+fileConnector.getApplicationData = function(appID, key, callback){
+	var filebase=this.Modules.Config.filebase;
+
+	mkdirp(filebase+'/appdata/'+appID, function(err){
+			fs.readdir(filebase+'/appdata/'+appID, function(err, files){
+
+			if(files.length > 0){
+				fs.readFile(filebase+'/appdata/'+appID+'/'+files[0], function(err, file){
+					var obj = JSON.parse(file);
+					callback(null, obj[key]);
+				});
+
+			}else{
+				var err = {};
+				err.toString = function(){err.message};
+				err.message = "No states are currently saved";
+				callback(err);
+			}
+		});
+	});
+
 	
 }
 
+/**
+ * saveApplicationData allows an application to write persistent key-value-data for later use
+ * (See Roomstate for an example of what you can do)
+ *
+ * @param  {String} appID The ID of the app
+ * @param  {String} key   The key 
+ * @param  {Object} value The value that is supposed to be stored
+ *
+ */
+fileConnector.saveApplicationData = function (appID, key, value){
+	var self = this
+
+	var filebase=this.Modules.Config.filebase;
+
+	mkdirp(filebase+'/appdata/'+appID, function(err){
+		fs.readdir(filebase+'/appdata/'+appID, function(err, files){
+			if(files.length >= 1){
+				fs.readFile(filebase+'/appdata/'+appID+'/'+files[0], function(err, file){
+					var obj = JSON.parse(file);
+
+					obj[key] =  value;
+
+					var newData = JSON.stringify(obj);
+
+					fs.writeFile(filebase+'/appdata/'+appID+'/'+appID+'.data.txt', newData, (err) => {
+						if (err) throw err;
+					});
+				});
+			}else{
+				var obj = {};
+
+				obj[key] = value;
+
+				var newData = JSON.stringify(obj);
+
+				fs.writeFile(filebase+'/appdata/'+appID+'/'+appID+'.data.txt', newData, (err) => {
+					if (err) throw err;
+				});
+			}
+		});
+	});
+}
 
 
 /**
@@ -347,7 +420,7 @@ fileConnector.saveObjectData=function(roomID,objectID,data,context,createIfNotEx
 *	if a callback function is specified, it is called after saving
 *
 */
-fileConnector.saveContent=function(roomID,objectID,content,context, inputIsStream,callback){
+fileConnector.saveContent=function(roomID, objectID, content,context, inputIsStream, callback){
 	this.Modules.Log.debug("Save content from string (roomID: '"+roomID+"', objectID: '"+objectID+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	var that = this;
 
@@ -507,14 +580,17 @@ fileConnector.remove=function(roomID,objectID,context, callback){
 *	after(objectID)
 *
 */
-fileConnector.createObject=function(roomID,type,data, context, callback){
+fileConnector.createObject=function(objectID, roomID, type, data, context, callback){
 
-	this.Modules.Log.debug("Create object (roomID: '"+roomID+"', type: '"+type+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
+	this.Modules.Log.debug("Create object "+objectID+" (roomID: '"+roomID+"', type: '"+type+"', user: '"+this.Modules.Log.getUserFromContext(context)+"')");
 	
 	if (!context) this.Modules.Log.error("Missing context");
 	
 	var uuid = require('node-uuid');
-	var objectID = uuid.v4();
+
+	if(!(objectID)){
+		var objectID = uuid.v4();	
+	}
 	
 	data.type=type;
 	
@@ -704,6 +780,57 @@ fileConnector.getObjectDataByFile=function(roomID,objectID){
 	return data;
 }
 
+/**
+*	internal
+*
+*	read an object file from a saved state and return the attribute set
+*/
+fileConnector.getObjectDataByState=function(roomID,objectID, stateName){
+	var filebase = this.Modules.Config.filebase;
+	
+	var filename=filebase+'/'+roomID+'/'+stateName+'-state'+'/'+objectID+'.object.txt';
+	
+	try {
+		var attributes = fs.readFileSync(filename, 'utf8');
+		attributes=JSON.parse(attributes);
+	} catch (e) {								//if the attribute file does not exist, create an empty one
+	
+		//when an object is not there, false is returned as a sign of an error
+		return false;
+	}
+	
+	var data={};
+	
+	//	automatically repair some values which could be wrong due
+	//  to manual file copying.
+
+	data.attributes=attributes;
+	data.type=data.attributes.type;
+	data.id=objectID;
+	data.attributes.id=data.id;
+	data.inRoom=roomID;
+	data.attributes.inRoom=roomID;
+	data.attributes.hasContent=false;
+	
+	//assure rooms do not loose their type
+	if (roomID==objectID){
+		data.type='Room';
+		data.attributes.type='Room';
+	}
+	
+	var path = require('path');
+	
+	filename=filebase+'/'+roomID+'/'+objectID+'.content';
+	
+	if (fs.existsSync(filename)) {
+		
+		data.attributes.hasContent=true;
+		data.attributes.contentAge=new Date().getTime();
+	}
+
+	return data;
+}
+
 
 fileConnector.trimImage=function(roomID, objectID, context, callback) {
 
@@ -791,7 +918,7 @@ fileConnector.getMimeType=function(roomID,objectID,context,callback) {
 
 	var objectData = this.getObjectData(roomID,objectID,context);
 	var mimeType = objectData.attributes.mimeType;
-	
+
 	callback(mimeType);
 	
 }
@@ -923,6 +1050,7 @@ fileConnector.getInlinePreviewMimeType=function(roomID, objectID,context,callbac
 		var generatorName = self.getInlinePreviewProviderName(mimeType);
 
 		if (generatorName == false) {
+			console.trace();
 			self.Modules.Log.warn("no generator name for mime type '"+mimeType+"' found!");
 			callback(false);
 		} else {

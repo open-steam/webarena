@@ -493,13 +493,16 @@ ObjectManager.init = function() {
     Modules.Dispatcher.registerCall('entered', function(data) {
         GUI.entered();
     });
+    
+    Modules.Dispatcher.registerCall('goToRoom', function(roomID) {
+        ObjectManager.loadRoom(roomID);
+    });
 
     Modules.Dispatcher.registerCall('error', function(data) {
         GUI.error("server error", data, false, true);
     });
 
     Modules.Dispatcher.registerCall('inform', function(data) {
-	
         if (data.message.awareness !== undefined && data.message.awareness.present !== undefined) {
             //list of users
             var users = [];
@@ -590,7 +593,6 @@ ObjectManager.getRoomID = function() {
 ObjectManager.getCurrentRoom = function() {
     return this.currentRoom;
 }
-
 
 ObjectManager.getSelected = function() {
     var result = [];
@@ -954,7 +956,6 @@ ObjectManager.writeToServerConsole = function(data) {
 
 
 ObjectManager.restoreObject = function(objectID, x, y){
-
 	var arr = new Array();
 	arr.push(objectID);
 	

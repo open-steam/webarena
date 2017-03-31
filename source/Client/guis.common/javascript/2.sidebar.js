@@ -22,33 +22,22 @@ GUI.sidebar.savedState = undefined;
  * Available sidebar pages
  */
 GUI.sidebar.elementConfig = {
-    "bug" : {
-        order : 0
-    },
-	"chat" : {
+    "chat" : {
         order : 1,
         onOpen : GUI.chat.opened
     },
     "inspector" : {
         order : 2
     },
-    "pad" : {
-        order : 3
-    },
 	"trashbasket" : {
 		order : 4,
 		onOpen : GUI.trashbasket.opened,
 		onClose: GUI.trashbasket.closed
 	},
-	"cloud" : {
+	"objectList" : {
 		order : 5,
-		onOpen : GUI.cloud.opened,
-		onClose: GUI.cloud.closed
-	},
-	"recentChanges" : {
-		order : 6,
-		onOpen : GUI.recentChanges.opened,
-		onClose: GUI.recentChanges.closed
+		onOpen : GUI.objectList.opened,
+		onClose: GUI.objectList.closed
 	}
 };
 
@@ -96,7 +85,6 @@ GUI.sidebar.openPage = function(element, button) {
 	
     /* set currently opened element/page */
     GUI.sidebar.currentElement = element;
-
     var left = GUI.sidebar.elementConfig[element]['order']*$("#sidebar").width()*(-1);
 
     /* check if sidebar is shown */
@@ -220,11 +208,8 @@ GUI.sidebar.init = function() {
 	
 	GUI.sidebar.elementConfig.inspector.title = GUI.translate("Object inspector");
 	GUI.sidebar.elementConfig.chat.title = GUI.translate("Chat");
-    GUI.sidebar.elementConfig.bug.title = GUI.translate("Bugreport");
-	GUI.sidebar.elementConfig.pad.title = GUI.translate("Annotations");
 	GUI.sidebar.elementConfig.trashbasket.title = GUI.translate("Trash basket");
-	GUI.sidebar.elementConfig.cloud.title = GUI.translate("Cloud");
-	GUI.sidebar.elementConfig.recentChanges.title = GUI.translate("Recent Changes");
+	GUI.sidebar.elementConfig.objectList.title = GUI.translate("ObjectList");
 	
 	$("#header_toggle_sidebar_hide").attr('title', GUI.translate('Hide sidebar'));
 	$("#header_toggle_sidebar_show").attr('title', GUI.translate('Show sidebar'));

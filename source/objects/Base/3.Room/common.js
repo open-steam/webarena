@@ -35,8 +35,10 @@ Room.register=function(type){
 	this.registerAttribute('bigIcon',{hidden:true, changedFunction: function(object) {}});
 	this.registerAttribute('linecolor',{hidden:true});
 	this.registerAttribute('linesize',{hidden:true});
+	this.registerAttribute('showCaption',{hidden:true});
 	
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
+	
     
     if (Modules.Config.structuringMode) {        this.attributeManager.registerAttribute('mode', {type: 'selection', standard: 'foreground', options: ['background', 'foreground'], category: 'Structure', hidden: true, changedFunction: function(room) {                GUI.deselectAllObjects();                room.redraw();
                 

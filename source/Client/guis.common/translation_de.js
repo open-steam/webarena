@@ -40,8 +40,8 @@ GUI.setTranslations('de',{
 	'Reload' : 'Neuladen',
 	'Bugreport' : 'Fehlerbericht',
 	'Object inspector' : 'Objektinspektor',
+	'ObjectList' : 'Objektliste',
 	'Trash basket' : 'Papierkorb',
-	'Recent Changes' : 'Letzte Änderungen',
 	'Toggle hidden mode' : 'Versteckt-Modus wechseln',
 	'Texts' : 'Texte',
 	'Mode' : 'Modus',
@@ -149,8 +149,14 @@ GUI.setTranslations('de',{
 	'delete Object' : 'Objekt gelöscht',
 	'Release the mouse button to delete' : 'Zum Löschen die Maustaste loslassen',
 	'The trash basket is empty. You can delete objects with the contextmenu, the Escape-Button or by dragging them into the trash basket.' : 'Der Papierkorb ist leer. Objekte können mithilfe des Kontextmenüs, dem Escape-Button oder durch Ablegen im Papierkorb gelöscht werden.',
-	'There are no recent changes' : 'Es existieren keine letzten Änderungen',
     'Clean Trashbucket' : 'Papierkorb leeren',
-    'Do not clean' : 'Nicht leeren'
-	}
+    'Do not clean' : 'Nicht leeren',
+	'Login' : 'Anmelden',
+	'About' : "Impressum anzeigen",
+	'Close About' : 'Impressum schließen',
+	'Object does not exist' : "Objekt existiert nicht",
+	'Object does not exist anymore. It was deleted by another user completely. Trashtree will up. Trash is updated' : 'Objekt existiert nicht mehr. Es wurde von einem anderen Benutzer vollständig gelöscht. Papierkorb wird aktualsiert',
+	'Close message' : 'Schließe Nachricht',
+	'Send' :'Senden'
+ 	}
 );

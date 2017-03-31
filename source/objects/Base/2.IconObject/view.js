@@ -140,7 +140,7 @@ IconObject.dblclickHandler = function(event) {
 		}
 	
 		if(event.target.localName == "tspan"){
-			this.editText();
+			this.editText();		
 		}
 	}
 }
@@ -244,9 +244,11 @@ IconObject.renderText = function (text){
 	if (this.getAttribute("bigIcon")) {
 		var startX = 78;
 		var widthHalf = 32;
+		var bigIcon=true;
 	} else {
 		var startX = 48;
 		var widthHalf = 16;
+		var bigIcon=false;
 	}
     
     //split the text after a maximum of 17 characters
@@ -281,17 +283,14 @@ IconObject.renderText = function (text){
     $(text).attr("font-size", 12);
 	$(text).attr('pointer-events','fill');
 
+
 	/* center text */
-	$(rep).find("text").find("tspan").each(function() {
-	
-		/* width of tspan elements is 0 in Firefox --> display multiline text left aligned in Firefox */
-		if ($(rep).find("text").width() == 0) {
-			var w = widthHalf-Math.floor($(this)[0].getBoundingClientRect().width/2);
-		} else {
-			var w = widthHalf-Math.floor($(this).width()/2);
-		}
+	$(rep).find("text").find("tspan").each(function(dum,ts) {
 		
-		$(this).attr("x", w);
+		var width=ts.getComputedTextLength();
+		var maxWidth=(bigIcon)?65:33;
+		var border=(maxWidth-width)/2;
+		$(ts).attr("x", border);
 		
 	});
 
@@ -320,12 +319,10 @@ IconObject.updateIcon=function(){
 	this.createPixelMap();
 }
 
-
 /**
  * Called after a double click on the text, enables the inplace editing
  */
 IconObject.editText = function(){
-
 	var rep = this.getRepresentation();
 	
 	$(rep).find("foreignObject").show();
@@ -349,7 +346,8 @@ IconObject.editText = function(){
 	
 	this.inPlaceEditingMode = true;
 	GUI.inPlaceEditingObject = this.id;
-
+	
+	this.block();
 }
 
 
@@ -357,8 +355,6 @@ IconObject.editText = function(){
  * Called after hitting the Enter key during the inplace editing
  */
 IconObject.saveChanges = function() {
-	
-	console.log('In saveChanges');
 
 	if(this.inPlaceEditingMode){
 		var rep = this.getRepresentation();
@@ -375,7 +371,7 @@ IconObject.saveChanges = function() {
 		GUI.inPlaceEditingObject = false;
 	
 		this.setAttribute("name", newContent);
-	
-		this.draw();	
+		this.draw();
+		this.unblock();
 	}
 }

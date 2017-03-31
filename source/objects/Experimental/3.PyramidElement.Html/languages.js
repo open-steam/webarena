@@ -1,0 +1,4 @@
+PyramidElement.setTranslations('de',{
+
+}
+);

@@ -51,82 +51,85 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 	
 	actionsheet.html('<div class="actionsheet_triangle"></div><div class="actionsheet_buttons"></div>'); //clear actionsheet
 
-    if(isWebarenaObject){
-        $.each(ObjectManager.getActionsForSelected(), function(key, action) {
 
-            var newButton = document.createElement("div");
-            if(isWebarenaObject){
-                $(newButton).html(webarenaObject.translate(GUI.currentLanguage, action));
-            } else {
+		if(isWebarenaObject){
+			$.each(ObjectManager.getActionsForSelected(), function(key, action) {
 
-            }
+				var newButton = document.createElement("div");
+				if(isWebarenaObject){
+					$(newButton).html(webarenaObject.translate(GUI.currentLanguage, action));
+				} else {
 
-            $(newButton).addClass("actionsheet_button");
+				}
 
-            $(newButton).bind("click", function() {
-                ObjectManager.performActionForSelected(action, webarenaObject);
+				$(newButton).addClass("actionsheet_button");
 
-                actionsheet.hide();
+				$(newButton).bind("click", function() {
+					ObjectManager.performActionForSelected(action, webarenaObject);
 
-            });
+					actionsheet.hide();
 
-            /* effects: */
-            newButton.addEventListener("touchstart", function() {
-                $(newButton).addClass("actionsheet_button_hover");
-            }, false);
+				});
 
-            newButton.addEventListener("touchend", function() {
-                $(newButton).removeClass("actionsheet_button_hover");
-            }, false);
+				/* effects: */
+				newButton.addEventListener("touchstart", function() {
+					$(newButton).addClass("actionsheet_button_hover");
+				}, false);
 
-            $(newButton).bind("mousedown", function() {
-                $(newButton).addClass("actionsheet_button_hover");
-            });
+				newButton.addEventListener("touchend", function() {
+					$(newButton).removeClass("actionsheet_button_hover");
+				}, false);
 
-            $(newButton).bind("mouseup", function() {
-                $(newButton).removeClass("actionsheet_button_hover");
-            });
+				$(newButton).bind("mousedown", function() {
+					$(newButton).addClass("actionsheet_button_hover");
+				});
 
-            actionsheet.find(".actionsheet_buttons").append(newButton);
+				$(newButton).bind("mouseup", function() {
+					$(newButton).removeClass("actionsheet_button_hover");
+				});
 
-        });
-    } else {
+				actionsheet.find(".actionsheet_buttons").append(newButton);
 
-        $.each(webarenaObject.actions, function(key, action) {
-            var newButton = document.createElement("div");
+			});
+		} else {
 
-            $(newButton).html(GUI.translate(action.actionName));
+			$.each(webarenaObject.actions, function(key, action) {
+				var newButton = document.createElement("div");
 
-            $(newButton).addClass("actionsheet_button");
+				$(newButton).html(GUI.translate(action.actionName));
 
-            $(newButton).bind("click", function() {
-                action.actionFunction()
+				$(newButton).addClass("actionsheet_button");
 
-                actionsheet.hide();
+				$(newButton).bind("click", function() {
+					action.actionFunction()
 
-            });
+					actionsheet.hide();
 
-            /* effects: */
-            newButton.addEventListener("touchstart", function() {
-                $(newButton).addClass("actionsheet_button_hover");
-            }, false);
+				});
 
-            newButton.addEventListener("touchend", function() {
-                $(newButton).removeClass("actionsheet_button_hover");
-            }, false);
+				/* effects: */
+				newButton.addEventListener("touchstart", function() {
+					$(newButton).addClass("actionsheet_button_hover");
+				}, false);
 
-            $(newButton).bind("mousedown", function() {
-                $(newButton).addClass("actionsheet_button_hover");
-            });
+				newButton.addEventListener("touchend", function() {
+					$(newButton).removeClass("actionsheet_button_hover");
+				}, false);
 
-            $(newButton).bind("mouseup", function() {
-                $(newButton).removeClass("actionsheet_button_hover");
-            });
+				$(newButton).bind("mousedown", function() {
+					$(newButton).addClass("actionsheet_button_hover");
+				});
 
-            actionsheet.find(".actionsheet_buttons").append(newButton);
+				$(newButton).bind("mouseup", function() {
+					$(newButton).removeClass("actionsheet_button_hover");
+				});
 
-        });
-    }
+				actionsheet.find(".actionsheet_buttons").append(newButton);
+
+			});
+		}
+	
+    
 	
 	
 	/* calculate dimensions and show (little delay to ensure working width/height DOM getter methods) */
@@ -184,7 +187,8 @@ GUI.showActionsheet = function(x, y, webarenaObject, isWebarenaObject) {
 	
 
 	actionsheet.css("opacity", 0);
-	actionsheet.show();
+	if(GUI.writePermission)
+		actionsheet.show();
 
 	
 	/* little trick (the handler was called immediately by the current click which causes the actionsheet to show up) */

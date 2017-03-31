@@ -6,6 +6,7 @@ GeneralObject.setTranslations('de',{
 	'width':'Breite',
 	'height':'Höhe',
 	'fillcolor':'Füllfarbe',
+	'headercolor':'Kopfzeilenfarbe',
 	'linecolor':'Linienfarbe',
 	'opacity':'Deckkraft',
 	'linesize':'Linienstärke',
@@ -26,6 +27,7 @@ GeneralObject.setTranslations('de',{
 	'group':'Gruppe',
 	'Group':'Gruppieren',
 	'Ungroup':'Gruppierung aufheben',
+	'singleSelect': 'Einzelselektion',
 	'shadow':'Schatten',
 	'hidden':'Versteckt',
 	'id':'ID',
@@ -66,6 +68,9 @@ GeneralObject.setTranslations('de',{
 	'Please select a destination or enter a URL' : 'Bitte wählen Sie ein Ziel oder geben Sie eine URL ein',
 	'Please enter a valid URL' : 'Bitte geben Sie eine gültige URL ein',
 	'Internal' : 'Intern',
-	'External' : 'Extern'
+	'External' : 'Extern',
+	'is blocked by' : 'ist blockiert von',
+	"Object is blocked" : "Objekt blockiert",
+	'cancel process' : 'Vorgang abbrechen'
 	}
 );

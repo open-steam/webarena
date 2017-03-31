@@ -44,7 +44,7 @@ Table.insertFirstColumn = function(obj) {
 Table.showFormatDialog = function(selected) {
     var that = this;
     var dialog_buttons = {};
-    dialog_buttons[that.translate(GUI.currentLanguage, "Speichere Anordnung von Zeilen und Spalten")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Save layout")] = function() {
         var yAttributes = $("#sortable").children();
         var yAttributeValues = [];
         $(yAttributes).each(function() {
@@ -97,7 +97,7 @@ Table.showFormatDialog = function(selected) {
     html += '<script>' + js + js1 + js2 + '</script>';
     content.push(html);
     var dialog = GUI.dialog(
-            that.translate(GUI.currentLanguage, "Zeilen und Spalten anpassen"),
+            that.translate(GUI.currentLanguage, "Edit rows and columns"),
             content,
             dialog_buttons,
             dialog_width,
@@ -126,7 +126,7 @@ Table.showLabelDialog = function(clickedElement,positionMouse) {
 
     }
     
-    dialog_buttons[that.translate(GUI.currentLanguage, "Namen übernehmen")] = function() {
+    dialog_buttons[that.translate(GUI.currentLanguage, "Change Header")] = function() {
         changeName();
     };
     
@@ -152,7 +152,7 @@ var js = '$(document).ready(function(){document.getElementById("inputField").sel
         }
     };
     var dialog = GUI.dialog(
-            that.translate(GUI.currentLanguage, "Zeilen- und Spaltennamen überarbeiten"),
+            that.translate(GUI.currentLanguage, "Change Header"),
             content,
             dialog_buttons,
             dialog_width,

@@ -25,20 +25,27 @@ theObject.nameChanged=function(value){
 	});
 }
 
-theObject.objectCreated = function() {
+theObject.objectCreated = function(callback) {
   
-  console.log('This is objectCreated');
   var self=this;
   
   this.getRoomAsync(function(){
   	Modules.ObjectManager.shout('Could not create the room correctly!');
   },function(parent){
 	  Modules.ObjectManager.createSubroom(parent,function(room){
-	  		console.log('Subroom '+room+' created');
-	  		console.log(room.getAttribute('parent'));
 	  		self.setAttribute('destination', room.getAttribute('id'));
+	  		if (callback) callback(self);
 	  });  	
   });
   
 
+}
+
+theObject.getDestinationRoom = function(callback){
+	
+	var destination=this.getAttribute('destination');
+	
+	if (!callback) return callback(undefined);
+	
+	Modules.ObjectManager.getRoom(destination, this.context, false, callback);
 }

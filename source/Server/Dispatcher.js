@@ -61,6 +61,15 @@ Dispatcher.init = function(theModules) {
     Modules = theModules;
 }
 
+Dispatcher.registerCall('applicationCall', function(socket, data, responseID) {
+    var context = Modules.UserManager.getConnectionBySocket(socket);
+    if(data.message == "getClientApplicationData"){
+        Modules.ApplicationManager.getClientApplicationData(resultCallbackWrapper(socket, responseID));
+    }else{
+        Modules.ApplicationManager.message(data.message, this, data, resultCallbackWrapper(socket, responseID));
+    }
+});
+
 Dispatcher.registerCall('deleteObject', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectManager.deleteObject(data, context, resultCallbackWrapper(socket, responseID));
@@ -106,6 +115,30 @@ Dispatcher.registerCall('undo', function(socket, data, responseID) {
 Dispatcher.registerCall('duplicateObjects', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectManager.duplicate(data, context, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('saveState', function(socket, data, responseID) {
+    var context = Modules.UserManager.getConnectionBySocket(socket);
+    data.context = context;
+    data.roomID = context.room.getRoomID();
+
+    Modules.ApplicationManager.message("saveState", data);
+});
+
+Dispatcher.registerCall('getSavedStates', function(socket, data, responseID) {
+    var context = Modules.UserManager.getConnectionBySocket(socket);
+    data.context = context;
+    data.roomID = context.room.getRoomID();
+
+    Modules.ApplicationManager.message('getSavedStates', this, data, resultCallbackWrapper(socket, responseID));
+});
+
+Dispatcher.registerCall('restoreState', function(socket, data, responseID) {
+    var context = Modules.UserManager.getConnectionBySocket(socket);
+    data.context = context;
+    data.roomID = context.room.getRoomID();
+
+    Modules.ApplicationManager.message('restoreState', data);
 });
 
 Dispatcher.registerCall('serverCall', function(socket, data, responseID) {

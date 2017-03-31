@@ -8,6 +8,8 @@
 */
 
 
+var Modules={};
+var _ = require('underscore');
 /**
 *	Each object type get its attribute manager. This is the server side
 *   AttributeManager which mainly is responsible for channeling through
@@ -84,6 +86,11 @@ var AttributeManager=new function(){
 *	again filled in the registration procress.
 **/
 AttributeManager.init=function(proto){
+	
+	//on the initial init, the evenvironment is provided
+	if(proto.config) {
+		Modules=proto;
+	}
 
 	this.proto=proto;
 	this.attributes={};
@@ -169,14 +176,13 @@ AttributeManager.registerAttribute=function(attribute,data){
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced){
-
-    //console.log('setAttribute '+object+' '+attribute+' '+value);
+AttributeManager.setAttribute=function(object, attribute, value, forced, notify){
 
 	var that = this;
 		
 	// do nothing, if value has not changed
-	if (object.get(attribute)===value){
+	//previous solution with "===" did not work correctly
+	if (_.isEqual(object.get(attribute),value)){
         return false;
     } 
     
@@ -186,6 +192,23 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	}
 	
 	var oldValue=object.getAttribute(attribute);
+
+// evaluation
+	//
+	// if the position ob the object has changed. evaluatePosition is called. This function
+	// should wait and collect data for a while, as position and dimension information is hardly
+	// ever changed in only one aspect.
+		
+	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+		if (object.evaluatePosition)
+			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
+	}
+	
+	// for every other attribute which may have changed, a changed function is called
+	// (eg. if the attribute test has changed, we try to call testChanged on the server)
+	
+	var fnName=attribute+'Changed';
+    if (object[fnName]) object[fnName](value);
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
@@ -209,6 +232,17 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 	object.persist();
 	
     this.triggerEvaluation(object,attribute,value,oldValue);
+	//give the object a proper name if no name has been chosen so far
+	if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
+		object.intelligentRename(attribute,value);
+	}
+	
+	//inform applications if notify is set to true or undefined
+	var data={};
+	data[attribute]=value;
+	if(notify || notify == undefined){
+		Modules.Applications.event('setAttribute',object,data);	
+	}
 	
 	return true;
 }

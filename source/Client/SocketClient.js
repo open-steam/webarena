@@ -16,19 +16,11 @@ SocketClient.init=function(){
 	socket.on('connect', function () {
 		GUI.connected();
 	});
-	socket.on('WebRTC-message', function(data){
-		WebRTCManager.receiveMessage(data);
-	});
 }
 
 SocketClient.sendCall=function(type, data, responseID){
 	if(!Modules.Socket){return;}
 	Modules.Socket.emit('message',{'type':type,'data':data,'responseID':responseID});
-}
-
-SocketClient.sendWebRTCCall=function(message, data, room){
-	if(!Modules.Socket){return;}
-	Modules.Socket.emit('WebRTC-message',{'message':message,'data':data, 'room':room});
 }
   
 SocketClient.serverCall=SocketClient.sendCall;

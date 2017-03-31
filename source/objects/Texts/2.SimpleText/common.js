@@ -32,15 +32,17 @@ SimpleText.register=function(type){
 
     this.registerAttribute('rotation', {type:'number', category: 'Dimensions'});
 	
-
-
+	this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
+	this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
+	this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
 	
 }
 
 SimpleText.execute=function(){
-	if(!this.inPlaceEditingMode){
-		this.editText();
-	}
+		// if you enter the Editmode then block the object
+		if (this.checkBlock()){
+			this.editText();
+		}
 }
 
 SimpleText.isResizable=function(){
@@ -62,6 +64,7 @@ SimpleText.intelligentRename=function(newValue){
 SimpleText.register('SimpleText');
 SimpleText.isCreatable=true;
 SimpleText.inPlaceEditingMode = false;
+SimpleText.BlockingUser = null;
 
 SimpleText.contentURLOnly = false; //content is only accessible via URL
 

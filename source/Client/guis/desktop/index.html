@@ -21,7 +21,6 @@
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.toastmessage.js"></script>
 
     <script type="text/javascript" src="/guis.common/libraries/moment.min.js"></script>
-	<script type="text/javascript" src="/guis.common/libraries/adapter.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.autogrow.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.js"></script>
     <script type="text/javascript" src="/guis.common/libraries/jquery/plugins/jquery.jeditable.autogrow.js"></script>
@@ -52,8 +51,8 @@
 	<script src="/SocketClient.js"></script>
     <script src="/ActionManager.js"></script>
     <script src="/TranslationManager.js"></script>
+    <script src="/ApplicationManager.js"></script>
 
-	<script src="/WebRTCManager.js"></script>
 	<script src="/Common/Log.js"></script>
 	<script src="/Common/DataSet.js"></script>
 	<script src="/AttributeManager.js"></script>
@@ -75,6 +74,7 @@
 		'AttributeManager':AttributeManager,
 		'TranslationManager':TranslationManager,
 		'ActionManager':ActionManager,
+		'ApplicationManager':ApplicationManager,
 	};
 
 	
@@ -96,6 +96,7 @@
 	<script src="/objects"></script>
 
 	<script type="text/javascript" src="/defaultJavascripts"></script>
+<!-- 	<script type="text/javascript" src="/applications"></script> -->
 
 	<script type="text/javascript" src="/guis.common/translation_de.js"></script>
 
@@ -200,6 +201,7 @@
 				<div id="inspector"></div>
                 <div id="pad"><iframe name="padframe"></iframe></div>
 				<div id="trash"></div>
+				<div id="objectList"></div>
 				<div id="cloud" style="height: 2000px"></div>
 				<div id="recentChanges" style="height: 2000px"></div>
 			</div>
@@ -234,7 +236,12 @@
 		<br />
 		
 		<input type="submit" name="login" value="Login" class="login_submit" id="login_submit" />
+		<input type="submit" name="Impressum" value="About" class="login_submit" id="impressum_button" />
 		
+	</div>
+	
+	<div id='impressum' style='padding: 20px; background-color: #FFFFFF; border: 3px solid #C7C7C7;position: absolute;  overflow-y: scroll;z-index: 25001;border-radius: 10px;'>
+		<input type='submit' name='Impressum' value='Close About' class='login_submit' id='impressum_close_button' onclick="$('#impressum').hide();" style="float: right;"/>
 	</div>
 	
 	

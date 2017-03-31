@@ -12,6 +12,11 @@ GUI.showLogin = function(err) {
 		return;
 	}
 	
+	//translate all buttons
+	$("#login_submit").attr('value', GUI.translate("Login"));
+	$("#impressum_button").attr('value', GUI.translate("About"));
+	$("#impressum_close_button").attr('value', GUI.translate("Close About"));
+	
 	/* true if the login process is active */
 	GUI.loginProcessActive = false;
 	
@@ -39,6 +44,40 @@ GUI.showLogin = function(err) {
 		$("#login").append("<p>"+GUI.translate('Unfortunately Microsoft Internet Explorer did not support all features of this system. We recommend using Google Chrome or Mozilla Firefox. Thank you for your understanding.')+"</p>");
 	}
 	
+	var printImprint = function(){
+	var imprint = Config.about;
+	var printList = function(aData){		
+		var list="";
+		
+		if (!aData) return list;
+		
+		for (var i = 0; i < aData.length; i++) { 
+			logo.push("<li>"+aData[i]+'</li>');
+		}
+		return list;
+	};
+    var logo = ['<h2>'+imprint.project+'</h2>'];
+    
+    	logo.push('<p>'+imprint.copyright+'</p>');
+		logo.push('<h3>Main contributors:</h3>');
+		logo.push('<ul>');
+	 	printList(imprint.contributors);
+	 	logo.push('</ul>');
+		logo.push('<h3>Contact information</h3>');
+		logo.push('<p>'+imprint.contact+'</p>');
+		logo.push('<h3>Acknowledgements</h3>');
+		logo.push('<p>'+imprint.acknowledgements+'</p>');
+
+		logo.forEach(function(l) {
+			$( "#impressum" ).append(l);
+		});
+	
+	};
+	
+	printImprint();
+	
+	$("#impressum").hide();
+	
 	$("body").append("<p id='TouchMouseNote' style='position: fixed; bottom: 10px; z-index: 15002; left: 10%'>"+GUI.translate('Please note: if you are using a computer with touchscreen AND mouse, press the login button with your prefered device. The webarena interface will be optimized for the selected input method.')+"</p>");
 	
 	$("#login_submit").on("touchend", function () {
@@ -48,6 +87,24 @@ GUI.showLogin = function(err) {
 	
 	$("#login_submit").on("mouseup", function () {
 		GUI.login();
+	});
+	
+	var fitAboutBox = function(){
+		var p = $( "#login" );
+		var position = p.position();
+		$("#impressum").css("top",window.innerHeight*0.05+"px");
+		$("#impressum").css("left",(position.left-402)+"px");
+		$("#impressum").css("width",(804)+"px");
+		$("#impressum").css("height",(Math.min(800,window.innerHeight*0.7))+"px");
+	}
+	$("#impressum_button").on("touchend", function () {
+		fitAboutBox();
+		$("#impressum").show();
+	});
+	
+	$("#impressum_button").on("mouseup", function () {
+		fitAboutBox();
+		$("#impressum").show();
 	});
 	
 	var userDataObject = GUI.retrieveUserData();
@@ -64,6 +121,7 @@ GUI.showLogin = function(err) {
 GUI.hideLogin = function() {
 	
 	$("#login").hide();
+	$("#impressum").hide();
 	$("#login_background").hide();
 	$("#login_background").css("opacity", 1);
 	$("#TouchMouseNote").hide();

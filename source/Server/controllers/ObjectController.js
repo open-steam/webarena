@@ -22,7 +22,6 @@ ObjectController.init = function(theModules){
 }
 
 ObjectController.createObject = function(data, context, callback){
-
     var roomID = data.roomID;
     var type = data.type;
     var attributes = data.attributes;
@@ -108,26 +107,33 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 		}
 		
 			if (serverFunction === "setAttribute"){
-			var oldValue = object.getAttribute(serverFunctionParams[0]);
-			var historyEntry = {
-				'action': 'set Attribute',
-				'objectID': objectID,
-				'roomID': roomID,
-				'attribute': serverFunctionParams[0],
-				'old': oldValue,
-				'new': serverFunctionParams[1]
-			}
-			
-			ObjectManager.history.add(new Date().getTime(), probableTransactionInfo.userId, historyEntry);
-			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
+				var attribute= serverFunctionParams[0];
+				
+				//do not make history entries for object blocking metadata
+				if (attribute=='blockedTime') return;
+				if (attribute=='blockedByID') return;
+				if (attribute=='blockedByUser') return;
+				
+				var oldValue = object.getAttribute(attribute);
+				var historyEntry = {
+					'action': 'set Attribute',
+					'objectID': objectID,
+					'roomID': roomID,
+					'attribute': attribute,
+					'old': oldValue,
+					'new': serverFunctionParams[1]
+				}
+				
+				ObjectManager.history.add(new Date().getTime(), probableTransactionInfo.userId, historyEntry);
+				Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 		
-		} else if (serverFunction === "setContent") {
-			var historyEntry = {
-				'objectID': objectID,
-				'roomID': roomID,
-				'action': 'set Content'
-			}
-			
+			} else if (serverFunction === "setContent") {
+				var historyEntry = {
+					'objectID': objectID,
+					'roomID': roomID,
+					'action': 'set Content'
+				}
+				
 			ObjectManager.history.add(new Date().getTime(), context.user.username, historyEntry);
 			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 			

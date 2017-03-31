@@ -50,6 +50,8 @@ UserManager.socketDisconnect=function(socket){
 	
 	var room=this.getConnectionBySocket(socket).room;
 	
+	Modules.Applications.event('logout',this.connections[socket.id].user);
+	
 	delete(this.connections[socket.id]);
 	
 	if (room) {
@@ -130,8 +132,7 @@ UserManager.login=function(socketOrUser,data){
 			connection.user.password=data.password;
 			connection.user.color=userColor;
 			connection.user.externalSession = data.externalSession;
-			connection.user.id = socket.id;
-		
+			connection.user.id = UserManager.generateUID();
 			connection.user.home=data.home;
 			connection.user.hash='___'+require('crypto').createHash('md5').update(socket.id+connection.user).digest("hex");
 		
@@ -140,6 +141,8 @@ UserManager.login=function(socketOrUser,data){
 				userhash: connection.user.hash,
 				home: connection.user.home
 			});
+			
+			Modules.Applications.event('login',connection.user);
 
 		} else {
 			socketServer.sendToSocket(socket,'loginFailed','Wrong username or password!');
@@ -148,6 +151,16 @@ UserManager.login=function(socketOrUser,data){
 	});
 	
 }
+
+UserManager.generateUID= function() {
+    var d = new Date().getTime();
+    var uid = 'xxxx-xxxx-yxxx'.replace(/[xy]/g, function(c) {
+        var r = (d + Math.random()*16)%16 | 0;
+        d = Math.floor(d/16);
+        return (c=='x' ? r : (r&0x3|0x8)).toString(16);
+    });
+    return uid;
+};
 
 /**
 *	enterRoom
@@ -190,14 +203,15 @@ UserManager.enterRoom=function(socketOrUser,data,responseID){
 
 		if (mayEnter) {
 			
-			ObjectManager.getRoom(roomID,connection,oldRoomId,function(room){	
+			ObjectManager.getRoom(roomID,connection,oldRoomId,function(room){
+				if (connection.room) Modules.Applications.event('left',connection.room);	
 				connection.room = room;
 				Modules.RoomController.sendRoom(socket,room.id);
 				socketServer.sendToSocket(socket,'entered',room.id);
 				UserManager.sendAwarenessData(room.id);
+				Modules.Applications.event('entered',room);
 			});
 			
-			//ObjectManager.sendChatMessages(roomID,socket);
 			
 			Modules.Dispatcher.respond(socket,responseID,false);
 
@@ -228,7 +242,7 @@ UserManager.getAwarenessData=function(roomID,connections){
 		
 		var presData={};
 		presData.username=con.user.username;
-		presData.id=i;
+		presData.id=con.user.id;
 		presData.color=con.user.color;
 		awarenessData.present.push(presData);
 	}
@@ -296,6 +310,15 @@ UserManager.getConnectionBySocket=function(socket){
 	return false;
 }
 
+UserManager.getConnectionByUserID=function(userID){
+	
+	for (var i in this.connections){
+		var connection=this.connections[i];
+		if (connection.user.id==userID) return connection;
+	}
+	return false;
+}
+
 UserManager.getConnectionBySocketID=function(socketID){
 	for (var i in this.connections){
 		var connection=this.connections[i];
@@ -324,6 +347,8 @@ UserManager.getUserLocations=function(){
    		
    		var obj={}
    		obj.username=data.user.username;
+   		obj.id=data.user.id;
+   		obj.socketID=data.socket.id;
    		obj.room=data.room;
    		
    		userData.push(obj);
@@ -331,6 +356,17 @@ UserManager.getUserLocations=function(){
    	
    	return userData;
 	
+}
+
+UserManager.getUserName=function(userID){
+	var connections=UserManager.connections;
+	for (var i in connections){
+		var data=connections[i];
+		
+		if (!data.user.username) continue;
+		if (data.socket.id==userID) return data.user.username;
+	}
+	return undefined;
 }
 
 UserManager.getUserRooms=function(context,callback){

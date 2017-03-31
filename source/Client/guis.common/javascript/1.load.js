@@ -36,12 +36,12 @@ GUI.loadGUI = function(step) {
 		return;
 	}
 	
-	if (step == undefined || step == 1) {
+	if (step == undefined || step == 1) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
 		if (!GUI.loaded) GUI.chat.init();
 		GUI.chat.clear(); //clear chats messages
-	
+
 		if (!GUI.loaded) GUI.sidebar.init(); //init sidebar
 
 
@@ -81,8 +81,7 @@ GUI.loadGUI = function(step) {
 		if (!GUI.loaded) GUI.initReturnKeyHandler(); //handle return key events to save changes during the inplace editing
 	
 		if (!GUI.loaded) GUI.initObjectCopyCutPasteHandlingByKeyboard(); //handle ctrl+c, ctrl+x, ctrl+v for copy, cut and paste objects //needs: ObjectManager.cutObjects, ObjectManager.copyObjects, ObjectManager.pasteObjets, ObjectManager.getSelected on keydown
-	
-		
+
 		/* toolbar */
 		if (!GUI.loaded) {
 			//needs: ObjectManager
@@ -123,16 +122,42 @@ GUI.loadGUI = function(step) {
 		
 		GUI.loaded = true;
 		GUI.hideLogin();
-		WebRTCManager.init();
 		
 		GUI.drawAllLinks(); //draw all existing links in the new room
 		if (Modules.Config.structuringMode) GUI.setMode(ObjectManager.getCurrentRoom().getAttribute('mode'));
-	
+
+
+		//Init applicationManager & load GUI-elements
+		Modules.ApplicationManager.applicationCall("getClientApplicationData", function(GuiElements){
+			Modules.ApplicationManager.setAppData(GuiElements);
+			GUI.initApplications();
+		});
+		
+		setTimeout(function(){
+		
+			ObjectManager.getCurrentRoom().serverCall("writePermission",function(result){
+				GUI.writePermission=result;
+				console.log("Write permission: ",GUI.writePermission);
+				GUI.fadeoutActionElements();
+			});
+		}, 200);
+
 	} else {
 		console.error("unknown load step");
 	}
 
 }
+
+GUI.fadeoutActionElements = function(){
+	if(GUI.writePermission){
+
+	}else{
+		$(".header_left").css("display","none");
+		$("#paste_button").css("display","none");
+		$("#undo_button").css("display","none");
+		$("#trash_button").css("display","none");
+	}
+};
 
 GUI.checkCurrentsGUIObjects = function(){
         $(".ui-dialog-content").dialog("close");
