@@ -392,7 +392,6 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
 GeneralObject.getAttribute = function(attribute, noevaluation) {
     return this.attributeManager.getAttribute(this, attribute, noevaluation);
 }
-GeneralObject.getAttribute.public = true;
 
 GeneralObject.setAttribute = function(attribute, value, forced, notify) {
     try {

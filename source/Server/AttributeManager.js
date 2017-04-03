@@ -177,8 +177,6 @@ AttributeManager.registerAttribute=function(attribute,data){
 *	set an attribute to a value on a specified object
 */
 AttributeManager.setAttribute=function(object, attribute, value, forced, notify, transactionId){
-	console.log("setAttribute is called on the Server on object");
-	console.log(object);
 	var that = this;
 		
 	// do nothing, if value has not changed

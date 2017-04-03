@@ -199,6 +199,7 @@ fileConnector.getInventory=function(roomID,context,callback){
 
 	if (callback) {
 		/* async */
+		console.log(inventory);
 		process.nextTick(function(){callback(inventory);});
 	}
 	return inventory;

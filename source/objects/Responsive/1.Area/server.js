@@ -10,6 +10,7 @@
 var theObject = Object.create(require('./common.js'));
 var Modules = require('../../../server.js');
 
+module.exports = theObject;
 
 theObject.evaluatePosition = function(object, inside) {   
     console.log(object);
@@ -46,6 +47,7 @@ theObject.checkData = function() {
 
     return true;
 }
+
 theObject.getPlacementArea = function(object) {
     var startX = this.getAttribute('x');
     var startY = this.getAttribute('y');
@@ -71,6 +73,3 @@ theObject.howToHandle = function(object) {
         return 'distract';
     }
 }
-
-
-module.exports = theObject;
