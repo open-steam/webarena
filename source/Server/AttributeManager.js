@@ -20,7 +20,7 @@ var _ = require('underscore');
 *   even when several instances of the same object exist (which is common on
 *   the server side), they all have the same attribute set they operate on.
 */
-var AttributeManager=new function(){
+var AttributeManager = new function(){
 	
 	//actual attribute data is kept private, so it can only be maniplulated
 	//by setter and getter functions.
@@ -126,7 +126,7 @@ AttributeManager.registerAttribute=function(attribute,data){
 	if (data.type===undefined) data.type='text';
 	if (data.min===undefined) data.min=-50000;
 	if (data.max===undefined) data.max=50000;
-	if (data.standard==undefined) data.standard=0;
+	if (data.standard===undefined) data.standard=0;
 	
 	
 	data.setter=function(object,value){	
@@ -176,8 +176,8 @@ AttributeManager.registerAttribute=function(attribute,data){
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object, attribute, value, forced, notify){
-
+AttributeManager.setAttribute=function(object, attribute, value, forced, notify, transactionId){
+	console.log("I arrived at the attributeManager");
 	var that = this;
 		
 	// do nothing, if value has not changed
@@ -200,8 +200,7 @@ AttributeManager.setAttribute=function(object, attribute, value, forced, notify)
 	// ever changed in only one aspect.
 		
 	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-		if (object.evaluatePosition)
-			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
+		if (object.evaluatePosition) object.evaluatePosition(attribute,value,object.getAttribute(attribute));
 	}
 	
 	// for every other attribute which may have changed, a changed function is called
@@ -322,6 +321,7 @@ AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	
 	// call the getter function
 	
+	//Intentional error
 	return getter(object);
 }
 

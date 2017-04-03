@@ -109,10 +109,7 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 			if (serverFunction === "setAttribute"){
 				var attribute= serverFunctionParams[0];
 				
-				//do not make history entries for object blocking metadata
-				if (attribute=='blockedTime') return;
-				if (attribute=='blockedByID') return;
-				if (attribute=='blockedByUser') return;
+
 				
 				var oldValue = object.getAttribute(attribute);
 				var historyEntry = {
@@ -138,7 +135,10 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 			
 		}
-		fn.apply(object, serverFunctionParams);
+		
+
+		fn.apply(object, serverFunctionParams);	
+
 		
 	});
 
@@ -146,7 +146,12 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 };
 
 ObjectController.repositionObjects = function(data, context, cb) {
-	    var roomID = data.room;    Modules.ObjectManager.getRoom(roomID, context, roomID, function(room) { //the room object        room.repositionObjects();    });}
+	
+    var roomID = data.room;
+    Modules.ObjectManager.getRoom(roomID, context, roomID, function(room) { //the room object
+        room.repositionObjects();
+    });
+}
 
 
 module.exports = ObjectController;

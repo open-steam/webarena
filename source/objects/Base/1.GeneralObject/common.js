@@ -197,6 +197,10 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
     
+    this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
+    this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
+    this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
+    
     var r = Modules.Helper.getRandom(0, 200);
     var g = Modules.Helper.getRandom(0, 200);
     var b = Modules.Helper.getRandom(0, 200);
@@ -205,12 +209,6 @@ GeneralObject.register = function(type) {
     this.standardData.fillcolor = 'rgb(' + r + ',' + g + ',' + b + ')';
     this.standardData.width = width;
     this.standardData.height = width;
-
-
-    this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
-    this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
-    this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
-    
 }  // End of register function
 
 /**
@@ -391,7 +389,8 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
     return this.attributeManager.registerAttribute(attribute, setter, type, min, max);
 }
 
-GeneralObject.setAttribute = function(attribute, value, forced, notify, transactionId) {
+
+GeneralObject.setAttribute = function(attribute, value, forced, notify) {
     try {
         if(GUI.writePermission==false || GUI.writePermission=="undefined"){
             return ;
@@ -400,10 +399,19 @@ GeneralObject.setAttribute = function(attribute, value, forced, notify, transact
         }
     }
     catch(err) {
-        // GUI wird auf dem Server aufgerufen und ist dort nicht verfĂźgbar
+        // Funktion wird auf dem Server aufgerufen und ist dort nicht verfuegbar
+        console.log("setAttribute wird auf dem Server aufgerufen");
         return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
     }
 }
+GeneralObject.setAttribute.public = true;
+GeneralObject.setAttribute.neededRights = {write: true};
+
+GeneralObject.getAttribute = function(attribute, noevaluation) {
+    return this.attributeManager.getAttribute(this, attribute, noevaluation);
+}
+GeneralObject.getAttribute.public = true;
+GeneralObject.getAttribute.neededRights = {read: true};
 
 GeneralObject.hasAttribute = function(attribute) {
     return this.attributeManager.hasAttribute(this, attribute);

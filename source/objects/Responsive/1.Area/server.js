@@ -12,7 +12,7 @@ var Modules = require('../../../server.js');
 module.exports = theObject;
 
 
-theObject.evaluatePosition = function(object, inside) {
+theObject.evaluatePosition = function(object, inside) {   
     if (this.checkData()) {
         var data = this.getData();
        

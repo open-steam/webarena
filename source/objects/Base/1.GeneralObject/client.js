@@ -989,7 +989,46 @@ GeneralObject.showAttributeTransferDialog = function(selected) {
 
 }
 
-/***	client side drop handler (for senstitve objects)*   overwrite this if you want to handle dropped elements*   on the client side. Leave it untouched, if you want to*   handle drop events on the server or in an application*/GeneralObject.onDrop=function(elem){	this.serverCall("onDrop", elem.getID());}GeneralObject.isBackgroundObject = function(){	if (this.isStructuring()) return true;	if (this.getAttribute('fixed')) return true; 		return false;}GeneralObject.isAccessible = function() {	if (!Modules.Config.structuringMode) return true;		var roomInBackgroundMode=this.getRoom().isInBackgroundMode();		var isBackgroundObject=this.isBackgroundObject();		return (roomInBackgroundMode==isBackgroundObject);	}GeneralObject.isVisible=function(){		if (!this.getAttribute('visible')) return false;		if (!Modules.Config.structuringMode) return true;		if (this.getRoom().isInBackgroundMode() && ! this.isBackgroundObject()) return false;		return true;	}
+/**
+*	client side drop handler (for senstitve objects)
+*   overwrite this if you want to handle dropped elements
+*   on the client side. Leave it untouched, if you want to
+*   handle drop events on the server or in an application
+*/
+GeneralObject.onDrop=function(elem){
+	this.serverCall("onDrop", elem.getID());
+}
+
+
+GeneralObject.isBackgroundObject = function(){
+	if (this.isStructuring()) return true;
+	if (this.getAttribute('fixed')) return true; 
+	
+	return false;
+}
+
+GeneralObject.isAccessible = function() {
+	if (!Modules.Config.structuringMode) return true;
+	
+	var roomInBackgroundMode=this.getRoom().isInBackgroundMode();
+	
+	var isBackgroundObject=this.isBackgroundObject();
+	
+	return (roomInBackgroundMode==isBackgroundObject);
+	
+}
+
+GeneralObject.isVisible=function(){
+	
+	if (!this.getAttribute('visible')) return false;
+	
+	if (!Modules.Config.structuringMode) return true;
+	
+	if (this.getRoom().isInBackgroundMode() && ! this.isBackgroundObject()) return false;
+	
+	return true;
+	
+}
 
 GeneralObject.shout=function(text){
 	

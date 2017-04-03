@@ -143,6 +143,10 @@ Dispatcher.registerCall('restoreState', function(socket, data, responseID) {
 
 Dispatcher.registerCall('serverCall', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
+    if(data.fn.name == "setAttribute"){
+        console.log("serverCall from AttributeManager on client-side");
+        console.log(data);
+    }
     Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
 });
 

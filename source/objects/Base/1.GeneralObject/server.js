@@ -1061,6 +1061,7 @@ theObject.writePermission=function(callback){
 		callback(result);
 	});
 }
+
 theObject.writePermission.public=true;
 
 theObject.intelligentRename=function(attribute,value){

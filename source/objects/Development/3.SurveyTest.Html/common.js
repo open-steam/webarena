@@ -13,7 +13,7 @@ SurveyTest.register=function(type){
 
 	// Registering the object
 
-	HtmlObject=Modules.ObjectManager.getPrototype('HtmlObject');
+	var HtmlObject=Modules.ObjectManager.getPrototype('HtmlObject');
 	HtmlObject.register.call(this,type);
 
 	this.registerAttribute('points_1',{hidden:false, type: 'number', min: -5, standard: 0, max: 5});

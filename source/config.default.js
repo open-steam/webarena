@@ -56,10 +56,10 @@ module.exports={
 	
 // Development
 	
-	debugMode: false,
+	debugMode: true,
 	logLevels : {
 			"warn" : true,
-			"debug" : false,
+			"debug" : true,
 			"info" : false
 	},
 	
