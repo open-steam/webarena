@@ -136,10 +136,20 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 			
 		}
 		
-
-		fn.apply(object, serverFunctionParams);	
-
 		
+		// var callback = serverFunctionParams[serverFunctionParams.length-1];
+
+		// var newParams = serverFunctionParams.slice(1, 3);
+		// newParams.push("true");
+		// newParams.push(callback);
+		// console.log(newParams);
+		
+		/* ERROR?:
+		 * Maybe a distinction needs to be made because some functions changed
+ 		 *
+		 */
+
+		fn.apply(object, serverFunctionParams);			
 	});
 
 

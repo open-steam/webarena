@@ -9,10 +9,10 @@
 
 var theObject = Object.create(require('./common.js'));
 var Modules = require('../../../server.js');
-module.exports = theObject;
 
 
 theObject.evaluatePosition = function(object, inside) {   
+    console.log(object);
     if (this.checkData()) {
         var data = this.getData();
        
@@ -73,3 +73,4 @@ theObject.howToHandle = function(object) {
 }
 
 
+module.exports = theObject;

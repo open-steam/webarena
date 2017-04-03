@@ -177,7 +177,8 @@ AttributeManager.registerAttribute=function(attribute,data){
 *	set an attribute to a value on a specified object
 */
 AttributeManager.setAttribute=function(object, attribute, value, forced, notify, transactionId){
-	console.log("I arrived at the attributeManager");
+	console.log("setAttribute is called on the Server on object");
+	console.log(object);
 	var that = this;
 		
 	// do nothing, if value has not changed
@@ -200,7 +201,7 @@ AttributeManager.setAttribute=function(object, attribute, value, forced, notify,
 	// ever changed in only one aspect.
 		
 	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-		if (object.evaluatePosition) object.evaluatePosition(attribute,value,object.getAttribute(attribute));
+		if (object.collectPositioningData) object.collectPositioningData(attribute,value,object.getAttribute(attribute));
 	}
 	
 	// for every other attribute which may have changed, a changed function is called

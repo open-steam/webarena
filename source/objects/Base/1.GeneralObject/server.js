@@ -628,9 +628,10 @@ theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
 }
 
-theObject.collectPositioningData=theObject.evaluatePosition;
-
-theObject.evaluatePosition=function(key,value,oldvalue){
+//this is typically called when an object has been moved
+//data is collected and then handed over to the room which holds information
+//about structuring objects and thus does further processing
+theObject.collectPositioningData=function(key,value,oldvalue){
 
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		this.runtimeData.evaluatePositionData={};
@@ -659,15 +660,13 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 	
 	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
 		
+		
 		var data={};
 		data.old=posData.old;
 		data.new=posData.new;
 		
-
-	    self.evaluatePositionInt(data);
-		self.runtimeData.evaluatePositionData=undefined;
-    	
-		
+		self.evaluatePositionInt(data);
+	    self.runtimeData.evaluatePositionData=undefined;
 	},timerLength);
 	
 }

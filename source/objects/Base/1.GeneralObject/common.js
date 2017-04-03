@@ -389,6 +389,10 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
     return this.attributeManager.registerAttribute(attribute, setter, type, min, max);
 }
 
+GeneralObject.getAttribute = function(attribute, noevaluation) {
+    return this.attributeManager.getAttribute(this, attribute, noevaluation);
+}
+GeneralObject.getAttribute.public = true;
 
 GeneralObject.setAttribute = function(attribute, value, forced, notify) {
     try {
@@ -400,18 +404,11 @@ GeneralObject.setAttribute = function(attribute, value, forced, notify) {
     }
     catch(err) {
         // Funktion wird auf dem Server aufgerufen und ist dort nicht verfuegbar
-        console.log("setAttribute wird auf dem Server aufgerufen");
         return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
     }
 }
 GeneralObject.setAttribute.public = true;
 GeneralObject.setAttribute.neededRights = {write: true};
-
-GeneralObject.getAttribute = function(attribute, noevaluation) {
-    return this.attributeManager.getAttribute(this, attribute, noevaluation);
-}
-GeneralObject.getAttribute.public = true;
-GeneralObject.getAttribute.neededRights = {read: true};
 
 GeneralObject.hasAttribute = function(attribute) {
     return this.attributeManager.hasAttribute(this, attribute);
