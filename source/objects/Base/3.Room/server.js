@@ -12,15 +12,25 @@ var Modules=require('../../../server.js');
 var async = require('async');
 
 theObject.evaluatePositionFor = function(object, data) {
-	
-	var self=this    if (object.isActive && object.isActive()) {       
+	console.log("Evaluate position for called on: ");
+	console.log(object);
+	var self=this
+
+    if (object.isActive && object.isActive()) {
+       
        //this is called when an application object has moved.
        
         var oldContext=object.getAttribute('context').toString();
-               var inStructures=0;
+       
+        var inStructures=0;
         
         this.getInventoryAsync(function(allObjects){	
-        		   for (var i in allObjects) {		            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {		                inStructures+=allObjects[i].processPositioningData(object, data, self);		        }        	}
+        
+		   for (var i in allObjects) {
+		            if (allObjects[i].isStructuring && allObjects[i].isStructuring()) {
+		                inStructures+=allObjects[i].processPositioningData(object, data, self);
+		        }
+        	}
         
         	//if not one of the structures could process the object, it must be sitting on neural ground
         	if (!inStructures){
@@ -38,7 +48,10 @@ theObject.evaluatePositionFor = function(object, data) {
 	        }
         	
         });
-           }}
+       
+    }
+
+}
 
 theObject.removeEvaluationArray=[];
 
@@ -247,7 +260,16 @@ theObject.repositionObjects = function(object) {
 		
 		   //first determine, which objects are structuring objects and which ones are application (or active) objects
 	
-		    var structures = [];		    var activeObjects = [];			        for (var i in inventory) {	            if (inventory[i].isStructuring && inventory[i].isStructuring()) {	                structures.push(inventory[i]);	            } else if (inventory[i].isActive && inventory[i].isActive()) {	                activeObjects.push(inventory[i]);	            }	        }
+		    var structures = [];
+		    var activeObjects = [];
+		
+	        for (var i in inventory) {
+	            if (inventory[i].isStructuring && inventory[i].isStructuring()) {
+	                structures.push(inventory[i]);
+	            } else if (inventory[i].isActive && inventory[i].isActive()) {
+	                activeObjects.push(inventory[i]);
+	            }
+	        }
 	        
 	        //if an object has been passed to this function, only care about it and leave
 	        //the others alone.
@@ -255,16 +277,25 @@ theObject.repositionObjects = function(object) {
 	        if (object) {
 	        	activeObjects = [];
 	        	activeObjects.push(object);
-	        }		
+	        }
+		
             //now we try to place every active object
-            				    for (var index in activeObjects) {
+            		
+		    for (var index in activeObjects) {
 		    	
 		    	var ao = activeObjects[index];
-		    	var aoWidth = ao.getAttribute("width");		        var aoHeight = ao.getAttribute("height");		        var aoX = ao.getAttribute("x");		        var aoY = ao.getAttribute("y");
-		    			        //determine, which structuring objects have the current active object and
+		    	var aoWidth = ao.getAttribute("width");
+		        var aoHeight = ao.getAttribute("height");
+		        var aoX = ao.getAttribute("x");
+		        var aoY = ao.getAttribute("y");
+		    	
+		        //determine, which structuring objects have the current active object and
 		        //which don't. We have to care about both!
 		        
-		        var structuresHavingObject = [];		        var structuresNotHavingObject = [];		        		        for (var i in structures) {
+		        var structuresHavingObject = [];
+		        var structuresNotHavingObject = [];
+		        
+		        for (var i in structures) {
 		        	
 		        	if (structures[i].isInContext(ao)){  // Check if the structure even cares about the context
 		        										 // the application object is in. If this is not the case
@@ -279,45 +310,167 @@ theObject.repositionObjects = function(object) {
 		        	} else {
 		        		structuresNotHavingObject.push(structures[i]);
 		        	}
-		        			        }		
+		        	
+		        }
+		
 		        // now building paths
 		        // the activeObject will later be placed within these paths
 		        // if there is no structure to be found which can position the activeObject
 		        // the whole room or at least 1024x768 pixels are used 
-				        var solution;		        if (structuresHavingObject.length === 0) {		            var xStructMax = 0;		            var yStructMax = 0;		            for (var s in structures) {		                var xTemp = structures[s].getAttribute("x") + structures[s].getAttribute("width");		                var yTemp = structures[s].getAttribute("y") + structures[s].getAttribute("height");				                if (xStructMax < xTemp) {xStructMax = xTemp;}		                if (yStructMax < yTemp) {yStructMax = yTemp;}		            }				            var x1 = 0;		            var x2 = xStructMax < 1024 ? 1024 : xStructMax;		            var y1 = 0;		            var y2 = yStructMax < 768 ? 768 : yStructMax;				            solution = [[{X: x1, Y: y1}, {X: x2, Y: y1}, {X: x2, Y: y2}, {X: x1, Y: y2}]]		        } else {
+		
+		        var solution;
+		        if (structuresHavingObject.length === 0) {
+		            var xStructMax = 0;
+		            var yStructMax = 0;
+		            for (var s in structures) {
+		                var xTemp = structures[s].getAttribute("x") + structures[s].getAttribute("width");
+		                var yTemp = structures[s].getAttribute("y") + structures[s].getAttribute("height");
+		
+		                if (xStructMax < xTemp) {xStructMax = xTemp;}
+		                if (yStructMax < yTemp) {yStructMax = yTemp;}
+		            }
+		
+		            var x1 = 0;
+		            var x2 = xStructMax < 1024 ? 1024 : xStructMax;
+		            var y1 = 0;
+		            var y2 = yStructMax < 768 ? 768 : yStructMax;
+		
+		            solution = [[{X: x1, Y: y1}, {X: x2, Y: y1}, {X: x2, Y: y2}, {X: x1, Y: y2}]]
+		        } else {
 		        	
 		        	if (!structuresHavingObject[0].getPlacementArea){
 		        		
 		        		console.log('ERROR: '+structuresHavingObject[0]+' has no getPlacementArea function');
 		        		
-		        	}		            solution = structuresHavingObject[0].getPlacementArea(ao);
+		        	}
+		            solution = structuresHavingObject[0].getPlacementArea(ao);
 		            
 		            
-		            for (var i = 1; i < structuresHavingObject.length; i++) {			            var tempPositions = structuresHavingObject[i].getPlacementArea(ao);			            var cpr = new Modules.Clipper.Clipper();			            cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);			            cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);			            //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//			            var solution_paths = new Modules.Clipper.Paths();			            var succeeded = cpr.Execute(0, solution_paths, 0, 0);			            solution = solution_paths;						        }				        }		
+		            for (var i = 1; i < structuresHavingObject.length; i++) {
+			            var tempPositions = structuresHavingObject[i].getPlacementArea(ao);
+			            var cpr = new Modules.Clipper.Clipper();
+			            cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
+			            cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
+			            //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
+			            var solution_paths = new Modules.Clipper.Paths();
+			            var succeeded = cpr.Execute(0, solution_paths, 0, 0);
+			            solution = solution_paths;
+			
+			        }
+		
+		        }
+		
 		
 		        // now those structures that can not position the object are taken into account
 		        // they must be subtracted from the are which would be a valid position for the object.
-		        		        for (var i = 0; i < structuresNotHavingObject.length; i++) {
-		        			            var tempPositions = structuresNotHavingObject[i].getDisplacementArea(ao);		            var cpr = new Modules.Clipper.Clipper();				            cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);		            cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);				            //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//		            var solution_paths = new Modules.Clipper.Paths();				            var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctDifference, solution_paths, 0, 0);		            solution = solution_paths;				        }		
+		        
+		        for (var i = 0; i < structuresNotHavingObject.length; i++) {
+		        	
+		            var tempPositions = structuresNotHavingObject[i].getDisplacementArea(ao);
+		            var cpr = new Modules.Clipper.Clipper();
+		
+		            cpr.AddPaths(solution, Modules.Clipper.PolyType.ptSubject, true);
+		            cpr.AddPaths(tempPositions, Modules.Clipper.PolyType.ptClip, true);
+		
+		            //ctIntersection: 0, ctUnion: 1, ctDifference: 2, ctXor: 3//
+		            var solution_paths = new Modules.Clipper.Paths();
+		
+		            var succeeded = cpr.Execute(Modules.Clipper.ClipType.ctDifference, solution_paths, 0, 0);
+		            solution = solution_paths;
+		
+		        }
+		
 		        // now we try to position the activeObject
-		        		        if (solution.length === 0) {
+		        
+		        if (solution.length === 0) {
 		        	
 		        	// if the solution set is empty, we have a conflicting structure. In this case, no positioning is possible
 		        	// TODO: conflict handling
-		        			            ao.setAttribute("linecolor", "rgb(204,0,0)");		            ao.setAttribute("linesize", "5");
+		        	
+		            ao.setAttribute("linecolor", "rgb(204,0,0)");
+		            ao.setAttribute("linesize", "5");
 		            console.log('Conflicting structure!');
-		            		        } else {		            ao.setAttribute("linecolor", "transparent");		            var minX = Number.MAX_VALUE;		            var maxX = 0;		            var minY = Number.MAX_VALUE;		            var maxY = 0;		
+		            
+		        } else {
+		            ao.setAttribute("linecolor", "transparent");
+		            var minX = Number.MAX_VALUE;
+		            var maxX = 0;
+		            var minY = Number.MAX_VALUE;
+		            var maxY = 0;
+		
 		            // let's look if the current position is okay. In this case, nothing has to be done.
-				            var currentPositionInPolygon = true;		            var currentPosition = new Modules.Clipper.IntPoint(aoX, aoY);		            for (var i in solution) {		                var inpoly = Modules.Clipper.Clipper.PointInPolygon(currentPosition, solution[i]);		                if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {		                    currentPositionInPolygon = false;		                    break;		                }		            }		            
+		
+		            var currentPositionInPolygon = true;
+		            var currentPosition = new Modules.Clipper.IntPoint(aoX, aoY);
+		            for (var i in solution) {
+		                var inpoly = Modules.Clipper.Clipper.PointInPolygon(currentPosition, solution[i]);
+		                if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
+		                    currentPositionInPolygon = false;
+		                    break;
+		                }
+		            }
+		            
 		            // if the current position is not okay, find a new one and set it there.
-		            		            if (!currentPositionInPolygon) {		                for (var j in solution[0]) {		                    if (solution[0][j].X < minX) {		                        minX = solution[0][j].X;		                    }		                    if (solution[0][j].X > maxX) {		                        maxX = solution[0][j].X;		                    }		                    if (solution[0][j].Y < minY) {		                        minY = solution[0][j].Y;		                    }		                    if (solution[0][j].Y > maxY) {		                        maxY = solution[0][j].Y;		                    }		                }				                if ((maxX - minX) > aoWidth) {		                    maxX -= aoWidth;		                }		                if ((maxY - minY) > aoHeight) {		                    maxY -= aoHeight;		                }				                var inPolyFlag = false;		                var counter = 0;		                var randomX;		                var randomY;
+		            
+		            if (!currentPositionInPolygon) {
+		                for (var j in solution[0]) {
+		                    if (solution[0][j].X < minX) {
+		                        minX = solution[0][j].X;
+		                    }
+		                    if (solution[0][j].X > maxX) {
+		                        maxX = solution[0][j].X;
+		                    }
+		                    if (solution[0][j].Y < minY) {
+		                        minY = solution[0][j].Y;
+		                    }
+		                    if (solution[0][j].Y > maxY) {
+		                        maxY = solution[0][j].Y;
+		                    }
+		                }
+		
+		                if ((maxX - minX) > aoWidth) {
+		                    maxX -= aoWidth;
+		                }
+		                if ((maxY - minY) > aoHeight) {
+		                    maxY -= aoHeight;
+		                }
+		
+		                var inPolyFlag = false;
+		                var counter = 0;
+		                var randomX;
+		                var randomY;
 		                
-		                // TODO: to something better than random here.				                while (!inPolyFlag && counter < 1000) {		                    var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));		                    var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));		                    var pt = new Modules.Clipper.IntPoint(randomX, randomY);		                    var inPolyFlagHelper = true;		                    for (var i in solution) {		                        var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);		                        if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {		                            inPolyFlagHelper = false;		                            break;		                        }		                    }		                    counter++;		                    inPolyFlag = inPolyFlagHelper;		                }		                ao.setAttribute("x", randomX, false, true);		                ao.setAttribute("y", randomY, false, true);
-		                ao.setAttribute("linecolor", "transparent");		            	ao.setAttribute("linesize", "0");		            }		        }		    }
+		                // TODO: to something better than random here.
+		
+		                while (!inPolyFlag && counter < 1000) {
+		                    var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));
+		                    var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));
+		                    var pt = new Modules.Clipper.IntPoint(randomX, randomY);
+		                    var inPolyFlagHelper = true;
+		                    for (var i in solution) {
+		                        var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
+		                        if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
+		                            inPolyFlagHelper = false;
+		                            break;
+		                        }
+		                    }
+		                    counter++;
+		                    inPolyFlag = inPolyFlagHelper;
+		                }
+		                ao.setAttribute("x", randomX, false, true);
+		                ao.setAttribute("y", randomY, false, true);
+		                ao.setAttribute("linecolor", "transparent");
+		            	ao.setAttribute("linesize", "0");
+		            }
+		        }
+		    }
 		
 		
 		
-	});}
+	});
+
+
+}
 
 theObject.modeChanged = function(value){
 	

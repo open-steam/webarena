@@ -179,77 +179,27 @@ theObject.makeSensitive=function(){
 		return result;
 	
 	};
-	
-	
-	/**
-	*	SensitiveObjects evaluate other objects in respect to themselves.
-	*
-	*	object the object that shall be evaluated
-	*	changeData old and new values of positioning (e.g. changeData.old.x) 
-	**/
-	theObject.evaluateObject=function(object,changeData){
-		
-		//complete data
-		
-		var oldData={};
-		var newData={};
-		var fields=['x','y','width','height'];
-		
-		for (var i=0;i<4;i++){
-			var field=fields[i];
-			oldData[field]=changeData.old[field] || object.getAttribute(field);
-			newData[field]=changeData.new[field] || object.getAttribute(field);
-		}
-		
-		//determine intersections
-		
-		var oldIntersects=this.intersects(oldData.x,oldData.y,oldData.width,oldData.height);
-		var newIntersects=this.intersects(newData.x,newData.y,newData.width,newData.height);
-		
-		//handle move
-		
-		if (oldIntersects && newIntersects) return this.onMoveWithin(object,newData);
-		if (!oldIntersects && !newIntersects) return this.onMoveOutside(object,newData);
-		if (oldIntersects && !newIntersects) return this.onLeave(object,newData);
-		if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
-	};
-	
-	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
-		
-	};
-	
-	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
-		
-	};
-	
-	if (!theObject.onLeave) theObject.onLeave=function(object,data){
-		
-	};
-	
-	if (!theObject.onEnter) theObject.onEnter=function(object,data){
-		
-	};
-	
-	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
-		
-	};
-
-	theObject.onDrop.public=true;
 
 }
 
-theObject.processPositioningData=theObject.evaluateObject;
 
 // ****************************************************************
 // * MAKE STRUCTURING *********************************************
 // ****************************************************************
 
 theObject.makeStructuring=function(){
-	this.isStructuringFlag=true;
-	this.makeSensitive();
-	this.isSensitiveFlag=false;
+	if (!Modules.config.structuringMode) {
+        console.log('Cannot make ' + this + ' structuring because structuring is turned off in config.');
+        return;
+    } else {
+        console.log(this + ' is now structuring');
+    }
+
+    this.isStructuringFlag = true;
+
+    var theObject = this;
 	
-	this.onObjectMove=function(changeData){
+	theObject.onObjectMove=function(changeData){
 		
 		//when a structuring object is moved, every active object may be in need of repositioning
 		
@@ -353,7 +303,6 @@ theObject.makeStructuring=function(){
 
 		//call evaluatePosition which does the actual evaluation. evaluatePosition does not have
 		//to care about setting the context any more.
-	    
 	    if (this.evaluatePosition){
 
 	        if (oldIntersects && newIntersects)   {// moved inside
@@ -663,6 +612,7 @@ theObject.collectPositioningData=function(key,value,oldvalue){
 		
 		self.getRoomAsync(function(){},function(room){
 	    	if (!room){
+	    		console.log("got no room");
 	    	    return;
 	    	}else{
 	    	   	room.evaluatePositionFor(self, data);

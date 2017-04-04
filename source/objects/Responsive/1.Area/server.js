@@ -12,8 +12,8 @@ var Modules = require('../../../server.js');
 
 module.exports = theObject;
 
-theObject.evaluatePosition = function(object, inside) {   
-    console.log(object);
+theObject.evaluatePosition = function(object, inside) {
+    console.log("evaluating Position");
     if (this.checkData()) {
         var data = this.getData();
        
