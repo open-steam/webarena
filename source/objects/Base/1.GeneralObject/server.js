@@ -45,8 +45,8 @@ theObject.makeSensitive=function(){
 		
 		for (var i=0;i<4;i++){
 			var field=fields[i];
-			oldData[field]=changeData['old'][field] || this.getAttribute(field);
-			newData[field]=changeData['new'][field] || this.getAttribute(field);
+			oldData[field]=changeData.old[field] || this.getAttribute(field);
+			newData[field]=changeData.new[field] || this.getAttribute(field);
 		}
 		
 		var that=this;
@@ -77,7 +77,7 @@ theObject.makeSensitive=function(){
 				}
 			});
 		})
-	}
+	};
 	
 	
 	theObject.bBoxIntersects=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
@@ -102,7 +102,7 @@ theObject.makeSensitive=function(){
 		//console.log('intersects');
 		return true;	
 		
-	}
+	};
 	
 	
 	/**
@@ -125,8 +125,7 @@ theObject.makeSensitive=function(){
 		
 		return this.bBoxIntersects(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
 		
-	}
-	
+	};
 	
 	/**
 	*	getOverlappingObjectsAsync
@@ -151,12 +150,10 @@ theObject.makeSensitive=function(){
 						result.push(test);
 					}
 				}
-				console.log(result);
 				callback(result);
 			});
 		});
-	}
-	
+	};
 	
 	/**
 	*	getOverlappingObjects
@@ -181,7 +178,7 @@ theObject.makeSensitive=function(){
 		
 		return result;
 	
-	}
+	};
 	
 	
 	/**
@@ -200,8 +197,8 @@ theObject.makeSensitive=function(){
 		
 		for (var i=0;i<4;i++){
 			var field=fields[i];
-			oldData[field]=changeData['old'][field] || object.getAttribute(field);
-			newData[field]=changeData['new'][field] || object.getAttribute(field);
+			oldData[field]=changeData.old[field] || object.getAttribute(field);
+			newData[field]=changeData.new[field] || object.getAttribute(field);
 		}
 		
 		//determine intersections
@@ -215,7 +212,7 @@ theObject.makeSensitive=function(){
 		if (!oldIntersects && !newIntersects) return this.onMoveOutside(object,newData);
 		if (oldIntersects && !newIntersects) return this.onLeave(object,newData);
 		if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
-	}
+	};
 	
 	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
 		
@@ -257,7 +254,7 @@ theObject.makeStructuring=function(){
 		//when a structuring object is moved, every active object may be in need of repositioning
 		
 		console.log('onObjectMove on structuring object '+this);
-	}
+	};
 
 	theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
 
@@ -280,7 +277,7 @@ theObject.makeStructuring=function(){
 
         //console.log('intersects');
         return true;
-	}
+	};
 
 
     /**
@@ -344,8 +341,8 @@ theObject.makeStructuring=function(){
 
         for (var i in fields) {
             var field = fields[i];
-            oldData[field] = changeData['old'][field] || object.getAttribute(field);
-            newData[field] = changeData['new'][field] || object.getAttribute(field);
+            oldData[field] = changeData.old[field] || object.getAttribute(field);
+            newData[field] = changeData.new[field] || object.getAttribute(field);
         }
 
         //determine intersections
@@ -383,7 +380,7 @@ theObject.makeStructuring=function(){
             
             var removeEvaluation=function(){
             	self.evaluatePosition(object, false);
-            }
+            };
             removeEvaluation.context=self.getAttribute('context');
             
             room.addRemoveEvaluations(removeEvaluation);
@@ -394,7 +391,7 @@ theObject.makeStructuring=function(){
 	    	console.log('ERROR: '+this+' is a structuring object which does not have the evaluatePosition function!');
 	    	return 0;
 	    }
-    }
+    };
 
 
     theObject.getDisplacementArea = function(object) {
@@ -426,7 +423,7 @@ theObject.makeStructuring=function(){
         var p4 = {X: startX , Y: startY + height};
         
         return [[p1, p2, p3, p4]];
-    }
+    };
 	
 
 	
@@ -442,16 +439,14 @@ theObject.makeStructuring=function(){
 		var similar = thisContext==otherContext;
 		
 		return similar;
-	}
-
-
-}
+	};
+};
 
 
 theObject.howToHandle=function(object){
-	console.log('ERROR: howToHandle is not implemented on '+this);
+	console.log('ERROR: howToHandle is not implemented on '+object);
 	return 'distract';
-}
+};
 
 
 
@@ -465,7 +460,7 @@ theObject.howToHandle=function(object){
 */
 theObject.getAttributeSet=function(){
 	return Modules.AttributeManager.getAttributeSet(this);
-}
+};
 
 /**
 *	updateClient
@@ -479,7 +474,7 @@ theObject.updateClient=function(socket,mode){
 		var SocketServer=Modules.SocketServer;
 		SocketServer.sendToSocket(socket,mode, object.getAttributeSet());
 	});
-}
+};
 
 /**
 *	persist
@@ -497,7 +492,7 @@ theObject.persist=function(){
 			self.updateClients();
 		});
 	} 
-}
+};
 
 /**
 *	updateClients
@@ -517,9 +512,8 @@ theObject.updateClients=function(mode){
     	for (var i in connections){
 			self.updateClient(connections[i].socket,mode);
 		}
-    },100);
-	
-}
+    },100);	
+};
 
 /**
 *	hasContent
@@ -528,7 +522,7 @@ theObject.updateClients=function(mode){
 */
 theObject.hasContent=function(){
 	return this.getAttribute('hasContent');
-}
+};
 
 /**
 *	setContent
@@ -552,13 +546,13 @@ theObject.setContent=function(content,callback){
 	//send object update to all listeners
 	this.persist();
 	this.updateClients('contentUpdate');
-}
+};
 
 theObject.setContent.public = true;
 
 theObject.setContent.neededRights = {
     write : true
-}
+};
 
 //TODO: On this lever, we should not care about files at all!
 theObject.copyContentFromFile=function(filename,callback) {
@@ -570,14 +564,13 @@ theObject.copyContentFromFile=function(filename,callback) {
 
 	//send object update to all listeners
 	this.persist();
-	this.updateClients('contentUpdate');
-	
-}
+	this.updateClients('contentUpdate');	
+};
 
 theObject.getCurrentUserName=function(){
 	if (!this.context) return 'root';
 	return this.context.user.username;
-}
+};
 
 /**
 *	getContent
@@ -595,13 +588,13 @@ theObject.getContent=function(callback){
 		var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
 		return content;
     }
-}
+};
 
 theObject.getContent.public = true;
 
 theObject.getContent.neededRights = {
     read : true
-}
+};
 
 theObject.getContentAsString=function(callback){
 	if (callback === undefined) {
@@ -612,7 +605,7 @@ theObject.getContentAsString=function(callback){
 			callback(Modules.Helper.utf8.parse(content));
 		});
 	}
-}
+};
 
 
 /**
@@ -622,31 +615,34 @@ theObject.getContentAsString=function(callback){
 */
 theObject.getInlinePreview=function(mimeType, callback){
 	return Modules.Connector.getInlinePreview(this.inRoom, this.id, mimeType, this.context, callback);
-}
+};
 
 theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
-}
+};
 
 //this is typically called when an object has been moved
 //data is collected and then handed over to the room which holds information
 //about structuring objects and thus does further processing
 theObject.collectPositioningData=function(key,value,oldvalue){
-
+	console.log("collecting positioning data");
+	console.log(this.runtimeData.evaluatePositionData);
 	if (this.runtimeData.evaluatePositionData===undefined) {
+		console.log("defining positioningdata");
 		this.runtimeData.evaluatePositionData={};
 		this.runtimeData.evaluatePositionData.old={};
 		this.runtimeData.evaluatePositionData.new={};
 	}
 	
 	if (this.runtimeData.evaluatePositionData.delay) {
+		console.log("waiting for something to happen");
 		clearTimeout(this.runtimeData.evaluatePositionData.delay);
 		this.runtimeData.evaluatePositionData.delay=false;
 	}
 	
-	this.runtimeData.evaluatePositionData['new'][key]=value;
-	if (!this.runtimeData.evaluatePositionData['old'][key]) {
-		this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
+	this.runtimeData.evaluatePositionData.new[key]=value;
+	if (!this.runtimeData.evaluatePositionData.old[key]) {
+		this.runtimeData.evaluatePositionData.old[key]=oldvalue;
 		//if there yet is a value here, we have concurrent modifications
 	}
 	
@@ -665,36 +661,29 @@ theObject.collectPositioningData=function(key,value,oldvalue){
 		data.old=posData.old;
 		data.new=posData.new;
 		
-		self.evaluatePositionInt(data);
-	    self.runtimeData.evaluatePositionData=undefined;
+		self.getRoomAsync(function(){},function(room){
+	    	if (!room){
+	    	    return;
+	    	}else{
+	    	   	room.evaluatePositionFor(self, data);
+	    	}
+	    	self.runtimeData.evaluatePositionData=undefined;
+    	});
+   
 	},timerLength);
 	
-}
-
-theObject.evaluatePositionInt=function(data){
-	
-	var that=this;
-
-	this.getRoomAsync(function(){
-		//error
-	},function(room){
-		if (!room) return;
-		room.evaluatePositionFor(that,data);
-	});
-	
-}
+};
 
 theObject.getRoom=function(){
 	if (!this.context) error('No context');
 	return (this.context.room);	
-}
-
+};
 
 
 theObject.getRoomAsync=function(error,cb){
 	if (!this.context) error('No context');
 	cb (this.context.room);	
-}
+};
 
 
 theObject.getBoundingBox=function(){
@@ -705,14 +694,14 @@ theObject.getBoundingBox=function(){
 	var height=this.getAttribute('height');
 	return {'x':x,'y':y,'width':width,'height':height};
 	
-}
+};
 
 //gets an object within the same room
 theObject.getObject=function(id){
 	var self = this;
 	
 	return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
-}
+};
 
 
 theObject.getLinkedObjectsAsync=function(callback) {
@@ -735,12 +724,12 @@ theObject.getLinkedObjectsAsync=function(callback) {
 	
 	callback(links);
 	
-}
+};
 
 
 theObject.getObjectsToDuplicateAsync = function(list,callback) {
 	
-	if (list == undefined) {
+	if (list === undefined) {
 		/* init new list */
 		
 		/* list of objects which will be duplicated */
@@ -763,7 +752,7 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 		
 		temp.push=function(list,callback){
 			list[self.getAttribute('id')] = true; //add this object to list
-		}
+		};
 		
 		async.applyEachSeries(temp, list, function(){
 			var arrList = [];
@@ -779,7 +768,7 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 		
 	});
 	
-}
+};
 
 
 
@@ -798,20 +787,20 @@ theObject.browse = function(data, callback) {
         var args = arguments[0];
         var defaults = {
             'icon' : "/objectIcons/Subroom",
-            'name' : args["title"],
+            'name' : args.title,
             'type' : "Room"
-        }
-        args = _.defaults(args, defaults)
+        };
+        args = _.defaults(args, defaults);
 
         return createNode(args);
-    }
+    };
 
     var createNode = function(){
         var node = {};
         var args = arguments[0];
         var defaults = {
             icon : "/objectIcons/" + args.type
-        }
+        };
         args = _.defaults(args, defaults);
 
         node.data = {
@@ -826,11 +815,11 @@ theObject.browse = function(data, callback) {
         };
 
         if(args.inRoom){
-            node.metadata["inRoom"] = args.inRoom;
+            node.metadata.inRoom = args.inRoom;
         }
 
         return node;
-    }
+    };
 	
 	
     if (roomId === -1) {

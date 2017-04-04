@@ -184,7 +184,7 @@ ObjectManager.getObjects = function(roomID, context, callback) {
     //get the object creation information by the connector
     // {id;type;rights;attributes}
 
-    if (callback == undefined) {
+    if (callback === undefined) {
         /* sync. */
 
         var objectsData = Modules.Connector.getInventory(roomID, context);

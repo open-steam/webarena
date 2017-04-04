@@ -788,6 +788,7 @@ GeneralObject.makeSensitive=function(){
 }
 
 GeneralObject.makeStructuring=function(){
+    console.log("make structuring called");
     this.isStructuringFlag=true;
 }
 
