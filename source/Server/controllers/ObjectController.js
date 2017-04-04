@@ -108,9 +108,7 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 		
 			if (serverFunction === "setAttribute"){
 				var attribute= serverFunctionParams[0];
-				
 
-				
 				var oldValue = object.getAttribute(attribute);
 				var historyEntry = {
 					'action': 'set Attribute',

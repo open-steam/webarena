@@ -245,7 +245,6 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         delete attributes.id;
     }
 
-    //forced-id as parameter that allows creating an object with that id
     Modules.Connector.createObject(objectID, roomID, type, proto.standardData, context, function(id) {
         var object = ObjectManager.getObject(roomID, id, context);
 
@@ -253,7 +252,7 @@ ObjectManager.createObject = function(roomID, type, attributes, content, context
         var defaultAttributes = object.standardData;
         for (var key in defaultAttributes) {
             var value = defaultAttributes[key];
-            if(key =="id"){
+            if(key == "id"){
                 continue;
             }
             object.set(key, value);

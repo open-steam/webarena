@@ -134,24 +134,24 @@ theObject.makeSensitive=function(){
 	*	get an array of all overlapping objects
 	**/
 	theObject.getOverlappingObjectsAsync=function(callback){
-		
+		var self = this;
 		this.getRoomAsync(function(){
 			//error
 		}, function(room){
 			if (!room) return;
 			room.getInventoryAsync(function(inventory){
-			
+				// console.log(inventory);
 				var result=[];
-			
 				for (var i in inventory){
-		
+			
 					var test=inventory[i];
-					if (test.id==this.id) continue;
-					if (this.intersects(test)){
+
+					if (test.id==self.getID()) continue;
+					if (self.intersects(test)){
 						result.push(test);
 					}
 				}
-			
+				console.log(result);
 				callback(result);
 			});
 		});
