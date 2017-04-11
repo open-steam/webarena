@@ -575,7 +575,6 @@ theObject.getInlinePreviewMimeType=function(callback) {
 //about structuring objects and thus does further processing
 theObject.collectPositioningData=function(key,value,oldvalue){
 	console.log("collecting positioning data");
-	console.log(this.runtimeData.evaluatePositionData);
 	if (this.runtimeData.evaluatePositionData===undefined) {
 		console.log("defining positioningdata");
 		this.runtimeData.evaluatePositionData={};

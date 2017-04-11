@@ -16,8 +16,10 @@ theObject.evaluatePosition = function(object, inside) {
     console.log("evaluating Position");
     if (this.checkData()) {
         var data = this.getData();
-       
+        console.log("ResponsiveArea/server.js data: ");
+        console.log("data");
         if (inside){
+            console.log("Some Object is inside another");
         	if (object.getAttribute(data.attribute) !== data.value) {
 	            object.setAttribute(data.attribute, data.value);
 	            console.log('Attribute ' + data.attribute + ' has been set to ' + data.value + ' for ' + object);

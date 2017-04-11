@@ -12,11 +12,10 @@ var Modules=require('../../../server.js');
 var async = require('async');
 
 theObject.evaluatePositionFor = function(object, data) {
-	console.log("Evaluate position for called on: ");
-	console.log(object);
+	console.log("Evaluate position for called");
 	var self=this
 
-    if (object.isActive && object.isActive()) {
+    //if (object.isActive && object.isActive()) {
        
        //this is called when an application object has moved.
        
@@ -49,7 +48,7 @@ theObject.evaluatePositionFor = function(object, data) {
         	
         });
        
-    }
+    //}
 
 }
 
