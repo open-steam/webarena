@@ -226,7 +226,7 @@ AttributeManager.setAttribute=function(object, attribute, value, forced, notify,
 
 var triggerEvaluationDelay={};
 AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
-
+	console.log("evaluation triggere")
 	var delayID=object.getAttribute('id')+attribute;
 	if (triggerEvaluationDelay[delayID]){
 		clearTimeout(triggerEvaluationDelay[delayID]);
@@ -242,7 +242,9 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 		// ever changed in only one aspect.
 		// console.log("evaluating....");
 		// console.log(object);
-		if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
+		// TODO: check for object.isActive as well 
+		// if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
+		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
 			if (object.collectPositioningData){
 					object.collectPositioningData(attribute,value,oldValue);
 				}
@@ -260,7 +262,7 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 	    //check if the changed attribute value is one of those structured by the background.
 	    //if this is the case, reposition the object.
 	    
-	    if (object.isActive()){
+	    //if (object.isActive()){
 		    object.getRoomAsync(function(){
 		    	console.log('ERROR: could not get room in serverside setAttribute');
 		    },function(room){
@@ -273,7 +275,7 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 		    		}
 		    	},true);
 		    })
-	    }
+	    //}
 	    
 		//give the object a proper name if no name has been chosen so far
 		
