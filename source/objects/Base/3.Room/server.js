@@ -15,7 +15,7 @@ theObject.evaluatePositionFor = function(object, data) {
 	console.log("Evaluate position for called");
 	var self=this
 
-    //if (object.isActive && object.isActive()) {
+    if (object.isActive && object.isActive()) {
        
        //this is called when an application object has moved.
        
@@ -32,6 +32,7 @@ theObject.evaluatePositionFor = function(object, data) {
         	}
         
         	//if not one of the structures could process the object, it must be sitting on neural ground
+        	console.log(inStructures);
         	if (!inStructures){
         		object.setAttribute('context','neutral');
         	}
@@ -48,7 +49,7 @@ theObject.evaluatePositionFor = function(object, data) {
         	
         });
        
-    //}
+    }
 
 }
 
@@ -184,7 +185,7 @@ theObject.getDeletedObjects = function(cb){
 	
     Modules.ObjectManager.getObjects("trash", this.context, function(objects){
 		
-		var objectArray = new Array();
+		var objectArray = [];
 		
 		for(var i = 0; i<objects.length; i++){
 			var oldRoom = objects[i].getAttribute("oldRoomID");
@@ -254,7 +255,7 @@ theObject.getRecentChanges = function(data, cb){
  *
  */
 theObject.repositionObjects = function(object) {
-	
+	var that = this;
 	this.getInventoryAsync(function(inventory){
 		
 		   //first determine, which objects are structuring objects and which ones are application (or active) objects
@@ -277,7 +278,6 @@ theObject.repositionObjects = function(object) {
 	        	activeObjects = [];
 	        	activeObjects.push(object);
 	        }
-		
             //now we try to place every active object
             		
 		    for (var index in activeObjects) {
@@ -311,12 +311,12 @@ theObject.repositionObjects = function(object) {
 		        	}
 		        	
 		        }
-		
+				
 		        // now building paths
 		        // the activeObject will later be placed within these paths
 		        // if there is no structure to be found which can position the activeObject
 		        // the whole room or at least 1024x768 pixels are used 
-		
+				//TODO: Maybe use the current "active area" of the room, instead of 1024x768 to prevent weird behavior
 		        var solution;
 		        if (structuresHavingObject.length === 0) {
 		            var xStructMax = 0;
@@ -339,7 +339,7 @@ theObject.repositionObjects = function(object) {
 		        	
 		        	if (!structuresHavingObject[0].getPlacementArea){
 		        		
-		        		console.log('ERROR: '+structuresHavingObject[0]+' has no getPlacementArea function');
+		        		console.log("ERROR: "+structuresHavingObject[0]+" has no getPlacementArea function");
 		        		
 		        	}
 		            solution = structuresHavingObject[0].getPlacementArea(ao);
@@ -398,19 +398,22 @@ theObject.repositionObjects = function(object) {
 		            var maxY = 0;
 		
 		            // let's look if the current position is okay. In this case, nothing has to be done.
-		
+					
 		            var currentPositionInPolygon = true;
 		            var currentPosition = new Modules.Clipper.IntPoint(aoX, aoY);
 		            for (var i in solution) {
+		            	//CAREFUL: i is a string! type conversion necessary, therefore == instead of ===
 		                var inpoly = Modules.Clipper.Clipper.PointInPolygon(currentPosition, solution[i]);
-		                if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
+		                if ((i == 0 && inpoly === 0) || (i > 0 && inpoly !== 0)) {
 		                    currentPositionInPolygon = false;
 		                    break;
 		                }
 		            }
 		            
 		            // if the current position is not okay, find a new one and set it there.
-		            
+		            //TODO: Sometimes this causes weird behaviour and the object "jumps around"
+		            //in the room while it is in correct position
+
 		            if (!currentPositionInPolygon) {
 		                for (var j in solution[0]) {
 		                    if (solution[0][j].X < minX) {
@@ -439,16 +442,50 @@ theObject.repositionObjects = function(object) {
 		                var randomX;
 		                var randomY;
 		                
-		                // TODO: to something better than random here.
-		
+		                // TODO: to something better than random here. maxXY and minXY are already 
+		                // within the bounds of either the room (atm 1024x768) or the structure. 
+						// console.log(that.getViewBoundingBoxHeight());
+						// console.log(that.getViewBoundingBoxWidth());
+
+						/**
+						 * Idea for a solution:
+						 * Instead of looking for a random position that is okay, check whether the 
+						 * top/bottom or left/right side of the object is extending over the edge of
+						 * the structure or viewport. Then move it along the X- or Y-axis depending on
+						 * the cases. 
+						 *
+						 * 
+
+
+								                        +---------+
+								                        |    |    |
+								                        |    v    |
+								               +--------+         +-------+
+								               |        +---------+       |
+								               |                          |
+								       +----------+                    +----------+
+								       |          |                    |          |
+								       | +----->  |                    |  <----+  |
+								       |          |                    |          |
+								       |          |                    |          |
+								       +----------+                    +----------+
+								               |                          |
+								               |        +---------+       |
+								               +--------+         +-------+
+								                        |    ^    |
+								                        |    |    |
+								                        |    |    |
+								                        +---------+
+		                */
 		                while (!inPolyFlag && counter < 1000) {
 		                    var randomX = Math.floor(minX + (Math.random() * (maxX - minX)));
 		                    var randomY = Math.floor(minY + (Math.random() * (maxY - minY)));
 		                    var pt = new Modules.Clipper.IntPoint(randomX, randomY);
 		                    var inPolyFlagHelper = true;
 		                    for (var i in solution) {
+		                    //CAREFUL: i is a string! type conversion necessary, therefore == instead of ===
 		                        var inpoly = Modules.Clipper.Clipper.PointInPolygon(pt, solution[i]);
-		                        if ((i == 0 && inpoly == 0) || (i > 0 && inpoly != 0)) {
+		                        if ((i == 0 && inpoly === 0) || (i > 0 && inpoly !== 0)) {
 		                            inPolyFlagHelper = false;
 		                            break;
 		                        }
@@ -744,8 +781,6 @@ theObject.clearTrash=function(callback){
 		}
         callback();
     });
-    
-    
 }
 theObject.clearTrash.public = true;
 	

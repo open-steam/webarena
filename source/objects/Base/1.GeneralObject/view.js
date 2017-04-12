@@ -986,7 +986,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
 
             self.adjustControls();
 
-        };
+        }
 
         var end = function(event) {
         
@@ -1012,7 +1012,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
                 $("#content").unbind("touchend");
             }
 
-        };
+        }
 
         if (GUI.isTouchDevice) {
             /* touch */
@@ -1024,7 +1024,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
             $("#content").bind("mouseup.webarenaMove", end);
         }
 
-    };
+    }
 
 
     if (GUI.isTouchDevice) {
@@ -1161,7 +1161,7 @@ GeneralObject.moveStart = function(event) {
             GUI.moveLinks(object);
         });
 
-    };
+    }
 
     var end = function(event) {
     
@@ -1210,7 +1210,7 @@ GeneralObject.moveStart = function(event) {
             $("#sidebar").unbind("mouseup", end);
         }
 
-    };
+    }
 
     if (GUI.isTouchDevice) {
         /* touch */
@@ -1309,7 +1309,7 @@ GeneralObject.unmakeMovable = function() {
 
     //rep.removeEventListener("touchstart", self.moveStart, false);
     rep.ontouchstart = function() {
-    };
+    }
 
 }
 
@@ -1790,7 +1790,7 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
     }
 
     return result;
-};
+}
 
 /**
  *  determine if the object's bounding box intersects with the square x,y,width,height

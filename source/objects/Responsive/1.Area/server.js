@@ -32,7 +32,7 @@ theObject.evaluatePosition = function(object, inside) {
         }
     }
 
-};
+}
 
 theObject.getData = function() {
     var attribute = this.getAttribute('attribute');

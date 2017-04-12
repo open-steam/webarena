@@ -38,7 +38,7 @@ var AttributeManager = new function(){
 	//your data afterwards. In the general case use setAttribute instead.
 	
 	this.set=function(id,key,value){
-		if (id==undefined || value==undefined){
+		if (id===undefined || value===undefined){
 			console.log('ERROR: undefined set',id,key,value);
 			console.trace();
 			return;
@@ -62,7 +62,7 @@ var AttributeManager = new function(){
 	
 	this.setAll=function(id,data){
 		
-		if (id==undefined){
+		if (id===undefined){
 			console.log('ERROR: undefined setAll',id,data);
 			console.trace();
 			return;
@@ -177,8 +177,6 @@ AttributeManager.registerAttribute=function(attribute,data){
 *	set an attribute to a value on a specified object
 */
 AttributeManager.setAttribute=function(object, attribute, value, forced, notify, transactionId){
-	var that = this;
-		
 	// do nothing, if value has not changed
 	//previous solution with "===" did not work correctly
 	if (_.isEqual(object.get(attribute),value)){
@@ -226,7 +224,6 @@ AttributeManager.setAttribute=function(object, attribute, value, forced, notify,
 
 var triggerEvaluationDelay={};
 AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
-	console.log("evaluation triggere")
 	var delayID=object.getAttribute('id')+attribute;
 	if (triggerEvaluationDelay[delayID]){
 		clearTimeout(triggerEvaluationDelay[delayID]);
@@ -234,7 +231,6 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 	}
 	
 	triggerEvaluationDelay[delayID]=setTimeout(function(){
-		
 	    // evaluation
 		//
 		// if the position ob the object has changed. collectPositioningData is called. This function
@@ -242,14 +238,12 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 		// ever changed in only one aspect.
 		// console.log("evaluating....");
 		// console.log(object);
-		// TODO: check for object.isActive as well 
-		// if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
-		if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
+		if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
 			if (object.collectPositioningData){
-					object.collectPositioningData(attribute,value,oldValue);
-				}
+				object.collectPositioningData(attribute,value,oldValue);
 			}
-		
+		}
+
 		// for every other attribute which may have changed, a changed function is called
 		// (eg. if the attribute test has changed, we try to call testChanged on the server)
 		//TODO: Maybe inform applications here instead of doing it withing setAttribute
@@ -262,12 +256,13 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 	    //check if the changed attribute value is one of those structured by the background.
 	    //if this is the case, reposition the object.
 	    
-	    //if (object.isActive()){
+	    if (object.isActive()){
 		    object.getRoomAsync(function(){
 		    	console.log('ERROR: could not get room in serverside setAttribute');
 		    },function(room){
-		    	
-		    	if (attribute=='context') return room.repositionObjects(object);
+		    	if (attribute == 'context'){
+		    		return room.repositionObjects(object);
+		    	}
 		    	
 		    	room.getStructuringAttributes(function(attList){
 		    		if (attList[attribute]){
@@ -275,7 +270,7 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 		    		}
 		    	},true);
 		    })
-	    //}
+	    }
 	    
 		//give the object a proper name if no name has been chosen so far
 		
@@ -286,7 +281,7 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 		
 	},100);
 	
-}
+};
 
 /**
 *	get an attribute of a specified object
@@ -294,7 +289,7 @@ AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
 AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	
 	//on unregistred attributes directly return their value
-	if (this.attributes[attribute]==undefined){
+	if (this.attributes[attribute]===undefined){
 		return object.get(attribute);
 	}
 	
