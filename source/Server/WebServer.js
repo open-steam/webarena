@@ -649,7 +649,7 @@ WebServer.init = function (theModules) {
 									} else {
 										var contentType = false;
 
-										contentType = mime.lookup(url)
+										contentType = mime.getType(url);
 
 										var shouldSendETag = true;
 
