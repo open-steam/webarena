@@ -46,7 +46,7 @@ module.exports={
 	
 // Functional restrictions
 	
-	collaborativeEditor:false, //sidebar
+	structuringMode:true,
 	chat:true,
 	bugReport:true,
 	trash: true,
@@ -56,10 +56,10 @@ module.exports={
 	
 // Development
 	
-	debugMode: false,
+	debugMode: true,
 	logLevels : {
 			"warn" : true,
-			"debug" : false,
+			"debug" : true,
 			"info" : false
 	},
 	

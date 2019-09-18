@@ -108,12 +108,7 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 		
 			if (serverFunction === "setAttribute"){
 				var attribute= serverFunctionParams[0];
-				
-				//do not make history entries for object blocking metadata
-				if (attribute=='blockedTime') return;
-				if (attribute=='blockedByID') return;
-				if (attribute=='blockedByUser') return;
-				
+
 				var oldValue = object.getAttribute(attribute);
 				var historyEntry = {
 					'action': 'set Attribute',
@@ -138,11 +133,33 @@ ObjectController.executeServersideAction = function (data, context, cb) {
 			Modules.RoomController.informAllInRoom({"room": roomID, 'message': {'change': 'change'}}, null); 
 			
 		}
-		fn.apply(object, serverFunctionParams);
 		
+		
+		// var callback = serverFunctionParams[serverFunctionParams.length-1];
+
+		// var newParams = serverFunctionParams.slice(1, 3);
+		// newParams.push("true");
+		// newParams.push(callback);
+		// console.log(newParams);
+		
+		/* ERROR?:
+		 * Maybe a distinction needs to be made because some functions changed
+ 		 *
+		 */
+
+		fn.apply(object, serverFunctionParams);			
 	});
 
 
 };
+
+ObjectController.repositionObjects = function(data, context, cb) {
+	
+    var roomID = data.room;
+    Modules.ObjectManager.getRoom(roomID, context, roomID, function(room) { //the room object
+        room.repositionObjects();
+    });
+}
+
 
 module.exports = ObjectController;

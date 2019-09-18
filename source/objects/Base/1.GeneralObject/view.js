@@ -15,73 +15,84 @@ GeneralObject.moveByTransform = function() {
     return false;
 }
 
+/**
+ * True if the object has a special area where it can be moved
+ */
+GeneralObject.restrictedMovingArea = false;
+
 
 /**
  * Updates the representation using the attributes
  * @param {bool} external True if triggered externally (and not by the object itself)
  */
-GeneralObject.draw = function(external) {
+GeneralObject.draw=function(external){
 
-    if (!this.isGraphical)
-        return;
-
-    var rep = this.getRepresentation();
+    if (!this.isGraphical) return;
+        
+    var rep=this.getRepresentation();
 
     this.setViewWidth(this.getAttribute('width'));
     this.setViewHeight(this.getAttribute('height'));
-
+    
     this.drawPosition(external);
-
+            
     $(rep).attr("layer", this.getAttribute('layer'));
+    
+    this.showOrHide();
+    
+    this.adjustControls();
+    GUI.objectList.update();
+}
 
-    if (!$(rep).hasClass("webarena_ghost")) {
-
+GeneralObject.showOrHide=function(external){
+    
+        var rep=this.getRepresentation();
+    
+        if (!$(rep).hasClass("webarena_ghost")) {
+        
         if (this.selected) {
             $(rep).css("visibility", "visible");
         } else {
-
-            if (this.getAttribute("visible")) {
-
+            
+            if (this.isVisible()) {
+            
                 if (external) {
                     if ($(rep).css("visibility") == "hidden") {
                         /* fade in */
                         $(rep).css("opacity", 0);
                         $(rep).css("visibility", "visible");
                         $(rep).animate({
-                            "opacity": 1
-                        }, {queue: false, duration: 500});
+                            "opacity" : 1
+                        }, {queue:false, duration:500});
                     }
                 } else {
                     $(rep).css("visibility", "visible");
+                    $(rep).css("opacity", 1);
                 }
-
+                
             } else {
-
+                            
                 if (external) {
-                    if ($(rep).css("visibility") == "visible") {
+                    if ($(rep).css("visibility") == "visible") {            
                         /* fade out */
                         $(rep).css("opacity", 1);
                         $(rep).animate({
-                            "opacity": 0
-                        }, {queue: false,
-                            complete: function() {
+                            "opacity" : 0
+                        }, {queue:false, 
+                            complete:function() {
                                 $(rep).css("visibility", "hidden");
+                                $(rep).css("opacity", 1);
                             }
-                        });
+                            });
                     }
                 } else {
                     $(rep).css("visibility", "hidden");
                 }
-
+                
             }
-
+            
         }
-
-		
     }
-
-    this.adjustControls();
-	GUI.objectList.update();
 }
 
 /**
@@ -130,9 +141,9 @@ GeneralObject.updateGUI = function() {
     }
 
     this.draw();
+
     GUI.updateGUI(this);
-		
-	
+
 }
 
 /**
@@ -152,7 +163,7 @@ GeneralObject.getRepresentation = function() {
     var rep = document.getElementById(this.getAttribute('id'));
 
     if (!rep) {
-        var parent = $('#room');
+        var parent = $('#room_');
         var rep = this.createRepresentation(parent);
         this.representationCreated();
 
@@ -195,22 +206,20 @@ GeneralObject.representationCreated = function() {
     });
 
     $("html").on("moveend.wa", function(e) {
-    	
+        
         if (e.objectId !== that.getID()) {
             var movedObject = ObjectManager.getObject(e.objectId);
 
             //execute copy/cut - if intersecting on mouse/touch release
             if (that.intersectsWith(movedObject)) {
                 var selected = ObjectManager.getSelected();
-                
-                for (var i in selected){
-                	var elem=selected[i];
-                	if (elem !== that) {
-                        that.serverCall("onDrop", elem.getID());
+                    for (var i in selected){
+                        var elem=selected[i];
+                        if (elem !== that) {
+                            that.serverCall("onDrop", elem.getID());
+                        }
+                        
                     }
-                	
-                }
- 
             }
 
             that.hideActivationMarker();
@@ -222,7 +231,7 @@ GeneralObject.representationCreated = function() {
         $("html").unbind("moveObject.wa");
         $("html").unbind("moveend.wa");
     })
-	
+
 }
 
 
@@ -262,8 +271,8 @@ GeneralObject.removeRepresentation = function() {
 
     $(rep).empty();
     $(rep).remove();
-	
-	GUI.objectList.update();
+    
+    GUI.objectList.update();
 
 }
 
@@ -369,11 +378,14 @@ GeneralObject.selectedGroup = null;
  * @param {bool} groupSelect ?
  */
 GeneralObject.select = function(multiple, groupSelect, singleEdit) {
+    
+    if (!this.isAccessible()) return;   // refuse selecting if not in the right mode
+
     if (this.selected)
         return;
         
     this.tryToBlock();
-								
+                                
     GUI.hideActionsheet();
 
     if (!GUI.shiftKeyDown && !multiple) {
@@ -386,6 +398,7 @@ GeneralObject.select = function(multiple, groupSelect, singleEdit) {
     }
 
     this.selected = true;
+
 
     //show invisible object if selected
     var visible = true;
@@ -423,12 +436,13 @@ GeneralObject.select = function(multiple, groupSelect, singleEdit) {
             GUI.showLink(objectID, targetID, true);
         }
     });
-	
-    if (this.getAttribute("group") != 0 && !groupSelect & singleEdit!=true) {
+
+
+    if (this.getAttribute("group") != 0 && !groupSelect & singleEdit!= true) {
         $.each(this.getGroupMembers(), function(index, object) {
             object.select(true, true);
         });
-		this.selectedGroup = this.getAttribute("group");
+        this.selectedGroup = this.getAttribute("group");
     }
 
 
@@ -469,12 +483,13 @@ GeneralObject.select = function(multiple, groupSelect, singleEdit) {
  * Deselects the object
  */
 GeneralObject.deselect = function() {
+
     if (!this.selected)
         return;
-    this.selected = false;	
-	
-	this.tryToUnblock();
-    
+
+    this.selected = false;
+
+
     //hide invisible object after deselection
     var visible = true;
     if (!this.getAttribute("visible")) {
@@ -511,7 +526,6 @@ GeneralObject.deselect = function() {
         if (!visible) {
             GUI.showLink(objectID, targetID, false);
         }
-
     });
 
 
@@ -558,7 +572,7 @@ GeneralObject.adjustControls = function() {
             /* Position: bottom, horizontally centered */
             if (control.type == "y") {
                 var x = self.getViewBoundingBoxX() + self.getViewBoundingBoxWidth() / 2;
-				var y = self.getViewBoundingBoxY() + self.getViewBoundingBoxHeight();
+                var y = self.getViewBoundingBoxY() + self.getViewBoundingBoxHeight();
             }
 
             /* Position: top, horizontally centered */
@@ -590,15 +604,15 @@ GeneralObject.adjustControls = function() {
                 var x = self.getViewX();
                 var y = self.getViewY() + self.getViewHeight();
             }
-			
-			if(!isNaN(x)){
-				$(control).attr("cx", x);
-			}
-			
-			if(!isNaN(y)){
-				$(control).attr("cy", y);
-			}
-			
+            
+            if(!isNaN(x)){
+                $(control).attr("cx", x);
+            }
+            
+            if(!isNaN(y)){
+                $(control).attr("cy", y);
+            }
+            
         });
     }
 
@@ -972,10 +986,10 @@ GeneralObject.addControl = function(type, resizeFunction) {
 
             self.adjustControls();
 
-        };
+        }
 
         var end = function(event) {
-		
+        
             event.preventDefault();
 
             control.moving = false;
@@ -998,7 +1012,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
                 $("#content").unbind("touchend");
             }
 
-        };
+        }
 
         if (GUI.isTouchDevice) {
             /* touch */
@@ -1010,7 +1024,7 @@ GeneralObject.addControl = function(type, resizeFunction) {
             $("#content").bind("mouseup.webarenaMove", end);
         }
 
-    };
+    }
 
 
     if (GUI.isTouchDevice) {
@@ -1041,16 +1055,16 @@ GeneralObject.saveMoveStartPosition = function() {
 /**
 *   getArenaObject
 *
-*	gets the WebArenaObject for a given htmlobject by going through the dom structure
+*   gets the WebArenaObject for a given htmlobject by going through the dom structure
 */
 GeneralObject.getArenaObject=function(htmlobject){
-	
-	if (!htmlobject) return undefined;
-	
-	if (htmlobject.dataObject) return htmlobject.dataObject;
-	
-	return this.getArenaObject(htmlobject.parentNode);
-	
+    
+    if (!htmlobject) return undefined;
+    
+    if (htmlobject.dataObject) return htmlobject.dataObject;
+    
+    return this.getArenaObject(htmlobject.parentNode);
+    
 }
 
 /**
@@ -1058,8 +1072,8 @@ GeneralObject.getArenaObject=function(htmlobject){
  * @param {DomEvent} event The DOM event
  */
 GeneralObject.moveStart = function(event) {
-	
-	//TODO Why in hell is moveStart called on a context different than the object context?
+    
+    //TODO Why in hell is moveStart called on a context different than the object context?
 
     if (!this.id || this.id == "") {
         var self = ObjectManager.getObject($(this).closest("svg>*").attr("id"));
@@ -1108,20 +1122,20 @@ GeneralObject.moveStart = function(event) {
     self.hideControls();
 
     var move = function(event) {
-	
+    
         //only move the object if the mouse key is pressed
-		if(!GUI.isTouchDevice){
-			if (event.which == 0) {
-				end(event);
-				return;
-			}
-		}
+        if(!GUI.isTouchDevice){
+            if (event.which == 0) {
+                end(event);
+                return;
+            }
+        }
 
         $("html").trigger({
             type: "moveObject.wa",
             objectId: self.id
         });
-		
+        
         if (GUI.isTouchDevice && event.touches.length > 1) return;
 
         if (!self.moving) return;
@@ -1130,7 +1144,7 @@ GeneralObject.moveStart = function(event) {
         event.stopPropagation();
 
         self.moved = true;
-		
+        
         if (!GUI.isTouchDevice) {
             /* mouse */
             var dx = event.pageX - self.moveStartMouseX;
@@ -1147,10 +1161,10 @@ GeneralObject.moveStart = function(event) {
             GUI.moveLinks(object);
         });
 
-    };
+    }
 
     var end = function(event) {
-	
+    
         $("html").trigger({
             type: "moveend.wa",
             objectId: self.id
@@ -1158,7 +1172,7 @@ GeneralObject.moveStart = function(event) {
         var cut = !(event.ctrlKey || event.metaKey);
 
         var movedBetweenRooms = false;
-			
+            
         var rep = self.getRepresentation();
 
 
@@ -1193,10 +1207,10 @@ GeneralObject.moveStart = function(event) {
             /* mouse */
             $("#content").unbind("mousemove.webarenaMove");
             $("#content").unbind("mouseup.webarenaMove");
-			$("#sidebar").unbind("mouseup", end);
+            $("#sidebar").unbind("mouseup", end);
         }
 
-    };
+    }
 
     if (GUI.isTouchDevice) {
         /* touch */
@@ -1206,7 +1220,7 @@ GeneralObject.moveStart = function(event) {
         /* mouse */
         $("#content").bind("mousemove.webarenaMove", move);
         $("#content").bind("mouseup.webarenaMove", end);
-		$("#sidebar").bind("mouseup", end);
+        $("#sidebar").bind("mouseup", end);
     }
 
 }
@@ -1220,7 +1234,11 @@ GeneralObject.makeMovable = function() {
     var self = this;
     var rep;
 
-    rep = this.getRepresentation();
+    if (this.restrictedMovingArea) {
+        rep = $(this.getRepresentation()).find(".moveArea").get(0);
+    } else {
+        rep = this.getRepresentation();
+    }
 
     if (GUI.isTouchDevice) {
         /* touch */
@@ -1275,19 +1293,23 @@ GeneralObject.moveBy = function(x, y) {
  */
 GeneralObject.unmakeMovable = function() {
 
-    var rep = this.getRepresentation();
+    var rep;
+    if (this.restrictedMovingArea) {
+        rep = $(this.getRepresentation()).find(".moveArea").get(0);
+    } else {
+        rep = this.getRepresentation();
+    }
 
     if (!rep){
-        console.log('Could not find representation in '+this);
+        console.log('No representation in '+this);
         console.trace();
-        return;
     }
 
     $(rep).unbind("mousedown");
 
     //rep.removeEventListener("touchstart", self.moveStart, false);
     rep.ontouchstart = function() {
-    };
+    }
 
 }
 
@@ -1511,12 +1533,12 @@ GeneralObject.click = function(event) {
 
     var self = this;
 
-	/*
+    /*
     if (GUI.isTouchDevice) {
         self.clickHandler(event);
         return true;
     }
-	*/
+    */
 
     /* stop when the clicked object is the SVG canvas */
     if (event.target == $("#content>svg").get(0))
@@ -1571,7 +1593,7 @@ GeneralObject.clickHandler = function(event) {
     }
 
     if (this.selected) {
-    	
+        
         if (GUI.elementSelectable(event.target)) {
             this.selectedClickHandler(event);
         }
@@ -1632,7 +1654,7 @@ GeneralObject.deselectHandler = function() {
  */
 GeneralObject.dblclickHandler = function(event) {
 
-		this.execute(event);
+        this.execute(event);
 }
 
 /**
@@ -1703,7 +1725,7 @@ GeneralObject.setDisplayGhost = function(s) {
 //this method will only return the first intersection point or "no intersection" or "coincident"
 GeneralObject.IntersectionObjectLine = function(a1, a2) {
 
-    //calculate the corner points to build the bounding box lines:	
+    //calculate the corner points to build the bounding box lines:  
     var objectLeftTop = new Object();
     objectLeftTop.x = this.getViewBoundingBoxX();
     objectLeftTop.y = this.getViewBoundingBoxY();
@@ -1768,10 +1790,10 @@ GeneralObject.IntersectionLineLine = function(a1, a2, b1, b2) {
     }
 
     return result;
-};
+}
 
 /**
- *	determine if the object's bounding box intersects with the square x,y,width,height
+ *  determine if the object's bounding box intersects with the square x,y,width,height
  */
 GeneralObject.boxIntersectsWith = function(otherx, othery, otherwidth, otherheight) {
     if (!this.isGraphical)
@@ -1796,7 +1818,7 @@ GeneralObject.boxIntersectsWith = function(otherx, othery, otherwidth, otherheig
 }
 
 /**
- *	determine if the object or the object's bounding box intersects with another object's bounding box
+ *  determine if the object or the object's bounding box intersects with another object's bounding box
  */
 GeneralObject.intersectsWith = function(other) {
     var otherx = other.getViewBoundingBoxX();
@@ -1834,10 +1856,10 @@ GeneralObject.checkBrowserVisibility = function() {
     var objectTop = $("#"+this.id).offset().top;
     var objectBottom = objectTop + $("#"+this.id).height();
 
-	var result = ((objectBottom <= documentViewBottom) && (objectTop >= documentViewTop));
-	
+    var result = ((objectBottom <= documentViewBottom) && (objectTop >= documentViewTop));
+    
     return result;
-	
+    
 }
 
 /**
@@ -1848,7 +1870,7 @@ GeneralObject.checkBrowserVisibility = function() {
 *
 */
 GeneralObject.isInMoveArea=function(htmlobject){
-	
-	return true;
-	
+    
+    return true;
+    
 }

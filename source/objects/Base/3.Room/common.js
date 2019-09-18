@@ -40,8 +40,39 @@ Room.register=function(type){
 	this.registerAttribute('showLinks',{type:"boolean", standard:true, changedFunction: function(object, value) {GUI.showLinks(value);}});
 	
     
+    if (Modules.Config.structuringMode) {
+        this.attributeManager.registerAttribute('mode', {type: 'selection', standard: 'foreground', options: ['background', 'foreground'], category: 'Structure', hidden: true, changedFunction: function(room) {
+                GUI.deselectAllObjects();
+                room.redraw();
+                
+                var mode=room.getAttribute('mode');
+                
+                GUI.setMode(mode);
+                
+                
+                
+            }});
+    }
 }
 
+
+Room.isInBackgroundMode = function() {
+
+    var mode = this.getAttribute('mode');
+
+    if (mode == 'background')
+        return true;
+
+    return false;
+
+}
+
+Room.switchMode = function(mode) {
+    if (mode == 'background')
+        this.setAttribute('mode', 'background');
+    else
+        this.setAttribute('mode', 'foreground');
+}
 
 Room.getRoomID = function() {
 	

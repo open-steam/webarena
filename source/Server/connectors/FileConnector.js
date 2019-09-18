@@ -196,7 +196,6 @@ fileConnector.getInventory=function(roomID,context,callback){
 		}
 
 	});
-
 	if (callback) {
 		/* async */
 		process.nextTick(function(){callback(inventory);});

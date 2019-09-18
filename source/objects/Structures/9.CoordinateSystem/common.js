@@ -73,8 +73,5 @@ CoordinateSystem.register = function(type) {
 
 CoordinateSystem.isCreatable = true;
 
-CoordinateSystem.decideIfActive = function(object) {
-    return true;
-}
 
 module.exports = CoordinateSystem;

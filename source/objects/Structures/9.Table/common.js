@@ -36,10 +36,6 @@ Table.register = function(type) {
 Table.isCreatable = true;
 Table.input=false;
 
-Table.decideIfActive = function(object) {
-    return true;
-}
-
 Table.execute = function(event) {
     if(!this.inPlaceEditingMode){
 		this.editText(event);

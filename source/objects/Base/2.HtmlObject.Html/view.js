@@ -19,8 +19,9 @@ HtmlObject.draw=function(external){
 	var that=this;
 	
 	this.updateHTMLContent();
-	
+	this.showOrHide();	
 }
+
 
 HtmlObject.updateContent = function() {
 	console.log('ERROR: This should not be called any more!');
@@ -60,7 +61,6 @@ HtmlObject.createRepresentation = function(parent) {
 	this.initGUI(rep);
 	
 	this.createHTMLContent();
-	
 	return rep;
 	
 }

@@ -14,14 +14,13 @@
 
 // The server side defintion of the object extends the common parts
 
-var theObject=Object.create(require('./common.js'));
+var theObject=Object.create(require("./common.js"));
 
 // The Modules variable provides access to server modules such as
 // Module.ObjectManager
 
 var Modules=require('../../../server.js');
 var _ = require('lodash');
-var async = require("async");
 
 // Make the object public
 module.exports=theObject;
@@ -46,8 +45,8 @@ theObject.makeSensitive=function(){
 		
 		for (var i=0;i<4;i++){
 			var field=fields[i];
-			oldData[field]=changeData['old'][field] || this.getAttribute(field);
-			newData[field]=changeData['new'][field] || this.getAttribute(field);
+			oldData[field]=changeData.old[field] || this.getAttribute(field);
+			newData[field]=changeData.new[field] || this.getAttribute(field);
 		}
 		
 		var that=this;
@@ -78,7 +77,7 @@ theObject.makeSensitive=function(){
 				}
 			});
 		})
-	}
+	};
 	
 	
 	theObject.bBoxIntersects=function(thisX,thisY,thisWidth,thisHeight,otherX,otherY,otherWidth,otherHeight){
@@ -103,7 +102,7 @@ theObject.makeSensitive=function(){
 		//console.log('intersects');
 		return true;	
 		
-	}
+	};
 	
 	
 	/**
@@ -126,8 +125,7 @@ theObject.makeSensitive=function(){
 		
 		return this.bBoxIntersects(bbox.x,bbox.y,bbox.width,bbox.height,otherX,otherY,otherWidth,otherHeight);
 		
-	}
-	
+	};
 	
 	/**
 	*	getOverlappingObjectsAsync
@@ -135,29 +133,27 @@ theObject.makeSensitive=function(){
 	*	get an array of all overlapping objects
 	**/
 	theObject.getOverlappingObjectsAsync=function(callback){
-		
+		var self = this;
 		this.getRoomAsync(function(){
 			//error
 		}, function(room){
 			if (!room) return;
 			room.getInventoryAsync(function(inventory){
-			
+				// console.log(inventory);
 				var result=[];
-			
 				for (var i in inventory){
-		
+			
 					var test=inventory[i];
-					if (test.id==this.id) continue;
-					if (this.intersects(test)){
+
+					if (test.id==self.getID()) continue;
+					if (self.intersects(test)){
 						result.push(test);
 					}
 				}
-			
 				callback(result);
 			});
 		});
-	}
-	
+	};
 	
 	/**
 	*	getOverlappingObjects
@@ -182,63 +178,7 @@ theObject.makeSensitive=function(){
 		
 		return result;
 	
-	}
-	
-	
-	/**
-	*	SensitiveObjects evaluate other objects in respect to themselves.
-	*
-	*	object the object that shall be evaluated
-	*	changeData old and new values of positioning (e.g. changeData.old.x) 
-	**/
-	theObject.evaluateObject=function(object,changeData){
-		
-		//complete data
-		
-		var oldData={};
-		var newData={};
-		var fields=['x','y','width','height'];
-		
-		for (var i=0;i<4;i++){
-			var field=fields[i];
-			oldData[field]=changeData['old'][field] || object.getAttribute(field);
-			newData[field]=changeData['new'][field] || object.getAttribute(field);
-		}
-		
-		//determine intersections
-		
-		var oldIntersects=this.intersects(oldData.x,oldData.y,oldData.width,oldData.height);
-		var newIntersects=this.intersects(newData.x,newData.y,newData.width,newData.height);
-		
-		//handle move
-		
-		if (oldIntersects && newIntersects) return this.onMoveWithin(object,newData);
-		if (!oldIntersects && !newIntersects) return this.onMoveOutside(object,newData);
-		if (oldIntersects && !newIntersects) return this.onLeave(object,newData);
-		if (!oldIntersects && newIntersects) return this.onEnter(object,newData);
-	}
-	
-	if (!theObject.onMoveWithin) theObject.onMoveWithin=function(object,data){
-		
 	};
-	
-	if (!theObject.onMoveOutside) theObject.onMoveOutside=function(object,data){
-		
-	};
-	
-	if (!theObject.onLeave) theObject.onLeave=function(object,data){
-		
-	};
-	
-	if (!theObject.onEnter) theObject.onEnter=function(object,data){
-		
-	};
-	
-	if (!theObject.onDrop) theObject.onDrop=function(objectId,data){
-		
-	};
-
-	theObject.onDrop.public=true;
 
 }
 
@@ -248,19 +188,215 @@ theObject.makeSensitive=function(){
 // ****************************************************************
 
 theObject.makeStructuring=function(){
-	this.isStructuringFlag=true;
-	this.makeSensitive();
-	this.isSensitiveFlag=false;
+	if (!Modules.config.structuringMode) {
+        console.log('Cannot make ' + this + ' structuring because structuring is turned off in config.');
+        return;
+    } else {
+        console.log(this + ' is now structuring');
+    }
+
+    this.isStructuringFlag = true;
+
+    var theObject = this;
 	
-	this.onObjectMove=function(changeData){
+	theObject.onObjectMove=function(changeData){
 		
 		//when a structuring object is moved, every active object may be in need of repositioning
 		
 		console.log('onObjectMove on structuring object '+this);
-		
-	}
+	};
 
-}
+	theObject.bBoxIntersects = function(thisX, thisY, thisWidth, thisHeight, otherX, otherY, otherWidth, otherHeight) {
+
+        if ((otherX + otherWidth) < thisX) {
+            //console.log('too far left');
+            return false;
+        }
+        if ((otherY + otherHeight) < thisY) {
+            //console.log('too far up');
+            return false;
+        }
+        if (otherX > (thisX + thisWidth)) {
+            //console.log('too far right');
+            return false;
+        }
+        if (otherY > (thisY + thisHeight)) {
+            //console.log('too far bottom');
+            return false;
+        }
+
+        //console.log('intersects');
+        return true;
+	};
+
+
+    /**
+     *	intersects
+     *
+     *	determines, if this Active object intersects another object.
+     *	In this simple implementation, this is done by bounding box comparison.
+     **/
+    theObject.intersects = function(otherX, otherY, otherWidth, otherHeight) {
+
+        if (typeof otherX == 'object') {
+            var other = otherX.getBoundingBox();
+            otherX = other.x;
+            otherY = other.y;
+            otherWidth = other.width;
+            otherHeight = other.height;
+        }
+
+        var bbox = this.getBoundingBox();
+
+        return this.bBoxIntersects(bbox.x, bbox.y, bbox.width, bbox.height, otherX, otherY, otherWidth, otherHeight);
+
+    }
+    /**
+     *	getOverlappingObjcts
+     *
+     *	get an array of all overlapping objects
+     **/
+    theObject.getOverlappingObjects = function() {
+        var result = [];
+
+        var inventory = this.getRoom().getInventory();
+
+        for (var i in inventory) {
+            var test = inventory[i];
+            if (test.id == this.id)
+                continue;
+            if (this.intersects(test)) {
+                result.push(test);
+            }
+        }
+
+        return result;
+    }
+
+
+    /**
+     *	Structuring Objects evaluate other objects in respect to themselves.
+     *
+     *	object the object that shall be evaluated
+     *	changeData old and new values of positioning (e.g. changeData.old.x)
+     *
+     *	returns 1 if the object interdsets the current structure, 0 if it does not
+     **/
+    theObject.processPositioningData = function(object, changeData, room) {
+    	
+        //complete data
+        var oldData = {};
+        var newData = {};
+        var fields = ['x', 'y', 'cx', 'cy', 'width', 'height'];
+
+        for (var i in fields) {
+            var field = fields[i];
+            oldData[field] = changeData.old[field] || object.getAttribute(field);
+            newData[field] = changeData.new[field] || object.getAttribute(field);
+        }
+
+        //determine intersections
+
+        var oldIntersects = this.intersects(oldData.x, oldData.y, oldData.width, oldData.height);
+        var newIntersects = this.intersects(newData.x, newData.y, newData.width, newData.height);
+        
+
+		//call evaluatePosition which does the actual evaluation. evaluatePosition does not have
+		//to care about setting the context any more.
+	    if (this.evaluatePosition){
+
+	        if (oldIntersects && newIntersects)   {// moved inside
+	        	this.evaluatePosition(object, newData);
+	        	return 1;
+	        }
+	        
+	        if (!oldIntersects && newIntersects)  {//newly entered
+	        	
+	        	//Context switch: setting the context of the applicationObject to the context of the current
+       		    //structuring object.
+        
+        		if (!oldIntersects && newIntersects) object.setAttribute('context',this.getAttribute('context'));
+	        	
+	        	this.evaluatePosition(object, newData);
+	        	return 1;
+	        }
+	        
+            //object removal should only be done if the repositioning has taken place within the same context
+            //and only for attributes of the current context. As we do not know that here, we fill an array
+            //on the room level. The room then calls those functions necessary.
+            
+            var self=this;
+            
+            var removeEvaluation=function(){
+            	self.evaluatePosition(object, false);
+            };
+            removeEvaluation.context=self.getAttribute('context');
+            
+            room.addRemoveEvaluations(removeEvaluation);
+
+	        return 0;
+	        
+	    } else {
+	    	console.log('ERROR: '+this+' is a structuring object which does not have the evaluatePosition function!');
+	    	return 0;
+	    }
+    };
+
+
+    theObject.getDisplacementArea = function(object) {
+    	
+        var startX = this.getAttribute('x');
+        var startY = this.getAttribute('y');
+        var width = this.getAttribute('width');
+        var height = this.getAttribute('height');
+
+        var aoWidth = object.getAttribute('width');
+        var aoHeight = object.getAttribute('height');
+
+        var x1;
+        if (startX - aoWidth < 0) {
+            x1 = 0;
+        } else {
+            x1 = startX - aoWidth;
+        }
+        var y1;
+        if (startY - aoHeight < 0) {
+            y1 = 0;
+        } else {
+            y1 = startY - aoHeight;
+        }
+        
+        var p1 = {X: startX, Y: startY};
+        var p2 = {X: startX + width, Y: startY};
+        var p3 = {X: startX + width, Y: startY + height};
+        var p4 = {X: startX , Y: startY + height};
+        
+        return [[p1, p2, p3, p4]];
+    };
+	
+
+	
+	
+	theObject.isInContext=function(objectOrContext){
+		
+		var thisContext=this.getAttribute('context').toString();
+		
+		if (objectOrContext==thisContext) return true;
+		
+		var otherContext=objectOrContext.getAttribute('context').toString();
+		
+		var similar = thisContext==otherContext;
+		
+		return similar;
+	};
+};
+
+
+theObject.howToHandle=function(object){
+	console.log('ERROR: howToHandle is not implemented on '+object);
+	return 'distract';
+};
+
 
 
 
@@ -273,7 +409,7 @@ theObject.makeStructuring=function(){
 */
 theObject.getAttributeSet=function(){
 	return Modules.AttributeManager.getAttributeSet(this);
-}
+};
 
 /**
 *	updateClient
@@ -287,7 +423,7 @@ theObject.updateClient=function(socket,mode){
 		var SocketServer=Modules.SocketServer;
 		SocketServer.sendToSocket(socket,mode, object.getAttributeSet());
 	});
-}
+};
 
 /**
 *	persist
@@ -305,7 +441,7 @@ theObject.persist=function(){
 			self.updateClients();
 		});
 	} 
-}
+};
 
 /**
 *	updateClients
@@ -325,9 +461,8 @@ theObject.updateClients=function(mode){
     	for (var i in connections){
 			self.updateClient(connections[i].socket,mode);
 		}
-    },100);
-	
-}
+    },100);	
+};
 
 /**
 *	hasContent
@@ -336,7 +471,7 @@ theObject.updateClients=function(mode){
 */
 theObject.hasContent=function(){
 	return this.getAttribute('hasContent');
-}
+};
 
 /**
 *	setContent
@@ -360,13 +495,13 @@ theObject.setContent=function(content,callback){
 	//send object update to all listeners
 	this.persist();
 	this.updateClients('contentUpdate');
-}
+};
 
 theObject.setContent.public = true;
 
 theObject.setContent.neededRights = {
     write : true
-}
+};
 
 //TODO: On this lever, we should not care about files at all!
 theObject.copyContentFromFile=function(filename,callback) {
@@ -378,14 +513,13 @@ theObject.copyContentFromFile=function(filename,callback) {
 
 	//send object update to all listeners
 	this.persist();
-	this.updateClients('contentUpdate');
-	
-}
+	this.updateClients('contentUpdate');	
+};
 
 theObject.getCurrentUserName=function(){
 	if (!this.context) return 'root';
 	return this.context.user.username;
-}
+};
 
 /**
 *	getContent
@@ -403,13 +537,13 @@ theObject.getContent=function(callback){
 		var content=Modules.Connector.getContent(this.inRoom, this.id, this.context);
 		return content;
     }
-}
+};
 
 theObject.getContent.public = true;
 
 theObject.getContent.neededRights = {
     read : true
-}
+};
 
 theObject.getContentAsString=function(callback){
 	if (callback === undefined) {
@@ -420,7 +554,7 @@ theObject.getContentAsString=function(callback){
 			callback(Modules.Helper.utf8.parse(content));
 		});
 	}
-}
+};
 
 
 /**
@@ -430,29 +564,33 @@ theObject.getContentAsString=function(callback){
 */
 theObject.getInlinePreview=function(mimeType, callback){
 	return Modules.Connector.getInlinePreview(this.inRoom, this.id, mimeType, this.context, callback);
-}
+};
 
 theObject.getInlinePreviewMimeType=function(callback) {
 	Modules.Connector.getInlinePreviewMimeType(this.inRoom, this.id, this.context, callback);
-}
+};
 
-
-theObject.evaluatePosition=function(key,value,oldvalue){
-
+//this is typically called when an object has been moved
+//data is collected and then handed over to the room which holds information
+//about structuring objects and thus does further processing
+theObject.collectPositioningData=function(key,value,oldvalue){
+	console.log("collecting positioning data");
 	if (this.runtimeData.evaluatePositionData===undefined) {
+		console.log("defining positioningdata");
 		this.runtimeData.evaluatePositionData={};
 		this.runtimeData.evaluatePositionData.old={};
 		this.runtimeData.evaluatePositionData.new={};
 	}
 	
 	if (this.runtimeData.evaluatePositionData.delay) {
+		console.log("waiting for something to happen");
 		clearTimeout(this.runtimeData.evaluatePositionData.delay);
 		this.runtimeData.evaluatePositionData.delay=false;
 	}
 	
-	this.runtimeData.evaluatePositionData['new'][key]=value;
-	if (!this.runtimeData.evaluatePositionData['old'][key]) {
-		this.runtimeData.evaluatePositionData['old'][key]=oldvalue;
+	this.runtimeData.evaluatePositionData.new[key]=value;
+	if (!this.runtimeData.evaluatePositionData.old[key]) {
+		this.runtimeData.evaluatePositionData.old[key]=oldvalue;
 		//if there yet is a value here, we have concurrent modifications
 	}
 	
@@ -466,40 +604,35 @@ theObject.evaluatePosition=function(key,value,oldvalue){
 	
 	this.runtimeData.evaluatePositionData.delay=setTimeout(function(){
 		
+		
 		var data={};
 		data.old=posData.old;
 		data.new=posData.new;
 		
-		self.evaluatePositionInt(data);
-		self.runtimeData.evaluatePositionData=undefined;
+		self.getRoomAsync(function(){},function(room){
+	    	if (!room){
+	    		console.log("got no room");
+	    	    return;
+	    	}else{
+	    	   	room.evaluatePositionFor(self, data);
+	    	}
+	    	self.runtimeData.evaluatePositionData=undefined;
+    	});
+   
 	},timerLength);
 	
-}
-
-theObject.evaluatePositionInt=function(data){
-	
-	var that=this;
-
-	this.getRoomAsync(function(){
-		//error
-	},function(room){
-		if (!room) return;
-		room.evaluatePositionFor(that,data);
-	});
-	
-}
+};
 
 theObject.getRoom=function(){
 	if (!this.context) error('No context');
 	return (this.context.room);	
-}
-
+};
 
 
 theObject.getRoomAsync=function(error,cb){
 	if (!this.context) error('No context');
 	cb (this.context.room);	
-}
+};
 
 
 theObject.getBoundingBox=function(){
@@ -510,14 +643,14 @@ theObject.getBoundingBox=function(){
 	var height=this.getAttribute('height');
 	return {'x':x,'y':y,'width':width,'height':height};
 	
-}
+};
 
 //gets an object within the same room
 theObject.getObject=function(id){
 	var self = this;
 	
 	return Modules.ObjectManager.getObject(self.get('inRoom'), id, self.context);
-}
+};
 
 
 theObject.getLinkedObjectsAsync=function(callback) {
@@ -540,12 +673,12 @@ theObject.getLinkedObjectsAsync=function(callback) {
 	
 	callback(links);
 	
-}
+};
 
 
 theObject.getObjectsToDuplicateAsync = function(list,callback) {
 	
-	if (list == undefined) {
+	if (list === undefined) {
 		/* init new list */
 		
 		/* list of objects which will be duplicated */
@@ -568,7 +701,7 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 		
 		temp.push=function(list,callback){
 			list[self.getAttribute('id')] = true; //add this object to list
-		}
+		};
 		
 		async.applyEachSeries(temp, list, function(){
 			var arrList = [];
@@ -584,7 +717,7 @@ theObject.getObjectsToDuplicateAsync = function(list,callback) {
 		
 	});
 	
-}
+};
 
 
 
@@ -603,20 +736,20 @@ theObject.browse = function(data, callback) {
         var args = arguments[0];
         var defaults = {
             'icon' : "/objectIcons/Subroom",
-            'name' : args["title"],
+            'name' : args.title,
             'type' : "Room"
-        }
-        args = _.defaults(args, defaults)
+        };
+        args = _.defaults(args, defaults);
 
         return createNode(args);
-    }
+    };
 
     var createNode = function(){
         var node = {};
         var args = arguments[0];
         var defaults = {
             icon : "/objectIcons/" + args.type
-        }
+        };
         args = _.defaults(args, defaults);
 
         node.data = {
@@ -631,11 +764,11 @@ theObject.browse = function(data, callback) {
         };
 
         if(args.inRoom){
-            node.metadata["inRoom"] = args.inRoom;
+            node.metadata.inRoom = args.inRoom;
         }
 
         return node;
-    }
+    };
 	
 	
     if (roomId === -1) {
@@ -810,7 +943,39 @@ theObject.copyToRoom = function (roomID, callback){
 	Modules.ObjectManager.copyObject(this, roomID, this.context, callback);
 	
 }
+/*
+*	get an array of all overlapping objects
+**/
+theObject.getOverlappingObjectsAsync=function(callback){
+	
+	var self=this;
+	
+	this.getRoomAsync(function(){
+		//error
+	}, function(room){
+		if (!room) return;
+		room.getInventoryAsync(function(inventory){
+		
+			var result=[];
+		
+			for (var i in inventory){
+	
+				var test=inventory[i];
+				if (test.id==self.id) continue;
+				if (self.intersects(test)){
+					result.push(test);
+				}
+			}
+		
+			callback(result);
+		});
+	});
+}
+	
 
+theObject.getUserRooms=function(callback){
+	Modules.UserManager.getUserRooms(this.context,callback);
+}
 theObject.getUserRooms=function(callback){
 	Modules.UserManager.getUserRooms(this.context,callback);
 }
@@ -833,6 +998,7 @@ theObject.writePermission=function(callback){
 		callback(result);
 	});
 }
+
 theObject.writePermission.public=true;
 
 theObject.intelligentRename=function(attribute,value){

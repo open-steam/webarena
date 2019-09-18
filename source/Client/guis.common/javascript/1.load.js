@@ -36,7 +36,7 @@ GUI.loadGUI = function(step) {
 		return;
 	}
 	
-	if (step == undefined || step == 1) {
+	if (step == undefined || step == 1) {
 		GUI.progressBarManager.updateProgress("login", 20);
 
 		if (!GUI.loaded) GUI.chat.init();
@@ -124,6 +124,7 @@ GUI.loadGUI = function(step) {
 		GUI.hideLogin();
 		
 		GUI.drawAllLinks(); //draw all existing links in the new room
+		if (Modules.Config.structuringMode) GUI.setMode(ObjectManager.getCurrentRoom().getAttribute('mode'));
 
 
 		//Init applicationManager & load GUI-elements

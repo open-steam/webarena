@@ -20,7 +20,7 @@ var _ = require('underscore');
 *   even when several instances of the same object exist (which is common on
 *   the server side), they all have the same attribute set they operate on.
 */
-var AttributeManager=new function(){
+var AttributeManager = new function(){
 	
 	//actual attribute data is kept private, so it can only be maniplulated
 	//by setter and getter functions.
@@ -38,7 +38,7 @@ var AttributeManager=new function(){
 	//your data afterwards. In the general case use setAttribute instead.
 	
 	this.set=function(id,key,value){
-		if (id==undefined || value==undefined){
+		if (id===undefined || value===undefined){
 			console.log('ERROR: undefined set',id,key,value);
 			console.trace();
 			return;
@@ -62,7 +62,7 @@ var AttributeManager=new function(){
 	
 	this.setAll=function(id,data){
 		
-		if (id==undefined){
+		if (id===undefined){
 			console.log('ERROR: undefined setAll',id,data);
 			console.trace();
 			return;
@@ -126,7 +126,7 @@ AttributeManager.registerAttribute=function(attribute,data){
 	if (data.type===undefined) data.type='text';
 	if (data.min===undefined) data.min=-50000;
 	if (data.max===undefined) data.max=50000;
-	if (data.standard==undefined) data.standard=0;
+	if (data.standard===undefined) data.standard=0;
 	
 	
 	data.setter=function(object,value){	
@@ -176,37 +176,19 @@ AttributeManager.registerAttribute=function(attribute,data){
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object, attribute, value, forced, notify){
-
-	var that = this;
-	
+AttributeManager.setAttribute=function(object, attribute, value, forced, notify, transactionId){
 	// do nothing, if value has not changed
 	//previous solution with "===" did not work correctly
 	if (_.isEqual(object.get(attribute),value)){
         return false;
-    }
-
+    } 
+    
     if(attribute=='id'){
 		console.log('ERROR: TRIED TO SET ID');
 		console.trace();
 	}
 	
-	// evaluation
-	//
-	// if the position ob the object has changed. evaluatePosition is called. This function
-	// should wait and collect data for a while, as position and dimension information is hardly
-	// ever changed in only one aspect.
-		
-	if (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height'){
-		if (object.evaluatePosition)
-			object.evaluatePosition(attribute,value,object.getAttribute(attribute));
-	}
-	
-	// for every other attribute which may have changed, a changed function is called
-	// (eg. if the attribute test has changed, we try to call testChanged on the server)
-	
-	var fnName=attribute+'Changed';
-    if (object[fnName]) object[fnName](value);
+	var oldValue=object.getAttribute(attribute);
 	
 	// get the object's setter function. If the attribute is not registred,
 	// create a setter function which directly sets the attribute to the
@@ -228,21 +210,78 @@ AttributeManager.setAttribute=function(object, attribute, value, forced, notify)
 	// call the setter function and persist the results
 	setter(object,value);
 	object.persist();
-	
-	//give the object a proper name if no name has been chosen so far
-	if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
-		object.intelligentRename(attribute,value);
-	}
-	
+
+	this.triggerEvaluation(object,attribute,value,oldValue);
 	//inform applications if notify is set to true or undefined
 	var data={};
 	data[attribute]=value;
-	if(notify || notify == undefined){
+	if(notify || notify === undefined){
 		Modules.Applications.event('setAttribute',object,data);	
 	}
 	
 	return true;
 }
+
+var triggerEvaluationDelay={};
+AttributeManager.triggerEvaluation=function(object,attribute,value,oldValue){
+	var delayID=object.getAttribute('id')+attribute;
+	if (triggerEvaluationDelay[delayID]){
+		clearTimeout(triggerEvaluationDelay[delayID]);
+		triggerEvaluationDelay[delayID]=false;
+	}
+	
+	triggerEvaluationDelay[delayID]=setTimeout(function(){
+	    // evaluation
+		//
+		// if the position ob the object has changed. collectPositioningData is called. This function
+		// should wait and collect data for a while, as position and dimension information is hardly
+		// ever changed in only one aspect.
+		// console.log("evaluating....");
+		// console.log(object);
+		if (object.isActive() && (attribute=='x' || attribute=='y' || attribute=='width' || attribute=='height')){
+			if (object.collectPositioningData){
+				object.collectPositioningData(attribute,value,oldValue);
+			}
+		}
+
+		// for every other attribute which may have changed, a changed function is called
+		// (eg. if the attribute test has changed, we try to call testChanged on the server)
+		//TODO: Maybe inform applications here instead of doing it withing setAttribute
+		var fnName=attribute+'Changed';
+	    if (object[fnName]) {
+	    	object[fnName](value);
+	    }
+	    
+	    
+	    //check if the changed attribute value is one of those structured by the background.
+	    //if this is the case, reposition the object.
+	    
+	    if (object.isActive()){
+		    object.getRoomAsync(function(){
+		    	console.log('ERROR: could not get room in serverside setAttribute');
+		    },function(room){
+		    	if (attribute == 'context'){
+		    		return room.repositionObjects(object);
+		    	}
+		    	
+		    	room.getStructuringAttributes(function(attList){
+		    		if (attList[attribute]){
+		    			room.repositionObjects(object);
+		    		}
+		    	},true);
+		    })
+	    }
+	    
+		//give the object a proper name if no name has been chosen so far
+		
+		if (attribute!='name' && attribute!='x' && attribute!='y' && attribute!='width' && attribute!='height'){
+			object.intelligentRename(attribute,value);
+		}		
+		
+		
+	},100);
+	
+};
 
 /**
 *	get an attribute of a specified object
@@ -250,7 +289,7 @@ AttributeManager.setAttribute=function(object, attribute, value, forced, notify)
 AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	
 	//on unregistred attributes directly return their value
-	if (this.attributes[attribute]==undefined){
+	if (this.attributes[attribute]===undefined){
 		return object.get(attribute);
 	}
 	
@@ -258,6 +297,7 @@ AttributeManager.getAttribute=function(object,attribute,noevaluation){
 	
 	// call the getter function
 	
+	//Intentional error
 	return getter(object);
 }
 

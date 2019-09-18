@@ -214,7 +214,7 @@ GUI.showLink = function(id1, id2, val) {
 	
 	var rep2 = object2.getRepresentation();
 	
-	if(val && room.getAttribute('showLinks') && $(rep1).css('opacity') > 0 && $(rep2).css('opacity') > 0){ //show
+	if(val && room.getAttribute('showLinks') && object1.isVisible() && object2.isVisible() > 0){ //show
 		$("#webarenaLink_between_"+id1+"_and_"+id2).show();
 		$("#webarenaLink_between_"+id2+"_and_"+id1).show();
 	}

@@ -184,8 +184,7 @@ var saveDelays={};
 /**
 *	set an attribute to a value on a specified object
 */
-AttributeManager.setAttribute=function(object,attribute,value,forced){
-	
+AttributeManager.setAttribute=function(object,attribute,value,forced, notify){
 	var that = this;
 	
 	if (attribute=='position'){
@@ -247,15 +246,14 @@ AttributeManager.setAttribute=function(object,attribute,value,forced){
 
 	//this timer is the delay in which changes on the same object are discarded
 	var theTimer=200;
-	
 	if (forced) {
-           object.serverCall('setAttribute', attribute, value, false, {
+           object.serverCall('setAttribute', attribute, value, true, true,  {
            	'transactionId': that.transactionId,
            	'userId' : GUI.userid
-           })
+           });
 	} else {
 		saveDelays[identifier]=window.setTimeout(function(){
-               object.serverCall('setAttribute', attribute, value, false, {
+               object.serverCall('setAttribute', attribute, value, false, true, {
                	'transactionId': that.transactionId,
                	'userId' : GUI.userid
            	})

@@ -108,6 +108,8 @@ IconObject.draw=function(external){
 
 		
 	}
+	
+	this.showOrHide();
 
 	this.createPixelMap();
 }

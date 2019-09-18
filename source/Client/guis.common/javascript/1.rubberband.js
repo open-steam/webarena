@@ -83,7 +83,7 @@ GUI.rubberbandStart = function(event) {
 		
 			$.each(ObjectManager.getObjects('left'), function(index, object) {
 			
-				if (!object.getAttribute("visible")) return;
+				if (!object.isVisible()) return;
 				
 				var val;
 				if(typeof object.objectIntersectsWith == 'function'){ 

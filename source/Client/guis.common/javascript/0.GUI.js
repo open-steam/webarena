@@ -483,7 +483,7 @@ GUI.initMouseHandler = function() {
 			/* find objects at this position */
 			var clickedObject = GUI.getObjectAt(x, y);
 
-			if (clickedObject && event.target != $("#content>svg").get(0)) {
+			if (clickedObject && clickedObject.isAccessible() && event.target != $("#content>svg").get(0)) {
 				event.preventDefault();
 				event.stopPropagation();
 				clickedObject.click(event);
@@ -567,7 +567,8 @@ GUI.initMouseHandler = function() {
 			
 			var clickedObject=(temp)?temp.dataObject:false;
 
-			if (clickedObject) {
+			if (clickedObject && clickedObject.isAccessible()) {
+
 				// Objects with restricted moving areas should get the "native" events
 				// Only if clicked on the moving area, e.g. actionbar the default event handling
 				// should be prevented
@@ -584,7 +585,7 @@ GUI.initMouseHandler = function() {
 			clickedObject.click(event);
 				
 			} else {
-				/* clicked on background */
+				/* clicked on background or unaccessible object*/
                 event.preventDefault();
                 event.stopPropagation();
 				GUI.rubberbandStart(event);
@@ -1043,6 +1044,50 @@ GUI.startNoAnimationTimer = function() {
  */
 GUI.confirm = function(message) {
 	return confirm(message);
+}
+
+GUI.setMode=function(mode){
+	
+	if (!Modules.Config.structuringMode){
+		console.log('setMode?');
+		console.trace();
+		return;
+	}
+	
+	//Eigenschaften des Vordergrunds
+	var className='fgmode';
+	var text='Edit background';
+	var toMode='background';
+	//Eigenschaften des Hintergrunds
+	if (mode=='background'){
+		className='bgmode';
+		text='Exit';
+		toMode='foreground';
+	}
+	
+	var header=document.getElementById('header');
+	var sidebar=document.getElementById('sidebar');
+	var sidebar_title=document.getElementById('sidebar_title');
+	var sidebarContent=document.getElementById('sidebar_content');
+	
+    //optical changes
+	if (header) header.className=className;
+	if (sidebar) sidebar.className=className;
+	if (sidebar_title) sidebar_title.className=className;
+	
+	sidebarContent.className=className;
+	
+    //set the button
+	$( "#switchbutton" ).remove();	
+	$( "<button id=\"switchbutton\">"+text+"</button>" ).appendTo(sidebar);
+	
+	var switchbutton=document.getElementById('switchbutton');
+	switchbutton.onclick=function(){
+		GUI.setMode(toMode);
+	}
+	
+	ObjectManager.getCurrentRoom().setAttribute('mode',mode);
+	
 }
 
 /**

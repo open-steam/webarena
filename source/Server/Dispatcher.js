@@ -145,6 +145,7 @@ Dispatcher.registerCall('serverCall', function(socket, data, responseID) {
     var context = Modules.UserManager.getConnectionBySocket(socket);
     Modules.ObjectController.executeServersideAction(data, context, resultCallbackWrapper(socket, responseID));
 });
+
 Dispatcher.registerCall('writeToServerConsole', function(socket, data, responseID) {
     Modules.ServerController.writeToServerConsole(data, socket, responseID, resultCallbackWrapper(socket, responseID));
 });

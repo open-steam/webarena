@@ -3,19 +3,19 @@
  *
  *    @author Felix Winkelnkemper, University of Paderborn, 2015
  *
- *	  As every webArena object type inherits from GeneralObject, GeneralObject/common.js,
- *	  GeneralObject/server.js etc. contain very basic code for object interaction.
+ *    As every webArena object type inherits from GeneralObject, GeneralObject/common.js,
+ *    GeneralObject/server.js etc. contain very basic code for object interaction.
  *
- *	  This common.js file contains code which is equally valid on the client as
- *	  well as on the server side.
+ *    This common.js file contains code which is equally valid on the client as
+ *    well as on the server side.
  *
  */
 
 // functions and properties defined here are the same on the server and client side
 
 var Modules = require('../../../server.js');  // The modules variable provides access
-											  // to the basic managers as well as
-											  // to the configuration
+                                              // to the basic managers as well as
+                                              // to the configuration
 
 var GeneralObject = Object.create(Object);
 
@@ -26,8 +26,8 @@ GeneralObject.isCreatable = false;  // set this to true if object types can be c
 GeneralObject.isGraphical = true;   // set this to true if the object has a graphical representation
 GeneralObject.alwaysOnTop = false;  // set this to true if the object should be displayed above all layers
 GeneralObject.contentURLOnly = true; // set this to true if the object contains content which should not be
-									 // automatically synchronized between client and server but which is
-									 // accessed by URL.
+                                     // automatically synchronized between client and server but which is
+                                     // accessed by URL.
 
 /**
  * Registers the object
@@ -46,7 +46,7 @@ GeneralObject.register = function(type) {
     this.standardData = new Modules.DataSet; // DataSet is a set of very basic attributes like x and y
     
     ObjectManager.registerType(type, this); // Register this object type on the object manager.
-    										// (on ther server as well as on the client)
+                                            // (on ther server as well as on the client)
     
     // Objects need to have access to a number of managers:
     //
@@ -65,6 +65,15 @@ GeneralObject.register = function(type) {
     
     // Now registering basic attributes
     
+    
+    if (Modules.Config.debugMode){
+        this.registerAttribute('debug1', {type: 'text', category: 'Debug'});
+        this.registerAttribute('debug2', {type: 'text', category: 'Debug'});
+        this.registerAttribute('debug3', {type: 'text', category: 'Debug'});
+        this.registerAttribute('debug4', {type: 'text', category: 'Debug'});
+        this.registerAttribute('context', {type: 'text', category: 'Debug'});
+    }
+    
     this.registerAttribute('id', {type: 'number', readonly: true});
     this.registerAttribute('type', {type: 'text', readonly: true});
     this.registerAttribute('name', {type: 'text'});
@@ -77,6 +86,19 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('x', {type: 'number', min: 0, category: 'Dimensions'});
     this.registerAttribute('y', {type: 'number', min: 0, category: 'Dimensions'});
+    
+    this.registerAttribute('cx',{hidden:true, mobile: false,getFunction:function(object){
+        return Math.floor(object.getAttribute('x')+object.getAttribute('width')/2);
+    },setFunction:function(object,value){
+        object.setAttribute('x',Math.floor(value-object.getAttribute('width')/2));
+    }});
+    this.registerAttribute('cy',{hidden:true, mobile: false,getFunction:function(object){
+        return Math.floor(object.getAttribute('y')+object.getAttribute('height')/2);
+    },setFunction:function(object,value){
+        object.setAttribute('y',Math.floor(value-object.getAttribute('height')/2));
+    }});
+    
+    
     this.registerAttribute('width', {type: 'number', min: 5, standard: 100, unit: 'px', category: 'Dimensions', checkFunction: function(object, value) {
 
             if (object.resizeProportional()) {
@@ -117,7 +139,12 @@ GeneralObject.register = function(type) {
 
     this.registerAttribute('linesize', {type: 'number', min: 1,max:10, standard: 1, category: 'Appearance'});
 
-    this.registerAttribute('locked', {type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
+    this.registerAttribute('fixed', {type: 'boolean', standard: false, category: 'Basic', checkFunction: function(object, value) {
+
+            window.setTimeout(function() {
+                object.deselect();
+                object.select();
+            }, 10);
 
             return true;
 
@@ -169,11 +196,11 @@ GeneralObject.register = function(type) {
         }});
 
     this.registerAttribute('group', {type: 'group', readonly: false, category: 'Basic', standard: 0});
-	
-	this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
-	this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
-	this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
-	
+    
+    this.registerAttribute('blockedByUser', {type:'text',readonly: false, standard: "none", hidden:true});
+    this.registerAttribute('blockedByID', {type:'text',readonly: false, standard: "none", hidden:true});
+    this.registerAttribute('tryUnblock', {type:'number',readonly: false, standard: 0, hidden:true});
+    
     var r = Modules.Helper.getRandom(0, 200);
     var g = Modules.Helper.getRandom(0, 200);
     var b = Modules.Helper.getRandom(0, 200);
@@ -182,8 +209,6 @@ GeneralObject.register = function(type) {
     this.standardData.fillcolor = 'rgb(' + r + ',' + g + ',' + b + ')';
     this.standardData.width = width;
     this.standardData.height = width;
-	
-	
 }  // End of register function
 
 /**
@@ -214,21 +239,22 @@ GeneralObject.toString = function() {
 }
 
 /**
+
 * tryToBlock
 *
 * Try to set the block on an object. This os only possible, if the object is not already blocked.
 */
 GeneralObject.tryToBlock=function(){
-	
-	
-	if (!this.isBlocked()) {
-		this.block();
-		return true;
-	} else {
-		//console.log('Cannot block '+this);
-	}
-	
-	return false;
+    
+    
+    if (!this.isBlocked()) {
+        this.block();
+        return true;
+    } else {
+        //console.log('Cannot block '+this);
+    }
+    
+    return false;
 
 }
 
@@ -238,29 +264,29 @@ GeneralObject.tryToBlock=function(){
  * This should not be called direclty. Use tryToBlock instead.
  */
 GeneralObject.block = function(){
-	this.setAttribute('blockedByUser',ObjectManager.user.username);
-	this.setAttribute('blockedByID',ObjectManager.user.id);
-	var startTimestamp = new Date().getTime();
-	this.setAttribute('blockedTime',startTimestamp);
-	//console.log("Blocked: " +this);
-	
-	//renew the block every 5 seconds if the object has not been unblocked
-	//in between.
-	
-	var that=this;
-	this.blockrenwer=window.setTimeout(function(){
-		
-		if (that.blockrenwer){
-			clearTimeout(that.blockrenwer);
-			that.blockrenwer=false;
-		}
-		
-		if (that.isBlocked(true)){
-			that.block();
-		} 
-		
-	},5000);
-	
+    this.setAttribute('blockedByUser',ObjectManager.user.username);
+    this.setAttribute('blockedByID',ObjectManager.user.id);
+    var startTimestamp = new Date().getTime();
+    this.setAttribute('blockedTime',startTimestamp);
+    //console.log("Blocked: " +this);
+    
+    //renew the block every 5 seconds if the object has not been unblocked
+    //in between.
+    
+    var that=this;
+    this.blockrenwer=window.setTimeout(function(){
+        
+        if (that.blockrenwer){
+            clearTimeout(that.blockrenwer);
+            that.blockrenwer=false;
+        }
+        
+        if (that.isBlocked(true)){
+            that.block();
+        } 
+        
+    },5000);
+    
 }
 
 /**
@@ -269,13 +295,13 @@ GeneralObject.block = function(){
 * Try remove the block of an object. This is only possible if it was you who blocked it in the first place.
 */
 GeneralObject.tryToUnblock=function(){
-	
-	var blockedById=this.getAttribute('blockedByID');
-	
-	if (ObjectManager.user.id==blockedById) this.unblock();
-	else {
-		//console.log('Cannot unblock '+this+ ' as you have not blocked it!');
-	}
+    
+    var blockedById=this.getAttribute('blockedByID');
+    
+    if (ObjectManager.user.id==blockedById) this.unblock();
+    else {
+        //console.log('Cannot unblock '+this+ ' as you have not blocked it!');
+    }
 
 }
 
@@ -284,10 +310,10 @@ GeneralObject.tryToUnblock=function(){
  * cancel the blockade on the selected object
  */
 GeneralObject.unblock = function(){
-	this.setAttribute('blockedByUser','none');
-	this.setAttribute('blockedByID','none');
-	this.setAttribute('blockedTime',0);
-	//console.log("Unblocked: " +this);
+    this.setAttribute('blockedByUser','none');
+    this.setAttribute('blockedByID','none');
+    this.setAttribute('blockedTime',0);
+    //console.log("Unblocked: " +this);
 }
 
 /*
@@ -301,32 +327,32 @@ GeneralObject.unblock = function(){
 *
 */
 GeneralObject.isBlocked = function(raw){
-	
-	//set raw to true if you just want to check if a valid block exists without checking who set it.
-	
-	//console.log('checking for block on '+this);
-	
-	var that = this;
+    
+    //set raw to true if you just want to check if a valid block exists without checking who set it.
+    
+    //console.log('checking for block on '+this);
+    
+    var that = this;
 
-	var waitingTime = 30; //sec
-	
-	var blockedTime=this.getAttribute('blockedTime');
-	
-	if (!blockedTime) return false;
-	if (blockedTime==0) return false;    //object not blocked
-	
-	var now = new Date().getTime();
-	
-	if (now-blockedTime>(waitingTime*1000)) return false; //object blocked long ago
-	
-	if (raw) return true;
-	
-	var blockedById=this.getAttribute('blockedByID');
-	
-	if (ObjectManager.user.id==blockedById) return false; //blocked by myself
-	
-	return true;
-	
+    var waitingTime = 30; //sec
+    
+    var blockedTime=this.getAttribute('blockedTime');
+    
+    if (!blockedTime) return false;
+    if (blockedTime==0) return false;    //object not blocked
+    
+    var now = new Date().getTime();
+    
+    if (now-blockedTime>(waitingTime*1000)) return false; //object blocked long ago
+    
+    if (raw) return true;
+    
+    var blockedById=this.getAttribute('blockedByID');
+    
+    if (ObjectManager.user.id==blockedById) return false; //blocked by myself
+    
+    return true;
+    
 }
 
 /*
@@ -336,24 +362,15 @@ GeneralObject.isBlocked = function(raw){
 *
 */
 GeneralObject.checkBlock=function(){
-	
-	if (this.isBlocked()){
-		return this.showBlockDialog();
-	}
-	
-	return true;
-	
+    
+    if (this.isBlocked()){
+        return this.showBlockDialog();
+    }
+    
+    return true;
+    
 }
 
-/**
- * Attribute handling
- *
- * The following attributes are mostly a shortcut to the object's attribute manager
- *
- * the get and set function set an object's value without any futher check and should
- * only be used with caution (e.g. in situations where checks would fail as the attributes
- * subject to the chech are just created)
- */
 
 GeneralObject.get = function(key) {
     return this.attributeManager.get(this.id, key);
@@ -372,26 +389,25 @@ GeneralObject.registerAttribute = function(attribute, setter, type, min, max) {
     return this.attributeManager.registerAttribute(attribute, setter, type, min, max);
 }
 
-GeneralObject.setAttribute = function(attribute, value, forced, notify, transactionId) {
-	try {
-    	if(GUI.writePermission==false || GUI.writePermission=="undefined"){
-			return ;
-		}else{
-			return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
-		}
-	}
-	catch(err) {
-		// GUI wird auf dem Server aufgerufen und ist dort nicht verfügbar
-		return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
-	}
-
-}
-GeneralObject.setAttribute.public = true;
-GeneralObject.setAttribute.neededRights = {write: true}
-
 GeneralObject.getAttribute = function(attribute, noevaluation) {
     return this.attributeManager.getAttribute(this, attribute, noevaluation);
 }
+
+GeneralObject.setAttribute = function(attribute, value, forced, notify) {
+    try {
+        if(GUI.writePermission==false || GUI.writePermission=="undefined"){
+            return ;
+        }else{
+            return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
+        }
+    }
+    catch(err) {
+        // Funktion wird auf dem Server aufgerufen und ist dort nicht verfuegbar
+        return this.attributeManager.setAttribute(this, attribute, value, forced, notify);
+    }
+}
+GeneralObject.setAttribute.public = true;
+GeneralObject.setAttribute.neededRights = {write: true};
 
 GeneralObject.hasAttribute = function(attribute) {
     return this.attributeManager.hasAttribute(this, attribute);
@@ -431,12 +447,14 @@ GeneralObject.getName = function() {
 GeneralObject.getRoomID = function() {
     return this.get('inRoom');
 }
+
 GeneralObject.getCurrentRoom=GeneralObject.getRoomID;
 
 
 GeneralObject.getID = function() {
     return this.get('id');
 }
+
 GeneralObject.getId = GeneralObject.getID;
 
 
@@ -444,7 +462,7 @@ GeneralObject.getId = GeneralObject.getID;
 
 GeneralObject.remove = function() {
     Modules.ObjectManager.remove(this);
-	
+
 }
 
 GeneralObject.deleteIt = GeneralObject.remove;
@@ -453,7 +471,6 @@ GeneralObject.deleteIt = GeneralObject.remove;
 //returns if an object has links to other objects or not
 GeneralObject.hasLinkedObjects = function() {
 
-    var counter = 0;
 
     var linkedObjects = this.getLinkedObjects();
 
@@ -509,7 +526,7 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
             that.setAttribute('link', links);
             that.persist();
         }
-        else { //this destination was not copied		
+        else { //this destination was not copied        
             var dest = Modules.ObjectManager.getObject(that.inRoom, link.destination, that.context);
 
             if (typeof dest.inRoom === 'undefined') { //the object and the destination are in different rooms now, so remove the links
@@ -545,7 +562,7 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 
 
 /**
-*	create Links between this object and other object (by adding entries in the link-attribute of all objects)
+*   create Links between this object and other object (by adding entries in the link-attribute of all objects)
 * @param {array} targetIds    array with ids of the target objects
 * @param {boolean} arrowheadOtherEnd    Show an arrow on the distant end of the link. Default value: false (if not specified)
 * @param {boolean} arrowheadThisEnd    Show an arrow on the near end of the link. Default value: false (if not specified) 
@@ -555,10 +572,10 @@ GeneralObject.updateLinkIds = function(idTranslationList) {
 */
 GeneralObject.createLinks = function(targetIds, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
 
-	for(var i = 0; i<targetIds.length; i++){
-		this.createLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
-	}
-	
+    for(var i = 0; i<targetIds.length; i++){
+        this.createLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+    }
+    
 }
 
 
@@ -569,191 +586,191 @@ GeneralObject.createLinks = function(targetIds, arrowheadOtherEnd, arrowheadThis
 */
 GeneralObject.createLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
 
-	var target;
-	var object;
+    var target;
+    var object;
 
-	if(typeof this.context == "undefined"){ //client side call
-		target = ObjectManager.getObject(targetId);
-		object = this;
-	}
-	else{ //server side call
-		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
-		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
-	}
+    if(typeof this.context == "undefined"){ //client side call
+        target = ObjectManager.getObject(targetId);
+        object = this;
+    }
+    else{ //server side call
+        target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
+        object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
+    }
 
-	object.setLinkAttribute(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
-	target.setLinkAttribute(this.id, arrowheadThisEnd, arrowheadOtherEnd, width, style, padding);
-	
+    object.setLinkAttribute(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+    target.setLinkAttribute(this.id, arrowheadThisEnd, arrowheadOtherEnd, width, style, padding);
+    
 }
 
 
 /**
-*	change the Links between this object and all other object (by changing the entries in the link-attribute)
+*   change the Links between this object and all other object (by changing the entries in the link-attribute)
 *  @param  {array} targetIds     array with ids of the target objects
 *  other parameters: see above 
 */
 GeneralObject.changeLinks = function(targetIds, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
 
-	for(var i = 0; i<targetIds.length; i++){
-		this.changeLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
-	}
+    for(var i = 0; i<targetIds.length; i++){
+        this.changeLink(targetIds[i], arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+    }
 
 }
 
 
 /**
-*	change the Link between this object and one other object (by changing the entry in the link-attribute)
+*   change the Link between this object and one other object (by changing the entry in the link-attribute)
 *  @param {string} targetId    the id of the target object
 *  other parameters: see above 
 */
 GeneralObject.changeLink = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
 
-	var target;
-	var object;
+    var target;
+    var object;
 
-	if(typeof this.context == "undefined"){ //client side call
-		target = ObjectManager.getObject(targetId);
-		object = this;
-	}
-	else{ //server side call
-		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
-		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
-	}
+    if(typeof this.context == "undefined"){ //client side call
+        target = ObjectManager.getObject(targetId);
+        object = this;
+    }
+    else{ //server side call
+        target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
+        object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
+    }
 
-	object.setLinkAttribute(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
-	target.setLinkAttribute(this.id, arrowheadThisEnd, arrowheadOtherEnd, width, style, padding);
+    object.setLinkAttribute(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding);
+    target.setLinkAttribute(this.id, arrowheadThisEnd, arrowheadOtherEnd, width, style, padding);
 
 }
 
 
 /**
-*	delete all Links between this object and all other object (by removing the entries from the link-attribute)
+*   delete all Links between this object and all other object (by removing the entries from the link-attribute)
 */
 GeneralObject.deleteLinks = function(){
 
-	var links = this.getAttribute('link');
-	
-	for(var i = 0; i<links.length; i++){
-		this.deleteLink(links[i].destination);
-	}
+    var links = this.getAttribute('link');
+    
+    for(var i = 0; i<links.length; i++){
+        this.deleteLink(links[i].destination);
+    }
 
 }
 
 
 /**
-*	delete the Link between this object and one other object (by removing the entry from the link-attribute)
+*   delete the Link between this object and one other object (by removing the entry from the link-attribute)
 * @param {string} targetId     the id of the target object
 */
 GeneralObject.deleteLink = function(targetId){
 
-	var target;
-	var object;
+    var target;
+    var object;
 
-	if(typeof this.context == "undefined"){ //client side call
-		target = ObjectManager.getObject(targetId);
-		object = this;
-	}
-	else{ //server side call
-		target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
-		object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
-	}
+    if(typeof this.context == "undefined"){ //client side call
+        target = ObjectManager.getObject(targetId);
+        object = this;
+    }
+    else{ //server side call
+        target = Modules.ObjectManager.getObject(this.inRoom, targetId, this.context); 
+        object = Modules.ObjectManager.getObject(this.inRoom, this.id, this.context); 
+    }
 
-	object.removeLinkAttribute(targetId);
-	target.removeLinkAttribute(this.id);
+    object.removeLinkAttribute(targetId);
+    target.removeLinkAttribute(this.id);
 
 }
 
 
 /**
 *
-*	internal
+*   internal
 *
 *   set the Link attribute of this object
 */
 GeneralObject.setLinkAttribute = function(targetId, arrowheadOtherEnd, arrowheadThisEnd, width, style, padding){
 
-	var newLinks = [];
-	var oldLinks = this.getAttribute('link');
-	
-	//check if there already existing links, if yes: reinsert them
-	if(oldLinks.length != 0){
-		for(var i = 0; i<oldLinks.length; i++){
-			newLinks.push(oldLinks[i]);
-		}
-	}
-	
-	//define default values
-	var link = {
-		destination: targetId,
-		arrowheadOtherEnd: false,
-		arrowheadThisEnd: false,
-		width: 5,
-		style: "stroke",
-		padding: 5
-	};
-	
-	for(var i = 0; i<newLinks.length; i++){
-		if(newLinks[i].destination == targetId){ //link is already specified-->overwrite the default values with the existing values
-			for (var attribute in newLinks[i]){
-				link[attribute] = newLinks[i][attribute]; 
-			}
-			newLinks.splice(i, 1);
-		}
-	}
-	
-	if(arrowheadOtherEnd == true || arrowheadOtherEnd == false){
-		link.arrowheadOtherEnd = arrowheadOtherEnd;
-	}
-	
-	if(arrowheadThisEnd == true || arrowheadThisEnd == false){
-		link.arrowheadThisEnd = arrowheadThisEnd;
-	}
-		
-	if(typeof width == "number" && width > 0){
-		link.width = width;
-	}
-	
-	if(style == "stroke" || style == "dashed" || style == "dotted"){
-		link.style = style;
-	}
-		
-	if(typeof padding == "number" && padding > -1){
-		link.padding = padding;
-	}	
+    var newLinks = [];
+    var oldLinks = this.getAttribute('link');
+    
+    //check if there already existing links, if yes: reinsert them
+    if(oldLinks.length != 0){
+        for(var i = 0; i<oldLinks.length; i++){
+            newLinks.push(oldLinks[i]);
+        }
+    }
+    
+    //define default values
+    var link = {
+        destination: targetId,
+        arrowheadOtherEnd: false,
+        arrowheadThisEnd: false,
+        width: 5,
+        style: "stroke",
+        padding: 5
+    };
+    
+    for(var i = 0; i<newLinks.length; i++){
+        if(newLinks[i].destination == targetId){ //link is already specified-->overwrite the default values with the existing values
+            for (var attribute in newLinks[i]){
+                link[attribute] = newLinks[i][attribute]; 
+            }
+            newLinks.splice(i, 1);
+        }
+    }
+    
+    if(arrowheadOtherEnd == true || arrowheadOtherEnd == false){
+        link.arrowheadOtherEnd = arrowheadOtherEnd;
+    }
+    
+    if(arrowheadThisEnd == true || arrowheadThisEnd == false){
+        link.arrowheadThisEnd = arrowheadThisEnd;
+    }
+        
+    if(typeof width == "number" && width > 0){
+        link.width = width;
+    }
+    
+    if(style == "stroke" || style == "dashed" || style == "dotted"){
+        link.style = style;
+    }
+        
+    if(typeof padding == "number" && padding > -1){
+        link.padding = padding;
+    }   
 
-	newLinks.push(link);
-	
+    newLinks.push(link);
+    
     this.setAttribute("link", newLinks); 
 
-	if(typeof this.context == "undefined"){ //client side call
-		//show all links (if 'showLinks' is deactivated, activate it)
-		var room = this.getRoom(); 
-		room.setAttribute('showLinks', true); 
-	}
-	
+    if(typeof this.context == "undefined"){ //client side call
+        //show all links (if 'showLinks' is deactivated, activate it)
+        var room = this.getRoom(); 
+        room.setAttribute('showLinks', true); 
+    }
+    
 }
 
 
 /**
 *
-*	internal
+*   internal
 *
 *   remove an entry from the Link attribute of this object
 */
 GeneralObject.removeLinkAttribute = function(targetId){
 
-	var newLinks = [];
-	var oldLinks = this.getAttribute('link');
+    var newLinks = [];
+    var oldLinks = this.getAttribute('link');
 
-	//check if there already existing links, if yes and they are unequal to the targetId: reinsert them
-	if(oldLinks.length != 0){
-		for(var i = 0; i<oldLinks.length; i++){
-			if(oldLinks[i].destination != targetId){
-				newLinks.push(oldLinks[i]);
-			}
-		}
-	}
-	
+    //check if there already existing links, if yes and they are unequal to the targetId: reinsert them
+    if(oldLinks.length != 0){
+        for(var i = 0; i<oldLinks.length; i++){
+            if(oldLinks[i].destination != targetId){
+                newLinks.push(oldLinks[i]);
+            }
+        }
+    }
+    
     this.setAttribute("link", newLinks);
 
 }
@@ -761,16 +778,50 @@ GeneralObject.removeLinkAttribute = function(targetId){
 
 /**
 *
-*	 SENSITIVE AND STRUCTURING OBJECTS
+*    SENSITIVE AND STRUCTURING OBJECTS
 *
-*	 here in the common.js, only flags are set. Actual logic is provided in the client and server files
+*    here in the common.js, only flags are set. Actual logic is provided in the client and server files
 *
 */
+GeneralObject.makeSensitive=function(){
+    this.isSensitiveFlag=true;
+}
 
+GeneralObject.makeStructuring=function(){
+    console.log("make structuring called");
+    this.isStructuringFlag=true;
+}
 
-GeneralObject.makeSensitive = function() {this.isSensitiveFlag = true;}
-GeneralObject.makeStructuring = function() {this.isStructuringFlag = true;}
-GeneralObject.isSensitive = function() {return this.isSensitiveFlag || false;}
-GeneralObject.isStructuring = function() {return this.isStructuringFlag || false;}
+GeneralObject.makeActive=function(){
+    if (Modules.Config.structuringMode){
+        this.isActiveFlag=true;
+    } else {
+        console.log('Cannot make '+this+' active as structuring is turned off.');
+    }
+}
+
+GeneralObject.isActive=function(){
+    return this.isActiveFlag||false;
+}
+
+GeneralObject.isIllustrating=function(){
+    return !(this.isActive());
+}
+
+GeneralObject.isStructuring=function(){
+    return this.isStructuringFlag||false;
+}
+
+GeneralObject.isSensitive=function(){
+    return this.isSensitiveFlag||false;
+}
+
+GeneralObject.getContexts=function(){
+    
+    var room=this.getRoom();
+    var contexts=room.getAttribute('contexts');
+    
+    return contexts;
+}
 
 module.exports = GeneralObject;
