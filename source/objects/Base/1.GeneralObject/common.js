@@ -235,6 +235,7 @@ GeneralObject.toString = function() {
     if (!this.get('id')) {
         return 'type ' + this.type;
     }
+    console.log(this.get('id'));
     return this.type + ' #' + this.get('id');
 }
 
@@ -473,6 +474,7 @@ GeneralObject.hasLinkedObjects = function() {
 
 
     var linkedObjects = this.getLinkedObjects();
+    var counter=0;
 
     for (var id in linkedObjects) {
         var object = linkedObjects[id];
@@ -480,6 +482,8 @@ GeneralObject.hasLinkedObjects = function() {
         counter++;
 
     }
+    
+    console.log('Has linked objects '+counter);
 
     if (counter > 0) {
         return true;

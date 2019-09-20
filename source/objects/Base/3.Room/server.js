@@ -19,7 +19,14 @@ theObject.evaluatePositionFor = function(object, data) {
        
        //this is called when an application object has moved.
        
-        var oldContext=object.getAttribute('context').toString();
+        var context=object.getAttribute('context');
+        
+        if (!context) {
+        	console.log('#### CONTEXT IS UNDEFINED');
+        	return;
+        }
+       
+        var oldContext=context.toString();
        
         var inStructures=0;
         

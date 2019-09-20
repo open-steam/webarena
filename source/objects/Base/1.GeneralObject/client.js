@@ -589,6 +589,9 @@ GeneralObject.getCurrentUserName = function() {
 
 
 GeneralObject.getLinkedObjects = function() {
+	
+	console.log('getLinkedObjects');
+	
     var self = this;
 
     var getObject = function(id) {

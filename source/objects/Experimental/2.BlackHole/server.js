@@ -68,3 +68,5 @@ theObject.onDrop=function(droppedID){
 	});
 	
 }
+
+theObject.onDrop.public=true;

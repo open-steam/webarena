@@ -15,7 +15,7 @@ BlackHole.register=function(type){
 	GeneralObject.register.call(this,type);
 	
 	
-	this.registerAttribute('destination', {type: 'Hyperlink', standard: "choose", linkFunction: function(object) {
+	this.registerAttribute('destination', {type: 'text', standard: "choose", linkFunction: function(object) {
            object.showExitDialog()
        }, category: 'Hyperlink', changedFunction: function(object) {
            if(object.updateIcon){object.updateIcon()};
