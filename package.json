@@ -10,7 +10,7 @@
     "q": "~0.9.6",
     "underscore": "*",
     "async": "~0.2.9",
-    "lodash": "~2.2.1",
+    "lodash": "~4.17.15",
     "winston": "0.8.0",
     "jsftp": "*",
     "node-dav": "*",
