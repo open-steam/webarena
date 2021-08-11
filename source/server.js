@@ -21,6 +21,7 @@ var printLogo = function() {
         '#        Jan Petertonkoker               #',
         '#        Steven Christopher Lücker       #',
         '#        Christoph Sens                  #',
+        '#        Alejandro Sandoval Parra        #',
         '#                                        #',
         '##########################################'];
 
